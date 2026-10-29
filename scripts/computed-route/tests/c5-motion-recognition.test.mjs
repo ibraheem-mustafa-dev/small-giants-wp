@@ -32,6 +32,7 @@ test( 'negative control (C5 recognition 4): the same formula on a trigger that i
 	assert.equal( recogniseBehaviour( { ...PARALLAX, properties: [ { property: 'transform', formula: "'scale(' + y * 0.18 + ')'" } ] } ), null );
 	assert.equal( recogniseBehaviour( { ...PARALLAX, trigger: { type: 'scroll-position', detail: 'IntersectionObserver callback via parallax' } } ), null, 'a scroll-position record whose trigger does not name the scroll' );
 	assert.equal( recogniseBehaviour( { ...PARALLAX, properties: [ { property: 'transform', formula: "'translateY(' + innerHeight * 0.5 + 'px)'" } ] } ), null, 'the viewport height is not the scroll position' );
+	assert.equal( recogniseBehaviour( { ...PARALLAX, properties: [ { property: 'transform', formula: "'translate3d(0,' + y.toFixed(1) + 'px,0) rotate(' + (rot + sy * 0.035 * depth).toFixed(1) + 'deg)'" } ] } ), null, 'a transform that also rotates is not a plain travel' );
 	const y = recogniseBehaviour( { ...PARALLAX, properties: [ { property: 'transform', formula: "'translateY(' + window.scrollY * 0.3 + 'px)'" } ] } );
 	assert.equal( y.effects[ 0 ].values.speedRatio, 0.3 );
 	const named = recogniseBehaviour( { ...PARALLAX, properties: [ { property: 'transform', formula: "'translateY(' + $off * -0.25 + 'px)'" } ] } );
@@ -39,11 +40,14 @@ test( 'negative control (C5 recognition 4): the same formula on a trigger that i
 } );
 
 // ---- the pinned timeline carries its orientation (item 10) ----
-test( 'MUST FAIL (C5 recognition 10): the pinned horizontal timeline is written with the horizontal orientation it depends on', () => {
+test( 'MUST FAIL (C5 recognition 10): the pinned horizontal timeline is written with the horizontal orientation it depends on, which the review does not list', async () => {
 	const PIN = 'window scroll (rAF-throttled) -> updatePins(). p = clamp((stickyTop - pin.top) / (pin.offsetHeight - sticky.offsetHeight), 0, 1)';
 	const track = J( 'S-5', { trigger: { type: 'scroll-position', detail: PIN }, element: { dc: 'Site', template_tpl_id: '10', selector: '[data-pin] -> [data-pin-x]' }, properties: [ { property: 'transform', formula: 'dist = max(0, track.scrollWidth - innerWidth); translate3d(−p × dist px, 0, 0)' } ] } );
 	const b = recogniseBehaviour( track );
-	assert.deepEqual( b.blocks[ 'sgs/timeline' ].slice( 0, 2 ), [ { attr: 'scrollEffect', value: 'pinned-horizontal' }, { attr: 'orientation', value: 'horizontal' } ] );
+	const { effectRows } = await import( '../lib/motion-behaviours.mjs' );
+	assert.match( effectRows( [ track ] )[ 0 ].text, /written as the block settings sgs\/timeline scrollEffect$/, 'the review row names the setting, not its companion' );
+	assert.ok( ! effectRows( [ track ] )[ 0 ].effect.includes( 'orientation' ), 'a companion setting is not a row of the review' );
+	assert.deepEqual( b.blocks[ 'sgs/timeline' ].slice( 0, 2 ), [ { attr: 'scrollEffect', value: 'pinned-horizontal' }, { attr: 'orientation', value: 'horizontal', companion: true } ] );
 } );
 
 // ---- a script reveal is one scroll entrance (item 3) ----
@@ -53,13 +57,14 @@ const rise = ( id, trigger, over = {} ) => J( id, { source: { file: 'App.dc.html
 const FOUR = [ 'scroll-into-view', 'mount', 'press', 'state' ];
 const REVEAL_RECORDS = [ ...FOUR.map( ( t, i ) => opacity( `J-0${ i + 1 }`, t ) ), ...FOUR.map( ( t, i ) => rise( `J-0${ i + 5 }`, t ) ) ];
 
-test( 'MUST FAIL (C5 recognition 3): the opacity and the rise one tween writes are one scroll entrance with the tween\'s timing, once per caller', () => {
+test( 'MUST FAIL (C5 recognition 3): the opacity and the rise one tween writes are one scroll entrance with the tween\'s timing, from every caller', () => {
 	const out = normaliseReveals( REVEAL_RECORDS );
-	assert.equal( out.length, 4, 'eight writes are four entrances' );
-	const scroll = out.find( ( r ) => 'scroll-into-view' === r.trigger.type );
+	assert.equal( out.length, 1, 'eight writes, two per caller, are one entrance' );
+	const [ scroll ] = out;
 	assert.equal( scroll.id, 'J-01' );
+	assert.equal( scroll.trigger.type, 'scroll-into-view', 'the scroll-started record leads' );
 	assert.equal( scroll.mechanism, 'waapi' );
-	assert.deepEqual( scroll.mergedFrom, [ 'J-01', 'J-05' ] );
+	assert.deepEqual( scroll.mergedFrom, [ 'J-01', 'J-02', 'J-03', 'J-04', 'J-05', 'J-06', 'J-07', 'J-08' ] );
 	assert.deepEqual( scroll.properties, [ { property: 'opacity', from: 0, to: 1 }, { property: 'transform', from: 'translateY(26px)', to: 'none' } ] );
 	assert.equal( scroll.duration_ms, 460 );
 	assert.equal( scroll.easing, EASING_CSS.easeOutCubic );
@@ -89,9 +94,18 @@ test( 'negative control (C5 recognition 3): a curve the inventory could not name
 	assert.deepEqual( alone[ 0 ].reveal, { axis: null, px: 0 } );
 } );
 
-test( 'negative control (C5 recognition 3): tweens of different functions, durations or triggers are not merged with each other', () => {
+test( 'negative control (C5 recognition 3): tweens of different functions or durations are not merged with each other; the callers of one are', () => {
 	const mixed = [ opacity( 'A', 'state' ), rise( 'B', 'state', { duration_ms: 300 } ), rise( 'C', 'mount' ), rise( 'D', 'state', { source: { file: 'App.dc.html', function: 'hide', code: '' } } ) ];
-	assert.equal( normaliseReveals( mixed ).length, 4 );
+	const out = normaliseReveals( mixed );
+	assert.deepEqual( out.map( ( r ) => r.id ), [ 'A', 'B', 'D' ] );
+	assert.deepEqual( out[ 0 ].mergedFrom, [ 'A', 'C' ], 'the mount rise joins the state opacity' );
+	const lead = normaliseReveals( [ rise( 'M', 'mount', { properties: [ { property: 'transform', formula: "'translateY(' + (30 * (1 - e)).toFixed(2) + 'px)'" } ] } ), opacity( 'S', 'scroll-into-view' ), rise( 'R', 'scroll-into-view' ) ] );
+	assert.equal( lead[ 0 ].properties[ 1 ].from, 'translateY(26px)', 'the rise of the scroll caller leads' );
+	const noScroll = normaliseReveals( [ opacity( 'E', 'mount' ), opacity( 'F', 'state' ) ] );
+	assert.deepEqual( noScroll.map( ( r ) => [ r.id, r.trigger.type ] ), [ [ 'E', 'mount' ] ], 'with no scroll caller the first leads' );
+	const lateScroll = normaliseReveals( [ opacity( 'G', 'mount' ), opacity( 'H', 'scroll-into-view' ) ] );
+	assert.deepEqual( lateScroll.map( ( r ) => r.id ), [ 'H' ], 'the scroll caller leads wherever it sits' );
+	assert.deepEqual( lateScroll[ 0 ].mergedFrom, [ 'G', 'H' ] );
 } );
 
 test( 'MUST FAIL (C5 recognition 3): the writes that hide an element until its reveal are held by the reveal, only when the poses agree', () => {
@@ -162,4 +176,20 @@ test( 'negative control (C5 recognition 5): with no drag the setting is not writ
 	assert.equal( recogniseBehaviour( styleTimer[ 2 ], { records: styleTimer } ), null, 'a style write is not a step of the track' );
 	const onlyDragStyle = CAROUSEL.filter( ( r ) => 'J-03' !== r.id );
 	assert.ok( ! recogniseBehaviour( onlyDragStyle[ 0 ], { records: onlyDragStyle } ).blocks[ 'sgs/testimonial-slider' ].some( ( s ) => 'dragToScroll' === s.attr ), 'the drag needs both its snap suspension and its scroll write' );
+} );
+
+// ---- the style writes of an element the script creates for an effect ----
+const CREATED = { dc: 'App', template_tpl_id: null, selector: "document.createElement('span')", selection_rule: 'an element created in code' };
+const band = J( 'P-2', { mechanism: 'waapi', element: CREATED, source: { function: 'shine', line: 20, code: 'band.animate(...)' }, trigger: { type: 'pointer-move', detail: 'mousemove' }, properties: [ { property: 'transform', from: 'skewX(-18deg) translateX(-120%)', to: 'skewX(-18deg) translateX(220%)' } ], duration_ms: 750 } );
+const bandStyle = J( 'P-2s', { element: CREATED, source: { function: 'shine', line: 10, code: "band.style.width = '60%'" }, trigger: { type: 'pointer-move', detail: 'mousemove' }, properties: [ { property: 'width', to: '60%' } ] } );
+
+test( 'MUST FAIL (C5 fill 6): the writes that style an element the script creates for an effect are held by that effect, which reads them', () => {
+	const b = recogniseBehaviour( bandStyle, { records: [ band, bandStyle ] } );
+	assert.equal( b.kind, 'covered' );
+	assert.equal( b.by, 'effect element' );
+	assert.match( b.reason, /P-2's effect/ );
+	assert.equal( recogniseBehaviour( bandStyle, { records: [ bandStyle ] } ), null, 'with no animation of the created element beside it nothing holds the write' );
+	assert.equal( recogniseBehaviour( bandStyle, { records: [ { ...band, mechanism: 'js-style-write' }, bandStyle ] } ), null, 'only a Web Animation reads a created element\'s style' );
+	assert.equal( recogniseBehaviour( bandStyle, { records: [ { ...band, trigger: { type: 'press', detail: 'click' } }, bandStyle ] } ), null, 'another trigger is another effect' );
+	assert.equal( recogniseBehaviour( bandStyle ), null, 'with no inventory there is no evidence' );
 } );

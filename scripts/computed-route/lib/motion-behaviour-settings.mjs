@@ -2,7 +2,8 @@
 // motion layers (the header's scrolled shadow and sticky bar, the open-status dot pulse, scrolling to an opened accordion
 // row, the testimonial slider's autoplay, the pinned timeline's track, counter, focus and active year). Each recogniser
 // takes one animation record (and `ctx`, lib/motion-behaviours.mjs::recogniseBehaviour's) and returns
-// { blocks: { '<block>': [ { attr, value, colour? } ] }, accepted?, sticky?, notes } or null.
+// { blocks: { '<block>': [ { attr, value, colour?, companion? } ] }, accepted?, sticky?, notes } or null. A `companion` setting is
+// one the effect depends on (the pinned timeline's orientation): it is written with the others and is not a row of the review.
 
 import { colourHex } from './tokens.mjs';
 import { shadowParts } from './motion-shadow.mjs';
@@ -171,7 +172,7 @@ export function pinnedTimelineOf( r ) {
 	if ( move && /translate3d|translateX/i.test( words( move.to, move.formula ) ) && new RegExp( `${ MINUS }\\s*p\\b` ).test( words( move.formula ) ) ) {
 		const carousel = /native horizontal scroller|scroll-snap/i.test( words( r.trigger?.detail ) );
 		return {
-			blocks: { 'sgs/timeline': [ { attr: 'scrollEffect', value: 'pinned-horizontal' }, { attr: 'orientation', value: 'horizontal' }, ...( carousel ? [ { attr: 'mobileLayout', value: 'carousel' } ] : [] ) ] },
+			blocks: { 'sgs/timeline': [ { attr: 'scrollEffect', value: 'pinned-horizontal' }, { attr: 'orientation', value: 'horizontal', companion: true }, ...( carousel ? [ { attr: 'mobileLayout', value: 'carousel' } ] : [] ) ] },
 			accepted: 'the draft switches to its touch-only strip at 1024px; SGS pins from 768px and swipes below (Ruling 9)',
 			notes: [ 'the track moves sideways with the scroll while pinned' ],
 		};

@@ -27,7 +27,7 @@ import { poseOf } from './motion-channels.mjs';
 import { props, nameOf, words, blob, triggerOf, scrollValueName, MINUS, TIMES, NUMBER, number, round, durationOf, easingOf, compact } from './motion-record-text.mjs';
 import { PINNED, headerScrollOf, dotPulseOf, accordionScrollOf, autoplayOf, pinnedTimelineOf, carouselOf } from './motion-behaviour-settings.mjs';
 import { hiddenStartOf } from './motion-reveal.mjs';
-import { effectElementStyle, colourOf, largerSideFactor } from './motion-effect-element.mjs';
+import { effectElementStyle, effectElementOwner, colourOf, largerSideFactor } from './motion-effect-element.mjs';
 import { templateKey } from './fact-key.mjs';
 import { fromPointer, tiltOf, tiltGlareHostOf, tiltResetOf } from './motion-tilt.mjs';
 
@@ -317,6 +317,10 @@ export function recogniseBehaviour( record, ctx = {} ) {
 	if ( hides ) {
 		return done( r, { kind: 'covered', by: 'entrance', reason: `the script hides the element until its scroll reveal ${ hides } plays it in: the entrance's from-pose` } );
 	}
+	const owner = effectElementOwner( r, ctx.records );
+	if ( owner ) {
+		return done( r, { kind: 'covered', by: 'effect element', reason: `the declarations the script gives the element it creates for ${ owner }'s effect: the effect reads them` } );
+	}
 	const exit = closeOf( r );
 	if ( exit ) {
 		return done( r, { kind: 'close', ...exit } );
@@ -380,7 +384,7 @@ export function effectRows( records, ctx = {} ) {
 		if ( ! b || [ 'native', 'covered' ].includes( b.kind ) ) {
 			continue;
 		}
-		const attrs = 'settings' === b.kind ? Object.entries( b.blocks || {} ).map( ( [ block, s ] ) => `${ block } ${ s.map( ( x ) => x.attr ).join( ', ' ) }` ).join( ' or ' ) : '';
+		const attrs = 'settings' === b.kind ? Object.entries( b.blocks || {} ).map( ( [ block, s ] ) => `${ block } ${ s.filter( ( x ) => ! x.companion ).map( ( x ) => x.attr ).join( ', ' ) }` ).join( ' or ' ) : '';
 		const what = 'effect' === b.kind ? [ ...b.effects.map( ( e ) => e.effect ), ...( b.hoverState ? [ 'follow-pointer' ] : [] ) ].join(  ' + ' ) || 'hover state'
 			: 'control' === b.kind ? `${ b.effect } hover rate of ${ b.of }` : 'site' === b.kind ? b.option : 'settings' === b.kind ? `settings: ${ attrs }` : 'close' === b.kind ? 'close' : 'no SGS effect';
 		const says = 'unmapped' === b.kind ? `not expressed by any SGS effect: ${ b.reason }`

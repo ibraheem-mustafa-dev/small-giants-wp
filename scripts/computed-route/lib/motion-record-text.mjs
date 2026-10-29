@@ -22,7 +22,8 @@ export function scrollValueName( q, r ) {
 	if ( /scrollY/i.test( f ) ) {
 		return 'scrollY';
 	}
-	if ( ! /scroll/i.test( words( r.trigger?.detail ) ) || ! /translate/i.test( f ) ) {
+	// Only a translate counts: a transform that also rotates, scales or skews is a different motion, whose factors are not a travel.
+	if ( ! /scroll/i.test( words( r.trigger?.detail ) ) || ! /translate/i.test( f ) || /rotate|scale|skew|matrix|perspective/i.test( f ) ) {
 		return null;
 	}
 	return new RegExp( `(?:^|[^\\w$.])((?!px\\b|em\\b|deg\\b|innerHeight\\b|innerWidth\\b|Math\\b)[A-Za-z_$][\\w$]*)\\s*${ TIMES }\\s*${ MINUS }?\\d*\\.?\\d+`, 'i' ).exec( f )?.[ 1 ] ?? null;

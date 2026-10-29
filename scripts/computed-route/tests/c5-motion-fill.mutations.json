@@ -1,0 +1,266 @@
+[
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "return same ? { ...loop, frames: [ a, b ], offsets: [ 0, 1 ], direction: 'alternate', duration: loop.duration / 2, fromThreeKeyframes: true } : loop;",
+		"replace": "return loop;",
+		"why": "a three-keyframe float is refused"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "duration: loop.duration / 2, fromThreeKeyframes: true }",
+		"replace": "duration: loop.duration, fromThreeKeyframes: true }",
+		"why": "the leg is the whole cycle"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "const same = 3 === loop.frames.length && 'normal' === loop.direction && Math.abs( ( loop.offsets?.[ 1 ] ?? 0.5 ) - 0.5 ) <= 0.01",
+		"replace": "const same = 3 === loop.frames.length && Math.abs( ( loop.offsets?.[ 1 ] ?? 0.5 ) - 0.5 ) <= 0.01",
+		"why": "an alternating three-keyframe loop is one leg"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "const same = 3 === loop.frames.length && 'normal' === loop.direction && Math.abs( ( loop.offsets?.[ 1 ] ?? 0.5 ) - 0.5 ) <= 0.01",
+		"replace": "const same = 3 === loop.frames.length && 'normal' === loop.direction",
+		"why": "a peak off the half is symmetric"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "[ ...new Set( [ ...Object.keys( a ), ...Object.keys( c ) ] ) ].every( ( k ) => JSON.stringify( a[ k ] ?? null ) === JSON.stringify( c[ k ] ?? null ) )",
+		"replace": "true",
+		"why": "a loop that does not return is symmetric"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "loop.fromThreeKeyframes && ! /^(?:linear|ease-in-out)$/.test( String( loop.easing ?? '' ).trim() )",
+		"replace": "false",
+		"why": "an asymmetric curve is not named"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "loop.fromThreeKeyframes && ! /^(?:linear|ease-in-out)$/.test( String( loop.easing ?? '' ).trim() )",
+		"replace": "loop.fromThreeKeyframes",
+		"why": "a symmetric curve is named as asymmetric"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "const wide = at( base );",
+		"replace": "const wide = at( 1440 );",
+		"why": "a loop is judged at 1440 only"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "const base = [ 1440, 768, 375 ].find( ( w ) => shows( loops?.[ w ] ) ) ?? 1440;",
+		"replace": "const base = 1440;",
+		"why": "a loop is judged at 1440 only (element)"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "const base = [ 1440, 768, 375 ].find( ( w ) => shows( loops?.[ w ] ) ) ?? 1440;",
+		"replace": "const base = [ 375, 768, 1440 ].find( ( w ) => shows( loops?.[ w ] ) ) ?? 1440;",
+		"why": "the narrowest width is judged first"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "const shows = ( m ) => Boolean( m?.loops?.length || m?.marquee || m?.smil?.length );",
+		"replace": "const shows = ( m ) => Boolean( m?.loops?.length );",
+		"why": "a marquee tag or an SVG animation is not motion"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "only && out.effects.length && out.notes.push( only );",
+		"replace": "",
+		"why": "the judged width is not stated"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "used.push( pick.record.id, ...( pick.also || [] ) );",
+		"replace": "used.push( pick.record.id );",
+		"why": "the identical entrances are not accounted"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "return { record: m.record, notes, unmapped, also: same };",
+		"replace": "return { record: m.record, notes, unmapped };",
+		"why": "the identical entrances are not returned"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "same.length && notes.push(",
+		"replace": "false && notes.push(",
+		"why": "the identical entrances are not named"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "${ m.record.mergedFrom?.length > 1 ? ` (the writes ${ m.record.mergedFrom.join( ', ' ) } of one tween)` : '' }",
+		"replace": "",
+		"why": "the tween's writes are not named"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "classify( r, { css: ctx.css, records: ctx.records } )",
+		"replace": "classify( r, { css: ctx.css } )",
+		"why": "the hiding writes are not seen beside their reveal"
+	},
+	{
+		"file": "lib/motion-layers.mjs",
+		"find": "if ( ! tied.every( ( r ) => sameEntrance( r, tied[ 0 ] ) ) ) {",
+		"replace": "if ( true ) {",
+		"why": "identical entrances stay ambiguous"
+	},
+	{
+		"file": "lib/motion-layers.mjs",
+		"find": "record = tied.find( ( r ) => 'scroll' === TRIGGER[ r.trigger?.type ] ) ?? tied[ 0 ];",
+		"replace": "record = tied[ 0 ];",
+		"why": "the scroll-started record is not preferred"
+	},
+	{
+		"file": "lib/motion-layers.mjs",
+		"find": "const same = candidates.filter( ( r ) => sameEntrance( r, record ) ).map( ( r ) => r.id );\n\treturn same.length > 1 ? { record, identical: same } : { record };",
+		"replace": "return { record };",
+		"why": "the identical set is not returned"
+	},
+	{
+		"file": "lib/motion-layers.mjs",
+		"find": "const same = candidates.filter( ( r ) => sameEntrance( r, record ) ).map( ( r ) => r.id );",
+		"replace": "const same = ranked.filter( ( x ) => sameEntrance( x.r, record ) ).map( ( x ) => x.r.id );",
+		"why": "records the trigger filter set aside are not the same entrance"
+	},
+	{
+		"file": "lib/motion-layers.mjs",
+		"find": "r.duration_ms ?? null, r.delay_ms ?? null, r.easing ?? null, r.direction ?? null, r.fill ?? null, r.stagger ?? null ] );",
+		"replace": "r.delay_ms ?? null, r.easing ?? null, r.direction ?? null, r.fill ?? null, r.stagger ?? null ] );",
+		"why": "a different duration is the same entrance"
+	},
+	{
+		"file": "lib/motion-layers.mjs",
+		"find": "r.duration_ms ?? null, r.delay_ms ?? null, r.easing ?? null, r.direction ?? null, r.fill ?? null, r.stagger ?? null ] );",
+		"replace": "r.duration_ms ?? null, r.easing ?? null, r.direction ?? null, r.fill ?? null, r.stagger ?? null ] );",
+		"why": "a different delay is the same entrance"
+	},
+	{
+		"file": "lib/motion-layers.mjs",
+		"find": "r.duration_ms ?? null, r.delay_ms ?? null, r.easing ?? null, r.direction ?? null, r.fill ?? null, r.stagger ?? null ] );",
+		"replace": "r.duration_ms ?? null, r.delay_ms ?? null, r.direction ?? null, r.fill ?? null, r.stagger ?? null ] );",
+		"why": "a different curve is the same entrance"
+	},
+	{
+		"file": "lib/motion-layers.mjs",
+		"find": "( r.properties || [] ).map( ( p ) => [ p.property, p.from ?? null, p.to ?? null, p.keyframes ?? null ] )",
+		"replace": "( r.properties || [] ).map( ( p ) => [ p.property, p.from ?? null ] )",
+		"why": "a different end pose is the same entrance"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "const records = normaliseReveals( sameTriggerResolved( given ) );",
+		"replace": "const records = sameTriggerResolved( given );",
+		"why": "a script reveal is not read as an entrance"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "palette: clientPalette( rawSnapshot ), css: draftCss, records };",
+		"replace": "palette: clientPalette( rawSnapshot ), css: draftCss };",
+		"why": "the writer context has no records"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "const near = ( null === tpl || undefined === tpl ) && 'infinite' === r.iterations && /^(?:css-animation|waapi)$/.test( r.mechanism ) ? r.element?.nearest_tpl_id : null;",
+		"replace": "const near = null;",
+		"why": "a built loop is not placed by its nearest element"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "const near = ( null === tpl || undefined === tpl ) && 'infinite' === r.iterations && /^(?:css-animation|waapi)$/.test( r.mechanism ) ? r.element?.nearest_tpl_id : null;",
+		"replace": "const near = ( null === tpl || undefined === tpl ) && /^(?:css-animation|waapi)$/.test( r.mechanism ) ? r.element?.nearest_tpl_id : null;",
+		"why": "a finite animation is placed by its nearest element"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "const near = ( null === tpl || undefined === tpl ) && 'infinite' === r.iterations && /^(?:css-animation|waapi)$/.test( r.mechanism ) ? r.element?.nearest_tpl_id : null;",
+		"replace": "const near = ( null === tpl || undefined === tpl ) && 'infinite' === r.iterations ? r.element?.nearest_tpl_id : null;",
+		"why": "a transition is placed by its nearest element"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "const near = ( null === tpl || undefined === tpl ) && 'infinite'",
+		"replace": "const near = 'infinite'",
+		"why": "an own element loses to a nearest one"
+	},
+	{
+		"file": "lib/fill-motion-account.mjs",
+		"find": "const home = homeOf( r ) ?? homeOf.byComponent?.( r );",
+		"replace": "const home = homeOf( r );",
+		"why": "a script record no element holds is silent"
+	},
+	{
+		"file": "lib/fill-motion-account.mjs",
+		"find": "'active' === ( r.status ?? 'active' ) && SCRIPT_DRIVEN.test( r.mechanism ?? '' ) && 0 === tplIds( r ).length && ! hostOf( r ) && ! scriptFile( r ) && r.element?.dc ?",
+		"replace": "SCRIPT_DRIVEN.test( r.mechanism ?? '' ) && 0 === tplIds( r ).length && ! hostOf( r ) && ! scriptFile( r ) && r.element?.dc ?",
+		"why": "a dead record gets a row"
+	},
+	{
+		"file": "lib/fill-motion-account.mjs",
+		"find": "'active' === ( r.status ?? 'active' ) && SCRIPT_DRIVEN.test( r.mechanism ?? '' ) && 0 === tplIds( r ).length && ! hostOf( r ) && ! scriptFile( r ) && r.element?.dc ?",
+		"replace": "'active' === ( r.status ?? 'active' ) && 0 === tplIds( r ).length && ! hostOf( r ) && ! scriptFile( r ) && r.element?.dc ?",
+		"why": "a stylesheet record gets a row"
+	},
+	{
+		"file": "lib/fill-motion-account.mjs",
+		"find": "const SCRIPT_DRIVEN = /^(?:js-|waapi|css-animation)/;",
+		"replace": "const SCRIPT_DRIVEN = /^(?:js-|css-animation)/;",
+		"why": "a Web Animation gets no row"
+	},
+	{
+		"file": "lib/fill-motion-account.mjs",
+		"find": "const SCRIPT_DRIVEN = /^(?:js-|waapi|css-animation)/;",
+		"replace": "const SCRIPT_DRIVEN = /^(?:waapi|css-animation)/;",
+		"why": "a script write gets no row"
+	},
+	{
+		"file": "lib/fill-motion-account.mjs",
+		"find": "const SCRIPT_DRIVEN = /^(?:js-|waapi|css-animation)/;",
+		"replace": "const SCRIPT_DRIVEN = /^(?:js-|waapi)/;",
+		"why": "a code-built CSS animation gets no row"
+	},
+	{
+		"file": "lib/fill-motion-account.mjs",
+		"find": "compHome.has( dc ) || compHome.set( dc, h );",
+		"replace": "compHome.set( 'x', h );",
+		"why": "every component answers for every record"
+	},
+	{
+		"file": "lib/fill-behaviour.mjs",
+		"find": "[ 'site', 'native', 'covered' ].includes( x.b.kind )",
+		"replace": "[ 'site', 'native' ].includes( x.b.kind )",
+		"why": "a held write with no element is silent"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "const only = ranAt.length && ! ranAt.includes( 'desktop' ) ?",
+		"replace": "const only = ranAt.length ?",
+		"why": "a loop that runs at desktop is called narrower-only"
+	},
+	{
+		"file": "lib/fill-motion-account.mjs",
+		"find": "'active' === ( r.status ?? 'active' ) && SCRIPT_DRIVEN.test( r.mechanism ?? '' ) && 0 === tplIds( r ).length && ! hostOf( r ) && ! scriptFile( r ) && r.element?.dc ?",
+		"replace": "'active' === ( r.status ?? 'active' ) && SCRIPT_DRIVEN.test( r.mechanism ?? '' ) && ! hostOf( r ) && ! scriptFile( r ) && r.element?.dc ?",
+		"why": "a record naming a nearby element gets a row on a surface without it"
+	},
+	{
+		"file": "lib/fill-motion-account.mjs",
+		"find": "'active' === ( r.status ?? 'active' ) && SCRIPT_DRIVEN.test( r.mechanism ?? '' ) && 0 === tplIds( r ).length && ! hostOf( r ) && ! scriptFile( r ) && r.element?.dc ?",
+		"replace": "'active' === ( r.status ?? 'active' ) && SCRIPT_DRIVEN.test( r.mechanism ?? '' ) && 0 === tplIds( r ).length && ! scriptFile( r ) && r.element?.dc ?",
+		"why": "a record found by a data hook gets a row on a surface without it"
+	},
+	{
+		"file": "lib/fill-motion-account.mjs",
+		"find": "'active' === ( r.status ?? 'active' ) && SCRIPT_DRIVEN.test( r.mechanism ?? '' ) && 0 === tplIds( r ).length && ! hostOf( r ) && ! scriptFile( r ) && r.element?.dc ?",
+		"replace": "'active' === ( r.status ?? 'active' ) && SCRIPT_DRIVEN.test( r.mechanism ?? '' ) && 0 === tplIds( r ).length && ! hostOf( r ) && r.element?.dc ?",
+		"why": "a script file's record gets a row on a surface without its element"
+	},
+	{
+		"file": "lib/fill-motion-account.mjs",
+		"find": "const where = homeOf( r ) ? `belongs to this surface${ own }` :",
+		"replace": "const where = `belongs to this surface${ own }` ? `belongs to this surface${ own }` :",
+		"why": "the unplaced element is not named in the row"
+	}
+]

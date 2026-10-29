@@ -7,15 +7,9 @@
 	},
 	{
 		"file": "lib/motion-record-text.mjs",
-		"find": "if ( ! /scroll/i.test( words( r.trigger?.detail ) ) || ! /translate/i.test( f ) ) {",
-		"replace": "if ( ! /translate/i.test( f ) ) {",
+		"find": "if ( ! /scroll/i.test( words( r.trigger?.detail ) ) || ! /translate/i.test( f ) || /rotate|scale|skew|matrix|perspective/i.test( f ) ) {",
+		"replace": "if ( ! /translate/i.test( f ) || /rotate|scale|skew|matrix|perspective/i.test( f ) ) {",
 		"why": "a non-scroll trigger can carry a parallax"
-	},
-	{
-		"file": "lib/motion-record-text.mjs",
-		"find": "if ( ! /scroll/i.test( words( r.trigger?.detail ) ) || ! /translate/i.test( f ) ) {",
-		"replace": "if ( ! /scroll/i.test( words( r.trigger?.detail ) ) ) {",
-		"why": "a scale can carry a parallax"
 	},
 	{
 		"file": "lib/motion-record-text.mjs",
@@ -49,7 +43,7 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "{ attr: 'orientation', value: 'horizontal' }, ",
+		"find": "{ attr: 'orientation', value: 'horizontal', companion: true }, ",
 		"replace": "",
 		"why": "the pinned timeline is written without its orientation"
 	},
@@ -139,24 +133,6 @@
 	},
 	{
 		"file": "lib/motion-reveal.mjs",
-		"find": "const key = [ r.element?.dc, r.source?.function, r.trigger?.type, r.duration_ms, r.easing, JSON.stringify( r.stagger ?? null ) ].join( '|' );",
-		"replace": "const key = [ r.element?.dc ].join( '|' );",
-		"why": "unrelated tweens are merged"
-	},
-	{
-		"file": "lib/motion-reveal.mjs",
-		"find": "const key = [ r.element?.dc, r.source?.function, r.trigger?.type, r.duration_ms, r.easing, JSON.stringify( r.stagger ?? null ) ].join( '|' );",
-		"replace": "const key = [ r.element?.dc, r.source?.function, r.duration_ms, r.easing, JSON.stringify( r.stagger ?? null ) ].join( '|' );",
-		"why": "tweens of different callers are merged"
-	},
-	{
-		"file": "lib/motion-reveal.mjs",
-		"find": "if ( ! opacity ) {\n\t\t\tcontinue;\n\t\t}",
-		"replace": "",
-		"why": "a rise with no opacity is merged"
-	},
-	{
-		"file": "lib/motion-reveal.mjs",
 		"find": "delay_ms: Number.isFinite( step ) ? `i * ${ step }` : first.delay_ms,",
 		"replace": "delay_ms: first.delay_ms,",
 		"why": "the stagger step is not carried"
@@ -172,24 +148,6 @@
 		"find": "{ property: 'opacity', from: 0, to: 1 }, ...( rise ?",
 		"replace": "{ property: 'opacity', from: 1, to: 0 }, ...( rise ?",
 		"why": "the opacity runs backwards"
-	},
-	{
-		"file": "lib/motion-reveal.mjs",
-		"find": "from: `translate${ rise.m.axis }(${ rise.m.px }px)`, to: 'none'",
-		"replace": "from: 'none', to: `translate${ rise.m.axis }(${ rise.m.px }px)`",
-		"why": "the rise runs backwards"
-	},
-	{
-		"file": "lib/motion-reveal.mjs",
-		"find": "members.slice( 1 ).forEach( ( x ) => drop.add( x.r ) );",
-		"replace": "",
-		"why": "the merged members stay as separate records"
-	},
-	{
-		"file": "lib/motion-reveal.mjs",
-		"find": "reveal: rise ? { axis: rise.m.axis, px: rise.m.px } : { axis: null, px: 0 },",
-		"replace": "reveal: { axis: null, px: 0 },",
-		"why": "the rise is not remembered for the hiding writes"
 	},
 	{
 		"file": "lib/motion-reveal.mjs",
@@ -244,5 +202,83 @@
 		"find": "x.element?.dc === r.element?.dc && 'active' === ( x.status ?? 'active' ) );\n\tconst timer",
 		"replace": "x.element?.dc === r.element?.dc );\n\tconst timer",
 		"why": "a handler the draft never runs counts as evidence"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "const lead = opacities.find( ( x ) => 'scroll-into-view' === x.r.trigger?.type ) ?? opacities[ 0 ];",
+		"replace": "const lead = opacities[ 0 ];",
+		"why": "the scroll-started record does not lead"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "const key = [ r.element?.dc, r.source?.function, r.duration_ms, r.easing, JSON.stringify( r.stagger ?? null ) ].join( '|' );",
+		"replace": "const key = [ r.element?.dc ].join( '|' );",
+		"why": "unrelated tweens are merged"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "if ( ! opacities.length ) {\n\t\t\tcontinue;\n\t\t}",
+		"replace": "",
+		"why": "a rise with no opacity is merged"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "from: `translate${ rise.axis }(${ rise.px }px)`, to: 'none'",
+		"replace": "from: 'none', to: `translate${ rise.axis }(${ rise.px }px)`",
+		"why": "the rise runs backwards"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "members.filter( ( x ) => x.r !== first ).forEach( ( x ) => drop.add( x.r ) );",
+		"replace": "",
+		"why": "the merged members stay as separate records"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "members.filter( ( x ) => x.r !== first ).forEach( ( x ) => drop.add( x.r ) );",
+		"replace": "members.slice( 1 ).forEach( ( x ) => drop.add( x.r ) );",
+		"why": "a lead that sits later is dropped with the rest"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "reveal: rise ? { axis: rise.axis, px: rise.px } : { axis: null, px: 0 },",
+		"replace": "reveal: { axis: null, px: 0 },",
+		"why": "the rise is not remembered for the hiding writes"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "const rise = ( rises.find( ( x ) => x.r.trigger?.type === lead.r.trigger?.type ) ?? rises[ 0 ] )?.m;",
+		"replace": "const rise = null;",
+		"why": "the rise is never merged"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "( rises.find( ( x ) => x.r.trigger?.type === lead.r.trigger?.type ) ?? rises[ 0 ] )?.m",
+		"replace": "rises[ 0 ]?.m",
+		"why": "the rise of the leading caller is not preferred"
+	},
+	{
+		"file": "lib/motion-record-text.mjs",
+		"find": "if ( ! /scroll/i.test( words( r.trigger?.detail ) ) || ! /translate/i.test( f ) || /rotate|scale|skew|matrix|perspective/i.test( f ) ) {",
+		"replace": "if ( ! /scroll/i.test( words( r.trigger?.detail ) ) || ! /translate/i.test( f ) ) {",
+		"why": "a rotating transform is read as a travel"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "s.filter( ( x ) => ! x.companion ).map( ( x ) => x.attr ).join( ', ' )",
+		"replace": "s.map( ( x ) => x.attr ).join( ', ' )",
+		"why": "a companion setting is a row of the review"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "const owner = effectElementOwner( r, ctx.records );\n\tif ( owner ) {",
+		"replace": "const owner = null;\n\tif ( owner ) {",
+		"why": "the style writes of an effect element are left unaccounted"
+	},
+	{
+		"file": "lib/motion-effect-element.mjs",
+		"find": "'waapi' === r.mechanism && x.id === styleRecordOf( r, records )?.id )?.id ?? null;",
+		"replace": "x.id === styleRecordOf( r, records )?.id )?.id ?? null;",
+		"why": "a non-animation record owns the style writes"
 	}
 ]

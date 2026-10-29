@@ -21,6 +21,7 @@ import { setAttr } from './tree.mjs';
 import { templateKey, templateKeyOf } from './fact-key.mjs';
 import { staggerPlans, applyStagger } from './fill-motion-stagger.mjs';
 import { positionsByTemplate } from './motion-behaviour-settings.mjs';
+import { normaliseReveals } from './motion-reveal.mjs';
 import { exactHome } from './fill-part-pairing.mjs';
 
 export { elementMotion, elementEffects, renderRefutes } from './fill-motion-element.mjs';
@@ -82,7 +83,10 @@ export function recordsByElement( records ) {
 	const out = new Map();
 	for ( const r of records || [] ) {
 		const tpl = r.element?.template_tpl_id;
-		for ( const id of null === tpl || undefined === tpl ? [] : [ tpl ].flat() ) {
+		// An endless animation of an element the code builds (a marquee strip inserted into a template element) is placed on the
+		// template element that holds it: the nearest one is the element a block can carry the loop on.
+		const near = ( null === tpl || undefined === tpl ) && 'infinite' === r.iterations && /^(?:css-animation|waapi)$/.test( r.mechanism ) ? r.element?.nearest_tpl_id : null;
+		for ( const id of null !== near && undefined !== near ? [ near ].flat() : null === tpl || undefined === tpl ? [] : [ tpl ].flat() ) {
 			const key = templateKey( { dc: r.element.dc, tpl: id } );
 			if ( ! out.has( key ) ) {
 				out.set( key, [] );
@@ -253,7 +257,7 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 	const out = { writes: [], unmapped: [], notes: [], site: [], handover: [] };
 	// Every settings write is checked against the framework DB's attributes: the handle given, else the framework DB itself.
 	const hasAttr = givenHasAttr ?? ( db ? hasAttrOf( db ) : undefined );
-	const records = sameTriggerResolved( given );
+	const records = normaliseReveals( sameTriggerResolved( given ) );
 	const byElement = recordsByElement( records );
 	// One classification context everywhere: an empty CSS list is no CSS given (a draft served from a URL), not CSS with no consumer.
 	const cls = { css: draftCss, template };
@@ -261,7 +265,7 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 	const runtime = unplaced.filter( ( r ) => 'entrance' === classify( r, cls ).kind );
 	const runtimeLoops = unplaced.filter( ( r ) => 'effect' === classify( r, cls ).kind );
 	const used = [];
-	const ctx = { types: tokenTypes( schema ), tokens: clientTokens( rawSnapshot ), palette: clientPalette( rawSnapshot ), css: draftCss };
+	const ctx = { types: tokenTypes( schema ), tokens: clientTokens( rawSnapshot ), palette: clientPalette( rawSnapshot ), css: draftCss, records };
 	// The draft's computed position per template element and width, so a header pinned only at some widths is sticky only there.
 	const idx = behaviourIndex( { records, template, css: draftCss, positions: reads ? positionsByTemplate( { reads, nodes, rootComponent } ) : undefined } );
 	const targetKeys = new Set( nodes.flatMap( ( n ) => n.targets.map( ( t ) => elementKey( t.finder, rootComponent ) ) ).filter( Boolean ) );
