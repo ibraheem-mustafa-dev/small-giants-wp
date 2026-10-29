@@ -1,0 +1,5 @@
+[
+	{ "file": "lib/site-build-labels.mjs", "find": "route && kinds.forEach( ( kind ) => note( kind, route, words ) );", "replace": "void kinds;", "why": "a static link's own text is never read" },
+	{ "file": "lib/site-build-labels.mjs", "find": "! /\\{\\{/.test( `${ words }${ href }` )", "replace": "true", "why": "a link whose words or address are bindings gives its binding as text" },
+	{ "file": "lib/site-build-labels.mjs", "find": "'a' === t?.realTag && words &&", "replace": "words &&", "why": "any element with an href and words gives link text" }
+]

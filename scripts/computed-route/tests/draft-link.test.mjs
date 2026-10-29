@@ -6,7 +6,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { linkContext, resolveDraftLink, linkWrite } from '../lib/draft-link.mjs';
+import { linkContext, resolveDraftLink, linkWrite, elementFile } from '../lib/draft-link.mjs';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
 import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
@@ -198,4 +198,45 @@ test( 'the writer: a link list\'s items hold their pages\' addresses, a fragment
 	const items = ( r ) => r.skeleton.find( ( n ) => 'sgs/icon-list' === n.name )?.attributes.items.map( ( i ) => i.url ?? null );
 	assert.deepEqual( items( propose( list, FILES ) ), [ '/help/#delivery', '/cart/', '/' ] );
 	assert.deepEqual( items( propose( list, null ) ), [ null, null, null ] );
+} );
+
+// A single-file draft: the served inventory names the entry component's host `Root`, the routing intake read names the real
+// draft file, so a handler is matched under the entry draft's file (propose's `rootComponent`).
+const ENTRY = 'Eye Care Birmingham';
+const fromEntry = ( line, handler, route, x = {} ) => ( { from: `${ ENTRY }.dc.html:${ line }:3 <a>`, call: `onClick="{{ ${ handler } }}"`, route, ...x } );
+const SINGLE = linkContext( {
+	rows: [ page( 'home', 'home', { template: 'front-page' } ), { route: 'shop', slug: 'shop', postType: 'shop', template: 'archive-product' }, page( 'lenses', 'prescription-lenses' ), page( 'signin', 'my-account' ) ],
+	routing: { adapter: 'state-page', links: [ fromEntry( 1, 'goShop', 'shop' ), fromEntry( 2, 'openAccount', 'account' ), fromEntry( 3, 'openAccount', 'signin' ), fromEntry( 4, 'pickLens', 'shop' ), fromEntry( 5, 'pickLens', 'lenses' ), fromEntry( 6, 'openMenu', 'lenses' ), fromEntry( 7, 'openMenu', 'signin' ), fromEntry( 8, 'goGone', null ), fromEntry( 9, 'openBag', null, { control: true } ), fromEntry( 10, 'lensView', 'lenses' ), fromEntry( 11, 'lensView', 'lensTabs' ), fromEntry( 12, 'maybeShop', 'shop' ), fromEntry( 13, 'maybeShop', 'ghost' ) ] },
+	routeSlug: { signin: 'my-account', account: 'my-account', lensTabs: 'prescription-lenses' },
+	proposed: [ { route: 'signin', slug: 'my-account', postType: 'page' }, { route: 'lensTabs', slug: 'prescription-lenses', postType: 'page' } ],
+} );
+const proposeSingle = ( root, extra = {} ) => proposeSkeleton( { inventory: inventory( root ), facts: facts(), surface: 'fixture', surfaceKind: 'page', surfaceName: 'Fixture', db, factRecord: null, draftLinks: SINGLE, rootComponent: ENTRY, ...extra } );
+const handlerButton = ( handler, words ) => E( 'button', { words, snippet: `<button sc-camel-on-click="{{ ${ handler } }}" data-dc-tpl="9">${ words }</button>` } );
+
+test( 'MUST FAIL: on a single-file draft a handler is matched under the entry draft\'s real file, so a go() link holds its page (negative control: no entry component leaves it empty)', () => {
+	const tree = section( [ goLink( 'goShop', 'Shop now' ) ] );
+	assert.equal( rowOf( proposeSingle( tree ), 'Shop now' ).attributes.url, '/shop/' );
+	assert.equal( rowOf( proposeSingle( tree, { rootComponent: null } ), 'Shop now' ).attributes.url, undefined, 'without the entry component the host "Root" matches no routed file' );
+	assert.equal( elementFile( { template: 'Root' }, ENTRY ), `${ ENTRY }.dc.html` );
+	assert.equal( elementFile( { template: 'Footer' }, ENTRY ), 'Footer.dc.html', 'another component keeps its own file' );
+} );
+
+test( 'MUST FAIL: a handler button with no href holds the page its handler reaches, and one that reaches none says so in a handover row', () => {
+	const r = proposeSingle( section( [ handlerButton( 'goShop', 'Browse the shop' ), handlerButton( 'goGone', 'Dead end' ), handlerButton( 'openBag', 'Bag' ), handlerButton( 'unknownHandler', 'Mystery' ) ] ) );
+	assert.equal( rowOf( r, 'Browse the shop' ).attributes.url, '/shop/' );
+	assert.equal( rowOf( r, 'Dead end' ).attributes.url, undefined );
+	assert.ok( handovers( r ).some( ( h ) => 'behaviour' === h.owner && 'link' === h.kind && /goGone/.test( h.detail ) ), 'the unresolved handler button is a handover row' );
+	assert.equal( handovers( r ).filter( ( h ) => /openBag|unknownHandler/.test( h.detail ) ).length, 0, 'a control, or a handler the routing never read, is no link and writes no row (negative control)' );
+	assert.deepEqual( handoverProblems( handovers( r ), 'fixture' ), [] );
+} );
+
+test( 'MUST FAIL: an account trigger whose routes reach the sign-in and account views links to the account page; a trigger reaching two other pages stays empty', () => {
+	const tree = section( [ goLink( 'openAccount', 'Account' ), goLink( 'pickLens', 'Pick' ), goLink( 'openMenu', 'Menu' ) ] );
+	const r = proposeSingle( tree );
+	assert.equal( rowOf( r, 'Account' ).attributes.url, '/my-account/' );
+	assert.equal( rowOf( r, 'Pick' ).attributes.url, undefined, 'shop or lenses by the item clicked: no single page' );
+	assert.equal( rowOf( r, 'Menu' ).attributes.url, '/my-account/', 'a trigger whose routes include the account page links to it' );
+	const same = proposeSingle( section( [ goLink( 'lensView', 'Lens views' ), goLink( 'maybeShop', 'Maybe' ) ] ) );
+	assert.equal( rowOf( same, 'Lens views' ).attributes.url, '/prescription-lenses/', 'two routes of one page-map row reach that row' );
+	assert.equal( rowOf( same, 'Maybe' ).attributes.url, undefined, 'a route no row holds among the routes leaves the link empty (negative control)' );
 } );

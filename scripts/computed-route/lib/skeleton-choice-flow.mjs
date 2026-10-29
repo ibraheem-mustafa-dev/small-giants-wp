@@ -189,6 +189,7 @@ export function choiceFlowModel( { view, rootKey, R, formControl = null, brands 
 		} else {
 			question.options = [];
 			out.notes.push( `${ name }: the loop ${ q.loop.k } recorded ${ label?.vals?.more ? `only ${ label.vals.v.length } of its ${ q.loop.count } labels` : 'no distinct label per option' }, so its options are not listed: add them in the editor` );
+			out.handovers.push( { owner: 'content-page', kind: 'text', detail: `${ name }: the options are not listed (the draft's loop recorded ${ label?.vals?.more ? `only ${ label.vals.v.length } of its ${ q.loop.count } labels` : 'no distinct label per option' }): enter every option in the editor` } );
 		}
 		if ( cost?.vals?.v.length ) {
 			cost.vals.v.some( ( v ) => specHit( R.pricePrefixFrom, v ) ) && ( question.pricePrefix = 'from' );

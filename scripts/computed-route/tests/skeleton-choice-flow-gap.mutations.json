@@ -1,0 +1,3 @@
+[
+	{ "file": "lib/skeleton-choice-flow.mjs", "find": "out.handovers.push( { owner: 'content-page', kind: 'text', detail: `${ name }: the options are not listed", "replace": "void ( { owner: 'content-page', kind: 'text', detail: `${ name }: the options are not listed", "why": "an unreadable option list is only a note" }
+]

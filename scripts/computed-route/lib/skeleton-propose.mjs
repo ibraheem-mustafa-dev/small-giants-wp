@@ -117,7 +117,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	m.els.forEach( ( e ) => view.checkParent( e, m.byKey[ e.parentKey ] ) );
 	const formLinkOf = linkedFormOf( { view, scope, links: formLinks, refs, els: m.els, rule: facts.decisions.rules?.formLink } );
 	// A draft link's destination as a site address (lib/draft-link.mjs), for every writer of a link setting.
-	const siteLink = siteLinkResolver( draftLinks );
+	const siteLink = siteLinkResolver( draftLinks, rootComponent );
 	// The page map's role for the surface: a choice flow, or a part another row's block draws (lib/skeleton-surface-role.mjs).
 	const role = surfaceRole( { pageMap, id: surfaceId ?? scope?.id ?? null, kind: surfaceKind, m, view, postType: facts.decisions.rules?.choiceFlow?.postType } );
 	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce, role, pageMap }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
@@ -146,7 +146,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	Object.assign( w, makeUnits( ctx ) );
 	Object.assign( w, makeContent( ctx ) );
 	Object.assign( w, makeSlotRows( ctx ) );
-	const { record, removeSubtree, absorbSubtree, absorbWidthKids, takeVariants, unitsOf, buildBrand, buildIcons, buildList, contentAttrs, carriedAttrs, buildHeaderRows, buildFooterRows, hostSlot } = w;
+	const { record, removeSubtree, absorbSubtree, absorbWidthKids, takeVariants, unitsOf, buildBrand, buildIcons, buildList, contentAttrs, carriedAttrs, buildHeaderRows, buildFooterRows, hostSlot, ownWordsNode } = w;
 	Object.assign( w, { buildNode, buildChildren } );
 
 	function buildNode( e, parentBlock ) {
@@ -281,6 +281,10 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		hosts.push( { block, node, row } );
 		node.innerBlocks = e !== m.root ? buildChildren( e, block ) : R.headerSlots && block === R.headerSlots.block ? buildHeaderRows( e, block ) : R.footerSlots && block === R.footerSlots.block ? buildFooterRows( e, block ) : buildChildren( e, block );
 		hosts.pop();
+		// The container's own words stand beside its children as a text child (lib/skeleton-write-content.mjs::ownWordsNode).
+		const loose = ownWordsNode( e, block );
+		loose && ( loose.leading ? node.innerBlocks.unshift( loose.node ) : node.innerBlocks.push( loose.node ) );
+		loose && ( row.rowNote = [ row.rowNote, `its own words "${ Object.values( loose.node.attributes )[ 0 ] }" are the ${ loose.node.name } child ${ loose.leading ? 'before' : 'after' } its children` ].filter( Boolean ).join( '; ' ) );
 		return node;
 	}
 

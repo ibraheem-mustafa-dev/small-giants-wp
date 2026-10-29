@@ -5,6 +5,8 @@ import { parseTplKey } from './fill-skeleton.mjs';
 import { fingerprintOf } from './identity.mjs';
 
 const ws = ( s ) => String( s ?? '' ).replace( /\s+/g, ' ' ).trim();
+// The most a draft icon measures on either side before it is a picture.
+export const ICON_PX = 48;
 
 export function inventoryModel( inventory ) {
 	const els = inventory.elements;
@@ -19,8 +21,17 @@ export function inventoryModel( inventory ) {
 		return false;
 	};
 	const shownAnywhere = ( e ) => Object.values( e.visible ).some( Boolean );
-	// Part of its parent rather than a block: an svg and everything in it, or an element never shown at any width (a br).
-	const isPart = ( e ) => 'svg' === e.tag || inSvg( e ) || ! shownAnywhere( e );
+	// An icon beside a label: an image or a wrapper of images and svgs with no words, at most ICON_PX across.
+	const isGlyph = ( c ) => {
+		const b = c.box?.[ 1440 ] || c.box?.[ 375 ] || null;
+		const small = ! b || ( b.w <= ICON_PX && b.h <= ICON_PX );
+		return 'svg' === c.tag || ( ! ws( c.words ) && ! ws( c.allText ) && small && ( 'img' === c.tag || ( [ 'span', 'i', 'div' ].includes( c.tag ) && kids( c ).length > 0 && kids( c ).every( isGlyph ) ) ) );
+	};
+	// The icon of a link or button that holds its own words: part of the control (its icon slot), never a block of its own.
+	const isLabelIcon = ( e ) => 'svg' !== e.tag && [ 'a', 'button' ].includes( byKey[ e.parentKey ]?.tag ) && !! ws( byKey[ e.parentKey ].words ) && isGlyph( e );
+	// Part of its parent rather than a block: an svg and everything in it, an element never shown at any width (a br), the icon beside a control's label, or the cite a blockquote ends with (its attribution).
+	const isCite = ( e ) => [ 'cite', 'footer', 'figcaption' ].includes( e.tag ) && 'blockquote' === byKey[ e.parentKey ]?.tag && !! ws( e.words );
+	const isPart = ( e ) => 'svg' === e.tag || inSvg( e ) || ! shownAnywhere( e ) || isLabelIcon( e ) || isCite( e );
 	// The widest width an element renders at (1440, else 768, else 375), the width its own classification is read at.
 	const refWidth = ( e ) => [ 1440, 768, 375 ].find( ( w ) => e?.visible?.[ w ] ) ?? null;
 	// A child that does not render where its parent does (an sc-if on a width: a label shown only on a phone): an alternative

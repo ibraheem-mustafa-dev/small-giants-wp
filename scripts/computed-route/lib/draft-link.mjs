@@ -6,6 +6,7 @@
 //     `#fragment` kept (`Home.dc.html#build` gives `/#build`) and its query dropped (`dropped` names it);
 //   - `external` (a scheme or `//` link), `site` (already root-relative) and `anchor` (an in-page `#part`): the href as it is;
 //   - `none`: a bare `#` or empty href whose click handler reaches no single page (url left empty, as before);
+//     `navigates` marks a handler the routing read recorded as a click that moves, not a control;
 //   - a product link (the page map's `product` row) whose `?id=` is a product of the client's draft catalogue
 //     (sites/<client>/build/catalogue.json, FR-48-92, not dropped in the review): that product's address
 //     (`/<product base>/<slug>/`, the slug the site build gives it); a query key that names one of its choices with one
@@ -23,6 +24,8 @@ import { permalinkOf } from './fill-route.mjs';
 import { PERMALINKS } from './site-build-plan.mjs';
 import { proposePageMap } from './intake-pagemap.mjs';
 import { loadCatalogue, productAddress, slugify } from './catalogue-read.mjs';
+import { SERVED_ROOT } from './key-space.mjs';
+import { isAccountRow } from './site-build-map.mjs';
 
 const EXTERNAL = /^([a-z][a-z0-9+.-]*:|\/\/)/i;
 const FILE = /^(.+?\.dc\.html):\d+/;
@@ -34,8 +37,13 @@ export const handlerOf = ( value ) => /^\s*\{\{\s*([^}\s]+)\s*\}\}\s*$/.exec( St
 // The click handler an inventory element's own markup carries (`sc-camel-on-click="{{ goHelp }}"`), or null.
 export const elementHandler = ( e ) => /sc-camel-on-click="(\{\{[^"]*\}\})"/.exec( e?.snippet || '' )?.[ 1 ] ?? null;
 
-// The draft file an inventory element's template lives in.
-export const elementFile = ( e ) => ( e?.template ? `${ e.template }.dc.html` : '' );
+// The draft file an inventory element's template lives in. A served inventory names the entry draft's host `Root`
+// (lib/key-space.mjs::SERVED_ROOT); the routing intake read keys that draft's handlers by its real file, the entry
+// component's (`rootComponent`), so a single-file draft's links are matched under that file.
+export const elementFile = ( e, rootComponent = null ) => {
+	const host = rootComponent && SERVED_ROOT === e?.template ? rootComponent : e?.template;
+	return host ? `${ host }.dc.html` : '';
+};
 
 // The resolver context from its parts: `rows` the page map, `routing` intake's { adapter, links } (FR-48-26), `routeSlug`
 // { route: slug } the page map's matching and `proposed` the proposed rows it names slugs from. A route the confirmed map
@@ -55,15 +63,17 @@ export function linkContext( { rows = [], routing = null, routeSlug = {}, propos
 		row && routeRow.set( route, row );
 	}
 	const goRoutes = new Map();
+	const plain = new Set();
 	for ( const l of routing?.links || [] ) {
 		const file = FILE.exec( l.from || '' )?.[ 1 ];
 		const h = handlerOf( /onClick="([^"]*)"/.exec( l.call || '' )?.[ 1 ] );
 		if ( file && h ) {
 			const k = `${ file }\u0000${ h }`;
 			goRoutes.set( k, new Set( [ ...( goRoutes.get( k ) || [] ), l.route ?? null ] ) );
+			! l.control && plain.add( k );
 		}
 	}
-	return { adapter: routing?.adapter ?? null, rows, routeRow, goRoutes, catalogue, menuItems };
+	return { adapter: routing?.adapter ?? null, rows, routeRow, goRoutes, plain, catalogue, menuItems };
 }
 
 // A catalogue product link: { address, query (the query left to drop) } or null when the catalogue has no such product.
@@ -128,11 +138,20 @@ export function resolveDraftLink( href, ctx, { file = '', handler = null } = {} 
 	const h = String( href ?? '' ).trim();
 	if ( ! h || '#' === h ) {
 		const routes = [ ...( ctx?.goRoutes.get( `${ file }\u0000${ handlerOf( handler ) }` ) || [] ) ];
-		if ( 1 === routes.length && null !== routes[ 0 ] ) {
-			return toRow( routes[ 0 ], ctx );
-		}
 		const named = routes.filter( ( x ) => null !== x );
-		return { kind: 'none', ...( named.length ? { routes: named } : {} ) };
+		// A handler whose routes are one page-map row (a signed-out and a signed-in view of the account page share one), or
+		// that include the account page (an account trigger), reaches that one row.
+		const hit = routes.length === named.length ? named.map( ( x ) => ctx?.routeRow.get( x ) ) : [];
+		const rowsHit = [ ...new Set( hit.filter( Boolean ) ) ];
+		if ( hit.length && hit.every( Boolean ) && 1 === rowsHit.length ) {
+			return toRow( named[ 0 ], ctx );
+		}
+		const account = rowsHit.length ? named.find( ( x ) => isAccountRow( ctx.routeRow.get( x ) ) ) : null;
+		if ( account ) {
+			return toRow( account, ctx );
+		}
+		// `navigates`: the routing read recorded this handler as a click that moves (not a control: a toggle, an opener).
+		return { kind: 'none', ...( named.length ? { routes: named } : {} ), ...( ctx?.plain.has( `${ file }\u0000${ handlerOf( handler ) }` ) ? { navigates: true } : {} ) };
 	}
 	if ( EXTERNAL.test( h ) ) {
 		return { kind: 'external', value: h };
@@ -193,8 +212,8 @@ export function draftLinksFor( { repo, client, routing = null, proposedRows = nu
 }
 
 // The resolver a skeleton writer calls for one element's link: ( href, e ) -> resolveDraftLink's answer, reading the file the
-// element's template lives in and its own click handler. `ctx` null resolves with no page map.
-export const siteLinkResolver = ( ctx ) => ( href, e ) => resolveDraftLink( href, ctx, { file: elementFile( e ), handler: elementHandler( e ) } );
+// element's template lives in (`rootComponent`: the entry draft's component, for a served inventory) and its own click handler. `ctx` null resolves with no page map.
+export const siteLinkResolver = ( ctx, rootComponent = null ) => ( href, e ) => resolveDraftLink( href, ctx, { file: elementFile( e, rootComponent ), handler: elementHandler( e ) } );
 
 // What a writer puts in a link setting for one resolution: { value (null writes nothing), handover (a skeleton handover row
 // { owner, kind: 'link', detail }, or null) }. `href` is the draft's own value, named in the row.

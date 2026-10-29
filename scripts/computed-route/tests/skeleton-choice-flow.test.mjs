@@ -130,6 +130,7 @@ test( 'MUST FAIL: options are listed only when the loop recorded one value per i
 	const { skeleton, proposal } = run( dup );
 	assert.deepEqual( skeleton[ 0 ].innerBlocks[ 0 ].innerBlocks[ 0 ].attributes.options, [] );
 	assert.match( proposal.choiceFlow.notes.join( ' ' ), /question 1 "Pick a size".*not listed/ );
+	assert.ok( skeleton[ 0 ].handover.some( ( h ) => 'content-page' === h.owner && /question 1 "Pick a size".*not listed/.test( h.detail ) ), 'an unreadable option list is a visible hand-over row' );
 	// Control: the aligned loop lists both.
 	assert.equal( run( FLOW ).skeleton[ 0 ].innerBlocks[ 0 ].innerBlocks[ 0 ].attributes.options.length, 2 );
 } );

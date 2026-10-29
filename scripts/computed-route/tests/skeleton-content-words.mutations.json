@@ -1,0 +1,16 @@
+[
+	{ "file": "lib/skeleton-write-content.mjs", "find": "const leading = ! open || '' !== snippet.slice( open[ 0 ].length ).split( '<' )[ 0 ].trim();", "replace": "const leading = true;", "why": "a container's closing words are placed before its children" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": "const leading = ! open || '' !== snippet.slice( open[ 0 ].length ).split( '<' )[ 0 ].trim();", "replace": "const leading = false;", "why": "a container's opening words are placed after its children" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": "if ( ! words || ! textAttr || ( skeletonSettings( facts, block ).text && 'blockquote' !== e.tag ) ) {", "replace": "if ( true ) {", "why": "a container's own words are never carried" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": "if ( ! words || ! textAttr || ( skeletonSettings( facts, block ).text && 'blockquote' !== e.tag ) ) {", "replace": "if ( ! words || ! textAttr ) {", "why": "a block that reads words into its own setting also gets a duplicate text child" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": "textAttr && t && ! quoteBody && (", "replace": "textAttr && t && (", "why": "a blockquote body is written to the attribution" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": "textAttr && cite && ( a[ textAttr ] = m.words( cite ) );", "replace": "void cite;", "why": "a blockquote's cite is not its attribution" },
+	{ "file": "lib/skeleton-model.mjs", "find": "|| isLabelIcon( e ) || isCite( e );", "replace": "|| isCite( e );", "why": "the icon beside a link's label makes the link a wrapper shell" },
+	{ "file": "lib/skeleton-model.mjs", "find": "|| isLabelIcon( e ) || isCite( e );", "replace": "|| isLabelIcon( e );", "why": "a blockquote's cite is a block of its own" },
+	{ "file": "lib/skeleton-model.mjs", "find": "const small = ! b || ( b.w <= ICON_PX && b.h <= ICON_PX );", "replace": "const small = true;", "why": "a photo beside a link's words is read as its icon" },
+	{ "file": "lib/read-logic.mjs", "find": "const MAX_VALUES = MAX_LOOP;", "replace": "const MAX_VALUES = 8;", "why": "a loop's labels are capped at eight again" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": "levelAttr && enumOf( block, levelAttr ).includes( e.tag ) && ( a[ levelAttr ] = e.tag );", "replace": "void levelAttr;", "why": "a heading's level is never written from the draft tag" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": "levelAttr && enumOf( block, levelAttr ).includes( e.tag ) && ( a[ levelAttr ] = e.tag );", "replace": "levelAttr && ( a[ levelAttr ] = 'h2' );", "why": "every heading is written as h2" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": "if ( 'string' === typeof defaultText && '' !== defaultText ) {", "replace": "if ( false ) {", "why": "a wordless control keeps the block's default label" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": "aria && e.attrs?.[ 'aria-label' ] && ( a[ aria ] = e.attrs[ 'aria-label' ] );", "replace": "void aria;", "why": "a wordless control loses its aria-label" }
+]

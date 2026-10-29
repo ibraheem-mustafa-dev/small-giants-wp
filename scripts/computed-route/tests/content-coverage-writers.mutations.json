@@ -157,8 +157,8 @@
 	},
 	{
 		"file": "lib/skeleton-write-content.mjs",
-		"find": "( a.linkTarget = e.attrs.target );\n\t\t}\n\t\treturn { a: {",
-		"replace": "void e;\n\t\t}\n\t\treturn { a: {",
+		"find": "( a.linkTarget = e.attrs.target );\n\t}\n\n\t// The cite",
+		"replace": "void e;\n\t}\n\n\t// The cite",
 		"why": "linkTarget is never written"
 	},
 	{
@@ -175,14 +175,14 @@
 	},
 	{
 		"file": "lib/skeleton-write-content.mjs",
-		"find": "textAttr && t && ( a[ textAttr ] =",
-		"replace": "textAttr && false && ( a[ textAttr ] =",
+		"find": "textAttr && t && ! quoteBody && ( a[ textAttr ] =",
+		"replace": "textAttr && false && ! quoteBody && ( a[ textAttr ] =",
 		"why": "the first text setting is never written"
 	},
 	{
 		"file": "lib/skeleton-write-content.mjs",
-		"find": "if ( linkAttr && href ) {",
-		"replace": "if ( false ) {",
+		"find": "linkAttr && linkSettings( block",
+		"replace": "false && linkSettings( block",
 		"why": "the first link setting is never written"
 	}
 ]

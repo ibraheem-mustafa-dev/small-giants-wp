@@ -545,9 +545,12 @@
 				"type": "setting",
 				"block": "sgs/cart",
 				"settings": [
-					"^viewCartLabel$",
-					"^panelShowViewCart$"
-				]
+					"^viewCartLabel$"
+				],
+				"valueFrom": "text",
+				"also": {
+					"panelShowViewCart": true
+				}
 			}
 		},
 		{

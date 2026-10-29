@@ -23,6 +23,11 @@ export function copyrightPrefixParts( text, siteName = null ) {
 }
 export const copyrightPrefixOf = ( text, siteName = null ) => copyrightPrefixParts( text, siteName ).prefix;
 
+// The setting that holds the heading level of a text block (the tag-identity setting whose values are heading tags), or null.
+export function levelSetting( facts, block ) {
+	return facts.attrsByRole( block, 'tag-identity' ).map( ( r ) => r.attr_name ).find( ( n ) => ( facts.enumOf( block, n ) || [] ).includes( 'h1' ) ) ?? null;
+}
+
 // The settings the skeleton writer can give one block, from the facts alone (lib/skeleton-facts.mjs::loadFacts):
 // { text, link, others }. `text` and `link` are the block's first text-content and link-href settings (firstAttrByRole), the
 // ones a draft element's words and address go to; `others` are the identity and structure settings it writes by name: a
@@ -41,6 +46,7 @@ export function skeletonSettings( facts, block ) {
 	} else {
 		out.text = facts.firstAttrByRole( block, 'text-content' );
 		out.link = facts.firstAttrByRole( block, 'link-href' );
+		out.text && levelSetting( facts, block ) && out.others.push( levelSetting( facts, block ) );
 		const kinds = ( facts.enumOf( block, 'displayType' ) || [] ).filter( ( k ) => facts.displayTypes.includes( k ) );
 		kinds.length && out.others.push( 'displayType', ...( kinds.includes( 'copyright' ) && has( 'copyrightPrefix' ) ? [ 'copyrightPrefix' ] : [] ) );
 		has( 'linkTarget' ) && out.others.push( 'linkTarget' );
@@ -58,6 +64,53 @@ export function makeContent( ctx ) {
 		const want = 'flex' === e.display && 'column' === e.flexDirection && opts.includes( 'stack' ) ? 'stack' : e.display;
 		return opts.includes( want ) ? { layout: want } : {};
 	};
+
+	// The link setting of one element: its href, or for a button with no href its click handler (`<button
+	// sc-camel-on-click="{{ goShop }}">`, FR-48-30), as a site address (lib/draft-link.mjs: a draft route is never written as
+	// it stands). Writes into `a` and `handover`. A handler the routing read recorded as a control (an opener, a toggle) is
+	// no link and says nothing.
+	function linkSettings( block, e, top, linkAttr, a, handover ) {
+		const href = e.attrs?.href;
+		const handler = elementHandler( e );
+		const byHandler = ! href && null !== handler;
+		if ( ! href && ! byHandler ) {
+			return;
+		}
+		const r = siteLink( href || '', e );
+		if ( 'none' === r.kind ) {
+			const onClick = handlerOf( handler );
+			const subject = byHandler ? 'draft button' : 'draft link is "#"';
+			const how = onClick ? `${ byHandler ? ' navigates' : ' and navigates' } by script ${ onClick }` : '';
+			const items = r.routes ? ` to one of ${ r.routes.map( ( x ) => `"${ x }"` ).join( ', ' ) } by the item it is clicked on` : '';
+			( ! byHandler || r.navigates ) && handover.push( { owner: 'behaviour', kind: 'link', detail: `${ subject }${ how }${ items }: destination not in the draft, url left empty` } );
+		} else if ( ! top.linkSource ) {
+			const out = linkWrite( r, href || handlerOf( handler ) );
+			null !== out.value && ( a[ linkAttr ] = out.value );
+			out.handover && handover.push( out.handover );
+		}
+		e.attrs?.target && attrExists( block, 'linkTarget' ) && ( a.linkTarget = e.attrs.target );
+	}
+
+	// The cite (or footer) a blockquote ends with, the element holding its attribution, or null.
+	const citeOf = ( e ) => m.kids( e ).find( ( k ) => [ 'cite', 'footer', 'figcaption' ].includes( k.tag ) && m.isPart( k ) && m.words( k ) ) ?? null;
+
+	// A container's own words (the text printed straight inside it, beside its child elements) as a text child, the generic
+	// text block of the tag map's `p` (facts.tagMap), placed in DOM order: before the children when the text opens the
+	// element's markup, after them otherwise. Only a block with no text setting of its own takes this (a wrapper shell, a
+	// section root, a block that draws children); one that reads words into its own setting has them already.
+	// Returns { node, leading } or null. The node has no draftRef: Fill reads the container, whose type style the text inherits.
+	function ownWordsNode( e, block ) {
+		const words = m.words( e );
+		const textBlock = facts.tagMap.p?.core_block_slug;
+		const textAttr = textBlock ? facts.firstAttrByRole( textBlock, 'text-content' ) : null;
+		if ( ! words || ! textAttr || ( skeletonSettings( facts, block ).text && 'blockquote' !== e.tag ) ) {
+			return null;
+		}
+		const snippet = e.snippet || '';
+		const open = /^<[^>]*>/.exec( snippet );
+		const leading = ! open || '' !== snippet.slice( open[ 0 ].length ).split( '<' )[ 0 ].trim();
+		return { node: { name: textBlock, attributes: { [ textAttr ]: words }, innerBlocks: [] }, leading };
+	}
 
 	// The content settings of one element's block. Returns { a (attributes), handover }.
 	function contentAttrs( block, e, top ) {
@@ -91,22 +144,25 @@ export function makeContent( ctx ) {
 			return { a, handover };
 		}
 		const { text: textAttr, link: linkAttr } = skeletonSettings( facts, block );
-		textAttr && t && ( a[ textAttr ] = m.textWithBreaks( e ).includes( '<br>' ) ? m.textWithBreaks( e ) : t );
-		top.linkSource && ( a.linkSource = top.linkSource );
-		const href = e.attrs?.href;
-		if ( linkAttr && href ) {
-			// The draft's destination as a site address (lib/draft-link.mjs): a draft route is never written as it stands.
-			const r = siteLink( href, e );
-			if ( 'none' === r.kind ) {
-				const onClick = handlerOf( elementHandler( e ) );
-				handover.push( { owner: 'behaviour', kind: 'link', detail: `draft link is "#"${ onClick ? ` and navigates by script ${ onClick }` : '' }${ r.routes ? ` to one of ${ r.routes.map( ( x ) => `"${ x }"` ).join( ', ' ) } by the item it is clicked on` : '' }: destination not in the draft, url left empty` } );
-			} else if ( ! top.linkSource ) {
-				const out = linkWrite( r, href );
-				null !== out.value && ( a[ linkAttr ] = out.value );
-				out.handover && handover.push( out.handover );
-			}
-			e.attrs?.target && attrExists( block, 'linkTarget' ) && ( a.linkTarget = e.attrs.target );
+		// A quote's first text setting is its attribution: the blockquote's own words are its body (ownWordsNode), the
+		// attribution is its cite.
+		const quoteBody = 'blockquote' === e.tag;
+		const cite = quoteBody ? citeOf( e ) : null;
+		textAttr && t && ! quoteBody && ( a[ textAttr ] = m.textWithBreaks( e ).includes( '<br>' ) ? m.textWithBreaks( e ) : t );
+		// A control with no words (a swatch, a dot) must not print the block's default label: the label is written empty and
+		// the draft's aria-label names the control. A block a rule configured (`top.attributes`) takes its settings from the
+		// rule, so its text setting is not this element's label.
+		const defaultText = textAttr && ! t && ! Object.keys( top.attributes || {} ).length ? JSON.parse( facts.attr( block, textAttr )?.default_value ?? 'null' ) : null;
+		if ( 'string' === typeof defaultText && '' !== defaultText ) {
+			a[ textAttr ] = '';
+			const aria = facts.firstAttrByRole( block, 'a11y-text' );
+			aria && e.attrs?.[ 'aria-label' ] && ( a[ aria ] = e.attrs[ 'aria-label' ] );
 		}
+		const levelAttr = textAttr ? levelSetting( facts, block ) : null;
+		levelAttr && enumOf( block, levelAttr ).includes( e.tag ) && ( a[ levelAttr ] = e.tag );
+		textAttr && cite && ( a[ textAttr ] = m.words( cite ) );
+		top.linkSource && ( a.linkSource = top.linkSource );
+		linkAttr && linkSettings( block, e, top, linkAttr, a, handover );
 		return { a: { ...a, ...Object.fromEntries( Object.entries( top.attributes || {} ) ) }, handover };
 	}
 
@@ -128,5 +184,5 @@ export function makeContent( ctx ) {
 		}
 		return out;
 	}
-	return { contentAttrs, carriedAttrs };
+	return { contentAttrs, carriedAttrs, ownWordsNode };
 }
