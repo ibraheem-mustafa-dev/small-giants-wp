@@ -106,6 +106,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		toggleItemDecorative,
 		updateItemCrop,
 		updateItemLink,
+		updateItemText,
 		onSelectImages,
 	} = useGalleryItems( { items, setAttributes } );
 
@@ -400,6 +401,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					toggleItemDecorative={ toggleItemDecorative }
 					updateItemCrop={ updateItemCrop }
 					updateItemLink={ updateItemLink }
+					updateItemText={ updateItemText }
 				/>
 
 				<LayoutSettingsPanel

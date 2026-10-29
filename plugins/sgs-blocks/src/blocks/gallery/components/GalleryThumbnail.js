@@ -18,6 +18,7 @@ import { focalPointToObjectPosition } from '../../../utils';
  * @param {Function} props.onDragOver  Called when dragged over this item.
  * @param {Function} props.onDrop      Called when dropped on this item.
  * @param {Function} props.onUpdateLink Called with (index, patch) to set the item's linkUrl, linkTarget or linkLabel.
+ * @param {Function} props.onUpdateText Called with (index, patch) to set the item's alt or caption.
  */
 export default function GalleryThumbnail( {
 	image,
@@ -29,6 +30,7 @@ export default function GalleryThumbnail( {
 	onToggleDecorative,
 	onUpdateCrop,
 	onUpdateLink,
+	onUpdateText,
 } ) {
 	const fit = image.objectFit || 'cover';
 	return (
@@ -68,15 +70,32 @@ export default function GalleryThumbnail( {
 			     on the item object (`decorative`), not as a top-level block
 			     attribute. When true, render.php blanks this item's alt text and
 			     adds aria-hidden="true" so the image is hidden from assistive
-			     tech (WCAG 2.1 AA 1.1.1). This block has no per-item alt-text
-			     control in the editor to disable (alt is set via the WordPress
-			     Media Library, not an inline field here). */ }
+			     tech (WCAG 2.1 AA 1.1.1). The picture's description and caption
+			     are the item's own `alt` and `caption` fields, edited below. */ }
 			<ToggleControl
 				className="sgs-gallery-editor__thumb-decorative"
 				label={ __( 'Decorative — hide from screen readers', 'sgs-blocks' ) }
 				checked={ !! image.decorative }
 				onChange={ ( value ) => onToggleDecorative( index, value ) }
 				__nextHasNoMarginBottom
+			/>
+			{ ! image.decorative && (
+				<TextControl
+					label={ __( 'Image description (alt text)', 'sgs-blocks' ) }
+					help={ __( 'Read out by screen readers. Describe what the picture shows.', 'sgs-blocks' ) }
+					value={ image.alt || '' }
+					onChange={ ( val ) => onUpdateText( index, { alt: val } ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			) }
+			<TextControl
+				label={ __( 'Caption', 'sgs-blocks' ) }
+				help={ __( 'Shown with the picture when the gallery shows captions.', 'sgs-blocks' ) }
+				value={ image.caption || '' }
+				onChange={ ( val ) => onUpdateText( index, { caption: val } ) }
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 			{ /* Per-item link: a linked item renders as an <a> to this URL and never opens the
 			     lightbox. The label is the link's accessible name (empty falls back to the alt text). */ }

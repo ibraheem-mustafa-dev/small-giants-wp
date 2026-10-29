@@ -72,6 +72,19 @@ export default function useGalleryItems( { items, setAttributes } ) {
 	};
 
 	/**
+	 * Patch a single item's picture words (alt and/or caption).
+	 *
+	 * @param {number} index Index of the item to update.
+	 * @param {Object} patch Partial item patch.
+	 */
+	const updateItemText = ( index, patch ) => {
+		const next = items.map( ( item, i ) =>
+			i === index ? { ...item, ...patch } : item
+		);
+		setAttributes( { mediaItems: next } );
+	};
+
+	/**
 	 * Patch a single item's link fields (linkUrl, linkTarget and/or linkLabel).
 	 *
 	 * @param {number} index Index of the item to update.
@@ -104,6 +117,7 @@ export default function useGalleryItems( { items, setAttributes } ) {
 		toggleItemDecorative,
 		updateItemCrop,
 		updateItemLink,
+		updateItemText,
 		onSelectImages,
 	};
 }
