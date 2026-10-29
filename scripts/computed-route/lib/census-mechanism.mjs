@@ -249,8 +249,26 @@ export function surfaceRows( { client, surface, report, run, lookup, rules = loa
 			draft: cell.draft, live: cell.live, confirm: key ? confirmBy.get( key ) ?? null : null
 		} );
 	}
+	// A rule that speaks for the whole page (a reduced-motion rule: a visitor setting, bookkeeping only) is one page-level row per
+	// rule on the surface, counting the elements it reaches, not one row per element.
+	const pageRows = new Map();
 	for ( const f of fill.filter( ( r ) => ! used.has( r ) ) ) {
 		const rule = ruleOf( f );
+		if ( VOCAB.pageRuleClasses.includes( rule?.class ) ) {
+			const id = [ rule.class, f.property, f.value ].join( SEP );
+			if ( pageRows.has( id ) ) {
+				pageRows.get( id ).elements++;
+				continue;
+			}
+			pageRows.set( id, { elements: 1 } );
+			rows.push( {
+				client, surface, element: `${ VOCAB.pageRuleElement } ${ f.value }`, slug: null, slot: '', surfaceLevel: true, elements: 1,
+				kind: 'fill', key: f.property, property: propertyFamily( 'style', f.property, f.value ), state: f.state, runStates: 'all',
+				tier: tierPattern( f.widths, allWidths ), side: VOCAB.fillSides[ f.origin ], reason: rule.class, reasonText: f.reason ?? null, owner: rule.owner ?? null, ...fillClassOf( rule, f ),
+				draft: f.value, live: null, confirm: null, rule: pageRows.get( id )
+			} );
+			continue;
+		}
 		rows.push( {
 			client, surface, element: `${ f.node }${ f.slot ? ` ${ f.slot }` : '' }`, slug: slugOf( f.node, f.block ), slot: f.slot, surfaceLevel: false,
 			kind: 'fill', key: f.property, property: propertyFamily( 'style', f.property, f.value ), state: f.state, runStates: 'all',
@@ -264,7 +282,12 @@ export function surfaceRows( { client, surface, report, run, lookup, rules = loa
 	const kept = rows.filter( ( r ) => ! repeats.has( r ) );
 	const parents = refParents( run?.tree );
 	const artefacts = walkerArtefacts( kept, ( ref ) => parents.get( ref ) ?? null );
-	return { rows: kept.map( ( r ) => ( { ...r, ...( artefacts.has( r ) ? { walkerArtefact: artefacts.get( r ).reason, walkerBy: artefacts.get( r ).by } : {} ), block: r.surfaceLevel ? VOCAB.surfaceBlockFamily : rowBlockFamily( r.slug, lookup ) } ) ), walk, dropped: repeats.size };
+	const finish = ( row ) => {
+		const { rule, ...r } = row;
+		const found = artefacts.get( row );
+		return { ...r, ...( rule ? { elements: rule.elements } : {} ), ...( found ? { walkerArtefact: found.reason, walkerBy: found.by } : {} ), block: r.surfaceLevel ? VOCAB.surfaceBlockFamily : rowBlockFamily( r.slug, lookup ) };
+	};
+	return { rows: kept.map( finish ), walk, dropped: repeats.size };
 }
 
 // An element row's block family: the DB's parent-chain root, `unregistered:<slug>` for a slug the framework DB does not hold
