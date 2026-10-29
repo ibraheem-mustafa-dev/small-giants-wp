@@ -1,0 +1,68 @@
+[
+	{
+		"file": "lib/intake-inventory-trigger.mjs",
+		"find": "return !! loop && holders.includes( String( loop.detail.list ?? '' ).replace( /^\\{\\{\\s*|\\s*\\}\\}$/g, '' ) );",
+		"replace": "return !! loop;",
+		"why": "a loop over any list binds the property"
+	},
+	{
+		"file": "lib/intake-inventory-trigger.mjs",
+		"find": "if ( path.at( -1 ) !== key ) {\n\t\t\treturn false;\n\t\t}",
+		"replace": "",
+		"why": "a handler naming another property binds it"
+	},
+	{
+		"file": "lib/intake-inventory-trigger.mjs",
+		"find": "r.detail.as === root && num( r ) < num( x )",
+		"replace": "r.detail.as === root",
+		"why": "the loop after the handler is its loop"
+	},
+	{
+		"file": "lib/intake-inventory-trigger.mjs",
+		"find": "const [ root, ...path ] = String( x.detail.expression ?? '' ).split( '.' );\n\t\tif ( ! path.length ) {\n\t\t\treturn root === key;\n\t\t}",
+		"replace": "const [ root, ...path ] = String( x.detail.expression ?? '' ).split( '.' );",
+		"why": "a renderVals key bound directly is not a handler"
+	},
+	{
+		"file": "lib/intake-inventory-trigger.mjs",
+		"find": "seen.add( `${ comp }:${ m.name }` );\n\tconst found = [ ...direct ];",
+		"replace": "if ( direct.length ) {\n\t\treturn pickTriggers( direct );\n\t}\n\tseen.add( `${ comp }:${ m.name }` );\n\tconst found = [ ...direct ];",
+		"why": "the template handler is the only trigger of a method a timer also calls"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "...( dotted ? [ { attr: 'showDots', value: true } ] : [] ),",
+		"replace": "",
+		"why": "showDots is not written"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "...moves, ...steps, ...dots ]",
+		"replace": "...moves, ...steps ]",
+		"why": "the dots are not covered"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "trackTpl === x.element?.template_tpl_id",
+		"replace": "true",
+		"why": "another track's dots join this slider"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "x.source?.function !== fn && null != trackTpl",
+		"replace": "null != trackTpl",
+		"why": "the timer's own function is dots"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "INDEXED.test( words( x.source?.code ) ) );",
+		"replace": "true );",
+		"why": "a fixed-offset press is a dot"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "isStep( x ) && 'press' === triggerOf( x ) && x.source?.function !== fn",
+		"replace": "isStep( x ) && x.source?.function !== fn",
+		"why": "any trigger is a dot"
+	}
+]

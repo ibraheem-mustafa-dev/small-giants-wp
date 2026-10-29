@@ -194,9 +194,11 @@ export function pinnedTimelineOf( r ) {
 // A scroll track the draft's script drives, which the testimonial slider is: a timer that steps the track sideways
 // (`setInterval every 6000ms via step`, a `scrollTo( { left: ... } )`) is the slider's autoplay and its interval; pointer
 // dragging that suspends scroll snapping and moves `scrollLeft` is its drag to scroll; prev and next controls that step
-// the same function are its arrows. The track's other script writes (the drag handlers, the arrows' steps) are the slider's
+// the same function are its arrows; press controls of another function that scroll the same track to an offset derived from
+// an index (`scrollTo( { left: i * w } )` inside the object each dot returns) are its dots. The track's other script writes (the drag handlers, the arrows' steps) are the slider's
 // own. Returns a behaviour ({ kind: 'settings' | 'covered', ... }) or null. `ctx.records` is the whole inventory.
 const STEPS = /scrollTo\(\s*\{\s*left/;
+const INDEXED = /scrollTo\(\s*\{\s*left\s*:\s*\w+\s*\*/;
 const isStep = ( r ) => 'js-scroll' === r.mechanism && 'active' === ( r.status ?? 'active' ) && STEPS.test( words( r.source?.code ) );
 const everyMs = ( r ) => number( /setInterval\s+every\s+(\d*\.?\d+)\s*ms/i.exec( words( r.trigger?.detail ) )?.[ 1 ] );
 export function carouselOf( r, ctx = {} ) {
@@ -209,9 +211,12 @@ export function carouselOf( r, ctx = {} ) {
 	const drags = all.filter( ( x ) => /drag/i.test( x.source?.function ?? '' ) && 'js-style-write' === x.mechanism && props( x ).some( ( q ) => 'scroll-snap-type' === nameOf( q ) ) );
 	const moves = all.filter( ( x ) => /drag/i.test( x.source?.function ?? '' ) && 'js-scroll' === x.mechanism );
 	const steps = all.filter( ( x ) => x.source?.function === fn && isStep( x ) && 'interval' !== triggerOf( x ) );
-	const owns = new Set( [ ...all.filter( ( x ) => isStep( x ) && 'interval' === triggerOf( x ) && x.source?.function === fn ), ...drags, ...moves, ...steps ].map( ( x ) => x.id ) );
+	const trackTpl = timer.element?.template_tpl_id;
+	const dots = all.filter( ( x ) => isStep( x ) && 'press' === triggerOf( x ) && x.source?.function !== fn && null != trackTpl && trackTpl === x.element?.template_tpl_id && INDEXED.test( words( x.source?.code ) ) );
+	const owns = new Set( [ ...all.filter( ( x ) => isStep( x ) && 'interval' === triggerOf( x ) && x.source?.function === fn ), ...drags, ...moves, ...steps, ...dots ].map( ( x ) => x.id ) );
 	const dragging = drags.length > 0 && moves.length > 0;
 	const arrows = steps.length > 0;
+	const dotted = dots.length > 0;
 	if ( timer.id !== r.id ) {
 		return owns.has( r.id ) ? { kind: 'covered', by: 'testimonial-slider', reason: `a write of the scroll track ${ timer.id } drives (its timer, its pointer drag or its arrows): the testimonial slider's own autoplay, drag to scroll and arrows` } : null;
 	}
@@ -220,8 +225,9 @@ export function carouselOf( r, ctx = {} ) {
 		blocks: { 'sgs/testimonial-slider': [
 			{ attr: 'autoplay', value: true }, { attr: 'autoplaySpeed', value: everyMs( r ) },
 			...( dragging ? [ { attr: 'dragToScroll', value: true } ] : [] ), ...( arrows ? [ { attr: 'showArrows', value: true } ] : [] ),
+			...( dotted ? [ { attr: 'showDots', value: true } ] : [] ),
 		] },
 		accepted: "the hover, touch and focus holds that pause the timer and the slider's own arrow and dot styling are the slider's own",
-		notes: [ `a scroll track stepped by a ${ everyMs( r ) }ms timer${ dragging ? ', dragged by the pointer' : '' }${ arrows ? ' and stepped by arrow controls' : '' } is the testimonial slider's autoplay${ dragging ? ', drag to scroll' : '' }${ arrows ? ' and arrows' : '' }`, "the slider's dots are not read from an active record, so showDots is left to the slider's own setting" ],
+		notes: [ `a scroll track stepped by a ${ everyMs( r ) }ms timer${ dragging ? ', dragged by the pointer' : '' }${ arrows ? ' and stepped by arrow controls' : '' } is the testimonial slider's autoplay${ dragging ? ', drag to scroll' : '' }${ arrows ? ' and arrows' : '' }${ dotted ? ' and dots' : '' }`, ...( dotted ? [] : [ "the slider's dots are not read from an active record, so showDots is left to the slider's own setting" ] ) ],
 	};
 }
