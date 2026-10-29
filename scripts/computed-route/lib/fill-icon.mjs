@@ -325,6 +325,9 @@ export function iconDecisions( { svg, schema, attributes = {}, allowed = null, h
 	} else if ( lucide ) {
 		put( 'iconSource', 'lucide' );
 		put( 'iconName', lucide );
+	} else if ( ! ( 'iconSvg' in schema ) ) {
+		// Settings with no place for the client's own markup (a list item's iconSource and iconName) take no custom source.
+		out.unmapped.push( { property: 'svg', value: '<svg>', slot: '', reason: 'the draft mark is neither a registry brand nor a Lucide icon, and the settings hold no iconSvg for the client markup' } );
 	} else {
 		put( 'iconSource', 'custom' );
 		put( 'iconSvg', render( kept ) );
