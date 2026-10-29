@@ -96,6 +96,10 @@ test( 'a slot an earlier pass gave stands, and another node\'s element is never 
 	assert.equal( node.draftSlots[ ITEM( 3 ) ]?.tpl, 'Root/706#2' );
 	assert.ok( ! ( `${ ITEM( 2 ) } > .sgs-icon-list__icon` in node.draftSlots ) );
 	assert.ok( out.unpaired.some( ( u ) => `${ ITEM( 2 ) } > .sgs-icon-list__icon` === u.slot ) );
+	// A modal frame's parts are its own rule's: the pass adds nothing to a frame node.
+	const frame = { name: 'sgs/icon-list', draftRef: { tpl: 'Root/706#0' }, draftSlots: {}, modalFrame: true, innerBlocks: [] };
+	pairSkeletonParts( { db, tree: [ frame ], m, finder, calSettings: ( b ) => F.cal[ b ]?.settings || {}, calPaint: ( b ) => F.cal[ b ]?.elements || {} } );
+	assert.deepEqual( frame.draftSlots, {} );
 } );
 
 // A wrapper level one side lacks (QC of RC1): the block's boxes the draft does not draw, and a draft box holding several parts.

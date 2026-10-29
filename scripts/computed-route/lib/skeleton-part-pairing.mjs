@@ -412,8 +412,8 @@ export function pairParts( { db, block, cal, paint = [], m, el, items = null, ow
 // Every node of a proposed skeleton paired (proposeSkeleton's last pass). tree: the skeleton; m: the inventory model;
 // rowOf: element key to its proposal row; calSettings( slug ) / calPaint( slug ): the block's calibrated settings and its
 // default paint ({ <path>: { <width>: computed style } }, in document order); unitItems: node to the elements of the unit it was built from; mediaSpec: rules.mediaElement (the draft's
-// picture custom elements). A node whose draftRef is not one draft element (a selector, none) is not paired. A slot a node
-// already holds stands. Returns { paired, unpaired: [ { key, block, slot, reason } ] }, and each row gains `slots`.
+// picture custom elements). A node whose draftRef is not one draft element (a selector, none), or a modal frame, is not
+// paired. A slot a node already holds stands. Returns { paired, unpaired: [ { key, block, slot, reason } ] }, and each row gains `slots`.
 export function pairSkeletonParts( { db, tree, m, finder, rowOf = {}, calSettings = () => ( {} ), calPaint = () => ( {} ), unitItems = new Map(), mediaSpec = null } ) {
 	const nodes = [];
 	const walk = ( list ) => list.forEach( ( n ) => {
@@ -428,7 +428,9 @@ export function pairSkeletonParts( { db, tree, m, finder, rowOf = {}, calSetting
 	const out = { paired: 0, unpaired: [] };
 	for ( const n of nodes ) {
 		const el = elOf( n );
-		if ( ! el ) {
+		// A modal frame's parts are paired by its own rule from evidence this pass does not read (the backdrop covers the
+		// overlay, the panel is the dialog, the close clears the open state: lib/skeleton-modal-frame.mjs).
+		if ( ! el || n.modalFrame ) {
 			continue;
 		}
 		const items = unitItems.get( n ) || null;
