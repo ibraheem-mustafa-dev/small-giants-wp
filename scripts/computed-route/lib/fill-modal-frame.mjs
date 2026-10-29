@@ -4,6 +4,8 @@
 // content, so the node leaves the filled tree here and is kept in `modal-frame.json` ({ anchor, attributes }), which the site build
 // merges onto the page's `sgs/modal` frame by its anchor (lib/site-build-modal-frame.mjs).
 
+import { REF_PREFIX } from './tree.mjs';
+
 // Removes the frame node of `skeleton` from `tree` (cleanTree keeps the skeleton's top-level order) and returns its record, or null
 // when the skeleton carries none. `tree` is changed in place.
 export function liftModalFrame( { skeleton, tree } ) {
@@ -12,5 +14,8 @@ export function liftModalFrame( { skeleton, tree } ) {
 		return null;
 	}
 	const [ node ] = tree.splice( at, 1 );
-	return { anchor: node.attributes?.anchor ?? null, attributes: node.attributes };
+	// The node's cr-ref class names a node of the modal's own tree, so it is not carried to the page.
+	const { className, ...attributes } = node.attributes || {};
+	const kept = String( className || '' ).split( /\s+/ ).filter( ( c ) => c && ! c.startsWith( REF_PREFIX ) ).join( ' ' );
+	return { anchor: attributes.anchor ?? null, attributes: { ...attributes, ...( kept ? { className: kept } : {} ) } };
 }

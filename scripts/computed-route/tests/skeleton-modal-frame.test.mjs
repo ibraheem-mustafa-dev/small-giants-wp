@@ -152,8 +152,9 @@ test( 'MUST FAIL: Fill lifts the frame node out of the post\'s tree and keeps it
 	const frame = tree.find( ( n ) => 'sgs/modal' === n.name );
 	assert.equal( frame.modalFrame, undefined, 'the marker is a draft key, never built' );
 	frame.attributes.scrimColour = '#141414';
+	frame.attributes.className = 'cr-ref-size-guide-9 keep-me';
 	const lifted = liftModalFrame( { skeleton: r.skeleton, tree } );
-	assert.deepEqual( lifted, { anchor: 'modal-size-guide', attributes: { triggerStyle: 'none', anchor: 'modal-size-guide', scrimColour: '#141414' } } );
+	assert.deepEqual( lifted, { anchor: 'modal-size-guide', attributes: { triggerStyle: 'none', anchor: 'modal-size-guide', scrimColour: '#141414', className: 'keep-me' } } );
 	assert.equal( tree.some( ( n ) => 'sgs/modal' === n.name ), false );
 	assert.equal( all( tree ).some( ( n ) => undefined !== n.modalFrame ), false );
 	const none = [ { name: 'sgs/container', attributes: {}, innerBlocks: [] } ];

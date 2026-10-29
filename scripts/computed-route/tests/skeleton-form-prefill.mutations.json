@@ -16,7 +16,7 @@
 	{"file": "lib/skeleton-rules.mjs", "find": "! R.formPrefillOpener || ! handler ||", "replace": "! handler ||", "why": "the decisions entry turns the rule on"},
 	{"file": "lib/skeleton-rules.mjs", "find": "! [ 'a', 'button' ].includes( e.tag ) || ! facts.repo", "replace": "! facts.repo", "why": "only a button or link is a control"},
 	{"file": "lib/skeleton-rules.mjs", "find": "const anchor = open ? pageForm() : null;", "replace": "const anchor = open ? ( pageForm() ?? 'form' ) : null;", "why": "a page with no linked form has nothing to link to"},
-	{"file": "lib/skeleton-rules.mjs", "find": "x.key.endsWith( `#${ copy }` ) &&", "replace": "", "why": "a value is read from the control's own copy"},
+	{"file": "lib/skeleton-rules.mjs", "find": "parseInstanceKey( x.key )?.copy === copy &&", "replace": "", "why": "a value is read from the control's own copy"},
 	{"file": "lib/skeleton-rules.mjs", "find": "y.tpl === loop.tpl", "replace": "true", "why": "a value is read from the control's own loop"},
 	{"file": "lib/skeleton-rules.mjs", "find": "'text' === h.where && field === h.path", "replace": "field === h.path", "why": "a value is the words an element prints"},
 	{"file": "lib/skeleton-rules.mjs", "find": "'text' === h.where && field === h.path", "replace": "'text' === h.where", "why": "a value is the words of the element printing the item path"},

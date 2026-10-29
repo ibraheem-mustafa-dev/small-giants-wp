@@ -23,6 +23,7 @@ import { blockPartSurfaces } from './skeleton-surface-role.mjs';
 import { closesOn, handlerCloses, handlerOpens, handlerWrites, opensOn, opensOnWrites } from './skeleton-handler-opens.mjs';
 import { modalTargets } from './skeleton-opener.mjs';
 import { modalFrameParts } from './skeleton-modal-frame.mjs';
+import { parseInstanceKey } from './fact-key.mjs';
 import { formOpenerOf, prefillHref } from './skeleton-form-prefill.mjs';
 import { makeFieldGroups } from './skeleton-field-groups.mjs';
 
@@ -671,10 +672,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			return null;
 		}
 		const loop = ( e.membership || [] ).filter( ( x ) => 'sc-for' === x.kind ).at( -1 );
-		const copy = /#(\d+)$/.exec( e.key )?.[ 1 ];
+		const copy = parseInstanceKey( e.key )?.copy;
 		const valueOf = ( rest ) => {
 			const field = loop && undefined !== copy ? `${ loop.as }.${ rest }` : null;
-			const from = field ? m.els.find( ( x ) => x.key.endsWith( `#${ copy }` ) && ( x.membership || [] ).some( ( y ) => 'sc-for' === y.kind && y.tpl === loop.tpl ) && ( view.entry( x )?.template.holes || [] ).some( ( h ) => 'text' === h.where && field === h.path ) ) : null;
+			const from = field ? m.els.find( ( x ) => parseInstanceKey( x.key )?.copy === copy && ( x.membership || [] ).some( ( y ) => 'sc-for' === y.kind && y.tpl === loop.tpl ) && ( view.entry( x )?.template.holes || [] ).some( ( h ) => 'text' === h.where && field === h.path ) ) : null;
 			return from ? m.words( from ) : null;
 		};
 		return { href: prefillHref( { fields: open.fields, anchor, valueOf } ), form: anchor };

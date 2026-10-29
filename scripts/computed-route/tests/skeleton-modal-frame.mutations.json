@@ -27,6 +27,7 @@
 	{"file": "lib/fill-skeleton.mjs", "find": "'handover', 'modalFrame',", "replace": "'handover',", "why": "the frame marker is a draft key, stripped from the built tree"},
 	{"file": "lib/skeleton-facts.mjs", "find": "r.modalFrame.parts?.[ role ] || problems.push", "replace": "problems.push", "why": "every part has a reason"},
 	{"file": "lib/skeleton-facts.mjs", "find": "length || problems.push( `rules.modalFrame.names.", "replace": "length || [].push( `rules.modalFrame.names.", "why": "a part name must be a css_element of the block"},
+	{"file": "lib/fill-modal-frame.mjs", "find": "! c.startsWith( REF_PREFIX )", "replace": "true", "why": "the node's ref class is not carried to the page"},
 	{"file": "lib/fill-modal-frame.mjs", "find": "true === n.modalFrame", "replace": "false", "why": "the frame node is found by its marker"},
 	{"file": "lib/fill-modal-frame.mjs", "find": "tree.splice( at, 1 )", "replace": "tree.slice( at, at + 1 )", "why": "the frame node leaves the tree of the post"},
 	{"file": "lib/site-build-modal-frame.mjs", "find": "{ ...frame.attributes, ...n.attributes }", "replace": "{ ...n.attributes, ...frame.attributes }", "why": "the own settings of the page frame win"},
