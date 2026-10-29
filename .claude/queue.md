@@ -51,3 +51,4 @@ The signal between parallel sessions working the cloning tool plan (`.claude/pla
 - 2026-10-28 S hostinger-end eye-care-ward-end (push, exit 0)
 - 2026-10-29 F deploy-start sandybrown,indus-test,mamas-test,eye-care-clone-test (register C6 plugin fixes, gate fixes, gift cards, flow slug marker; main 14734d341)
 - 2026-10-29 F deployed sandybrown,indus-test,mamas-test,eye-care-clone-test (13/13 full gates; register C6 plugin fixes, gate fixes, gift cards, flow slug marker; code 14734d341)
+- 2026-10-29 S intake-start eye-care-ward-end (full intake --record: the draft changed on 2026-10-28 and wave 1-2 fixes need whole loops and page-map openers; main bb4219cd0)

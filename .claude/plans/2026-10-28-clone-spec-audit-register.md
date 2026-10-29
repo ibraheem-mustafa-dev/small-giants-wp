@@ -43,11 +43,18 @@ Rows fixed on `main` reach the sites at the third re-clone (skeleton propose, Fi
 |---|---|---|
 | C1 box values | fixed: the ladder and the resolver build sides and corners per device through `lib/box-tier.mjs` | `0b7244e7d` |
 | B3 `displayType` overwrite | fixed: a setting whose values show or hide the element read is never a look answer (`lib/resolve.mjs::selectsPresence`) | `0b7244e7d` |
-| C6 plugin bugs | fixed: leading minus kept, fx host promotion zero-specificity (magnet and particles), multi-button mobile inherits tablet; not deployed | `6c13985a9` |
+| C6 plugin bugs | fixed and deployed to the four sites (`14734d341`, 13/13 full gates): leading minus kept, fx host promotion zero-specificity (magnet and particles), multi-button mobile inherits tablet; live on indus-test about (magnet buttons `flex`, about-114 `flex-start` at 375 and 768, 18 negative margins render) | `6c13985a9` |
 | A3 single-file draft links | fixed: real entry file, handler buttons, one-row and account routes, handover rows | `fcd8fb42a` |
 | A4 words and lists | fixed: own words as a text child, icon+label one button, quote body and cite, loops read whole (`read-logic.mjs` cap 8 to 60), unreadable option list a hand-over row. **Open:** the Indus brands mega gallery (`fill-list-items.mjs::listItems` not traced) and whether Fill places an `img` icon in the button's icon slot | `fcd8fb42a` |
 | B2 heading levels | fixed | `fcd8fb42a` |
 | B3 wordless labels, B6 labels | fixed: empty label plus aria-label, menu label from the static link text, `viewCartLabel` written | `fcd8fb42a` |
+| A2 product pages | fixed: the `product` role places `sgs/buybox` (gallery column absorbed) and an `sgs/heading` bound to the title at the region holding the add-to-basket control and the `h1` (`lib/skeleton-product-region.mjs`). **Open:** the description is not bound (no structural marker found in the draft code) | `c590eb9a5` |
+| B4 loops on any page | fixed: priced product-linked loops place the collection, brand-linked loops `sgs/brand-strip`, star-and-quote loops the provider's reviews block (`lib/skeleton-loop-blocks.mjs`); a review loop naming no provider stays static with a note (Mama's testimonials: the carousel row, C5) | `c590eb9a5` |
+| B7 shop sorting and chips | fixed: `catalog-sorting` and `product-results-count` in a toolbar row, category chips a `product_cat` filter, an inexpressible sort option a missing-features row | `c590eb9a5` |
+| C4 shells, order confirmation | fixed: `sameNode` ignores `cr-ref-*`, `template` rows match `result` records, `order-confirmation` builds around WooCommerce's totals. **Open:** Eye Care's Sunglasses mega panel (cause unproven: suspected two loops in one list element; needs Fill output on the fresh Eye Care intake) | `c590eb9a5` |
+| A1 openers | fixed for modals: page map `opens: [{kind, slug}]`, `rules.modalOpener` makes the trigger an `sgs/button` to `#<anchor>`, one `sgs/modal` frame per opened modal on the page, site-check covers `sgs_modal`, a walk with no live root fails. **Open:** the form-target opener (Indus `toForm` scrolls and sets selects, writing no open state), the frame taking the draft's backdrop, panel and close look (S8: needs the modal surface's open state read into the frame), a flow-opener control ("Add my prescription") | `bb4219cd0` |
+| A5 drawer menus and close | fixed: drawers bind `drawer`, then `drawer-<n>` menus in order; the draft close control is absorbed as `sgs/nav-drawer`'s close part | `bb4219cd0` |
+| A6 no-region refusal | fixed: a problem row in the proposal; Fill and site build refuse a commerce surface without its region block | `bb4219cd0` |
 
 ## A. Working pieces in the right place (the clone does not work)
 
