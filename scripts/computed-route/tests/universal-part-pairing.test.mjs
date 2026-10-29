@@ -278,4 +278,7 @@ test( 'content identity: a written value finds the one element showing it, folde
 	assert.match( r.notes.find( ( n ) => '.x__twin' === n.slot ).reason, /2 draft elements could supply twin/ );
 	const fields = contentPairs( { text, els, fieldsOf: ( e ) => ( [ 'c', 'd' ].includes( e.key ) ? [ 'label' ] : [] ) } );
 	assert.equal( fields.pairs[ '.x__label' ], undefined, 'a field two elements print supplies no part' );
+	// A field a setting would take only by a later role (a title for a name) supplies no part: it is not that setting's content.
+	const later = contentPairs( { text: { name: { path: '.x__name' } }, els: [ { key: 'h' } ], fieldsOf: () => [ 'title' ] } );
+	assert.equal( later.pairs[ '.x__name' ], undefined );
 } );
