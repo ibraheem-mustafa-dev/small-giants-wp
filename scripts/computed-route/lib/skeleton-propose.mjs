@@ -210,10 +210,14 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		}
 		if ( ( 'commerceRegion' === r.rule || loopProducts ) && r.inner ) {
 			const item = r.item ? m.byKey[ r.item ] : null;
-			const copy = ( n ) => ( { name: n.name, attributes: { ...( n.attributes || {} ) }, innerBlocks: ( n.innerBlocks || [] ).map( copy ), ...( false === n.reads ? { reads: false } : {} ) } );
+			const copy = ( n ) => ( { name: n.name, attributes: { ...( n.attributes || {} ) }, innerBlocks: ( n.innerBlocks || [] ).map( copy ), ...( false === n.reads ? { reads: false } : {} ), ...( n.itemKey ? { itemKey: n.itemKey } : {} ) } );
 			// An SGS block in the region reads the draft's item (the shop's product card its first card, the product page's
-			// heading its title) unless its rule entry says `reads: false` (a block that draws itself from WooCommerce).
-			const read = ( { reads, ...n } ) => ( 'sgs/' === n.name.slice( 0, 4 ) && item && false !== reads ? { ...n, draftRef: finder( item ), draftFingerprint: m.fingerprint( item ) } : n );
+			// heading its title; a block naming its own `itemKey`, the product page's description, that element) unless its rule
+			// entry says `reads: false` (a block that draws itself from WooCommerce).
+			const read = ( { reads, itemKey, ...n } ) => {
+				const own = itemKey ? m.byKey[ itemKey ] : item;
+				return 'sgs/' === n.name.slice( 0, 4 ) && own && false !== reads ? { ...n, draftRef: finder( own ), draftFingerprint: m.fingerprint( own ) } : n;
+			};
 			const mark = ( n ) => read( { ...n, innerBlocks: n.innerBlocks.map( mark ) } );
 			node.innerBlocks = r.inner.map( copy ).map( mark );
 		}

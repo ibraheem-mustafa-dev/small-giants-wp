@@ -120,3 +120,50 @@ test( 'an add control that is never shown is no evidence of the buy box', () => 
 	const { skeleton } = run( els, { role: 'product', checkout: null, buybox: { add: [ 20 ] } } );
 	assert.equal( find( skeleton, 'sgs/buybox' ), null );
 } );
+
+// The description is the prose that varies per product: the title and one more shown element of the hero read fields of the one
+// record the draft binds (`{{ p.name }}`, `{{ p.short }}`).
+const bound = ( e, own ) => ( { ...e, srcOwnText: own } );
+const DESCRIBED = PRODUCT.flatMap( ( e ) => 'Root/11#0' === e.key ? [ bound( e, '{{ p.name }}' ), bound( el( 'Root/14#0', 'Root/10#0', 'p', 'Our giant lactation cookie, baked to order in the flavour you pick.', { depth: 3 } ), '{{ p.short }}' ) ] : [ e ] );
+const heroOf = ( tree ) => {
+	for ( const n of tree ) {
+		if ( ( n.innerBlocks || [] ).some( ( c ) => 'sgs/buybox' === c.name ) ) {
+			return n;
+		}
+		const inner = heroOf( n.innerBlocks || [] );
+		if ( inner ) {
+			return inner;
+		}
+	}
+	return null;
+};
+const COMMERCE = { role: 'product', checkout: null, buybox: { add: [ 20 ] } };
+
+test( 'MUST FAIL: the prose field of the title record is a text block bound to the product description, in the look of the draft element', () => {
+	const { skeleton, proposal, problems } = run( DESCRIBED, COMMERCE );
+	assert.deepEqual( problems, [] );
+	const text = heroOf( skeleton ).innerBlocks.find( ( n ) => 'sgs/text' === n.name && n.attributes.metadata );
+	assert.deepEqual( text.attributes.metadata.bindings.text, { source: 'sgs-product/field', args: { key: 'short_description', source: 'auto' } } );
+	assert.deepEqual( text.draftRef, { tpl: 'Root/14#0' }, 'the block takes the look of the description element, not the title' );
+	assert.deepEqual( heroOf( skeleton ).innerBlocks.map( ( n ) => n.name ), [ 'sgs/heading', 'sgs/text', 'sgs/buybox' ] );
+	assert.match( proposal.rows.find( ( r ) => 'commerceRegion' === r.rule ).reason, /the description Root\/14#0/ );
+	assert.ok( proposal.rows.some( ( r ) => 'Root/14#0' === r.key && 'absorbed' === r.action ), 'the draft paragraph is drawn by the bound block' );
+} );
+
+test( 'negative control: no description is bound for a short field, a field of another record, a heading, an element outside the hero or a title without a field', () => {
+	const bindsText = ( els ) => !! heroOf( run( els, COMMERCE ).skeleton ).innerBlocks.find( ( n ) => n.attributes?.metadata?.bindings?.text );
+	assert.equal( bindsText( DESCRIBED ), true );
+	const swap = ( key, f ) => DESCRIBED.map( ( e ) => ( key === e.key ? f( e ) : e ) );
+	assert.equal( bindsText( swap( 'Root/14#0', ( e ) => ( { ...e, words: 'Short one' } ) ) ), false, 'under 30 characters is a label, not prose' );
+	assert.equal( bindsText( swap( 'Root/14#0', ( e ) => bound( e, '{{ q.short }}' ) ) ), false, 'a field of another record' );
+	assert.equal( bindsText( swap( 'Root/14#0', ( e ) => ( { ...e, tag: 'h2' } ) ) ), false, 'a heading' );
+	assert.equal( bindsText( swap( 'Root/14#0', ( e ) => bound( e, '{{ p.short }} and more words after it' ) ) ), false, 'text that is more than the field' );
+	assert.equal( bindsText( swap( 'Root/14#0', ( e ) => ( { ...e, parentKey: 'Root/1#0' } ) ) ), false, 'an element outside the hero stays an ordinary block' );
+	assert.equal( bindsText( swap( 'Root/11#0', ( e ) => bound( e, 'Sample product' ) ) ), false, 'a title that is no record field names no record' );
+} );
+
+test( 'the longest prose field of the record is the description', () => {
+	const more = [ ...DESCRIBED, bound( el( 'Root/15#0', 'Root/10#0', 'p', 'A second, much longer line of prose that this product record also carries for its page.', { depth: 3 } ), '{{ p.long }}' ) ];
+	const { skeleton } = run( more, COMMERCE );
+	assert.deepEqual( heroOf( skeleton ).innerBlocks.find( ( n ) => n.attributes?.metadata?.bindings?.text ).draftRef, { tpl: 'Root/15#0' } );
+} );

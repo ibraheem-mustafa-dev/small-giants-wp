@@ -9,9 +9,22 @@
 //     `buybox-add-to-basket` part, lib/skeleton-shop-locators.mjs, found by the draft runtime's stamp) and the page's heading;
 //   - the hero is that region, or its parent when a shown sibling of the region holds the product images and none of the
 //     buy box (the gallery column of a two-column hero): the composite draws both columns, so the hero is what it replaces.
+//   - the description is the prose that varies per product: the draft reads the title as a field of one record (`{{ p.name }}`),
+//     and the description is the shown element under the hero whose own text is one field of that same record (`{{ p.short }}`),
+//     as long as the catalogue reader's description rule (lib/catalogue-records.mjs::descriptionField: 30 characters of prose);
+//     it is a text block bound to the product's description (`sgs-product/field`, the key the rule's `description` names) that
+//     takes the draft element's look.
 // Pure: the inventory model, the commerce facts and the rule in, the region out.
 
 const shown = ( e ) => Object.values( e.visible || {} ).some( Boolean );
+
+// The prose length at which a record field is a description (lib/catalogue-records.mjs::descriptionField).
+const PROSE = 30;
+// An element whose own text is exactly one field of a record variable: { record, field }.
+const fieldOf = ( e ) => {
+	const m = /^\{\{\s*([A-Za-z_$][\w$]*)\.([\w$.]+)\s*\}\}$/.exec( String( e?.srcOwnText ?? '' ).trim() );
+	return m ? { record: m[ 1 ], field: m[ 2 ] } : null;
+};
 
 export function productRegion( { m, commerce, rule } ) {
 	const spec = rule?.roles?.product;
@@ -43,13 +56,17 @@ export function productRegion( { m, commerce, rule } ) {
 	const gallery = parent && parent !== m.root ? els.filter( ( e ) => e.parentKey === parent.key && e !== region && images( e ).length && ! under( add, e ) ) : [];
 	const hero = gallery.length ? parent : region;
 	const attributes = JSON.parse( JSON.stringify( spec.attributes || {} ) );
+	const record = fieldOf( title )?.record;
+	const prose = ( e ) => String( e.words ?? '' ).replace( /\s+/g, ' ' ).trim().length;
+	const description = spec.description && record ? els.filter( ( e ) => ! /^h[1-6]$/.test( e.tag ) && under( e, hero ) && fieldOf( e )?.record === record && prose( e ) >= PROSE ).sort( ( a, b ) => prose( b ) - prose( a ) )[ 0 ] ?? null : null;
+	const inner = description ? ( spec.inner || [] ).flatMap( ( n ) => 'sgs/heading' === n.name ? [ n, { ...JSON.parse( JSON.stringify( spec.description ) ), itemKey: description.key } ] : [ n ] ) : spec.inner || null;
 	return {
 		key: hero.key,
 		role: 'product',
 		block: spec.block,
 		attributes,
-		inner: spec.inner || null,
+		inner,
 		item: title,
-		reason: `${ spec.reason } (the add-to-basket control ${ add.key } and the heading ${ title.key }${ gallery.length ? `, with the gallery column ${ gallery.map( ( g ) => g.key ).join( ', ' ) }` : '' })`,
+		reason: `${ spec.reason } (the add-to-basket control ${ add.key } and the heading ${ title.key }${ description ? `, the description ${ description.key }` : '' }${ gallery.length ? `, with the gallery column ${ gallery.map( ( g ) => g.key ).join( ', ' ) }` : '' })`,
 	};
 }
