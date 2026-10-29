@@ -358,8 +358,8 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	}
 	const skeleton = flowNode ? [ ...flowSides.before, ...[].concat( rootNode || [] ), ...flowSides.after ] : formStepNodes( hiddenFieldNodes( formHostNodes( [].concat( rootNode || [] ), { factRecord } ), hiddenFieldContext( { factRecord, m, view, nodeOfKey, rowOf, rules: R, attr: facts.attr, scriptOf } ) ), { factRecord, surfaceKind, component: 'form' === surfaceKind ? view.recordOf( scope?.id )?.dc ?? null : null, ...formStepContext( { m, view, nodeOfKey, rowOf, rows, rules: R, attr: facts.attr } ) } );
 	// Each absorbed part element is its block node's draftSlots entry at the part's calibrated slot, with its children at
-	// the part's sub-part slots, and the block node stands in the part's wrapper beside the wrapper's other content, or
-	// the wrapper the part leaves empty is dropped (lib/skeleton-part-slots.mjs).
+	// the part's sub-part slots; the block node stays where its own element stands, and the wrapper the part leaves empty is
+	// dropped (lib/skeleton-part-slots.mjs).
 	partPending.forEach( ( p ) => {
 		const node = nodeOfKey[ p.into ];
 		if ( ! node ) {
@@ -374,7 +374,6 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const logoId = idSetting && facts.attr( node.name, idSetting ) ? carriedAttrs( facts.logoBlocks[ 0 ], p.e ).attrs.logoId : null;
 		logoId && ( node.attributes = { ...node.attributes, [ idSetting ]: logoId } );
 		const place = placePart( { e: p.e, node, tree: skeleton, nodeOfKey, m } );
-		place?.placed && ( rowOf[ p.into ].placedIn = place.placed );
 		place?.dropped && Object.assign( rowOf[ place.dropped ], { action: 'remove', reason: place.note } );
 		place?.note && ( rowOf[ p.into ].slotNotes = [ ...( rowOf[ p.into ].slotNotes || [] ), place.note ] );
 		if ( ! db ) {
