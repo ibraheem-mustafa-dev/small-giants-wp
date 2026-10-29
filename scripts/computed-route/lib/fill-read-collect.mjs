@@ -119,6 +119,10 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 		const imgs = el.matches( 'img' ) ? [ el ] : [ ...el.querySelectorAll( 'img' ), ...drawn.filter( ( i, n ) => drawn.findIndex( ( j ) => imgSrc( j ) === imgSrc( i ) ) === n ) ];
 		const cap = el.matches( 'figure' ) ? el.querySelector( 'figcaption' ) : null;
 		snap.img = 1 === imgs.length ? { tag: el.localName, src: imgSrc( imgs[ 0 ] ), alt: imgs[ 0 ].getAttribute( 'alt' ), caption: cap ? ( cap.textContent || '' ).replace( /\s+/g, ' ' ).trim() : null } : null;
+		// The one picture an element with no <img> of its own paints as its CSS background (a card whose photo is its
+		// `background-image: url()`): its address as the page resolved it. Several layers, a gradient or a none are not one picture.
+		const bgm = /^url\(\s*(["']?)([^"')]+)\1\s*\)$/.exec( getComputedStyle( el ).backgroundImage );
+		snap.bgImg = ! snap.img && bgm ? { tag: 'background', src: bgm[ 2 ], alt: null, caption: null } : null;
 		// Every picture the element draws when it draws two or more, in document order (one image placeholder's copies of one
 		// address count once), so a list block can give each of its items the picture the draft draws in that item.
 		const pictures = [];

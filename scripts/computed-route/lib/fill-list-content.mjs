@@ -16,8 +16,7 @@ import { fileURLToPath } from 'node:url';
 import { loadAjv, schemaProblems } from './handoff.mjs';
 import { setAttr } from './tree.mjs';
 import { handoverEntry } from './fill-handover.mjs';
-import { draftPath, mapEntries, stockEntries } from './fill-media.mjs';
-import { stockKey } from './media-stock.mjs';
+import { pictureEntry } from './fill-media.mjs';
 import { normaliseHref } from './fill-presence.mjs';
 import { templateKeyOf, parseTemplateKey } from './fact-key.mjs';
 import { loadDraft } from './intake-ast.mjs';
@@ -123,12 +122,7 @@ export function listClaims( block, target ) {
 const escapeText = ( s ) => String( s ).replace( /&/g, '&amp;' ).replace( /</g, '&lt;' ).replace( />/g, '&gt;' );
 
 // The attachment a picture field's value names in the media map, or null: a draft file path or a stock preview address.
-export function itemPicture( value, media = {} ) {
-	const file = draftPath( value, media.origin );
-	const stock = null === file ? stockKey( value ) : null;
-	const hits = null !== file && /\.(?:png|jpe?g|gif|webp|avif|svg)$/i.test( file ) ? mapEntries( media.map, media.site, file ) : null !== stock ? stockEntries( media.map, media.site, stock ) : [];
-	return 1 === new Set( hits.map( ( h ) => h.id ) ).size ? hits[ 0 ] : null;
-}
+export const itemPicture = pictureEntry;
 
 // One item's settings from the draft item: { attrs, rows } where rows are [{ field, value, reason }] the item cannot hold.
 export function itemAttrs( item, { map, keys, media, pages = null, label } ) {

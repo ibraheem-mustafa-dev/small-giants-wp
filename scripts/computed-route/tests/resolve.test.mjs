@@ -24,10 +24,12 @@ test( 'container padding-top: one side of a box inside a tier object', () => {
 	assert.deepEqual( r.writes, [ { attr: 'padding', value: { mobile: { top: '56px' }, desktop: { top: '104px' } }, merge: 'deep' } ] );
 } );
 
+// A background image is the uploaded attachment, found in the media map by the file it names (FR-48-39).
+const MEDIA = { map: { sites: { 'acme-test': { files: [ { asset: 'sites/acme/handoff/assets/a.jpg', id: 1, url: 'https://cdn.test/a.jpg' }, { asset: 'sites/acme/handoff/assets/b.jpg', id: 2, url: 'https://cdn.test/b.jpg' } ] } } }, site: 'acme-test', origin: 'https://x.test' };
 test( 'container background image: one flat_sibling attribute per tier', () => {
-	const r = resolve( { block: 'sgs/container', slot: '', prop: 'background-image', perWidth: { 1440: 'url("https://x.test/a.jpg")', 375: 'url("https://x.test/b.jpg")' } },
-		{ db, snapshot, calibration: cal( { backgroundImage: { slot: '', property: 'background-image' }, backgroundImageTablet: { slot: '', property: 'background-image' }, backgroundImageMobile: { slot: '', property: 'background-image' } } ) } );
-	assert.deepEqual( r.writes.map( ( w ) => [ w.attr, w.value.url ] ).sort(), [ [ 'backgroundImage', 'https://x.test/a.jpg' ], [ 'backgroundImageMobile', 'https://x.test/b.jpg' ] ] );
+	const r = resolve( { block: 'sgs/container', slot: '', prop: 'background-image', perWidth: { 1440: 'url("https://x.test/assets/a.jpg")', 375: 'url("https://x.test/assets/b.jpg")' } },
+		{ db, snapshot, calibration: cal( { backgroundImage: { slot: '', property: 'background-image' }, backgroundImageTablet: { slot: '', property: 'background-image' }, backgroundImageMobile: { slot: '', property: 'background-image' } } ), media: MEDIA } );
+	assert.deepEqual( r.writes.map( ( w ) => [ w.attr, w.value.url ] ).sort(), [ [ 'backgroundImage', 'https://cdn.test/a.jpg' ], [ 'backgroundImageMobile', 'https://cdn.test/b.jpg' ] ] );
 } );
 
 test( 'a colour snaps to the palette slug', () => {

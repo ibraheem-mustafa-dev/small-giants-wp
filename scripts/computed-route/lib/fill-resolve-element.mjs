@@ -203,6 +203,17 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		if ( ! Object.keys( draft ).length ) {
 			continue;
 		}
+		// A background photo the block holds as its picture (lib/fill-media.mjs::mediaDecisions, tag `background`) is that
+		// setting's value: the element's `background-image` is settled by it, not a row the block has no setting for.
+		const placed = ! layer && '' === target.slot && 'background-image' === prop ? st.pictures?.get( st.flat[ rec.index ] ) : null;
+		if ( placed ) {
+			const urls = Object.keys( draft ).filter( ( w ) => /^url\(/.test( String( draft[ w ] ) ) );
+			urls.length && settled( st, rec, ref, { slot, property: prop, value: valueText( Object.fromEntries( urls.map( ( w ) => [ w, draft[ w ] ] ) ) ), widths: urls.map( Number ), reason: 'row-held', detail: `the block's ${ placed.attr } holds the draft's background photo (attachment ${ placed.id })` } );
+			urls.forEach( ( w ) => delete draft[ w ] );
+			if ( ! Object.keys( draft ).length ) {
+				continue;
+			}
+		}
 		// Spacing ownership (step 3): the parent's gap and the children's margins follow the rendered gaps.
 		if ( ! layer && target.id === gapTarget( st, rec )?.id && GAP_PROPS.includes( prop ) && st.gapSet.has( `${ rec.index }|${ prop }` ) ) {
 			draft = { ...draft, ...Object.fromEntries( Object.entries( st.gapSet.get( `${ rec.index }|${ prop }` ) ).filter( ( [ w ] ) => undefined !== draft[ w ] ) ) };
@@ -263,7 +274,7 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		}
 		const fluid = fluidSamples( st, target, layer, prop );
 		const alternates = layer ? [] : alternateSlots( cal, prop, draft, rec.targets.map( ( t ) => t.slot ), target.slot );
-		const res = resolveProperty( { node: st.flat[ rec.index ], block: rec.name, prop, draft, baseline: baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), slots: [ slot, ...alternates.filter( ( s ) => s !== slot ) ], calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx, siblings: allDrafts, fluid, declaredFluid: layer ? null : declaredFluid( st, target, prop, draft ), declared: layer ? {} : agreedDeclared( st, target, prop, draft, fontPx ), contextAt } );
+		const res = resolveProperty( { node: st.flat[ rec.index ], block: rec.name, prop, draft, baseline: baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), slots: [ slot, ...alternates.filter( ( s ) => s !== slot ) ], calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, media: { ...st.media, origin: st.origin }, fontPx, siblings: allDrafts, fluid, declaredFluid: layer ? null : declaredFluid( st, target, prop, draft ), declared: layer ? {} : agreedDeclared( st, target, prop, draft, fontPx ), contextAt } );
 		const { eq, landed } = 'gap' === res.status && 'no-setting' === res.gap && ! layer ? ratioWrite( st, rec, target, prop, draft, notPlain, { baselineFn, apply, rendered } ) : { eq: null, landed: false };
 		// A maximum height written from the rendered heights replaces the not-plain rows (each width's height is what it
 		// paints) and carries their values on its note; a result that wrote nothing keeps them as rows.

@@ -99,6 +99,16 @@ export function stockEntries( map, site, key ) {
 	return ( map?.sites?.[ recordSite( site ) ]?.files || [] ).filter( ( e ) => e.stock && e.asset === key );
 }
 
+// The one media-map entry a painted address names, or null: a draft file (an image type) or a stock preview. value: the address
+// as the draft paints it (the preview server's own origin allowed); media: { map, site, origin }. An address the map does not
+// hold, or holds as several attachments, names none: the draft's own address is never written as a picture.
+export function pictureEntry( value, media = {} ) {
+	const file = draftPath( value, media.origin );
+	const stock = null === file ? stockKey( value ) : null;
+	const hits = null !== file && /\.(?:png|jpe?g|gif|webp|avif|svg)$/i.test( file ) ? mapEntries( media.map, media.site, file ) : null !== stock ? stockEntries( media.map, media.site, stock ) : [];
+	return 1 === new Set( hits.map( ( h ) => h.id ) ).size ? hits[ 0 ] : null;
+}
+
 // The setting that holds the attachment id for a URL setting, or null when the block declares none.
 export function idSetting( schema, urlAttr ) {
 	const id = /Url$/.test( urlAttr ) ? urlAttr.replace( /Url$/, 'Id' ) : `${ urlAttr }Id`;
