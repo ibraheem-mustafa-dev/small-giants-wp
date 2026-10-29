@@ -25,7 +25,8 @@ import { makeRecorder } from './skeleton-write-record.mjs';
 import { makeUnits } from './skeleton-write-units.mjs';
 import { makeContent } from './skeleton-write-content.mjs';
 import { noRegionProblem } from './skeleton-commerce-refusal.mjs';
-import { modalFrame } from './skeleton-opener.mjs';
+import { modalFrame, modalTargets } from './skeleton-opener.mjs';
+import { modalFrameNode } from './skeleton-modal-frame.mjs';
 import { makeSlotRows } from './skeleton-write-slots.mjs';
 import { siteLinkResolver } from './draft-link.mjs';
 
@@ -379,6 +380,16 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		}
 		made.notes.length && ( rowOf[ p.into ].slotNotes = [ ...( rowOf[ p.into ].slotNotes || [] ), ...made.notes ] );
 	} );
+	// A modal surface's frame look (lib/skeleton-modal-frame.mjs): the `sgs/modal` frame node reads the draft's backdrop, panel and close at
+	// the block's calibrated parts; Fill lifts it out of the post's tree and the site build merges it onto the page's frame by anchor.
+	const frameParts = ! built && R.modalFrame ? cls.modalParts() : null;
+	const frameOf = frameParts ? modalTargets( { pageMap, surfaces: view.surfaces } ).find( ( t ) => t.surface.id === scope?.id ) : null;
+	if ( frameParts ) {
+		const made = modalFrameNode( { db, block: R.modalFrame.block, cal: { settings: calSettings( R.modalFrame.block ) }, parts: frameParts, names: R.modalFrame.names, anchor: frameOf?.anchor ?? null, m, finder } );
+		skeleton.push( made.node );
+		const notes = [ ...made.notes, ...( frameOf ? [] : [ `the ${ surface } modal has no sgs_modal row in the page map, so its frame carries no anchor and no page can take its look` ] ) ];
+		notes.length && rowOf[ m.root.key ] && ( rowOf[ m.root.key ].slotNotes = [ ...( rowOf[ m.root.key ].slotNotes || [] ), ...notes ] );
+	}
 	// A surface the client already built as a post: that post's block tree is the skeleton, so every row is settled by it.
 	rows.forEach( ( x ) => {
 		const top = rootOf( m.byKey[ x.key ] );

@@ -20,8 +20,9 @@ import { filterRail } from './skeleton-filter-rail.mjs';
 import { linkWrite, siteLinkResolver } from './draft-link.mjs';
 import { choiceFlowModel } from './skeleton-choice-flow.mjs';
 import { blockPartSurfaces } from './skeleton-surface-role.mjs';
-import { handlerCloses, handlerOpens, handlerWrites, opensOn, opensOnWrites } from './skeleton-handler-opens.mjs';
+import { closesOn, handlerCloses, handlerOpens, handlerWrites, opensOn, opensOnWrites } from './skeleton-handler-opens.mjs';
 import { modalTargets } from './skeleton-opener.mjs';
+import { modalFrameParts } from './skeleton-modal-frame.mjs';
 import { makeFieldGroups } from './skeleton-field-groups.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
@@ -643,6 +644,23 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const closeKeys = ( e ) => ( facts.repo && facts.client
 		? handlerCloses( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: view.entry( e )?.template.component, handler: handlerOf( e ) } )
 		: new Set() );
+	// The frame parts of a modal surface (lib/skeleton-modal-frame.mjs): its dialog, backdrop and close become the `sgs/modal`
+	// frame's own settings (rules.modalFrame), and the root and the dialog panel unwrap into the post's inner content. Found once.
+	let frameParts;
+	const modalParts = () => {
+		if ( undefined === frameParts ) {
+			const own = scope?.id ? view.surfaces[ scope.id ] : null;
+			frameParts = R.modalFrame && 'modal' === own?.kind
+				? modalFrameParts( { m, closeKeysOf: ( e ) => ( [ 'a', 'button' ].includes( e.tag ) && handlerOf( e ) ? closeKeys( e ) : new Set() ), closes: ( keys ) => closesOn( own, keys ) } )
+				: null;
+		}
+		return frameParts;
+	};
+	const modalFrameRule = ( { e } ) => {
+		const parts = modalParts();
+		const part = parts ? Object.keys( parts ).find( ( k ) => parts[ k ] === e ) : null;
+		return part ? v( 'modalFrame', { action: 'scrim' === part || 'close' === part ? 'absorbed' : 'unwrap', ...( 'scrim' === part || 'close' === part ? { into: m.root.key } : {} ), reason: R.modalFrame.parts[ part ] } ) : null;
+	};
 	// A button or link that opens a drawer surface: its click handler writes a state key one of the drawer's surfaces.json
 	// states holds at true, or the handler is named in the drawer's recorded opener words.
 	const opensDrawer = ( e ) => {
@@ -874,7 +892,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// The verdict for one element, or null.
 	const ruleFor = ( e, parentBlock = null ) => {
 		const x = { e, st: declared( e ), text: all( e ), kidsB: m.blockKids( e ), parentBlock };
-		for ( const rule of [ ...STRUCTURES, ...RULES ] ) {
+		for ( const rule of [ modalFrameRule, ...STRUCTURES, ...RULES ] ) {
 			const out = rule( x );
 			if ( out ) {
 				return out;
@@ -883,5 +901,5 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		return null;
 	};
 
-	return { ruleFor, drawsChildren, declared, iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, filterRail: rail, choiceFlow: flow };
+	return { ruleFor, drawsChildren, declared, modalParts, iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, filterRail: rail, choiceFlow: flow };
 }

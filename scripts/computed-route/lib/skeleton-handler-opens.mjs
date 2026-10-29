@@ -75,3 +75,7 @@ export function handlerCloses( { folder, record, component, handler } ) {
 
 // Whether a fact-record surface opens on one of `keys`: a state of it holds the key at true.
 export const opensOn = ( surface, keys ) => ( surface?.states || [] ).some( ( st ) => Object.entries( st.state_keys || {} ).some( ( [ k, v ] ) => true === v && keys.has( k ) ) );
+
+// Whether a fact-record surface is closed by clearing one of `keys`: a state of it holds the key at true or at a literal
+// (`modal: "size"`), so a handler that writes the key a falsy value (handlerCloses) closes it.
+export const closesOn = ( surface, keys ) => ( surface?.states || [] ).some( ( st ) => Object.entries( st.state_keys || {} ).some( ( [ k, v ] ) => false !== v && null != v && '' !== v && keys.has( k ) ) );

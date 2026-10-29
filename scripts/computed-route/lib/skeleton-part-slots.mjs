@@ -10,6 +10,7 @@ import { LOOSE } from './resolve.mjs';
 import { partHome } from './fill-part-pairing.mjs';
 
 const NTH = /:nth-of-type\((\d+)\)\s*$/;
+const PSEUDO = /::(?:before|after)$/;
 
 // The calibrated slot strings the block's settings hold on the part's descendants: { settings entries' slot and slots }
 // under `homeSlot`, the settings of any other part (a sub-part, never the wrapper and never a state).
@@ -51,8 +52,8 @@ function walk( steps, from, kids ) {
 }
 
 // opener: the absorbed draft element; part: the DB css_element it is; m: the inventory model; finder: the element's
-// finder. Returns { slots: { <calibrated path>: finder }, notes: [text] }.
-export function partSlots( { db, block, cal, part, opener, m, finder } ) {
+// finder; subParts false gives the part's own slot only. Returns { slots: { <calibrated path>: finder }, notes: [text] }.
+export function partSlots( { db, block, cal, part, opener, m, finder, subParts = true } ) {
 	const out = { slots: {}, notes: [] };
 	const home = partHome( db, block, cal, part, null );
 	if ( null === home ) {
@@ -60,7 +61,11 @@ export function partSlots( { db, block, cal, part, opener, m, finder } ) {
 		return out;
 	}
 	const homeSlot = Object.values( cal.settings ).map( ( s ) => s.slot ).find( ( p ) => LOOSE( p ) === home );
-	out.slots[ homeSlot ] = finder( opener );
+	// A part calibrated at a painted layer (`@scrim::before`) is read from its element: the slot names the element.
+	out.slots[ homeSlot.replace( PSEUDO, '' ) ] = finder( opener );
+	if ( ! subParts ) {
+		return out;
+	}
 	const kids = ( e ) => m.kids( e ).filter( ( k ) => ! m.isPart( k ) );
 	for ( const p of subPartPaths( db, block, cal, part, homeSlot ) ) {
 		const steps = p.slice( homeSlot.length + 3 ).split( ' > ' );
