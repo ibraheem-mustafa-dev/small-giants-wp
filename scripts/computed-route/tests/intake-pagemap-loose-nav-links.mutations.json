@@ -1,0 +1,56 @@
+[
+	{
+		"file": "lib/intake-pagemap-surfaces.mjs",
+		"find": "const loose = 'header' === r.kind && 'nav' === s.name && 0 === i ?",
+		"replace": "const loose = false ?",
+		"why": "no header link outside the nav joins the menu"
+	},
+	{
+		"file": "lib/intake-pagemap-surfaces.mjs",
+		"find": "const loose = 'header' === r.kind && 'nav' === s.name && 0 === i ?",
+		"replace": "const loose = 'header' === r.kind && 'nav' === s.name ?",
+		"why": "the loose links join every nav's menu, not the first only"
+	},
+	{
+		"file": "lib/intake-pagemap-surfaces.mjs",
+		"find": "const loose = 'header' === r.kind && 'nav' === s.name && 0 === i ?",
+		"replace": "const loose = 'nav' === s.name && 0 === i ?",
+		"why": "a drawer's loose links join its menu"
+	},
+	{
+		"file": "lib/intake-pagemap-surfaces.mjs",
+		"find": "if ( targets.length && ! read.some( ( it ) => it.targets.some( ( t ) => targets.includes( t ) ) ) ) {",
+		"replace": "if ( targets.length ) {",
+		"why": "a loose link the nav already has is added a second time"
+	},
+	{
+		"file": "lib/intake-pagemap-surfaces.mjs",
+		"find": "if ( targets.length && ! read.some(",
+		"replace": "if ( ! read.some(",
+		"why": "a loose link that reaches no page is added as an item"
+	},
+	{
+		"file": "lib/intake-pagemap-loose-links.mjs",
+		"find": "&& ! ancestors( a ).some( ( up ) => 'nav' === up.name || 'sc-for' === up.name )",
+		"replace": "&& ! ancestors( a ).some( ( up ) => 'nav' === up.name )",
+		"why": "a link inside an sc-for list is a loose link"
+	},
+	{
+		"file": "lib/intake-pagemap-loose-links.mjs",
+		"find": "&& ! descendants( a ).some( ( k ) => [ 'svg', 'img' ].includes( k.name ) )",
+		"replace": "",
+		"why": "a link holding an icon is a loose link"
+	},
+	{
+		"file": "lib/intake-pagemap-loose-links.mjs",
+		"find": "&& sameNavLook( a, model, declaredOf, parentOf ) );",
+		"replace": ");",
+		"why": "every header link outside the nav is a loose link, whatever its look"
+	},
+	{
+		"file": "lib/intake-pagemap-loose-links.mjs",
+		"find": "const parentOf = ( n ) => ( n.parent && '#root' !== n.parent.name ? n.parent : null );",
+		"replace": "const parentOf = () => null;",
+		"why": "the look is not inherited from the cluster a link sits in"
+	}
+]

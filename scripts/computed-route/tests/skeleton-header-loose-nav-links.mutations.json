@@ -1,0 +1,86 @@
+[
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "'a' === e.tag && 'header' === surface.kind && R.navigationLink &&",
+		"replace": "'a' === e.tag && R.navigationLink &&",
+		"why": "a link of any surface (a drawer's) joins the navigation"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "R.navigationLink && ! kidsB.length && ! hasSvg( e ) && m.words( e ) &&",
+		"replace": "R.navigationLink && ! hasSvg( e ) && m.words( e ) &&",
+		"why": "a link holding elements joins the navigation"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "R.navigationLink && ! kidsB.length && ! hasSvg( e ) && m.words( e ) &&",
+		"replace": "R.navigationLink && ! kidsB.length && m.words( e ) &&",
+		"why": "a link with an icon joins the navigation"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "R.navigationLink && ! kidsB.length && ! hasSvg( e ) && m.words( e ) &&",
+		"replace": "R.navigationLink && ! kidsB.length && ! hasSvg( e ) &&",
+		"why": "a link with no words joins the navigation"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "&& ! ( e.membership || [] ).some( ( x ) => 'sc-for' === x.kind )",
+		"replace": "",
+		"why": "a link inside a list joins the navigation"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "return nav && ( realHref( e ) || handlerOf( e ) ) && looksLikeNavLink( e, nav )",
+		"replace": "return nav && looksLikeNavLink( e, nav )",
+		"why": "a link with no destination joins the navigation"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "return nav && ( realHref( e ) || handlerOf( e ) ) && looksLikeNavLink( e, nav )",
+		"replace": "return nav && ( realHref( e ) || handlerOf( e ) )",
+		"why": "any link outside the nav joins it, whatever its look"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "return nav && ( realHref( e ) || handlerOf( e ) ) && looksLikeNavLink( e, nav ) ? v( 'navigationLink', { action: 'absorbed', into: nav.key } ) : null;",
+		"replace": "return nav && ( realHref( e ) || handlerOf( e ) ) && looksLikeNavLink( e, nav ) ? v( 'navigationLink', { action: 'absorbed', into: 'Root/1#0' } ) : null;",
+		"why": "the link is absorbed into the wrong element"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "return sameNavLook( e, model, declared, ( x ) => m.byKey[ x.parentKey ], R.navigationLink.properties );",
+		"replace": "return sameNavLook( e, model, declared, () => null, R.navigationLink.properties );",
+		"why": "size, case and tracking are not inherited from the cluster the link sits in"
+	},
+	{
+		"file": "lib/nav-link-look.mjs",
+		"find": "return !! mine && mine === inheritedDecl( b, p, declaredOf, parentOf );",
+		"replace": "return mine === inheritedDecl( b, p, declaredOf, parentOf );",
+		"why": "two links that set no look at all are the same look"
+	},
+	{
+		"file": "lib/nav-link-look.mjs",
+		"find": "return !! mine && mine === inheritedDecl( b, p, declaredOf, parentOf );",
+		"replace": "return !! mine;",
+		"why": "any declared look is the nav links' look"
+	},
+	{
+		"file": "data/skeleton-decisions.json",
+		"find": "\"properties\": [ \"font-size\", \"text-transform\", \"letter-spacing\" ],",
+		"replace": "\"properties\": [ \"text-transform\", \"letter-spacing\" ],",
+		"why": "the size is not part of the look"
+	},
+	{
+		"file": "data/skeleton-decisions.json",
+		"find": "\"properties\": [ \"font-size\", \"text-transform\", \"letter-spacing\" ],",
+		"replace": "\"properties\": [ \"font-size\", \"letter-spacing\" ],",
+		"why": "the case is not part of the look"
+	},
+	{
+		"file": "data/skeleton-decisions.json",
+		"find": "\"properties\": [ \"font-size\", \"text-transform\", \"letter-spacing\" ],",
+		"replace": "\"properties\": [ \"font-size\", \"text-transform\" ],",
+		"why": "the tracking is not part of the look"
+	}
+]

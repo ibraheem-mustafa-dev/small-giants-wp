@@ -303,7 +303,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	// sibling it follows in the document, so Fill's width gate can hide each branch on the other's widths.
 	function buildChildren( e, parentBlock, list = undefined, withWide = ! list ) {
 		const units = unitsOf( e, list );
-		const build = ( u ) => ( 'brand' === u.type ? buildBrand( u.els ) : 'icons' === u.type ? buildIcons( u.els, u.parent ) : 'list' === u.type ? buildList( u.els ) : buildNode( u.els[ 0 ], parentBlock ) );
+		const build = ( u ) => ( 'brand' === u.type ? buildBrand( u.els, u.logo ) : 'icons' === u.type ? buildIcons( u.els, u.parent ) : 'list' === u.type ? buildList( u.els ) : buildNode( u.els[ 0 ], parentBlock ) );
 		const wide = withWide ? m.widthKids( e ) : [];
 		if ( ! wide.length ) {
 			return units.flatMap( build ).filter( Boolean );

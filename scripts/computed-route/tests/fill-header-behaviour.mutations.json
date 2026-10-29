@@ -1,0 +1,152 @@
+[
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "applyHeaderBehaviour( { n, t, reads, flat, out, where, hasAttr } );",
+		"replace": "",
+		"why": "motionWrites never calls the header writer"
+	},
+	{
+		"file": "lib/fill-header-behaviour.mjs",
+		"find": "if ( ! reads || '' !== ( t.slot ?? '' ) || ! isHeaderBlock( n.name, hasAttr ) ) {",
+		"replace": "if ( ! reads || ! isHeaderBlock( n.name, hasAttr ) ) {",
+		"why": "a header part (not its root) is written as the header"
+	},
+	{
+		"file": "lib/fill-header-behaviour.mjs",
+		"find": "if ( ! reads || '' !== ( t.slot ?? '' ) || ! isHeaderBlock( n.name, hasAttr ) ) {",
+		"replace": "if ( ! reads || '' !== ( t.slot ?? '' ) ) {",
+		"why": "every block's root is written as a header"
+	},
+	{
+		"file": "lib/fill-header-behaviour.mjs",
+		"find": "export const isHeaderBlock = ( block, hasAttr ) => !! hasAttr?.( block, 'headerSticky' ) && !! hasAttr?.( block, 'headerShrink' );",
+		"replace": "export const isHeaderBlock = ( block, hasAttr ) => !! hasAttr?.( block, 'headerSticky' ) || !! hasAttr?.( block, 'headerShrink' );",
+		"why": "a block with only one of the two settings is a header"
+	},
+	{
+		"file": "lib/fill-header-behaviour.mjs",
+		"find": "if ( JSON.stringify( node.attributes?.[ attr ] ) === JSON.stringify( value ) ) {\n\t\t\treturn;\n\t\t}",
+		"replace": "",
+		"why": "a value the node already holds is written again"
+	},
+	{
+		"file": "lib/fill-header-behaviour.mjs",
+		"find": "const PINS = /^(?:sticky|fixed)$/;",
+		"replace": "const PINS = /^sticky$/;",
+		"why": "a fixed header is not pinned"
+	},
+	{
+		"file": "lib/fill-header-behaviour.mjs",
+		"find": "const PINS = /^(?:sticky|fixed)$/;",
+		"replace": "const PINS = /^(?:sticky|fixed|relative)$/;",
+		"why": "a relative header is pinned"
+	},
+	{
+		"file": "lib/fill-header-behaviour.mjs",
+		"find": "drawn.filter( ( w ) => snap( w ).position )",
+		"replace": "drawn",
+		"why": "a width with no position read counts as not pinned"
+	},
+	{
+		"file": "lib/fill-header-behaviour.mjs",
+		"find": "const drawn = READ_WIDTHS.filter( ( w ) => snap( w ) && ! snap( w ).missing );",
+		"replace": "const drawn = READ_WIDTHS.filter( ( w ) => snap( w ) );",
+		"why": "a width the header is not drawn at is read"
+	},
+	{
+		"file": "lib/fill-header-behaviour.mjs",
+		"find": "scrolled( w ).rest.height - scrolled( w ).scrolled.height >= SHRINK_MIN_PX",
+		"replace": "scrolled( w ).rest.height !== scrolled( w ).scrolled.height",
+		"why": "a header that grows or moves by rounding is a shrink"
+	},
+	{
+		"file": "lib/fill-header-behaviour.mjs",
+		"find": "scrolled( w ).rest.height - scrolled( w ).scrolled.height >= SHRINK_MIN_PX",
+		"replace": "scrolled( w ).rest.height - scrolled( w ).scrolled.height > SHRINK_MIN_PX",
+		"why": "a drop of exactly one pixel is not a shrink"
+	},
+	{
+		"file": "lib/fill-header-behaviour.mjs",
+		"find": "const SHRINK_MIN_PX = 1;",
+		"replace": "const SHRINK_MIN_PX = 0.1;",
+		"why": "box rounding counts as a shrink"
+	},
+	{
+		"file": "lib/fill-header-behaviour.mjs",
+		"find": "null !== at && undefined !== at && undefined === node.attributes?.scrolledOffset && hasAttr( n.name, 'scrolledOffset' ) &&",
+		"replace": "null !== at && undefined !== at && hasAttr( n.name, 'scrolledOffset' ) &&",
+		"why": "the probe's distance replaces the one the code states"
+	},
+	{
+		"file": "lib/fill-header-behaviour.mjs",
+		"find": "const read = READ_WIDTHS.filter( ( w ) => scrolled( w ) );",
+		"replace": "const read = drawn.filter( ( w ) => scrolled( w ) );",
+		"why": "the scrolled read needs a resting snapshot of its own"
+	},
+	{
+		"file": "lib/fill-header-behaviour.mjs",
+		"find": "if ( hasAttr( n.name, 'surfaceBlur' ) ) {",
+		"replace": "if ( true ) {",
+		"why": "a header with no blur setting is written one"
+	},
+	{
+		"file": "lib/fill-header-behaviour.mjs",
+		"find": "const widest = [ ...drawn ].reverse().find( ( w ) => rest[ w ] );",
+		"replace": "const widest = drawn.find( ( w ) => rest[ w ] );",
+		"why": "the narrowest width's blur stands, not the widest"
+	},
+	{
+		"file": "lib/fill-header-behaviour.mjs",
+		"find": "others.length && gap(",
+		"replace": "false && gap(",
+		"why": "a blur that differs between widths is not raised"
+	},
+	{
+		"file": "lib/fill-header-behaviour.mjs",
+		"find": "const only = read.find( ( w ) => blurOf( scrolled( w ).scrolled.backdropFilter ) );",
+		"replace": "const only = null;",
+		"why": "a blur that appears only on scroll is silent"
+	},
+	{
+		"file": "lib/fill-header-behaviour.mjs",
+		"find": "return m && Number( m[ 1 ] ) > 0 ? `${ Number( m[ 1 ] ) }px` : null;",
+		"replace": "return m ? `${ Number( m[ 1 ] ) }px` : null;",
+		"why": "a zero blur is a blur"
+	},
+	{
+		"file": "lib/fill-header-behaviour.mjs",
+		"find": "if ( ! TIERS.some( ( [ , w ] ) => held[ w ] ) ) {\n\t\treturn null;\n\t}",
+		"replace": "",
+		"why": "a behaviour that holds at no tier is written all off"
+	},
+	{
+		"file": "lib/fill-header-behaviour.mjs",
+		"find": "if ( undefined === held[ w ] ) {\n\t\t\tcontinue;\n\t\t}",
+		"replace": "",
+		"why": "a width that was not read counts as not held"
+	},
+	{
+		"file": "lib/fill-header-behaviour.mjs",
+		"find": "if ( 'off' === want || 'desktop' === tier || inherited !== want ) {",
+		"replace": "if ( 'off' === want || 'desktop' === tier ) {",
+		"why": "a narrower tier that holds again beneath one that does not is left off"
+	},
+	{
+		"file": "lib/fill-header-behaviour.mjs",
+		"find": "if ( 'off' === want || 'desktop' === tier || inherited !== want ) {",
+		"replace": "if ( 'desktop' === tier || inherited !== want ) {",
+		"why": "a tier that does not hold is left to inherit"
+	},
+	{
+		"file": "lib/fill-header-behaviour.mjs",
+		"find": "if ( 'off' === want || 'desktop' === tier || inherited !== want ) {",
+		"replace": "if ( true ) {",
+		"why": "every tier is written whatever it inherits"
+	},
+	{
+		"file": "lib/fill-header-behaviour.mjs",
+		"find": ".flatMap( ( n ) => n.targets.filter( ( t ) => '' === ( t.slot ?? '' ) ).map( ( t ) => t.id ) );",
+		"replace": ".flatMap( ( n ) => n.targets.map( ( t ) => t.id ) );",
+		"why": "the scrolled read covers a header's parts as well as its root"
+	}
+]

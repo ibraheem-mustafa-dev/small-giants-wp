@@ -7,6 +7,7 @@ import { brandOwnsAddress } from './brand-registry.mjs';
 import { linkWrite } from './draft-link.mjs';
 import { isMarker } from './skeleton-rules.mjs';
 import { finish, W } from './skeleton-classify.mjs';
+import { specHit } from './skeleton-facts.mjs';
 
 export const LOGO_HANDOVER = { owner: 'site-info', kind: 'presence', detail: 'the logo image: a logo block\'s image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor' };
 
@@ -51,6 +52,9 @@ export function makeUnits( ctx ) {
 		const gridList = 'grid' === parent?.display && span.length === list.length;
 		return links.length >= minLinks && ( m.stacked( links ) || gridList ) && ! removedBy( span[ 0 ] ) ? span : [];
 	};
+	// The logo image among a typed brand name's siblings: an image whose file name, alt text or class says it is the brand mark
+	// (decisions.logoImage), or whose alt text is the site name. The image is the logo, so the words beside it are not one.
+	const logoImageAmong = ( list ) => list.find( ( k ) => 'img' === k.tag && ( specHit( facts.decisions.logoImage, `${ k.attrs?.srcBasename || '' } ${ k.attrs?.alt || '' } ${ k.attrs?.class || '' }` ) || ( k.attrs?.alt || '' ).trim().toLowerCase() === facts.siteName.toLowerCase() ) ) ?? null;
 	const unitsOf = ( e, list = m.blockKids( e ) ) => {
 		const out = [];
 		for ( let i = 0; i < list.length; ) {
@@ -58,7 +62,7 @@ export function makeUnits( ctx ) {
 			const icons = brand ? [] : cls.iconRun( list, i, e );
 			const run = brand || icons.length ? [] : linkRun( list, i, e );
 			if ( brand ) {
-				out.push( { type: 'brand', els: brand } );
+				out.push( { type: 'brand', els: brand, logo: logoImageAmong( list ) } );
 				i += brand.length;
 			} else if ( icons.length ) {
 				out.push( { type: 'icons', els: icons, parent: e } );
@@ -74,8 +78,15 @@ export function makeUnits( ctx ) {
 		return out;
 	};
 
-	function buildBrand( els ) {
+	// A typed brand name beside a logo image (`logo`) is dropped: the image is the logo, and the words are the accepted
+	// difference between a typed and a pictured wordmark.
+	function buildBrand( els, logo = null ) {
 		const [ first, ...rest ] = els;
+		if ( logo ) {
+			const reason = `typed brand name "${ els.map( m.words ).join( ' ' ) }" beside the logo image ${ logo.key }: the logo image is the logo, so the typed words are dropped (an accepted difference)`;
+			els.forEach( ( e ) => record( e, { action: 'remove', reason, confidence: 1, candidates: [] }, { unit: 'brand' } ) );
+			return null;
+		}
 		const r = cls.classify( first, null, { typedBrand: true } );
 		const node = base( first, r.candidates[ 0 ].block, {} );
 		node.handover = [ LOGO_HANDOVER ];
