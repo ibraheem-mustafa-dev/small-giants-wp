@@ -11,6 +11,8 @@
 // run saved before marking it) is marked and rebuilt. A rebuild never overwrites content a person changed since the build saved it.
 import fs from 'fs';
 import path from 'path';
+import { COMMERCE_ROLES } from './skeleton-commerce-region.mjs';
+import { commerceRefusal, commerceRoles, rowCommerceRole } from './skeleton-commerce-refusal.mjs';
 import { LAYOUT_TYPES, SHOP_TYPES, boundMenu, hasPost, isAccountRow, orderRows, pageTreeFor, parentRow, rowKey, treeFor, treeHash, wpType } from './site-build-map.mjs';
 import { commonChain, copyFile, copySource, copyTree, pageTemplateOf, readShell, rowsOf, servedTemplates, splitShell } from './template-copies.mjs';
 import { addressOf, desiredMenus, menuLocation } from './site-build-menus.mjs';
@@ -170,6 +172,11 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 			continue;
 		}
 		const { tree, source } = pageTreeFor( repo, client, row, menuIds );
+		const noRegion = 'placeholder' !== source && commerceRefusal( { role: rowCommerceRole( row ), tree, roles: commerceRoles(), what: key } );
+		if ( noRegion ) {
+			problems.push( `${ key }: ${ noRegion }` );
+			continue;
+		}
 		const hash = treeHash( tree );
 		const binds = LAYOUT_TYPES[ row.postType ] && boundMenu( LAYOUT_TYPES[ row.postType ], Object.keys( menuIds ) );
 		const unbound = 'placeholder' === source && [ 'header', 'drawer' ].includes( LAYOUT_TYPES[ row.postType ] ) && wanted.menus[ binds ] && ! menuIds[ binds ];
@@ -243,6 +250,11 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 	}
 	let hashes = { ...( state.templateHashes || {} ) };
 	for ( const [ slug, pick ] of builders ) {
+		const noRegion = commerceRefusal( { role: COMMERCE_ROLES[ slug ], tree: pick.tree, roles: commerceRoles(), what: `the ${ slug } template (${ pick.source })` } );
+		if ( noRegion ) {
+			problems.push( `${ pick.row ? rowKey( pick.row ) : `template:${ slug }` }: ${ noRegion }` );
+			continue;
+		}
 		const hash = treeHash( pick.tree );
 		const saved = ( state.customTemplates || [] ).includes( slug );
 		// A recorded hash with no saved copy is a build that stopped before it saved: built again.

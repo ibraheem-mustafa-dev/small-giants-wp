@@ -26,6 +26,7 @@ import { readDraft } from './lib/fill-read.mjs';
 import { stateOpener, readUrlOf, refusalRows, openedAt, describeWays } from './lib/fill-open.mjs';
 import { widthStateKeys } from './lib/state-reach.mjs';
 import { openerRefusals } from './lib/fill-opener-refusals.mjs';
+import { surfaceRefusal } from './lib/skeleton-commerce-refusal.mjs';
 import { inputHashes, readSetFile } from './lib/census-reads.mjs';
 import { fillTree } from './lib/fill-resolve.mjs';
 import { fillStates } from './lib/fill-state.mjs';
@@ -136,6 +137,10 @@ export async function fillSurface( o ) {
 	const problems = [ ...skeletonProblems( authored ), ...lintSkeleton( authored, db, path.basename( o.skeleton ) ) ];
 	if ( problems.length ) {
 		throw new Error( `the skeleton is not valid (R-47-10):\n- ${ problems.join( '\n- ' ) }` );
+	}
+	const noRegion = surfaceRefusal( { repo, client: o.client, entry, tree: authored, surface: o.surface } );
+	if ( noRegion ) {
+		throw new Error( noRegion );
 	}
 	const skeleton = expandSiteInfoRows( authored );
 	const outDir = path.resolve( o.out || path.join( buildDir, 'qa', 'fill', o.surface, stamp() ) );

@@ -1,0 +1,16 @@
+[
+	{"file": "lib/skeleton-commerce-refusal.mjs", "find": "if ( ! commerce?.role || region?.key ) {", "replace": "if ( true ) {", "why": "a commerce-role surface with no region raises a problem"},
+	{"file": "lib/skeleton-commerce-refusal.mjs", "find": "if ( ! commerce?.role || region?.key ) {", "replace": "if ( region?.key ) {", "why": "a surface with no commerce role raises none"},
+	{"file": "lib/skeleton-commerce-refusal.mjs", "find": "if ( ! commerce?.role || region?.key ) {", "replace": "if ( ! commerce?.role ) {", "why": "a found region raises none"},
+	{"file": "lib/skeleton-commerce-refusal.mjs", "find": "const why = region?.note ? region.note : 'no element of the draft reads as it';", "replace": "const why = 'no element of the draft reads as it';", "why": "a region found twice names its note"},
+	{"file": "lib/skeleton-commerce-refusal.mjs", "find": "n?.name === block || treeHoldsBlock( n?.innerBlocks, block )", "replace": "n?.name === block", "why": "a region block at any depth is held"},
+	{"file": "lib/skeleton-commerce-refusal.mjs", "find": "if ( ! role || ! block || treeHoldsBlock( tree, block ) ) {", "replace": "if ( true ) {", "why": "a tree with no region block is refused"},
+	{"file": "lib/skeleton-commerce-refusal.mjs", "find": "if ( ! role || ! block || treeHoldsBlock( tree, block ) ) {", "replace": "if ( ! role || ! block ) {", "why": "a tree holding the region block is not refused"},
+	{"file": "lib/skeleton-commerce-refusal.mjs", "find": "if ( ! role || ! block || treeHoldsBlock( tree, block ) ) {", "replace": "if ( ! role || treeHoldsBlock( tree, block ) ) {", "why": "a role the rule gives no block is not refused"},
+	{"file": "lib/skeleton-commerce-refusal.mjs", "find": "export const rowCommerceRole = ( row ) => ( isAccountRow( row ) ? 'account' : null );", "replace": "export const rowCommerceRole = ( row ) => 'account';", "why": "only the account page has a row role"},
+	{"file": "lib/skeleton-commerce-refusal.mjs", "find": "return commerce ? commerceRefusal( { role: commerce.role, tree, roles: commerceRoles(), what: `surface \"${ surface }\"` } ) : null;", "replace": "return null;", "why": "Fill refuses a commerce surface with no region block"},
+	{"file": "lib/skeleton-commerce-refusal.mjs", "find": "fs.existsSync( mapFile ) ? JSON.parse( fs.readFileSync( mapFile, 'utf8' ) ) : []", "replace": "[]", "why": "the page map names the account page's role"},
+	{"file": "lib/skeleton-propose.mjs", "find": "...[ noRegionProblem( { surface, commerce, region: cls.commerceRegion } ) ].filter( Boolean )", "replace": "", "why": "the skeleton writer raises the no-region problem"},
+	{"file": "lib/site-build-plan.mjs", "find": "const noRegion = 'placeholder' !== source && commerceRefusal(", "replace": "const noRegion = false && commerceRefusal(", "why": "the site build refuses the account page with no region"},
+	{"file": "lib/site-build-plan.mjs", "find": "const noRegion = commerceRefusal( { role: COMMERCE_ROLES[ slug ],", "replace": "const noRegion = null && commerceRefusal( { role: COMMERCE_ROLES[ slug ],", "why": "the site build refuses a shop template copy with no region"}
+]
