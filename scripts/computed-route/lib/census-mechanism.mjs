@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { familyOf, physicalOf, isCssProperty } from './css-families.mjs';
 import { classify, loadRules } from './fill-census.mjs';
 import { mapResolverGap } from './gap-classes.mjs';
+import { boxDuplicates, walkerArtefacts } from './census-unassessed.mjs';
 
 const VOCAB = JSON.parse( fs.readFileSync( path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'data', 'census-mechanisms.json' ), 'utf8' ) );
 const FILL_STATE = VOCAB.fillStatePatterns.map( ( p ) => new RegExp( p, 'i' ) );
@@ -194,11 +195,26 @@ function fillClassOf( rule, fill ) {
 	return { fillClass: rule?.frClass ?? null, fillCandidate: !! rule?.candidate };
 }
 
+// The `ref → parent ref` map of a Fill run's tree.
+export function refParents( tree ) {
+	const out = new Map();
+	const walk = ( nodes, parent ) => {
+		for ( const n of Array.isArray( nodes ) ? nodes : [] ) {
+			const ref = String( n.attributes?.className ?? '' ).match( /cr-ref-[\w-]+/ )?.[ 0 ] ?? null;
+			ref && parent && out.set( ref, parent );
+			walk( n.innerBlocks, ref ?? parent );
+		}
+	};
+	walk( tree, null );
+	return out;
+}
+
 const keyOf = ( node, slot, property, state ) => [ node, slot || '', property, state ].join( SEP );
 
 // Joins one surface's walker items to its Fill rows and returns the census rows (one per walker item or unjoined Fill row),
-// each carrying the signature parts. `run` is { unmapped, held, writes, confirm, tree }; `lookup` is `blockLookup`'s result.
-export function surfaceRows( { client, surface, report, run, lookup, rules = loadRules() } ) {
+// each carrying the signature parts. `run` is { unmapped, held, writes, confirm, tree }; `lookup` is `blockLookup`'s result;
+// `siteRecords` is the client's site-option record ids (census-all.mjs::siteOptionRecords).
+export function surfaceRows( { client, surface, report, run, lookup, rules = loadRules(), siteRecords = new Set() } ) {
 	const walk = report ? walkerItems( report ) : { items: [], widths: [], runStates: [], rows: 0, duplicates: 0 };
 	const fill = fillRows( run ?? {} );
 	const blocks = refBlocks( run?.tree );
@@ -208,9 +224,13 @@ export function surfaceRows( { client, surface, report, run, lookup, rules = loa
 		const k = keyOf( f.node, f.slot, f.property, f.state );
 		fillBy.set( k, [ ...( fillBy.get( k ) ?? [] ), f ] );
 	}
-	const wrote = new Set( ( run?.writes ?? [] ).map( ( w ) => keyOf( w.node, w.slot, w.prop, 'default' ) ) );
+	// A write stands for the state it was written for (a hover hold is no resting write) and only while a later write on the
+	// same setting has not replaced it (lib/fill-report.mjs::supersededWrites marks it `supersededBy`).
+	const wrote = new Set( ( run?.writes ?? [] ).filter( ( w ) => null == w.supersededBy ).map( ( w ) => keyOf( w.node, w.slot, w.prop, w.state || 'default' ) ) );
 	const confirmBy = new Map( ( run?.confirm ?? [] ).map( ( c ) => [ keyOf( c.node, c.slot, c.property, c.state ), c.verdict ] ) );
-	const ruleOf = ( f ) => classify( f.reason, 'unmapped' === f.origin ? rules.unmapped : rules.held );
+	// A motion record the site build holds as a site option (siteRecords: the client's site-options.json) is handled whatever the
+	// Fill row says about it (the route fade is written once for the whole site, not as a block layer).
+	const ruleOf = ( f ) => ( 'motion' === f.property && siteRecords.has( String( f.value ) ) ? VOCAB.siteOptionRule : classify( f.reason, 'unmapped' === f.origin ? rules.unmapped : rules.held ) );
 	const slugOf = ( ref, slug, cls ) => slug || blocks.get( ref ) || ( cls && cls.startsWith( 'sgs-' ) ? `sgs/${ cls.slice( 4 ) }` : null );
 	const used = new Set();
 	const rows = [];
@@ -232,8 +252,26 @@ export function surfaceRows( { client, surface, report, run, lookup, rules = loa
 			draft: cell.draft, live: cell.live, confirm: key ? confirmBy.get( key ) ?? null : null
 		} );
 	}
+	// A rule that speaks for the whole page (a reduced-motion rule: a visitor setting, bookkeeping only) is one page-level row per
+	// rule on the surface, counting the elements it reaches, not one row per element.
+	const pageRows = new Map();
 	for ( const f of fill.filter( ( r ) => ! used.has( r ) ) ) {
 		const rule = ruleOf( f );
+		if ( VOCAB.pageRuleClasses.includes( rule?.class ) ) {
+			const id = [ rule.class, f.property, f.value ].join( SEP );
+			if ( pageRows.has( id ) ) {
+				pageRows.get( id ).elements++;
+				continue;
+			}
+			pageRows.set( id, { elements: 1 } );
+			rows.push( {
+				client, surface, element: `${ VOCAB.pageRuleElement } ${ f.value }`, slug: null, slot: '', surfaceLevel: true, elements: 1,
+				kind: 'fill', key: f.property, property: propertyFamily( 'style', f.property, f.value ), state: f.state, runStates: 'all',
+				tier: tierPattern( f.widths, allWidths ), side: VOCAB.fillSides[ f.origin ], reason: rule.class, reasonText: f.reason ?? null, owner: rule.owner ?? null, ...fillClassOf( rule, f ),
+				draft: f.value, live: null, confirm: null, rule: pageRows.get( id )
+			} );
+			continue;
+		}
 		rows.push( {
 			client, surface, element: `${ f.node }${ f.slot ? ` ${ f.slot }` : '' }`, slug: slugOf( f.node, f.block ), slot: f.slot, surfaceLevel: false,
 			kind: 'fill', key: f.property, property: propertyFamily( 'style', f.property, f.value ), state: f.state, runStates: 'all',
@@ -241,7 +279,18 @@ export function surfaceRows( { client, surface, report, run, lookup, rules = loa
 			draft: f.value, live: null, confirm: confirmBy.get( keyOf( f.node, f.slot, f.property, f.state ) ) ?? null
 		} );
 	}
-	return { rows: rows.map( ( r ) => ( { ...r, block: r.surfaceLevel ? VOCAB.surfaceBlockFamily : rowBlockFamily( r.slug, lookup ) } ) ), walk };
+	// A walker row with no Fill row is unassessed only after its measuring artefacts are moved out (lib/census-unassessed.mjs): a
+	// box width or height that repeats a width or height row is dropped, a box row and a motion technique difference are W-walker.
+	const repeats = boxDuplicates( rows );
+	const kept = rows.filter( ( r ) => ! repeats.has( r ) );
+	const parents = refParents( run?.tree );
+	const artefacts = walkerArtefacts( kept, ( ref ) => parents.get( ref ) ?? null );
+	const finish = ( row ) => {
+		const { rule, ...r } = row;
+		const found = artefacts.get( row );
+		return { ...r, ...( rule ? { elements: rule.elements } : {} ), ...( found ? { walkerArtefact: found.reason, walkerBy: found.by } : {} ), block: r.surfaceLevel ? VOCAB.surfaceBlockFamily : rowBlockFamily( r.slug, lookup ) };
+	};
+	return { rows: kept.map( finish ), walk, dropped: repeats.size };
 }
 
 // An element row's block family: the DB's parent-chain root, `unregistered:<slug>` for a slug the framework DB does not hold

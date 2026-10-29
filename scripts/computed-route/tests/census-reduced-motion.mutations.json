@@ -1,0 +1,9 @@
+[
+	{ "file": "lib/census-mechanism.mjs", "find": "if ( VOCAB.pageRuleClasses.includes( rule?.class ) ) {", "replace": "if ( false ) {", "why": "one row per element" },
+	{ "file": "lib/census-mechanism.mjs", "find": "const id = [ rule.class, f.property, f.value ].join( SEP );", "replace": "const id = [ rule.class, f.property ].join( SEP );", "why": "two rules share one row" },
+	{ "file": "lib/census-mechanism.mjs", "find": "const id = [ rule.class, f.property, f.value ].join( SEP );", "replace": "const id = [ rule.class, f.property, f.value, f.node ].join( SEP );", "why": "a row per element and rule" },
+	{ "file": "lib/census-mechanism.mjs", "find": "pageRows.get( id ).elements++;", "replace": "void id;", "why": "the elements are not counted" },
+	{ "file": "lib/census-mechanism.mjs", "find": "...( rule ? { elements: rule.elements } : {} )", "replace": "...{}", "why": "the count never reaches the row" },
+	{ "file": "lib/census-mechanism.mjs", "find": "element: `${ VOCAB.pageRuleElement } ${ f.value }`, slug: null, slot: '', surfaceLevel: true,", "replace": "element: `${ VOCAB.pageRuleElement } ${ f.value }`, slug: null, slot: '', surfaceLevel: false,", "why": "the page row is an element row" },
+	{ "file": "lib/census-mechanism.mjs", "find": "reason: rule.class, reasonText: f.reason ?? null, owner: rule.owner ?? null, ...fillClassOf( rule, f ),\n\t\t\t\tdraft: f.value, live: null, confirm: null, rule: pageRows.get( id )", "replace": "reason: rule.class, reasonText: f.reason ?? null, owner: rule.owner ?? null, fillClass: null, fillCandidate: false,\n\t\t\t\tdraft: f.value, live: null, confirm: null, rule: pageRows.get( id )", "why": "the page row is not held" }
+]

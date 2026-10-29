@@ -51,8 +51,19 @@ function fillRun( qa, surface ) {
 	return { dir, unmapped: readJson( path.join( dir, 'unmapped.json' ) ), held: report.alreadyHeld ?? [], writes: report.writes ?? [], confirm: report.confirm ?? [], tree: fs.existsSync( treeFile ) ? readJson( treeFile ) : [] };
 }
 
-// Every surface's census rows of one client: [ { client, surface, rows, walk, sources } ].
-export function clientRows( client, qa, lookup, rules ) {
+// The motion record ids a client's site build holds as site options (sites/<client>/build/site-options.json, each option's
+// `records`): the route fade and the like, written once for the whole site. An absent or unreadable file holds none.
+export function siteOptionRecords( repo, client ) {
+	const file = path.join( repo, 'sites', client, 'build', 'site-options.json' );
+	try {
+		return new Set( Object.values( readJson( file ) ).flatMap( ( o ) => ( Array.isArray( o?.records ) ? o.records.map( String ) : [] ) ) );
+	} catch {
+		return new Set();
+	}
+}
+
+// Every surface's census rows of one client: [ { client, surface, rows, walk, sources } ]. siteRecords: siteOptionRecords.
+export function clientRows( client, qa, lookup, rules, siteRecords = new Set() ) {
 	const surfaces = [ ...new Set( [ ...dirs( path.join( qa, 'parity', 'out' ) ), ...dirs( path.join( qa, 'fill' ) ), ...dirs( path.join( qa, 'solve' ) ) ] ) ].sort();
 	const out = [];
 	for ( const surface of surfaces ) {
@@ -62,8 +73,8 @@ export function clientRows( client, qa, lookup, rules ) {
 			continue;
 		}
 		const report = reportFile ? readJson( reportFile ) : null;
-		const { rows, walk } = surfaceRows( { client, surface, report, run, lookup, rules } );
-		out.push( { client, surface, rows, walk, sources: { walker: reportFile, fill: run?.dir ?? null } } );
+		const { rows, walk, dropped } = surfaceRows( { client, surface, report, run, lookup, rules, siteRecords } );
+		out.push( { client, surface, rows, walk, dropped, sources: { walker: reportFile, fill: run?.dir ?? null } } );
 	}
 	return out;
 }
@@ -71,9 +82,9 @@ export function clientRows( client, qa, lookup, rules ) {
 const cell = ( v ) => String( v ?? '' ).replace( /\|/g, '\\|' ).replace( /\s+/g, ' ' ).slice( 0, 60 );
 
 // The Markdown table of the groups.
-export function renderTable( { groups, unclassified, surfaces, clients, classes = null } ) {
+export function renderTable( { groups, unclassified, surfaces, clients, classes = null, dropped = 0 } ) {
 	const grouped = groups.reduce( ( n, g ) => n + g.total, 0 );
-	const lines = [ `# Mechanism census`, '', `${ grouped + unclassified.length } rows (${ grouped } in ${ groups.length } groups, ${ unclassified.length } with no signature) across ${ surfaces } surface(s) of ${ clients.join( ', ' ) }.`, '', ...( classes ? [ `Classes (FR-48-65, one per row, ${ classes.total } rows): ${ Object.entries( classes.counts ).sort( ( a, b ) => b[ 1 ] - a[ 1 ] ).map( ( [ c, n ] ) => `${ c } ${ n }` ).join( ', ' ) }.`, '' ] : [] ), `| ${ SIGNATURE_PARTS.join( ' | ' ) } | classes | rows per client | examples (client, surface, element: draft → live) | Fill reason | owner |`, `|${ '---|'.repeat( SIGNATURE_PARTS.length + 5 ) }` ];
+	const lines = [ `# Mechanism census`, '', `${ grouped + unclassified.length } rows (${ grouped } in ${ groups.length } groups, ${ unclassified.length } with no signature) across ${ surfaces } surface(s) of ${ clients.join( ', ' ) }.`, '', ...( dropped ? [ `${ dropped } box width and height row(s) left out as repeats of a width or height row of the same element (lib/census-unassessed.mjs::boxDuplicates).`, '' ] : [] ), ...( classes ? [ `Classes (FR-48-65, one per row, ${ classes.total } rows): ${ Object.entries( classes.counts ).sort( ( a, b ) => b[ 1 ] - a[ 1 ] ).map( ( [ c, n ] ) => `${ c } ${ n }` ).join( ', ' ) }.`, '' ] : [] ), `| ${ SIGNATURE_PARTS.join( ' | ' ) } | classes | rows per client | examples (client, surface, element: draft → live) | Fill reason | owner |`, `|${ '---|'.repeat( SIGNATURE_PARTS.length + 5 ) }` ];
 	for ( const g of groups ) {
 		const cls = Object.entries( g.classes ).map( ( [ c, n ] ) => `${ c } ${ n }` ).join( ', ' );
 		const per = Object.entries( g.byClient ).map( ( [ c, n ] ) => `${ c } ${ n }` ).join( ', ' );
@@ -128,12 +139,12 @@ export function censusAll( { root: repo, clients, db = openDb() } ) {
 	const lookup = blockLookup( db );
 	const rules = loadRules();
 	const all = clients ?? dirs( path.join( repo, 'sites' ) ).filter( ( c ) => fs.existsSync( path.join( repo, 'sites', c, 'build', 'qa' ) ) );
-	const raw = all.flatMap( ( c ) => clientRows( c, path.join( repo, 'sites', c, 'build', 'qa' ), lookup, rules ) );
+	const raw = all.flatMap( ( c ) => clientRows( c, path.join( repo, 'sites', c, 'build', 'qa' ), lookup, rules, siteOptionRecords( repo, c ) ) );
 	const calFor = calibrationReader( repo );
 	const classed = classifyRows( raw.flatMap( ( s ) => s.rows ), { db, calFor, calFiles: calFor.files, freshness: gitFreshness( { repo, db } ) } );
 	const surfaces = raw.map( ( s ) => ( { ...s, rows: classed.filter( ( r ) => r.client === s.client && r.surface === s.surface ) } ) );
 	const { groups, unclassified } = groupRows( classed );
-	return { clients: all, surfaces, groups, unclassified, classes: classCounts( classed ) };
+	return { clients: all, surfaces, groups, unclassified, classes: classCounts( classed ), dropped: raw.reduce( ( n, s ) => n + s.dropped, 0 ) };
 }
 
 if ( process.argv[ 1 ] === fileURLToPath( import.meta.url ) ) {
@@ -142,7 +153,7 @@ if ( process.argv[ 1 ] === fileURLToPath( import.meta.url ) ) {
 		process.exit( 2 );
 	}
 	const result = censusAll( { root, clients: flag( '--clients' )?.split( ',' ) ?? null } );
-	const summary = { clients: result.clients, surfaces: result.surfaces.length, groups: result.groups, unclassified: result.unclassified, classes: result.classes };
+	const summary = { clients: result.clients, surfaces: result.surfaces.length, groups: result.groups, unclassified: result.unclassified, classes: result.classes, dropped: result.dropped };
 	const out = flag( '--out' );
 	if ( out ) {
 		fs.writeFileSync( out, out.endsWith( '.json' ) ? JSON.stringify( summary, null, 1 ) : renderTable( { ...summary, surfaces: result.surfaces.length } ) );

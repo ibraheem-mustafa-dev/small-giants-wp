@@ -1,0 +1,8 @@
+[
+	{ "file": "lib/census-mechanism.mjs", "find": "'motion' === f.property && siteRecords.has( String( f.value ) ) ? VOCAB.siteOptionRule :", "replace": "false ? VOCAB.siteOptionRule :", "why": "a held site option still raises F-behaviour" },
+	{ "file": "lib/census-mechanism.mjs", "find": "'motion' === f.property && siteRecords.has( String( f.value ) )", "replace": "siteRecords.has( String( f.value ) )", "why": "any property with the record's value is handled" },
+	{ "file": "lib/census-mechanism.mjs", "find": "'motion' === f.property && siteRecords.has( String( f.value ) )", "replace": "'motion' === f.property", "why": "every motion row is handled" },
+	{ "file": "census-all.mjs", "find": "o.records.map( String ) : [] )", "replace": "[] : [] )", "why": "no record ids are read" },
+	{ "file": "census-all.mjs", "find": "Object.values( readJson( file ) ).flatMap(", "replace": "[ readJson( file ).sgs_motion_settings ].flatMap(", "why": "only one option is read" },
+	{ "file": "census-all.mjs", "find": "lookup, rules, siteOptionRecords( repo, c ) ) );", "replace": "lookup, rules ) );", "why": "the census never reads the file" }
+]

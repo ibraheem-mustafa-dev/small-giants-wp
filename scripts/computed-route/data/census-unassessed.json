@@ -1,0 +1,14 @@
+{
+	"_meta": {
+		"purpose": "The rules that move a walker row with no Fill row out of `unassessed` (FR-48-65, register S6/D3). Each names a measuring artefact the walker raises, not a verdict on a setting: a box measurement that follows layout rows (or has no explaining row, `box-unexplained`), and a difference in how the draft and the block make a motion (compared by what they paint, not by how they are made). lib/census-unassessed.mjs reads it.",
+		"layoutKeys": "The style keys that move a box: the same set lib/triage.mjs reads for a box row (LAYOUT_KEY)."
+	},
+	"boxKind": "box",
+	"sizeKeys": { "w": "width", "h": "height" },
+	"sizeTolerancePx": 1,
+	"layoutKeys": "^(margin|padding|gap|row-gap|column-gap|width|min-|max-|height|font-size|line-height|display|border-.*width|top|bottom|left|right|flex|grid|align|justify)",
+	"technique": {
+		"motion": [ "transition", "keyframes", "animation" ],
+		"style": "^transition-(property|duration|delay|timing-function|behavior)$"
+	}
+}

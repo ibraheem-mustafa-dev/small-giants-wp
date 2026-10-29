@@ -8,9 +8,17 @@ import { OWNERS } from './gaps-file.mjs';
 
 export const GAP_CLASSES = Object.keys( OWNERS );
 export const I_CLASSES = GAP_CLASSES.filter( ( c ) => c.startsWith( 'I-' ) );
-// Classes a row can carry in a report that has no triage verdict behind it.
+// Classes a row can carry in a report that has no triage verdict behind it. `unassessed` (FR-48-65): a walker row with no Fill
+// row, left after the measuring artefacts are moved out of it to W-walker (lib/census-unassessed.mjs); never a framework gap, and
+// it stays on the surface report until a Fill row assesses it. It is a census class only: gaps.json holds open gaps, so
+// GAP_CLASSES (the owners lib/gaps-file.mjs names) does not list it.
 export const UNASSESSED = 'unassessed';
+export const UNASSESSED_OWNER = 'Spec 48 §3.6';
 export const HELD = 'held';
+// The W-walker reasons a walker row with no Fill row can carry once its artefact is moved out: a box row that follows layout
+// rows (`consequence`) or that no row explains (`box-unexplained`, FR-48-65: U is W-walker until a geometry check explains it),
+// and a difference in how the motion is made (`technique`).
+export const UNASSESSED_ARTEFACTS = [ 'consequence', 'box-unexplained', 'technique' ];
 // A `no-setting` row whose record does not show every check ran: not a framework gap yet, and not a known route fault either.
 export const UNCHECKED = 'W-unchecked';
 // The checks a `no-setting` row must record as run before it may be F-setting (lib/fill-resolve-element.mjs::checksRan).
@@ -26,7 +34,7 @@ export function gapClassOf( cls ) {
 
 // W verdicts that name a measuring artefact (FR-48-65: W-walker). `transient` and `used-value` are artefacts of the walker's
 // reading, triage's own checks beside the FR's list.
-const WALKER_REASONS = [ 'mispaired', 'same-element', 'unmeasured-side', 'no-live-element', 'consequence', 'unmapped-state', 'content', 'transient', 'used-value' ];
+const WALKER_REASONS = [ 'mispaired', 'same-element', 'unmeasured-side', 'no-live-element', 'consequence', 'unmapped-state', 'content', 'transient', 'used-value', 'technique' ];
 // W verdicts where a setting exists that the route did not find, calibrate or write: the resolver's own gaps, the canvas
 // citation, and a setting that triage's fit check listed (`attribute`, `discovered`, `extension`, `enclosing`).
 const ROUTE_REASONS = [ 'resolver-blocked', 'canvas-settable', 'attribute', 'discovered', 'extension', 'enclosing' ];
@@ -60,6 +68,14 @@ export function mapTriage( verdict ) {
 		return result( FIXED[ cls ][ 1 ], false, reason );
 	}
 	throw new Error( `triage class ${ JSON.stringify( cls ) } with reason ${ JSON.stringify( reason ) } is not in FR-48-65's mapping` );
+}
+
+// A walker row with no Fill row whose artefact was moved out of `unassessed` (one of UNASSESSED_ARTEFACTS): W-walker, never a candidate.
+export function mapUnassessedArtefact( reason ) {
+	if ( ! UNASSESSED_ARTEFACTS.includes( reason ) ) {
+		throw new Error( `${ JSON.stringify( reason ) } is not a walker artefact of an unassessed row (${ UNASSESSED_ARTEFACTS.join( ', ' ) })` );
+	}
+	return result( 'W-walker', false, reason );
 }
 
 // The evidence of a `no-setting` row ({ reason, code, checks, unchecked }): the held verdict the equivalence engine returned

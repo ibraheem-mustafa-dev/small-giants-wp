@@ -37,12 +37,14 @@ test( 'the real header data: every row has a signature and the groups name the k
 	const result = censusAll( { root: FIXTURE, clients: [ 'alpha' ], db } );
 	assert.equal( result.unclassified.length, 0 );
 	const rows = result.groups.reduce( ( n, g ) => n + g.total, 0 );
-	assert.equal( rows, 330 );
+	assert.equal( rows, 322 );
 	const has = ( parts ) => result.groups.some( ( g ) => Object.entries( parts ).every( ( [ k, v ] ) => g.parts[ k ] === v ) );
 	// A transform spelled as separate longhands on the live page and as a matrix in the draft is one property family.
 	assert.ok( has( { block: 'sgs/icon', property: 'transform', state: 'hover', side: 'walker-only' } ) );
-	// A paint on an inner part reads as a width and height difference of the icon at two widths only.
-	assert.ok( has( { block: 'sgs/icon', property: 'box:w', tier: '768+1440' } ) );
+	// A paint on an inner part reads as a width and height difference of the icon at two widths only: the width row stays, its
+	// box:w twin is dropped (lib/census-unassessed.mjs::boxDuplicates) and the height has no height row to repeat.
+	assert.ok( has( { block: 'sgs/icon', property: 'width', tier: '768+1440' } ) && has( { block: 'sgs/icon', property: 'box:h', tier: '768+1440' } ) );
+	assert.ok( ! has( { block: 'sgs/icon', property: 'box:w' } ) );
 	// Rows with no element are the surface's own.
 	assert.ok( has( { block: '(surface)', property: 'presence:element' } ) && has( { block: '(surface)', property: 'link:missing' } ) );
 	// A setting the framework lacks, and an inherited hold, keep their Fill reason class.

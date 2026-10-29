@@ -1,0 +1,14 @@
+[
+	{ "file": "lib/written-slot.mjs", "find": "return own || slots[ 0 ] || '';", "replace": "return own;", "why": "a wrapper slot beside a descendant slot gives the wrapper" },
+	{ "file": "lib/written-slot.mjs", "find": "return own || slots[ 0 ] || '';", "replace": "return slots[ 0 ] || own;", "why": "the first descendant beats the calibrated slot" },
+	{ "file": "lib/written-slot.mjs", "find": "! w.state && ! w.slot &&", "replace": "! w.slot &&", "why": "a state setting's write counts" },
+	{ "file": "lib/written-slot.mjs", "find": "! w.state && ! w.slot &&", "replace": "! w.state &&", "why": "a part's write counts" },
+	{ "file": "lib/written-slot.mjs", "find": "! [ 'content', 'motion' ].includes( w.how )", "replace": "true", "why": "content and motion writes count" },
+	{ "file": "lib/written-slot.mjs", "find": "if ( slot ) {\n\t\t\tout.set", "replace": "if ( true ) {\n\t\t\tout.set", "why": "a wrapper setting is recorded with an empty slot" },
+	{ "file": "lib/written-slot.mjs", "find": "[ w.prop ]: slot } );", "replace": "[ w.attr ]: slot } );", "why": "keyed by attribute, not property" },
+	{ "file": "lib/written-slot.mjs", "find": "! p.slot && reads.has( p.ref )", "replace": "reads.has( p.ref )", "why": "part pairs get the block's reads" },
+	{ "file": "lib/written-slot.mjs", "find": "return pairs.map( ( p ) => ( ! p.slot && reads.has( p.ref ) ? { ...p, liveAt: reads.get( p.ref ) } : p ) );", "replace": "return pairs;", "why": "reads never reach the pairs" },
+	{ "file": "lib/pairs.mjs", "find": "p.liveAt && Object.keys( p.liveAt ).length ?", "replace": "false ?", "why": "liveAt never emitted" },
+	{ "file": "lib/pairs.mjs", "find": "p.liveAt && Object.keys( p.liveAt ).length ?", "replace": "p.liveAt ?", "why": "an empty liveAt emitted" },
+	{ "file": "lib/fill-config.mjs", "find": "withLiveReads( walkerPairs( nodes, tree, inventory ), liveReads )", "replace": "walkerPairs( nodes, tree, inventory )", "why": "Fill's config ignores the reads" }
+]

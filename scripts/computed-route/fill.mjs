@@ -65,6 +65,7 @@ import { motionSettled, motionRejudged, transitionListOutcomes } from './lib/fil
 import { stateMap } from './lib/state-map.mjs';
 import { readMediaMap } from './lib/fill-media.mjs';
 import { assertCurrent } from './lib/freshness.mjs';
+import { liveReadSlots } from './lib/written-slot.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -354,7 +355,7 @@ export async function fillSurface( o ) {
 		const steps = sweepSteps( reads.sweep, ( id ) => ( { node: refOf( flat[ Number( id.split( ':' )[ 0 ] ) ] ), slot: id.slice( id.indexOf( ':' ) + 1 ) } ) );
 		const report = fillReport( { client: o.client, surface: o.surface, draft: o.draftDir ? `${ o.draftDir } (served locally)` : url, nodes: nodes.length, targets: nodes.reduce( ( t, n ) => t + n.targets.length, 0 ), ...result, steps, entrances, snapshotPatch: { file: patchFile, entries: states.patchEntries }, sweepSkipped: false === o.sweep } );
 		const divergences = fs.existsSync( ledgerFile ) ? path.relative( outDir, ledgerFile ).split( path.sep ).join( '/' ) : null;
-		const cfg = walkerConfigs( { surface: o.surface, nodes, tree, inventory, draftUrl: readUrl, liveUrl: o.liveUrl, open: o.open || null, opener: walkOpener, divergences, state: Object.keys( entry.states || {} )[ 0 ] || 'opening', walk } );
+		const cfg = walkerConfigs( { surface: o.surface, nodes, tree, inventory, draftUrl: readUrl, liveUrl: o.liveUrl, open: o.open || null, opener: walkOpener, divergences, state: Object.keys( entry.states || {} )[ 0 ] || 'opening', walk, liveReads: liveReadSlots( { writes: result.writes, calFor } ) } );
 		const put = ( name, text ) => fs.writeFileSync( path.join( outDir, name ), text );
 		writeOrigin();
 		// A list host's new children join the tree last: every pass above reads the tree by its skeleton's node indices.

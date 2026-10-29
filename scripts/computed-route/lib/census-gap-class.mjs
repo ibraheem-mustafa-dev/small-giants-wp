@@ -9,8 +9,10 @@ import { fileURLToPath } from 'node:url';
 import { isCssProperty } from './css-families.mjs';
 import { fromCommand, fromFile, isEvidence, renderEvidence } from './gate-evidence.mjs';
 import { LOOSE } from './resolve.mjs';
-import { GAP_CLASSES, HELD, UNASSESSED, ancestorsOf, classify, gapClassOf, instrumentFinding, staleCheck } from './gap-classes.mjs';
+import { GAP_CLASSES, HELD, I_CLASSES, UNASSESSED, ancestorsOf, classify, gapClassOf, instrumentFinding, mapUnassessedArtefact, staleCheck } from './gap-classes.mjs';
 
+// The Fill reason a walker row carries when no Fill row covers it (data/census-mechanisms.json reasonClasses.walkerOnly).
+const VOCAB_WALKER_ONLY = JSON.parse( fs.readFileSync( path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'data', 'census-mechanisms.json' ), 'utf8' ) ).reasonClasses.walkerOnly;
 const UNCALIBRATED_SETTINGS = new RegExp( JSON.parse( fs.readFileSync( path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'data', 'census-mechanisms.json' ), 'utf8' ) ).uncalibratedSettingsPattern );
 
 // The DB-versus-code check per block (memoised): the DB's refresh time against the block's last commit and its uncommitted
@@ -37,10 +39,11 @@ export function gitFreshness( { repo, db } ) {
 	};
 }
 
-// The base class of a census row: { class, candidate }.
+// The base class of a census row: { class, candidate }. A row with no Fill row is W-walker when its measuring artefact was
+// moved out (`walkerArtefact`, lib/census-unassessed.mjs), else `unassessed` (FR-48-65).
 export function baseClass( row ) {
 	if ( ! row.fillClass ) {
-		return { class: UNASSESSED, candidate: false };
+		return row.walkerArtefact ? mapUnassessedArtefact( row.walkerArtefact ) : { class: UNASSESSED, candidate: false };
 	}
 	if ( HELD !== row.fillClass && ! GAP_CLASSES.includes( row.fillClass ) ) {
 		gapClassOf( row.fillClass );
@@ -106,6 +109,8 @@ export function classifyRows( rows, { db, calFor, calFiles = () => null, freshne
 	return rows.map( ( row ) => {
 		const base = baseClass( row );
 		let finding = null;
+		// A row with no Fill row takes its class from G0's freshness only: nothing tried to write its value, so G3 and G4 have no failed write to explain.
+		const unwritten = UNASSESSED === base.class && VOCAB_WALKER_ONLY === row.reason;
 		if ( row.slug && known.get( row.slug ) && isCssProperty( row.key ) && ! [ HELD ].includes( base.class ) ) {
 			const state = 'default' === row.state ? null : row.state;
 			const id = [ row.client, row.surface, row.slug, row.key, state ].join( '\u0001' );
@@ -115,13 +120,18 @@ export function classifyRows( rows, { db, calFor, calFiles = () => null, freshne
 			}
 			finding = memo.get( id );
 		}
-		const c = classify( base, finding );
+		// What G3 and G4 would say of a row with no Fill row is kept beside its class (`gapObserved`), not as its class.
+		const c = classify( base, unwritten && finding ? { ...finding, db: null, calibration: null, attribute: null } : finding );
+		const seen = unwritten && finding ? classify( base, { ...finding, stale: null } ) : null;
+		const observed = seen && I_CLASSES.includes( seen.class ) ? { class: seen.class, via: seen.via ?? null, attribute: seen.attribute ?? null, evidence: seen.evidence ?? null } : null;
 		const evidence = c.evidence ?? ( 'I-calibration' === c.class ? calibrationEvidence( row, calFor( row.client, row.surface, row.slug ), calFiles( row.client, row.surface, row.slug ) ) : null );
-		return { ...row, gapClass: c.class, gapCandidate: !! c.candidate, gapVia: c.via ?? null, gapAttribute: c.attribute ?? null, gapEvidence: evidence ?? null };
+		return { ...row, gapClass: c.class, gapCandidate: !! c.candidate, gapVia: c.via ?? null, gapAttribute: c.attribute ?? null, gapEvidence: evidence ?? null, gapReason: c.reason ?? null, gapObserved: observed };
 	} );
 }
 
-// Row counts per class, I-class rows named: { total, counts, instrument: [ { class, client, surface, block, attribute, property, via, evidence } ] }.
+// Row counts per class, I-class rows named: { total, counts, instrument: [ { class, client, surface, block, attribute, property, via, evidence } ],
+// observed: [ { class, block, attribute, via, evidence, rows } ] }. `observed` lists the settings G3 or G4 found on rows no Fill row covers
+// (an I-class setting nobody tried to write: instrument debt seen, not a class of those rows, never counted in `counts`).
 // A row carries exactly one class, so the counts sum to `total`, the number of rows given (grouped rows and rows with no
 // signature alike); a row without a single class name throws, and so does an I-class row whose evidence is not a command
 // and its output line or a file and key (lib/gate-evidence.mjs: free text is not evidence).
@@ -136,5 +146,11 @@ export function classCounts( rows ) {
 		}
 		counts[ r.gapClass ] = ( counts[ r.gapClass ] ?? 0 ) + 1;
 	}
-	return { total: rows.length, counts, instrument: rows.filter( ( r ) => r.gapClass.startsWith( 'I-' ) ).map( ( r ) => ( { class: r.gapClass, client: r.client, surface: r.surface, block: r.slug, attribute: r.gapAttribute, property: r.key, via: r.gapVia, evidence: r.gapEvidence } ) ) };
+	const seen = new Map();
+	for ( const r of rows.filter( ( x ) => x.gapObserved ) ) {
+		const k = [ r.gapObserved.class, r.slug, r.gapObserved.attribute, r.gapObserved.via ].join( '|' );
+		seen.has( k ) || seen.set( k, { class: r.gapObserved.class, block: r.slug, attribute: r.gapObserved.attribute, via: r.gapObserved.via, evidence: r.gapObserved.evidence, rows: 0 } );
+		seen.get( k ).rows++;
+	}
+	return { total: rows.length, observed: [ ...seen.values() ], counts, instrument: rows.filter( ( r ) => r.gapClass.startsWith( 'I-' ) ).map( ( r ) => ( { class: r.gapClass, client: r.client, surface: r.surface, block: r.slug, attribute: r.gapAttribute, property: r.key, via: r.gapVia, evidence: r.gapEvidence } ) ) };
 }

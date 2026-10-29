@@ -7,6 +7,7 @@ import { skeletonPairs, tplSelector } from './origin-pairs.mjs';
 import { refOf, REF_PREFIX } from './tree.mjs';
 import { openerSource, liveOpenerSource } from './fill-open.mjs';
 import { stateDraftSource, stateLiveSource } from './walker-states.mjs';
+import { withLiveReads } from './written-slot.mjs';
 
 // The widths a generated config walks (the walker's standard run, Spec 48 §3.6 item 2).
 export const WALK_WIDTHS = [ 375, 768, 1440, 1920 ];
@@ -131,13 +132,14 @@ function statesText( walk, roots ) {
 	return [ '\tstates: [', ...walk.states.map( line ), '\t],' ];
 }
 
-// Both files' names and texts: { baseFile, baseText, fullFile, fullText }. The full file is what Solve and the walker run.
-export function walkerConfigs( { surface, nodes, tree, inventory = null, draftUrl, liveUrl, open, opener = null, divergences, state, walk = null } ) {
+// Both files' names and texts: { baseFile, baseText, fullFile, fullText }. The full file is what Solve and the walker run. liveReads
+// (lib/written-slot.mjs::liveReadSlots): the slot each written property is read at on live, carried on the block's pair.
+export function walkerConfigs( { surface, nodes, tree, inventory = null, draftUrl, liveUrl, open, opener = null, divergences, state, walk = null, liveReads = new Map() } ) {
 	const baseFile = `${ surface }.fill-base.mjs`;
 	return {
 		baseFile,
 		baseText: baseConfigText( { surface, draftUrl, liveUrl, open, opener, divergences, state, walk, roots: surfaceRoots( nodes, tree, inventory ) } ),
 		fullFile: `${ surface }.fill.mjs`,
-		fullText: configText( baseFile, surface, walkerPairs( nodes, tree, inventory ) ),
+		fullText: configText( baseFile, surface, withLiveReads( walkerPairs( nodes, tree, inventory ), liveReads ) ),
 	};
 }

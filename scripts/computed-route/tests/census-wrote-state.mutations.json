@@ -1,0 +1,5 @@
+[
+	{"file": "lib/census-mechanism.mjs", "find": "filter( ( w ) => null == w.supersededBy ).map( ( w ) => keyOf( w.node, w.slot, w.prop, w.state || 'default' ) )", "replace": "map( ( w ) => keyOf( w.node, w.slot, w.prop, w.state || 'default' ) )", "why": "a superseded write counts"},
+	{"file": "lib/census-mechanism.mjs", "find": "filter( ( w ) => null == w.supersededBy ).map( ( w ) => keyOf( w.node, w.slot, w.prop, w.state || 'default' ) )", "replace": "filter( ( w ) => null == w.supersededBy ).map( ( w ) => keyOf( w.node, w.slot, w.prop, 'default' ) )", "why": "every write is a resting write"},
+	{"file": "lib/census-mechanism.mjs", "find": "w.prop, w.state || 'default' ) )", "replace": "w.prop, w.state ) )", "why": "a resting write keyed on an undefined state"}
+]
