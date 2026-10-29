@@ -35,6 +35,20 @@ Every row was re-checked by an independent verifier (both halves reproduced from
 | C6 plugin bugs | proven | proven (minus-sign regex run; multi-button fallback read); fx-magnet override proven on live buttons, its counts are rater counts | verifier, main thread (regex) |
 | D1 to D7 measurement | proven | proven except the padding/gap split counts (rater count) | verifier |
 
+## Fix pass status
+
+Rows fixed on `main` reach the sites at the third re-clone (skeleton propose, Fill and site build re-run; Eye Care and Mama's intake re-run for whole loops); plugin rows reach them at the next deploy.
+
+| Row | Status | Commit |
+|---|---|---|
+| C1 box values | fixed: the ladder and the resolver build sides and corners per device through `lib/box-tier.mjs` | `0b7244e7d` |
+| B3 `displayType` overwrite | fixed: a setting whose values show or hide the element read is never a look answer (`lib/resolve.mjs::selectsPresence`) | `0b7244e7d` |
+| C6 plugin bugs | fixed: leading minus kept, fx host promotion zero-specificity (magnet and particles), multi-button mobile inherits tablet; not deployed | `6c13985a9` |
+| A3 single-file draft links | fixed: real entry file, handler buttons, one-row and account routes, handover rows | `fcd8fb42a` |
+| A4 words and lists | fixed: own words as a text child, icon+label one button, quote body and cite, loops read whole (`read-logic.mjs` cap 8 to 60), unreadable option list a hand-over row. **Open:** the Indus brands mega gallery (`fill-list-items.mjs::listItems` not traced) and whether Fill places an `img` icon in the button's icon slot | `fcd8fb42a` |
+| B2 heading levels | fixed | `fcd8fb42a` |
+| B3 wordless labels, B6 labels | fixed: empty label plus aria-label, menu label from the static link text, `viewCartLabel` written | `fcd8fb42a` |
+
 ## A. Working pieces in the right place (the clone does not work)
 
 **A1. Draft buttons that open something open nothing (modals, choice flows, form prefill).** ICA-1, ICA-6, ICA-2, ICA-10. Spec 48 §recognised structures ("Not built: a modal-opened flow's trigger is not proposed on the page that opens it"), Spec 02 `sgs/modal` (opened by its trigger or any link to its anchor, `data-sgs-modal-open`), Spec 48 FR-48-55 scope (every surface the draft shows, modals included). Code: no writer of a modal opener anywhere (`grep sgs-modal-open scripts/computed-route/lib` finds only the checker `lib/site-check-parts.mjs`); the page map knows only `opensFlow` (`lib/intake-pagemap-flow-openers.mjs`). Evidence: Eye Care's size-guide modal post 118 is published and on no page; "Which size am I?" and "Add my prescription" are plain buttons/text; Indus careers "Apply for this role" ×3 are dead buttons (draft `toForm({role, team})`). Fix: generalise the page map's opener to `opens: [{kind, slug}]` (modal, flow, form target), a skeleton rule beside `skeleton-rules.mjs::blockPartOpener` turning a control whose handler writes the target's open state into an `sgs/button` linking `#<anchor>` (with `?param` for a form prefill and `valueFromParam` on the fields), and the `sgs/modal` frame placed once on the page or template that holds the trigger, its backdrop and panel written as the frame's scrim and dialog settings (the draft's dialog body only inside the post). Site-check: `missingFlowRows` covers `sgs_modal` rows, and a walk whose live element is absent is a failed walk, never "ok" (`site-run.mjs`). Covers every client.
