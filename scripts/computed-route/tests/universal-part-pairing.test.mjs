@@ -142,4 +142,5 @@ test( 'MUST FAIL (one draft element is one node\'s): a node and a node inside it
 	assert.equal( sharedElementProblems( twins ).length, 1 );
 	const steps = [ { name: 'sgs/form', innerBlocks: [ { name: 'sgs/form-step', innerBlocks: [ at( 'Root/23#0', 'sgs/heading' ) ] }, { name: 'sgs/form-step', innerBlocks: [ at( 'Root/23#0', 'sgs/heading' ) ] } ] } ];
 	assert.deepEqual( sharedElementProblems( steps ), [] );
+	assert.deepEqual( sharedElementProblems( [ at( 'Root/14#0', 'sgs/button' ), { ...at( 'Root/14#0', 'sgs/button' ), variantKey: 'Root/18#0' } ] ), [] );
 } );
