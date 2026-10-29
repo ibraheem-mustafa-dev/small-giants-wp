@@ -24,7 +24,8 @@ import path from 'path';
 import { loadFacts, decisionsProblems, REPO as CODE_REPO } from './skeleton-facts.mjs';
 import { readDecisions, skeletonDir } from './skeleton-finalise.mjs';
 import { openDb } from './db.mjs';
-import { collapseSkeletons, collapseFlags, collapseMissing, paletteUsage, slimCensus } from './intake-run-collapse.mjs';
+import { collapseFlags, collapseMissing, paletteUsage, slimCensus } from './intake-run-collapse.mjs';
+import { refreshIntakeSkeletons } from './skeleton-rerun.mjs';
 
 const gap = ( construct, draftId, error ) => ( { construct, draftId: String( draftId ?? '' ), error: String( error ?? '' ) } );
 
@@ -127,7 +128,8 @@ export const STAGES = [
 	} ],
 	[ 'breakpoints', ( job ) => {
 		const per = readBreakpoints( { folder: job.folder } );
-		return { breakpoints: per.map( ( { gaps, ...b } ) => b ), gaps: per.flatMap( ( b ) => b.gaps ), note: per.map( ( b ) => `${ b.draft }: ${ b.basis ?? 'no basis' } ${ b.thresholds.map( ( t ) => t.value ).join( '/' ) }` ).join( '; ' ) };
+		ctx.breakpoints = per.map( ( { gaps, ...b } ) => ( void gaps, b ) );
+		return { breakpoints: ctx.breakpoints, gaps: per.flatMap( ( b ) => b.gaps ), note: per.map( ( b ) => `${ b.draft }: ${ b.basis ?? 'no basis' } ${ b.thresholds.map( ( t ) => t.value ).join( '/' ) }` ).join( '; ' ) };
 	} ],
 	[ 'page map', ( job, ctx ) => {
 		const p = proposePageMap( { folder: job.folder, routing: ctx.routing, census: ctx.censusFull } );
@@ -200,26 +202,22 @@ export const STAGES = [
 		const { inventoryStage } = await import( './intake-inventory.mjs' );
 		return inventoryStage( job, ctx );
 	} ],
+	// The browser half of the skeleton step: every surface root opened (a state-opened one through its opener), read at each
+	// width and its inventory saved to sites/<client>/build/intake/inventories. Nothing is proposed here: the proposals read the
+	// fact record, which the facts stage rewrites for the export after this stage, so they run in the `proposals` stage.
 	[ 'skeletons', async ( job, ctx, log ) => {
 		const roots = surfaceRoots( { folder: job.folder, census: ctx.censusFull } );
 		const want = job.surfaces;
 		const surfaces = want ? roots.surfaces.filter( ( s ) => want.includes( s.slug ) || want.includes( s.id ) ) : roots.surfaces;
-		const fw = frameworkFacts( job );
-		let r;
-		try {
-			r = await proposeSkeletons( { folder: job.folder, harPath: job.harPath, surfaces, client: job.client, entry: job.entry, routing: ctx.routing, pageMap: ctx.pageMap ?? null, repo: job.repo, census: ctx.censusFull, db: fw.db, facts: fw.facts ?? null, inventoriesDir: job.inventoriesDir ?? null, log: ( l ) => log( `  ${ l }` ) } );
-		} finally {
-			fw.db.close();
-		}
-		const c = collapseSkeletons( r.skeletons );
-		ctx.skeletonRows = Object.values( c.skeletons ).flatMap( ( s ) => s.rows );
+		const r = await proposeSkeletons( { folder: job.folder, harPath: job.harPath, surfaces, client: job.client, entry: job.entry, routing: ctx.routing, pageMap: ctx.pageMap ?? null, repo: job.repo, census: ctx.censusFull, propose: null, inventoriesDir: job.inventoriesDir ?? null, log: ( l ) => log( `  ${ l }` ) } );
+		ctx.skeletonReads = Object.fromEntries( r.skeletons.map( ( { surface, ...entry } ) => [ surface, entry ] ) );
 		const opened = r.skeletons.filter( ( s ) => s.opened ).map( ( s ) => `${ s.surface } via ${ s.opened.via }` );
 		return {
-			skeletons: c.skeletons, surfaces: { surfaces: roots.surfaces.map( ( { states, ...s } ) => ( void states, s ) ), parts: roots.parts },
+			skeletons: ctx.skeletonReads, surfaces: { surfaces: roots.surfaces.map( ( { states, ...s } ) => ( void states, s ) ), parts: roots.parts },
 			runs: r.runs.map( ( x ) => ( { file: x.file, hash: x.hash, surfaces: x.surfaces, requests: x.requests, proxyAttempts: x.proxyAttempts.length, ms: x.ms } ) ),
 			blocked: r.runs.flatMap( ( x ) => x.blocked ), proxyAttempts: r.runs.reduce( ( n, x ) => n + x.proxyAttempts.length, 0 ),
-			collapse: { skeletons: [ c.before, c.after ], skeletonsWithinSurfaces: c.withinSurfaces }, gaps: [ ...roots.gaps, ...r.gaps ],
-			note: `${ surfaces.length } surfaces, ${ r.gaps.length } gaps, ${ c.before } rows, ${ c.withinSurfaces } after collapsing within surfaces, ${ c.after } across surfaces; opened ${ opened.join( ', ' ) || 'none' }`,
+			gaps: [ ...roots.gaps, ...r.gaps ],
+			note: `${ surfaces.length } surfaces, ${ r.gaps.length } gaps, ${ r.skeletons.length - r.gaps.length } inventories saved; opened ${ opened.join( ', ' ) || 'none' }`,
 		};
 	} ],
 	// FR-48-7: the template, logic and surfaces readers joined into sites/<client>/build/intake/facts.json. The widened
@@ -233,6 +231,24 @@ export const STAGES = [
 		const c = writeFacts( job.factsFile, record );
 		const resolved = job.widths.map( ( w ) => `${ w }px ${ c.perWidth[ w ].resolved }/${ c.holes } (${ c.perWidth[ w ].absent } absent, ${ c.perWidth[ w ].unresolved } unresolved)` ).join( ', ' );
 		return { facts: c, blocked, gaps: record.gaps, note: `${ c.elements } elements, ${ c.holes } holes resolved ${ resolved }, ${ c.widthConditions } width conditions, ${ c.elementsInSurfaces } in surfaces, ${ c.instances } instance keys, ${ c.gaps } gaps in facts.json` };
+	} ],
+	// The skeleton proposals, made from the inventories the skeletons stage saved and with the fact record the facts stage has
+	// just written (the one proposal path, lib/skeleton-rerun.mjs::refreshIntakeSkeletons, which `--rerun-skeletons` also
+	// calls): the run's own routing, page map, breakpoints and motion inventory are its context. A surface whose proposal throws
+	// keeps its entry with `proposalGap` and a gap row; its inventory stays saved, so a re-run proposes it again.
+	[ 'proposals', ( job, ctx ) => {
+		const db = openDb();
+		try {
+			const res = refreshIntakeSkeletons( { intake: { skeletons: ctx.skeletonReads || {}, inventory: { animations: ctx.animations ?? null }, breakpoints: ctx.breakpoints ?? [], pageMap: ctx.pageMap ?? [], routing: ctx.routing ?? null }, client: job.client, db, repo: job.repo, codeRepo: CODE_REPO, inventoriesDir: job.inventoriesDir ?? null } );
+			ctx.skeletonRows = Object.values( res.intake.skeletons ).flatMap( ( s ) => s.rows );
+			return {
+				skeletons: res.intake.skeletons, collapse: { skeletons: [ res.before, res.after ], skeletonsWithinSurfaces: res.withinSurfaces },
+				gaps: res.failed.map( ( f ) => gap( 'skeleton-proposal', f.slug, `${ f.slug }: the proposal failed (${ f.error }); its inventory is saved, so a re-run proposes it again` ) ),
+				note: `${ Object.keys( res.intake.skeletons ).length } surfaces, ${ res.failed.length } proposals failed, ${ res.missing.length } without a saved inventory, ${ res.before } rows, ${ res.withinSurfaces } after collapsing within surfaces, ${ res.after } across surfaces`,
+			};
+		} finally {
+			db.close();
+		}
 	} ],
 	[ 'missing features', async ( job, ctx ) => {
 		const { proposeMissingFeatures } = await import( './intake-missing.mjs' );
@@ -287,7 +303,7 @@ export const STAGES = [
 
 // What each stage must wait for before it starts when stages run side by side (lib/intake-run-worker.mjs): the
 // earlier stages whose context fields it reads (routing: routing; visits and userAgent: replay; censusFull: census;
-// siteInfoFull: site info; flagRows: flags; notDefects: draft defects; skeletonRows: skeletons), or '*' for every earlier
+// siteInfoFull: site info; flagRows: flags; notDefects: draft defects; skeletonReads: skeletons; skeletonRows: proposals), or '*' for every earlier
 // stage applied (the replay top-up reads `blocked`, which the worker gathers as each stage is applied).
 // tests/intake-run-schedule.test.mjs checks each stage's own reads (and the inventory stage's inventoryStage) against
 // this list.
@@ -304,7 +320,8 @@ export const STAGE_NEEDS = Object.freeze( {
 	inventory: [ 'routing', 'census', 'draft defects', 'page map' ],
 	skeletons: [ 'routing', 'census', 'page map' ],
 	facts: [ 'inventory', 'skeletons' ],
-	'missing features': [ 'census', 'skeletons' ],
+	proposals: [ 'routing', 'breakpoints', 'page map', 'inventory', 'skeletons', 'facts' ],
+	'missing features': [ 'census', 'proposals' ],
 	'replay top-up': [ '*' ],
 	notices: [],
 } );

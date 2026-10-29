@@ -104,7 +104,7 @@ test( 'a full run writes a schema-valid intake.json, review.md and page-map.json
 	assert.ok( intake.census.length > 20 && intake.census.every( ( r ) => r.reader || r.gap ) );
 	assert.match( intake.tools.browser, /^chromium \d/ );
 	assert.equal( intake.harness.clock, '2026-01-05T10:00:00.000Z' );
-	for ( const s of [ 'replay', 'census', 'page map', 'tokens and palette', 'site info', 'flags', 'draft defects', 'skeletons', 'facts', 'missing features', 'notices' ] ) {
+	for ( const s of [ 'replay', 'census', 'page map', 'tokens and palette', 'site info', 'flags', 'draft defects', 'skeletons', 'facts', 'proposals', 'missing features', 'notices' ] ) {
 		assert.match( first.out, new RegExp( `\\[intake\\] ${ s }: done in \\d+\\.\\ds` ), `no timing line for ${ s }` );
 	}
 	// FR-48-7: the facts stage writes a schema-valid fact record whose instance keys come from the skeleton inventories.
@@ -137,6 +137,32 @@ test( 'MUST FAIL: the drawer renders only when its state opens; the skeleton ope
 	assert.equal( viaTrigger.skeletons[ 0 ].opened.draftId, 'Home:6' );
 	const none = await proposeSkeletons( { folder, harPath, surfaces: drawerOnly.map( ( s ) => ( { ...s, states: [], openedBy: null } ) ), client: CLIENT, census } );
 	assert.match( none.gaps[ 0 ].error, /no opener/, 'a surface nothing opens is a gap row naming what was tried' );
+} );
+
+test( 'MUST FAIL: the browser stage reads and saves inventories without proposing: a proposer that would throw is never called', async () => {
+	const folder = handoff( CLIENT );
+	const harPath = at( CLIENT, 'intake', 'replay', `${ recheckManifest( folder ).manifestHash }.har` );
+	const census = await staticCensus( { folder, entry: 'Home.dc.html', harPath } );
+	const footerOnly = surfaceRoots( { folder, census } ).surfaces.filter( ( s ) => 'footer' === s.slug );
+	const inventoriesDir = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-inv-' ) );
+	const stale = () => {
+		throw new Error( 'facts.json is stale: the export changed since it was written' );
+	};
+	// The proposing run fails the surface on the stale record (the fault register row E1 found) ...
+	const proposing = await proposeSkeletons( { folder, harPath, surfaces: footerOnly, client: CLIENT, census, propose: stale } );
+	assert.match( proposing.gaps[ 0 ].error, /facts\.json is stale/ );
+	assert.match( proposing.skeletons[ 0 ].gap, /facts\.json is stale/ );
+	// ... the reading run saves the inventory and records no gap.
+	const reading = await proposeSkeletons( { folder, harPath, surfaces: footerOnly, client: CLIENT, census, propose: null, inventoriesDir } );
+	assert.deepEqual( reading.gaps, [] );
+	assert.equal( reading.skeletons[ 0 ].gap, undefined );
+	assert.deepEqual( reading.skeletons[ 0 ].rows, [] );
+	assert.ok( reading.skeletons[ 0 ].inventory.elements > 0 );
+	const saved = JSON.parse( fs.readFileSync( path.join( inventoriesDir, 'footer.json' ), 'utf8' ) );
+	assert.equal( saved.elements.length, reading.skeletons[ 0 ].inventory.elements );
+	assert.ok( saved.sources?.files, 'the saved inventory names the export it describes' );
+	await assert.rejects( proposeSkeletons( { folder, harPath, surfaces: footerOnly, client: CLIENT, census, propose: null } ), /needs inventoriesDir/ );
+	fs.rmSync( inventoriesDir, { recursive: true, force: true } );
 } );
 
 test( 'MUST FAIL: loop copies collapse to one skeleton row and repeated flags to one row, every original key kept', () => {

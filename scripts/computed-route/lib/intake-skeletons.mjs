@@ -342,6 +342,13 @@ function factsFor( { db, client, repo, facts } ) {
 	}
 }
 
+// The `opened` entry of a surface that was opened to be read: how it opened, where it renders and which widths were read at a
+// neighbour. A width another state opened (the same state at its other breakpoint) is named in `statesAt`.
+function openedOf( open ) {
+	const other = Object.entries( open.ways ).filter( ( [ , x ] ) => x !== open.opener ).map( ( [ w, x ] ) => [ w, x.state ] );
+	return { ...open.opener, at: open.at, readAt: open.readAt, ...( other.length ? { statesAt: Object.fromEntries( other ) } : {} ), tried: open.tried };
+}
+
 // The inventory and proposal of every surface (surfaceRoots' list). Surfaces sharing a page and route share one fresh
 // sandbox and harness run (the runs go side by side in the browser-unit pool, lib/intake-pool.mjs, kept in page order):
 // settled in rest mode at open, then each surface's root is marked and read at 1440, 375 and 768, settleRest after each
@@ -355,7 +362,10 @@ function factsFor( { db, client, repo, facts } ) {
 // confirmed page-map.json exists) }. Returns { skeletons: [{ surface, id, kind,
 // name, route, opened?, inventory, rows, counts, problems, gap? }], gaps, runs: [{ file, hash, surfaces, requests,
 // unlisted, blocked, proxyAttempts, ms }] }. A surface whose inventory or proposal throws, or that no opener renders,
-// keeps its entry with `gap` and adds a gap row naming what was tried.
+// keeps its entry with `gap` and adds a gap row naming what was tried. `propose: null` reads and saves the inventories only
+// (requires `inventoriesDir`): no facts are loaded and nothing is proposed, so each entry has no rows and carries its
+// inventory summary; the proposals are made afterwards from the saved files (lib/skeleton-rerun.mjs::refreshIntakeSkeletons),
+// once the fact record they read has been rewritten for the export.
 export async function proposeSkeletons( { folder, harPath, surfaces, client, db = null, facts = null, entry = null, routing = null, site = null, shotsDir = null, widths = INVENTORY_WIDTHS, repo = REPO, harness = {}, log = () => {}, census = null, openStates = true, inventoriesDir = null, propose = proposeSkeleton, pageMap = null } ) {
 	if ( [ ...widths ].sort().join() !== [ ...INVENTORY_WIDTHS ].sort().join() ) {
 		throw new Error( `the skeleton inventory reads at ${ INVENTORY_WIDTHS.join( ', ' ) } (Spec 48 §3.4), not ${ widths.join( ', ' ) }` );
@@ -369,9 +379,13 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 			return { error: `the export's routing could not be read: ${ e.message }` };
 		}
 	} )() );
-	const ownDb = ! db && ! facts;
-	const theDb = db || ( facts ? null : openDb() );
-	const f = factsFor( { db: theDb, client, repo, facts } );
+	const readOnly = null === propose;
+	if ( readOnly && ! inventoriesDir ) {
+		throw new Error( 'a read-only skeleton run (propose: null) saves the inventories, so it needs inventoriesDir' );
+	}
+	const ownDb = ! readOnly && ! db && ! facts;
+	const theDb = readOnly ? null : db || ( facts ? null : openDb() );
+	const f = readOnly ? null : factsFor( { db: theDb, client, repo, facts } );
 	const calKeys = site ? ( s ) => Object.keys( loadCalibration( path.join( HERE, '..', 'cache' ), s, site )?.elements || {} ) : () => [];
 	const sources = inventoriesDir ? sourcesOf( folder ) : null;
 	// The state keys each component writes from the viewport width: a state bounding one opens only at the widths inside it.
@@ -450,19 +464,23 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 							inventory = await readInventory( { page: h.page, root: s.selector, settle, shotsDir: shotsDir ? path.join( shotsDir, s.slug ) : null, url: h.page.url(), strips: stripOptions( s, everySurface() ) } );
 						}
 						// A global surface that is a strip the header surface read beside itself is that header's row, never a surface of its own.
-						if ( 'global' === s.kind && absorbed.has( inventory.checks.rootKey ) ) {
+						if ( ! readOnly && 'global' === s.kind && absorbed.has( inventory.checks.rootKey ) ) {
 							log( `${ s.slug }: a strip of the ${ absorbed.get( inventory.checks.rootKey ) } surface; proposed there` );
 							continue;
 						}
 						inventoriesDir && fs.writeFileSync( path.join( inventoriesDir, `${ s.slug }.json` ), `${ JSON.stringify( { ...inventory, sources } ) }
 ` );
+						if ( readOnly ) {
+							u.out.push( { surface: s.slug, id: s.id, kind: s.kind, name: s.name, route: s.route, root: { tpl: s.rootTpl, ...m }, ...( s.panel ? { panel: s.panel } : {} ), ...( open ? { opened: openedOf( open ) } : {} ), inventory: summaryOf( inventory ), rows: [], counts: null, problems: [] } );
+							log( `${ s.slug }: ${ inventory.elements.length } elements read` );
+							continue;
+						}
 						if ( f.error ) {
 							throw new Error( f.error );
 						}
 						const r = propose( { inventory, facts: f.facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: builtFor( s ), clientDecisions: f.clientDecisions, carried: carriedIds( { repo, client, site: siteOf( { repo, client, slug: s.slug } ) } ), calKeys, formLinks: formLinks(), refs, draftLinks: draftLinks(), db: theDb } );
 						// A width another state opened (the same state at its other breakpoint) is named in `statesAt`.
-						const other = open ? Object.entries( open.ways ).filter( ( [ , x ] ) => x !== open.opener ).map( ( [ w, x ] ) => [ w, x.state ] ) : [];
-						const opened = open && { ...open.opener, at: open.at, readAt: open.readAt, ...( other.length ? { statesAt: Object.fromEntries( other ) } : {} ), tried: open.tried };
+						const opened = open && openedOf( open );
 						r.proposal.stripRoots?.forEach( ( k ) => absorbed.set( k, s.slug ) );
 						u.out.push( { surface: s.slug, id: s.id, kind: s.kind, name: s.name, route: s.route, ...( s.panel ? { panel: s.panel } : {} ), root: { tpl: s.rootTpl, ...m }, ...( opened ? { opened } : {} ), inventory: summaryOf( inventory ), rows: rowsOf( s.slug, r.proposal, inventory ), counts: r.proposal.counts, problems: r.problems } );
 						log( `${ s.slug }: ${ inventory.elements.length } elements, ${ r.proposal.rows.length } rows` );
