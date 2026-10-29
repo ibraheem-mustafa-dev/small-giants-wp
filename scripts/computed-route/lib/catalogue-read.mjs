@@ -3,17 +3,21 @@
 // gap row for every choice WooCommerce core cannot hold. The records, their fields (lib/catalogue-records.mjs) and the
 // choices each product offers (lib/catalogue-options.mjs) are read from the code alone; a client's name never decides
 // anything. A client whose page map has no live `product` row has no catalogue (its products, if any, are content).
-//   - a product with no choice is `simple`; one whose basket line carries one or more single-value choices with listed
-//     options is `variable`, one variation per combination (at most MAX_VARIATIONS), priced by the one choice whose
-//     options carry a price (else the record's price);
+//   - each listed choice of a product's basket line is a product attribute. An unpriced choice a choice flow asks (the
+//     basket call of a page-map `sgs_choice_flow` row's component reads a state key holding the same option values,
+//     lib/flow-product.mjs::flowChoices), a multi-choice included, is an answer attribute that creates no variations
+//     (`variation` false), carried to the bag line by the flow (Spec 43 FR-43-7, FR-43-21); every other single-value
+//     choice, priced or not, creates variations, since the buy box draws only variation attributes: one variation per
+//     combination of them (at most MAX_VARIATIONS), priced by the one choice whose options carry a price (else the
+//     record's price). A product with no variation attribute is `simple`;
 //   - a priced choice whose options are whole numbers of 2 or more, priced apart from the number, is a pack size (Spec 27 Part 2's pack axis:
 //     `_sgs_pack_size_axis`, each variation's `_sgs_unit_divisor` and `_sgs_discount_label`);
 //   - each attribute's `variesBy` is the Google ProductGroup axis it is (VARIESBY_WORDS: a pack size is `size`, else a
 //     word of its label or state key), null when none fits; a variable product none of whose attributes has one is a
 //     `no-variesby` gap row, because SGS's product preflight keeps such a product a draft;
-//   - a multi-choice, a switch (and the choices it gates), a choice whose options cannot be read, an amount the shopper
-//     picks as the price itself, more than one priced choice, too many variations and every filter field with no
-//     WooCommerce home are gap rows (`kind`, `detail`), never silent drops;
+//   - a multi-choice no flow asks, a switch (and the choices it gates), a choice whose options cannot be read, an amount
+//     the shopper picks as the price itself, more than one priced choice, too many variations and every filter field with
+//     no WooCommerce home are gap rows (`kind`, `detail`), never silent drops;
 //   - every other filter field is a facet (lib/catalogue-facets.mjs): a global attribute with its terms, and each
 //     product's terms in its `facets`.
 import fs from 'node:fs';
@@ -23,6 +27,7 @@ import { UNREAD, catalogueSources, valueOf } from './catalogue-source.mjs';
 import { descriptionField, facetFields, imageFields, recordLists } from './catalogue-records.mjs';
 import { basketLines, keyOptions, lineFor, lineKeys } from './catalogue-options.mjs';
 import { readFacets, settleFacets } from './catalogue-facets.mjs';
+import { componentSource, flowChoices, flowComponents, sameValues } from './flow-product.mjs';
 
 export const MAX_VARIATIONS = 100;
 export const SKU_PREFIX = 'sgs-draft-';
@@ -114,13 +119,14 @@ export function variesByOf( label, key, pack ) {
 	return hit ? VARIESBY_WORDS[ hit ] : null;
 }
 
-// One attribute from a choice: { key, label, slug, packSize, variesBy, options, default }.
-function attributeOf( choice ) {
+// One attribute from a choice: { key, label, slug, packSize, variesBy, variation, priced, options, default }; a choice a
+// flow asks (`answer`) creates variations only when it is priced.
+function attributeOf( choice, answer ) {
 	const priced = choice.options.every( ( o ) => 'number' === typeof o.price );
 	const pack = priced && choice.options.every( ( o ) => Number.isInteger( o.value ) && o.value >= 2 ) && choice.options.some( ( o ) => o.price !== o.value );
 	const label = pack ? 'Pack size' : human( choice.name ) || human( choice.key ) || choice.key;
 	return {
-		key: choice.key, label, slug: pack ? PACK_SLUG : slugify( label ), packSize: pack, variesBy: variesByOf( label, choice.key, pack ), priced,
+		key: choice.key, label, slug: pack ? PACK_SLUG : slugify( label ), packSize: pack, variesBy: variesByOf( label, choice.key, pack ), variation: priced || ! answer, priced,
 		options: choice.options.map( ( o ) => ( { value: o.value, term: String( o.label ?? o.value ), price: priced ? o.price : null, swatch: o.swatch || null, badge: pack ? o.badge || null : null } ) ),
 		default: choice.options.some( ( o ) => o.value === choice.first ) ? String( choice.options.find( ( o ) => o.value === choice.first ).label ?? choice.first ) : null,
 	};
@@ -135,8 +141,9 @@ function combinations( attrs, price ) {
 	return out;
 }
 
-// The choices of one record turned into attributes and gap rows: { attributes, gaps }.
-function choicesOf( ctx, lines, list, record, draftId ) {
+// The choices of one record turned into attributes and gap rows: { attributes, gaps }. asks: the choices the flows selling
+// this record ask (lib/flow-product.mjs::flowChoices).
+function choicesOf( ctx, lines, list, record, draftId, asks ) {
 	const gaps = [];
 	const gap = ( kind, detail ) => gaps.push( { draftId, kind, detail } );
 	const found = lineFor( ctx, lines, list, record );
@@ -148,6 +155,7 @@ function choicesOf( ctx, lines, list, record, draftId ) {
 	}
 	const keys = lineKeys( ctx, found.line ).map( ( k ) => keyOptions( ctx, found.line.src, k ) );
 	const list2 = ( c ) => c.options.map( ( o ) => o.label ?? o.value ).join( ', ' );
+	const asked = ( c ) => asks.some( ( f ) => sameValues( f.values, c.options.map( ( o ) => o.value ) ) );
 	const choices = [];
 	for ( const c of keys ) {
 		if ( c.gatedBy ) {
@@ -160,9 +168,9 @@ function choicesOf( ctx, lines, list, record, draftId ) {
 		const gatedText = gated.length ? `; when on, the shopper also picks ${ gated.map( ( g ) => `"${ g.key }" (${ list2( g ) || 'options unread' })` ).join( ' and ' ) }` : '';
 		if ( 'switch' === c.kind ) {
 			gap( 'switch', `choice "${ c.key }" is an on/off switch${ c.factor ? ` that multiplies the price by ${ c.factor }` : '' }${ gatedText }: WooCommerce core holds no recurring or price-changing switch (a recurring order needs WooCommerce Subscriptions or an equivalent plugin); recorded, not built` );
-		} else if ( 'multi' === c.kind ) {
-			gap( 'multi-choice', `choice "${ c.key }" lets the shopper pick several of ${ list2( c ) || 'options the code does not list' }${ gatedText }: a WooCommerce variation holds one value per attribute, so it needs a product add-ons field; recorded, not built` );
-		} else if ( 'choice' === c.kind ) {
+		} else if ( 'multi' === c.kind && ! asked( c ) ) {
+			gap( 'multi-choice', `choice "${ c.key }" lets the shopper pick several of ${ list2( c ) || 'options the code does not list' }${ gatedText }: a WooCommerce variation holds one value per attribute and no choice flow asks it, so it needs a product add-ons field or a flow carrying it as an answer; recorded, not built` );
+		} else if ( 'choice' === c.kind || 'multi' === c.kind ) {
 			choices.push( c );
 			if ( gatedText ) {
 				gap( 'gated-choice', `choice "${ c.key }"${ gatedText }: a choice that appears only after another is not a WooCommerce variation; recorded, not built` );
@@ -171,22 +179,23 @@ function choicesOf( ctx, lines, list, record, draftId ) {
 			gap( 'unread-choice', `the basket line reads choice "${ c.key }", whose options the code does not list statically; recorded, not built` );
 		}
 	}
-	let attributes = choices.map( attributeOf );
+	let attributes = choices.map( ( c ) => attributeOf( c, asked( c ) ) );
 	const priced = attributes.filter( ( a ) => a.priced );
 	if ( priced.length > 1 ) {
 		gap( 'priced-choices', `${ priced.length } choices each carry a price (${ priced.map( ( a ) => a.key ).join( ', ' ) }) and the code's combined price is not read; the product is made with none of them` );
-		attributes = [];
+		attributes = attributes.filter( ( a ) => ! a.priced );
 	}
 	for ( const a of attributes.filter( ( x ) => x.priced && ! x.packSize && x.options.every( ( o ) => o.price === o.value ) ) ) {
 		gap( 'open-amount', `the shopper picks the amount paid (${ a.options.map( ( o ) => money( o.price ) ).join( ', ' ) }): sold as one variation per amount; redeeming it later as store credit needs a gift-card plugin, which WooCommerce core does not have` );
 	}
-	const count = attributes.reduce( ( n, a ) => n * a.options.length, 1 );
+	const axes = () => attributes.filter( ( a ) => a.variation );
+	const count = axes().reduce( ( n, a ) => n * a.options.length, 1 );
 	if ( count > MAX_VARIATIONS ) {
-		gap( 'too-many-variations', `${ count } combinations of ${ attributes.map( ( a ) => a.key ).join( ', ' ) } exceed ${ MAX_VARIATIONS }; the product is made with no choices` );
-		attributes = [];
+		gap( 'too-many-variations', `${ count } combinations of ${ axes().map( ( a ) => a.key ).join( ', ' ) } exceed ${ MAX_VARIATIONS }; the product is made with none of them` );
+		attributes = attributes.filter( ( a ) => ! a.variation );
 	}
-	if ( attributes.length && ! attributes.some( ( a ) => a.variesBy ) ) {
-		gap( 'no-variesby', `no choice (${ attributes.map( ( a ) => `"${ a.key }"` ).join( ', ' ) }) is one of Google's variesBy axes (${ VARIESBY_VALUES.join( ', ' ) }), and SGS's product preflight publishes a variable product only when one of its variation terms maps to one (no_variesby); the product is made and kept a draft` );
+	if ( axes().length && ! axes().some( ( a ) => a.variesBy ) ) {
+		gap( 'no-variesby', `no choice that creates variations (${ axes().map( ( a ) => `"${ a.key }"` ).join( ', ' ) }) is one of Google's variesBy axes (${ VARIESBY_VALUES.join( ', ' ) }), and SGS's product preflight publishes a variable product only when one of its variation terms maps to one (no_variesby); the product is made and kept a draft` );
 	}
 	return { attributes, gaps };
 }
@@ -221,6 +230,8 @@ export function readCatalogue( { repo, client, rows } ) {
 		return { catalogue: out, notes };
 	}
 	const file = productFile( ctx.exp, rows );
+	// The logic of each component a page-map choice flow is drawn by: the choices it asks are answers, not variations.
+	const flows = flowComponents( folder, rows ).map( ( f ) => componentSource( ctx, f.component ) ).filter( Boolean );
 	const shopRow = rows.find( ( r ) => 'shop' === r.postType );
 	const shopFile = shopRow && ctx.exp.drafts.some( ( d ) => d.file === shopRow.route ) ? shopRow.route : file;
 	out.source = { files: [ ...new Set( lists.map( ( l ) => l.src.file ) ) ].sort(), productPage: file, idKey: lists[ 0 ].key };
@@ -241,10 +252,12 @@ export function readCatalogue( { repo, client, rows } ) {
 		const lines = basketLines( ctx, list, file );
 		for ( const r of list.records ) {
 			const draftId = String( r[ list.key ] );
-			const { attributes, gaps } = choicesOf( ctx, lines, list, r, draftId );
+			const asks = flows.flatMap( ( src ) => flowChoices( ctx, src, draftId ) );
+			const { attributes, gaps } = choicesOf( ctx, lines, list, r, draftId, asks );
 			out.gaps.push( ...gaps );
 			const sku = skuOf( draftId );
-			const variations = attributes.length ? combinations( attributes, r[ prices.price ] ).map( ( c ) => ( { sku: `${ sku }-${ c.parts.join( '-' ) }`, options: c.options, price: c.price } ) ) : [];
+			const axes = attributes.filter( ( a ) => a.variation );
+			const variations = axes.length ? combinations( axes, r[ prices.price ] ).map( ( c ) => ( { sku: `${ sku }-${ c.parts.join( '-' ) }`, options: c.options, price: c.price } ) ) : [];
 			const name = r.name;
 			out.products.push( {
 				draftId, sku, slug: slugify( brandField ? `${ r[ brandField ] } ${ name }` : name ), name, type: variations.length ? 'variable' : 'simple',

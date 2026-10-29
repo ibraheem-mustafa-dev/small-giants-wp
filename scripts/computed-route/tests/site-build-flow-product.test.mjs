@@ -7,7 +7,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { addedIds, planFlowProducts, flowProductStatePhp, flowProductApplyPhp, runFlowProducts } from '../lib/site-build-flow-product.mjs';
+import { planFlowProducts, flowProductStatePhp, flowProductApplyPhp, runFlowProducts } from '../lib/site-build-flow-product.mjs';
+import { addedIds } from '../lib/flow-product.mjs';
 
 const HOME = 'class Home { go() { M.cart.add({ key: [\'zookies\', S.size].join(\'-\'), id: \'zookies\', name: \'Zookies\', price: 9 }); } }';
 const rows = [ { slug: 'choice-flow-build', postType: 'sgs_choice_flow', draftId: 'surfaces.json S-08' }, { slug: 'choice-flow-gifts', postType: 'sgs_choice_flow', draftId: 'surfaces.json S-20' } ];

@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 import { readCatalogue } from '../lib/catalogue-read.mjs';
-import { PHOTO_TO_COME, catalogueImages, planCatalogue, recordSite, runCatalogue, tallyCatalogue } from '../lib/site-build-catalogue.mjs';
+import { PHOTO_TO_COME, catalogueImages, heldDraft, planCatalogue, recordSite, runCatalogue, tallyCatalogue } from '../lib/site-build-catalogue.mjs';
 import { catalogueApplyPhp, catalogueStatePhp, productBaseFlushPhp } from '../lib/site-build-catalogue-php.mjs';
 import { linkContext, resolveDraftLink, linkWrite } from '../lib/draft-link.mjs';
 import { repoWith } from './fixtures/catalogue/repo.mjs';
@@ -349,4 +349,19 @@ test( 'product base: a site that cannot call itself passes on the stored rules a
 	const same = baseRun( { repo, catalogue, want: 'product', flush: { ...BASE_OK, rules: 0 } } );
 	assert.deepEqual( same.calls, [ 'read', 'write', 'read' ] );
 	assert.equal( same.code, 0 );
+} );
+
+test( 'MUST FAIL (RC16): each attribute is written as a variation only when it creates variations; only those decide a held draft and are named as variations', () => {
+	const { repo, catalogue } = setup();
+	assert.match( writeOf( repo, catalogue ), /\$attr->set_variation\( ! empty\( \$a\['variation'\] \) \);/ );
+	assert.equal( heldDraft( { type: 'variable', attributes: [ { variation: true, variesBy: null }, { variation: false, variesBy: 'color' } ] } ), true, 'an answer attribute\'s axis never publishes the variations' );
+	const jar = catalogue.products[ 0 ];
+	const answered = { ...jar, attributes: jar.attributes.map( ( a ) => ( 'grain' === a.key ? { ...a, variation: false } : a ) ), variations: jar.variations.filter( ( v ) => 'Fine set' === v.options.grain ) };
+	const plan = planCatalogue( { ...catalogue, products: [ answered ] }, site( [ { draftId: 'jar', id: 0 } ] ) );
+	assert.match( plan.actions[ 0 ].say, /price 4, 2 variations of Pack size \(6\/12\), answer attributes Grain \(Fine set\/Coarse set\),/ );
+	// Negative control: a variation axis with a variesBy value publishes; a simple product is never held; with no answer
+	// attribute the plan names none.
+	assert.equal( heldDraft( { type: 'variable', attributes: [ { variation: true, variesBy: 'size' }, { variation: false, variesBy: null } ] } ), false );
+	assert.equal( heldDraft( { type: 'simple', attributes: [ { variation: false, variesBy: null } ] } ), false );
+	assert.doesNotMatch( planCatalogue( catalogue, site( [ { draftId: 'jar', id: 0 } ] ) ).actions[ 0 ].say, /answer attributes/ );
 } );

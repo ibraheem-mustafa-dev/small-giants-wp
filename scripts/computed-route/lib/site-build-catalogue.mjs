@@ -66,10 +66,11 @@ export function catalogueImages( repo, catalogue ) {
 }
 
 const keyOf = ( img ) => ( img ? img.url || img.asset : null );
+const attrSay = ( a ) => `${ a.label } (${ a.options.map( ( o ) => o.term ).join( '/' ) })`;
 
-// A variable product SGS's product preflight will not publish: none of its attributes is a Google variesBy axis (the
-// catalogue's `no-variesby` gap row). It is made and kept a draft.
-export const heldDraft = ( p ) => 'variable' === p.type && p.attributes.length > 0 && ! p.attributes.some( ( a ) => a.variesBy );
+// A variable product SGS's product preflight will not publish: none of the attributes that create its variations is a
+// Google variesBy axis (the catalogue's `no-variesby` gap row). It is made and kept a draft.
+export const heldDraft = ( p ) => 'variable' === p.type && ! p.attributes.some( ( a ) => a.variation && a.variesBy );
 const products = ( catalogue ) => catalogue.products.filter( ( p ) => ! ( catalogue.dropped || [] ).includes( p.draftId ) );
 
 // What one found product lacks of its catalogue record (names, for the plan line).
@@ -136,7 +137,7 @@ export function planCatalogue( catalogue, state ) {
 		const address = productAddress( catalogue, p );
 		if ( ! s.id ) {
 			const imgs = [ p.image, ...p.gallery ].filter( Boolean ).filter( ( i ) => ! state.images[ keyOf( i ) ] ).length;
-			actions.push( { ...step, action: 'create', placeholder: step.photoToCome, say: `create ${ p.draftId } (${ p.sku }) ${ p.type } "${ p.name }" at ${ address }: price ${ p.price }${ p.rrp ? `, RRP ${ p.rrp }` : '' }${ p.variations.length ? `, ${ p.variations.length } variations of ${ p.attributes.map( ( a ) => `${ a.label } (${ a.options.map( ( o ) => o.term ).join( '/' ) })` ).join( ' x ' ) }` : '' }${ p.categories.length ? `, categories ${ p.categories.join( ', ' ) }` : '' }${ p.brand ? `, brand ${ p.brand }` : '' }${ p.image ? `, image ${ state.images[ keyOf( p.image ) ] ? `attachment ${ state.images[ keyOf( p.image ) ] }` : p.image.url ? 'to fetch' : 'to upload' }` : `, image photo to come (${ state.images[ PHOTO_TO_COME ] ? `attachment ${ state.images[ PHOTO_TO_COME ] }` : 'to upload' })` }${ imgs ? ` (${ imgs } image file(s) to add)` : '' }` } );
+			actions.push( { ...step, action: 'create', placeholder: step.photoToCome, say: `create ${ p.draftId } (${ p.sku }) ${ p.type } "${ p.name }" at ${ address }: price ${ p.price }${ p.rrp ? `, RRP ${ p.rrp }` : '' }${ p.variations.length ? `, ${ p.variations.length } variations of ${ p.attributes.filter( ( a ) => a.variation ).map( attrSay ).join( ' x ' ) }` : '' }${ p.attributes.some( ( a ) => ! a.variation ) ? `, answer attributes ${ p.attributes.filter( ( a ) => ! a.variation ).map( attrSay ).join( ', ' ) }` : '' }${ p.categories.length ? `, categories ${ p.categories.join( ', ' ) }` : '' }${ p.brand ? `, brand ${ p.brand }` : '' }${ p.image ? `, image ${ state.images[ keyOf( p.image ) ] ? `attachment ${ state.images[ keyOf( p.image ) ] }` : p.image.url ? 'to fetch' : 'to upload' }` : `, image photo to come (${ state.images[ PHOTO_TO_COME ] ? `attachment ${ state.images[ PHOTO_TO_COME ] }` : 'to upload' })` }${ imgs ? ` (${ imgs } image file(s) to add)` : '' }` } );
 			continue;
 		}
 		if ( s.fixture ) {

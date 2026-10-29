@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 import { repoWith } from './fixtures/catalogue/repo.mjs';
+import { FLOW_ROWS, withFlow } from './fixtures/catalogue/flow.mjs';
 import { readCatalogue, productAddress, skuOf, slugify, variesByOf } from '../lib/catalogue-read.mjs';
 import { catalogueProblems, catalogueRecord, catalogueSummary, droppedIds } from '../lib/intake-catalogue-run.mjs';
 import { reviewRows, markProblem } from '../lib/intake-review.mjs';
@@ -37,11 +38,35 @@ test( 'categories come from the array field the shop page filters on, named by t
 	assert.equal( catalogue.gaps.filter( ( g ) => 'facet' === g.kind ).length, 0 );
 } );
 
-test( 'a priced whole-number choice is a pack size; with a second choice every combination is a variation priced by the pack', () => {
+
+test( 'MUST FAIL (RC16): an unpriced choice a choice flow asks, the multi-choice included, is an answer attribute; only the priced choice creates variations', () => {
+	const { catalogue } = read( 'shared', FLOW_ROWS, withFlow );
+	const jar = byId( catalogue, 'jar' );
+	assert.equal( jar.type, 'variable' );
+	assert.deepEqual( jar.attributes.map( ( a ) => [ a.key, a.label, a.slug, a.packSize, a.variation ] ), [ [ 'pack', 'Pack size', 'pack-size', true, true ], [ 'grain', 'Grain', 'grain', false, false ], [ 'tops', 'Top', 'top', false, false ] ] );
+	assert.deepEqual( jar.attributes[ 2 ].options.map( ( o ) => [ o.value, o.term, o.price ] ), [ [ 'nuts', 'Nuts', null ], [ 'seeds', 'Seeds', null ], [ 'comb', 'Comb', null ] ] );
+	assert.deepEqual( jar.attributes.map( ( a ) => a.default ), [ '6', 'Fine set', null ] );
+	assert.deepEqual( jar.variations.map( ( v ) => [ v.sku, v.options, v.price ] ), [ [ 'sgs-draft-jar-6', { 'pack-size': '6' }, 4 ], [ 'sgs-draft-jar-12', { 'pack-size': '12' }, 7.5 ] ] );
+	assert.ok( ! catalogue.gaps.some( ( g ) => 'multi-choice' === g.kind ), 'the multi-choice the flow asks travels as its answer' );
+	assert.deepEqual( catalogueProblems( catalogue ), [] );
+	// Negative control: the same flow without its page-map row asks nothing, so the grain stays a variation axis and the
+	// multi-choice a gap row.
+	const off = byId( read( 'shared', SHARED_ROWS, withFlow ).catalogue, 'jar' );
+	assert.deepEqual( [ off.attributes.map( ( a ) => [ a.key, a.variation ] ), off.variations.length ], [ [ [ 'pack', true ], [ 'grain', true ] ], 4 ] );
+	// A choice the flow's basket call reads for another product is not asked for this one.
+	const other = byId( read( 'shared', FLOW_ROWS, ( to ) => {
+		withFlow( to );
+		const f = path.join( to, 'Builder.dc.html' );
+		fs.writeFileSync( f, fs.readFileSync( f, 'utf8' ).replace( "add: () => D.basket.add({ key: 'jar', id: 'jar', grain: S.grain, tops: S.tops, pack: S.pack })", "add: () => { D.basket.add({ key: 'jar', id: 'jar', tops: S.tops, pack: S.pack }); D.basket.add({ key: 'box', id: 'box', grain: S.grain }); }" ) );
+	} ).catalogue, 'jar' );
+	assert.deepEqual( other.attributes.map( ( a ) => [ a.key, a.variation ] ), [ [ 'pack', true ], [ 'grain', true ], [ 'tops', false ] ] );
+} );
+
+test( 'a priced whole-number choice is a pack size; with a second choice no flow asks every combination is a variation priced by the pack', () => {
 	const { catalogue } = read( 'shared', SHARED_ROWS );
 	const jar = byId( catalogue, 'jar' );
 	assert.equal( jar.type, 'variable' );
-	assert.deepEqual( jar.attributes.map( ( a ) => [ a.key, a.label, a.slug, a.packSize ] ), [ [ 'pack', 'Pack size', 'pack-size', true ], [ 'grain', 'Grain', 'grain', false ] ] );
+	assert.deepEqual( jar.attributes.map( ( a ) => [ a.key, a.label, a.slug, a.packSize, a.variation ] ), [ [ 'pack', 'Pack size', 'pack-size', true, true ], [ 'grain', 'Grain', 'grain', false, true ] ] );
 	assert.deepEqual( jar.attributes[ 0 ].options.map( ( o ) => [ o.term, o.price, o.badge ] ), [ [ '6', 4, null ], [ '12', 7.5, 'Popular' ] ] );
 	assert.deepEqual( jar.attributes[ 1 ].options.map( ( o ) => [ o.term, o.swatch ] ), [ [ 'Fine set', '#E8C468' ], [ 'Coarse set', '#B8862B' ] ] );
 	assert.deepEqual( [ jar.attributes[ 0 ].default, jar.attributes[ 1 ].default ], [ '6', 'Fine set' ] );
@@ -49,7 +74,7 @@ test( 'a priced whole-number choice is a pack size; with a second choice every c
 	assert.equal( jar.price, 4 );
 } );
 
-test( 'a multi-choice, a switch with its price factor and gated choice, and an amount picked as the price are gap rows; the quantity is none', () => {
+test( 'a multi-choice no flow asks, a switch with its price factor and gated choice, and an amount picked as the price are gap rows; the quantity is none', () => {
 	const { catalogue } = read( 'shared', SHARED_ROWS );
 	const kinds = catalogue.gaps.filter( ( g ) => '*' !== g.draftId ).map( ( g ) => `${ g.draftId }:${ g.kind }` );
 	assert.deepEqual( kinds, [ 'jar:multi-choice', 'jar:switch', 'voucher:open-amount', 'voucher:no-variesby' ] );
@@ -57,7 +82,7 @@ test( 'a multi-choice, a switch with its price factor and gated choice, and an a
 	assert.match( sw.detail, /"gift".*multiplies the price by 0\.8.*"every" \(1, 2\)/ );
 	assert.match( catalogue.gaps.find( ( g ) => 'multi-choice' === g.kind ).detail, /Nuts, Seeds, Comb/ );
 	const voucher = byId( catalogue, 'voucher' );
-	assert.deepEqual( [ voucher.type, voucher.attributes[ 0 ].packSize, voucher.variations.map( ( v ) => v.price ) ], [ 'variable', false, [ 10, 20 ] ] );
+	assert.deepEqual( [ voucher.type, voucher.attributes[ 0 ].packSize, voucher.attributes[ 0 ].variation, voucher.variations.map( ( v ) => v.price ) ], [ 'variable', false, true, [ 10, 20 ] ] );
 	assert.equal( byId( catalogue, 'box' ).attributes.length, 0 );
 } );
 
@@ -74,14 +99,17 @@ test( 'the product page\'s basket line wins over a quick-add elsewhere; without 
 	assert.ok( ! off.gaps.some( ( g ) => 'box' === g.draftId ) );
 } );
 
-test( 'two choices that each carry a price are a gap row and the product is made with neither', () => {
-	const { catalogue } = read( 'shared', SHARED_ROWS, ( to ) => {
+test( 'two choices that each carry a price are a gap row and the product is made with neither; an answer a flow asks stays', () => {
+	const pricedGrain = ( to ) => {
 		const f = path.join( to, 'Item.dc.html' );
 		fs.writeFileSync( f, fs.readFileSync( f, 'utf8' ).replace( "grains: pickOne(D ? D.grains : [], 'grain'),", 'grains: (D ? D.grains : []).map(o => ({ ...o, t: money(o.add), pick: () => this.setState({ grain: o.id }) })),' ) );
-	} );
+	};
+	const { catalogue } = read( 'shared', SHARED_ROWS, pricedGrain );
 	const jar = byId( catalogue, 'jar' );
 	assert.deepEqual( [ jar.type, jar.attributes.length ], [ 'simple', 0 ] );
 	assert.match( catalogue.gaps.find( ( g ) => 'priced-choices' === g.kind ).detail, /pack, grain/ );
+	const asked = byId( read( 'shared', FLOW_ROWS, ( to ) => ( withFlow( to ), pricedGrain( to ) ) ).catalogue, 'jar' );
+	assert.deepEqual( [ asked.type, asked.attributes.map( ( a ) => [ a.key, a.variation ] ) ], [ 'simple', [ [ 'tops', false ] ] ] );
 } );
 
 test( 'class property: two price fields give price and RRP, images come from the address table, brand from the filtered brand field, the base from the manifest', () => {

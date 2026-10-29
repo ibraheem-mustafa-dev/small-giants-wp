@@ -88,13 +88,14 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["key", "label", "slug", "packSize", "variesBy", "options", "default"],
+            "required": ["key", "label", "slug", "packSize", "variesBy", "variation", "options", "default"],
             "additionalProperties": false,
             "properties": {
               "key": { "type": "string", "description": "The draft state key the shopper's choice is kept in." },
               "label": { "type": "string" },
               "slug": { "type": "string", "pattern": "^[a-z0-9-]+$", "description": "The global attribute slug, without pa_." },
               "packSize": { "type": "boolean", "description": "A pack-size axis (Spec 27 Part 2): _sgs_pack_size_axis on the product, _sgs_unit_divisor and _sgs_discount_label on each variation." },
+              "variation": { "type": "boolean", "description": "Whether the attribute creates variations. An unpriced choice a choice flow asks (its basket call reads it) is an answer attribute that creates none, carried to the bag line by the flow (Spec 43 FR-43-7, FR-43-21); every other single-value choice creates variations, since the buy box draws only variation attributes." },
               "variesBy": { "enum": ["color", "size", "material", "pattern", "suggestedAge", "suggestedGender", null], "description": "The Google ProductGroup variesBy axis this attribute is, written as each of its terms' _sgs_variesby_value (SGS's product preflight publishes a variable product only when one of its variation terms carries one); null when no axis fits." },
               "options": {
                 "type": "array",
@@ -156,7 +157,7 @@
         },
         "wildcard": { "type": ["string", "null"], "description": "A field value the filter matches under every choice: a product holding it carries every term." },
         "toggleLabel": { "type": ["string", "null"], "description": "A boolean filter's control text, when it differs from its term." },
-        "axis": { "type": "boolean", "description": "True when a variation attribute of the same slug already holds every term, so the facet is not written again." },
+        "axis": { "type": "boolean", "description": "True when a product attribute of the same slug already holds every term, so the facet is not written again." },
         "files": { "type": "array", "items": { "type": "string" } }
       }
     },

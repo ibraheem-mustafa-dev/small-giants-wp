@@ -2,7 +2,7 @@
 // (lib/catalogue-facets.mjs) made on one site as a global WooCommerce attribute (`pa_<slug>`, type select, ordered by
 // the terms' custom order) with its terms, each colour term's `_sgs_swatch_color`, and each product's terms as a
 // filter-only product attribute (not a variation, not shown on the product page), the shape the hand-built seeds of the
-// client sites use. A facet a variation attribute already is (`axis`) is not written again.
+// client sites use. A facet a product attribute already is (`axis`) is not written again.
 //   - plan (reads only): per facet `create` (no attribute has its slug), `complete` (it lacks a term, or a term lacks its
 //     swatch) or `exists`; a slug WooCommerce reserves stops the run; an attribute of that slug under another name is
 //     noted and used as it is. A product lacks a facet when it does not carry the attribute, or lacks one of its terms

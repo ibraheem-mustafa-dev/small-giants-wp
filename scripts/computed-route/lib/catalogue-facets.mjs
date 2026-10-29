@@ -329,8 +329,8 @@ export function readFacets( ctx, list, fields, { slugify, human } ) {
 	return { facets, gaps, termsOf: ( r ) => ( { ...( perRecord.get( r ) || {} ) } ) };
 }
 
-// Settles the facets' slugs against the catalogue's variation attributes (readFacets already numbers two facets of one
-// slug): a facet whose slug a variation attribute already takes is that axis when the attribute holds all its terms (it
+// Settles the facets' slugs against the catalogue's product attributes (readFacets already numbers two facets of one
+// slug): a facet whose slug a product attribute already takes is that axis when the attribute holds all its terms (it
 // is not written again), else it is renamed `<slug>-filter` (numbered when that is taken too). Products' facet keys
 // follow. Mutates `catalogue`.
 export function settleFacets( catalogue ) {
