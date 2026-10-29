@@ -1,0 +1,10 @@
+[
+	{ "file": "lib/collect.mjs", "find": "at = props.includes( p ) ? el.querySelector( `:scope ${ slot }` ) : null;", "replace": "at = null;", "why": "the slot is never read" },
+	{ "file": "lib/collect.mjs", "find": "at = props.includes( p ) ? el.querySelector( `:scope ${ slot }` ) : null;", "replace": "at = el.querySelector( `:scope ${ slot }` );", "why": "a property the pair does not read is read too" },
+	{ "file": "lib/collect.mjs", "find": "for ( const [ p, slot ] of Object.entries( run ? {} : opts?.liveAt || {} ) ) {", "replace": "for ( const [ p, slot ] of Object.entries( {} ) ) {", "why": "liveAt ignored" },
+	{ "file": "lib/collect.mjs", "find": "\t\tif ( at ) {\n\t\t\tconst acs = getComputedStyle( at );", "replace": "\t\tif ( true ) {\n\t\t\tconst acs = getComputedStyle( at || el );", "why": "a slot with no element reads wrongly" },
+	{ "file": "lib/collect.mjs", "find": "} catch {\n\t\t\tat = null;\n\t\t}\n\t\tif ( at ) {", "replace": "} catch ( e ) {\n\t\t\tthrow e;\n\t\t}\n\t\tif ( at ) {", "why": "a bad selector throws" },
+	{ "file": "lib/collect.mjs", "find": "const v = acs.getPropertyValue( p ).trim();\n\t\t\tstyles[ p ] = /color$/.test( p ) ? srgb( v ) :", "replace": "const v = cs.getPropertyValue( p ).trim();\n\t\t\tstyles[ p ] = /color$/.test( p ) ? srgb( v ) :", "why": "the wrapper's value is read" },
+	{ "file": "lib/state-passes.mjs", "find": "...( 'live' === side && p.liveAt ? { liveAt: p.liveAt } : {} )", "replace": "...( p.liveAt ? { liveAt: p.liveAt } : {} )", "why": "the draft side reads liveAt too" },
+	{ "file": "lib/state-passes.mjs", "find": "...( 'live' === side && p.liveAt ? { liveAt: p.liveAt } : {} )", "replace": "", "why": "liveAt never passed" }
+]

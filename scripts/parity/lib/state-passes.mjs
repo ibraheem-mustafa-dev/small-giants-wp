@@ -43,7 +43,7 @@ export function stampDeclaredPath( d, l ) {
 export const readOpts = ( pairs, p, side, propsOf = ( q ) => q.props || DEFAULT_PROPS ) => {
 	const others = pairs.filter( ( q ) => q !== p && q[ side ] );
 	const readsText = ( q ) => ! q[ side ].group && propsOf( q ).some( ( x ) => TEXT_CARRIED.includes( x ) );
-	return { others: others.map( ( q ) => q[ side ] ), names: others.map( ( q ) => q.name ), textOthers: others.filter( readsText ).map( ( q ) => q[ side ] ), paintPart: true };
+	return { others: others.map( ( q ) => q[ side ] ), names: others.map( ( q ) => q.name ), textOthers: others.filter( readsText ).map( ( q ) => q[ side ] ), paintPart: true, ...( 'live' === side && p.liveAt ? { liveAt: p.liveAt } : {} ) };
 };
 
 // Scroll-in pairs: the animations started ~60ms after each is scrolled to, and its pose once settled
