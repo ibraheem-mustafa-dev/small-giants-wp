@@ -1,7 +1,7 @@
 {
  "schemaVersion": "1",
  "client": "indus-foods",
- "takenOn": "2026-10-27T15:06:37.428Z",
+ "takenOn": "2026-10-29T07:34:33.305Z",
  "sources": {
   "files": {
    "EnquiryForm.dc.html": "cdb4408622be747be444e21c75e3a7096569af77bf7657e7cb45d41e93acbf66",
@@ -26,7 +26,7 @@
    "tokens/typography.css": "9dcdef1dd3f8e3830a78e14b472900536cebcf3f17a08b945981d2a65816f64b"
   },
   "route": {
-   "commit": "5892ce78973c218d477af956c380a4d83e583f7f"
+   "commit": "cfaabe22bb32cb467cd96de1eae44ee0b1f965f9"
   }
  },
  "manifest": {
@@ -24820,7 +24820,7 @@
   "animations": {
    "schema_version": "1.0",
    "project": "Indus Foods",
-   "generated": "2026-10-27",
+   "generated": "2026-10-29",
    "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
    "drafts": [
     {
@@ -26094,7 +26094,7 @@
      },
      "trigger": {
       "type": "press",
-      "detail": "onClick on Indus Foods Website v2:118 (closeMobile)"
+      "detail": "onClick on Indus Foods Website v2:118 (closeMobile) (and 6 more: keydown listener on window (this._key) via closeMobile; click listener on el via closeMobile; onClick on Indus Foods Website v2:106 (closeBackdrop) (and 1 more: onClick on Indus Foods Website v2:106 (closeBackdrop → closeBackdrop)) via closeMobile; …)"
      },
      "properties": [
       {
@@ -26122,6 +26122,51 @@
     },
     {
      "id": "A-25",
+     "name": "Web Animation in closeMobile on ref setDrawerEl",
+     "mechanism": "waapi",
+     "element": {
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "108",
+      "selector": "ref setDrawerEl",
+      "description": "animated element: ref setDrawerEl"
+     },
+     "source": {
+      "file": "Indus Foods Website v2.dc.html",
+      "function": "closeMobile",
+      "ref": "setDrawerEl",
+      "line": 1310,
+      "code": "el.animate([{ transform: 'none' }, { transform: 'translateX(100%)' }], { duration: 340, easing: 'cubic-bezier(.7,0,.84,0)', fill: 'forwards' })"
+     },
+     "trigger": {
+      "type": "route",
+      "detail": "hashchange listener on window (this._hash) via closeMobile"
+     },
+     "properties": [
+      {
+       "property": "transform",
+       "from": "none",
+       "to": "translateX(100%)"
+      }
+     ],
+     "duration_ms": 340,
+     "delay_ms": 0,
+     "stagger": null,
+     "easing": "cubic-bezier(.7,0,.84,0)",
+     "iterations": 1,
+     "direction": "normal",
+     "fill": "forwards",
+     "reduced_motion": {
+      "behaviour": "skip",
+      "detail": "returns early under !el || this.rm"
+     },
+     "status": "active",
+     "trace": {
+      "observed": "no",
+      "note": "unreached in the census runtime pass (rest mode); see the draft defects for the forced test"
+     }
+    },
+    {
+     "id": "A-26",
      "name": "Web Animation in startMarquee on ref setMarqueeEl",
      "mechanism": "waapi",
      "element": {
@@ -26167,7 +26212,7 @@
      }
     },
     {
-     "id": "A-26",
+     "id": "A-27",
      "name": "Web Animation in startMarquee on ref setMarqueeEl",
      "mechanism": "waapi",
      "element": {
@@ -26216,7 +26261,7 @@
      }
     },
     {
-     "id": "A-27",
+     "id": "A-28",
      "name": "Web Animation in floatIt from setFloatEl on ref setFloatEl",
      "mechanism": "waapi",
      "element": {
@@ -26262,7 +26307,7 @@
      "notes": "called from setFloatEl (line 1339): this.floatIt(el, 0)"
     },
     {
-     "id": "A-28",
+     "id": "A-29",
      "name": "Web Animation in floatIt from setFloatEl2 on ref setFloatEl2",
      "mechanism": "waapi",
      "element": {
@@ -26308,7 +26353,7 @@
      "notes": "called from setFloatEl2 (line 1340): this.floatIt(el, 900)"
     },
     {
-     "id": "A-29",
+     "id": "A-30",
      "name": "Web Animation in floatRef on el",
      "mechanism": "waapi",
      "element": {
@@ -26355,7 +26400,7 @@
      "notes": "dead code: floatRef is reached only through renderVals key ref, which no template binding references"
     },
     {
-     "id": "A-30",
+     "id": "A-31",
      "name": "Web Animation in fx from bindMotion on sp inserted into e.target.closest && e.target.closest('[data-mag]')",
      "mechanism": "waapi",
      "element": {
@@ -26407,7 +26452,7 @@
      "notes": "called from bindMotion (line 1382): this.fx(m, sp, [{ transform: 'scale(0)', opacity: 1 }, { transform: 'scale(1)', opacity: 0 }], 650)"
     },
     {
-     "id": "A-31",
+     "id": "A-32",
      "name": "Web Animation in fx from bindMotion on sp inserted into e.target.closest && e.target.closest('[data-mag]')",
      "mechanism": "waapi",
      "element": {
@@ -26454,7 +26499,7 @@
      "notes": "called from shine (line 1395): this.fx(m, sp, [{ transform: 'translateX(-120%) skewX(-18deg)' }, { transform: 'translateX(260%) skewX(-18deg)' }], 750); from bindMotion (line 1374): this.shine(m)"
     },
     {
-     "id": "A-32",
+     "id": "A-33",
      "name": "Web Animation in resetTilt from bindMotion on this._tiltEl = t",
      "mechanism": "waapi",
      "element": {
@@ -26502,7 +26547,7 @@
      "notes": "called from bindMotion (line 1361): this.resetTilt(this._tiltEl)"
     },
     {
-     "id": "A-33",
+     "id": "A-34",
      "name": "Web Animation in animateEntrance on [...h1.parentElement.children]",
      "mechanism": "waapi",
      "element": {
@@ -26522,65 +26567,6 @@
      "trigger": {
       "type": "mount",
       "detail": "componentDidMount via animateEntrance"
-     },
-     "properties": [
-      {
-       "property": "opacity",
-       "from": 0,
-       "to": 1
-      },
-      {
-       "property": "transform",
-       "from": "translateY(28px)",
-       "to": "none"
-      },
-      {
-       "property": "filter",
-       "from": "blur(8px)",
-       "to": "blur(0)"
-      }
-     ],
-     "duration_ms": 900,
-     "delay_ms": "80 + i * 110",
-     "stagger": null,
-     "easing": "cubic-bezier(.16,.84,.32,1)",
-     "iterations": 1,
-     "direction": "normal",
-     "fill": "backwards",
-     "reduced_motion": {
-      "behaviour": "skip",
-      "detail": "returns early under !main || this.rm"
-     },
-     "status": "active",
-     "trace": {
-      "observed": "yes",
-      "note": "reached in the census runtime pass"
-     }
-    },
-    {
-     "id": "A-34",
-     "name": "Web Animation in animateEntrance on [...h1.parentElement.children]",
-     "mechanism": "waapi",
-     "element": {
-      "dc": "Indus Foods Website v2",
-      "template_tpl_id": null,
-      "selector": "[...h1.parentElement.children]",
-      "selection_rule": "resolved at runtime",
-      "description": "animated element: [...h1.parentElement.children]"
-     },
-     "source": {
-      "file": "Indus Foods Website v2.dc.html",
-      "function": "animateEntrance",
-      "ref": null,
-      "line": 1403,
-      "code": "el.animate([{ opacity: 0, transform: 'translateY(28px)', filter: 'blur(8px)' }, { opacity: 1, transform: 'none', filter: 'blur(0)' }], { duration: 900, delay: 8…"
-     },
-     "trigger": {
-      "type": "route",
-      "detail": "componentDidUpdate when page changes (set by a hash-route listener) via animatePage via animateEntrance",
-      "state_keys": [
-       "page"
-      ]
      },
      "properties": [
       {
@@ -26618,6 +26604,65 @@
     },
     {
      "id": "A-35",
+     "name": "Web Animation in animateEntrance on [...h1.parentElement.children]",
+     "mechanism": "waapi",
+     "element": {
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": null,
+      "selector": "[...h1.parentElement.children]",
+      "selection_rule": "resolved at runtime",
+      "description": "animated element: [...h1.parentElement.children]"
+     },
+     "source": {
+      "file": "Indus Foods Website v2.dc.html",
+      "function": "animateEntrance",
+      "ref": null,
+      "line": 1403,
+      "code": "el.animate([{ opacity: 0, transform: 'translateY(28px)', filter: 'blur(8px)' }, { opacity: 1, transform: 'none', filter: 'blur(0)' }], { duration: 900, delay: 8…"
+     },
+     "trigger": {
+      "type": "route",
+      "detail": "componentDidUpdate when page changes (set by a hash-route listener) via animatePage via animateEntrance",
+      "state_keys": [
+       "page"
+      ]
+     },
+     "properties": [
+      {
+       "property": "opacity",
+       "from": 0,
+       "to": 1
+      },
+      {
+       "property": "transform",
+       "from": "translateY(28px)",
+       "to": "none"
+      },
+      {
+       "property": "filter",
+       "from": "blur(8px)",
+       "to": "blur(0)"
+      }
+     ],
+     "duration_ms": 900,
+     "delay_ms": "80 + i * 110",
+     "stagger": null,
+     "easing": "cubic-bezier(.16,.84,.32,1)",
+     "iterations": 1,
+     "direction": "normal",
+     "fill": "backwards",
+     "reduced_motion": {
+      "behaviour": "skip",
+      "detail": "returns early under !main || this.rm"
+     },
+     "status": "active",
+     "trace": {
+      "observed": "yes",
+      "note": "reached in the census runtime pass"
+     }
+    },
+    {
+     "id": "A-36",
      "name": "Web Animation in animateEntrance on img && img.parentElement",
      "mechanism": "waapi",
      "element": {
@@ -26673,7 +26718,7 @@
      }
     },
     {
-     "id": "A-36",
+     "id": "A-37",
      "name": "Web Animation in animateEntrance on img && img.parentElement",
      "mechanism": "waapi",
      "element": {
@@ -26715,72 +26760,6 @@
       }
      ],
      "duration_ms": 1100,
-     "delay_ms": 200,
-     "stagger": null,
-     "easing": "cubic-bezier(.16,.84,.32,1)",
-     "iterations": 1,
-     "direction": "normal",
-     "fill": "backwards",
-     "reduced_motion": {
-      "behaviour": "skip",
-      "detail": "returns early under !main || this.rm"
-     },
-     "status": "active",
-     "trace": {
-      "observed": "yes",
-      "note": "reached in the census runtime pass"
-     }
-    },
-    {
-     "id": "A-37",
-     "name": "Web Animation in animateEntrance on image-slot",
-     "mechanism": "waapi",
-     "element": {
-      "dc": "Indus Foods Website v2",
-      "template_tpl_id": [
-       "78",
-       "89",
-       "101",
-       "141",
-       "162",
-       "172",
-       "217",
-       "225",
-       "234",
-       "279",
-       "289",
-       "342",
-       "372",
-       "396",
-       "452",
-       "460",
-       "484",
-       "496",
-       "503",
-       "608"
-      ],
-      "selector": "image-slot",
-      "description": "animated element: image-slot"
-     },
-     "source": {
-      "file": "Indus Foods Website v2.dc.html",
-      "function": "animateEntrance",
-      "ref": null,
-      "line": 1408,
-      "code": "img.animate([{ transform: 'scale(1.18)' }, { transform: 'scale(1)' }], { duration: 1600, delay: 200, easing: E, fill: 'backwards' })"
-     },
-     "trigger": {
-      "type": "mount",
-      "detail": "componentDidMount via animateEntrance"
-     },
-     "properties": [
-      {
-       "property": "transform",
-       "from": "scale(1.18)",
-       "to": "scale(1)"
-      }
-     ],
-     "duration_ms": 1600,
      "delay_ms": 200,
      "stagger": null,
      "easing": "cubic-bezier(.16,.84,.32,1)",
@@ -26836,6 +26815,72 @@
       "code": "img.animate([{ transform: 'scale(1.18)' }, { transform: 'scale(1)' }], { duration: 1600, delay: 200, easing: E, fill: 'backwards' })"
      },
      "trigger": {
+      "type": "mount",
+      "detail": "componentDidMount via animateEntrance"
+     },
+     "properties": [
+      {
+       "property": "transform",
+       "from": "scale(1.18)",
+       "to": "scale(1)"
+      }
+     ],
+     "duration_ms": 1600,
+     "delay_ms": 200,
+     "stagger": null,
+     "easing": "cubic-bezier(.16,.84,.32,1)",
+     "iterations": 1,
+     "direction": "normal",
+     "fill": "backwards",
+     "reduced_motion": {
+      "behaviour": "skip",
+      "detail": "returns early under !main || this.rm"
+     },
+     "status": "active",
+     "trace": {
+      "observed": "yes",
+      "note": "reached in the census runtime pass"
+     }
+    },
+    {
+     "id": "A-39",
+     "name": "Web Animation in animateEntrance on image-slot",
+     "mechanism": "waapi",
+     "element": {
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": [
+       "78",
+       "89",
+       "101",
+       "141",
+       "162",
+       "172",
+       "217",
+       "225",
+       "234",
+       "279",
+       "289",
+       "342",
+       "372",
+       "396",
+       "452",
+       "460",
+       "484",
+       "496",
+       "503",
+       "608"
+      ],
+      "selector": "image-slot",
+      "description": "animated element: image-slot"
+     },
+     "source": {
+      "file": "Indus Foods Website v2.dc.html",
+      "function": "animateEntrance",
+      "ref": null,
+      "line": 1408,
+      "code": "img.animate([{ transform: 'scale(1.18)' }, { transform: 'scale(1)' }], { duration: 1600, delay: 200, easing: E, fill: 'backwards' })"
+     },
+     "trigger": {
       "type": "route",
       "detail": "componentDidUpdate when page changes (set by a hash-route listener) via animatePage via animateEntrance",
       "state_keys": [
@@ -26867,7 +26912,7 @@
      }
     },
     {
-     "id": "A-39",
+     "id": "A-40",
      "name": "Web Animation in setHeroSvgEl on q('sunrays_spin')",
      "mechanism": "waapi",
      "element": {
@@ -26913,7 +26958,7 @@
      }
     },
     {
-     "id": "A-40",
+     "id": "A-41",
      "name": "Web Animation in setHeroSvgEl on q('Mountain Block')",
      "mechanism": "waapi",
      "element": {
@@ -26964,7 +27009,7 @@
      }
     },
     {
-     "id": "A-41",
+     "id": "A-42",
      "name": "Web Animation in setHeroSvgEl on q('snow')",
      "mechanism": "waapi",
      "element": {
@@ -27010,7 +27055,7 @@
      }
     },
     {
-     "id": "A-42",
+     "id": "A-43",
      "name": "Web Animation in setHeroSvgEl on q('sunrays_expand')",
      "mechanism": "waapi",
      "element": {
@@ -27093,7 +27138,7 @@
      }
     },
     {
-     "id": "A-43",
+     "id": "A-44",
      "name": "Web Animation in setHeroSvgEl on [gold, glow, hi]",
      "mechanism": "waapi",
      "element": {
@@ -27139,7 +27184,7 @@
      }
     },
     {
-     "id": "A-44",
+     "id": "A-45",
      "name": "Web Animation in setHeroSvgEl on q('darkpath')",
      "mechanism": "waapi",
      "element": {
@@ -27185,7 +27230,7 @@
      }
     },
     {
-     "id": "A-45",
+     "id": "A-46",
      "name": "Web Animation in setHeroSvgEl on q('background')",
      "mechanism": "waapi",
      "element": {
@@ -27725,7 +27770,7 @@
      }
     },
     {
-     "id": "A-46",
+     "id": "A-47",
      "name": "Web Animation in componentDidUpdate on ref setBody",
      "mechanism": "waapi",
      "element": {
@@ -27779,7 +27824,7 @@
      }
     },
     {
-     "id": "A-47",
+     "id": "A-48",
      "name": "Web Animation in componentDidUpdate on ref setDone",
      "mechanism": "waapi",
      "element": {
@@ -27832,7 +27877,7 @@
      }
     },
     {
-     "id": "A-48",
+     "id": "A-49",
      "name": "Web Animation in next on ref setBody",
      "mechanism": "waapi",
      "element": {
@@ -27895,7 +27940,70 @@
      }
     },
     {
-     "id": "A-49",
+     "id": "A-50",
+     "name": "Web Animation in next on ref setBody",
+     "mechanism": "waapi",
+     "element": {
+      "dc": "TradeApplication",
+      "template_tpl_id": "22",
+      "selector": "ref setBody",
+      "description": "animated element: ref setBody"
+     },
+     "source": {
+      "file": "TradeApplication.dc.html",
+      "function": "next",
+      "ref": "setBody",
+      "line": 255,
+      "code": "this._body.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-8px)' }, { transform: 'translateX(8px)' }, { transform: 'translateX(0)' }], { dura…"
+     },
+     "trigger": {
+      "type": "press",
+      "detail": "onClick on TradeApplication:85 (next → next)"
+     },
+     "properties": [
+      {
+       "property": "transform",
+       "from": "translateX(0)",
+       "to": "translateX(0)",
+       "keyframes": [
+        {
+         "offset": 0,
+         "value": "translateX(0)"
+        },
+        {
+         "offset": 0.3333,
+         "value": "translateX(-8px)"
+        },
+        {
+         "offset": 0.6667,
+         "value": "translateX(8px)"
+        },
+        {
+         "offset": 1,
+         "value": "translateX(0)"
+        }
+       ]
+      }
+     ],
+     "duration_ms": 320,
+     "delay_ms": 0,
+     "stagger": null,
+     "easing": "linear",
+     "iterations": 1,
+     "direction": "normal",
+     "fill": "auto",
+     "reduced_motion": {
+      "behaviour": "skip",
+      "detail": "guarded by this._body && !this.rm"
+     },
+     "status": "active",
+     "trace": {
+      "observed": "no",
+      "note": "unreached in the census runtime pass (rest mode); see the draft defects for the forced test"
+     }
+    },
+    {
+     "id": "A-51",
      "name": "Web Animation in componentDidUpdate on ref setCard",
      "mechanism": "waapi",
      "element": {
@@ -27948,7 +28056,7 @@
      }
     },
     {
-     "id": "A-50",
+     "id": "A-52",
      "name": "Web Animation in submit on ref setCard",
      "mechanism": "waapi",
      "element": {
@@ -27967,6 +28075,69 @@
      "trigger": {
       "type": "validation-fail",
       "detail": "guarded by Object.keys(errs).length"
+     },
+     "properties": [
+      {
+       "property": "transform",
+       "from": "translateX(0)",
+       "to": "none",
+       "keyframes": [
+        {
+         "offset": 0,
+         "value": "translateX(0)"
+        },
+        {
+         "offset": 0.3333,
+         "value": "translateX(-8px)"
+        },
+        {
+         "offset": 0.6667,
+         "value": "translateX(8px)"
+        },
+        {
+         "offset": 1,
+         "value": "none"
+        }
+       ]
+      }
+     ],
+     "duration_ms": 320,
+     "delay_ms": 0,
+     "stagger": null,
+     "easing": "linear",
+     "iterations": 1,
+     "direction": "normal",
+     "fill": "auto",
+     "reduced_motion": {
+      "behaviour": "skip",
+      "detail": "guarded by this._card && !this.rm"
+     },
+     "status": "active",
+     "trace": {
+      "observed": "no",
+      "note": "unreached in the census runtime pass (rest mode); see the draft defects for the forced test"
+     }
+    },
+    {
+     "id": "A-53",
+     "name": "Web Animation in submit on ref setCard",
+     "mechanism": "waapi",
+     "element": {
+      "dc": "EnquiryForm",
+      "template_tpl_id": "4",
+      "selector": "ref setCard",
+      "description": "animated element: ref setCard"
+     },
+     "source": {
+      "file": "EnquiryForm.dc.html",
+      "function": "submit",
+      "ref": "setCard",
+      "line": 99,
+      "code": "this._card.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-8px)' }, { transform: 'translateX(8px)' }, { transform: 'none' }], { duration: 320…"
+     },
+     "trigger": {
+      "type": "press",
+      "detail": "onSubmit on EnquiryForm:6 (submit → submit)"
      },
      "properties": [
       {
@@ -28689,7 +28860,7 @@
      },
      "trigger": {
       "type": "press",
-      "detail": "onClick on Indus Foods Website v2:726 (toTop)"
+      "detail": "onClick on Indus Foods Website v2:726 (toTop) (and 1 more: onClick on Indus Foods Website v2:726 (toTop → toTop))"
      },
      "properties": [
       {
@@ -28736,7 +28907,7 @@
      },
      "trigger": {
       "type": "press",
-      "detail": "onClick on Indus Foods Website v2:726 (toTop)"
+      "detail": "onClick on Indus Foods Website v2:726 (toTop) (and 1 more: onClick on Indus Foods Website v2:726 (toTop → toTop))"
      },
      "properties": [
       {
@@ -29792,7 +29963,7 @@
      },
      "trigger": {
       "type": "hover",
-      "detail": "onMouseEnter on Indus Foods Website v2:221 (pauseMarquee)"
+      "detail": "onMouseEnter on Indus Foods Website v2:221 (pauseMarquee) (and 1 more: onMouseEnter on Indus Foods Website v2:221 (pauseMarquee → pauseMarquee))"
      },
      "properties": [
       {
@@ -29839,7 +30010,7 @@
      },
      "trigger": {
       "type": "pointer-leave",
-      "detail": "onMouseLeave on Indus Foods Website v2:221 (playMarquee)"
+      "detail": "onMouseLeave on Indus Foods Website v2:221 (playMarquee) (and 1 more: onMouseLeave on Indus Foods Website v2:221 (playMarquee → playMarquee))"
      },
      "properties": [
       {
@@ -31279,7 +31450,7 @@
      },
      "trigger": {
       "type": "hover",
-      "detail": "onMouseEnter on Indus Foods Website v2:571 (btnEnter)"
+      "detail": "onMouseEnter on Indus Foods Website v2:571 (btnEnter) (and 1 more: onMouseEnter on Indus Foods Website v2:571 (btnEnter → btnEnter))"
      },
      "properties": [
       {
@@ -31324,7 +31495,7 @@
      },
      "trigger": {
       "type": "hover",
-      "detail": "onMouseEnter on Indus Foods Website v2:571 (btnEnter)"
+      "detail": "onMouseEnter on Indus Foods Website v2:571 (btnEnter) (and 1 more: onMouseEnter on Indus Foods Website v2:571 (btnEnter → btnEnter))"
      },
      "properties": [
       {
@@ -31369,7 +31540,7 @@
      },
      "trigger": {
       "type": "pointer-leave",
-      "detail": "onMouseLeave on Indus Foods Website v2:571 (btnLeave)"
+      "detail": "onMouseLeave on Indus Foods Website v2:571 (btnLeave) (and 1 more: onMouseLeave on Indus Foods Website v2:571 (btnLeave → btnLeave))"
      },
      "properties": [
       {
@@ -31414,7 +31585,7 @@
      },
      "trigger": {
       "type": "pointer-leave",
-      "detail": "onMouseLeave on Indus Foods Website v2:571 (btnLeave)"
+      "detail": "onMouseLeave on Indus Foods Website v2:571 (btnLeave) (and 1 more: onMouseLeave on Indus Foods Website v2:571 (btnLeave → btnLeave))"
      },
      "properties": [
       {
@@ -47309,6 +47480,7 @@
       "A-43",
       "A-44",
       "A-45",
+      "A-46",
       "L-01",
       "L-02",
       "L-03",
@@ -47318,11 +47490,13 @@
       "L-07",
       "L-08",
       "L-09",
-      "A-46",
       "A-47",
       "A-48",
       "A-49",
-      "A-50"
+      "A-50",
+      "A-51",
+      "A-52",
+      "A-53"
      ]
     },
     "inline_transitions": {
@@ -47707,7 +47881,7 @@
   "surfaces": {
    "schema_version": "1.0",
    "project": "Indus Foods",
-   "generated": "2026-10-27",
+   "generated": "2026-10-29",
    "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
    "records": [
     {
@@ -48507,9 +48681,10 @@
         "A-14",
         "A-15",
         "A-20",
-        "A-33",
-        "A-35",
-        "A-37",
+        "A-24",
+        "A-34",
+        "A-36",
+        "A-38",
         "J-26",
         "J-29"
        ]
@@ -48548,6 +48723,7 @@
         "A-19",
         "A-22",
         "A-24",
+        "A-25",
         "J-04",
         "J-31"
        ]
@@ -48582,7 +48758,7 @@
        ],
        "how_to_reach": "no type-safe value forces these keys (see unresolved)",
        "animation_ids": [
-        "A-49"
+        "A-51"
        ]
       }
      ],
@@ -48643,8 +48819,9 @@
        ],
        "how_to_reach": "onClick on TradeApplication:85 (next); onClick on TradeApplication:118 (restart); or lib/intake-state.mjs::setDraftState({ component: \"TradeApplication\", keys: {\"done\":false} })",
        "animation_ids": [
-        "A-47",
-        "A-48"
+        "A-48",
+        "A-49",
+        "A-50"
        ]
       },
       {
@@ -48658,8 +48835,9 @@
        ],
        "how_to_reach": "onClick on TradeApplication:85 (next); onClick on TradeApplication:118 (restart); or lib/intake-state.mjs::setDraftState({ component: \"TradeApplication\", keys: {\"done\":true} })",
        "animation_ids": [
-        "A-47",
-        "A-48"
+        "A-48",
+        "A-49",
+        "A-50"
        ]
       }
      ],
@@ -48692,7 +48870,7 @@
        ],
        "how_to_reach": "no type-safe value forces these keys (see unresolved)",
        "animation_ids": [
-        "A-46",
+        "A-47",
         "J-220"
        ]
       }
@@ -48748,7 +48926,8 @@
        ],
        "how_to_reach": "no type-safe value forces these keys (see unresolved)",
        "animation_ids": [
-        "A-48"
+        "A-49",
+        "A-50"
        ]
       }
      ],
@@ -48783,7 +48962,7 @@
        ],
        "how_to_reach": "onClick on TradeApplication:118 (restart); or lib/intake-state.mjs::setDraftState({ component: \"TradeApplication\", keys: {\"step\":1} })",
        "animation_ids": [
-        "A-46",
+        "A-47",
         "J-220"
        ]
       },
@@ -48798,7 +48977,7 @@
        ],
        "how_to_reach": "onClick on TradeApplication:118 (restart); or lib/intake-state.mjs::setDraftState({ component: \"TradeApplication\", keys: {\"step\":0} })",
        "animation_ids": [
-        "A-46",
+        "A-47",
         "J-220"
        ]
       }
@@ -48860,8 +49039,9 @@
        ],
        "how_to_reach": "onSubmit on EnquiryForm:6 (submit); onClick on EnquiryForm:48 (reset); or lib/intake-state.mjs::setDraftState({ component: \"EnquiryForm\", keys: {\"sent\":false} })",
        "animation_ids": [
-        "A-49",
-        "A-50"
+        "A-51",
+        "A-52",
+        "A-53"
        ]
       },
       {
@@ -48875,8 +49055,9 @@
        ],
        "how_to_reach": "onSubmit on EnquiryForm:6 (submit); onClick on EnquiryForm:48 (reset); or lib/intake-state.mjs::setDraftState({ component: \"EnquiryForm\", keys: {\"sent\":true} })",
        "animation_ids": [
-        "A-49",
-        "A-50"
+        "A-51",
+        "A-52",
+        "A-53"
        ]
       }
      ],
@@ -48931,7 +49112,8 @@
        ],
        "how_to_reach": "no type-safe value forces these keys (see unresolved)",
        "animation_ids": [
-        "A-50"
+        "A-52",
+        "A-53"
        ]
       }
      ],
@@ -48960,7 +49142,8 @@
        ],
        "how_to_reach": "no type-safe value forces these keys (see unresolved)",
        "animation_ids": [
-        "A-50"
+        "A-52",
+        "A-53"
        ]
       }
      ],
@@ -49384,7 +49567,7 @@
    {
     "rowId": "inventory:anim:Indus Foods Website v2.dc.html|1333|waapi:duration_ms",
     "draftId": "Indus Foods Website v2.dc.html:1333",
-    "text": "A-25 (theirs A-15) duration_ms: ours dur, theirs dist / 0.045 (45 px/s)",
+    "text": "A-26 (theirs A-15) duration_ms: ours dur, theirs dist / 0.045 (45 px/s)",
     "field": "duration_ms",
     "ours": "dur",
     "theirs": "dist / 0.045 (45 px/s)",
@@ -49393,7 +49576,7 @@
    {
     "rowId": "inventory:anim:Indus Foods Website v2.dc.html|1333|waapi:transform.to",
     "draftId": "Indus Foods Website v2.dc.html:1333",
-    "text": "A-25 (theirs A-15) transform.to: ours 'translateX(-' + dist + 'px)', theirs translateX(-{dist}px)",
+    "text": "A-26 (theirs A-15) transform.to: ours 'translateX(-' + dist + 'px)', theirs translateX(-{dist}px)",
     "field": "transform.to",
     "ours": "'translateX(-' + dist + 'px)'",
     "theirs": "translateX(-{dist}px)",
@@ -49402,7 +49585,7 @@
    {
     "rowId": "inventory:anim:Indus Foods Website v2.dc.html|1338|waapi:trigger.type",
     "draftId": "Indus Foods Website v2.dc.html:1338",
-    "text": "A-27 (theirs A-16) trigger.type: ours mount, theirs loop",
+    "text": "A-28 (theirs A-16) trigger.type: ours mount, theirs loop",
     "field": "trigger.type",
     "ours": "mount",
     "theirs": "loop",
@@ -49411,7 +49594,7 @@
    {
     "rowId": "inventory:anim:Indus Foods Website v2.dc.html|1338|waapi:delay_ms",
     "draftId": "Indus Foods Website v2.dc.html:1338",
-    "text": "A-27 (theirs A-16) delay_ms: ours delay || 0, theirs 0 (184) / 900 (256)",
+    "text": "A-28 (theirs A-16) delay_ms: ours delay || 0, theirs 0 (184) / 900 (256)",
     "field": "delay_ms",
     "ours": "delay || 0",
     "theirs": "0 (184) / 900 (256)",
@@ -49420,7 +49603,7 @@
    {
     "rowId": "inventory:anim:Indus Foods Website v2.dc.html|1344|waapi:trigger.type",
     "draftId": "Indus Foods Website v2.dc.html:1344",
-    "text": "A-29 (theirs A-17) trigger.type: ours mount, theirs loop",
+    "text": "A-30 (theirs A-17) trigger.type: ours mount, theirs loop",
     "field": "trigger.type",
     "ours": "mount",
     "theirs": "loop",
@@ -49429,7 +49612,7 @@
    {
     "rowId": "inventory:anim:Indus Foods Website v2.dc.html|1344|waapi:duration_ms",
     "draftId": "Indus Foods Website v2.dc.html:1344",
-    "text": "A-29 (theirs A-17) duration_ms: ours 2800 + Math.random() * 2200, theirs 2800 + random*2200",
+    "text": "A-30 (theirs A-17) duration_ms: ours 2800 + Math.random() * 2200, theirs 2800 + random*2200",
     "field": "duration_ms",
     "ours": "2800 + Math.random() * 2200",
     "theirs": "2800 + random*2200",
@@ -49438,7 +49621,7 @@
    {
     "rowId": "inventory:anim:Indus Foods Website v2.dc.html|1344|waapi:delay_ms",
     "draftId": "Indus Foods Website v2.dc.html:1344",
-    "text": "A-29 (theirs A-17) delay_ms: ours -Math.random() * 3000, theirs -random*3000",
+    "text": "A-30 (theirs A-17) delay_ms: ours -Math.random() * 3000, theirs -random*3000",
     "field": "delay_ms",
     "ours": "-Math.random() * 3000",
     "theirs": "-random*3000",
@@ -49447,7 +49630,7 @@
    {
     "rowId": "inventory:anim:Indus Foods Website v2.dc.html|1397|waapi:rotate.from",
     "draftId": "Indus Foods Website v2.dc.html:1397",
-    "text": "A-32 (theirs A-20) rotate.from: ours t.style.rotate || 'none', theirs current inline rotate",
+    "text": "A-33 (theirs A-20) rotate.from: ours t.style.rotate || 'none', theirs current inline rotate",
     "field": "rotate.from",
     "ours": "t.style.rotate || 'none'",
     "theirs": "current inline rotate",
@@ -49456,7 +49639,7 @@
    {
     "rowId": "inventory:anim:Indus Foods Website v2.dc.html|1403|waapi:trigger.type",
     "draftId": "Indus Foods Website v2.dc.html:1403",
-    "text": "A-33 (theirs A-21) trigger.type: ours mount, theirs load",
+    "text": "A-34 (theirs A-21) trigger.type: ours mount, theirs load",
     "field": "trigger.type",
     "ours": "mount",
     "theirs": "load",
@@ -49465,7 +49648,7 @@
    {
     "rowId": "inventory:anim:Indus Foods Website v2.dc.html|1407|waapi:trigger.type",
     "draftId": "Indus Foods Website v2.dc.html:1407",
-    "text": "A-35 (theirs A-22) trigger.type: ours mount, theirs load",
+    "text": "A-36 (theirs A-22) trigger.type: ours mount, theirs load",
     "field": "trigger.type",
     "ours": "mount",
     "theirs": "load",
@@ -49474,7 +49657,7 @@
    {
     "rowId": "inventory:anim:Indus Foods Website v2.dc.html|1408|waapi:trigger.type",
     "draftId": "Indus Foods Website v2.dc.html:1408",
-    "text": "A-37 (theirs A-23) trigger.type: ours mount, theirs load",
+    "text": "A-38 (theirs A-23) trigger.type: ours mount, theirs load",
     "field": "trigger.type",
     "ours": "mount",
     "theirs": "load",
@@ -49483,7 +49666,7 @@
    {
     "rowId": "inventory:anim:TradeApplication.dc.html|170|waapi:transform.from",
     "draftId": "TradeApplication.dc.html:170",
-    "text": "A-46 (theirs A-31) transform.from: ours 'translateX(' + 36 * dir + 'px)', theirs translateX(36px × dir)",
+    "text": "A-47 (theirs A-31) transform.from: ours 'translateX(' + 36 * dir + 'px)', theirs translateX(36px × dir)",
     "field": "transform.from",
     "ours": "'translateX(' + 36 * dir + 'px)'",
     "theirs": "translateX(36px × dir)",
@@ -51263,9 +51446,18 @@
     "why": "only the re-derived inventory has this effect"
    },
    {
+    "rowId": "inventory:anim:Indus Foods Website v2.dc.html|1310|waapi:only-ours",
+    "draftId": "Indus Foods Website v2.dc.html:1310",
+    "text": "A-25 waapi Web Animation in closeMobile on ref setDrawerEl is not in Claude Design's animations.json",
+    "field": "record",
+    "ours": "Indus Foods Website v2.dc.html|1310|waapi",
+    "theirs": null,
+    "why": "only the re-derived inventory has this effect"
+   },
+   {
     "rowId": "inventory:anim:Indus Foods Website v2.dc.html|1333|waapi:only-ours",
     "draftId": "Indus Foods Website v2.dc.html:1333",
-    "text": "A-26 waapi Web Animation in startMarquee on ref setMarqueeEl is not in Claude Design's animations.json",
+    "text": "A-27 waapi Web Animation in startMarquee on ref setMarqueeEl is not in Claude Design's animations.json",
     "field": "record",
     "ours": "Indus Foods Website v2.dc.html|1333|waapi",
     "theirs": null,
@@ -51274,7 +51466,7 @@
    {
     "rowId": "inventory:anim:Indus Foods Website v2.dc.html|1403|waapi:only-ours",
     "draftId": "Indus Foods Website v2.dc.html:1403",
-    "text": "A-34 waapi Web Animation in animateEntrance on [...h1.parentElement.children] is not in Claude Design's animations.json",
+    "text": "A-35 waapi Web Animation in animateEntrance on [...h1.parentElement.children] is not in Claude Design's animations.json",
     "field": "record",
     "ours": "Indus Foods Website v2.dc.html|1403|waapi",
     "theirs": null,
@@ -51283,7 +51475,7 @@
    {
     "rowId": "inventory:anim:Indus Foods Website v2.dc.html|1407|waapi:only-ours",
     "draftId": "Indus Foods Website v2.dc.html:1407",
-    "text": "A-36 waapi Web Animation in animateEntrance on img && img.parentElement is not in Claude Design's animations.json",
+    "text": "A-37 waapi Web Animation in animateEntrance on img && img.parentElement is not in Claude Design's animations.json",
     "field": "record",
     "ours": "Indus Foods Website v2.dc.html|1407|waapi",
     "theirs": null,
@@ -51292,9 +51484,27 @@
    {
     "rowId": "inventory:anim:Indus Foods Website v2.dc.html|1408|waapi:only-ours",
     "draftId": "Indus Foods Website v2.dc.html:1408",
-    "text": "A-38 waapi Web Animation in animateEntrance on image-slot is not in Claude Design's animations.json",
+    "text": "A-39 waapi Web Animation in animateEntrance on image-slot is not in Claude Design's animations.json",
     "field": "record",
     "ours": "Indus Foods Website v2.dc.html|1408|waapi",
+    "theirs": null,
+    "why": "only the re-derived inventory has this effect"
+   },
+   {
+    "rowId": "inventory:anim:TradeApplication.dc.html|255|waapi:only-ours",
+    "draftId": "TradeApplication.dc.html:255",
+    "text": "A-50 waapi Web Animation in next on ref setBody is not in Claude Design's animations.json",
+    "field": "record",
+    "ours": "TradeApplication.dc.html|255|waapi",
+    "theirs": null,
+    "why": "only the re-derived inventory has this effect"
+   },
+   {
+    "rowId": "inventory:anim:EnquiryForm.dc.html|99|waapi:only-ours",
+    "draftId": "EnquiryForm.dc.html:99",
+    "text": "A-53 waapi Web Animation in submit on ref setCard is not in Claude Design's animations.json",
+    "field": "record",
+    "ours": "EnquiryForm.dc.html|99|waapi",
     "theirs": null,
     "why": "only the re-derived inventory has this effect"
    },
@@ -54934,7 +55144,8 @@
     "kind": "waapi",
     "role": "effect",
     "recordIds": [
-     "A-24"
+     "A-24",
+     "A-25"
     ]
    },
    {
@@ -54942,8 +55153,8 @@
     "kind": "waapi",
     "role": "effect",
     "recordIds": [
-     "A-25",
-     "A-26"
+     "A-26",
+     "A-27"
     ]
    },
    {
@@ -54951,8 +55162,8 @@
     "kind": "waapi",
     "role": "effect",
     "recordIds": [
-     "A-27",
-     "A-28"
+     "A-28",
+     "A-29"
     ]
    },
    {
@@ -54960,7 +55171,7 @@
     "kind": "waapi",
     "role": "effect",
     "recordIds": [
-     "A-29"
+     "A-30"
     ]
    },
    {
@@ -54976,8 +55187,8 @@
     "kind": "waapi",
     "role": "effect",
     "recordIds": [
-     "A-30",
-     "A-31"
+     "A-31",
+     "A-32"
     ]
    },
    {
@@ -54985,7 +55196,7 @@
     "kind": "waapi",
     "role": "effect",
     "recordIds": [
-     "A-32"
+     "A-33"
     ]
    },
    {
@@ -54993,8 +55204,8 @@
     "kind": "waapi",
     "role": "effect",
     "recordIds": [
-     "A-33",
-     "A-34"
+     "A-34",
+     "A-35"
     ]
    },
    {
@@ -55002,8 +55213,8 @@
     "kind": "waapi",
     "role": "effect",
     "recordIds": [
-     "A-35",
-     "A-36"
+     "A-36",
+     "A-37"
     ]
    },
    {
@@ -55011,8 +55222,8 @@
     "kind": "waapi",
     "role": "effect",
     "recordIds": [
-     "A-37",
-     "A-38"
+     "A-38",
+     "A-39"
     ]
    },
    {
@@ -55020,7 +55231,7 @@
     "kind": "waapi",
     "role": "effect",
     "recordIds": [
-     "A-39"
+     "A-40"
     ]
    },
    {
@@ -55028,7 +55239,7 @@
     "kind": "waapi",
     "role": "effect",
     "recordIds": [
-     "A-40"
+     "A-41"
     ]
    },
    {
@@ -55036,7 +55247,7 @@
     "kind": "waapi",
     "role": "effect",
     "recordIds": [
-     "A-41"
+     "A-42"
     ]
    },
    {
@@ -55044,7 +55255,7 @@
     "kind": "waapi",
     "role": "effect",
     "recordIds": [
-     "A-42"
+     "A-43"
     ]
    },
    {
@@ -55052,7 +55263,7 @@
     "kind": "waapi",
     "role": "effect",
     "recordIds": [
-     "A-43"
+     "A-44"
     ]
    },
    {
@@ -55060,7 +55271,7 @@
     "kind": "waapi",
     "role": "effect",
     "recordIds": [
-     "A-44"
+     "A-45"
     ]
    },
    {
@@ -55068,7 +55279,7 @@
     "kind": "waapi",
     "role": "effect",
     "recordIds": [
-     "A-45"
+     "A-46"
     ]
    },
    {
@@ -55396,7 +55607,7 @@
     "kind": "waapi",
     "role": "effect",
     "recordIds": [
-     "A-46"
+     "A-47"
     ]
    },
    {
@@ -55404,7 +55615,7 @@
     "kind": "waapi",
     "role": "effect",
     "recordIds": [
-     "A-47"
+     "A-48"
     ]
    },
    {
@@ -55412,7 +55623,8 @@
     "kind": "waapi",
     "role": "effect",
     "recordIds": [
-     "A-48"
+     "A-49",
+     "A-50"
     ]
    },
    {
@@ -55540,7 +55752,7 @@
     "kind": "waapi",
     "role": "effect",
     "recordIds": [
-     "A-49"
+     "A-51"
     ]
    },
    {
@@ -55548,7 +55760,8 @@
     "kind": "waapi",
     "role": "effect",
     "recordIds": [
-     "A-50"
+     "A-52",
+     "A-53"
     ]
    },
    {
@@ -56482,6 +56695,7 @@
     "kind": "handler",
     "role": "trigger",
     "recordIds": [
+     "A-24",
      "S-34",
      "S-33"
     ]
@@ -56530,6 +56744,7 @@
     "kind": "handler",
     "role": "trigger",
     "recordIds": [
+     "A-24",
      "S-33"
     ]
    },
@@ -56540,6 +56755,7 @@
     "recordIds": [
      "A-16",
      "A-24",
+     "A-25",
      "RM-01"
     ]
    },
@@ -56571,6 +56787,7 @@
     "role": "trigger",
     "recordIds": [
      "A-24",
+     "A-25",
      "S-34"
     ]
    },
@@ -56746,7 +56963,7 @@
     "kind": "ref",
     "role": "trigger",
     "recordIds": [
-     "A-27",
+     "A-28",
      "RM-01"
     ]
    },
@@ -56779,8 +56996,8 @@
     "kind": "ref",
     "role": "trigger",
     "recordIds": [
-     "A-25",
      "A-26",
+     "A-27",
      "RM-01"
     ]
    },
@@ -56851,7 +57068,7 @@
     "kind": "ref",
     "role": "trigger",
     "recordIds": [
-     "A-28",
+     "A-29",
      "RM-01"
     ]
    },
@@ -57244,20 +57461,18 @@
    {
     "occurrence": "handler@Indus Foods Website v2:js:1024:4/addEventListener:keydown",
     "kind": "handler",
-    "role": "context",
+    "role": "trigger",
     "recordIds": [
-     "S-01"
-    ],
-    "why": "drives no effect record; it sits on Indus Foods Website v2's surface"
+     "A-24"
+    ]
    },
    {
     "occurrence": "handler@Indus Foods Website v2:js:1026:4/addEventListener:hashchange",
     "kind": "handler",
-    "role": "context",
+    "role": "trigger",
     "recordIds": [
-     "S-01"
-    ],
-    "why": "drives no effect record; it sits on Indus Foods Website v2's surface"
+     "A-25"
+    ]
    },
    {
     "occurrence": "timer@Indus Foods Website v2:js:1029:18",
@@ -57303,9 +57518,9 @@
     "role": "trigger",
     "recordIds": [
      "A-20",
-     "A-33",
-     "A-35",
-     "A-37",
+     "A-34",
+     "A-36",
+     "A-38",
      "J-26",
      "J-29"
     ]
@@ -57358,9 +57573,9 @@
      "A-12",
      "A-13",
      "A-21",
-     "A-34",
-     "A-36",
-     "A-38",
+     "A-35",
+     "A-37",
+     "A-39",
      "J-27",
      "J-30"
     ]
@@ -57417,7 +57632,7 @@
     "kind": "timer",
     "role": "trigger",
     "recordIds": [
-     "A-26",
+     "A-27",
      "J-35",
      "J-37"
     ]
@@ -57496,11 +57711,10 @@
    {
     "occurrence": "handler@Indus Foods Website v2:js:1302:52/addEventListener:click",
     "kind": "handler",
-    "role": "context",
+    "role": "trigger",
     "recordIds": [
-     "S-01"
-    ],
-    "why": "drives no effect record; it sits on Indus Foods Website v2's surface"
+     "A-24"
+    ]
    },
    {
     "occurrence": "timer@Indus Foods Website v2:js:1312:19",
@@ -57534,7 +57748,7 @@
     "kind": "timer",
     "role": "trigger",
     "recordIds": [
-     "A-25",
+     "A-26",
      "J-34",
      "J-36"
     ]
@@ -57581,8 +57795,8 @@
     "kind": "handler",
     "role": "trigger",
     "recordIds": [
-     "A-31",
      "A-32",
+     "A-33",
      "J-43",
      "J-44",
      "J-45",
@@ -57605,7 +57819,7 @@
     "kind": "handler",
     "role": "trigger",
     "recordIds": [
-     "A-30",
+     "A-31",
      "J-51",
      "J-52",
      "J-54",
@@ -58109,8 +58323,9 @@
     "kind": "ref",
     "role": "trigger",
     "recordIds": [
-     "A-46",
-     "A-48",
+     "A-47",
+     "A-49",
+     "A-50",
      "RM-02"
     ]
    },
@@ -58191,7 +58406,8 @@
     "kind": "handler",
     "role": "trigger",
     "recordIds": [
-     "A-48",
+     "A-49",
+     "A-50",
      "S-37",
      "S-40"
     ]
@@ -58209,7 +58425,7 @@
     "kind": "ref",
     "role": "trigger",
     "recordIds": [
-     "A-47",
+     "A-48",
      "RM-02"
     ]
    },
@@ -58239,8 +58455,9 @@
     "kind": "ref",
     "role": "trigger",
     "recordIds": [
-     "A-49",
-     "A-50",
+     "A-51",
+     "A-52",
+     "A-53",
      "RM-03"
     ]
    },
@@ -58249,7 +58466,8 @@
     "kind": "handler",
     "role": "trigger",
     "recordIds": [
-     "A-50",
+     "A-52",
+     "A-53",
      "S-45",
      "S-46",
      "S-43"
@@ -62501,7 +62719,7 @@
   {
    "route": "food-service",
    "slug": "food-service",
-   "title": "Food service supply for kitchens that never stop.",
+   "title": "Food Service",
    "parent": null,
    "template": "page",
    "menus": [
@@ -62519,8 +62737,8 @@
   {
    "route": "manufacturing",
    "slug": "manufacturing",
-   "title": "Bulk ingredients for food manufacturers.",
-   "parent": null,
+   "title": "Manufacturing",
+   "parent": "food-service",
    "template": "page",
    "menus": [],
    "postType": "page",
@@ -62531,8 +62749,8 @@
   {
    "route": "retail",
    "slug": "retail",
-   "title": "Retail-ready ranges your customers look for.",
-   "parent": null,
+   "title": "Retail",
+   "parent": "food-service",
    "template": "page",
    "menus": [],
    "postType": "page",
@@ -62543,8 +62761,8 @@
   {
    "route": "wholesale",
    "slug": "wholesale",
-   "title": "Pallet volumes for wholesalers and cash & carries.",
-   "parent": null,
+   "title": "Wholesale",
+   "parent": "food-service",
    "template": "page",
    "menus": [],
    "postType": "page",
@@ -62650,7 +62868,7 @@
    "route": "catalogue",
    "slug": "catalogue",
    "title": "Request Catalogue",
-   "parent": null,
+   "parent": "apply",
    "template": "page",
    "menus": [],
    "postType": "page",
@@ -62662,7 +62880,7 @@
    "route": "delivery",
    "slug": "delivery",
    "title": "Delivery & Logistics",
-   "parent": null,
+   "parent": "apply",
    "template": "page",
    "menus": [
     {
@@ -62680,7 +62898,7 @@
    "route": "terms",
    "slug": "terms",
    "title": "Terms & Conditions",
-   "parent": null,
+   "parent": "apply",
    "template": "page",
    "menus": [
     {
@@ -62734,7 +62952,7 @@
    "route": "faqs",
    "slug": "faqs",
    "title": "FAQs",
-   "parent": null,
+   "parent": "apply",
    "template": "page",
    "menus": [],
    "postType": "page",
@@ -64638,13 +64856,12 @@
      }
     ],
     "sharedWith": [],
-    "role": "custom-social-linkedin",
-    "roles": [
-     "custom-social-linkedin"
-    ],
-    "confidence": 0.8,
-    "why": "header, selection and social colours have no palette slug (FR-33-13, FR-33-16)",
-    "by": "name"
+    "role": null,
+    "roles": [],
+    "brand": "linkedin",
+    "confidence": 0.9,
+    "why": "brand colour: LinkedIn (the brand registry names it), painted by the brand's own setting, so no palette slot",
+    "by": "brand"
    },
    {
     "rowId": "palette:--social-facebook",
@@ -64664,13 +64881,12 @@
      }
     ],
     "sharedWith": [],
-    "role": "custom-social-facebook",
-    "roles": [
-     "custom-social-facebook"
-    ],
-    "confidence": 0.8,
-    "why": "header, selection and social colours have no palette slug (FR-33-13, FR-33-16)",
-    "by": "name"
+    "role": null,
+    "roles": [],
+    "brand": "facebook",
+    "confidence": 0.9,
+    "why": "brand colour: Facebook (the brand registry names it), painted by the brand's own setting, so no palette slot",
+    "by": "brand"
    },
    {
     "rowId": "palette:--social-google",
@@ -76081,7 +76297,7 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it",
+     "reason": "a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)",
      "rule": "clientBuiltSurface",
      "into": "Indus Foods Website v2/45#0",
      "builtPost": {
@@ -76146,7 +76362,7 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it",
+     "reason": "drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)",
      "rule": "clientBuiltSurface",
      "into": "Indus Foods Website v2/45#0",
      "builtPost": {
@@ -76216,7 +76432,7 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it",
+     "reason": "drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)",
      "rule": "clientBuiltSurface",
      "into": "Indus Foods Website v2/45#0",
      "builtPost": {
@@ -76286,7 +76502,7 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it",
+     "reason": "drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)",
      "rule": "clientBuiltSurface",
      "into": "Indus Foods Website v2/45#0",
      "builtPost": {
@@ -84160,8 +84376,8 @@
      "draftId": "Indus Foods Website v2:675"
     },
     {
-     "rowId": "skeleton:footer:Indus Foods Website v2/677",
-     "key": "Indus Foods Website v2/677",
+     "rowId": "skeleton:footer:Indus Foods Website v2/677=sgs/business-info",
+     "key": "Indus Foods Website v2/677=sgs/business-info",
      "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -84181,7 +84397,7 @@
      "block": "sgs/business-info",
      "confidence": 1,
      "low": false,
-     "reason": "4 copies of one template element; a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
+     "reason": "1 copies of one template element; a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
      "rule": "hoursRows",
      "candidates": [
       {
@@ -84201,17 +84417,17 @@
       {
        "draftId": "Indus Foods Website v2:677",
        "tag": "div",
-       "block": "sgs/business-info"
+       "block": null
       },
       {
        "draftId": "Indus Foods Website v2:677",
        "tag": "div",
-       "block": "sgs/business-info"
+       "block": null
       },
       {
        "draftId": "Indus Foods Website v2:677",
        "tag": "div",
-       "block": "sgs/business-info"
+       "block": null
       }
      ],
      "siblingCount": 3,
@@ -84239,14 +84455,104 @@
       }
      ],
      "draftId": "Indus Foods Website v2:677",
-     "copies": 4,
+     "copies": 1,
      "keys": [
-      "Indus Foods Website v2/677#0",
+      "Indus Foods Website v2/677#0"
+     ],
+     "proposalReason": "a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
+     "splitFrom": "Indus Foods Website v2/677",
+     "blocksAcrossCopies": {
+      "sgs/business-info": 1,
+      "none": 3
+     }
+    },
+    {
+     "rowId": "skeleton:footer:Indus Foods Website v2/677=absorbed",
+     "key": "Indus Foods Website v2/677=absorbed",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "eb8ff691",
+      "parentTags": [
+       "footer",
+       "div",
+       "div",
+       "div",
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 959
+     },
+     "tag": "div",
+     "words": "",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "3 copies of one template element; a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
+     "rule": "hoursRows",
+     "into": "Indus Foods Website v2/677#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<div style=\"display:flex;justify-content:space-between;gap:14px;font-size:16px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);color:{{ hr.color }};",
+     "parent": {
+      "draftId": "Indus Foods Website v2:675",
+      "tag": "div",
+      "block": "sgs/container"
+     },
+     "siblings": [
+      {
+       "draftId": "Indus Foods Website v2:677",
+       "tag": "div",
+       "block": "sgs/business-info"
+      },
+      {
+       "draftId": "Indus Foods Website v2:677",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Indus Foods Website v2:677",
+       "tag": "div",
+       "block": null
+      }
+     ],
+     "siblingCount": 3,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 915.2,
+       "y": 4642.3,
+       "w": 357.8,
+       "h": 39.8
+      },
+      {
+       "width": 768,
+       "x": 59,
+       "y": 6131.3,
+       "w": 650,
+       "h": 39.8
+      },
+      {
+       "width": 375,
+       "x": 47,
+       "y": 7744.3,
+       "w": 281,
+       "h": 39.8
+      }
+     ],
+     "draftId": "Indus Foods Website v2:677",
+     "copies": 3,
+     "keys": [
       "Indus Foods Website v2/677#1",
       "Indus Foods Website v2/677#2",
       "Indus Foods Website v2/677#3"
      ],
-     "proposalReason": "a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it"
+     "proposalReason": "a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
+     "splitFrom": "Indus Foods Website v2/677",
+     "blocksAcrossCopies": {
+      "sgs/business-info": 1,
+      "none": 3
+     }
     },
     {
      "rowId": "skeleton:footer:Indus Foods Website v2/678",
@@ -87296,10 +87602,10 @@
     "inventoryElements": 95,
     "parts": 13,
     "rows": 82,
-    "skeletonNodes": 46,
-    "expandedNodes": 50,
+    "skeletonNodes": 44,
+    "expandedNodes": 48,
     "low": 0,
-    "removed": 31,
+    "removed": 34,
     "unresolved": 0,
     "byRule": {
      "widthWrapper": 2,
@@ -88907,7 +89213,7 @@
      "block": "sgs/brand-strip",
      "confidence": 1,
      "low": false,
-     "reason": "a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels make sgs/trust-bar, and the repeated items are its items; the route writes no marquee motion until M7",
+     "reason": "a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels that are a page's own section make sgs/trust-bar, labels inside another block make sgs/brand-strip showing the names as text (the section block cannot sit inside a section, and a button group does not offer the marquee effect), and the repeated items are its items",
      "rule": "marquee",
      "handover": {
       "owner": "content-page",
@@ -110349,8 +110655,8 @@
     "inventoryElements": 174,
     "parts": 1,
     "rows": 173,
-    "skeletonNodes": 73,
-    "expandedNodes": 73,
+    "skeletonNodes": 77,
+    "expandedNodes": 77,
     "low": 10,
     "removed": 100,
     "unresolved": 0,
@@ -112435,8 +112741,8 @@
     "inventoryElements": 85,
     "parts": 0,
     "rows": 85,
-    "skeletonNodes": 69,
-    "expandedNodes": 69,
+    "skeletonNodes": 70,
+    "expandedNodes": 70,
     "low": 10,
     "removed": 16,
     "unresolved": 0,
@@ -112493,8 +112799,8 @@
     "inventoryElements": 84,
     "parts": 0,
     "rows": 84,
-    "skeletonNodes": 65,
-    "expandedNodes": 65,
+    "skeletonNodes": 68,
+    "expandedNodes": 68,
     "low": 10,
     "removed": 19,
     "unresolved": 0,
@@ -116025,8 +116331,8 @@
     "inventoryElements": 191,
     "parts": 11,
     "rows": 180,
-    "skeletonNodes": 129,
-    "expandedNodes": 129,
+    "skeletonNodes": 136,
+    "expandedNodes": 136,
     "low": 17,
     "removed": 50,
     "unresolved": 0,
@@ -117653,8 +117959,8 @@
     "inventoryElements": 168,
     "parts": 0,
     "rows": 168,
-    "skeletonNodes": 141,
-    "expandedNodes": 141,
+    "skeletonNodes": 145,
+    "expandedNodes": 145,
     "low": 24,
     "removed": 27,
     "unresolved": 0,
@@ -117712,8 +118018,8 @@
     "inventoryElements": 162,
     "parts": 0,
     "rows": 162,
-    "skeletonNodes": 135,
-    "expandedNodes": 135,
+    "skeletonNodes": 139,
+    "expandedNodes": 139,
     "low": 24,
     "removed": 27,
     "unresolved": 0,
@@ -117778,8 +118084,8 @@
     "inventoryElements": 136,
     "parts": 0,
     "rows": 136,
-    "skeletonNodes": 109,
-    "expandedNodes": 109,
+    "skeletonNodes": 113,
+    "expandedNodes": 113,
     "low": 14,
     "removed": 27,
     "unresolved": 0,
@@ -117976,8 +118282,8 @@
     "inventoryElements": 125,
     "parts": 0,
     "rows": 125,
-    "skeletonNodes": 99,
-    "expandedNodes": 99,
+    "skeletonNodes": 104,
+    "expandedNodes": 104,
     "low": 14,
     "removed": 26,
     "unresolved": 0,
@@ -118657,8 +118963,8 @@
     "inventoryElements": 121,
     "parts": 0,
     "rows": 121,
-    "skeletonNodes": 95,
-    "expandedNodes": 95,
+    "skeletonNodes": 99,
+    "expandedNodes": 99,
     "low": 11,
     "removed": 26,
     "unresolved": 0,
@@ -118928,8 +119234,8 @@
     "inventoryElements": 111,
     "parts": 5,
     "rows": 106,
-    "skeletonNodes": 87,
-    "expandedNodes": 87,
+    "skeletonNodes": 91,
+    "expandedNodes": 91,
     "low": 12,
     "removed": 19,
     "unresolved": 0,
@@ -118986,8 +119292,8 @@
     "inventoryElements": 92,
     "parts": 3,
     "rows": 89,
-    "skeletonNodes": 70,
-    "expandedNodes": 70,
+    "skeletonNodes": 74,
+    "expandedNodes": 74,
     "low": 8,
     "removed": 19,
     "unresolved": 0,
@@ -119051,8 +119357,8 @@
     "inventoryElements": 92,
     "parts": 3,
     "rows": 89,
-    "skeletonNodes": 70,
-    "expandedNodes": 70,
+    "skeletonNodes": 74,
+    "expandedNodes": 74,
     "low": 8,
     "removed": 19,
     "unresolved": 0,
@@ -119116,8 +119422,8 @@
     "inventoryElements": 92,
     "parts": 3,
     "rows": 89,
-    "skeletonNodes": 70,
-    "expandedNodes": 70,
+    "skeletonNodes": 74,
+    "expandedNodes": 74,
     "low": 8,
     "removed": 19,
     "unresolved": 0,
@@ -119618,7 +119924,7 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "drawn by sgs/form: rule formLink",
+     "reason": "2 copies of one template element on 2 surfaces; drawn by sgs/form: rule formLink",
      "rule": "formLink",
      "into": "Indus Foods Website v2>TradeApplication@466#0/6#0",
      "candidates": [],
@@ -119660,7 +119966,16 @@
        "h": 19.5
       }
      ],
-     "draftId": "TradeApplication:10"
+     "draftId": "TradeApplication:10",
+     "alsoIn": [
+      {
+       "surface": "trade-account-application",
+       "keys": [
+        "Indus Foods Website v2>TradeApplication@466#0/10#0"
+       ]
+      }
+     ],
+     "copies": 2
     },
     {
      "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/12#0",
@@ -121394,7 +121709,7 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "drawn by sgs/form: rule formLink",
+     "reason": "2 copies of one template element on 2 surfaces; drawn by sgs/form: rule formLink",
      "rule": "formLink",
      "into": "Indus Foods Website v2>TradeApplication@466#0/6#0",
      "candidates": [],
@@ -121436,7 +121751,16 @@
        "h": 56
       }
      ],
-     "draftId": "TradeApplication:85"
+     "draftId": "TradeApplication:85",
+     "alsoIn": [
+      {
+       "surface": "trade-account-application",
+       "keys": [
+        "Indus Foods Website v2>TradeApplication@466#0/85#0"
+       ]
+      }
+     ],
+     "copies": 2
     },
     {
      "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/86#0",
@@ -122519,8 +122843,8 @@
     "inventoryElements": 145,
     "parts": 9,
     "rows": 136,
-    "skeletonNodes": 90,
-    "expandedNodes": 90,
+    "skeletonNodes": 92,
+    "expandedNodes": 92,
     "low": 21,
     "removed": 45,
     "unresolved": 0,
@@ -123354,8 +123678,8 @@
     "inventoryElements": 108,
     "parts": 0,
     "rows": 108,
-    "skeletonNodes": 88,
-    "expandedNodes": 88,
+    "skeletonNodes": 96,
+    "expandedNodes": 96,
     "low": 10,
     "removed": 20,
     "unresolved": 0,
@@ -124412,8 +124736,8 @@
     "inventoryElements": 65,
     "parts": 0,
     "rows": 65,
-    "skeletonNodes": 55,
-    "expandedNodes": 55,
+    "skeletonNodes": 69,
+    "expandedNodes": 69,
     "low": 13,
     "removed": 10,
     "unresolved": 0,
@@ -129384,8 +129708,8 @@
     "inventoryElements": 76,
     "parts": 0,
     "rows": 76,
-    "skeletonNodes": 66,
-    "expandedNodes": 66,
+    "skeletonNodes": 75,
+    "expandedNodes": 75,
     "low": 4,
     "removed": 10,
     "unresolved": 0,
@@ -131673,8 +131997,8 @@
     "inventoryElements": 96,
     "parts": 0,
     "rows": 96,
-    "skeletonNodes": 49,
-    "expandedNodes": 49,
+    "skeletonNodes": 50,
+    "expandedNodes": 50,
     "low": 2,
     "removed": 47,
     "unresolved": 0,
@@ -131729,8 +132053,8 @@
     "inventoryElements": 92,
     "parts": 0,
     "rows": 92,
-    "skeletonNodes": 46,
-    "expandedNodes": 46,
+    "skeletonNodes": 47,
+    "expandedNodes": 47,
     "low": 3,
     "removed": 46,
     "unresolved": 0,
@@ -131793,8 +132117,8 @@
     "inventoryElements": 95,
     "parts": 0,
     "rows": 95,
-    "skeletonNodes": 48,
-    "expandedNodes": 48,
+    "skeletonNodes": 49,
+    "expandedNodes": 49,
     "low": 4,
     "removed": 47,
     "unresolved": 0,
@@ -131857,8 +132181,8 @@
     "inventoryElements": 92,
     "parts": 0,
     "rows": 92,
-    "skeletonNodes": 46,
-    "expandedNodes": 46,
+    "skeletonNodes": 47,
+    "expandedNodes": 47,
     "low": 3,
     "removed": 46,
     "unresolved": 0,
@@ -131921,8 +132245,8 @@
     "inventoryElements": 92,
     "parts": 0,
     "rows": 92,
-    "skeletonNodes": 46,
-    "expandedNodes": 46,
+    "skeletonNodes": 47,
+    "expandedNodes": 47,
     "low": 3,
     "removed": 46,
     "unresolved": 0,
@@ -131985,8 +132309,8 @@
     "inventoryElements": 92,
     "parts": 0,
     "rows": 92,
-    "skeletonNodes": 46,
-    "expandedNodes": 46,
+    "skeletonNodes": 47,
+    "expandedNodes": 47,
     "low": 3,
     "removed": 46,
     "unresolved": 0,
@@ -132337,7 +132661,7 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "14 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "14 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
      "rule": "formControl",
      "candidates": [],
      "action": "unwrap",
@@ -132414,7 +132738,7 @@
       "Indus Foods Website v2/555#5",
       "Indus Foods Website v2/555#6"
      ],
-     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
      "alsoIn": [
       {
        "surface": "inline-form-catalogue",
@@ -132621,7 +132945,7 @@
      "block": "sgs/form-field-text",
      "confidence": 1,
      "low": false,
-     "reason": "3 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "3 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
      "rule": "formControl",
      "candidates": [
       {
@@ -132673,7 +132997,7 @@
      "keys": [
       "Indus Foods Website v2/560#0"
      ],
-     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
      "splitFrom": "Indus Foods Website v2/560",
      "blocksAcrossCopies": {
       "sgs/form-field-text": 1,
@@ -132710,7 +133034,7 @@
      "block": "sgs/form-field-email",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
      "rule": "formControl",
      "candidates": [
       {
@@ -132762,7 +133086,7 @@
      "keys": [
       "Indus Foods Website v2/560#1"
      ],
-     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
      "splitFrom": "Indus Foods Website v2/560",
      "blocksAcrossCopies": {
       "sgs/form-field-text": 1,
@@ -132798,7 +133122,7 @@
      "block": "sgs/form-field-phone",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
      "rule": "formControl",
      "candidates": [
       {
@@ -132850,7 +133174,7 @@
      "keys": [
       "Indus Foods Website v2/560#2"
      ],
-     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
      "splitFrom": "Indus Foods Website v2/560",
      "blocksAcrossCopies": {
       "sgs/form-field-text": 1,
@@ -132886,7 +133210,7 @@
      "block": "sgs/form-field-select",
      "confidence": 1,
      "low": false,
-     "reason": "4 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "4 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
      "rule": "formControl",
      "candidates": [
       {
@@ -132939,7 +133263,7 @@
       "Indus Foods Website v2/562#0",
       "Indus Foods Website v2/562#1"
      ],
-     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
      "alsoIn": [
       {
        "surface": "inline-form-catalogue",
@@ -132970,7 +133294,7 @@
      "block": "sgs/form-field-file",
      "confidence": 1,
      "low": false,
-     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
      "rule": "formControl",
      "candidates": [
       {
@@ -133039,7 +133363,7 @@
      "block": "sgs/form-field-textarea",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
      "rule": "formControl",
      "candidates": [
       {
@@ -133115,7 +133439,7 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
      "rule": "formControl",
      "candidates": [],
      "action": "unwrap",
@@ -133201,7 +133525,7 @@
      "block": "sgs/form-field-consent",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
      "rule": "formControl",
      "candidates": [
       {
@@ -133658,76 +133982,6 @@
      "draftId": "TradeApplication:9"
     },
     {
-     "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466#0/10#0",
-     "key": "Indus Foods Website v2>TradeApplication@466#0/10#0",
-     "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "8cb0fea6",
-      "parentTags": [
-       "div",
-       "div",
-       "div",
-       "div"
-      ],
-      "textHash": "3f731f7a",
-      "line": 17
-     },
-     "tag": "span",
-     "words": "Step 1 of 5",
-     "block": "sgs/label",
-     "confidence": 1,
-     "low": false,
-     "reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
-     "rule": "label",
-     "candidates": [
-      {
-       "block": "sgs/label",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
-     "snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#0A7EA8;\" data-dc-tpl=\"10\">S",
-     "parent": {
-      "draftId": "TradeApplication:9",
-      "tag": "div",
-      "block": "sgs/container"
-     },
-     "siblings": [
-      {
-       "draftId": "TradeApplication:12",
-       "tag": "span",
-       "block": "sgs/container"
-      }
-     ],
-     "siblingCount": 1,
-     "boxes": [
-      {
-       "width": 1440,
-       "x": 141,
-       "y": 638.5,
-       "w": 94.8,
-       "h": 19.5
-      },
-      {
-       "width": 768,
-       "x": 73,
-       "y": 647.5,
-       "w": 94.8,
-       "h": 19.5
-      },
-      {
-       "width": 375,
-       "x": 43,
-       "y": 624,
-       "w": 191.8,
-       "h": 19.5
-      }
-     ],
-     "draftId": "TradeApplication:10"
-    },
-    {
      "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466#0/12#0",
      "key": "Indus Foods Website v2>TradeApplication@466#0/12#0",
      "fingerprint": {
@@ -133768,7 +134022,7 @@
       {
        "draftId": "TradeApplication:10",
        "tag": "span",
-       "block": "sgs/label"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -134639,8 +134893,8 @@
      "proposalReason": null
     },
     {
-     "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466/33=sgs/container",
-     "key": "Indus Foods Website v2>TradeApplication@466/33=sgs/container",
+     "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466/33",
+     "key": "Indus Foods Website v2>TradeApplication@466/33",
      "fingerprint": {
       "tag": "label",
       "cls": "",
@@ -134657,19 +134911,13 @@
      },
      "tag": "label",
      "words": "What kind of business are you?",
-     "block": "sgs/container",
+     "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "1 copies of one template element",
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/container",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "7 copies of one template element; the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+     "rule": "formControl",
+     "candidates": [],
+     "action": "remove",
      "snippet": "<label for=\"{{ f.id }}\" style=\"font-weight:700;font-size:16px;color:#2C3E50;display:flex;gap:6px;align-items:baseline;\" data-dc-tpl=\"33\">{{ f.label }}<sc-if val",
      "parent": {
       "draftId": "TradeApplication:28",
@@ -134708,83 +134956,9 @@
       }
      ],
      "draftId": "TradeApplication:33",
-     "copies": 1,
+     "copies": 7,
      "keys": [
-      "Indus Foods Website v2>TradeApplication@466#0/33#0"
-     ],
-     "proposalReason": null,
-     "splitFrom": "Indus Foods Website v2>TradeApplication@466/33",
-     "blocksAcrossCopies": {
-      "sgs/container": 1,
-      "none": 6
-     }
-    },
-    {
-     "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466/33=remove",
-     "key": "Indus Foods Website v2>TradeApplication@466/33=remove",
-     "fingerprint": {
-      "tag": "label",
-      "cls": "",
-      "styleHash": "454eda67",
-      "parentTags": [
-       "div",
-       "div",
-       "div",
-       "div",
-       "div"
-      ],
-      "textHash": "8e0293e1",
-      "line": 45
-     },
-     "tag": "label",
-     "words": "Trading name",
-     "block": null,
-     "confidence": 1,
-     "low": false,
-     "reason": "6 copies of one template element; the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
-     "rule": "formControl",
-     "candidates": [],
-     "action": "remove",
-     "snippet": "<label for=\"{{ f.id }}\" style=\"font-weight:700;font-size:16px;color:#2C3E50;display:flex;gap:6px;align-items:baseline;\" data-dc-tpl=\"33\">{{ f.label }}<sc-if val",
-     "parent": {
-      "draftId": "TradeApplication:28",
-      "tag": "div",
-      "block": "sgs/container"
-     },
-     "siblings": [
-      {
-       "draftId": "TradeApplication:39",
-       "tag": "input",
-       "block": "sgs/form-field-text"
-      }
-     ],
-     "siblingCount": 1,
-     "boxes": [
-      {
-       "width": 1440,
-       "x": 141,
-       "y": 1074.1,
-       "w": 388,
-       "h": 24
-      },
-      {
-       "width": 768,
-       "x": 73,
-       "y": 1073.9,
-       "w": 302,
-       "h": 24
-      },
-      {
-       "width": 375,
-       "x": 43,
-       "y": 1270.8,
-       "w": 289,
-       "h": 24
-      }
-     ],
-     "draftId": "TradeApplication:33",
-     "copies": 6,
-     "keys": [
+      "Indus Foods Website v2>TradeApplication@466#0/33#0",
       "Indus Foods Website v2>TradeApplication@466#0/33#1",
       "Indus Foods Website v2>TradeApplication@466#0/33#2",
       "Indus Foods Website v2>TradeApplication@466#0/33#3",
@@ -134794,16 +134968,11 @@
      ],
      "proposalReason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
      "otherWords": [
+      "Trading name",
       "Registered business name",
-      "Business structure",
-      "VAT number"
+      "Business structure"
      ],
-     "distinctWords": 6,
-     "splitFrom": "Indus Foods Website v2>TradeApplication@466/33",
-     "blocksAcrossCopies": {
-      "sgs/container": 1,
-      "none": 6
-     }
+     "distinctWords": 7
     },
     {
      "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466/35",
@@ -134828,7 +134997,7 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "4 copies of one template element; Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block",
+     "reason": "4 copies of one template element; inside a removed element (Indus Foods Website v2>TradeApplication@466#0/33#0)",
      "rule": null,
      "candidates": [],
      "action": "remove",
@@ -134836,7 +135005,7 @@
      "parent": {
       "draftId": "TradeApplication:33",
       "tag": "label",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [],
      "siblingCount": 0,
@@ -134871,7 +135040,7 @@
       "Indus Foods Website v2>TradeApplication@466#0/35#2",
       "Indus Foods Website v2>TradeApplication@466#0/35#3"
      ],
-     "proposalReason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+     "proposalReason": "inside a removed element (Indus Foods Website v2>TradeApplication@466#0/33#0)"
     },
     {
      "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466/47",
@@ -134915,7 +135084,7 @@
       {
        "draftId": "TradeApplication:33",
        "tag": "label",
-       "block": "sgs/container"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -134972,7 +135141,7 @@
      "block": "sgs/form-field-text",
      "confidence": 1,
      "low": false,
-     "reason": "3 copies of one template element; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "3 copies of one template element; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
      "rule": "formControl",
      "candidates": [
       {
@@ -135026,7 +135195,7 @@
       "Indus Foods Website v2>TradeApplication@466#0/39#1",
       "Indus Foods Website v2>TradeApplication@466#0/39#2"
      ],
-     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)"
     },
     {
      "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466/41",
@@ -135050,7 +135219,7 @@
      "block": "sgs/form-field-select",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "2 copies of one template element; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
      "rule": "formControl",
      "candidates": [
       {
@@ -135103,7 +135272,7 @@
       "Indus Foods Website v2>TradeApplication@466#0/41#0",
       "Indus Foods Website v2>TradeApplication@466#0/41#1"
      ],
-     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)"
     },
     {
      "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466/64",
@@ -135305,7 +135474,7 @@
       {
        "draftId": "TradeApplication:85",
        "tag": "button",
-       "block": "sgs/button"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -135326,76 +135495,6 @@
       }
      ],
      "draftId": "TradeApplication:84"
-    },
-    {
-     "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466#0/85#0",
-     "key": "Indus Foods Website v2>TradeApplication@466#0/85#0",
-     "fingerprint": {
-      "tag": "button",
-      "cls": "scp1p",
-      "styleHash": "da7fd760",
-      "parentTags": [
-       "div",
-       "div",
-       "div",
-       "div"
-      ],
-      "textHash": "13e59f84",
-      "line": 108
-     },
-     "tag": "button",
-     "words": "Continue",
-     "block": "sgs/button",
-     "confidence": 0.75,
-     "low": false,
-     "reason": null,
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/button",
-       "score": 0.75,
-       "share": 1
-      }
-     ],
-     "action": null,
-     "snippet": "<button type=\"button\" sc-camel-on-click=\"{{ next }}\" style=\"flex:{{ L.nextFlex }};justify-content:center;display:inline-flex;align-items:center;gap:10px;backgro",
-     "parent": {
-      "draftId": "TradeApplication:79",
-      "tag": "div",
-      "block": "sgs/container"
-     },
-     "siblings": [
-      {
-       "draftId": "TradeApplication:84",
-       "tag": "span",
-       "block": "sgs/text"
-      }
-     ],
-     "siblingCount": 1,
-     "boxes": [
-      {
-       "width": 1440,
-       "x": 782.6,
-       "y": 1596.1,
-       "w": 152.4,
-       "h": 56
-      },
-      {
-       "width": 768,
-       "x": 542.6,
-       "y": 1595.9,
-       "w": 152.4,
-       "h": 56
-      },
-      {
-       "width": 375,
-       "x": 43,
-       "y": 851,
-       "w": 289,
-       "h": 56
-      }
-     ],
-     "draftId": "TradeApplication:85"
     },
     {
      "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466#0/86#0",
@@ -136116,18 +136215,19 @@
     "inventoryElements": 105,
     "parts": 13,
     "rows": 92,
-    "skeletonNodes": 48,
-    "expandedNodes": 48,
+    "skeletonNodes": 85,
+    "expandedNodes": 85,
     "low": 1,
-    "removed": 43,
+    "removed": 46,
     "unresolved": 0,
     "byRule": {
      "formHost": 1,
      "alignWrapper": 2,
-     "label": 2,
+     "formSteps": 2,
      "dotMarker": 1,
+     "formControl": 12,
      "drawsChildren": 11,
-     "formControl": 11,
+     "label": 1,
      "solitaryIcon": 6,
      "cardHeading": 1,
      "siteInfoLink": 2
@@ -136977,7 +137077,7 @@
      "block": "sgs/form-field-text",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "2 copies of one template element; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
      "rule": "formControl",
      "candidates": [
       {
@@ -137030,7 +137130,7 @@
       "Indus Foods Website v2>EnquiryForm@468#0/26#0",
       "Indus Foods Website v2>EnquiryForm@468#0/26#1"
      ],
-     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
      "splitFrom": "Indus Foods Website v2>EnquiryForm@468/26",
      "blocksAcrossCopies": {
       "sgs/form-field-text": 2,
@@ -137058,7 +137158,7 @@
      "block": "sgs/form-field-email",
      "confidence": 1,
      "low": false,
-     "reason": "1 copies of one template element; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "1 copies of one template element; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
      "rule": "formControl",
      "candidates": [
       {
@@ -137110,7 +137210,7 @@
      "keys": [
       "Indus Foods Website v2>EnquiryForm@468#0/26#2"
      ],
-     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
      "splitFrom": "Indus Foods Website v2>EnquiryForm@468/26",
      "blocksAcrossCopies": {
       "sgs/form-field-text": 2,
@@ -137138,7 +137238,7 @@
      "block": "sgs/form-field-phone",
      "confidence": 1,
      "low": false,
-     "reason": "1 copies of one template element; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "1 copies of one template element; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
      "rule": "formControl",
      "candidates": [
       {
@@ -137190,7 +137290,7 @@
      "keys": [
       "Indus Foods Website v2>EnquiryForm@468#0/26#3"
      ],
-     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
      "splitFrom": "Indus Foods Website v2>EnquiryForm@468/26",
      "blocksAcrossCopies": {
       "sgs/form-field-text": 2,
@@ -137378,7 +137478,7 @@
      "block": "sgs/form-field-textarea",
      "confidence": 1,
      "low": false,
-     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
      "rule": "formControl",
      "candidates": [
       {
@@ -138556,12 +138656,6 @@
    "stage": "facts"
   },
   {
-   "construct": "inventory",
-   "draftId": "C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\intake\\inventories",
-   "error": "2 saved inventories carry no sources (written before the route recorded them); their currency is not checked",
-   "stage": "facts"
-  },
-  {
    "construct": "usage-check",
    "draftId": "a stylesheet of the running page",
    "error": "css-at:keyframes: the running page used it and the file read did not find it",
@@ -138760,34 +138854,38 @@
   {
    "rowId": "page:page:food-service",
    "rowType": "page-map",
-   "contentHash": "7ce69ed92ca7c3b09784f00a590dbfe9b6f6166166fa351469d771a2186749fe",
-   "mark": "edit:title=Food Service",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
+   "contentHash": "49751060d826467c6a3373ac8c57f1913ccb645d531042ec7768d7d3140cd991",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "page:page:manufacturing",
    "rowType": "page-map",
-   "contentHash": "893af30d1c58fa72c897fb9357078726b363b10e29022e962e9416b9952c48b7",
-   "mark": "edit:title=Manufacturing",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
+   "contentHash": "d3f444b9fbb2d9d1ca421ccd169155fb1311ab8a00ac3f87dbc4cf14a8a28346",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "page:page:retail",
    "rowType": "page-map",
-   "contentHash": "bb907ddb5fa93ddea28356882cc1ef8d8b540422930012b6d92457139b312fd5",
-   "mark": "edit:title=Retail",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
+   "contentHash": "4033c83d79cee7a3cf0a0b5816000b9b8c66d8dcf4c93d1a0c64455d1d314c2d",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "page:page:wholesale",
    "rowType": "page-map",
-   "contentHash": "40235af8cb002026c44c89cbba7ecf589a45b00aad635b923281208dfebbe112",
-   "mark": "edit:title=Wholesale",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
+   "contentHash": "eb6de86dec3997e82802fa0a380d980182c657d130c801662bafadfd5dd83cf5",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "page:page:brands",
@@ -138840,26 +138938,29 @@
   {
    "rowId": "page:page:catalogue",
    "rowType": "page-map",
-   "contentHash": "d2caad164b60a33b15c6680328a708eccb2e99b303b7d43a4ea4c7de23fd8852",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
+   "contentHash": "aafb5d4d9b33f608dd8b2ae8c52230a53d7a1e9fc6f0634ae7b1950102051087",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "page:page:delivery",
    "rowType": "page-map",
-   "contentHash": "2d9ffcae3eaaeac945b919a3a9f905a64811cb1ad1f3ef937eb989864e9e6b7f",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
+   "contentHash": "df1bee880f90d60fd8479245887a008184213b0fac10745a0750989d6043f5d2",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "page:page:terms",
    "rowType": "page-map",
-   "contentHash": "654c2b18a7dce167aa2e78440943f4f073fed31499250b252ea6f5bac7737c70",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
+   "contentHash": "2fe21154350bbeb69632f6272424018a99a8a26d5d95bae7086aa5039faa02b3",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "page:page:blog",
@@ -138880,10 +138981,11 @@
   {
    "rowId": "page:page:faqs",
    "rowType": "page-map",
-   "contentHash": "2d501f9d1ac9c3fe169522b9cfbe68320da5f984060e49443d8fee4602bc285c",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
+   "contentHash": "979b16effa69d03e9f8de45868a98573486d9738db992d63c9de54caa848b5a3",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "page:post:supporting-the-trade-through-ramadan",
@@ -139115,7 +139217,7 @@
    "contentHash": "31110b1aae430925b1b3381f1acc5903297b92e0d4126152880a591199e2257b",
    "mark": "role:surface,primary-text,text-inverse",
    "markedOn": "2026-10-28",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
   },
   {
    "rowId": "palette:--surface-warm",
@@ -139139,23 +139241,25 @@
    "contentHash": "8a63a2f22bc3feb0ec2deb6a99aa5a48ca1ac8ec73033433e4820ba3a4ad8a20",
    "mark": "role:custom-tint-on-blue",
    "markedOn": "2026-10-28",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
   },
   {
    "rowId": "palette:--social-linkedin",
    "rowType": "palette-role",
-   "contentHash": "31258932b7e8cc26172e3f4d60cdbb231a4721f97acb2a33d5e0de394068508c",
-   "mark": "one-off",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
+   "contentHash": "b3d2e65664acd2e97083c0e8062e5e2e5cd72824e35dc62944f4a75032b85373",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "palette:--social-facebook",
    "rowType": "palette-role",
-   "contentHash": "dac003312f7e809a7610e83df50d476f45309ba3d2390038c68733666862c467",
-   "mark": "one-off",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
+   "contentHash": "8b66c8e8be28d45c93e8d026e2f0256dffec07ddb64956c6a0e13183fa6d9c21",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "palette:--social-google",
@@ -139982,28 +140086,38 @@
    "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
-   "rowId": "effect:A-30",
+   "rowId": "effect:A-25",
    "rowType": "effect",
-   "contentHash": "04f37b012c8adee32b02af0d1c5a4c948c83030a5c0880df5114995cfd1c2287",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": "2026-10-23T23:58:47.556Z"
+   "contentHash": "a6b1ed93f1838a7d75e016accafbc711fb999d10c4cd3ef08c80c647bec9f632",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "effect:A-31",
    "rowType": "effect",
-   "contentHash": "6bffe9989fedffcfe8be94f1c9ab6eef60020a729233d347a35f91462d04d8c8",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": "2026-10-23T23:58:47.556Z"
+   "contentHash": "dc69bdfad5fe3b359fe3568badaf25314c37fb69ad01595b2f16b2d622cc1fcd",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "effect:A-32",
    "rowType": "effect",
-   "contentHash": "bcd26af30b8c03545c1af8afcbba1559120fe1310b4094da711e13f5daed04dd",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": "2026-10-23T23:58:47.556Z"
+   "contentHash": "0472ca6923988593882af87db3edc77843627d690ccc8cf13b2e2c04540e34b8",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
+  },
+  {
+   "rowId": "effect:A-33",
+   "rowType": "effect",
+   "contentHash": "85cf04c0fe65023d77e1b455e233c78c9878fa811188b21d9b72c6df8e06be8b",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "effect:J-05",
@@ -141071,12 +141185,23 @@
    "carriedFrom": "2026-10-19T02:13:36.160Z"
   },
   {
-   "rowId": "skeleton:footer:Indus Foods Website v2/677",
+   "rowId": "skeleton:footer:Indus Foods Website v2/677=sgs/business-info",
    "rowType": "skeleton-block",
-   "contentHash": "b6a1a014e4b7ae71ffc79a8fa55a75bd3cc6a11d63fb3d854eb26ab28c0bcfa4",
+   "contentHash": "814b490952e2b11de2af743dcf8f8c1027335251da6c9e439a1ce5c9aa82de42",
    "mark": "accept",
    "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z"
+   "carriedFrom": "2026-10-19T02:13:36.160Z",
+   "realignedFrom": [
+    "skeleton:footer:Indus Foods Website v2/677"
+   ]
+  },
+  {
+   "rowId": "skeleton:footer:Indus Foods Website v2/677=absorbed",
+   "rowType": "skeleton-block",
+   "contentHash": "9789cde49a240840b6dc58f19f0a20d129b8bfab73e05e2140a2155f5f0e3231",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:footer:Indus Foods Website v2/678",
@@ -144912,14 +145037,6 @@
    "carriedFrom": "2026-10-27T15:06:37.428Z"
   },
   {
-   "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466#0/10#0",
-   "rowType": "skeleton-block",
-   "contentHash": "c86c9d5a2c6bcdceb501205118cdb8903ef59fec9c16ba86761199652667e5fd",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
    "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466#0/12#0",
    "rowType": "skeleton-block",
    "contentHash": "26d44e561fbf4e9c657fe4d0804cb8355062df92b7234469987ddb5ccce3a3e7",
@@ -145016,20 +145133,13 @@
    "carriedFrom": "2026-10-27T15:06:37.428Z"
   },
   {
-   "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466/33=sgs/container",
+   "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466/33",
    "rowType": "skeleton-block",
-   "contentHash": "297836921c6245476330ea0e1aba5aa7a29eadd56717db29ba39abda19ef5e02",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466/33=remove",
-   "rowType": "skeleton-block",
-   "contentHash": "8175809e9950bb087a7942aed85b980773eee56e283bdaba1cda9aa4ac598c43",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
+   "contentHash": "c1526014e144c257d618109c8b5c4f3b4e49cc0c913b871833eae2bd1fdededd",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466/35",
@@ -145083,14 +145193,6 @@
    "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466#0/84#0",
    "rowType": "skeleton-block",
    "contentHash": "a1c88c8e5fbd19722a52de61e391dacf01f553e2200be07d242ec0f8d555d932",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466#0/85#0",
-   "rowType": "skeleton-block",
-   "contentHash": "5cd915e9ab4935cbcfd50f119ec67b4883a8769841db228d2fbf9477b5b6c10b",
    "mark": "accept",
    "markedOn": "2026-10-27",
    "carriedFrom": "2026-10-27T15:06:37.428Z"
@@ -147096,6 +147198,14 @@
    "carriedFrom": "2026-10-19T17:39:08.958Z"
   },
   {
+   "rowId": "inventory:anim:Indus Foods Website v2.dc.html%7C1310%7Cwaapi:only-ours",
+   "rowType": "inventory-diff",
+   "contentHash": "dd370871211875ca120f3aac5a041881bf39505316be152fce4e3910fd95df61",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
    "rowId": "inventory:anim:Indus Foods Website v2.dc.html%7C1333%7Cwaapi:only-ours",
    "rowType": "inventory-diff",
    "contentHash": "a8b61d02d5e1b5afa2c00116f6a044cd85504d5612b1377fe95827286f26ac19",
@@ -147126,6 +147236,22 @@
    "mark": "ours",
    "markedOn": "2026-10-19",
    "carriedFrom": "2026-10-19T17:39:08.958Z"
+  },
+  {
+   "rowId": "inventory:anim:TradeApplication.dc.html%7C255%7Cwaapi:only-ours",
+   "rowType": "inventory-diff",
+   "contentHash": "ac46a67265c22715414d972527ef0cd4f596713a4fb3c17ca40b5438c3a7a4e5",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "inventory:anim:EnquiryForm.dc.html%7C99%7Cwaapi:only-ours",
+   "rowType": "inventory-diff",
+   "contentHash": "c31a83d66b680196a84cbc475eb456f328384780e1a763fb04783030a1e1c426",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "inventory:anim:Indus Foods Website v2.dc.html%7C1048%7Cjs:only-ours",

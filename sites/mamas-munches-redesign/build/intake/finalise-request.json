@@ -1,5 +1,5 @@
 {
-	"generated": "2026-10-27T19:19:51.643Z",
+	"generated": "2026-10-29T08:40:19.012Z",
 	"client": "mamas-munches-redesign",
 	"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
 	"picksFile": "finalise-picks.json",
@@ -7,11 +7,11 @@
 	"context": "Built from intake.json rows: the element is the row (tag, words, snippet); candidate evidence lines are not kept there. parent, siblings (the nearest 12 in document order; siblingCount is the full number) and boxes (375, 768, 1440; x and y are page coordinates) come from the skeleton inventory, null where it held none. neighbours are the rows before and after it in the surface.",
 	"counts": {
 		"surfaces": 15,
-		"rows": 190
+		"rows": 171
 	},
 	"surfaces": {
 		"site-header-announcement-strip-bar": {
-			"generated": "2026-10-27T19:19:51.635Z",
+			"generated": "2026-10-29T08:40:19.007Z",
 			"surface": "site-header-announcement-strip-bar",
 			"source": "intake.json skeletons[\"site-header-announcement-strip-bar\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -564,7 +564,7 @@
 			]
 		},
 		"nav-drawer-left": {
-			"generated": "2026-10-27T19:19:51.635Z",
+			"generated": "2026-10-29T08:40:19.008Z",
 			"surface": "nav-drawer-left",
 			"source": "intake.json skeletons[\"nav-drawer-left\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -586,7 +586,7 @@
 						{
 							"draftId": "SiteHeader:59",
 							"tag": "button",
-							"block": "sgs/button"
+							"block": null
 						}
 					],
 					"confidence": 0.66,
@@ -618,7 +618,7 @@
 							"key": "Home>SiteHeader@7#0/59#0",
 							"tag": "button",
 							"words": "×",
-							"block": "sgs/button"
+							"block": null
 						}
 					],
 					"siblingCount": 1,
@@ -1150,7 +1150,7 @@
 			]
 		},
 		"site-footer": {
-			"generated": "2026-10-27T19:19:51.636Z",
+			"generated": "2026-10-29T08:40:19.008Z",
 			"surface": "site-footer",
 			"source": "intake.json skeletons[\"site-footer\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -1538,7 +1538,7 @@
 			]
 		},
 		"page-home-dc-html": {
-			"generated": "2026-10-27T19:19:51.638Z",
+			"generated": "2026-10-29T08:40:19.011Z",
 			"surface": "page-home-dc-html",
 			"source": "intake.json skeletons[\"page-home-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -2705,262 +2705,6 @@
 							"y": 3837.5,
 							"w": 335,
 							"h": 28
-						}
-					]
-				},
-				{
-					"key": "Home/139",
-					"element": {
-						"tag": "span",
-						"words": "New Baby Gift Box",
-						"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:21px;line-height:1.15\" data-dc-tpl=\"139\">{{ t.name }}</span>"
-					},
-					"parent": {
-						"draftId": "Home:138",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Home:140",
-							"tag": "span",
-							"block": "sgs/text"
-						},
-						{
-							"draftId": "Home:141",
-							"tag": "span",
-							"block": "sgs/container"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "4 copies of one template element",
-					"rowId": "skeleton:page-home-dc-html:Home/139",
-					"draftId": "Home:139",
-					"action": null,
-					"copies": 4,
-					"keys": [
-						"Home/139#0",
-						"Home/139#1",
-						"Home/139#2",
-						"Home/139#3"
-					],
-					"otherWords": [
-						"40-Day Care Bundle",
-						"Gift card",
-						"Taster Trio"
-					],
-					"neighbours": [
-						{
-							"key": "Home/138",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Home/140",
-							"tag": "span",
-							"words": "A mix of Zookies, gift-boxed with your note.",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 120.8,
-							"y": 3084.3,
-							"w": 256.9,
-							"h": 28.6
-						},
-						{
-							"width": 768,
-							"x": 53.1,
-							"y": 3954,
-							"w": 303.4,
-							"h": 29.4
-						},
-						{
-							"width": 375,
-							"x": 40.4,
-							"y": 4235,
-							"w": 215,
-							"h": 27.9
-						}
-					]
-				},
-				{
-					"key": "Home/140",
-					"element": {
-						"tag": "span",
-						"words": "A mix of Zookies, gift-boxed with your note.",
-						"snippet": "<span style=\"font-size:15px;color:#5E4A3D;line-height:1.45\" data-dc-tpl=\"140\">{{ t.line }}</span>"
-					},
-					"parent": {
-						"draftId": "Home:138",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Home:139",
-							"tag": "span",
-							"block": "sgs/text"
-						},
-						{
-							"draftId": "Home:141",
-							"tag": "span",
-							"block": "sgs/container"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "4 copies of one template element",
-					"rowId": "skeleton:page-home-dc-html:Home/140",
-					"draftId": "Home:140",
-					"action": null,
-					"copies": 4,
-					"keys": [
-						"Home/140#0",
-						"Home/140#1",
-						"Home/140#2",
-						"Home/140#3"
-					],
-					"otherWords": [
-						"Six weekly deliveries through the postnatal weeks.",
-						"She redeems it once baby arrives.",
-						"3 Zookies through the letterbox. No one needs to be in."
-					],
-					"neighbours": [
-						{
-							"key": "Home/139",
-							"tag": "span",
-							"words": "New Baby Gift Box",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Home/141",
-							"tag": "span",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 121.4,
-							"y": 3114.5,
-							"w": 257.2,
-							"h": 48
-						},
-						{
-							"width": 768,
-							"x": 53.7,
-							"y": 3984.2,
-							"w": 303.3,
-							"h": 27
-						},
-						{
-							"width": 375,
-							"x": 40.9,
-							"y": 4265.1,
-							"w": 215.3,
-							"h": 47.2
-						}
-					]
-				},
-				{
-					"key": "Home/142",
-					"element": {
-						"tag": "span",
-						"words": "£15",
-						"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:20px\" data-dc-tpl=\"142\">{{ t.price }}</span>"
-					},
-					"parent": {
-						"draftId": "Home:141",
-						"tag": "span",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Home:143",
-							"tag": "span",
-							"block": "sgs/button"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "4 copies of one template element",
-					"rowId": "skeleton:page-home-dc-html:Home/142",
-					"draftId": "Home:142",
-					"action": null,
-					"copies": 4,
-					"keys": [
-						"Home/142#0",
-						"Home/142#1",
-						"Home/142#2",
-						"Home/142#3"
-					],
-					"otherWords": [
-						"£42",
-						"from £15",
-						"£5"
-					],
-					"neighbours": [
-						{
-							"key": "Home/141",
-							"tag": "span",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Home/143",
-							"tag": "span",
-							"words": "→",
-							"block": "sgs/button"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 122.4,
-							"y": 3179.9,
-							"w": 33.1,
-							"h": 28.6
-						},
-						{
-							"width": 768,
-							"x": 54.7,
-							"y": 4050.4,
-							"w": 33.1,
-							"h": 28.6
-						},
-						{
-							"width": 375,
-							"x": 42.3,
-							"y": 4351.5,
-							"w": 33.1,
-							"h": 28.6
 						}
 					]
 				},
@@ -4867,253 +4611,6 @@
 					]
 				},
 				{
-					"key": "Home/227",
-					"element": {
-						"tag": "span",
-						"words": "“",
-						"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:48px;line-height:.6;color:#E86A75\" data-dc-tpl=\"227\">“</span>"
-					},
-					"parent": {
-						"draftId": "Home:225",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Home:226",
-							"tag": "span",
-							"block": "sgs/label"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "6 copies of one template element",
-					"rowId": "skeleton:page-home-dc-html:Home/227",
-					"draftId": "Home:227",
-					"action": null,
-					"copies": 6,
-					"keys": [
-						"Home/227#0",
-						"Home/227#1",
-						"Home/227#2",
-						"Home/227#3",
-						"Home/227#4",
-						"Home/227#5"
-					],
-					"neighbours": [
-						{
-							"key": "Home/226",
-							"tag": "span",
-							"words": "★★★★★",
-							"block": "sgs/label"
-						},
-						{
-							"key": "Home/228",
-							"tag": "h3",
-							"words": "Healthy and filling snack",
-							"block": "sgs/heading"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": -817.8,
-							"y": 5425.8,
-							"w": 26.4,
-							"h": 29.2
-						},
-						{
-							"width": 768,
-							"x": -1132.3,
-							"y": 6968,
-							"w": 26.4,
-							"h": 29.2
-						},
-						{
-							"width": 375,
-							"x": -984.7,
-							"y": 7635.9,
-							"w": 26.4,
-							"h": 29.2
-						}
-					]
-				},
-				{
-					"key": "Home/231",
-					"element": {
-						"tag": "b",
-						"words": "KA",
-						"snippet": "<b data-dc-tpl=\"231\">{{ r.name }}</b>"
-					},
-					"parent": {
-						"draftId": "Home:230",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Home:232",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "6 copies of one template element",
-					"rowId": "skeleton:page-home-dc-html:Home/231",
-					"draftId": "Home:231",
-					"action": null,
-					"copies": 6,
-					"keys": [
-						"Home/231#0",
-						"Home/231#1",
-						"Home/231#2",
-						"Home/231#3",
-						"Home/231#4",
-						"Home/231#5"
-					],
-					"otherWords": [
-						"mariahzaini",
-						"Mrs MIM",
-						"Tamanna"
-					],
-					"neighbours": [
-						{
-							"key": "Home/230",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Home/232",
-							"tag": "span",
-							"words": "June 2026 · Trustpilot",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": -1130.1,
-							"y": 5667.4,
-							"w": 18.2,
-							"h": 17.3
-						},
-						{
-							"width": 768,
-							"x": -1386.8,
-							"y": 7234.2,
-							"w": 18.2,
-							"h": 17.3
-						},
-						{
-							"width": 375,
-							"x": -1185.4,
-							"y": 7953.2,
-							"w": 18.2,
-							"h": 17.3
-						}
-					]
-				},
-				{
-					"key": "Home/232",
-					"element": {
-						"tag": "span",
-						"words": "June 2026 · Trustpilot",
-						"snippet": "<span data-dc-tpl=\"232\">{{ r.date }} · Trustpilot</span>"
-					},
-					"parent": {
-						"draftId": "Home:230",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Home:231",
-							"tag": "b",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "6 copies of one template element",
-					"rowId": "skeleton:page-home-dc-html:Home/232",
-					"draftId": "Home:232",
-					"action": null,
-					"copies": 6,
-					"keys": [
-						"Home/232#0",
-						"Home/232#1",
-						"Home/232#2",
-						"Home/232#3",
-						"Home/232#4",
-						"Home/232#5"
-					],
-					"otherWords": [
-						"January 2026 · Trustpilot",
-						"July 2026 · Trustpilot",
-						"February 2026 · Trustpilot"
-					],
-					"neighbours": [
-						{
-							"key": "Home/231",
-							"tag": "b",
-							"words": "KA",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Home/233#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/multi-button"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": -923.9,
-							"y": 5661.7,
-							"w": 136.4,
-							"h": 19.4
-						},
-						{
-							"width": 768,
-							"x": -1238,
-							"y": 7229.5,
-							"w": 136.4,
-							"h": 19.4
-						},
-						{
-							"width": 375,
-							"x": -1089.4,
-							"y": 7949.4,
-							"w": 136.4,
-							"h": 19.4
-						}
-					]
-				},
-				{
 					"key": "Home/233#0",
 					"element": {
 						"tag": "div",
@@ -5134,7 +4631,7 @@
 						{
 							"draftId": "Home:222",
 							"tag": "div",
-							"block": "sgs/container"
+							"block": "sgs/testimonial-slider"
 						}
 					],
 					"confidence": 0.51,
@@ -5160,7 +4657,7 @@
 							"key": "Home/232",
 							"tag": "span",
 							"words": "June 2026 · Trustpilot",
-							"block": "sgs/text"
+							"block": null
 						},
 						{
 							"key": "Home/235",
@@ -5344,7 +4841,7 @@
 			]
 		},
 		"build-your-zookie": {
-			"generated": "2026-10-27T19:19:51.639Z",
+			"generated": "2026-10-29T08:40:19.011Z",
 			"surface": "build-your-zookie",
 			"source": "intake.json skeletons[\"build-your-zookie\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -5429,7 +4926,7 @@
 			]
 		},
 		"page-shop-dc-html": {
-			"generated": "2026-10-27T19:19:51.640Z",
+			"generated": "2026-10-29T08:40:19.011Z",
 			"surface": "page-shop-dc-html",
 			"source": "intake.json skeletons[\"page-shop-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -5527,7 +5024,7 @@
 						{
 							"draftId": "Shop:28",
 							"tag": "div",
-							"block": "sgs/container"
+							"block": "woocommerce/product-collection"
 						},
 						{
 							"draftId": "Shop:32",
@@ -5564,7 +5061,7 @@
 							"key": "Shop/28#0",
 							"tag": "div",
 							"words": "",
-							"block": "sgs/container"
+							"block": "woocommerce/product-collection"
 						}
 					],
 					"siblingCount": 3,
@@ -5589,210 +5086,6 @@
 							"y": 502,
 							"w": 335,
 							"h": 18
-						}
-					]
-				},
-				{
-					"key": "Shop>ProductCard@31/9",
-					"element": {
-						"tag": "span",
-						"words": "from £9.50",
-						"snippet": "<span style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ priceSize }}\" data-dc-tpl=\"9\">{{ priceLabel }}</span>"
-					},
-					"parent": {
-						"draftId": "ProductCard:8",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "ProductCard:10",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "12 copies of one template element on 3 surfaces",
-					"rowId": "skeleton:page-shop-dc-html:Shop>ProductCard@31/9",
-					"draftId": "ProductCard:9",
-					"action": null,
-					"copies": 12,
-					"keys": [
-						"Shop>ProductCard@31#0/9#0",
-						"Shop>ProductCard@31#1/9#0",
-						"Shop>ProductCard@31#2/9#0",
-						"Shop>ProductCard@31#3/9#0",
-						"Shop>ProductCard@31#4/9#0"
-					],
-					"otherWords": [
-						"£5",
-						"£15",
-						"£42"
-					],
-					"alsoIn": [
-						{
-							"surface": "page-product-dc-html-id-zookies",
-							"keys": [
-								"Product>ProductCard@139#0/9#0",
-								"Product>ProductCard@139#1/9#0",
-								"Product>ProductCard@139#2/9#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>ProductCard@40#0/9#0",
-								"Gifts>ProductCard@40#1/9#0",
-								"Gifts>ProductCard@40#2/9#0",
-								"Gifts>ProductCard@40#3/9#0"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Shop>ProductCard@31/8",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Shop>ProductCard@31/10",
-							"tag": "span",
-							"words": "£1.19 a cookie",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 123.4,
-							"y": 1068.4,
-							"w": 116.1,
-							"h": 32
-						},
-						{
-							"width": 768,
-							"x": 53.8,
-							"y": 838.9,
-							"w": 116.1,
-							"h": 32
-						},
-						{
-							"width": 375,
-							"x": 34.7,
-							"y": 740.6,
-							"w": 99.5,
-							"h": 27.7
-						}
-					]
-				},
-				{
-					"key": "Shop>ProductCard@31/10",
-					"element": {
-						"tag": "span",
-						"words": "£1.19 a cookie",
-						"snippet": "<span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"10\">{{ unit }}</span>"
-					},
-					"parent": {
-						"draftId": "ProductCard:8",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "ProductCard:9",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "12 copies of one template element on 3 surfaces",
-					"rowId": "skeleton:page-shop-dc-html:Shop>ProductCard@31/10",
-					"draftId": "ProductCard:10",
-					"action": null,
-					"copies": 12,
-					"keys": [
-						"Shop>ProductCard@31#0/10#0",
-						"Shop>ProductCard@31#1/10#0",
-						"Shop>ProductCard@31#2/10#0",
-						"Shop>ProductCard@31#3/10#0",
-						"Shop>ProductCard@31#4/10#0"
-					],
-					"otherWords": [
-						"postage included",
-						"gift-boxed",
-						"6 deliveries"
-					],
-					"alsoIn": [
-						{
-							"surface": "page-product-dc-html-id-zookies",
-							"keys": [
-								"Product>ProductCard@139#0/10#0",
-								"Product>ProductCard@139#1/10#0",
-								"Product>ProductCard@139#2/10#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>ProductCard@40#0/10#0",
-								"Gifts>ProductCard@40#1/10#0",
-								"Gifts>ProductCard@40#2/10#0",
-								"Gifts>ProductCard@40#3/10#0"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Shop>ProductCard@31/9",
-							"tag": "span",
-							"words": "from £9.50",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Shop>ProductCard@31/11",
-							"tag": "button",
-							"words": "Build your box",
-							"block": "sgs/button"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 247.1,
-							"y": 1076.9,
-							"w": 78.2,
-							"h": 16.4
-						},
-						{
-							"width": 768,
-							"x": 54.5,
-							"y": 877.5,
-							"w": 78.2,
-							"h": 16.4
-						},
-						{
-							"width": 375,
-							"x": 35.3,
-							"y": 775,
-							"w": 78.2,
-							"h": 16.4
 						}
 					]
 				},
@@ -6360,7 +5653,7 @@
 			]
 		},
 		"page-product-dc-html-id-zookies": {
-			"generated": "2026-10-27T19:19:51.640Z",
+			"generated": "2026-10-29T08:40:19.011Z",
 			"surface": "page-product-dc-html-id-zookies",
 			"source": "intake.json skeletons[\"page-product-dc-html-id-zookies\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -6600,642 +5893,6 @@
 					]
 				},
 				{
-					"key": "Product/26#0",
-					"element": {
-						"tag": "div",
-						"words": "build your own box",
-						"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"26\">{{ eyebrow }}</div>"
-					},
-					"parent": {
-						"draftId": "Product:25",
-						"tag": "div",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "Product:27",
-							"tag": "h1",
-							"block": "sgs/heading"
-						},
-						{
-							"draftId": "Product:28",
-							"tag": "a",
-							"block": "sgs/button"
-						},
-						{
-							"draftId": "Product:30",
-							"tag": "p",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/26#0",
-					"draftId": "Product:26",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Product/25#0",
-							"tag": "div",
-							"words": "",
-							"block": null
-						},
-						{
-							"key": "Product/27#0",
-							"tag": "h1",
-							"words": "Zookies",
-							"block": "sgs/heading"
-						}
-					],
-					"siblingCount": 3,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 766.3,
-							"y": 188,
-							"w": 573.7,
-							"h": 28
-						},
-						{
-							"width": 768,
-							"x": 402,
-							"y": 160,
-							"w": 334,
-							"h": 28
-						},
-						{
-							"width": 375,
-							"x": 20,
-							"y": 597,
-							"w": 335,
-							"h": 28
-						}
-					]
-				},
-				{
-					"key": "Product/57#0",
-					"element": {
-						"tag": "span",
-						"words": "Up to 3, split evenly",
-						"snippet": "<span style=\"font-size:14px;color:#5E4A3D\" data-dc-tpl=\"57\">Up to 3, split evenly</span>"
-					},
-					"parent": {
-						"draftId": "Product:55",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Product:56",
-							"tag": "span",
-							"block": "sgs/label"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/57#0",
-					"draftId": "Product:57",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Product/56#0",
-							"tag": "span",
-							"words": "4 · Flavours",
-							"block": "sgs/label"
-						},
-						{
-							"key": "Product/58#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/option-picker"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 903.1,
-							"y": 733.2,
-							"w": 123.9,
-							"h": 17
-						},
-						{
-							"width": 768,
-							"x": 534.8,
-							"y": 770.4,
-							"w": 123.9,
-							"h": 17
-						},
-						{
-							"width": 375,
-							"x": 144.8,
-							"y": 1197.4,
-							"w": 123.9,
-							"h": 17
-						}
-					]
-				},
-				{
-					"key": "Product/62#0",
-					"element": {
-						"tag": "div",
-						"words": "All 20 strawberry",
-						"snippet": "<div style=\"margin-top:10px;font-size:14px;font-weight:700\" data-dc-tpl=\"62\">{{ split }}</div>"
-					},
-					"parent": {
-						"draftId": "Product:54",
-						"tag": "div",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "Product:55",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "Product:58",
-							"tag": "div",
-							"block": "sgs/option-picker"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/62#0",
-					"draftId": "Product:62",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Product/61",
-							"tag": "span",
-							"words": "✓",
-							"block": null
-						},
-						{
-							"key": "Product/63#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/option-picker"
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 796.3,
-							"y": 924.2,
-							"w": 513.7,
-							"h": 17
-						},
-						{
-							"width": 768,
-							"x": 428,
-							"y": 1123.4,
-							"w": 282,
-							"h": 17
-						},
-						{
-							"width": 375,
-							"x": 38,
-							"y": 1550.4,
-							"w": 299,
-							"h": 17
-						}
-					]
-				},
-				{
-					"key": "Product/97#0",
-					"element": {
-						"tag": "span",
-						"words": "Send it as a gift",
-						"snippet": "<span style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"97\">Send it as a gift</span>"
-					},
-					"parent": {
-						"draftId": "Product:96",
-						"tag": "span",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "Product:98",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/97#0",
-					"draftId": "Product:97",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Product/96#0",
-							"tag": "span",
-							"words": "",
-							"block": null
-						},
-						{
-							"key": "Product/98#0",
-							"tag": "span",
-							"words": "Add a note. We’ll leave the prices off.",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 829.3,
-							"y": 1179.2,
-							"w": 229.6,
-							"h": 19
-						},
-						{
-							"width": 768,
-							"x": 465,
-							"y": 1375.4,
-							"w": 229.6,
-							"h": 19
-						},
-						{
-							"width": 375,
-							"x": 83,
-							"y": 1798.4,
-							"w": 229.6,
-							"h": 19
-						}
-					]
-				},
-				{
-					"key": "Product/98#0",
-					"element": {
-						"tag": "span",
-						"words": "Add a note. We’ll leave the prices off.",
-						"snippet": "<span style=\"font-size:14px;color:#5E4A3D\" data-dc-tpl=\"98\">Add a note. We’ll leave the prices off.</span>"
-					},
-					"parent": {
-						"draftId": "Product:96",
-						"tag": "span",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "Product:97",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/98#0",
-					"draftId": "Product:98",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Product/97#0",
-							"tag": "span",
-							"words": "Send it as a gift",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Product/102#0",
-							"tag": "div",
-							"words": "",
-							"block": null
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 829.3,
-							"y": 1198.2,
-							"w": 229.6,
-							"h": 17
-						},
-						{
-							"width": 768,
-							"x": 465,
-							"y": 1394.4,
-							"w": 229.6,
-							"h": 17
-						},
-						{
-							"width": 375,
-							"x": 83,
-							"y": 1817.4,
-							"w": 229.6,
-							"h": 17
-						}
-					]
-				},
-				{
-					"key": "Product/111#0",
-					"element": {
-						"tag": "span",
-						"words": "✦",
-						"snippet": "<span style=\"flex:none;width:36px;height:36px;border-radius:999px;background:#F9D5D3;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:ce"
-					},
-					"parent": {
-						"draftId": "Product:110",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/111#0",
-					"draftId": "Product:111",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Product/110#0",
-							"tag": "div",
-							"words": "Baked fresh when you order",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Product/112#0",
-							"tag": "div",
-							"words": "With you in 3–5 days",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 0,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 766.3,
-							"y": 1345.2,
-							"w": 36,
-							"h": 36
-						},
-						{
-							"width": 768,
-							"x": 402,
-							"y": 1541.4,
-							"w": 36,
-							"h": 36
-						},
-						{
-							"width": 375,
-							"x": 20,
-							"y": 1964.4,
-							"w": 36,
-							"h": 36
-						}
-					]
-				},
-				{
-					"key": "Product/113#0",
-					"element": {
-						"tag": "span",
-						"words": "→",
-						"snippet": "<span style=\"flex:none;width:36px;height:36px;border-radius:999px;background:#FCEBBE;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:ce"
-					},
-					"parent": {
-						"draftId": "Product:112",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/113#0",
-					"draftId": "Product:113",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Product/112#0",
-							"tag": "div",
-							"words": "With you in 3–5 days",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Product/114#0",
-							"tag": "div",
-							"words": "Free UK delivery over £35",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 0,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 960.9,
-							"y": 1345.2,
-							"w": 36,
-							"h": 36
-						},
-						{
-							"width": 768,
-							"x": 402,
-							"y": 1587.4,
-							"w": 36,
-							"h": 36
-						},
-						{
-							"width": 375,
-							"x": 20,
-							"y": 2010.4,
-							"w": 36,
-							"h": 36
-						}
-					]
-				},
-				{
-					"key": "Product/115#0",
-					"element": {
-						"tag": "span",
-						"words": "£",
-						"snippet": "<span style=\"flex:none;width:36px;height:36px;border-radius:999px;background:#FFFAF0;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:ce"
-					},
-					"parent": {
-						"draftId": "Product:114",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/115#0",
-					"draftId": "Product:115",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Product/114#0",
-							"tag": "div",
-							"words": "Free UK delivery over £35",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Product/116#0",
-							"tag": "div",
-							"words": "",
-							"block": null
-						}
-					],
-					"siblingCount": 0,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1155.4,
-							"y": 1345.2,
-							"w": 36,
-							"h": 36
-						},
-						{
-							"width": 768,
-							"x": 402,
-							"y": 1633.4,
-							"w": 36,
-							"h": 36
-						},
-						{
-							"width": 375,
-							"x": 20,
-							"y": 2056.4,
-							"w": 36,
-							"h": 36
-						}
-					]
-				},
-				{
-					"key": "Product/120",
-					"element": {
-						"tag": "span",
-						"words": "+",
-						"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:32px;height:32px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center"
-					},
-					"parent": {
-						"draftId": "Product:119",
-						"tag": "button",
-						"block": "sgs/container"
-					},
-					"siblings": [],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "4 copies of one template element",
-					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/120",
-					"draftId": "Product:120",
-					"action": null,
-					"copies": 4,
-					"keys": [
-						"Product/120#0",
-						"Product/120#1",
-						"Product/120#2",
-						"Product/120#3"
-					],
-					"neighbours": [
-						{
-							"key": "Product/119",
-							"tag": "button",
-							"words": "Ingredients & allergens",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Product/122#0",
-							"tag": "p",
-							"words": "Every Zookie contains oats (gluten), brewer’s yeast, flaxseed and fenugreek, plus eggs and milk unless you choose the vegan base. Fenugreek is a legume and may cross-react with peanut or soy allergies. Made in a kitchen that also handles tree nuts.",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 0,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1281.4,
-							"y": 1412.6,
-							"w": 45.3,
-							"h": 45.3
-						},
-						{
-							"width": 768,
-							"x": 677.4,
-							"y": 1700.7,
-							"w": 45.3,
-							"h": 45.3
-						},
-						{
-							"width": 375,
-							"x": 296.4,
-							"y": 2123.7,
-							"w": 45.3,
-							"h": 45.3
-						}
-					]
-				},
-				{
 					"key": "Product/124#0",
 					"element": {
 						"tag": "div",
@@ -7387,8 +6044,87 @@
 				}
 			]
 		},
+		"product-gift-note": {
+			"generated": "2026-10-29T08:40:19.011Z",
+			"surface": "product-gift-note",
+			"source": "intake.json skeletons[\"product-gift-note\"]",
+			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
+			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
+			"rows": [
+				{
+					"key": "Product/101#0",
+					"element": {
+						"tag": "div",
+						"words": "200 characters left",
+						"snippet": "<div style=\"font-size:13px;color:#5E4A3D;text-align:right;padding-bottom:6px\" data-dc-tpl=\"101\">{{ msgLeft }} characters left</div>"
+					},
+					"parent": {
+						"draftId": "Product:93",
+						"tag": "div",
+						"block": "sgs/form"
+					},
+					"siblings": [
+						{
+							"draftId": "Product:94",
+							"tag": "label",
+							"block": null
+						},
+						{
+							"draftId": "Product:100",
+							"tag": "textarea",
+							"block": "sgs/form-field-textarea"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:product-gift-note:Product/101#0",
+					"draftId": "Product:101",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Product/100#0",
+							"tag": "textarea",
+							"words": "",
+							"block": "sgs/form-field-textarea"
+						}
+					],
+					"siblingCount": 2,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 786.3,
+							"y": 1351.6,
+							"w": 533.7,
+							"h": 21
+						},
+						{
+							"width": 768,
+							"x": 422,
+							"y": 1547.8,
+							"w": 294,
+							"h": 21
+						},
+						{
+							"width": 375,
+							"x": 40,
+							"y": 1970.8,
+							"w": 295,
+							"h": 21
+						}
+					]
+				}
+			]
+		},
 		"page-gifts-dc-html": {
-			"generated": "2026-10-27T19:19:51.641Z",
+			"generated": "2026-10-29T08:40:19.011Z",
 			"surface": "page-gifts-dc-html",
 			"source": "intake.json skeletons[\"page-gifts-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -8973,7 +7709,7 @@
 			]
 		},
 		"page-basket-dc-html": {
-			"generated": "2026-10-27T19:19:51.641Z",
+			"generated": "2026-10-29T08:40:19.012Z",
 			"surface": "page-basket-dc-html",
 			"source": "intake.json skeletons[\"page-basket-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -10298,7 +9034,7 @@
 			]
 		},
 		"page-checkout-dc-html": {
-			"generated": "2026-10-27T19:19:51.642Z",
+			"generated": "2026-10-29T08:40:19.012Z",
 			"surface": "page-checkout-dc-html",
 			"source": "intake.json skeletons[\"page-checkout-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -10834,85 +9570,6 @@
 							"y": 673,
 							"w": 228,
 							"h": 34
-						}
-					]
-				},
-				{
-					"key": "Checkout/72#0",
-					"element": {
-						"tag": "legend",
-						"words": "2 · Who’s it for?",
-						"snippet": "<legend style=\"font-family:'Young Serif',serif;font-size:22px;padding:0 8px\" data-dc-tpl=\"72\">2 · Who’s it for?</legend>"
-					},
-					"parent": {
-						"draftId": "Checkout:71",
-						"tag": "fieldset",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "Checkout:73",
-							"tag": "div",
-							"block": "sgs/form-field-tiles"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "2 copies of one template element on 2 surfaces",
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/72#0",
-					"draftId": "Checkout:72",
-					"action": null,
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "checkout-form",
-							"keys": [
-								"Checkout/72#0"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Checkout/71#0",
-							"tag": "fieldset",
-							"words": "",
-							"block": null
-						},
-						{
-							"key": "Checkout/73#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/form-field-tiles"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 168,
-							"y": 720,
-							"w": 189.1,
-							"h": 31
-						},
-						{
-							"width": 768,
-							"x": 52,
-							"y": 696,
-							"w": 189.1,
-							"h": 31
-						},
-						{
-							"width": 375,
-							"x": 34,
-							"y": 763,
-							"w": 189.1,
-							"h": 31
 						}
 					]
 				},
@@ -11943,7 +10600,7 @@
 			]
 		},
 		"page-contact-dc-html": {
-			"generated": "2026-10-27T19:19:51.642Z",
+			"generated": "2026-10-29T08:40:19.012Z",
 			"surface": "page-contact-dc-html",
 			"source": "intake.json skeletons[\"page-contact-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -12355,88 +11012,8 @@
 				}
 			]
 		},
-		"contact-form": {
-			"generated": "2026-10-27T19:19:51.642Z",
-			"surface": "contact-form",
-			"source": "intake.json skeletons[\"contact-form\"]",
-			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
-			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
-			"rows": [
-				{
-					"key": "Contact/47#0",
-					"element": {
-						"tag": "div",
-						"words": "What’s it about?",
-						"snippet": "<div style=\"font-weight:700;font-size:15px;margin-bottom:8px\" data-dc-tpl=\"47\">What’s it about?</div>"
-					},
-					"parent": {
-						"draftId": "Contact:46",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Contact:48",
-							"tag": "div",
-							"block": "sgs/form-field-tiles"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:contact-form:Contact/47#0",
-					"draftId": "Contact:47",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Contact/46#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Contact/48#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/form-field-tiles"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 142,
-							"y": 909.1,
-							"w": 631.2,
-							"h": 18
-						},
-						{
-							"width": 768,
-							"x": 66,
-							"y": 858,
-							"w": 636,
-							"h": 18
-						},
-						{
-							"width": 375,
-							"x": 40,
-							"y": 1324.8,
-							"w": 295,
-							"h": 18
-						}
-					]
-				}
-			]
-		},
 		"page-help-dc-html": {
-			"generated": "2026-10-27T19:19:51.642Z",
+			"generated": "2026-10-29T08:40:19.012Z",
 			"surface": "page-help-dc-html",
 			"source": "intake.json skeletons[\"page-help-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -14027,7 +12604,7 @@
 			]
 		},
 		"page-signin-dc-html": {
-			"generated": "2026-10-27T19:19:51.642Z",
+			"generated": "2026-10-29T08:40:19.012Z",
 			"surface": "page-signin-dc-html",
 			"source": "intake.json skeletons[\"page-signin-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -14584,7 +13161,7 @@
 			]
 		},
 		"page-account-dc-html": {
-			"generated": "2026-10-27T19:19:51.642Z",
+			"generated": "2026-10-29T08:40:19.012Z",
 			"surface": "page-account-dc-html",
 			"source": "intake.json skeletons[\"page-account-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -14658,87 +13235,6 @@
 							"y": 117.3,
 							"w": 335.8,
 							"h": 41.7
-						}
-					]
-				},
-				{
-					"key": "Account/22#0",
-					"element": {
-						"tag": "div",
-						"words": "",
-						"snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:12px\" data-dc-tpl=\"22\"> <a href=\"SignIn.dc.html\" style=\"height:60px;padding:0 30px;border-radius:999px;border:2px so"
-					},
-					"parent": {
-						"draftId": "Account:19",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Account:20",
-							"tag": "h2",
-							"block": "sgs/heading"
-						},
-						{
-							"draftId": "Account:21",
-							"tag": "p",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.51,
-					"candidates": [
-						{
-							"block": "sgs/multi-button",
-							"score": 0.75,
-							"share": 0.682
-						},
-						{
-							"block": "sgs/container",
-							"score": 0.35,
-							"share": 0.318
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-account-dc-html:Account/22#0",
-					"draftId": "Account:22",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Account/21#0",
-							"tag": "p",
-							"words": "Your orders, bake dates, subscriptions and saved addresses live here.",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Account/23#0",
-							"tag": "a",
-							"words": "Sign in →",
-							"block": "sgs/button"
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 130,
-							"y": 513.8,
-							"w": 355.1,
-							"h": 60
-						},
-						{
-							"width": 768,
-							"x": 58,
-							"y": 433.6,
-							"w": 355.1,
-							"h": 60
-						},
-						{
-							"width": 375,
-							"x": 40,
-							"y": 429.6,
-							"w": 295,
-							"h": 132
 						}
 					]
 				}

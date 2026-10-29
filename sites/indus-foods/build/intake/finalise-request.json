@@ -1,5 +1,5 @@
 {
-	"generated": "2026-10-19T05:15:25.029Z",
+	"generated": "2026-10-29T08:40:06.619Z",
 	"client": "indus-foods",
 	"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
 	"picksFile": "finalise-picks.json",
@@ -10,93 +10,8 @@
 		"rows": 7
 	},
 	"surfaces": {
-		"top-bar": {
-			"generated": "2026-10-19T05:15:25.029Z",
-			"surface": "top-bar",
-			"source": "intake.json skeletons[\"top-bar\"]",
-			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
-			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
-			"rows": [
-				{
-					"key": "Indus Foods Website v2/11#0",
-					"element": {
-						"tag": "div",
-						"words": "",
-						"snippet": "<div style=\"display:flex;align-items:center;gap:10px;min-width:0;\" data-dc-tpl=\"11\"> <sc-if value=\"{{ isM }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"12"
-					},
-					"parent": {
-						"draftId": "Indus Foods Website v2:10",
-						"tag": "div",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "Indus Foods Website v2:22",
-							"tag": "div",
-							"block": "sgs/social-icons"
-						}
-					],
-					"confidence": 0.51,
-					"candidates": [
-						{
-							"block": "sgs/multi-button",
-							"score": 0.75,
-							"share": 0.682
-						},
-						{
-							"block": "sgs/container",
-							"score": 0.35,
-							"share": 0.318
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:top-bar:Indus Foods Website v2/11#0",
-					"draftId": "Indus Foods Website v2:11",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2/10#0",
-							"tag": "div",
-							"words": "",
-							"block": null
-						},
-						{
-							"key": "Indus Foods Website v2/14#0",
-							"tag": "a",
-							"words": "",
-							"block": "sgs/button"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 100,
-							"y": 5.4,
-							"w": 371.4,
-							"h": 35.3
-						},
-						{
-							"width": 768,
-							"x": 32,
-							"y": 5.4,
-							"w": 371.4,
-							"h": 35.3
-						},
-						{
-							"width": 375,
-							"x": 20,
-							"y": 5.4,
-							"w": 300.6,
-							"h": 35.3
-						}
-					]
-				}
-			]
-		},
 		"page-about": {
-			"generated": "2026-10-19T05:15:25.029Z",
+			"generated": "2026-10-29T08:40:06.619Z",
 			"surface": "page-about",
 			"source": "intake.json skeletons[\"page-about\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -628,7 +543,7 @@
 			]
 		},
 		"page-our-story": {
-			"generated": "2026-10-19T05:15:25.029Z",
+			"generated": "2026-10-29T08:40:06.619Z",
 			"surface": "page-our-story",
 			"source": "intake.json skeletons[\"page-our-story\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -880,8 +795,89 @@
 				}
 			]
 		},
+		"page-apply": {
+			"generated": "2026-10-29T08:40:06.619Z",
+			"surface": "page-apply",
+			"source": "intake.json skeletons[\"page-apply\"]",
+			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
+			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
+			"rows": [
+				{
+					"key": "Indus Foods Website v2>TradeApplication@466#0/104#0",
+					"element": {
+						"tag": "span",
+						"words": "Prefer to apply over the phone?",
+						"snippet": "<span style=\"font-size:16px;font-weight:600;\" data-dc-tpl=\"104\">Prefer to apply over the phone?</span>"
+					},
+					"parent": {
+						"draftId": "TradeApplication:103",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "TradeApplication:105",
+							"tag": "a",
+							"block": "sgs/button"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": "2 copies of one template element on 2 surfaces",
+					"rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/104#0",
+					"draftId": "TradeApplication:104",
+					"action": null,
+					"copies": 2,
+					"alsoIn": [
+						{
+							"surface": "trade-account-application",
+							"keys": [
+								"Indus Foods Website v2>TradeApplication@466#0/104#0"
+							]
+						}
+					],
+					"neighbours": [
+						{
+							"key": "Indus Foods Website v2>TradeApplication@466#0/103#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Indus Foods Website v2>TradeApplication@466#0/105#0",
+							"tag": "a",
+							"words": "Call 0121 771 4330",
+							"block": "sgs/button"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 768,
+							"x": 54,
+							"y": 1750.9,
+							"w": 215.2,
+							"h": 24
+						},
+						{
+							"width": 375,
+							"x": 42,
+							"y": 2264.3,
+							"w": 215.2,
+							"h": 24
+						}
+					]
+				}
+			]
+		},
 		"page-terms": {
-			"generated": "2026-10-19T05:15:25.029Z",
+			"generated": "2026-10-29T08:40:06.619Z",
 			"surface": "page-terms",
 			"source": "intake.json skeletons[\"page-terms\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
