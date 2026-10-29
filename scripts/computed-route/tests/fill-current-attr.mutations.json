@@ -1,0 +1,74 @@
+[
+	{
+		"file": "lib/fill-current-attr.mjs",
+		"find": " && '' !== v && 'false' !== v;",
+		"replace": " && '' !== v && true;",
+		"why": "the value false marks an item current"
+	},
+	{
+		"file": "lib/fill-current-attr.mjs",
+		"find": "return null !== v && '' !== v",
+		"replace": "return true && '' !== v",
+		"why": "an absent aria-current marks an item current"
+	},
+	{
+		"file": "lib/fill-current-attr.mjs",
+		"find": " && '' !== v && 'false' !== v;",
+		"replace": " && true && 'false' !== v;",
+		"why": "an empty value marks an item current"
+	},
+	{
+		"file": "lib/fill-current-attr.mjs",
+		"find": "const oth = ! set( item ) ? item : peers.find( ( p ) => ! set( p ) );",
+		"replace": "const oth = item;",
+		"why": "the current item is compared with itself"
+	},
+	{
+		"file": "lib/fill-current-attr.mjs",
+		"find": "p.tagName === item.tagName && shown( p )",
+		"replace": "shown( p )",
+		"why": "a peer of another tag is compared"
+	},
+	{
+		"file": "lib/fill-current-attr.mjs",
+		"find": "p.tagName === item.tagName && shown( p )",
+		"replace": "p.tagName === item.tagName",
+		"why": "a hidden peer is compared"
+	},
+	{
+		"file": "lib/fill-current-attr.mjs",
+		"find": "instance.chain.length < 2 || ! set.has( key )",
+		"replace": "! set.has( key )",
+		"why": "an element of the page's own root component is read on other pages"
+	},
+	{
+		"file": "lib/fill-current-attr.mjs",
+		"find": "instance.chain.length < 2 || ! set.has( key )",
+		"replace": "instance.chain.length < 2",
+		"why": "an element with no bound current value is a candidate"
+	},
+	{
+		"file": "lib/fill-current-attr.mjs",
+		"find": "ATTR_HOLE === h.where",
+		"replace": "true",
+		"why": "every element is one whose aria-current is bound"
+	},
+	{
+		"file": "lib/fill-current-attr.mjs",
+		"find": "if ( ! Object.keys( changed ).length ) {",
+		"replace": "if ( false ) {",
+		"why": "peers that look alike give a look"
+	},
+	{
+		"file": "lib/fill-current-attr.mjs",
+		"find": "open = left;",
+		"replace": "",
+		"why": "a job answered by one page is read again on the next"
+	},
+	{
+		"file": "lib/fill-current-attr.mjs",
+		"find": "for ( const job of open ) {\n\t\tout.gaps.push",
+		"replace": "for ( const job of [] ) {\n\t\tout.gaps.push",
+		"why": "an unanswered item raises no row"
+	}
+]

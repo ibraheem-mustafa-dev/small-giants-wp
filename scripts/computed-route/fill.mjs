@@ -44,6 +44,7 @@ import { headerRootIds } from './lib/fill-header-behaviour.mjs';
 import { groupBindings, noFactsWarning } from './lib/fill-binding-group.mjs';
 import { factsFile, loadFacts } from './lib/fact-record.mjs';
 import { currentItemGroups } from './lib/fill-current-item.mjs';
+import { currentAttrKeys } from './lib/fill-current-attr.mjs';
 import { widthGateWrites, maskHiddenVariants } from './lib/fill-width-gate.mjs';
 import { addDefectLooks } from './lib/fill-state-defect.mjs';
 import { draftDefectsFile, writeDraftDefects } from './lib/draft-defects-file.mjs';
@@ -184,6 +185,8 @@ export async function fillSurface( o ) {
 		// The entry draft's component and the draft defects intake lists (the served root host is named `Root`, the fact record names it after the component).
 		const intakeParts = animationInventory( buildDir, o.draftIndex, log );
 		const currentGroups = facts ? currentItemGroups( facts, intakeParts.rootComponent ) : [];
+		// Aria-current bound as an attribute on a component's items: read on the draft's other pages (lib/fill-current-attr.mjs).
+		const currentAttr = { keys: facts ? currentAttrKeys( facts ) : [], pages: facts ? [ ...new Set( ( facts.pages || [] ).map( ( p ) => p.route ) ) ] : [], rootComponent: intakeParts.rootComponent };
 		// A drawer or mega-menu panel exists only while its draft state holds: the opener (lib/fill-open.mjs) names the state
 		// from the surface's handoff record, and a route-mounted component is read on its own route. Null for any other surface.
 		const intakeData = fs.existsSync( intakeFile ) ? JSON.parse( fs.readFileSync( intakeFile, 'utf8' ) ) : null;
@@ -205,7 +208,7 @@ export async function fillSurface( o ) {
 		// from it) and the place of each slot's draft element (a part drawn outside its block's).
 		const invFile = o.skeleton.replace( /\.skeleton\.json$/, '.inventory.json' );
 		const inventory = invFile !== o.skeleton && fs.existsSync( invFile ) ? JSON.parse( fs.readFileSync( invFile, 'utf8' ) ) : null;
-		const reads = await readDraft( { url: readUrl, nodes, open: o.open || null, opener, headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, logicRows, currentGroups, scrolledIds: headerRootIds( nodes, hasAttrOf( db ) ), log } );
+		const reads = await readDraft( { url: readUrl, nodes, open: o.open || null, opener, headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, logicRows, currentGroups, currentAttr, scrolledIds: headerRootIds( nodes, hasAttrOf( db ) ), log } );
 		// FR-48-69: a state declaration the draft never paints (intake.json `draftDefects`) is built from the code value, as a code look.
 		maskHiddenVariants( reads, nodes, facts, intakeParts.rootComponent );
 		const defectLooks = addDefectLooks( { reads, jobs: nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( { id: t.id, finder: t.finder } ) ) ), facts, draftDefects: intakeParts.draftDefects, rootComponent: intakeParts.rootComponent } );

@@ -16,5 +16,17 @@
 		"find": "carry no words, link or uploaded picture",
 		"replace": "carry nothing",
 		"why": "the empty-list row loses its reason"
+	},
+	{
+		"file": "lib/fill-list-items.mjs",
+		"find": "attr:(?:href|src|data-src|alt|id|placeholder))$/",
+		"replace": "attr:(?:href|src|data-src|alt|id))$/",
+		"why": "an image placeholder's placeholder is no item field"
+	},
+	{
+		"file": "lib/fill-list-items.mjs",
+		"find": "'attr:placeholder' === hole.where && 'image-slot' !== tag",
+		"replace": "false",
+		"why": "the placeholder of an input is item content"
 	}
 ]

@@ -213,7 +213,8 @@
 						{ "name": "sgs/heading", "attributes": { "level": "h1", "metadata": { "bindings": { "content": { "source": "sgs-product/field", "args": { "key": "title", "source": "auto" } } } } } },
 						{ "name": "sgs/buybox", "attributes": {}, "reads": false }
 					],
-					"reason": "the single-product template is the whole draft page (FR-48-56); the area that varies per product is the working, bound pieces: the title is a heading bound to the product (sgs-product/field), and the hero (gallery, price, option pickers, stock line, add-to-basket) is sgs/buybox, the composite that draws them from the WooCommerce product, the stated fallback until the Spec 27 parts split exists (FR-48-60 step 1, Bean S13)"
+					"description": { "name": "sgs/text", "attributes": { "metadata": { "bindings": { "text": { "source": "sgs-product/field", "args": { "key": "short_description", "source": "auto" } } } } }, "innerBlocks": [] },
+					"reason": "the single-product template is the whole draft page (FR-48-56); the area that varies per product is the working, bound pieces: the title is a heading bound to the product (sgs-product/field), the prose that varies per product is a text block bound to the product's description (short_description), and the hero (gallery, price, option pickers, stock line, add-to-basket) is sgs/buybox, the composite that draws them from the WooCommerce product, the stated fallback until the Spec 27 parts split exists (FR-48-60 step 1, Bean S13)"
 				},
 				"confirmation": {
 					"block": "woocommerce/order-confirmation-totals-wrapper",

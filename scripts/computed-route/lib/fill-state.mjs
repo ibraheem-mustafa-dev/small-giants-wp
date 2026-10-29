@@ -39,6 +39,7 @@ export { stateDrafts, ancestorLook, motionHolds };
 import { MOTION_STATE_PROPS, stateHover } from './fill-state-motion.mjs';
 import { scriptGapReason, openSlots } from './fill-state-script.mjs';
 import { partStateSlots } from './fill-state-parts.mjs';
+import { partPresent } from './fill-part-present.mjs';
 import { createPatch, tokenRoute, pickValue, pressVariant, ownedBySetting, applyTokenLooks, conflictRow, ringLook, restShadow } from './fill-state-tokens.mjs';
 import { focusSharesHover, settleFocusRests } from './fill-state-focus.mjs';
 
@@ -232,7 +233,7 @@ export function holdDefaults( { node, ref, rec, target, cal, db, snapshot, reads
 		const look = defaultStateLook( cal, state, rest, ctx.at );
 		const plan = [];
 		for ( const prop of [ ...new Set( Object.values( look ).flatMap( ( s ) => [ ...s ] ) ) ] ) {
-			const slots = holdSlots( cal, node, target.slot, prop, rest[ prop ] || {} );
+			const slots = holdSlots( cal, node, target.slot, prop, rest[ prop ] || {} ).filter( ( p ) => partPresent( { path: p, block: rec.name, node, db } ) );
 			if ( declared( state, prop ) || ! slots.some( ( p ) => look[ LOOSE( p ) ]?.has( prop ) ) || ( ! rest[ prop ] && read( prop ) ) ) {
 				continue;
 			}

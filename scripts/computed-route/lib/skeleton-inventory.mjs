@@ -129,6 +129,13 @@ function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc ]
 				attrs[ a ] = v;
 			}
 		}
+		// An image placeholder element (<image-slot>) names itself by its id and prints its placeholder text as its alt.
+		if ( 'IMAGE-SLOT' === e.tagName ) {
+			for ( const a of [ 'id', 'placeholder' ] ) {
+				const v = e.getAttribute( a );
+				null != v && '' !== v && ( attrs[ a ] = v );
+			}
+		}
 		if ( 'IMG' === e.tagName ) {
 			const s = e.currentSrc || e.getAttribute( 'src' ) || '';
 			attrs.srcBasename = s.startsWith( 'data:' ) ? `data:${ s.slice( 5, 30 ) }...` : s.split( '?' )[ 0 ].split( '/' ).pop();

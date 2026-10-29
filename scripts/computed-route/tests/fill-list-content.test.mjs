@@ -274,7 +274,8 @@ test( 'list targets come from the DB: one content array, else one child block', 
 test( 'holes: only content holes with a head and a field are item fields', () => {
 	assert.deepEqual( holeField( { where: 'text', path: 'ms.year' }, 'span' ), { head: 'ms', name: 'year', image: false, text: true, attr: null } );
 	assert.equal( holeField( { where: 'style:color', path: 'ms.fg' }, 'span' ), null );
-	assert.equal( holeField( { where: 'attr:placeholder', path: 'ms.title' }, 'image-slot' ), null );
+	assert.deepEqual( holeField( { where: 'attr:placeholder', path: 'ms.title' }, 'image-slot' ), { head: 'ms', name: 'title', image: false, text: false, attr: 'placeholder' }, 'the placeholder of an image placeholder is its alt, an item field' );
+	assert.equal( holeField( { where: 'attr:placeholder', path: 'ms.title' }, 'input' ), null, 'the placeholder of an input is no item content' );
 	assert.equal( holeField( { where: 'attr:id', path: 'ms.key' }, 'div' ), null );
 	assert.equal( holeField( { where: 'text', path: 'arrowIcon' }, 'span' ), null );
 	assert.equal( holeField( { where: 'attr:id', path: 't.img' }, 'image-slot' ).image, true );
@@ -337,4 +338,22 @@ test( 'MUST FAIL (register C4): an element drawing two loops names the loop its 
 	const one = { elements: inventory.elements.filter( ( e ) => ! /^Root\/52/.test( e.key ) ) };
 	assert.deepEqual( loopItems( { inventory: one, facts, rootKey: 'Root/40#0', rootComponent: C } ).others, [] );
 	assert.ok( ! pass( [ [ 'sgs/gallery', 'Root/40#0' ] ], { facts, inventory: one } ).r.unmapped.some( ( u ) => /draws 2 lists/.test( u.reason ) ) );
+} );
+
+test( 'MUST FAIL: the brand a logo slot names in its placeholder is the link label of its item, and the picture it holds no setting for stays one row', () => {
+	const facts = { elements: Object.fromEntries( [ fact( 40, 'div' ), fact( 41, 'sc-for', [], [ 40 ] ), fact( 42, 'a', [ [ 'attr:href', 'l.href' ] ], [ 41, 40 ] ), fact( 43, 'image-slot', [ [ 'attr:id', 'l.id' ], [ 'attr:placeholder', 'l.name' ] ], [ 42, 41, 40 ] ) ] ) };
+	const names = [ 'Sanam', 'Shan', 'Green Leaf' ];
+	const inventory = { elements: [ inv( 'Root/40#0', null, 'div' ), ...names.flatMap( ( n, i ) => [ inv( `Root/42#${ i }`, 'Root/40#0', 'a', '', [ [ 41, 'l' ] ], { href: `#/brand-${ i }` } ), inv( `Root/43#${ i }`, `Root/42#${ i }`, 'image-slot', '', [ [ 41, 'l' ] ], { id: `brand-${ i }`, placeholder: n } ) ] ) ] };
+	const pages = [ 0, 1, 2 ].map( ( i ) => ( { route: `brand-${ i }`, slug: `brand-${ i }`, postType: 'page' } ) );
+	const { r, flat } = pass( [ [ 'sgs/gallery', 'Root/40#0' ] ], { facts, inventory, pages } );
+	assert.deepEqual( flat[ 0 ].attributes.mediaItems, names.map( ( n, i ) => ( { linkUrl: `/brand-${ i }/`, linkLabel: n } ) ) );
+	assert.equal( r.handover.filter( ( h ) => 'id' === h.evidence.key && /draws a picture in each of its 3 items/.test( h.reason ) ).length, 1 );
+} );
+
+test( 'NEGATIVE: a placeholder the inventory did not record gives no link label', () => {
+	const facts = { elements: Object.fromEntries( [ fact( 40, 'div' ), fact( 41, 'sc-for', [], [ 40 ] ), fact( 42, 'a', [ [ 'attr:href', 'l.href' ] ], [ 41, 40 ] ), fact( 43, 'image-slot', [ [ 'attr:id', 'l.id' ], [ 'attr:placeholder', 'l.name' ] ], [ 42, 41, 40 ] ) ] ) };
+	const inventory = { elements: [ inv( 'Root/40#0', null, 'div' ), ...[ 0, 1 ].flatMap( ( i ) => [ inv( `Root/42#${ i }`, 'Root/40#0', 'a', '', [ [ 41, 'l' ] ], { href: `#/brand-${ i }` } ), inv( `Root/43#${ i }`, `Root/42#${ i }`, 'image-slot', '', [ [ 41, 'l' ] ] ) ] ) ] };
+	const pages = [ 0, 1 ].map( ( i ) => ( { route: `brand-${ i }`, slug: `brand-${ i }`, postType: 'page' } ) );
+	const { flat } = pass( [ [ 'sgs/gallery', 'Root/40#0' ] ], { facts, inventory, pages } );
+	assert.deepEqual( flat[ 0 ].attributes.mediaItems, [ { linkUrl: '/brand-0/' }, { linkUrl: '/brand-1/' } ] );
 } );

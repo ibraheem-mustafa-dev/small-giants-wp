@@ -26,6 +26,7 @@ const cal = () => ( {
 		itemColour: setting( 'color', null, [ LINK( 3 ), LINK( 4 ) ] ),
 		itemColourHover: setting( 'color', 'hover', [ FIRST ] ),
 		itemBgCurrent: setting( 'background-color', 'current', [ `${ LINK( 7 ) }::before` ] ),
+		itemBgOpen: setting( 'background-color', 'open', [ `${ LINK( 8 ) }::before` ] ),
 		navBgHover: setting( 'background-color', 'hover', [ '::after' ] ),
 	},
 } );
@@ -33,6 +34,12 @@ const cal = () => ( {
 test( 'MUST FAIL: the hover fill measured on the first item is the hover fill of a plain item the resting fill paints', () => {
 	assert.deepEqual( partStateSlots( { db, cal: cal(), block: BLOCK, prop: 'background-color', slot: LINK( 3 ), state: 'hover' } ), [ `${ FIRST }::before` ] );
 	assert.deepEqual( partStateSlots( { db, cal: cal(), block: BLOCK, prop: 'background-color', slot: LINK( 4 ), state: 'hover' } ), [ `${ FIRST }::before` ] );
+} );
+
+test( 'MUST FAIL: a state setting the slot assigner left without a canonical slot (itemBgCurrent) is the current fill of the plain item its element paints', () => {
+	const args = { db, cal: cal(), block: BLOCK, prop: 'background-color', slot: LINK( 3 ), state: 'current' };
+	assert.deepEqual( partStateSlots( args ), [ `${ LINK( 7 ) }::before` ] );
+	assert.deepEqual( partStateSlots( { ...args, slot: LINK( 9 ) } ), [], 'an element no resting setting paints has none' );
 } );
 
 test( 'negative control: the slots are the state setting\'s own, only for a part the resting setting paints, and only for that state, property and block', () => {
@@ -45,7 +52,7 @@ test( 'negative control: the slots are the state setting\'s own, only for a part
 	assert.deepEqual( partStateSlots( { ...args, slot: FIRST } ), [], 'the slot the state setting was measured at is not its own alternate' );
 	assert.deepEqual( partStateSlots( { ...args, block: 'sgs/container' } ), [], 'another block has no such part' );
 	assert.deepEqual( partStateSlots( { ...args, db: null } ), [], 'no framework DB ties nothing to a part' );
-	assert.deepEqual( partStateSlots( { ...args, state: 'current' } ), [], 'a state setting with no part in the DB (itemBgCurrent) is not attributed to one' );
+	assert.deepEqual( partStateSlots( { ...args, state: 'open' } ), [], 'a state setting of another element (itemBgOpen, the open item) is no setting of the item' );
 } );
 
 const look = ( declared ) => ( { states: [ 'hover' ], family: 'pseudo', selector: 'a:hover', tokens: [ ':hover' ], declared, rendered: declared, read: 'entered' } );

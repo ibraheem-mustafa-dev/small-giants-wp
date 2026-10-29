@@ -12,7 +12,7 @@ import { mapDecisions } from './fill-map.mjs';
 import { iconDecisions, imageIconDecisions } from './fill-icon.mjs';
 import { handoverEntry } from './fill-handover.mjs';
 import { unreadOf } from './fill-unread.mjs';
-import { fillBand } from './fill-band.mjs';
+import { fillBand, bandSetting } from './fill-band.mjs';
 import { hasRow } from './fill-skeleton.mjs';
 import { liftRow } from './fill-row-lift.mjs';
 import { json, makeState, snapsOf, planSpacing } from './fill-resolve-state.mjs';
@@ -194,7 +194,7 @@ export function fillTree( opts ) {
 		// What this node's calibration knows and nothing read or judged, so no setting is skipped silently.
 		const read = rec.targets.filter( ( t ) => Object.keys( snapsOf( st, t.id ) ).length ).map( ( t ) => t.slot );
 		const judged = new Set( [ ...st.out.writes.filter( ( w ) => w.index === rec.index ).map( ( w ) => w.attr ), ...( band ? [ band.attr ] : [] ) ] );
-		st.out.unread.push( ...unreadOf( { db: st.db, block: rec.name, cal, attributes: st.nodes[ rec.index ].node.attributes || {}, slots: read, written: judged } ).map( ( u ) => ( { node: ref, block: rec.name, ...u } ) ) );
+		st.out.unread.push( ...unreadOf( { db: st.db, block: rec.name, cal, attributes: st.nodes[ rec.index ].node.attributes || {}, slots: read, written: judged, band: bandSetting( st.db, rec.name, cal ) } ).map( ( u ) => ( { node: ref, block: rec.name, ...u } ) ) );
 	}
 	// A host block's setting that paints the same part on every instance of a child block is written once (FR-48-14b).
 	partWideWrites( st, opts.partWide );

@@ -32,18 +32,23 @@ export function structureRowsFor( db, block ) {
 }
 
 // One node's unjudged settings. cal: the block's calibration; attributes: the skeleton node's own attributes; slots:
-// the element paths a finder read on this node ('' is the draftRef element); written: the settings Fill wrote on it.
+// the element paths a finder read on this node ('' is the draftRef element); written: the settings Fill wrote on it; band: the
+// { attr, slot } of the block's content band (lib/fill-band.mjs::bandSetting), which the draftRef element is too: a block built on
+// the shared container wrapper draws one draft element as its root and its band, so reading the root reads the band's layout
+// settings. The band's own width setting (`attr`) keeps its own rule (lib/fill-band.mjs reads the drawn children), so it stays
+// unread until that evidence exists.
 // Returns [ { kind, slot, settings: [ attr ], reason } ].
-export function unreadOf( { db, block, cal, attributes = {}, slots = [], written = new Set() } ) {
+export function unreadOf( { db, block, cal, attributes = {}, slots = [], written = new Set(), band = null } ) {
 	const out = [];
 	const decided = ( a ) => Object.prototype.hasOwnProperty.call( attributes, a ) || written.has( a );
 	const read = new Set( slots.map( LOOSE ) );
+	const viaRoot = ( attr, paths ) => !! band && slots.includes( '' ) && attr !== band.attr && paths.some( ( p ) => LOOSE( p ) === LOOSE( band.slot ) );
 	const reached = ( paths ) => paths.some( ( p ) => read.has( LOOSE( p ) ) );
 
 	const byElement = new Map();
 	for ( const [ attr, s ] of Object.entries( cal?.settings || {} ) ) {
 		const paths = s.slots?.length ? s.slots : [ s.slot ?? '' ];
-		if ( decided( attr ) || reached( paths ) ) {
+		if ( decided( attr ) || reached( paths ) || viaRoot( attr, paths ) ) {
 			continue;
 		}
 		byElement.has( paths[ 0 ] ) || byElement.set( paths[ 0 ], [] );

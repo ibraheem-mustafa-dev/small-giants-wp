@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/fill-part-present.mjs",
+		"find": "accepted.has( other ) && ",
+		"replace": "",
+		"why": "a block the render draws internally is judged absent"
+	},
+	{
+		"file": "lib/fill-part-present.mjs",
+		"find": "! below.has( other )",
+		"replace": "true",
+		"why": "a child the node holds is judged absent"
+	},
+	{
+		"file": "lib/fill-part-present.mjs",
+		"find": "(?=__|--|[^a-z0-9-]|$)",
+		"replace": "(?=[^a-z0-9-]|$)",
+		"why": "a modifier of a block is read as another block's name"
+	},
+	{
+		"file": "lib/fill-part-present.mjs",
+		"find": "namesUnder( c, out );",
+		"replace": "",
+		"why": "only the direct children are searched"
+	}
+]

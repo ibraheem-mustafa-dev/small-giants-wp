@@ -7,20 +7,20 @@
 	},
 	{
 		"file": "lib/fill-state-parts.mjs",
-		"find": "state === s.state && parts.has( canonicalSlotOf( db, block, attr ) )",
-		"replace": "true && parts.has( canonicalSlotOf( db, block, attr ) )",
+		"find": "state === s.state && partKeys( db, block, attr ).some( ( k ) => parts.has( k ) )",
+		"replace": "true && partKeys( db, block, attr ).some( ( k ) => parts.has( k ) )",
 		"why": "a setting of another state is taken for the look's state"
 	},
 	{
 		"file": "lib/fill-state-parts.mjs",
-		"find": "state === s.state && parts.has( canonicalSlotOf( db, block, attr ) )",
+		"find": "state === s.state && partKeys( db, block, attr ).some( ( k ) => parts.has( k ) )",
 		"replace": "state === s.state",
 		"why": "a state setting of another part is taken for the item's"
 	},
 	{
 		"file": "lib/fill-state-parts.mjs",
-		"find": ".map( ( [ attr ] ) => canonicalSlotOf( db, block, attr ) ).filter( Boolean ) );",
-		"replace": ".map( ( [ attr ] ) => canonicalSlotOf( db, block, attr ) ) );",
+		"find": "row?.css_element && `element:${ row.css_element }` ].filter( Boolean );",
+		"replace": "row?.css_element && `element:${ row.css_element }` ];",
 		"why": "a setting tied to no part is a part of its own"
 	},
 	{
@@ -46,5 +46,11 @@
 		"find": ".concat( atRest ? [] : partStateSlots( { db, cal, block: rec.name, prop, slot, state } ) )",
 		"replace": "",
 		"why": "fillStates never tries the part's other slots"
+	},
+	{
+		"file": "lib/fill-state-parts.mjs",
+		"find": "row?.css_element && `element:${ row.css_element }` ].filter( Boolean )",
+		"replace": "].filter( Boolean )",
+		"why": "a state setting without a canonical slot is tied to no part"
 	}
 ]
