@@ -17,5 +17,6 @@
 	{"file": "lib/skeleton-recognise.mjs", "find": "hosts[ hostOf( e.attrs?.href ) ] || null", "replace": "null", "why": "the link host stands for a kind"},
 	{"file": "lib/skeleton-rules.mjs", "find": "const r = recogniser.recognise( e );", "replace": "const r = null;", "why": "the recognise rule is consulted"},
 	{"file": "lib/skeleton-recognise.mjs", "find": "|| ( next && next.score >= top.score )", "replace": "", "why": "a tie is no verdict"},
-	{"file": "lib/skeleton-recognise.mjs", "find": "e.box[ w ].h <= D.barMaxHeightPx", "replace": "true", "why": "a bar is short: a full-screen fixed overlay is not a banner"}
+	{"file": "lib/skeleton-recognise.mjs", "find": "e.box[ w ].h <= D.barMaxHeightPx", "replace": "true", "why": "a bar is short: a full-screen fixed overlay is not a banner"},
+	{"file": "lib/skeleton-recognise.mjs", "find": "if ( 'flow' === f.mode && ! gatherWords( e ).trim() ) {", "replace": "if ( false ) {", "why": "a brand icon with no words in a social row is taken as the block"}
 ]

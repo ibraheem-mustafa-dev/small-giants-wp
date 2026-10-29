@@ -169,3 +169,11 @@ test( 'negative control: a fixed element that covers the whole screen is a bar b
 	const r = run( inv( 'Root/1#0', footer( cover ) ), 'footer' );
 	assert.equal( find( r, 'sgs/notice-banner' ).length, 0 );
 } );
+
+test( 'negative control: a WhatsApp icon link with no words in flow (a brand icon in a row of icons) is never the block', () => {
+	const icon = ( n, href ) => [ el( `Root/${ n }#0`, 'Root/2#0', 'a', '', { depth: 2, attrs: { href }, position: STATIC } ), el( `Root/${ n + 1 }#0`, `Root/${ n }#0`, 'svg', '', { depth: 3 } ) ];
+	const page = [ el( 'Root/1#0', null, 'section', '', { depth: 0 } ), el( 'Root/2#0', 'Root/1#0', 'div', '', { display: 'flex' } ), ...icon( 3, 'https://www.instagram.com/x' ), ...icon( 5, 'https://wa.me/441217714330' ) ];
+	const r = run( inv( 'Root/1#0', page ), 'page' );
+	assert.deepEqual( find( r, 'sgs/whatsapp-cta' ), [] );
+	assert.notEqual( r.proposal.rows.find( ( x ) => 'Root/5#0' === x.key ).rule, 'recognise' );
+} );

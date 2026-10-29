@@ -9,7 +9,8 @@
 // 1 / (the number of blocks holding it); at least one name word must match, so a word only one block carries is decisive. The element is the block when the top score reaches rules.recognise.minScore and
 // beats the second. The mode follows the element alone: fixed to the viewport is the floating value of the mode setting
 // (with the corner, offset and hidden-label width the draft shows); sticky is the sticky setting with its edge; in flow
-// is the block's static or inline value, so the same block in flow stays where the draft puts it.
+// is the block's static or inline value, so the same block in flow stays where the draft puts it; in flow an element with
+// no words (a brand icon in a row of icons) is never recognised.
 import { declared as declaredStyle } from './skeleton-rules.mjs';
 
 const words = ( s ) => String( s ?? '' ).replace( /([a-z])([A-Z])/g, '$1 $2' ).toLowerCase().split( /[^a-z0-9]+/ ).filter( ( w ) => w.length >= 3 );
@@ -119,6 +120,10 @@ export function makeRecogniser( { m, facts } ) {
 			return null;
 		}
 		const f = features( e );
+		// In flow, a link with no words of its own is an icon (a brand icon in a social row draws it), never the block.
+		if ( 'flow' === f.mode && ! gatherWords( e ).trim() ) {
+			return null;
+		}
 		const { blocks, df, nameDf } = roster();
 		const scored = blocks.filter( ( b ) => b.bearing ).map( ( b ) => {
 			const named = f.tokens.filter( ( t ) => b.nameWords.has( t ) );
