@@ -71,12 +71,13 @@ export function loopItems( { inventory, facts, rootKey, rootComponent = null } )
 			const f = holeField( h, t.realTag || t.tag );
 			const loop = f && loopsOf( e ).find( ( m ) => m.as === f.head && ! outer.has( String( m.tpl ) ) );
 			if ( loop ) {
-				const l = loops.get( String( loop.tpl ) ) ?? { tpl: String( loop.tpl ), as: loop.as, depth: loopsOf( e ).indexOf( loop ) };
+				const l = loops.get( String( loop.tpl ) ) ?? { tpl: String( loop.tpl ), as: loop.as, list: loop.list, depth: loopsOf( e ).indexOf( loop ) };
 				loops.set( l.tpl, l );
 			}
 		}
 	}
-	const loop = [ ...loops.values() ].sort( ( a, b ) => a.depth - b.depth )[ 0 ];
+	const ranked = [ ...loops.values() ].sort( ( a, b ) => a.depth - b.depth );
+	const loop = ranked[ 0 ];
 	if ( ! loop ) {
 		return null;
 	}
@@ -113,7 +114,8 @@ export function loopItems( { inventory, facts, rootKey, rootComponent = null } )
 		}
 		return item;
 	} );
-	return { items, fields: [ ...fields.values() ], source: `loop ${ loop.as } (sc-for ${ loop.tpl }), ${ items.length } rendered copies`, reason: null };
+	// A list block holds one list: every other loop the element draws is named, never dropped without a word (S7).
+	return { items, fields: [ ...fields.values() ], source: `loop ${ loop.as } (sc-for ${ loop.tpl }), ${ items.length } rendered copies`, reason: null, others: ranked.slice( 1 ).map( ( l ) => ( { tpl: l.tpl, as: l.as, list: l.list ?? null } ) ) };
 }
 
 // What the draft's renderVals returns (the template's root data), for a parsed logic index.

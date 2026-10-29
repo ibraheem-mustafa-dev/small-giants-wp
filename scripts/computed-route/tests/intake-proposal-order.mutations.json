@@ -43,8 +43,8 @@
 	},
 	{
 		"file": "lib/skeleton-context.mjs",
-		"find": "draftLinksFor( { repo, client, routing, proposedRows: pageMap } )",
-		"replace": "draftLinksFor( { repo, client, proposedRows: pageMap } )",
+		"find": "draftLinksFor( { repo, client, routing, proposedRows: pageMap?.length ? pageMap : null } )",
+		"replace": "draftLinksFor( { repo, client, proposedRows: pageMap?.length ? pageMap : null } )",
 		"why": "the draft-link context ignores the run's routing"
 	},
 	{

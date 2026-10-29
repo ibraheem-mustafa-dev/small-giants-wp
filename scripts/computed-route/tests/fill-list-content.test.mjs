@@ -317,3 +317,24 @@ test( 'NEGATIVE: items carrying nothing at all are still not written; one row na
 	assert.equal( flat[ 0 ].attributes.mediaItems, undefined );
 	assert.match( r.handover[ 0 ].reason, /carry no words, link or uploaded picture/ );
 } );
+
+test( 'MUST FAIL (register C4): an element drawing two loops names the loop its list block does not hold, never drops it silently (S7)', () => {
+	const facts = { elements: Object.fromEntries( [
+		fact( 40, 'div' ),
+		fact( 41, 'sc-for', [], [ 40 ] ), fact( 42, 'a', [ [ 'text', 'l.name' ] ], [ 41, 40 ] ),
+		fact( 51, 'sc-for', [], [ 40 ] ), fact( 52, 'a', [ [ 'text', 'k.name' ] ], [ 51, 40 ] ),
+	] ) };
+	const listed = ( tpl, as ) => ( { kind: 'sc-for', tpl: String( tpl ), as, list: `{{ ${ as === 'l' ? 'styles' : 'shopBy' } }}` } );
+	const inventory = { elements: [ inv( 'Root/40#0', null, 'div' ),
+		...[ 'Pilot', 'Round' ].map( ( w, i ) => ( { ...inv( `Root/42#${ i }`, 'Root/40#0', 'a', w ), membership: [ listed( 41, 'l' ) ] } ) ),
+		...[ 'Best sellers', 'Under 100' ].map( ( w, i ) => ( { ...inv( `Root/52#${ i }`, 'Root/40#0', 'a', w ), membership: [ listed( 51, 'k' ) ] } ) ) ] };
+	const r0 = loopItems( { inventory, facts, rootKey: 'Root/40#0', rootComponent: C } );
+	assert.equal( r0.others.length, 1 );
+	assert.equal( r0.others[ 0 ].tpl, '51' );
+	const { r } = pass( [ [ 'sgs/gallery', 'Root/40#0' ] ], { facts, inventory } );
+	assert.ok( r.unmapped.some( ( u ) => /draws 2 lists and sgs\/gallery holds one.*sc-for 51 over shopBy/.test( u.reason ) ), JSON.stringify( r.unmapped.map( ( u ) => u.reason ) ) );
+	// Negative control: one loop names nothing.
+	const one = { elements: inventory.elements.filter( ( e ) => ! /^Root\/52/.test( e.key ) ) };
+	assert.deepEqual( loopItems( { inventory: one, facts, rootKey: 'Root/40#0', rootComponent: C } ).others, [] );
+	assert.ok( ! pass( [ [ 'sgs/gallery', 'Root/40#0' ] ], { facts, inventory: one } ).r.unmapped.some( ( u ) => /draws 2 lists/.test( u.reason ) ) );
+} );

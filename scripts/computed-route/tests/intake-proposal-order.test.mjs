@@ -83,7 +83,7 @@ test( 'MUST FAIL: the refresh reads the run\'s routing and its motion inventory\
 	const f = fixture();
 	const timer = { id: 'J-07', mechanism: 'js-scroll', status: 'active', element: { dc: 'Home', template_tpl_id: '150' }, source: { function: 'step', code: 't.scrollTo({ left: 0 })' }, trigger: { type: 'interval', detail: 'setInterval every 6000ms via step' }, properties: [ { property: 'scroll-position' } ] };
 	const seen = [];
-	const intake = { skeletons: { 'site-footer': f.skeletons[ 'site-footer' ] }, breakpoints: [], pageMap: [], routing: { adapter: 'state-page', routes: [], links: [] }, inventory: { animations: { records: [ timer ] } } };
+	const intake = { skeletons: { 'site-footer': f.skeletons[ 'site-footer' ] }, breakpoints: [], pageMap: [ { id: 'p1', route: '#/shop' } ], routing: { adapter: 'state-page', routes: [], links: [] }, inventory: { animations: { records: [ timer ] } } };
 	refreshIntakeSkeletons( { intake, client: CLIENT, db, repo: f.repo, codeRepo: REPO, propose: ( a ) => ( seen.push( a ), ok ) } );
 	assert.deepEqual( [ ...seen[ 0 ].loops.carousels ], [ 'Home/150' ] );
 	assert.equal( seen[ 0 ].draftLinks.adapter, 'state-page' );

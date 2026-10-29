@@ -1,0 +1,4 @@
+[
+	{ "file": "lib/fill-list-items.mjs", "find": "others: ranked.slice( 1 ).map(", "replace": "others: [].map(", "why": "the other loops are not named" },
+	{ "file": "lib/fill-list-content.mjs", "find": "list?.others?.length && out.unmapped.push(", "replace": "false && out.unmapped.push(", "why": "no gap row for the unread loop" }
+]

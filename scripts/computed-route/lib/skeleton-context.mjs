@@ -49,7 +49,7 @@ export function proposalContext( { repo, client, slug, id, breakpoints, site = s
 	const catalogue = loadCatalogue( repo, client );
 	return {
 		calKeys: calKeysFor( site ), calSettings: calSettingsFor( site ), states: statesOfRecord( { repo, client, id } ), thresholds: thresholdsOf( breakpoints ),
-		formLinks: formLinksFor( { repo, client, refs } ), refs, draftLinks: draftLinksFor( { repo, client, routing, proposedRows: pageMap } ),
+		formLinks: formLinksFor( { repo, client, refs } ), refs, draftLinks: draftLinksFor( { repo, client, routing, proposedRows: pageMap?.length ? pageMap : null } ),
 		carried: carriedIds( { repo, client, site, rootComponent } ),
 		// A WooCommerce page's template surface places WooCommerce's piece at the draft's commerce region, and a loop of products, brands or reviews is a working block.
 		commerce: commerceOf( manifestEntryOf( { repo, client, slug } ), rows, catalogue, loadShopParts( build ) ),
