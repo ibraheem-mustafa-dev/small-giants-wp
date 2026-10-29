@@ -89,6 +89,9 @@ sys.stdout.reconfigure(encoding="utf-8")
 sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
 from block_source_files import edit_source  # noqa: E402
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / "dbschema"))
+from block_source import BlockSource  # noqa: E402
+
 # Shared object-attribute shape discriminator — see lib/object_attr_shape.py's
 # docstring for the full 5-shape doctrine. Aliased to the private names this
 # file uses at its call sites (is_responsive computation, wrapper evidence, etc.).
@@ -1097,6 +1100,11 @@ def _index_sgs_block_files(
 
     _context_tier_attrs = _context_tier_attrs_by_provider(blocks_dir)
 
+    # What each block's own source declares and block.json does not (dbschema/block_source.py): a setting's allowed values and
+    # an array setting's item fields. A reader that cannot run stops the seed rather than writing a half-read database.
+    _block_source = BlockSource.read(blocks_dir.parent.parent)
+    _source_gaps: list[tuple[str, str, str, str]] = []
+
     for block_dir in sorted(blocks_dir.iterdir()):
         if not block_dir.is_dir() or block_dir.name in EXCLUDED_DIRS:
             continue
@@ -1165,7 +1173,7 @@ def _index_sgs_block_files(
             replaces = _raw_replaces.strip()
         else:
             replaces = None
-        attrs = data.get("attributes", {})
+        attrs = _with_source_declarations(data.get("attributes", {}), block_dir.name, slug, _block_source, _source_gaps)
         supports = data.get("supports", {})
         # Wrapper evidence is only trustworthy for a block PROVEN to route
         # through SGS_Container_Wrapper (task review "Also fix" —
@@ -1794,8 +1802,12 @@ def _index_sgs_block_files(
         )
         pruned_fossil_caps = c.rowcount
 
+    if not dry_run:
+        _write_source_gaps(c, _source_gaps)
+
     return {
         "pruned_fossil_caps": pruned_fossil_caps,
+        "source_gaps": len(_source_gaps),
         "scanned": scanned,
         "new_blocks": new_blocks,
         "new_attrs": new_attrs,
@@ -3195,6 +3207,61 @@ def _populate_setting_meanings(
     }
 
 
+def _with_source_declarations(attrs: dict, folder: str, slug: str, source: "BlockSource", gaps: list) -> dict:
+    """block.json's attributes plus what the block's own source declares (dbschema/block_source.py).
+
+    A string setting with no `enum` takes the allowed values its editor controls and PHP allow-lists state; an array setting
+    with no `items.properties` takes the item fields its default value and render.php state. A list the source declares but
+    cannot be read statically is appended to `gaps` as (block, setting, kind, reason). block.json wins wherever it declares.
+    """
+    out = {}
+    for name, definition in attrs.items():
+        if not isinstance(definition, dict):
+            out[name] = definition
+            continue
+        if definition.get("type") == "array" and not (definition.get("items") or {}).get("properties"):
+            fields = source.item_fields(folder, name, definition)
+            if fields:
+                definition = {**definition, "items": {**(definition.get("items") or {}), "properties": {f: {} for f in fields}}}
+        elif definition.get("type", "string") == "string" and not definition.get("enum"):
+            values, gap, _files = source.choices(folder, name, definition)
+            if values:
+                definition = {**definition, "enum": values}
+            elif gap:
+                gaps.append((slug, name, "enum", gap))
+        out[name] = definition
+    return out
+
+
+def _write_source_gaps(c: "sqlite3.Cursor", gaps: list) -> None:
+    """Replace block_source_gaps with this run's gap rows, then add a row for every select/toggle setting that still has no
+    allowed values (the control is drawn by a shared component that states none)."""
+    c.execute(
+        """CREATE TABLE IF NOT EXISTS block_source_gaps (
+            block_slug TEXT NOT NULL,
+            attr_name  TEXT NOT NULL,
+            kind       TEXT NOT NULL,
+            reason     TEXT NOT NULL,
+            PRIMARY KEY (block_slug, attr_name, kind)
+        )"""
+    )
+    c.execute("DELETE FROM block_source_gaps")
+    c.executemany("INSERT OR REPLACE INTO block_source_gaps VALUES (?, ?, ?, ?)", gaps)
+
+
+def _record_unlisted_choice_gaps(conn: sqlite3.Connection) -> None:
+    """A select or toggle setting that still has no allowed values after the source read is a named gap row."""
+    conn.execute(
+        """INSERT OR IGNORE INTO block_source_gaps (block_slug, attr_name, kind, reason)
+           SELECT block_slug, attr_name, 'enum',
+                  CASE WHEN attr_type = 'string' THEN 'a select or toggle control no option list in the block source states'
+                       ELSE 'the setting is a ' || attr_type || ', not a list of string choices' END
+           FROM block_attributes
+           WHERE source = 'sgs' AND enum_values IS NULL
+             AND inspector_control_type IN ('SelectControl', 'ToggleGroupControl', 'RadioControl')"""
+    )
+
+
 def _populate_allowed_blocks(
     blocks_dir: Path,
     c: "sqlite3.Cursor",
@@ -3410,6 +3477,7 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         #     — the SOLE writer now (enrich-db.py's stale writer removed); overwrite-
         #     on-disagreement policy, so this must run every reseed to stay durable. ---
         _run_inspector_control_type_seed(conn)
+        _record_unlisted_choice_gaps(conn)
 
         # --- Stage 1 tail: seed fx_effects from the motion-fx registry. ---
         _run_motion_fx_registry_seed(conn)

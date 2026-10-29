@@ -1,6 +1,6 @@
-# Skeleton finaliser
+# Skeleton low-confidence picks
 
-You settle the low-confidence rows of a skeleton the skeleton writer proposed (Spec 48 §3.4). You are run as a subagent by the session; the scripts never call a model. You read one file and write one file.
+You are the agent running the clone. You settle the low-confidence rows of a skeleton the skeleton writer proposed (Spec 48 §3.4) and bring the points you cannot settle to Bean's review; the scripts never call a model. You read one file and write one file.
 
 ## Input
 

@@ -48,7 +48,7 @@ function inventory( root ) {
 	walk( root, null, 0 );
 	return { checks: {}, source: 'fixture', root: root.tag, generated: 'fixture', elements };
 }
-const run = ( root, o = {} ) => proposeSkeleton( { inventory: inventory( root ), facts: o.facts || facts(), surface: 'fixture', surfaceKind: o.kind || 'page', surfaceName: o.name || 'Fixture', built: o.built || null, motion: o.motion || new Set(), db, factRecord: o.factRecord } );
+const run = ( root, o = {} ) => proposeSkeleton( { inventory: inventory( root ), facts: o.facts || facts(), surface: 'fixture', surfaceKind: o.kind || 'page', surfaceName: o.name || 'Fixture', motion: o.motion || new Set(), db, factRecord: o.factRecord } );
 const row = ( r, pred ) => r.proposal.rows.find( pred );
 const byWords = ( r, w ) => row( r, ( x ) => x.words === w );
 const byTag = ( r, t ) => row( r, ( x ) => x.tag === t );
@@ -226,12 +226,16 @@ test( 'listWrapper: a bare wrapper of stacked links, or of a grid of links each 
 	assert.notEqual( byTag( run( tree, { facts: facts( 'listWrapper' ) } ), 'div' ).action, 'unwrap' );
 } );
 
-test( 'clientBuiltSurface: every row of a surface the client built as a post names that post; MUST FAIL without the rule', () => {
+test( 'a surface with a hand-built reference post goes through the same confidence and review path as any other; MUST FAIL while a built post settles its rows', () => {
 	const built = { site: 'canary', postType: 'sgs_drawer', postId: 1 };
 	const tree = E( 'div', {}, [ E( 'span', { words: 'Menu' } ) ] );
-	assert.ok( run( tree, { kind: 'drawer', built } ).proposal.rows.every( ( x ) => 'clientBuiltSurface' === x.rule && x.builtPost === built && ! x.low ), 'every row is settled by the post, so none awaits the finaliser' );
-	assert.ok( run( tree, { kind: 'drawer' } ).proposal.rows.some( ( x ) => x.low ), 'the same surface unbuilt has a row the finaliser would be asked about' );
-	assert.ok( run( tree, { kind: 'drawer', built, facts: facts( 'clientBuiltSurface' ) } ).proposal.rows.every( ( x ) => 'clientBuiltSurface' !== x.rule ) );
+	const propose = ( extra ) => proposeSkeleton( { inventory: inventory( tree ), facts: facts(), surface: 'fixture', surfaceKind: 'drawer', surfaceName: 'Fixture', motion: new Set(), db, ...extra } );
+	const withPost = propose( { built } );
+	assert.ok( withPost.proposal.rows.some( ( x ) => x.low ), 'a row the rules are unsure of stays low, so the review sees it' );
+	assert.ok( withPost.proposal.rows.every( ( x ) => 'clientBuiltSurface' !== x.rule && ! x.builtPost ), 'no row names a built post' );
+	assert.equal( withPost.proposal.builtPost, undefined );
+	const outcome = ( r ) => r.proposal.rows.map( ( x ) => [ x.key, x.block, x.action, x.low, x.rule ] );
+	assert.deepEqual( outcome( withPost ), outcome( propose( {} ) ), 'negative control: the proposal is the same with or without a reference post' );
 } );
 
 test( 'marquee: a strip whose own animation loops a translate for ever is a brand strip (logos) or trust bar (labels); MUST FAIL without the rule or the motion record', () => {

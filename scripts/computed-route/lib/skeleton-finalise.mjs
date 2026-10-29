@@ -1,9 +1,9 @@
 // Skeleton writer, decisions and the finaliser (Spec 48 §3.4). Two files beside a surface's inventory hold choices:
 //   decisions.json          Bean's recorded choices per element (`skeleton.mjs decide`): top-priority evidence for propose.
-//   <surface>.picks.json    the finaliser subagent's picks for the low-confidence rows (`skeleton.mjs finalise --apply`).
+//   <surface>.picks.json    the clone agent's picks for the low-confidence rows (`skeleton.mjs finalise --apply`).
 // A decision keeps the element's signature (tag and words), so a re-read draft whose element changed under the same key
 // is reported stale instead of silently applied. Scripts never call a model: `finalise` writes a request file, the session
-// runs prompts/skeleton-finaliser.md over it as a subagent, and `finalise --apply` merges the picks it returns.
+// follows prompts/skeleton-finaliser.md over it, and `finalise --apply` merges the picks it returns.
 import fs from 'fs';
 import path from 'path';
 
@@ -43,7 +43,7 @@ export function recordSiteName( { file, siteName } ) {
 
 export const readPicks = ( file ) => readJson( file, {} );
 
-// What the finaliser subagent is asked: one entry per low-confidence row with the element's record, the candidates and the evidence.
+// What the clone agent is asked: one entry per low-confidence row with the element's record, the candidates and the evidence.
 export function finaliseRequest( { inventory, proposal, surface, promptFile } ) {
 	const byKey = Object.fromEntries( inventory.elements.map( ( e ) => [ e.key, e ] ) );
 	const rows = proposal.rows.filter( ( r ) => ( r.low && ! r.action ) || 'unresolved' === r.action );

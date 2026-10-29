@@ -167,6 +167,11 @@ Three 0-byte `sgs-framework.db` stubs exist on disk (repo root, `plugins/sgs-blo
 
 - `role`: A SEPARATE 3-VALUE VOCABULARY — icon-slug / text-content / url-href, plus NULL. NEVER join it to block_attributes.role (34 values); they are unrelated despite the shared column name. DECLARED from block.json items.properties.<field>.role, never name-parsed (FR-31-2.1a). NULL means no role was declared, and a consumer must not infer one from the field name.
 - `field_order`: STRUCTURAL and implicit — it is the block.json key order of items.properties, captured by enumerate() at sgs-update-v2.py, not anything an author declares. Any tool that sorts or reformats block.json keys would silently change this order with no error.
+- Item fields of an array setting with no `items.properties`: the seeder takes the keys of the default value's items, then the keys render.php reads from each item in a `foreach` over the attribute (`plugins/sgs-blocks/scripts/dbschema/block_source.py`, PHP read with `block-source-php.php`). Nothing is added to block.json.
+
+**`block_attributes.enum_values`** and **`block_source_gaps`**
+
+- `enum_values` is block.json's `enum` when it declares one; otherwise the allowed values the block's own source states: the option lists of its SelectControl, RadioControl and ToggleGroupControl (`block-source-choices.js`, parsed as code and followed through constants, barrels and shared components) and its PHP allow-lists (`block-source-php.php`, including helpers such as `sgs_list_marker_types`; the default is added to a PHP list). A list built at run time, or PHP allow-lists that disagree, is never guessed: it is a row in `block_source_gaps` (`block_slug`, `attr_name`, `kind`, `reason`), as is every select or toggle setting no readable list states.
 
 **`design_tokens`**
 

@@ -9,8 +9,8 @@
 //     page's route and has no root selector of its own)
 //   node scripts/computed-route/skeleton.mjs propose   --client <slug> --surface <name> [--site-name <text>]
 //     (a page's proposal holds each form on it as one linked form block, lib/skeleton-form-link.mjs)
-//     (the surfaces.json entry names its intake skeleton in `intakeSurface`: the proposal takes that skeleton's kind, name and
-//     built post, the intake motion inventory's loops, and the client decisions saved under that slug)
+//     (the surfaces.json entry names its intake skeleton in `intakeSurface`: the proposal takes that skeleton's kind, name,
+//     the intake motion inventory's loops, and the client decisions saved under that slug)
 //   node scripts/computed-route/skeleton.mjs review   --client <slug> --surface <name>
 //   node scripts/computed-route/skeleton.mjs finalise  --client <slug> --surface <name> [--apply <picks.json>]
 //   node scripts/computed-route/skeleton.mjs decide    --client <slug> --surface <name> --key <key> (--block <slug> [--attrs <json>] | --remove) [--reason <text>]
@@ -79,7 +79,7 @@ export function inventoryStrips( { client, surface, repo = REPO } ) {
 }
 
 // The intake context of a surface, as lib/skeleton-rerun.mjs::rerunSkeletons passes it: the intake skeleton the manifest
-// entry names in `intakeSurface` (its slug, id, kind, name and root component), the client's built post for it and the
+// entry names in `intakeSurface` (its slug, id, kind, name and root component), and the
 // intake motion inventory's looping templates. Throws when the entry has no usable link.
 export function intakeContext( { client, surface, repo = REPO } ) {
 	const slug = readSurface( repo, client, surface ).intakeSurface;
@@ -92,11 +92,10 @@ export function intakeContext( { client, surface, repo = REPO } ) {
 	if ( ! entry ) {
 		throw new Error( `"${ surface }" names intakeSurface "${ slug }", which is not in sites/${ client }/build/intake/intake.json skeletons` );
 	}
-	const built = readJson( path.join( skeletonDir( repo, client ), 'built-surfaces.json' ), {} ).surfaces || {};
 	// The handoff record of the same id carries the states (with the sc-if templates each shows); the draft's width thresholds are intake's.
 	const states = statesOfRecord( { repo, client, id: entry.id } );
 	const thresholds = thresholdsOf( intake.breakpoints );
-	return { slug, id: entry.id ?? null, pageMap: intake.pageMap || [], kind: entry.kind, name: entry.name, built: built[ entry.id ] || built[ slug ] || null, rootComponent: entry.inventory?.checks?.rootName || null, motion: loopingKeys( intake.inventory?.animations ), carousels: carouselKeys( intake.inventory?.animations ), states, thresholds };
+	return { slug, id: entry.id ?? null, pageMap: intake.pageMap || [], kind: entry.kind, name: entry.name, rootComponent: entry.inventory?.checks?.rootName || null, motion: loopingKeys( intake.inventory?.animations ), carousels: carouselKeys( intake.inventory?.animations ), states, thresholds };
 }
 
 // The intake context and the saved client decisions of a surface as propose and review read them: decisions under the intake
@@ -139,7 +138,7 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	const commerce = commerceOf( readSurface( repo, client, surface ), rows, catalogue, loadShopParts( path.join( repo, 'sites', client, 'build' ) ) );
 	// A loop of products, brands or reviews on any page is a working block (lib/skeleton-loop-blocks.mjs): the page map names the product page, the catalogue the brands.
 	const loops = { rows, brands: catalogue ? filtersOf( catalogue ).brands : [], carousels: served ? servedMotion( ctx.carousels, ctx.rootComponent ) : ctx.carousels };
-	const r = propose( { inventory, facts, formLinks, refs, draftLinks: draftLinksFor( { repo, client } ), surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, commerce, loops, built: ctx.built, carried: carriedIds( { repo, client, site: readSurface( repo, client, surface ).site, rootComponent: served ? ctx.rootComponent : null } ), scriptOf: ( component ) => componentScript( path.join( repo, 'sites', client, 'handoff' ), component ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: readPicks( p.picks ), calKeys: calKeysFor( readSurface( repo, client, surface ).site ), calSettings: calSettingsFor( readSurface( repo, client, surface ).site ), states: ctx.states, thresholds: ctx.thresholds, pageMap: ctx.pageMap, surfaceId: ctx.id, db } );
+	const r = propose( { inventory, facts, formLinks, refs, draftLinks: draftLinksFor( { repo, client } ), surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, commerce, loops, carried: carriedIds( { repo, client, site: readSurface( repo, client, surface ).site, rootComponent: served ? ctx.rootComponent : null } ), scriptOf: ( component ) => componentScript( path.join( repo, 'sites', client, 'handoff' ), component ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: readPicks( p.picks ), calKeys: calKeysFor( readSurface( repo, client, surface ).site ), calSettings: calSettingsFor( readSurface( repo, client, surface ).site ), states: ctx.states, thresholds: ctx.thresholds, pageMap: ctx.pageMap, surfaceId: ctx.id, db } );
 	json( p.skeleton, r.skeleton );
 	json( p.proposal, r.proposal );
 	return { ...r, paths: p, facts, inventory, clientDecisions };
@@ -197,7 +196,7 @@ export async function main( argv, { read = readInventory, repo = REPO } = {} ) {
 		} else {
 			const req = finaliseRequest( { inventory, proposal, surface, promptFile: FINALISER_PROMPT } );
 			json( p.request, req );
-			log( `finalise ${ surface }: ${ req.rows.length } low-confidence rows written to ${ p.request }; run ${ FINALISER_PROMPT } over it as a subagent, then finalise --apply <picks.json>` );
+			log( `finalise ${ surface }: ${ req.rows.length } low-confidence rows written to ${ p.request }; follow ${ FINALISER_PROMPT } over it, then finalise --apply <picks.json>` );
 		}
 	} else if ( flag( '--site-name' ) ) {
 		recordSiteName( { file: p.decisions, siteName: flag( '--site-name' ) } );

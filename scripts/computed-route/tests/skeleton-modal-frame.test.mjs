@@ -70,7 +70,7 @@ function run( o = {} ) {
 	const f = loadFacts( { db, client: 'fixture-client', repo: REPO } );
 	f.decisions = structuredClone( f.decisions );
 	o.edit && o.edit( f.decisions.rules );
-	return proposeSkeleton( { inventory, facts: { ...f, repo: draft.repo }, surface: 'size-guide', surfaceKind: o.kind ?? 'modal', surfaceName: 'Size guide', db, factRecord, openers: {}, pageMap: o.pageMap ?? [ ROW ], surfaceId: 'S-25', calSettings: ( b ) => ( 'sgs/modal' === b ? CAL : {} ) } );
+	return proposeSkeleton( { inventory, facts: { ...f, repo: draft.repo }, surface: 'size-guide', surfaceKind: o.kind ?? 'modal', surfaceName: 'Size guide', db, factRecord, openers: {}, pageMap: o.pageMap ?? [ ROW ], surfaceId: 'S-25', calSettings: ( b ) => ( 'sgs/modal' === b ? CAL : {} ), ...( o.built ? { built: o.built } : {} ) } );
 }
 const all = ( l ) => l.flatMap( ( n ) => [ n, ...all( n.innerBlocks || [] ) ] );
 const frameOf = ( r ) => r.skeleton.find( ( n ) => true === n.modalFrame );
@@ -89,6 +89,13 @@ test( 'MUST FAIL: the modal skeleton carries a frame node reading the scrim, the
 	assert.deepEqual( [ 2, 6 ].map( ( n ) => rowOf( r, n ).into ), [ 'Root/1#0', 'Root/1#0' ], 'the backdrop and the close go into the frame' );
 	assert.equal( rowOf( r, 1 ).slotNotes, undefined, 'the dialog reads no sub-parts: the close is a part of its own, not a child of the panel' );
 	assert.deepEqual( [ 1, 2, 3, 6 ].map( ( n ) => [ rowOf( r, n ).rule, rowOf( r, n ).action ] ), [ [ 'modalFrame', 'unwrap' ], [ 'modalFrame', 'absorbed' ], [ 'modalFrame', 'unwrap' ], [ 'modalFrame', 'absorbed' ] ] );
+} );
+
+test( 'MUST FAIL: a modal surface with a hand-built reference post still carries its frame node; the post settles nothing', () => {
+	const r = run( { built: { site: 'canary', postType: 'sgs_modal', postId: 9 } } );
+	assert.equal( frameOf( r ).name, 'sgs/modal' );
+	assert.deepEqual( refs( r ), [ 'Root/4#0', 'Root/5#0', 'Root/7#0' ] );
+	assert.equal( rowOf( r, 1 ).rule, 'modalFrame' );
 } );
 
 test( 'NEGATIVE: a handler that does not close, a backdrop that does not cover the overlay, a panel without role dialog, a page surface and the rule removed leave the parts as ordinary blocks', () => {

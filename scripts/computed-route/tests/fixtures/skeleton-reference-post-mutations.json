@@ -1,0 +1,6 @@
+[
+	{"file": "lib/skeleton-propose.mjs", "find": "const openerNotes = [];", "replace": "const openerNotes = []; rows.forEach( ( x ) => Object.assign( x, { low: false } ) );", "why": "a surface with a hand-built reference post would be settled without the review: no row stays low"},
+	{"file": "lib/skeleton-propose.mjs", "find": "const openerNotes = [];", "replace": "const openerNotes = []; rows.forEach( ( x ) => Object.assign( x, { rule: 'clientBuiltSurface' } ) );", "why": "a row would name a built-post rule that the review groups apart"},
+	{"file": "lib/skeleton-propose.mjs", "find": "const openerNotes = [];", "replace": "const openerNotes = []; rows.forEach( ( x ) => Object.assign( x, { builtPost: { site: 'x' } } ) );", "why": "a row would carry a built post the review and intake read as its cause"},
+	{"file": "lib/skeleton-propose.mjs", "find": "weights: W,", "replace": "weights: W, builtPost: { site: 'x' },", "why": "the proposal would name a built post"}
+]

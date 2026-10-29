@@ -85,6 +85,19 @@
 	justify-content: center;
 }
 
+/* A container sized by its own aspect ratio or minimum height gives its content band that height, so a child set to fill
+   (an sgs/media in fill mode, height: 100%) fills the container. Only when a band exists, and only when the container is
+   sized (render adds the class); a container sized by its content is untouched. */
+.sgs-container--sized:has(> .sgs-container__inner) {
+	display: flex;
+	flex-direction: column;
+}
+
+.sgs-container--sized > .sgs-container__inner {
+	flex: 1 1 auto;
+	min-height: 0;
+}
+
 .sgs-container__overlay {
 	position: absolute;
 	inset: 0;

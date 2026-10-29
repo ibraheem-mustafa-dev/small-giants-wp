@@ -26,7 +26,6 @@ test( 'MUST FAIL: a snapshot then an unchanged run exits 0; a changed row is nam
 	assert.equal( await h.run( [ 'snapshot', 'acme-fixture' ] ), 0 );
 	const frozen = JSON.parse( fs.readFileSync( path.join( h.repo, dirOf( h ), 'proposals.json' ), 'utf8' ) );
 	assert.deepEqual( frozen.header.counts, { surfaces: 2, rows: 3 } );
-	assert.equal( frozen.header.noBuilt, false );
 	assert.equal( await h.run( [ 'diff', 'acme-fixture', dirOf( h ) ] ), 0 );
 	assert.match( h.out, /0 changed, 0 added, 0 removed of 3 frozen rows/ );
 	h.state.header[ 1 ] = row( 'Acme/2#0', { block: 'sgs/text', rule: 'newRule', confidence: 0.7 } );
@@ -65,11 +64,9 @@ test( 'MUST FAIL: an added row and a removed row are each reported, whole surfac
 	assert.match( h.out, /ADDED drawer Acme\/20#0/ );
 } );
 
-test( 'a repeated key keeps its rows apart; the --no-built flag is recorded and decides the folder; diff-all finds the freeze', async () => {
+test( 'a repeated key keeps its rows apart; diff-all finds the freeze', async () => {
 	const h = harness( { header: [ row( 'Acme/1#0' ), row( 'Acme/1#0', { block: 'sgs/text' } ) ] } );
-	assert.equal( await h.run( [ 'snapshot', 'acme-fixture', '--no-built' ] ), 0 );
-	const dir = `${ dirOf( h ) }-no-built`;
-	assert.equal( JSON.parse( fs.readFileSync( path.join( h.repo, dir, 'proposals.json' ), 'utf8' ) ).header.noBuilt, true );
+	assert.equal( await h.run( [ 'snapshot', 'acme-fixture' ] ), 0 );
 	assert.equal( await h.run( [ 'diff-all', '2026-10-21' ] ), 0 );
 	h.state.header[ 1 ] = row( 'Acme/1#0', { block: 'sgs/image' } );
 	assert.equal( await h.run( [ 'diff-all', '2026-10-21' ] ), 1 );
@@ -83,7 +80,7 @@ test( 'usage errors and a missing freeze exit 2', async () => {
 	assert.equal( await h.run( [ 'diff', 'acme-fixture', 'nowhere' ] ), 2 );
 	assert.equal( await h.run( [ 'diff-all', '2026-10-21' ] ), 2 );
 	await h.run( [ 'snapshot', 'acme-fixture' ] );
-	assert.equal( await h.run( [ 'diff', 'acme-fixture', dirOf( h ), '--no-built' ] ), 2, 'a flag that disagrees with the freeze' );
+	assert.equal( await h.run( [ 'diff', 'acme-fixture', dirOf( h ), '--no-built' ] ), 2, 'the retired flag is a usage error' );
 	assert.equal( await h.run( [ 'diff', 'other-client', dirOf( h ) ] ), 2, 'a freeze of another client' );
 } );
 

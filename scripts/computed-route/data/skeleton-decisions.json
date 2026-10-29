@@ -507,9 +507,6 @@
 			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
 			"block": "sgs/label"
 		},
-		"clientBuiltSurface": {
-			"reason": "a surface the client already built as a post (a header, drawer or mega menu) follows that post's block tree"
-		},
 		"logoElement": {
 			"reason": "a custom element named as a logo (its tag matches logoImage, such as <brand-logo>) is the logo block, which reads the site logo"
 		},

@@ -289,7 +289,7 @@ export const rowsOf = ( surface, proposal, inventory ) => rowsWith( surface, pro
 
 const rowsWith = ( surface, proposal, inventory, fingerprints ) => proposal.rows.map( ( r ) => ( {
 	rowId: `skeleton:${ surface }:${ r.key }`, key: r.key, ...( fingerprints[ r.key ] ? { fingerprint: fingerprints[ r.key ] } : {} ), tag: r.tag, words: r.words, block: r.block, confidence: r.confidence, low: r.low, reason: r.reason, rule: r.rule ?? null,
-	...( r.into ? { into: r.into } : {} ), ...( r.handover ? { handover: r.handover } : {} ), ...( r.builtPost ? { builtPost: r.builtPost } : {} ), ...( r.siteOptions ? { siteOptions: r.siteOptions } : {} ), ...( r.conflict ? { conflict: r.conflict } : {} ),
+	...( r.into ? { into: r.into } : {} ), ...( r.handover ? { handover: r.handover } : {} ), ...( r.siteOptions ? { siteOptions: r.siteOptions } : {} ), ...( r.conflict ? { conflict: r.conflict } : {} ),
 	candidates: r.candidates.slice( 0, 3 ).map( ( c ) => ( { block: c.block, score: c.score, share: c.share } ) ), action: r.action, snippet: r.snippet, screenshots: r.screenshots,
 	...contextOf( inventory, proposal, r.key ),
 } ) );
@@ -539,10 +539,6 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 		into.gaps.push( gap( 'skeleton', `${ s.component }:${ s.rootTpl }`, `${ s.slug }: ${ error }` ) );
 		into.out.push( { surface: s.slug, id: s.id, kind: s.kind, name: s.name, route: s.route, ...( s.panel ? { panel: s.panel } : {} ), inventory: null, rows: [], counts: null, problems: [], gap: error } );
 	};
-	// The client's own built posts (a header, drawer or mega menu it already built), keyed by surfaces.json id or slug.
-	const builtFile = path.join( repo, 'sites', client, 'build', 'skeleton', 'built-surfaces.json' );
-	const builtMap = fs.existsSync( builtFile ) ? JSON.parse( fs.readFileSync( builtFile, 'utf8' ) ).surfaces || {} : {};
-	const builtFor = ( s ) => builtMap[ s.id ] || builtMap[ s.slug ] || null;
 	const groups = new Map();
 	for ( const s of surfaces ) {
 		const v = visitOf( s.route, { entry: index, routing: routeInfo } );
@@ -618,7 +614,7 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 						if ( f.error ) {
 							throw new Error( f.error );
 						}
-						const r = propose( { inventory, facts: f.facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: builtFor( s ), clientDecisions: f.clientDecisions, carried: carriedIds( { repo, client, site: siteOf( { repo, client, slug: s.slug } ) } ), calKeys, formLinks: formLinks(), refs, draftLinks: draftLinks(), scriptOf: ( component ) => componentScript( folder, component ), db: theDb } );
+						const r = propose( { inventory, facts: f.facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, clientDecisions: f.clientDecisions, carried: carriedIds( { repo, client, site: siteOf( { repo, client, slug: s.slug } ) } ), calKeys, formLinks: formLinks(), refs, draftLinks: draftLinks(), scriptOf: ( component ) => componentScript( folder, component ), db: theDb } );
 						// A width another state opened (the same state at its other breakpoint) is named in `statesAt`.
 						const opened = open && openedOf( open );
 						r.proposal.stripRoots?.forEach( ( k ) => absorbed.set( k, s.slug ) );

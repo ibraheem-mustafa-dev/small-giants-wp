@@ -1,4 +1,4 @@
-// The skeleton writer's intake context (skeleton.mjs::proposeSurface, lib/key-space.mjs): the surface kind, name, built post and
+// The skeleton writer's intake context (skeleton.mjs::proposeSurface, lib/key-space.mjs): the surface kind, name and
 // motion that intake passes, the link a manifest entry holds to its intake skeleton, and the two key spaces of a draft's
 // elements. A temp repo; no browser, no network.
 import test from 'node:test';
@@ -29,7 +29,7 @@ test( 'the committed footer inventory holds a root-host paragraph with words (th
 } );
 
 // A temp repo holding one surface: the manifest entry, intake.json, the inventory and the saved files.
-function fixture( { entry = { site: 'x', intakeSurface: 'site-footer' }, decisions = { surfaces: {} }, built = null, extra = [] } = {} ) {
+function fixture( { entry = { site: 'x', intakeSurface: 'site-footer' }, decisions = { surfaces: {} }, extra = [] } = {} ) {
 	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'skel-ctx-' ) );
 	const build = path.join( repo, 'sites', CLIENT, 'build' );
 	fs.mkdirSync( path.join( build, 'intake' ), { recursive: true } );
@@ -43,7 +43,6 @@ function fixture( { entry = { site: 'x', intakeSurface: 'site-footer' }, decisio
 	const list = loadFacts( { db, client: CLIENT, repo: REPO } ).tagMap.ul.core_block_slug.replace( /^sgs\//, '' );
 	fs.mkdirSync( path.join( repo, 'plugins/sgs-blocks/src/blocks', list ), { recursive: true } );
 	fs.copyFileSync( path.join( REPO, 'plugins/sgs-blocks/src/blocks', list, 'block.json' ), path.join( repo, 'plugins/sgs-blocks/src/blocks', list, 'block.json' ) );
-	built && fs.writeFileSync( path.join( build, 'skeleton', 'built-surfaces.json' ), JSON.stringify( { surfaces: built } ) );
 	return { repo, done: () => fs.rmSync( repo, { recursive: true, force: true } ) };
 }
 const spy = ( seen ) => ( args ) => {
@@ -60,15 +59,15 @@ test( 'propose without an intakeSurface refuses and names the missing link', () 
 	bad.done();
 } );
 
-test( 'propose passes the intake skeleton kind, name, built post and looping templates under the intake slug', () => {
+test( 'propose passes the intake skeleton kind, name and looping templates under the intake slug', () => {
 	const seen = [];
-	const f = fixture( { built: { 'S-14': { postId: 7 } } } );
+	const f = fixture();
 	proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, propose: spy( seen ) } );
 	const a = seen[ 0 ];
 	assert.equal( a.surface, 'site-footer' );
 	assert.equal( a.surfaceKind, 'footer' );
 	assert.equal( a.surfaceName, 'Footer' );
-	assert.deepEqual( a.built, { postId: 7 } );
+	assert.equal( a.built, undefined );
 	assert.deepEqual( [ ...a.motion ], [ 'Root/847' ], 'a looping template of the root host is keyed in the served space' );
 	f.done();
 } );

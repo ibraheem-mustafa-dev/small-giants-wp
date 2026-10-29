@@ -99,8 +99,7 @@ export const COVERAGE_WRITES = [
 
 const count = ( list ) => list.reduce( ( a, n ) => a + 1 + count( n.innerBlocks || [] ), 0 );
 
-// o: { inventory, facts, surface, surfaceKind, surfaceName, built (the client's own built post for this surface, from
-// sites/<client>/build/skeleton/built-surfaces.json), motion (template keys whose own animation loops a translate), clientDecisions, picks ({ key: decision }), calKeys (slug ->
+// o: { inventory, facts, surface, surfaceKind, surfaceName, motion (template keys whose own animation loops a translate), clientDecisions, picks ({ key: decision }), calKeys (slug ->
 // calibration element keys), calSettings (slug -> the calibration's settings with their slots), states (the surface's handoff
 // record states: name, how_to_reach, sc_if_tpl_ids), thresholds (the width thresholds the draft's code uses), db, openers (surface id to its surfaces.json opened_by words, read from the handoff folder when omitted), factRecord (the
 // client's fact record, lib/fact-record.mjs: loaded from `facts.client` when omitted, none when the client has no record),
@@ -108,7 +107,7 @@ const count = ( list ) => list.reduce( ( a, n ) => a + 1 + count( n.innerBlocks 
 // draftLinks (lib/draft-link.mjs::draftLinksFor: the client's page map and routing that turn a draft link into a site address;
 // null resolves every draft route to no address), pageMap (the page-map rows: which surface is a choice flow or a block-owned
 // part, lib/skeleton-surface-role.mjs) and surfaceId (the surface's surfaces.json id; the record's matching surface when omitted) }.
-export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, filters = null, built = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null, pageMap = [], surfaceId = null, loops = null, scriptOf = () => null } ) {
+export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, filters = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null, pageMap = [], surfaceId = null, loops = null, scriptOf = () => null } ) {
 	const m = inventoryModel( inventory );
 	const { composition } = facts;
 	const overrides = ( e, words ) => overrideFor( e, { clientDecisions, picks, facts, surface, words } );
@@ -388,7 +387,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	} );
 	// A modal surface's frame look (lib/skeleton-modal-frame.mjs): the `sgs/modal` frame node reads the draft's backdrop, panel and close at
 	// the block's calibrated parts; Fill lifts it out of the post's tree and the site build merges it onto the page's frame by anchor.
-	const frameParts = ! built && R.modalFrame ? cls.modalParts() : null;
+	const frameParts = R.modalFrame ? cls.modalParts() : null;
 	const frameOf = frameParts ? modalTargets( { pageMap, surfaces: view.surfaces } ).find( ( t ) => t.surface.id === scope?.id ) : null;
 	if ( frameParts ) {
 		const made = modalFrameNode( { db, block: R.modalFrame.block, cal: { settings: calSettings( R.modalFrame.block ) }, parts: frameParts, names: R.modalFrame.names, anchor: frameOf?.anchor ?? null, m, finder } );
@@ -396,12 +395,10 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const notes = [ ...made.notes, ...( frameOf ? [] : [ `the ${ surface } modal has no sgs_modal row in the page map, so its frame carries no anchor and no page can take its look` ] ) ];
 		notes.length && rowOf[ m.root.key ] && ( rowOf[ m.root.key ].slotNotes = [ ...( rowOf[ m.root.key ].slotNotes || [] ), ...notes ] );
 	}
-	// A surface the client already built as a post: that post's block tree is the skeleton, so every row is settled by it.
 	rows.forEach( ( x ) => {
 		const top = rootOf( m.byKey[ x.key ] );
 		top !== m.root && ( x.strip = top.key );
 	} );
-	built && R.clientBuiltSurface && rows.forEach( ( x ) => Object.assign( x, { rule: 'clientBuiltSurface', builtPost: built, low: false }, 'unresolved' === x.action ? { action: null } : {} ) );
 	// Each modal a control of this surface opens is framed once on the page that holds the control (lib/skeleton-opener.mjs); a
 	// header, footer, drawer or other part has no page to stand a frame on, and the proposal says so.
 	const openerNotes = [];
@@ -430,7 +427,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	const siteOptions = Object.assign( {}, ...rows.map( ( r ) => r.siteOptions ) );
 	const proposal = {
 		generated: new Date().toISOString(), inventory: inventory.generated, source: inventory.source, surface, siteName: facts.siteName, surfaceParts: scope?.surfaceParts ?? [], stripRoots: ctx.stripRoots, recordDisagreements: view.disagreements, recordUntranslated: view.untranslated,
-		confidenceFormula: 'min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights', weights: W, ...( built ? { builtPost: built } : {} ),
+		confidenceFormula: 'min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights', weights: W,
 		...( Object.keys( siteOptions ).length ? { siteOptions } : {} ),
 		...( role ? { surfaceRole: { role: role.role, row: role.row.slug, ...( role.part ? { part: role.part.label } : {} ) } } : {} ),
 		...( flowNode ? { choiceFlow: { steps: cls.choiceFlow.steps.length, questions: cls.choiceFlow.steps.filter( ( s ) => s.question ).length, results: cls.choiceFlow.steps.filter( ( s ) => s.result ).length, notes: cls.choiceFlow.notes } } : {} ),
