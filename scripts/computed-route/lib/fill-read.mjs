@@ -17,6 +17,7 @@ import { readLogicStates } from './fill-logic-state.mjs';
 import { readCurrentItems } from './fill-current-item.mjs';
 import { collectMany } from './fill-read-collect.mjs';
 import { openState } from './fill-open.mjs';
+import { scrolledProbe, SCROLL_TO } from './fill-read-scrolled.mjs';
 
 const RESOLVE = resolveFinder.toString();
 const COLLECT = collectPair.toString();
@@ -171,6 +172,7 @@ async function openPage( browser, devices, { url, open, opener = null, width, or
 //                         holds no value for (lib/fill-declared.mjs::unreadDeclared) are read rendered into
 //                         widths[w][targetId].styles too.
 //   sweep[targetId][prop] [{ width, value }] every 16px from 320 to 1920 (lengths and keywords as read).
+//   scrolled[w]           the `scrolledIds` targets after the window has scrolled, at READ_WIDTHS (lib/fill-read-scrolled.mjs::scrolledProbe)
 //   states[w]             each target's state looks at READ_WIDTHS (lib/fill-state-read.mjs::readStates), when `states`
 //                         (the state vocabulary, lib/db.mjs::statesVocabulary) is given; with `logicRows` (the state map's
 //                         `scIf` rows) it also holds the looks behind each set-state sc-if (lib/fill-logic-state.mjs::readLogicStates)
@@ -183,12 +185,12 @@ async function openPage( browser, devices, { url, open, opener = null, width, or
 //                         so nothing about that target's declared values there is judged (lib/fill-report.mjs::readFailureRows).
 // nodes: lib/fill-skeleton.mjs::skeletonNodes. open: the regex source of the text to click first. external: allow the
 // draft to load anything beyond its own origin (off by default, so a read is the same offline).
-export async function readDraft( { url, nodes, open = null, headless = true, sweep = true, external = false, mirror = {}, states = [], logicRows = [], currentGroups = [], opener = null, log = () => {} } ) {
+export async function readDraft( { url, nodes, open = null, headless = true, sweep = true, external = false, mirror = {}, states = [], logicRows = [], currentGroups = [], opener = null, scrolledIds = [], log = () => {} } ) {
 	const { chromium, devices } = await loadChromium();
 	const origin = new URL( url ).origin;
 	const jobs = jobsFor( nodes );
 	const browser = await chromium.launch( { headless, args: [ '--hide-scrollbars' ] } );
-	const result = { origin, widths: {}, declared: {}, sweep: {}, states: {}, failures: [], ...( opener ? { opener: { widths: {} } } : {} ) };
+	const result = { origin, widths: {}, declared: {}, sweep: {}, states: {}, scrolled: {}, failures: [], ...( opener ? { opener: { widths: {} } } : {} ) };
 	const aborted = new Set();
 	const emptyWidths = [];
 	const flexItems = {};
@@ -274,6 +276,8 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 					}
 				}
 			}
+			// The header roots after the window has scrolled (lib/fill-read-scrolled.mjs), last so the scroll disturbs no other read.
+			full && scrolledIds.length && ( result.scrolled[ width ] = await page.evaluate( scrolledProbe, [ jobs.filter( ( j ) => scrolledIds.includes( j.id ) && ! result.widths[ width ][ j.id ]?.missing ), RESOLVE, SCROLL_TO ] ) );
 			log( `read ${ width }px: ${ Object.values( result.widths[ width ] ).filter( ( s ) => ! s.missing ).length } of ${ jobs.length } targets` );
 			await ctx.close();
 		}

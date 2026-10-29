@@ -21,6 +21,7 @@ import { setAttr } from './tree.mjs';
 import { templateKey, templateKeyOf } from './fact-key.mjs';
 import { staggerPlans, applyStagger } from './fill-motion-stagger.mjs';
 import { positionsByTemplate } from './motion-behaviour-settings.mjs';
+import { applyHeaderBehaviour } from './fill-header-behaviour.mjs';
 import { exactHome } from './fill-part-pairing.mjs';
 
 export { elementMotion, elementEffects, renderRefutes } from './fill-motion-element.mjs';
@@ -291,6 +292,7 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 			let own = [ ...( byElement.get( key ) || [] ), ...idx.hostedFor( key ).map( ( x ) => x.r ), ...sets.flatMap( ( s ) => ( s.record ? [ s.record ] : [] ) ) ];
 			const where = { node: ref, block: n.name, slot: t.slot };
 			applyStrip( { n, target: t, key, idx, out, where, flat, hasAttr, reads } );
+			applyHeaderBehaviour( { n, t, reads, flat, out, where, hasAttr } );
 			// Settings behaviours (the header's scrolled shadow, the timeline's pinned track, ...) write block settings, not motion layers.
 			const settings = own.map( ( r ) => idx.found.find( ( x ) => x.r === r ) ).filter( ( x ) => x && 'settings' === x.b.kind );
 			if ( settings.length ) {

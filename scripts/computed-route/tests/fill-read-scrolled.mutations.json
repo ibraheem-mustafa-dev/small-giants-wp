@@ -1,0 +1,50 @@
+[
+	{
+		"file": "lib/fill-read-scrolled.mjs",
+		"find": "same( await at( mid ), rest ) ? lo = mid : hi = mid;",
+		"replace": "same( await at( mid ), rest ) ? hi = mid : lo = mid;",
+		"why": "the search for the distance runs the wrong way"
+	},
+	{
+		"file": "lib/fill-read-scrolled.mjs",
+		"find": "offset = lo;",
+		"replace": "offset = hi;",
+		"why": "the distance is the first scrolled one, not the last that still reads as rest"
+	},
+	{
+		"file": "lib/fill-read-scrolled.mjs",
+		"find": "if ( ! el || max < 1 ) {",
+		"replace": "if ( ! el ) {",
+		"why": "a page that cannot scroll is read as a header that does not change"
+	},
+	{
+		"file": "lib/fill-read-scrolled.mjs",
+		"find": "const scrolled = await at( max );",
+		"replace": "const scrolled = await at( 0 );",
+		"why": "the scrolled read is taken without scrolling"
+	},
+	{
+		"file": "lib/fill-read-scrolled.mjs",
+		"find": "if ( ! same( rest, scrolled ) ) {",
+		"replace": "if ( true ) {",
+		"why": "a distance is searched for even when the scroll changes nothing"
+	},
+	{
+		"file": "lib/fill-read-scrolled.mjs",
+		"find": "style.textContent = '*,*::before,*::after{transition:none!important;animation:none!important}';",
+		"replace": "style.textContent = '';",
+		"why": "transitions run during the reads, so a frame between two states is read"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "full && scrolledIds.length && ( result.scrolled[ width ] =",
+		"replace": "false && ( result.scrolled[ width ] =",
+		"why": "the draft is never scrolled"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "jobs.filter( ( j ) => scrolledIds.includes( j.id ) && ! result.widths[ width ][ j.id ]?.missing ), RESOLVE, SCROLL_TO ]",
+		"replace": "jobs, RESOLVE, SCROLL_TO ]",
+		"why": "every target is scrolled and read, not only the header roots"
+	}
+]
