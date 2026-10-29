@@ -308,7 +308,24 @@
 		"readingProgress": {
 			"maxHeightPx": 6,
 			"reason": "a full-width bar a few pixels tall, fixed to the viewport, is the Floating UI reading progress setting, not a block",
-			"handover": "Floating UI reading progress bar: its height and its colour or gradient (shared gradient picker) are site settings"
+			"handover": "Floating UI reading progress bar: its height and its colour or gradient (shared gradient picker) are site settings",
+			"options": { "enabled": "sgs_floating_ui_reading_progress_enabled", "colour": "sgs_floating_ui_reading_progress_colour", "gradient": "sgs_floating_ui_reading_progress_gradient", "height": "sgs_floating_ui_reading_progress_height" },
+			"range": [ 2, 8 ]
+		},
+		"cookieConsent": {
+			"patterns": [ "\\bcookies?\\b", "\\bconsent\\b" ],
+			"flags": "i",
+			"why": "a cookie consent banner fixed to the viewport has no framework equivalent (Spec 48 FR-48-84 reads cookie consent; no block or setting offers it), so it is a missing feature"
+		},
+		"persistentBar": {
+			"minShare": 0.98,
+			"maxHeightPx": 140,
+			"why": "a bar fixed across the bottom of the viewport holding a link or a button (cart, sale, call to action) is the persistent bottom bar of Spec 18 section 1.1, which is not built, so it is a missing feature"
+		},
+		"timedPopup": {
+			"patterns": [ "\\bafter\\s+\\d+\\s*(?:ms|s|secs?|seconds?|minutes?)\\b", "\\bexit[- ]intent\\b", "\\btimer\\b", "\\bon a delay\\b" ],
+			"flags": "i",
+			"why": "sgs/modal opens from a trigger or a hash and has no delay or exit-intent setting, so a popup that opens on a timer or on exit intent is a missing feature"
 		},
 		"decorationLayer": {
 			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in"
@@ -357,6 +374,10 @@
 			},
 			"wholeBlock": "sgs/container",
 			"lone": "sgs/button",
+			"floating": {
+				"options": { "enabled": "sgs_floating_ui_back_to_top_enabled", "position": "sgs_floating_ui_back_to_top_position", "background": "sgs_floating_ui_back_to_top_bg_colour", "icon": "sgs_floating_ui_back_to_top_icon_colour" },
+				"reason": "a back-to-top control fixed to the viewport is the Floating UI back-to-top setting (Spec 18 section 2.1), not a block: its side, background and icon colour are site options"
+			},
 			"reason": "a back-to-top control is a link whose source is 'top' (the shared link source): a container whose whole box is the link when it holds a label and an icon, a button when it is words alone"
 		},
 		"mapEmbed": {

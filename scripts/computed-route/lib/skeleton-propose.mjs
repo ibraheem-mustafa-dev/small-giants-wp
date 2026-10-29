@@ -419,9 +419,15 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	for ( const x of cls.filterDrawer?.missing || [] ) {
 		Object.assign( rowOf[ x.key ] ?? {}, { missingFeature: { line: x.line, why: x.why } } );
 	}
+	// A popup that opens on a timer or on exit intent is a missing feature on the surface's root row (rules.timedPopup).
+	const timed = cls.timedPopup();
+	timed && rowOf[ m.root.key ] && ( rowOf[ m.root.key ].missingFeature = timed );
+	// The Floating UI site options the draft's fixed back-to-top control and reading progress bar set (rules.backToTop.floating, rules.readingProgress): one map for the surface, applied by the site build.
+	const siteOptions = Object.assign( {}, ...rows.map( ( r ) => r.siteOptions ) );
 	const proposal = {
 		generated: new Date().toISOString(), inventory: inventory.generated, source: inventory.source, surface, siteName: facts.siteName, surfaceParts: scope?.surfaceParts ?? [], stripRoots: ctx.stripRoots, recordDisagreements: view.disagreements, recordUntranslated: view.untranslated,
 		confidenceFormula: 'min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights', weights: W, ...( built ? { builtPost: built } : {} ),
+		...( Object.keys( siteOptions ).length ? { siteOptions } : {} ),
 		...( role ? { surfaceRole: { role: role.role, row: role.row.slug, ...( role.part ? { part: role.part.label } : {} ) } } : {} ),
 		...( flowNode ? { choiceFlow: { steps: cls.choiceFlow.steps.length, questions: cls.choiceFlow.steps.filter( ( s ) => s.question ).length, results: cls.choiceFlow.steps.filter( ( s ) => s.result ).length, notes: cls.choiceFlow.notes } } : {} ),
 		...( cls.commerceRegion ? { commerceRegion: cls.commerceRegion.note ? { note: cls.commerceRegion.note } : { key: cls.commerceRegion.key, role: cls.commerceRegion.role, block: cls.commerceRegion.block, ...( cls.commerceRegion.toolbar ? { toolbar: { sort: cls.commerceRegion.toolbar.sort, count: cls.commerceRegion.toolbar.count, absorbed: cls.commerceRegion.toolbar.absorb, missing: cls.commerceRegion.toolbar.missing } } : {} ) } } : {} ),

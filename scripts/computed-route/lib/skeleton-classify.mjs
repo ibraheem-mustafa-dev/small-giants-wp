@@ -117,7 +117,7 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 	const rules = makeRules( { m, facts, surface, motion, view, scope, hooks: { siteInfoKinds, isColumnLabel, blockOfKey, formLinkOf, siteLink, topBlock: ( k ) => classify( k, null ).candidates[ 0 ]?.block } } );
 	// A rule verdict in the classifier's result shape (lib/skeleton-rules.mjs).
 	const fromRule = ( r ) => {
-		const base = { rule: r.rule, source: `rule ${ r.rule }`, reason: r.reason, confidence: 1, ...( r.handover ? { handover: r.handover } : {} ), ...( r.inner ? { inner: r.inner, item: r.item } : {} ), ...( r.kind ? { kind: r.kind } : {} ), ...( r.opens ? { opens: r.opens } : {} ) };
+		const base = { rule: r.rule, source: `rule ${ r.rule }`, reason: r.reason, confidence: 1, ...( r.handover ? { handover: r.handover } : {} ), ...( r.inner ? { inner: r.inner, item: r.item } : {} ), ...( r.kind ? { kind: r.kind } : {} ), ...( r.opens ? { opens: r.opens } : {} ), ...( r.missingFeature ? { missingFeature: r.missingFeature } : {} ), ...( r.siteOptions ? { siteOptions: r.siteOptions } : {} ) };
 		if ( r.action ) {
 			return { ...base, action: r.action, ...( r.into ? { into: r.into } : {} ), candidates: [] };
 		}
@@ -246,5 +246,5 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 		return { ...finish( C ), stale };
 	}
 
-	return { classify: ( ...a ) => sgsOnly( classify( ...a ), facts.replacedBy, facts.decisions.rules?.coreExceptions || [] ), brandFor, siteInfoKinds, isColumnLabel, briefOnly, drawsChildren: rules.drawsChildren, modalParts: rules.modalParts, iconRun: rules.iconRun, siteInfoBrand: rules.siteInfoBrand, commerceRegion: rules.commerceRegion, filterRail: rules.filterRail, filterDrawer: rules.filterDrawer, choiceFlow: rules.choiceFlow };
+	return { classify: ( ...a ) => sgsOnly( classify( ...a ), facts.replacedBy, facts.decisions.rules?.coreExceptions || [] ), brandFor, siteInfoKinds, isColumnLabel, briefOnly, timedPopup: rules.timedPopup, drawsChildren: rules.drawsChildren, modalParts: rules.modalParts, iconRun: rules.iconRun, siteInfoBrand: rules.siteInfoBrand, commerceRegion: rules.commerceRegion, filterRail: rules.filterRail, filterDrawer: rules.filterDrawer, choiceFlow: rules.choiceFlow };
 }

@@ -28,6 +28,7 @@ import { parseInstanceKey } from './fact-key.mjs';
 import { formOpenerOf, prefillHref } from './skeleton-form-prefill.mjs';
 import { makeFieldGroups } from './skeleton-field-groups.mjs';
 import { makeRecogniser, hostKindOf } from './skeleton-recognise.mjs';
+import { backToTopOptions, fixedAt, missingFixedFeature, readingProgressOptions, timedPopupMissing } from './skeleton-fixed-controls.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
 // them reads Site Info too.
@@ -142,6 +143,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	};
 	const hasSvg = ( e ) => m.kids( e ).some( ( k ) => 'svg' === k.tag );
 	const bare = ( e ) => ! m.words( e ) && ! m.blockKids( e ).length;
+	// Whether the element is a back-to-top control: a link, button or handler whose words or handler name say so.
+	const isBackToTop = ( e, text ) => ( [ 'a', 'button' ].includes( e.tag ) || !! handlerOf( e ) ) && !! ( specHit( R.backToTop, `${ text } ${ e.attrs?.[ 'aria-label' ] || '' }` ) || specHit( R.backToTop?.handlers, handlerOf( e ) ) );
 	const iconOnly = ( e ) => bare( e ) && hasSvg( e );
 	const emojiOnly = ( e ) => ! m.blockKids( e ).length && EMOJI.test( m.words( e ).replace( /\s+/g, '' ) );
 	const desc = ( e ) => m.blockKids( e ).flatMap( ( k ) => [ k, ...desc( k ) ] );
@@ -426,7 +429,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		},
 		// A full-width bar a few pixels tall, fixed to the viewport, drawing only a fill: the Floating UI reading progress
 		// setting.
-		( { e, st } ) => ( bare( e ) && ! hasSvg( e ) && 'fixed' === st.position && ( px( st.height ) ?? 99 ) <= ( R.readingProgress?.maxHeightPx ?? 6 ) && /^100(?:%|vw)$/.test( st.width || '' ) ? v( 'readingProgress', { action: 'remove', handover: { owner: 'behaviour', kind: 'behaviour', detail: R.readingProgress?.handover || 'reading progress bar' } } ) : null ),
+		( { e, st } ) => ( bare( e ) && ! hasSvg( e ) && 'fixed' === st.position && ( px( st.height ) ?? 99 ) <= ( R.readingProgress?.maxHeightPx ?? 6 ) && /^100(?:%|vw)$/.test( st.width || '' ) ? v( 'readingProgress', { action: 'remove', handover: { owner: 'behaviour', kind: 'behaviour', detail: R.readingProgress?.handover || 'reading progress bar' }, ...( R.readingProgress?.options ? { siteOptions: readingProgressOptions( e, st, R.readingProgress ) } : {} ) } ) : null ),
 		// A layer that holds nothing: a ring is a decorative image; a fill, gradient or glow folds into the background of
 		// the block it sits in.
 		( { e, st } ) => {
@@ -478,6 +481,13 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const laysOut = /grid|flex/.test( st.display || e.display || '' );
 			return ! m.words( e ) && kidsB.length && parentBlock && 'wrapper-shell' !== role && centred && ! ( 'section-root' === role && laysOut ) ? v( 'widthWrapper', { action: 'unwrap' } ) : null;
 		},
+		// A back-to-top control fixed to the viewport is the Floating UI back-to-top setting, read from the control's own look.
+		( { e, st, text } ) => ( R.backToTop?.floating && isBackToTop( e, text ) && fixedAt( e, st ) ? v( 'backToTop', { action: 'remove', reason: R.backToTop.floating.reason, siteOptions: backToTopOptions( e, st, R.backToTop.floating ), handover: { owner: 'behaviour', kind: 'behaviour', detail: R.backToTop.floating.reason } } ) : null ),
+		// A cookie consent banner or a persistent bottom bar fixed to the viewport has no framework equivalent: a missing feature.
+		( { e, st, text } ) => {
+			const miss = missingFixedFeature( { e, st, text, R, m } );
+			return miss ? v( miss.rule, { action: 'remove', reason: miss.why, missingFeature: { line: miss.line, why: miss.why } } ) : null;
+		},
 		// An element whose own features (link host, class, aria-label, position, shape) are held by one mode-bearing block's name and
 		// setting values is that block, in the mode the element itself shows (lib/skeleton-recognise.mjs).
 		( { e } ) => {
@@ -486,8 +496,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		},
 		// A back-to-top control is a link whose source is 'top'.
 		( { e, text, kidsB } ) => {
-			const control = [ 'a', 'button' ].includes( e.tag ) || !! handlerOf( e );
-			if ( ! control || ! ( specHit( R.backToTop, `${ text } ${ e.attrs?.[ 'aria-label' ] || '' }` ) || specHit( R.backToTop?.handlers, handlerOf( e ) ) ) ) {
+			if ( ! isBackToTop( e, text ) ) {
 				return null;
 			}
 			return kidsB.length ? v( 'backToTop', { block: R.backToTop?.wholeBlock, attributes: { sgsBlockLinkSource: 'top' } } ) : v( 'backToTop', { block: R.backToTop?.lone, attributes: { linkSource: 'top', label: text } } );
@@ -959,5 +968,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		return null;
 	};
 
-	return { ruleFor, drawsChildren, declared, modalParts, iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, filterRail: rail, filterDrawer: drawer ? { key: m.root.key, block: R.filterDrawer.block, attributes: drawer.attributes, facets: drawer.facets, notes: drawer.notes, missing: drawerMissing } : null, choiceFlow: flow };
+	// The missing-features entry for a popup surface that opens on a timer or on exit intent (rules.timedPopup), or null.
+	const timedPopup = () => ( 'modal' === surface.kind ? timedPopupMissing( { openedBy: scope?.openedBy, R } ) : null );
+
+	return { ruleFor, timedPopup, drawsChildren, declared, modalParts, iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, filterRail: rail, filterDrawer: drawer ? { key: m.root.key, block: R.filterDrawer.block, attributes: drawer.attributes, facets: drawer.facets, notes: drawer.notes, missing: drawerMissing } : null, choiceFlow: flow };
 }
