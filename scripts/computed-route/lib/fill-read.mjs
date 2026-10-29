@@ -17,6 +17,7 @@ import { readLogicStates } from './fill-logic-state.mjs';
 import { readCurrentItems } from './fill-current-item.mjs';
 import { collectMany } from './fill-read-collect.mjs';
 import { openState } from './fill-open.mjs';
+import { PAINT_GROUPS, PAINT_ATTR, paintHoldersInPage, applyPaintHolders } from './fill-paint-holder.mjs';
 
 const RESOLVE = resolveFinder.toString();
 const COLLECT = collectPair.toString();
@@ -82,13 +83,16 @@ export function emptyReadError( width, count, aborted ) {
 // exact draft element page-wide (parity/lib/collect.mjs resolves it, `within` only filters), so it is never scoped: a part
 // the block draws from outside its root's element (an absorbed drawer opener, the nav's burger) or a root the draft does
 // not draw at that width would otherwise never be found.
-export function jobsFor( nodes ) {
+export function jobsFor( nodes, { surface = false } = {} ) {
 	return nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( {
 		id: t.id,
 		finder: t.scoped && 'tpl' !== finderKind( t.finder ) ? scopeFinder( t.finder, scopeSelector( n.index ) ) : t.finder,
 		mark: t.scoped ? null : n.index,
 		owner: n.index,
 		root: '' === ( t.slot ?? '' ),
+		// The root of a surface that exists only while a draft state holds: its panel's paint may sit on a wrapper around it
+		// (lib/fill-paint-holder.mjs).
+		surfaceRoot: surface && null === n.parent && '' === ( t.slot ?? '' ),
 		// A node with child nodes reads its own text styles at every target, its root and its slots alike (a row's content
 		// band): a text descendant there is another node's element, never this one's look.
 		own: n.children.length > 0,
@@ -186,12 +190,14 @@ async function openPage( browser, devices, { url, open, opener = null, width, or
 export async function readDraft( { url, nodes, open = null, headless = true, sweep = true, external = false, mirror = {}, states = [], logicRows = [], currentGroups = [], opener = null, log = () => {} } ) {
 	const { chromium, devices } = await loadChromium();
 	const origin = new URL( url ).origin;
-	const jobs = jobsFor( nodes );
+	const jobs = jobsFor( nodes, { surface: !! opener?.state } );
 	const browser = await chromium.launch( { headless, args: [ '--hide-scrollbars' ] } );
 	const result = { origin, widths: {}, declared: {}, sweep: {}, states: {}, failures: [], ...( opener ? { opener: { widths: {} } } : {} ) };
 	const aborted = new Set();
 	const emptyWidths = [];
 	const flexItems = {};
+	const paintHolders = {};
+	const paintDeclared = {};
 	try {
 		for ( const width of [ ...new Set( [ ...READ_WIDTHS, ...FLUID_WIDTHS ] ) ] ) {
 			const full = READ_WIDTHS.includes( width );
@@ -221,6 +227,7 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 			}
 			if ( full ) {
 				flexItems[ width ] = await page.evaluate( flexItemsInPage, [ jobs, RESOLVE ] );
+				paintHolders[ width ] = await page.evaluate( paintHoldersInPage, [ jobs, RESOLVE, PAINT_GROUPS, PAINT_ATTR ] );
 				const cdp = await openDevtools( page );
 				result.declared[ width ] = {};
 				const found = jobs.filter( ( x ) => ! result.widths[ width ][ x.id ]?.missing );
@@ -238,6 +245,14 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 						result.failures.push( { id: j.id, owner: j.owner, width, read: 'declared', reason } );
 					}
 					result.declared[ width ][ j.id ] = own;
+				}
+				// The painting wrapper of a surface's root: the declared values it states, read beside the root's own.
+				paintDeclared[ width ] = {};
+				for ( const [ id, h ] of Object.entries( paintHolders[ width ] ) ) {
+					paintDeclared[ width ][ id ] = {};
+					for ( const [ group, selector ] of Object.entries( h.stamps ) ) {
+						paintDeclared[ width ][ id ][ group ] = await declaredValues( cdp, selector, RESOLVE, null ).catch( () => null );
+					}
 				}
 				// A wrapper that only holds an svg or img the draft sizes takes that size as its declared size.
 				for ( const j of found ) {
@@ -298,6 +313,7 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 		// Last, so no later read of the element's own value replaces the flex item's.
 		for ( const width of READ_WIDTHS ) {
 			applyFlexItems( result.widths[ width ], jobs, flexItems[ width ] );
+			applyPaintHolders( result.widths[ width ], result.declared[ width ], paintHolders[ width ], paintDeclared[ width ] );
 		}
 		if ( sweep && ! ( opener && ! opener.state ) ) {
 			const { ctx, page } = await openPage( browser, devices, { url, open, opener, width: 1440, origin, external, mirror } );
