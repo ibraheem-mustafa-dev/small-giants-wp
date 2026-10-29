@@ -94,7 +94,7 @@ const GAPS = {
 	overflow: [ 'overflow-y', 'overflow-block', 'overflow-inline', 'text-overflow', 'scroll-behavior', 'scrollbar-gutter' ],
 	'overscroll-behavior': [ 'overscroll-behavior', 'overscroll-behavior-x', 'overscroll-behavior-y' ],
 	'scroll-snap': [ 'scroll-margin', 'scroll-padding', 'scroll-snap-align', 'scroll-snap-type' ],
-	transforms: [ 'rotate', 'scale', 'perspective', 'perspective-origin', 'transform-origin', 'transform-style', 'transform-box', 'backface-visibility' ],
+	transforms: [ 'scale', 'perspective', 'perspective-origin', 'transform-origin', 'transform-style', 'transform-box', 'backface-visibility' ],
 };
 
 test( 'the groups kept as gaps stay gaps, name only properties no setting is stored under, and their notes name them', () => {

@@ -4685,7 +4685,7 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "The only resting transform setting is sgs/decorative-image rotation (degrees); the hover scales go through the states path (lib/fill-state.mjs), so any other resting transform is a shape row. No setting paints rotate, scale, perspective, perspective-origin, transform-origin, transform-style, transform-box or backface-visibility. Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps)."
+			"note": "The resting transform settings are sgs/decorative-image rotation (degrees) and sgs/icon iconRotate (the `rotate` property on its shape); the hover scales go through the states path (lib/fill-state.mjs), so any other resting transform is a shape row. No setting paints scale, perspective, perspective-origin, transform-origin, transform-style, transform-box or backface-visibility. Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps)."
 		},
 		"css-group:transitions": {
 			"recognise": "construct:transition",
