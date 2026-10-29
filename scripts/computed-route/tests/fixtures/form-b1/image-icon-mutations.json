@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/fill-icon.mjs",
+		"find": "[ 'img', 'background' ].includes( img.tag )",
+		"replace": "[ 'img' ].includes( img.tag )",
+		"why": "a background photo is an icon"
+	},
+	{
+		"file": "lib/fill-icon.mjs",
+		"find": "! rel || ! /\\.svg$/i.test( rel )",
+		"replace": "! rel",
+		"why": "a raster image is read as SVG"
+	},
+	{
+		"file": "lib/fill-icon.mjs",
+		"find": "! file.startsWith( path.resolve( folder ) + path.sep )",
+		"replace": "false",
+		"why": "a path leaving the draft folder is read"
+	},
+	{
+		"file": "lib/fill-icon.mjs",
+		"find": "! String( words ).trim() ||",
+		"replace": "",
+		"why": "an image with no words is a label icon"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "img: atDesktop[ '' ]?.svg ? null : image,",
+		"replace": "img: null,",
+		"why": "the control's image icon is never offered"
+	}
+]

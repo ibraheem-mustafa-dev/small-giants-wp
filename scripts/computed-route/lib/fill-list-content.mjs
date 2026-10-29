@@ -204,11 +204,15 @@ export function listDecisions( { block, target, node, list, media = {}, pages = 
 	for ( const f of unmatched.filter( ( name ) => list.items.some( ( it ) => null != it[ name ] && '' !== it[ name ] ) ) ) {
 		out.rows.push( { field: f, value: list.items.map( ( it ) => it[ f ] ).filter( ( v ) => null != v ).join( ' | ' ), reason: `the draft's item field "${ f }" has no place in ${ block }'s ${ where } (no item key of its name or role)` } );
 	}
-	// Items holding nothing the block shows (only a link, or nothing) would replace the block's items with empty ones: one
-	// row names the list, never a row per item the block does not take.
-	if ( ! built.some( ( b ) => Object.keys( b.attrs ).some( ( k ) => 'link' !== keyRole( k ) ) ) ) {
-		out.rows.push( { field: '(items)', value: String( built.length ), reason: `the draft's ${ built.length } items carry no words or uploaded picture ${ block } can show, so its ${ where } are not written` } );
+	// A list is never dropped (Bean 2026-10-28, register ruling S7): items carrying a link are written as they are, and a
+	// picture field the block's items hold no setting for is one row naming the pictures to choose. Items carrying nothing at
+	// all would replace the block's items with empty ones: one row names the list, never a row per item.
+	if ( ! built.some( ( b ) => Object.keys( b.attrs ).length ) ) {
+		out.rows.push( { field: '(items)', value: String( built.length ), reason: `the draft's ${ built.length } items carry no words, link or uploaded picture ${ block } can show, so its ${ where } are not written` } );
 		return out;
+	}
+	for ( const f of list.fields.filter( ( x ) => unmatched.includes( x.name ) && ( x.image || 'image' === keyRole( x.name ) ) ) ) {
+		out.rows.push( { field: f.name, value: '', reason: `the draft draws a picture in each of its ${ built.length } items (${ f.name }: an image the draft fills at run time, or a placeholder) and ${ block }'s ${ where } hold no picture setting Fill can write: choose each picture in the editor` } );
 	}
 	built.forEach( ( b ) => out.rows.push( ...b.rows ) );
 	out.notes.push( `${ list.items.length } items from the draft's ${ list.source }, fields ${ fields }` );

@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "if ( ! built.some( ( b ) => Object.keys( b.attrs ).length ) ) {",
+		"replace": "if ( ! built.some( ( b ) => Object.keys( b.attrs ).some( ( k ) => 'link' !== keyRole( k ) ) ) ) {",
+		"why": "items holding only links are dropped"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "unmatched.includes( x.name ) && ( x.image || 'image' === keyRole( x.name ) )",
+		"replace": "false",
+		"why": "an unplaceable picture field is not a row"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "carry no words, link or uploaded picture",
+		"replace": "carry nothing",
+		"why": "the empty-list row loses its reason"
+	}
+]

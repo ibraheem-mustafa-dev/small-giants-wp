@@ -9,7 +9,7 @@ import { presenceDecisions, textDecisions, linkDecisions } from './fill-presence
 import { linkAttrDecisions, blockSupportsAnchor } from './fill-link-attrs.mjs';
 import { imageSlots, mediaDecisions, nestedImage, factImage, pictureSlotOf, pictureSettles } from './fill-media.mjs';
 import { mapDecisions } from './fill-map.mjs';
-import { iconDecisions } from './fill-icon.mjs';
+import { iconDecisions, imageIconDecisions } from './fill-icon.mjs';
 import { handoverEntry } from './fill-handover.mjs';
 import { unreadOf } from './fill-unread.mjs';
 import { fillBand } from './fill-band.mjs';
@@ -91,6 +91,7 @@ function fillContent( st, rec, ref, cal ) {
 	if ( 'background' === image?.tag && media.checks.length ) {
 		( st.pictures ??= new WeakMap() ).set( node, media.checks[ 0 ] );
 	}
+	take( imageIconDecisions( { img: atDesktop[ '' ]?.svg ? null : image, words: atDesktop[ '' ]?.words, schema: blockSchema( rec.name ), attributes: node.attributes || {}, folder: st.draftFolder ?? null, origin: st.origin, href: hrefs[ '' ] ?? '' } ) );
 	take( iconDecisions( { svg: atDesktop[ '' ]?.svg ?? null, schema: blockSchema( rec.name ), attributes: node.attributes || {}, href: hrefs[ '' ] ?? '' } ) );
 	if ( 'map' === node.attributes?.displayType ) {
 		const embeds = Object.fromEntries( [ 1440, 768, 375 ].map( ( w ) => [ w, st.reads.widths[ w ]?.[ rec.targets.find( ( t ) => '' === t.slot )?.id ]?.embed ] ).filter( ( [ , e ] ) => e ) );
