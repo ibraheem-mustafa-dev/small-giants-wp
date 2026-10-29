@@ -52,4 +52,4 @@ From the register's "Fix pass status" table: the modal frame look (S8), the mega
 
 ## Status (2026-10-29)
 
-Root causes recorded above; the gift-card test is running; the design awaits Bean.
+Bean's rulings replace the design above: recognition reads the block names and block attributes the framework DB already holds (no per-block signature data); the gaps were mapped first against Spec 48, 48A, the tooling and the DB (`.claude/reports/2026-10-29-recognition-gaps.md`); floating UI splits by mechanism (self-floating blocks in the footer post as on eye-care-test, Spec 18 Customiser options, missing-features rows); a sticky notice bar goes to the header's top row; store calls named in `how_to_reach` open surfaces. The unread surfaces' faults are fixed (`31c8f7d7e`) except Mama's store-driven four, which the recognition track builds. The gift-card test passed (`plans/2026-10-28-gift-cards.md`).
