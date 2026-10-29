@@ -139,6 +139,24 @@ export function ownPaint( cal, slot, w, prop, fs ) {
 	return 'line-height' === prop && fs && base && ! Number.isNaN( px ) ? `${ Math.round( ( px / base ) * fs * 100 ) / 100 }px` : v;
 }
 
+// The horizontal padding of a block root that the block's wrapper gives a gutter: a block whose `padding` paints its content
+// band (it has the `contentWidth` and `padding` settings) takes the page's side gutter on its root while no band padding
+// states a horizontal side (SGS_Container_Wrapper, `has-global-padding`), and writing any horizontal padding value, a 0
+// included, removes it. The calibration fixture's root shows no gutter (its context nests it away), so the calibrated
+// value is not what the node shows.
+const GUTTER_PROPS = [ 'padding-left', 'padding-right' ];
+
+// Whether the node's root takes that gutter: the schema has the band settings and no tier states a full-bleed content width.
+function offersGutter( st, rec ) {
+	const schema = blockSchema( rec.name );
+	if ( ! schema?.contentWidth || ! schema?.padding ) {
+		return false;
+	}
+	const stated = st.flat[ rec.index ].attributes?.contentWidth ?? schema.contentWidth.default;
+	const tiers = 'object' === typeof stated && stated ? Object.values( stated ) : [ stated ];
+	return tiers.some( ( v ) => 'string' === typeof v && '' !== v && 'full' !== v );
+}
+
 // Whether the block's own paint of an inherited property at the root slot, read on the calibration fixture's element, is
 // the theme's style for the fixture's tag and not the block's: the node renders another tag (a heading calibrated as an
 // h4 and written as an h2), and the theme sets that property on the fixture's tag, so the fixture's value is the h4's.
@@ -166,6 +184,11 @@ export function baselineFn( st, rec, cal, prop, ownFontPx = () => undefined ) {
 			}
 			const here = '' === slot ? undefined : shownAt( st, rec.index, prop, w, fs );
 			return here ?? inheritedFrom( st, rec, prop, w, fs ) ?? page.value( prop, w, fs ) ?? defaultPaint( cal, slot, w, prop );
+		}
+		// A gutter the wrapper adds is unknown to the fixture's paint: no baseline equals the draft's side padding there, so a
+		// draft 0 is written over it.
+		if ( '' === slot && GUTTER_PROPS.includes( prop ) && offersGutter( st, rec ) ) {
+			return undefined;
 		}
 		// A property the calibration fixture switched on (lib/fill-fixture.mjs) is compared with its unstyled value.
 		return unstyledBaseline( st, rec.name, cal, blockSchema( rec.name ), slot, prop ) ?? defaultPaint( cal, slot, w, prop );

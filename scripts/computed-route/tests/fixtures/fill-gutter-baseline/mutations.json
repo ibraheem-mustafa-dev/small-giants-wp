@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "if ( '' === slot && GUTTER_PROPS.includes( prop ) && offersGutter( st, rec ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a draft 0 side padding would stay equal to the fixture's 0 under the gutter"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "if ( '' === slot && GUTTER_PROPS.includes( prop ) && offersGutter( st, rec ) ) {",
+		"replace": "if ( GUTTER_PROPS.includes( prop ) && offersGutter( st, rec ) ) {",
+		"why": "the content band would lose its calibrated paint"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "if ( '' === slot && GUTTER_PROPS.includes( prop ) && offersGutter( st, rec ) ) {",
+		"replace": "if ( '' === slot && offersGutter( st, rec ) ) {",
+		"why": "every property of the root would lose its baseline"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "if ( ! schema?.contentWidth || ! schema?.padding ) {",
+		"replace": "if ( ! schema?.padding ) {",
+		"why": "a block with padding but no content band would be given a gutter"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "return tiers.some( ( v ) => 'string' === typeof v && '' !== v && 'full' !== v );",
+		"replace": "return true;",
+		"why": "a full-bleed block would be given a gutter"
+	}
+]
