@@ -490,7 +490,7 @@ const slotLookups = new WeakMap();
 // The DB slot a setting is tied to (`block_attributes.canonical_slot`: the named part of the block it paints), or null.
 // A database without the column (a test fixture), or no database at all, ties nothing to a part. The lookup statement is
 // prepared once per database.
-function canonicalSlotOf( db, block, attr ) {
+export function canonicalSlotOf( db, block, attr ) {
 	if ( ! db ) {
 		return null;
 	}

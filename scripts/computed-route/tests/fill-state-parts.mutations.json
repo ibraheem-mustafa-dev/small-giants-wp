@@ -1,0 +1,50 @@
+[
+	{
+		"file": "lib/fill-state-parts.mjs",
+		"find": "slotsOf( s ).some( ( p ) => bare( p ) === slot )",
+		"replace": "slotsOf( s ).some( ( p ) => true )",
+		"why": "every element is a part some resting setting paints"
+	},
+	{
+		"file": "lib/fill-state-parts.mjs",
+		"find": "state === s.state && parts.has( canonicalSlotOf( db, block, attr ) )",
+		"replace": "true && parts.has( canonicalSlotOf( db, block, attr ) )",
+		"why": "a setting of another state is taken for the look's state"
+	},
+	{
+		"file": "lib/fill-state-parts.mjs",
+		"find": "state === s.state && parts.has( canonicalSlotOf( db, block, attr ) )",
+		"replace": "state === s.state",
+		"why": "a state setting of another part is taken for the item's"
+	},
+	{
+		"file": "lib/fill-state-parts.mjs",
+		"find": ".map( ( [ attr ] ) => canonicalSlotOf( db, block, attr ) ).filter( Boolean ) );",
+		"replace": ".map( ( [ attr ] ) => canonicalSlotOf( db, block, attr ) ) );",
+		"why": "a setting tied to no part is a part of its own"
+	},
+	{
+		"file": "lib/fill-state-parts.mjs",
+		"find": ".filter( ( p ) => bare( p ) !== slot );",
+		"replace": ";",
+		"why": "the slot the look was read on is returned as its own alternate"
+	},
+	{
+		"file": "lib/fill-state-parts.mjs",
+		"find": "const bare = ( path ) => String( path ?? '' ).replace( /::(?:before|after)$/, '' );",
+		"replace": "const bare = ( path ) => String( path ?? '' );",
+		"why": "a paint layer is not the element's own box"
+	},
+	{
+		"file": "lib/fill-state-parts.mjs",
+		"find": "s.property === prop || longhands( s.property ).includes( prop )",
+		"replace": "true",
+		"why": "every property's settings are the look's"
+	},
+	{
+		"file": "lib/fill-state.mjs",
+		"find": ".concat( atRest ? [] : partStateSlots( { db, cal, block: rec.name, prop, slot, state } ) )",
+		"replace": "",
+		"why": "fillStates never tries the part's other slots"
+	}
+]
