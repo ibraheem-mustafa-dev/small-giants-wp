@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "if ( undefined !== own && ! fixtureThemed( st, cal, slot, w, prop, tagOf( st, rec, cal ) ) ) {",
+		"replace": "if ( undefined !== own ) {",
+		"why": "the fixture tag's theme paint would be the baseline of a node with another tag"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "return a.level || a.tagName || schema?.level?.default || schema?.tagName?.default || defaultPaint( cal, '', 1440, '_tag' );",
+		"replace": "return a.level || a.tagName || defaultPaint( cal, '', 1440, '_tag' );",
+		"why": "a node leaving its level out would be judged as the fixture's tag, not the block default it renders"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "return a.level || a.tagName || schema?.level?.default || schema?.tagName?.default || defaultPaint( cal, '', 1440, '_tag' );",
+		"replace": "return a.level || a.tagName || schema?.level?.default || schema?.tagName?.default;",
+		"why": "a block with no default tag would lose the fixture tag fallback"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "return !! fixtureTag && !! nodeTag && fixtureTag !== nodeTag && st.page( fixtureTag ).own( prop );",
+		"replace": "return !! fixtureTag && !! nodeTag && fixtureTag !== nodeTag;",
+		"why": "a paint the theme does not set on the fixture tag would be dropped as theme-derived"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "const fixtureTag = '' === slot ? defaultPaint( cal, slot, w, '_tag' ) : undefined;",
+		"replace": "const fixtureTag = defaultPaint( cal, slot, w, '_tag' );",
+		"why": "an inner part would be judged by the node's tag"
+	}
+]
