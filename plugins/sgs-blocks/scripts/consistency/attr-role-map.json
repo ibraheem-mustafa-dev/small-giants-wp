@@ -9370,7 +9370,7 @@
     "sgs/wishlist-link::showLabel": "boolean-visibility",
     "sgs/wishlist-link::showLabelMobile": "boolean-visibility",
     "sgs/wishlist-link::showLabelTablet": "boolean-visibility",
-    "sgs/wishlist-link::wishlistUrl": "content",
+    "sgs/wishlist-link::wishlistUrl": "link-href",
     "sgs/wishlist-panel::addToMineLabel": null,
     "sgs/wishlist-panel::alertsPriceLabel": null,
     "sgs/wishlist-panel::alertsStockLabel": null,
