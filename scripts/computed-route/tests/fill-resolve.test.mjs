@@ -94,12 +94,21 @@ test( 'a child compares with its parent\'s measured value even when that value w
 
 test( 'MUST FAIL: equal rendered gaps give the parent the gap and take the between-sibling margins from the children', () => {
 	const kid = ( y, mb ) => snap( { 'margin-bottom': `${ mb }px` }, { rect: box( y ), words: 'x' } );
-	const r = run( SKEL(), { '0:': snap( {}, { rect: { x: 0, y: 0, w: 300, h: 200 } } ), '1:': kid( 0, 16 ), '2:': kid( 56, 16 ), '3:': kid( 112, 16 ) } );
+	const r = run( SKEL(), { '0:': snap( { display: 'flex' }, { rect: { x: 0, y: 0, w: 300, h: 200 } } ), '1:': kid( 0, 16 ), '2:': kid( 56, 16 ), '3:': kid( 112, 16 ) } );
 	assert.equal( JSON.stringify( find( r.tree, 0 ).attributes.gap ), JSON.stringify( { desktop: '16px' } ), 'the parent holds the 16px gap' );
 	assert.equal( find( r.tree, 0, 0 ).attributes.margin, undefined, 'the first child gave its trailing margin up' );
 	assert.equal( find( r.tree, 0, 1 ).attributes.margin, undefined );
 	assert.ok( find( r.tree, 0, 2 ).attributes.margin, 'the last child\'s trailing margin is not between siblings, so it stays' );
 	assert.deepEqual( r.spacing.filter( ( s ) => 1440 === s.width ).map( ( s ) => [ s.owner, s.decisions[ 0 ].value ] ), [ [ 'parent', '16px' ] ] );
+} );
+
+test( 'MUST FAIL: equal rendered gaps under a plain block parent leave the children their margins and the parent no gap (S11)', () => {
+	const kid = ( y, mb ) => snap( { 'margin-bottom': `${ mb }px` }, { rect: box( y ), words: 'x' } );
+	const r = run( SKEL(), { '0:': snap( { display: 'block' }, { rect: { x: 0, y: 0, w: 300, h: 200 } } ), '1:': kid( 0, 16 ), '2:': kid( 56, 16 ), '3:': kid( 112, 16 ) } );
+	assert.equal( find( r.tree, 0 ).attributes.gap, undefined, 'a block parent holds no gap' );
+	assert.match( JSON.stringify( find( r.tree, 0, 0 ).attributes.margin ), /"bottom":"16px"/, 'the first child keeps the margin the draft declares' );
+	assert.match( JSON.stringify( find( r.tree, 0, 1 ).attributes.margin ), /"bottom":"16px"/ );
+	assert.deepEqual( r.spacing.filter( ( s ) => 1440 === s.width ).map( ( s ) => [ s.owner, s.decisions[ 0 ].value ] ), [ [ 'children', '0px' ] ] );
 } );
 
 test( 'MUST FAIL: one unequal gap leaves the parent gap at 0 and every child keeps its own margin', () => {
@@ -135,7 +144,7 @@ test( 'spacing is decided per tier: equal gaps at desktop, unequal on a phone', 
 	// 1440: gaps 16, 16. 768 and 375: gaps 16, 40.
 	const y1 = ( w ) => ( 1440 === w ? 56 : 56 );
 	const y2 = ( w ) => ( 1440 === w ? 112 : 136 );
-	const spec = { '0:': snap( {}, { rect: { x: 0, y: 0, w: 300, h: 300 } } ), '1:': kidAt( () => 0, () => 16 ), '2:': kidAt( y1, ( w ) => ( 1440 === w ? 16 : 40 ) ), '3:': kidAt( y2, () => 0 ) };
+	const spec = { '0:': snap( { display: 'flex' }, { rect: { x: 0, y: 0, w: 300, h: 300 } } ), '1:': kidAt( () => 0, () => 16 ), '2:': kidAt( y1, ( w ) => ( 1440 === w ? 16 : 40 ) ), '3:': kidAt( y2, () => 0 ) };
 	const r = run( SKEL(), spec );
 	const owners = Object.fromEntries( r.spacing.map( ( s ) => [ s.width, s.owner ] ) );
 	assert.deepEqual( [ owners[ 1440 ], owners[ 768 ], owners[ 375 ] ], [ 'parent', 'children', 'children' ] );
