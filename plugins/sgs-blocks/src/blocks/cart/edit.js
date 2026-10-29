@@ -30,8 +30,9 @@ import { triggerStyles } from './panel-preview-style';
  * @param {Object}   root0.attributes    The block's current attributes.
  * @param {Function} root0.setAttributes Setter for the block's attributes.
  * @param {string}   root0.name          The block's registered name.
+ * @param {string}   root0.clientId      The block's editor client ID.
  */
-export default function Edit( { attributes, setAttributes, name } ) {
+export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	const {
 		displayMode,
 		iconName,
@@ -359,7 +360,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					</span>
 				</span>
 				{ hasPanel && previewOpen && (
-					<PanelPreview attributes={ attributes } displayMode={ displayMode } tier={ previewTier } palette={ palette } />
+					<PanelPreview attributes={ attributes } displayMode={ displayMode } tier={ previewTier } palette={ palette } clientId={ clientId } />
 				) }
 			</div>
 		</>

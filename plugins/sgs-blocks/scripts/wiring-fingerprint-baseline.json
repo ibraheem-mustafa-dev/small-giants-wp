@@ -3,7 +3,7 @@
  "counts": {
   "L3": 129,
   "L5": 12,
-  "L2": 1,
+  "L2": 2,
   "L3-tier": 1,
   "L7": 1
  },
@@ -30,6 +30,7 @@
   "sgs/gallery::scrimColourGradient::L3",
   "sgs/gallery::scrimOpacity::L3",
   "sgs/google-reviews::scrollbarStyle::L5",
+  "sgs/hero::label::L2",
   "sgs/hero::shapeDividerBottom::L3",
   "sgs/hero::shapeDividerBottomColour::L3",
   "sgs/hero::shapeDividerBottomColourGradient::L3",
