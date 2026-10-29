@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { openDb } from '../lib/db.mjs';
 import { inventoryModel } from '../lib/skeleton-model.mjs';
-import { pairParts, pairSkeletonParts } from '../lib/skeleton-part-pairing.mjs';
+import { pairParts, pairSkeletonParts, partTree } from '../lib/skeleton-part-pairing.mjs';
 import { listMarkerDecisions } from '../lib/fill-list-marker.mjs';
 import { formElement } from '../lib/skeleton-form-element.mjs';
 import { sharedElementProblems } from '../lib/skeleton-one-node.mjs';
@@ -31,6 +31,16 @@ test( 'MUST FAIL (a block-drawn frame no rule names is paired): the hero\'s spli
 	const r = run( 'sgs/hero', F.elements.hero, 'Root/203#0', ( m ) => ( { own: ( e ) => ! kids.includes( e.key ), children: kids.map( ( k ) => ( { el: m.byKey[ k ], name: 'sgs/heading' } ) ) } ) );
 	assert.equal( r.slots[ SPLIT ]?.tpl, 'Root/216#0' );
 	assert.equal( r.slots[ '.sgs-hero__media' ]?.tpl, 'Root/215#0' );
+	assert.equal( r.slots[ '.sgs-hero__content' ]?.tpl, 'Root/205#0' );
+	// With no inner blocks known, the media part still never takes the grid holding another node's element.
+	const bare = run( 'sgs/hero', F.elements.hero, 'Root/203#0', () => ( { own: ( e ) => ! kids.includes( e.key ) } ) );
+	assert.equal( bare.slots[ '.sgs-hero__media' ]?.tpl, 'Root/215#0' );
+	// Two frames that fit equally are no evidence: the media part stays unpaired.
+	const twin = F.elements.hero.filter( ( e ) => /\/21[567]#0$/.test( e.key ) ).map( ( e ) => ( { ...e, key: e.key.replace( '#0', '#9' ), parentKey: '/215#0' === e.key.slice( -6 ) ? e.parentKey : e.parentKey.replace( '#0', '#9' ) } ) );
+	const two = run( 'sgs/hero', [ ...F.elements.hero, ...twin ], 'Root/203#0', ( m ) => ( { own: ( e ) => ! kids.includes( e.key ), children: kids.map( ( k ) => ( { el: m.byKey[ k ], name: 'sgs/heading' } ) ) } ) );
+	assert.ok( ! ( '.sgs-hero__media' in two.slots ) );
+	// A setting only a state paints (the linked icon's hover) names no part.
+	assert.ok( ! partTree( { db, block: 'sgs/icon', cal: F.cal[ 'sgs/icon' ] } ).targets.includes( '.sgs-icon__link' ) );
 	// Negative control: layers the draft does not draw stay unpaired with their reason, never guessed onto the grid.
 	assert.ok( ! ( '.sgs-hero__overlay' in r.slots ) && ! ( '.sgs-hero__video-bg' in r.slots ) );
 	assert.match( r.unpaired.find( ( u ) => '.sgs-hero__overlay' === u.slot ).reason, /no element of its own/ );
@@ -41,6 +51,9 @@ test( 'MUST FAIL (a slider\'s slide is paired): the draft draws one card at a ti
 	assert.equal( r.slots[ SLIDE( 1 ) ]?.tpl, 'Root/274#0' );
 	assert.ok( ! ( SLIDE( 2 ) in r.slots ) );
 	assert.match( r.unpaired.find( ( u ) => SLIDE( 2 ) === u.slot ).reason, /one copy/ );
+	// Negative control: a stage with a child more than the block draws pairs nothing by order.
+	const extra = { ...F.elements.slider.find( ( e ) => 'Root/273#0' === e.key ), key: 'Root/999#0', parentKey: 'Root/271#0' };
+	assert.ok( ! ( SLIDE( 1 ) in run( 'sgs/testimonial-slider', [ ...F.elements.slider, extra ], 'Root/270#0' ).slots ) );
 } );
 
 test( 'MUST FAIL (an icon\'s shape is paired): a block root with no box settings draws its one child part as the box the draft\'s single element is; the glyph the draft lacks is named', () => {
@@ -95,6 +108,15 @@ test( 'MUST FAIL (the marker type follows the draft, read through the DB): a pai
 	assert.equal( marker( {} ).unmapped.find( ( u ) => 'marker' === u.property )?.value ?? marker( {} ).writes.find( ( x ) => 'none' === x.value )?.value, 'none' );
 } );
 
+// The DB as the marker setting's allowed values will read once the seeder holds them (icon, emoji, bullet, none).
+const listed = { prepare: ( sql ) => ( /css_property IS NULL AND enum_values IS NOT NULL/.test( sql ) ? { all: () => [ { attr_name: 'markerType', enum_values: '["icon","emoji","bullet","none"]' } ] } : db.prepare( sql ) ) };
+test( 'MUST FAIL (a marker type the DB lists is written, one it does not list is a named row)', () => {
+	const dots = listMarkerDecisions( { db: listed, block: 'sgs/icon-list', cal: F.cal[ 'sgs/icon-list' ], attributes: { items }, reads: { [ MARK( 1 ) ]: { words: '' }, [ MARK( 2 ) ]: { words: '' } } } );
+	assert.deepEqual( dots.writes, [ { attr: 'markerType', value: 'bullet', merge: 'replace' } ] );
+	const numbers = listMarkerDecisions( { db: listed, block: 'sgs/icon-list', cal: F.cal[ 'sgs/icon-list' ], attributes: { items }, reads: { [ MARK( 1 ) ]: { words: '1' }, [ MARK( 2 ) ]: { words: '2' } } } );
+	assert.deepEqual( [ numbers.writes, numbers.unmapped.map( ( u ) => u.value ) ], [ [], [ 'numbered' ] ] );
+} );
+
 test( 'negative control: items whose markers differ choose no marker type, and a block with no icon item keeps its settings', () => {
 	assert.match( marker( { [ MARK( 1 ) ]: { svg: { markup: LUCIDE } }, [ MARK( 2 ) ]: { words: '' } } ).notes.join(), /differ/ );
 	assert.deepEqual( marker( {}, 'sgs/heading' ), { writes: [], unmapped: [], notes: [] } );
@@ -104,6 +126,9 @@ test( 'MUST FAIL (a form stands on its card): a form root holding the controls i
 	const m = inventoryModel( { elements: F.elements.form } );
 	const root = m.els.find( ( e ) => 0 === e.depth );
 	assert.equal( formElement( m, root ).key, 'Root>TradeApplication@466#0/7#0' );
+	// A control standing straight in the root, beside an aside, leaves the root the form.
+	const loose = inventoryModel( { elements: F.elements.form.filter( ( e ) => e.depth <= 1 || 'Root>TradeApplication@466#0/39#0' === e.key ).map( ( e ) => ( 'Root>TradeApplication@466#0/7#0' === e.key ? { ...e, tag: 'input' } : e ) ) } );
+	assert.equal( formElement( loose, loose.els.find( ( e ) => 0 === e.depth ) ).key, root.key );
 	// Negative control: a root whose controls sit with nothing beside them is the form itself.
 	const card = inventoryModel( { elements: F.elements.form.filter( ( e ) => ! /\/(86|103)#0$/.test( e.key ) ) } );
 	assert.equal( formElement( card, card.els.find( ( e ) => 0 === e.depth ) ).key, root.key );

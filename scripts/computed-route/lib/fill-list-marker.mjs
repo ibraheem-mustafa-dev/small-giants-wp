@@ -29,9 +29,8 @@ export function markerSlots( { db, block, cal, slots } ) {
 	const T = partTree( { db, block, cal, paint: cal?.elements || {} } );
 	const out = {};
 	for ( const s of slots ) {
-		const steps = s.split( ' > ' );
 		const hits = [ ...s.matchAll( NTH ) ];
-		if ( ! hits.length || steps.includes( 'svg' ) || ! T.kinds( s ).has( 'svg' ) ) {
+		if ( ! hits.length || ! T.kinds( s ).has( 'svg' ) ) {
 			continue;
 		}
 		const k = Number( hits.at( -1 )[ 1 ] );
