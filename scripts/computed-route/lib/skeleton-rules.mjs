@@ -665,6 +665,30 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const closeKeys = ( e ) => ( facts.repo && facts.client
 		? handlerCloses( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: view.entry( e )?.template.component, handler: handlerOf( e ) } )
 		: new Set() );
+	// The draft's own close control of a drawer surface: a button or link below the root whose click handler writes a falsy
+	// value to a state key the drawer's own surfaces.json record opens on (rules.drawerClose).
+	const ownDrawer = () => ( scope?.id ? view.surfaces[ scope.id ] : null );
+	const closesOwnDrawer = ( e ) => {
+		const own = ownDrawer();
+		return !! own && e !== m.root && [ 'a', 'button' ].includes( e.tag ) && !! handlerOf( e ) && opensOn( own, closeKeys( e ) );
+	};
+	// Whether an element sits in the drawer's top row: the nearest element above it that holds the drawer's own close
+	// control is not the surface root and holds no navigation (the drawer's body), so the element shares the close's row.
+	const inDrawerTopRow = ( e ) => {
+		const holder = ( function up( k ) {
+			const p = m.byKey[ k.parentKey ];
+			return ! p ? null : desc( p ).some( closesOwnDrawer ) ? p : up( p );
+		}( e ) );
+		return !! holder && holder !== m.root && 'nav' !== holder.tag && ! desc( holder ).some( ( d ) => 'nav' === d.tag );
+	};
+	// A logo verdict in the drawer's top row, when the surface root's block draws the top row's logo from its own setting
+	// (rules.drawerLogo.idSetting is a setting of that block): the logo is that setting, absorbed into the root, never a second
+	// logo block; any other verdict is null.
+	const drawerLogo = ( e, out ) => {
+		const D = R.drawerLogo;
+		const rootBlock = ( R.surfaceRoot?.entries || [] ).find( ( x ) => x.kind === surface.kind && new RegExp( x.namePattern, 'i' ).test( surface.name || '' ) )?.block;
+		return D && rootBlock && facts.logoBlocks.includes( out.block ) && facts.attr( rootBlock, D.idSetting ) && inDrawerTopRow( e ) ? v( 'drawerLogo', { action: 'absorbed', into: m.root.key } ) : null;
+	};
 	// The anchor a saved form is reached by (lib/skeleton-form-prefill.mjs): the slug a page's linked form block references it by
 	// (lib/skeleton-form-link.mjs), set on the form block that roots the form's own post, so a link `…#<slug>` on any page lands on it.
 	const formAnchor = 'form' === surface.kind && scope?.id ? ( surface.formLinks || [] ).find( ( l ) => l.recordId === scope.id )?.slug ?? null : null;
@@ -829,11 +853,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// the block draws its close above its body, so the control is absorbed into the surface root and its look is read into
 		// the block's close settings (the node's draftSlots at the close part). The surface's own record is found by its kind, so only a
 		// drawer surface has one; a drawer another block draws is that block's whole, root and children.
-		( { e } ) => {
-			const own = scope?.id ? view.surfaces[ scope.id ] : null;
-			const control = own && e !== m.root && [ 'a', 'button' ].includes( e.tag ) && handlerOf( e );
-			return control && opensOn( own, closeKeys( e ) ) ? v( 'drawerClose', { action: 'absorbed', into: m.root.key } ) : null;
-		},
+		( { e } ) => ( closesOwnDrawer( e ) ? v( 'drawerClose', { action: 'absorbed', into: m.root.key } ) : null ),
 		// The control that opens the drawer, inside a header whose navigation block draws its own opener below its collapse
 		// point: the navigation block draws it, so it is absorbed there.
 		( { e } ) => {
@@ -962,7 +982,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		for ( const rule of [ modalFrameRule, ...STRUCTURES, ...RULES ] ) {
 			const out = rule( x );
 			if ( out ) {
-				return out;
+				return drawerLogo( e, out ) || out;
 			}
 		}
 		return null;

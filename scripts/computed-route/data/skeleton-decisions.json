@@ -430,6 +430,11 @@
 				"close": "the modal's close control (its click handler writes a falsy value to the state the modal opens on): the sgs/modal frame draws the close and its look becomes the frame's close settings; the draft's button is never built as a second, dead close"
 			}
 		},
+		"drawerLogo": {
+			"part": "chromeLogo",
+			"idSetting": "chromeLogoId",
+			"reason": "a logo in a drawer's top row (the row holding the drawer's own close control, not its navigation) is the drawer block's own top-row logo (Spec 36 FR-36-6: sgs/nav-drawer draws its logo from its chrome logo settings above its body), so the block takes it: the logo's carried attachment is the block's logo setting and its look the block's logo settings; the draft's logo is never built as a second logo block"
+		},
 		"drawerClose": {
 			"part": "close",
 			"labelSetting": "closeLabel",

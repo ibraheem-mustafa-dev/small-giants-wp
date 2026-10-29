@@ -2151,6 +2151,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `narrowsRenderedList(narrowed, rendered)` → the standing filter rule in one place: whether any narrowed `renderVals` key is a list the same component renders (`rendered` holds the `list` attribute of each of its `sc-for` elements). The skeleton stage (`optionSetFilter`) and the page map's choice-flow detection (`isChoiceFlow`) both ask it.
 
 ### `lib/skeleton-handler-opens.mjs`
+- `handlerValue(d, handler)` → the node a `renderVals` handler key stands for: its value, or for a member of the component (`closeMobile: this.closeMobile`) that class method or function-valued class property; `handlerOpens`, `handlerWrites`, `handlerCloses` and `lib/skeleton-form-prefill.mjs` read handlers through it.
 - `handlerOpens({ folder, record, component, handler })` → the Set of state keys the `renderVals` handler writes with an opening value (empty when the record names no draft file or the handler is not a `renderVals` key).
 - `handlerWrites({ folder, record, component, handler })` → the Map of state keys the `renderVals` handler writes with an opening value, each to the Set of literal values it writes (empty Set for a non-literal).
 - `opensOnWrites(surface, written)` → whether a fact-record surface state holds a written key at true or at the literal written.
@@ -2179,7 +2180,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 
 ### `lib/skeleton-write-content.mjs`
 - `skeletonSettings(facts, block)` → `{ text, link, others }`: the settings the skeleton writer can give a block (its first text-content and link-href settings, a wrapper shell's tag and layout, Site Info's display type, a link target, a logo's `logoId`, a menu `ref`); `contentAttrs` writes through it.
-- `makeContent( ctx )` → `{ contentAttrs, carriedAttrs }`: `contentAttrs( block, element, top )` → `{ a, handover }`, the block's settings from the draft element and the notes for what no setting holds; `carriedAttrs( block, element )` → `{ attrs, said, missing }`, the ids the build holds for the block.
+- `makeContent( ctx )` → `{ contentAttrs, linkAttrs, carriedAttrs, ownWordsNode }`: `contentAttrs( block, element, top )` → `{ a, handover }`, the block's settings from the draft element and the notes for what no setting holds; `linkAttrs( block, element, top )` → `{ a, handover }`, the link setting alone, for a block whose rule gives its words and draws its children (a pill button holding a label and a glyph), nothing when the rule's attributes already set a link; `carriedAttrs( block, element )` → `{ attrs, said, missing }`, the ids the build holds for the block.
 - `PREFIX_WORDS`: the most words a copyright prefix may hold. `copyrightPrefixParts(text, siteName)` (`{ prefix, leftover }`) and `copyrightPrefixOf(text, siteName)` (its prefix) → the words a draft's copyright line prints before its mark (`Copyright` for "Copyright (c) 2026 Acme", empty for "(c) 2026 Acme"), a short run of words that never holds the site name.
 
 ### `lib/skeleton-write-slots.mjs`

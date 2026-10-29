@@ -5,7 +5,7 @@
 // surfaces.json states holds the key at `true` (the fact record's surface states). A computed key is unknown and opens
 // nothing.
 import { draftLogicOf } from './skeleton-narrowing.mjs';
-import { keyName, isThisMember, isFn, subtree } from './intake-ast.mjs';
+import { keyName, isThisMember, isFn, subtree, classMethod } from './intake-ast.mjs';
 
 // A literal the draft writes to close or clear a key.
 const falsy = ( n ) => ( 'BooleanLiteral' === n?.type && false === n.value ) || 'NullLiteral' === n?.type || ( 'Identifier' === n?.type && 'undefined' === n.name ) || ( 'NumericLiteral' === n?.type && 0 === n.value ) || ( 'StringLiteral' === n?.type && '' === n.value );
@@ -31,11 +31,22 @@ function writtenKeys( d, node, closing ) {
 	return new Set( patchProperties( d, node ).filter( ( p ) => closing === falsy( p.value ) ).map( keyName ) );
 }
 
+// The value a renderVals handler key stands for: its own value, or, when that is a member of the component itself
+// (`closeMobile: this.closeMobile`), the class method or function-valued class property of that name, whose body holds
+// the setState calls. undefined when the draft has no such key.
+export function handlerValue( d, handler ) {
+	const value = d?.values.get( handler );
+	if ( ! isThisMember( value ) ) {
+		return value;
+	}
+	return classMethod( d.idx, value.property.name ) || value;
+}
+
 // The state keys a component's renderVals handler `handler` writes with an opening value (an empty Set when the record
 // names no draft file for the component or the handler is not a renderVals key). o: { folder, record, component, handler }.
 export function handlerOpens( { folder, record, component, handler } ) {
 	const d = draftLogicOf( { folder, record, component } );
-	const value = d?.values.get( handler );
+	const value = handlerValue( d, handler );
 	return value ? writtenKeys( d, value, false ) : new Set();
 }
 
@@ -47,7 +58,7 @@ const literalOf = ( n ) => ( [ 'StringLiteral', 'NumericLiteral', 'BooleanLitera
 // `modal: 'size'` is opened by the handler writing 'size' to `modal`.
 export function handlerWrites( { folder, record, component, handler } ) {
 	const d = draftLogicOf( { folder, record, component } );
-	const value = d?.values.get( handler );
+	const value = handlerValue( d, handler );
 	const out = new Map();
 	for ( const p of value ? patchProperties( d, value ).filter( ( x ) => ! falsy( x.value ) ) : [] ) {
 		const seen = out.get( keyName( p ) ) ?? out.set( keyName( p ), new Set() ).get( keyName( p ) );
@@ -65,7 +76,7 @@ export const opensOnWrites = ( surface, written ) => opensOn( surface, new Set( 
 // keys it closes. A key it also writes with an opening value in the same handler is a toggle's, not a close.
 export function handlerCloses( { folder, record, component, handler } ) {
 	const d = draftLogicOf( { folder, record, component } );
-	const value = d?.values.get( handler );
+	const value = handlerValue( d, handler );
 	if ( ! value ) {
 		return new Set();
 	}

@@ -166,6 +166,18 @@ export function makeContent( ctx ) {
 		return { a: { ...a, ...Object.fromEntries( Object.entries( top.attributes || {} ) ) }, handover };
 	}
 
+	// The link setting alone of an element whose rule gives the block its words and draws its children (a pill button holding a
+	// label and a glyph): the element's own href is still its destination. Nothing when the block has no link setting or the
+	// rule's own attributes already set a link of the block (a link source, a whole-block link). Returns { a, handover }.
+	function linkAttrs( block, e, top ) {
+		const a = {};
+		const handover = [];
+		const { link: linkAttr } = skeletonSettings( facts, block );
+		const ruled = Object.keys( top.attributes || {} ).some( ( k ) => k === linkAttr || /link/i.test( k ) );
+		linkAttr && ! ruled && ! top.linkSource && linkSettings( block, e, top, linkAttr, a, handover );
+		return { a, handover };
+	}
+
 	// Which navigation group of the surface an element is (0 for the first): a drawer binds the menu the page map made for the
 	// same group, in document order (lib/site-build-map.mjs::boundMenu). Navigation inside another navigation is no group.
 	const navAbove = ( n ) => {
@@ -196,5 +208,5 @@ export function makeContent( ctx ) {
 		}
 		return out;
 	}
-	return { contentAttrs, carriedAttrs, ownWordsNode };
+	return { contentAttrs, linkAttrs, carriedAttrs, ownWordsNode };
 }

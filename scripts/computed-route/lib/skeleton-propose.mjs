@@ -188,8 +188,9 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		// A rule's attributes are the block's settings; a block that draws its children takes no words from them.
 		const drawn = m.blockKids( e ).length ? ( r.absorb ? `rule ${ r.rule }` : cls.drawsChildren( block ) ) : null;
 		// A rule that sets a display type (a business detail) carries the block's settings itself: no generic text attribute.
+		// A block that draws its children still takes the element's own link (lib/skeleton-write-content.mjs::linkAttrs).
 		const own = r.rule && ( drawn || top.attributes?.displayType );
-		const { a, handover } = own ? { a: {}, handover: [] } : contentAttrs( block, e, top );
+		const { a, handover } = own ? ( drawn && ! top.attributes?.displayType ? w.linkAttrs( block, e, top ) : { a: {}, handover: [] } ) : contentAttrs( block, e, top );
 		// A navigation block's collapse point is the width the draft shows its navigation at.
 		const collapseAttr = 'nav' === e.tag ? R.navigation?.collapseAttribute?.[ block ] : null;
 		const collapse = collapseAttr ? collapsePoint( { e, states, thresholds } ) : null;
@@ -368,6 +369,10 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const labelSetting = R[ p.rule ]?.labelSetting;
 		const words = labelSetting ? m.words( p.e ).trim() : '';
 		labelSetting && /\p{L}/u.test( words ) && facts.attr( node.name, labelSetting ) && ( node.attributes = { ...node.attributes, [ labelSetting ]: words } );
+		// A logo the block draws from its own setting (rules.drawerLogo) gives that setting the attachment the build carries for the logo.
+		const idSetting = R[ p.rule ]?.idSetting;
+		const logoId = idSetting && facts.attr( node.name, idSetting ) ? carriedAttrs( facts.logoBlocks[ 0 ], p.e ).attrs.logoId : null;
+		logoId && ( node.attributes = { ...node.attributes, [ idSetting ]: logoId } );
 		const place = placePart( { e: p.e, node, tree: skeleton, nodeOfKey, m } );
 		place?.placed && ( rowOf[ p.into ].placedIn = place.placed );
 		place?.dropped && Object.assign( rowOf[ place.dropped ], { action: 'remove', reason: place.note } );

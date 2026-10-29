@@ -15,6 +15,7 @@ import { boundMenu, placeholderTree, writeMenuMap } from '../lib/site-build-map.
 import { carriedIds } from '../lib/skeleton-carried.mjs';
 import crypto from 'crypto';
 import { handlerCloses } from '../lib/skeleton-handler-opens.mjs';
+import { linkContext } from '../lib/draft-link.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -97,10 +98,15 @@ function closeRun( o = {} ) {
 	const text = `<x-dc name="Root"><div></div></x-dc>\n<script data-dc-script>\n${ logic }\n</script>\n`;
 	fs.writeFileSync( path.join( dir, 'Root.dc.html' ), text );
 	const click = o.click ?? 'closeMenu';
+	// o.logo: a logo element in the row holding the close ('row'), or in the body beside the navigation ('body').
+	const closeParent = 'row' === o.logo ? 9 : 1;
 	const list = [
 		{ ...el( 1, null, 'aside', '', { depth: 0 } ) },
-		{ ...el( 2, 1, o.tag ?? 'button', o.words ?? '×', { attrs: { 'aria-label': 'Close' } } ), snippet: `<${ o.tag ?? 'button' } data-dc-tpl="2" sc-camel-on-click="{{ ${ click } }}">${ o.words ?? '×' }</${ o.tag ?? 'button' }>` },
-		el( 3, 1, 'nav', '', { all: 'Home Shop' } ), el( 4, 3, 'a', 'Home', { depth: 2, attrs: { href: '#/' } } ), el( 5, 3, 'a', 'Shop', { depth: 2, attrs: { href: '#/shop' } } ),
+		// 'apart': the logo in a wrapper of its own in the body, beside the row holding the close.
+		...( o.logo ? [ el( 9, 1, 'div' ), { ...el( 14, 9, 'a', 'Call us', { depth: 2, attrs: { href: 'tel:+440000' } } ), snippet: '<a href="tel:+440000" data-dc-tpl="14">Call us</a>' }, el( 15, 1, 'div' ), el( 10, { row: 9, body: 1, apart: 15 }[ o.logo ], 'site-logo', '', { depth: 2 } ) ] : [] ),
+		{ ...el( 2, closeParent, o.tag ?? 'button', o.words ?? '×', { attrs: { 'aria-label': 'Close' } } ), snippet: `<${ o.tag ?? 'button' } data-dc-tpl="2" sc-camel-on-click="{{ ${ click } }}">${ o.words ?? '×' }</${ o.tag ?? 'button' }>` },
+		...( o.noNav ? [] : [ el( 3, 1, 'nav', '', { all: 'Home Shop' } ), el( 4, 3, 'a', 'Home', { depth: 2, attrs: { href: '#/' } } ), el( 5, 3, 'a', 'Shop', { depth: 2, attrs: { href: '#/shop' } } ) ] ),
+		...( o.cta ? [ { ...el( 11, 1, 'a', '', { all: 'Apply now', attrs: { href: '#/apply' } } ), snippet: '<a href="#/apply" data-dc-tpl="11"><span>Apply now</span><span></span></a>' }, el( 12, 11, 'span', 'Apply now', { depth: 2 } ), el( 13, 11, 'span', '', { depth: 2 } ) ] : [] ),
 	];
 	const rec = ( n, parent, tag, onClick ) => ( { template: { key: `Root/${ n }`, component: 'Root', n: String( n ), tag, realTag: tag, attrs: onClick ? { onClick: `{{ ${ onClick } }}` } : {}, style: { static: [], holes: [] }, pseudo: {}, holes: [],
 		parent: parent ? `Root/${ parent }` : null, realParent: parent ? `Root/${ parent }` : null, parentChain: parent ? [ `Root/${ parent }` ] : [], membership: { scIf: [], scFor: [], dcImport: [] }, own: {}, inHelmet: false, inFor: false, ref: null, hooks: {}, events: [], words: '', srcLine: n }, logic: { holes: {} }, surfaces: [], instances: [], fingerprint: {} } );
@@ -112,7 +118,7 @@ function closeRun( o = {} ) {
 	const f = loadFacts( { db, client: 'fixture-client', repo: REPO } );
 	f.decisions = structuredClone( f.decisions );
 	o.edit && o.edit( f.decisions.rules );
-	return { ...proposeSkeleton( { inventory, facts: { ...f, repo }, surface: 'drawer', surfaceKind: o.kind ?? 'drawer', surfaceName: 'Mobile menu', db, factRecord, openers: { 'S-05': 'Menu button' }, pageMap: o.pageMap ?? [] } ), repo, text };
+	return { ...proposeSkeleton( { inventory, facts: { ...f, repo }, surface: 'drawer', surfaceKind: o.kind ?? 'drawer', surfaceName: 'Mobile menu', db, factRecord, openers: { 'S-05': 'Menu button' }, pageMap: o.pageMap ?? [], ...( o.carried ? { carried: o.carried } : {} ), ...( o.draftLinks ? { draftLinks: o.draftLinks } : {} ) } ), repo, text };
 }
 const nodeAt = ( r, key ) => all( r.skeleton ).find( ( n ) => n.draftRef?.tpl === key );
 const rowAt = ( r, key ) => r.proposal.rows.find( ( x ) => x.key === key );
@@ -156,4 +162,63 @@ test( 'handlerCloses reads falsy writes, and a key the handler also opens is a t
 	assert.deepEqual( of( 'toggleMenu' ), [] );
 	assert.deepEqual( of( 'reopen' ), [], 'a key written both closed and open is not a close' );
 	assert.deepEqual( of( 'missing' ), [] );
+} );
+
+// The close handler as a member of the component (`closeMenu: this.shut`): a class field holding an arrow, or a class method.
+const memberLogic = ( member ) => `class Component {
+	shutField = () => { if ( this.busy ) { return; } this.setState( { menuOpen: false } ); };
+	shutMethod() {
+		this.setState( { menuOpen: false } );
+	}
+	flip = () => this.setState( ( s ) => ( { menuOpen: ! s.menuOpen } ) );
+	reopen = () => { this.setState( { menuOpen: false } ); this.setState( { menuOpen: true } ); };
+	renderVals() {
+		return { closeMenu: this.${ member } };
+	}
+}`;
+
+test( "MUST FAIL: a close handler that names a class field or a class method of the component is the drawer's own close", () => {
+	for ( const member of [ 'shutField', 'shutMethod' ] ) {
+		assert.deepEqual( [ rowAt( closeRun( { logic: memberLogic( member ) } ), 'Root/2#0' ).rule ], [ 'drawerClose' ], member );
+	}
+} );
+
+test( 'NEGATIVE: a member that toggles, reopens or does not exist is no close', () => {
+	for ( const member of [ 'flip', 'reopen', 'missing' ] ) {
+		assert.notEqual( rowAt( closeRun( { logic: memberLogic( member ) } ), 'Root/2#0' ).rule, 'drawerClose', member );
+	}
+} );
+
+const LOGO = { logo: () => ( { id: 81, asset: 'logo.svg' } ), menu: () => null };
+
+test( "MUST FAIL: a logo in the drawer's top row (beside its close) is the drawer block's own top-row logo: absorbed, its attachment the block's logo setting, no second logo block", () => {
+	const r = closeRun( { logo: 'row', carried: LOGO } );
+	assert.deepEqual( [ rowAt( r, 'Root/10#0' ).action, rowAt( r, 'Root/10#0' ).rule, rowAt( r, 'Root/10#0' ).into ], [ 'absorbed', 'drawerLogo', 'Root/1#0' ] );
+	assert.equal( nodeAt( r, 'Root/1#0' ).attributes.chromeLogoId, 81 );
+	assert.equal( all( r.skeleton ).filter( ( n ) => r.facts?.logoBlocks?.includes( n.name ) || /logo/.test( n.name ) ).length, 0, 'no logo block' );
+} );
+
+test( 'NEGATIVE: a logo in the body (beside the navigation, not the close), a page surface and the rule removed keep the logo block', () => {
+	const logoRow = ( o ) => rowAt( closeRun( { carried: LOGO, ...o } ), 'Root/10#0' );
+	assert.notEqual( logoRow( { logo: 'body' } ).rule, 'drawerLogo', 'the row holding both the logo and the close is the drawer root itself' );
+	assert.notEqual( logoRow( { logo: 'body', noNav: true } ).rule, 'drawerLogo', 'the drawer root is never its own top row, navigation or none' );
+	assert.notEqual( logoRow( { logo: 'apart' } ).rule, 'drawerLogo', 'a logo in a wrapper of its own beside the close row is in the body' );
+	assert.notEqual( logoRow( { logo: 'row', kind: 'modal' } ).rule, 'drawerLogo', 'a modal surface has no drawer block' );
+	assert.notEqual( rowAt( closeRun( { logo: 'row', carried: LOGO } ), 'Root/14#0' ).rule, 'drawerLogo', 'a link in the top row is no logo' );
+	assert.notEqual( logoRow( { logo: 'row', kind: 'page' } ).rule, 'drawerLogo', 'a page surface has no drawer' );
+	assert.notEqual( logoRow( { logo: 'row', edit: ( R ) => delete R.drawerLogo } ).rule, 'drawerLogo', 'the rule removed' );
+	assert.equal( nodeAt( closeRun( { logo: 'body', carried: LOGO } ), 'Root/1#0' ).attributes.chromeLogoId, undefined );
+} );
+
+test( 'MUST FAIL: a pill button holding a label and a glyph keeps its own link, resolved from the draft route', () => {
+	const draftLinks = linkContext( { rows: [ { route: 'apply', slug: 'apply', title: 'Apply', parent: null, template: 'page', postType: 'page' } ], routing: { adapter: 'hash', links: [] } } );
+	const r = closeRun( { cta: true, draftLinks } );
+	assert.equal( rowAt( r, 'Root/11#0' ).block, 'sgs/button' );
+	assert.deepEqual( nodeAt( r, 'Root/11#0' ).attributes, { label: 'Apply now', url: '/apply/' } );
+} );
+
+test( 'NEGATIVE: a pill button whose draft route no page-map row holds writes no url', () => {
+	const draftLinks = linkContext( { rows: [], routing: { adapter: 'hash', links: [] } } );
+	const r = closeRun( { cta: true, draftLinks } );
+	assert.equal( nodeAt( r, 'Root/11#0' ).attributes.url, undefined, 'a route no page-map row holds is never written' );
 } );
