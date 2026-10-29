@@ -39,6 +39,7 @@ import { sourcesOf } from './freshness.mjs';
 import { fingerprintsOf } from './identity.mjs';
 import { carriedIds } from './skeleton-carried.mjs';
 import { siteOf } from './skeleton-context.mjs';
+import { componentScript } from './fill-form-success.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const SURFACE_KINDS = [ 'header', 'footer', 'drawer', 'menu', 'form', 'modal', 'global', 'page' ];
@@ -478,7 +479,7 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 						if ( f.error ) {
 							throw new Error( f.error );
 						}
-						const r = propose( { inventory, facts: f.facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: builtFor( s ), clientDecisions: f.clientDecisions, carried: carriedIds( { repo, client, site: siteOf( { repo, client, slug: s.slug } ) } ), calKeys, formLinks: formLinks(), refs, draftLinks: draftLinks(), db: theDb } );
+						const r = propose( { inventory, facts: f.facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: builtFor( s ), clientDecisions: f.clientDecisions, carried: carriedIds( { repo, client, site: siteOf( { repo, client, slug: s.slug } ) } ), calKeys, formLinks: formLinks(), refs, draftLinks: draftLinks(), scriptOf: ( component ) => componentScript( folder, component ), db: theDb } );
 						// A width another state opened (the same state at its other breakpoint) is named in `statesAt`.
 						const opened = open && openedOf( open );
 						r.proposal.stripRoots?.forEach( ( k ) => absorbed.set( k, s.slug ) );

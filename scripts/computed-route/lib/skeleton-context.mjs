@@ -14,6 +14,7 @@ import { carriedIds } from './skeleton-carried.mjs';
 import { commerceOf, filtersOf } from './skeleton-commerce-region.mjs';
 import { loadCatalogue } from './catalogue-read.mjs';
 import { loadShopParts } from './fill-shop-parts.mjs';
+import { componentScript } from './fill-form-success.mjs';
 
 const CACHE = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'cache' );
 
@@ -50,7 +51,7 @@ export function proposalContext( { repo, client, slug, id, breakpoints, site = s
 	return {
 		calKeys: calKeysFor( site ), calSettings: calSettingsFor( site ), states: statesOfRecord( { repo, client, id } ), thresholds: thresholdsOf( breakpoints ),
 		formLinks: formLinksFor( { repo, client, refs } ), refs, draftLinks: draftLinksFor( { repo, client, routing, proposedRows: pageMap?.length ? pageMap : null } ),
-		carried: carriedIds( { repo, client, site, rootComponent } ),
+		carried: carriedIds( { repo, client, site, rootComponent } ), scriptOf: ( component ) => componentScript( path.join( repo, 'sites', client, 'handoff' ), component ),
 		// A WooCommerce page's template surface places WooCommerce's piece at the draft's commerce region, and a loop of products, brands or reviews is a working block.
 		commerce: commerceOf( manifestEntryOf( { repo, client, slug } ), rows, catalogue, loadShopParts( build ) ),
 		loops: { rows, brands: catalogue ? filtersOf( catalogue ).brands : [], carousels },
