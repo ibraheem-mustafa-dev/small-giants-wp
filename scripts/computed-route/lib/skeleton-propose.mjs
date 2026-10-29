@@ -146,7 +146,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	Object.assign( w, makeUnits( ctx ) );
 	Object.assign( w, makeContent( ctx ) );
 	Object.assign( w, makeSlotRows( ctx ) );
-	const { record, removeSubtree, absorbSubtree, absorbWidthKids, takeVariants, unitsOf, buildBrand, buildIcons, buildList, contentAttrs, carriedAttrs, buildHeaderRows, buildFooterRows, hostSlot } = w;
+	const { record, removeSubtree, absorbSubtree, absorbWidthKids, takeVariants, unitsOf, buildBrand, buildIcons, buildList, contentAttrs, carriedAttrs, buildHeaderRows, buildFooterRows, hostSlot, ownWordsNode } = w;
 	Object.assign( w, { buildNode, buildChildren } );
 
 	function buildNode( e, parentBlock ) {
@@ -281,6 +281,10 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		hosts.push( { block, node, row } );
 		node.innerBlocks = e !== m.root ? buildChildren( e, block ) : R.headerSlots && block === R.headerSlots.block ? buildHeaderRows( e, block ) : R.footerSlots && block === R.footerSlots.block ? buildFooterRows( e, block ) : buildChildren( e, block );
 		hosts.pop();
+		// The container's own words stand beside its children as a text child (lib/skeleton-write-content.mjs::ownWordsNode).
+		const loose = ownWordsNode( e, block );
+		loose && ( loose.leading ? node.innerBlocks.unshift( loose.node ) : node.innerBlocks.push( loose.node ) );
+		loose && ( row.rowNote = [ row.rowNote, `its own words "${ Object.values( loose.node.attributes )[ 0 ] }" are the ${ loose.node.name } child ${ loose.leading ? 'before' : 'after' } its children` ].filter( Boolean ).join( '; ' ) );
 		return node;
 	}
 

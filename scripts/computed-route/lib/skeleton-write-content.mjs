@@ -85,6 +85,27 @@ export function makeContent( ctx ) {
 		e.attrs?.target && attrExists( block, 'linkTarget' ) && ( a.linkTarget = e.attrs.target );
 	}
 
+	// The cite (or footer) a blockquote ends with, the element holding its attribution, or null.
+	const citeOf = ( e ) => m.kids( e ).find( ( k ) => [ 'cite', 'footer', 'figcaption' ].includes( k.tag ) && m.isPart( k ) && m.words( k ) ) ?? null;
+
+	// A container's own words (the text printed straight inside it, beside its child elements) as a text child, the generic
+	// text block of the tag map's `p` (facts.tagMap), placed in DOM order: before the children when the text opens the
+	// element's markup, after them otherwise. Only a block with no text setting of its own takes this (a wrapper shell, a
+	// section root, a block that draws children); one that reads words into its own setting has them already.
+	// Returns { node, leading } or null. The node has no draftRef: Fill reads the container, whose type style the text inherits.
+	function ownWordsNode( e, block ) {
+		const words = m.words( e );
+		const textBlock = facts.tagMap.p?.core_block_slug;
+		const textAttr = textBlock ? facts.firstAttrByRole( textBlock, 'text-content' ) : null;
+		if ( ! words || ! textAttr || ( skeletonSettings( facts, block ).text && 'blockquote' !== e.tag ) ) {
+			return null;
+		}
+		const snippet = e.snippet || '';
+		const open = /^<[^>]*>/.exec( snippet );
+		const leading = ! open || '' !== snippet.slice( open[ 0 ].length ).split( '<' )[ 0 ].trim();
+		return { node: { name: textBlock, attributes: { [ textAttr ]: words }, innerBlocks: [] }, leading };
+	}
+
 	// The content settings of one element's block. Returns { a (attributes), handover }.
 	function contentAttrs( block, e, top ) {
 		const a = {};
@@ -117,7 +138,12 @@ export function makeContent( ctx ) {
 			return { a, handover };
 		}
 		const { text: textAttr, link: linkAttr } = skeletonSettings( facts, block );
-		textAttr && t && ( a[ textAttr ] = m.textWithBreaks( e ).includes( '<br>' ) ? m.textWithBreaks( e ) : t );
+		// A quote's first text setting is its attribution: the blockquote's own words are its body (ownWordsNode), the
+		// attribution is its cite.
+		const quoteBody = 'blockquote' === e.tag;
+		const cite = quoteBody ? citeOf( e ) : null;
+		textAttr && t && ! quoteBody && ( a[ textAttr ] = m.textWithBreaks( e ).includes( '<br>' ) ? m.textWithBreaks( e ) : t );
+		textAttr && cite && ( a[ textAttr ] = m.words( cite ) );
 		top.linkSource && ( a.linkSource = top.linkSource );
 		linkAttr && linkSettings( block, e, top, linkAttr, a, handover );
 		return { a: { ...a, ...Object.fromEntries( Object.entries( top.attributes || {} ) ) }, handover };
@@ -141,5 +167,5 @@ export function makeContent( ctx ) {
 		}
 		return out;
 	}
-	return { contentAttrs, carriedAttrs };
+	return { contentAttrs, carriedAttrs, ownWordsNode };
 }
