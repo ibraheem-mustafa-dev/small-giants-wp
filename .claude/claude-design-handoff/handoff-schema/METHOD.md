@@ -129,7 +129,7 @@ For every `.animate(` site, `transition`, pseudo rule, keyframe, media rule and 
   - **content variant** (a block has an eyebrow).
 
   List all of them so the total reconciles.
-- **For each state**, give the state keys and a programmatic way to reach it: `setState({...})` on the live logic instance (see READING-DC-FILES §1 for how to get it) and the user action.
+- **For each state**, give the state keys and a programmatic way to reach it: `setState({...})` on the live logic instance (see READING-DC-FILES §1 for how to get it) and the user action. When a state exists only after the draft's own store holds something (a signed-in account, a basket with a gift note), also write the store call that puts it there, with literal arguments, exactly as the draft's code makes it (`MM.account.signIn()`, `MM.cart.setGift({ on: true })`): cloning runs only that call, on the draft's own store object, before it opens the surface.
 - **Time-dependent content.** Mark anything reading `Date`, `Math.random`, `localStorage`, intervals or timeouts.
 
 ## 8. Reconcile and validate
