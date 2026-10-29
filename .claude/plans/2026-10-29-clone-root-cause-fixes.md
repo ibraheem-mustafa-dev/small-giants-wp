@@ -15,11 +15,13 @@
 
 - Content the draft computes from the clock (`Date`) is recognised from the code, never from the words it shows when read.
 - A behaviour effect is recognised by what it does (its shape, trigger and target), never by words or the draft's own identifiers in names; the pinned-track recogniser keyed on `updatePins`/`data-pin` is replaced.
+- The rules read what the draft states rather than its raw text: computed sizes per width (`clamp()` and `var()` today read as nothing, `lib/skeleton-rules.mjs::declared`, `lengthPx`) and every event binding the template and the logic make (`handlerOf` sees only one click form, in a snippet cut at 400 characters), from the fact record and the inventory.
 - Content a draft's code injects (a fetched SVG in a stamped holder or a custom element) is read as that holder's content per width, and the motion on its parts is recorded against the stamped holder and the part's id (METHOD §5.2); the `html:custom-element` coverage entry stops excluding a custom element's internals; the logo and the hero carry it through the framework's inline SVG and motion settings, or a framework gap row names what cannot be carried.
 
-## Track D: data and the review (RC2, RC4, the finaliser)
+## Track D: data, the container band and the review (RC2, RC13, RC4, the finaliser)
 
 - The seeder reads what a block's own source declares and the DB lacks: a choice setting's allowed values and an array setting's item fields, from the block's source files and the helpers they call (Bean: nothing added to `block.json`); the route chooses values and writes item fields from them.
+- RC13 (framework): a container whose height comes from its own aspect ratio or minimum height passes it to its content band, so a child set to fill it fills it (`sgs/container`, `.sgs-container__content-band`); built, deployed and checked live on a filled picture in a sized frame.
 - `clientBuiltSurface` is removed: a hand-built post is only a reference to compare a clone against.
 - The finaliser is not a separate agent: the agent running the clone makes the low-confidence picks and brings the open points to Bean; Spec 48 §3.4 and the intake docs say so.
 
@@ -27,7 +29,7 @@
 
 - RC6: a loop of disclosure toggles over conditional panels is `sgs/accordion`.
 - RC5: a block's settings drawn in a second surface (the mega panel's drawer look) are read from that surface.
-- RC7: the hover hold keeps a gradient ground with its text colour.
+- RC7: the hover hold keeps a gradient ground with its text colour (prove the mechanism with a failing test first: it is read from the code, not yet reproduced).
 
 ## Then
 
