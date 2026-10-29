@@ -320,6 +320,17 @@ if ( moduleConfig ) {
 				'bound-sync.js'
 			),
 			/*
+			 * "Text by time of day" swaps a block's words by the hour.
+			 * Registered as `@sgs/time-text` by includes/time-text.php and
+			 * enqueued only on a page that renders a block using it.
+			 */
+			'shared/time-text': path.resolve(
+				process.cwd(),
+				'src',
+				'shared',
+				'time-text.js'
+			),
+			/*
 			 * Every effect runtime: one entry per `fx-*.js` file, found by name.
 			 * Tier V/W/H effects sit in `src/shared/effects/`, Tier G effects in
 			 * `src/shared/effects/gsap/`. The FILENAME is load-bearing: the PHP

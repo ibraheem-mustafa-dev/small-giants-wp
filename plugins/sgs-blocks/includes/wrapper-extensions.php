@@ -5,6 +5,7 @@
  *
  * - Block link (`supports.sgs.enabledExtensions: ["blockLink"]`).
  * - Child sizing (`["childSizing"]`): fit / fill / fixed inside a flex row.
+ * - Text by time of day (`["timeText"]`): the words swap by the hour in the visitor's browser.
  *
  * Child sizing depends on helpers-scoped-instance-vars.php, which sgs-blocks.php
  * requires first.
@@ -16,3 +17,4 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/hover-effects/block-link.php';
 require_once __DIR__ . '/child-sizing.php';
+require_once __DIR__ . '/time-text.php';
