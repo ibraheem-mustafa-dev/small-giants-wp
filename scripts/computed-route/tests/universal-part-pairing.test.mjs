@@ -282,3 +282,15 @@ test( 'content identity: a written value finds the one element showing it, folde
 	const later = contentPairs( { text: { name: { path: '.x__name' } }, els: [ { key: 'h' } ], fieldsOf: () => [ 'title' ] } );
 	assert.equal( later.pairs[ '.x__name' ], undefined );
 } );
+
+const REVIEW = ( k ) => `.sgs-google-reviews__slider > .sgs-google-reviews__list > .sgs-google-reviews__review:nth-of-type(${ k })`;
+test( 'MUST FAIL (a loop of cards in the layout the block paints): the reviews slider\'s review cards are the draft\'s review copies; the grid layout\'s bare list is the other render\'s', () => {
+	const r = run( 'sgs/google-reviews', F.elements.reviews, 'Root/191#0' );
+	assert.equal( r.slots[ REVIEW( 1 ) ]?.tpl, 'Root/193#0' );
+	assert.equal( r.slots[ REVIEW( 2 ) ]?.tpl, 'Root/193#1' );
+	assert.match( r.unpaired.find( ( u ) => '.sgs-google-reviews__list' === u.slot ).reason, /another render/ );
+	// Negative controls: the aggregate's stars and the breakdown rows, which the draft does not draw, never take the review
+	// copies, and nothing inside a card is guessed where its parts cannot be told apart.
+	assert.ok( ! Object.keys( r.slots ).some( ( k ) => /__aggregate|__breakdown/.test( k ) ), 'the aggregate and breakdown the draft does not draw read nothing' );
+	assert.ok( ! Object.keys( r.slots ).some( ( k ) => /__review-header > /.test( k ) ) );
+} );
