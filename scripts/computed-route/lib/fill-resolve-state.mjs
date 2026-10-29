@@ -214,7 +214,9 @@ export function planSpacing( st, rec ) {
 			const s = st.reads.widths[ w ]?.[ `${ c }:` ];
 			return s && ! s.missing ? { ...s.rect, inFlow: s.inFlow } : null;
 		} );
-		const ownership = spacingOwnership( rects, { unmeasured, declared: ( holder && st.reads.declared?.[ w ]?.[ holder.id ] ) || null } );
+		const held = holder && st.reads.widths[ w ]?.[ holder.id ];
+		const parentDisplay = ( held && ! held.missing && ( held.layoutDisplay || held.styles?.display ) ) || null;
+		const ownership = spacingOwnership( rects, { unmeasured, parentDisplay, declared: ( holder && st.reads.declared?.[ w ]?.[ holder.id ] ) || null } );
 		if ( 'unknown' === ownership.owner || ownership.decisions.length ) {
 			st.out.spacing.push( { node: refOf( st.flat[ rec.index ] ), index: rec.index, width: w, owner: ownership.owner, count: ownership.count, decisions: ownership.decisions } );
 		}
