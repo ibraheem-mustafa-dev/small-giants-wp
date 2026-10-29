@@ -1,0 +1,38 @@
+[
+	{
+		"file": "lib/intake-palette-usage.mjs",
+		"find": "const channel = new Set( [ ...tally( ( u ) => !! u.channel && isBackground( u.property ) ).keys() ].filter( ( g ) => opaque( g.hex ) && chroma( g.hex ) > SATURATED_C ) );",
+		"replace": "const channel = new Set( [ ...tally( ( u ) => false && isBackground( u.property ) ).keys() ].filter( ( g ) => opaque( g.hex ) && chroma( g.hex ) > SATURATED_C ) );",
+		"why": "the ground of a brand's own links is known as that brand's colour"
+	},
+	{
+		"file": "lib/intake-palette-usage.mjs",
+		"find": "strong( g ) && ! channel.has( g ) && ok( g )",
+		"replace": "strong( g ) && ok( g )",
+		"why": "a brand's ground is never the primary or accent"
+	},
+	{
+		"file": "lib/intake-palette-usage.mjs",
+		"find": "&& ! channel.has( g ) )",
+		"replace": ")",
+		"why": "a brand's ground is never the section ground"
+	},
+	{
+		"file": "lib/intake-palette.mjs",
+		"find": "spread.every( ( u ) => u.channel && u.channel === spread[ 0 ].channel )",
+		"replace": "spread.some( ( u ) => u.channel )",
+		"why": "a colour also used off the brand's control keeps its normal role"
+	},
+	{
+		"file": "lib/intake-palette.mjs",
+		"find": "spread.every( ( u ) => u.channel && u.channel === spread[ 0 ].channel )",
+		"replace": "spread.every( ( u ) => u.channel )",
+		"why": "a value on two brands' controls is no one brand's colour"
+	},
+	{
+		"file": "lib/intake-palette.mjs",
+		"find": "? brandBySlug( spread[ 0 ].channel ) : null;",
+		"replace": "? null : null;",
+		"why": "a colour whose every use is on a brand's control gets that brand's row"
+	}
+]

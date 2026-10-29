@@ -44,7 +44,7 @@ OPTIONAL_KEYS = ("offset", "bloom", "style", "ringOnly", "source")
 DRAFT_SOURCE = "draft"
 TEXT_SLUGS = frozenset(("text", "heading", "link", "link-hover", "section-text"))
 # Signal colours are icon, text and badge fills; their `-light` tints are the grounds (alert and notice bands).
-SIGNAL_SLUGS = frozenset(("success", "error", "info", "warning", "whatsapp"))
+SIGNAL_SLUGS = frozenset(("success", "error", "info", "warning"))
 MIN_CORE = 3.0
 MIN_INK = 9.0
 # Below this OKLCH chroma a colour reads as grey: there is no hue left to keep.
@@ -98,7 +98,7 @@ def resolve(value: object, palette: dict[str, str]) -> str | None:
 def is_ground_slug(slug: str) -> bool:
     """False for the slugs that name text, link, border or signal colours (they are drawn on grounds, never behind a
     focus ring): `text`, `heading`, `link`, `link-hover`, `section-text`, `text-*`, `*-text`, `client-text*`, `border*`,
-    `*-line`, and the solid `success`, `error`, `info`, `warning`, `whatsapp`."""
+    `*-line`, and the solid `success`, `error`, `info`, `warning`."""
     if slug in TEXT_SLUGS or slug in SIGNAL_SLUGS or slug.startswith(("text-", "client-text", "border", "client-border")):
         return False
     return not slug.endswith(("-text", "-line"))

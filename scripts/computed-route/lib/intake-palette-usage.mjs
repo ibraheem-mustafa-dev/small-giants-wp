@@ -106,22 +106,22 @@ export function usageRoles( groups, uses ) {
 	const divider = ( g ) => g !== surface && opaque( g.hex ) && chroma( g.hex ) <= SATURATED_C;
 	const border = give( 'border', best( lines, divider ), ( n ) => `the divider line colour that draws the most (${ n } px; a link's underline and a line in the page ground's colour are not dividers)` );
 	border && give( 'border-light', best( lines, ( g ) => g !== border && divider( g ) && lightness( g.hex ) > lightness( border.hex ) ), ( n ) => `the next divider line colour by length, lighter than the border (${ n } px)` );
-	// A colour painted as the ground of a link that opens WhatsApp is that channel's colour, never a brand ground.
-	const channel = give( 'whatsapp', best( tally( ( u ) => 'whatsapp' === u.channel && isBackground( u.property ) ), ( g ) => opaque( g.hex ) && chroma( g.hex ) > SATURATED_C ),
-		( n ) => `the ground of the links that open WhatsApp (${ n } elements)` );
+	// A colour painted as the ground of a link that opens a registry brand's channel (WhatsApp, Facebook...) is that brand's
+	// colour, which the brand's block paints itself: it takes no slot, and it is never offered as primary, accent or section.
+	const channel = new Set( [ ...tally( ( u ) => !! u.channel && isBackground( u.property ) ).keys() ].filter( ( g ) => opaque( g.hex ) && chroma( g.hex ) > SATURATED_C ) );
 	const grounds = tally( ( u ) => isBackground( u.property ) && ! BASE_TAG.test( tag( u ) ) );
 	const buttons = tally( ( u ) => isBackground( u.property ) && BUTTON_TAG.test( tag( u ) ) );
 	const linkGrounds = tally( ( u ) => isBackground( u.property ) && 'a' === tag( u ) );
 	const strong = ( g ) => opaque( g.hex ) && g !== surface && ( chroma( g.hex ) > SATURATED_C || ( !! page && contrast( g.hex, page ) >= 3 ) );
 	// A strong ground by where it paints: buttons first, then links styled as buttons, then any element.
 	const strongest = ( ok ) => ( [ [ buttons, 'buttons' ], [ linkGrounds, 'links' ], [ grounds, 'elements' ] ].map( ( [ m, what ] ) => {
-		const hit = best( m, ( g ) => strong( g ) && g !== channel && ok( g ) );
+		const hit = best( m, ( g ) => strong( g ) && ! channel.has( g ) && ok( g ) );
 		return hit ? [ hit[ 0 ], `${ hit[ 1 ] } ${ what }` ] : null;
 	} ).find( Boolean ) ) ?? null;
 	const primary = give( 'primary', strongest( () => true ), ( n ) => `the most used strong ground (${ n })` );
 	const accent = give( 'accent', strongest( ( g ) => g !== primary ), ( n ) => `the next most used strong ground (${ n })` );
 	const alt = give( 'surface-alt', best( grounds, ( g ) => opaque( g.hex ) && ! strong( g ) && g !== surface ), ( n ) => `the most used light ground after the page ground (${ n } elements)` );
-	const section = give( 'section', best( grounds, ( g ) => opaque( g.hex ) && ! [ surface, alt, primary ].includes( g ) ), ( n ) => `the most used ground after the page, raised and primary grounds (${ n } elements)` );
+	const section = give( 'section', best( grounds, ( g ) => opaque( g.hex ) && ! [ surface, alt, primary ].includes( g ) && ! channel.has( g ) ), ( n ) => `the most used ground after the page, raised and primary grounds (${ n } elements)` );
 	const dark = best( grounds, ( g ) => opaque( g.hex ) && lightness( g.hex ) < 40 )?.[ 0 ] ?? null;
 	// The most used colour on elements sitting on a ground (an element holding text counts twice), readable on it.
 	const on = ( g ) => ( g ? best( tally( ( u ) => 'color' === u.property && g.hexes.has( u.ground ), ( u ) => ( u.count ?? 1 ) * ( u.text ? 2 : 1 ) ),

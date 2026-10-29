@@ -1,7 +1,7 @@
 {
 	"client": "eye-care-ward-end",
 	"source": "ruled",
-	"ruling": "the eye-care-test answer key: the theme snapshot committed before 2026-10-24 (git show 8b778a71e:sites/eye-care-ward-end/theme-snapshot.json), each slug given to every colour token of that value; plus link-hover on --acc-ink, which the draft's own comment declares (Bean, 2026-10-24). Frozen: never derived from a snapshot the proposer's marks produced.",
+	"ruling": "the eye-care-test answer key: the theme snapshot committed before 2026-10-24 (git show 8b778a71e:sites/eye-care-ward-end/theme-snapshot.json), each slug given to every colour token of that value; plus link-hover on --acc-ink, which the draft's own comment declares (Bean, 2026-10-24); the WhatsApp slugs are removed because WhatsApp's colour is a brand colour with no palette slot (Bean, 2026-10-29). Frozen: never derived from a snapshot the proposer's marks produced.",
 	"roles": {
 		"--ink": [
 			"primary",
@@ -59,20 +59,12 @@
 		"--acc-soft": [
 			"accent-light"
 		],
-		"--wa": [
-			"whatsapp"
-		],
-		"--wa-hover": [
-			"whatsapp-hover"
-		],
+		"--wa": [],
+		"--wa-hover": [],
 		"--wa-ink": [],
 		"--wa-ink-deep": [],
-		"--wa-soft": [
-			"whatsapp-soft"
-		],
-		"--wa-border": [
-			"whatsapp-line"
-		],
+		"--wa-soft": [],
+		"--wa-border": [],
 		"--success": [
 			"success"
 		],

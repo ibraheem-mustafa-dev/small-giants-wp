@@ -41,7 +41,7 @@ Roles (any slug, not a fixed list — `_sgsDark.roles` overrides the name-based 
              fill), generalised to every "text painted on a fill" slug the palette
              actually has.
     border   border*.
-    locked   whatsapp, plus anything the `roles` override marks locked. Never moved;
+    locked   anything the `roles` override marks locked. Never moved;
              still checked (a locked colour that fails is a real authored problem, not
              something to be silently swapped).
     brand    everything else (primary, accent, success, error, info, *-light, *-dark,
@@ -99,7 +99,7 @@ MAX_SURFACE_CHROMA = 0.03
 # ever mistaking a genuinely light surface for an already-dark one.
 ALREADY_DARK_SURFACE_L_MAX = 0.4
 
-LOCKED_NAMES = frozenset({"whatsapp"})
+LOCKED_NAMES: frozenset = frozenset()
 
 
 class DarkPaletteContrastError(ValueError):

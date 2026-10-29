@@ -93,7 +93,8 @@ def test_role_classification_on_real_slugs():
     assert ddp.classify_role("text", {}) == "text"
     assert ddp.classify_role("text-inverse", {}) == "text"
     assert ddp.classify_role("border-subtle", {}) == "border"
-    assert ddp.classify_role("whatsapp", {}) == "locked"
+    assert ddp.classify_role("info", {}) == "brand"
+    assert ddp.classify_role("info", {"info": "locked"}) == "locked"
     assert ddp.classify_role("primary", {}) == "brand"
     assert ddp.classify_role("cookie-brown", {}) == "brand"
     # Override wins over the name-based guess.
@@ -215,16 +216,19 @@ def test_negative_control_without_the_all_surfaces_check_the_footer_defect_is_in
     )
 
 
-def test_whatsapp_is_locked_and_unchanged(snapshot_with_dark):
-    result = ddp.derive(snapshot_with_dark)
+def test_a_slug_the_roles_override_locks_is_unchanged(snapshot_with_dark):
+    """WhatsApp's colour is a brand colour with no palette slug, so nothing is locked by name: a slug is locked
+    only when the client's `roles` marks it. Negative control: the same slug unmarked is free to move."""
     palette = _palette_dict(snapshot_with_dark)
-    assert result["dark"]["whatsapp"] == palette["whatsapp"]
+    snapshot_with_dark["_sgsDark"]["roles"] = {"info": "locked"}
+    assert ddp.derive(snapshot_with_dark)["dark"]["info"] == palette["info"]
+    snapshot_with_dark["_sgsDark"]["roles"] = {}
+    assert "whatsapp" not in palette and ddp.classify_role("whatsapp", {}) == "brand"
 
 
 def test_an_already_passing_light_colour_is_byte_identical(snapshot_with_dark):
-    """`whatsapp` (#25D366, locked) already passes 3:1 against the derived dark
-    surface — prove a SECOND, non-locked case also comes out unchanged when it
-    already passes EVERY surface it is checked against, including the
+    """Prove a colour comes out unchanged when it already passes EVERY surface it
+    is checked against, including the
     moderately-dark (not near-black) `footer-bg`: `border` (#e8d5c0, a light tan)
     clears 3:1 against every derived surface without being moved. (`success`,
     the previous example here, now FAILS unchanged against `footer-bg` once
@@ -306,15 +310,11 @@ def test_negative_control_surface_role_override_fails_the_gate(real_snapshot):
     failure shape D.3 names). Overriding only the base `surface` is no longer
     enough to prove this on its own: since the fix now checks against every
     surface (§1), `footer-bg`/`surface-alt`/etc. would still be there to check
-    non-locked colours against, and the control would pass by accident. With
-    every surface gone, `_surface_bg_slugs` falls back to the ORIGINAL,
-    un-darkened light `surface` hex (#fbf3dc) — every ADJUSTABLE colour can still
-    be searched into passing against a fixed light background (moving the
-    foreground to near-black beats a light background easily, by design), but
-    `whatsapp`, which is LOCKED and never moved, cannot: its real, fixed green
-    (#25D366) measures only ~1.79:1 against the light fallback (< 3:1), a fact
-    independent of any search this module runs. If the gate ever stops
-    reporting this it means locked colours silently stopped being checked.
+    colours against, and the control would pass by accident. With every surface
+    gone, `_surface_bg_slugs` falls back to the ORIGINAL, un-darkened light
+    `surface` hex, and a brand colour that is not light enough to read on it
+    (`accent`) fails the gate. If the gate ever stops reporting this it means
+    the role map is no longer checked.
     """
     snap = copy.deepcopy(real_snapshot)
     palette = _palette_dict(snap)
@@ -327,7 +327,7 @@ def test_negative_control_surface_role_override_fails_the_gate(real_snapshot):
         "should have produced at least one contrast failure, but the gate "
         "reported none — it cannot be trusted to catch a broken role map."
     )
-    assert any(f["slug"] == "whatsapp" for f in result["failures"]), result["failures"]
+    assert any(f["slug"] == "accent" for f in result["failures"]), result["failures"]
 
 
 def test_negative_control_disabled_derivation_never_raises_or_fails(real_snapshot):

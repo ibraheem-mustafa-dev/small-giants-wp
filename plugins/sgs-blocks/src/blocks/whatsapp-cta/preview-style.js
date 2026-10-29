@@ -8,6 +8,7 @@
  * @package SGS\Blocks
  */
 import { isCssGradient, borderRadiusLonghands, sgsBorderPreview } from '../../utils';
+import { brandBySlug } from '../../utils/brand-registry';
 
 /**
  * Root-element preview style (contract §B3: the button element IS the block
@@ -51,7 +52,8 @@ export function buildRootStyle( previewAttrs, colourVar, resolveTextColourPrevie
 	// property the canvas inline style could replicate.
 	const rootStyle = {
 		...resolveTextColourPreviewStyle( labelColour, labelColourGradient, colourVar ),
-		backgroundColor: colourVar( backgroundColour ) || undefined,
+		// A colour set on the block wins; otherwise the ground is WhatsApp's brand colour from the registry.
+		backgroundColor: colourVar( backgroundColour ) || brandBySlug( 'whatsapp' )?.colour || undefined,
 		gap: iconGap || undefined,
 		minHeight: minHeight || undefined,
 		'--sgs-wa-min-height': minHeight || undefined,

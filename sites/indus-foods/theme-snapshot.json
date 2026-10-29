@@ -71,12 +71,6 @@
           "color": "#EBF5FF"
         },
         {
-          "slug": "whatsapp",
-          "color": "#25D366",
-          "name": "WhatsApp",
-          "_source": "confirmed"
-        },
-        {
           "slug": "surface",
           "color": "#FFFFFF",
           "name": "Surface",

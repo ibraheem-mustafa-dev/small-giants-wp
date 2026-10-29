@@ -178,3 +178,14 @@ test( 'MUST FAIL: a confirmed site title goes to blogname and a tagline to Site 
 		{ owner: 'wp-option', key: 'blogdescription', address: 'Handmade lactation cookies', ref: 'siteinfo:tagline' },
 	] );
 } );
+
+test( 'MUST FAIL: channelOfAddress names the registry social brand an address opens: its host, wa.me, or its own scheme', async () => {
+	const { channelOfAddress } = await import( '../lib/intake-siteinfo-shape.mjs' );
+	assert.equal( channelOfAddress( 'https://wa.me/447700900123' ), 'whatsapp' );
+	assert.equal( channelOfAddress( 'https://api.whatsapp.com/send?phone=1' ), 'whatsapp' );
+	assert.equal( channelOfAddress( 'whatsapp://send?phone=1' ), 'whatsapp' );
+	assert.equal( channelOfAddress( 'https://www.facebook.com/page' ), 'facebook' );
+	assert.equal( channelOfAddress( 'https://example.com/whatsapp' ), null, 'negative control: a look-alike path is not the brand' );
+	assert.equal( channelOfAddress( 'tel:+447700900123' ), null );
+	assert.equal( channelOfAddress( '#' ), null );
+} );

@@ -138,7 +138,7 @@ def test_palette_primary_breaks_a_tie_and_brand_colours_are_not_variants():
     green = _button(1, "green", _rest("rgb(37, 211, 102)", "rgb(11, 43, 23)"), {}, 1, text_len=22)
     dark = _button(2, "dark", _rest("rgb(20, 20, 20)", "rgb(250, 248, 245)"), {}, 1, text_len=20)
     light = _button(3, "light", _rest("rgb(250, 248, 245)", "rgb(20, 20, 20)"), {}, 1, text_len=15)
-    palette = [{"slug": "primary", "color": "#141414"}, {"slug": "whatsapp", "color": "#25D366"}]
+    palette = [{"slug": "primary", "color": "#141414"}]
     got = presets.build_button_presets({"buttons": [green, dark, light]}, [], palette)
     assert got["primary"]["background"] == "#141414"            # palette primary beats the longer label
     assert got["secondary"]["background"] == "#faf8f5"          # the WhatsApp green is skipped

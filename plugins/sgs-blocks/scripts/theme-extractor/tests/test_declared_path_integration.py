@@ -32,8 +32,8 @@ MAMAS = REPO / "sites/mamas-munches/mockups/homepage/index.html"
 EXPECTED = {"surface": "#FAF8F5", "surface-alt": "#FFFFFF", "text": "#141414", "text-inverse": "#FAF8F5",
             "primary": "#141414", "primary-text": "#FAF8F5", "text-muted": "#5E584F",
             "text-label": "#77716A", "border": "#E6E1DA", "accent": "#9C8B78", "accent-text": "#6F6152",
-            "accent-light": "#EFEAE2", "success": "#1B7F43", "whatsapp": "#25D366"}
-ABSENT = {"#8B8478", "#A39C90", "#6B655E", "#4A453E", "#F3F0EB", "#2B2721",
+            "accent-light": "#EFEAE2", "success": "#1B7F43"}
+ABSENT = {"#25D366", "#8B8478", "#A39C90", "#6B655E", "#4A453E", "#F3F0EB", "#2B2721",
           "#1A73E8", "#FBBC04", "#DADCE0", "#E8EAED", "#202124", "#3C4043", "#5F6368", "#70757A"}
 
 

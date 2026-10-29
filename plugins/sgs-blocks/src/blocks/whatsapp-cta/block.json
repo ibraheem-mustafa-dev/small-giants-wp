@@ -197,7 +197,8 @@
 		},
 		"backgroundColour": {
 			"type": "string",
-			"default": "whatsapp"
+			"default": "",
+			"description": "Button ground. Empty paints WhatsApp's brand colour from the brand registry; a colour set here wins."
 		},
 		"backgroundColourGradient": {
 			"type": "string",
