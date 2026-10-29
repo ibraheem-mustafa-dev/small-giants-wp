@@ -316,6 +316,11 @@
 			"part": "burger",
 			"reason": "a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)"
 		},
+		"drawerClose": {
+			"part": "close",
+			"labelSetting": "closeLabel",
+			"reason": "a button or link inside a drawer surface whose click handler writes a falsy value to a state key one of the drawer's own surfaces.json states holds at true (lib/skeleton-handler-opens.mjs::handlerCloses; a handler that also writes the key to an opening value is a toggle, not a close) is the drawer block's own close control (Spec 36 FR-36-6: close is the drawer's chrome, drawn by sgs/nav-drawer above its body), so the block takes it and its look becomes the block's close settings; the draft's button is never built as a second, dead close"
+		},
 		"pillButton": {
 			"block": "sgs/button",
 			"reason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link"

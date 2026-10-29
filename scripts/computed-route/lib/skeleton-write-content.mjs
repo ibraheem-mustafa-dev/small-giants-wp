@@ -166,6 +166,18 @@ export function makeContent( ctx ) {
 		return { a: { ...a, ...Object.fromEntries( Object.entries( top.attributes || {} ) ) }, handover };
 	}
 
+	// Which navigation group of the surface an element is (0 for the first): a drawer binds the menu the page map made for the
+	// same group, in document order (lib/site-build-map.mjs::boundMenu). Navigation inside another navigation is no group.
+	const navAbove = ( n ) => {
+		for ( let p = m.byKey[ n.parentKey ]; p; p = m.byKey[ p.parentKey ] ) {
+			if ( 'nav' === p.tag ) {
+				return true;
+			}
+		}
+		return false;
+	};
+	const navOrdinal = ( e ) => Math.max( 0, m.els.filter( ( n ) => 'nav' === n.tag && ! navAbove( n ) ).indexOf( e ) );
+
 	// The ids the build holds for this element's block: a logo block's `logoId` (the attachment of the file the element
 	// draws) and a menu block's `ref` (the menu site-build made for this surface). { attrs, said: { attr: where from } }.
 	function carriedAttrs( block, e ) {
@@ -179,7 +191,7 @@ export function makeContent( ctx ) {
 			hit?.reason && out.missing.push( `${ e.key }: no logoId is carried: ${ hit.reason }` );
 		}
 		if ( 'nav' === e.tag && attrExists( block, 'ref' ) && surfaceKind ) {
-			const id = carried.menu( surfaceKind );
+			const id = carried.menu( surfaceKind, navOrdinal( e ) );
 			id && Object.assign( out.attrs, { ref: id } ) && ( out.said.ref = `menu-map.json: the ${ surfaceKind } menu` );
 		}
 		return out;

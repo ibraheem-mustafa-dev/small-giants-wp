@@ -173,7 +173,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			absorbSubtree( e, { block: 'the element before it', key: r.into }, r.reason, r.rule );
 			// An absorbed element that is one of the absorbing block's own parts (the drawer's opener, the navigation's burger)
 			// becomes the node's slot for that part once the block's node exists.
-			R[ r.rule ]?.part && partPending.push( { e, into: r.into, part: R[ r.rule ].part } );
+			R[ r.rule ]?.part && partPending.push( { e, into: r.into, part: R[ r.rule ].part, rule: r.rule } );
 			return null;
 		}
 		const top = r.candidates[ 0 ];
@@ -347,6 +347,10 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		if ( ! node ) {
 			return;
 		}
+		// A control with words of its own ("Close", not a bare glyph) gives the block's label setting for the part its rule names.
+		const labelSetting = R[ p.rule ]?.labelSetting;
+		const words = labelSetting ? m.words( p.e ).trim() : '';
+		labelSetting && /\p{L}/u.test( words ) && facts.attr( node.name, labelSetting ) && ( node.attributes = { ...node.attributes, [ labelSetting ]: words } );
 		const place = placePart( { e: p.e, node, tree: skeleton, nodeOfKey, m } );
 		place?.placed && ( rowOf[ p.into ].placedIn = place.placed );
 		place?.dropped && Object.assign( rowOf[ place.dropped ], { action: 'remove', reason: place.note } );

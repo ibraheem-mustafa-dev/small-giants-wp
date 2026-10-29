@@ -10,8 +10,9 @@ import { keyName, isThisMember, isFn, subtree } from './intake-ast.mjs';
 // A literal the draft writes to close or clear a key.
 const falsy = ( n ) => ( 'BooleanLiteral' === n?.type && false === n.value ) || 'NullLiteral' === n?.type || ( 'Identifier' === n?.type && 'undefined' === n.name ) || ( 'NumericLiteral' === n?.type && 0 === n.value ) || ( 'StringLiteral' === n?.type && '' === n.value );
 
-// The state keys the setState calls inside `node` write with an opening value.
-function opening( d, node ) {
+// The state keys the setState calls inside `node` write, with an opening value (`closing` false) or with a falsy literal
+// (`closing` true: the keys the handler closes or clears).
+function writtenKeys( d, node, closing ) {
 	const out = new Set();
 	for ( const n of subtree( d.idx, node ) ) {
 		if ( 'CallExpression' !== n.type || ! isThisMember( n.callee, 'setState' ) ) {
@@ -19,7 +20,7 @@ function opening( d, node ) {
 		}
 		const arg = n.arguments[ 0 ];
 		const obj = 'ObjectExpression' === arg?.type ? arg : isFn( arg ) && 'ObjectExpression' === arg.body?.type ? arg.body : null;
-		( obj?.properties || [] ).filter( ( p ) => 'ObjectProperty' === p.type && ! p.computed && keyName( p ) && ! falsy( p.value ) ).forEach( ( p ) => out.add( keyName( p ) ) );
+		( obj?.properties || [] ).filter( ( p ) => 'ObjectProperty' === p.type && ! p.computed && keyName( p ) && closing === falsy( p.value ) ).forEach( ( p ) => out.add( keyName( p ) ) );
 	}
 	return out;
 }
@@ -29,7 +30,19 @@ function opening( d, node ) {
 export function handlerOpens( { folder, record, component, handler } ) {
 	const d = draftLogicOf( { folder, record, component } );
 	const value = d?.values.get( handler );
-	return value ? opening( d, value ) : new Set();
+	return value ? writtenKeys( d, value, false ) : new Set();
+}
+
+// The state keys a component's renderVals handler `handler` writes with a falsy literal (false, null, undefined, 0, ''): the
+// keys it closes. A key it also writes with an opening value in the same handler is a toggle's, not a close.
+export function handlerCloses( { folder, record, component, handler } ) {
+	const d = draftLogicOf( { folder, record, component } );
+	const value = d?.values.get( handler );
+	if ( ! value ) {
+		return new Set();
+	}
+	const opens = writtenKeys( d, value, false );
+	return new Set( [ ...writtenKeys( d, value, true ) ].filter( ( k ) => ! opens.has( k ) ) );
 }
 
 // Whether a fact-record surface opens on one of `keys`: a state of it holds the key at true.

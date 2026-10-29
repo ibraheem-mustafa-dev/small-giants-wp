@@ -1,0 +1,19 @@
+[
+	{"file": "lib/site-build-map.mjs", "find": "return own.length ? own[ index ] ?? null : 'header';", "replace": "return own.length ? own[ 0 ] : 'header';", "why": "the n-th group binds the n-th drawer menu"},
+	{"file": "lib/site-build-map.mjs", "find": "return own.length ? own[ index ] ?? null : 'header';", "replace": "return own[ index ] ?? 'header';", "why": "a group beyond the drawer's menus binds none, not the header menu"},
+	{"file": "lib/site-build-map.mjs", "find": "return own.length ? own[ index ] ?? null : 'header';", "replace": "return own.length ? own[ index ] ?? null : 'drawer';", "why": "a drawer with no menu of its own shows the header menu"},
+	{"file": "lib/site-build-map.mjs", "find": "if ( 'drawer' !== kind ) {\n\t\treturn kind;", "replace": "if ( 'drawer' !== kind && 'header' !== kind ) {\n\t\treturn kind;", "why": "only a drawer binds by order"},
+	{"file": "lib/site-build-map.mjs", "find": "( 'drawer' === a ? -1 : 'drawer' === b ? 1 : a.localeCompare( b, 'en', { numeric: true } ) )", "replace": "a.localeCompare( b, 'en' )", "why": "the exact drawer name comes first and the order is numeric"},
+	{"file": "lib/site-build-map.mjs", "find": "menuNames.filter( ( n ) => 'drawer' === n || n.startsWith( 'drawer-' ) )", "replace": "menuNames.filter( ( n ) => n.startsWith( 'drawer' ) )", "why": "a menu is a drawer's only by its exact name or a dash suffix"},
+	{"file": "lib/site-build-map.mjs", "find": "( own.length ? own : [ 'header' ] ).map(", "replace": "[ own[ 0 ] ?? 'header' ].map(", "why": "the placeholder holds one menu block per drawer menu"},
+	{"file": "lib/skeleton-carried.mjs", "find": "boundMenu( kind, Object.keys( menus ), index )", "replace": "boundMenu( kind, Object.keys( menus ), 0 )", "why": "the carried menu follows the group index"},
+	{"file": "lib/skeleton-write-content.mjs", "find": "carried.menu( surfaceKind, navOrdinal( e ) )", "replace": "carried.menu( surfaceKind, 0 )", "why": "each navigation group carries its own menu"},
+	{"file": "lib/skeleton-write-content.mjs", "find": "if ( 'nav' === p.tag ) {", "replace": "if ( false ) {", "why": "a navigation inside a navigation is no group"},
+	{"file": "lib/skeleton-write-content.mjs", "find": "Math.max( 0, m.els.filter( ( n ) => 'nav' === n.tag && ! navAbove( n ) ).indexOf( e ) )", "replace": "Math.max( 0, m.els.filter( ( n ) => 'nav' === n.tag && ! navAbove( n ) ).indexOf( e ) ) + 1", "why": "the first group is the first menu"},
+	{"file": "lib/skeleton-rules.mjs", "find": "[ 'a', 'button' ].includes( e.tag ) && handlerOf( e );\n\t\t\treturn control && opensOn( own, closeKeys( e ) )", "replace": "handlerOf( e );\n\t\t\treturn control && opensOn( own, closeKeys( e ) )", "why": "only a button or link is a control"},
+	{"file": "lib/skeleton-rules.mjs", "find": "return control && opensOn( own, closeKeys( e ) )", "replace": "return control", "why": "the handler must close a key the drawer opens on"},
+	{"file": "lib/skeleton-handler-opens.mjs", "find": "closing === falsy( p.value )", "replace": "! falsy( p.value )", "why": "a close is a falsy write"},
+	{"file": "lib/skeleton-handler-opens.mjs", "find": "[ ...writtenKeys( d, value, true ) ].filter( ( k ) => ! opens.has( k ) )", "replace": "[ ...writtenKeys( d, value, true ) ]", "why": "a key the handler also opens is a toggle's"},
+	{"file": "lib/skeleton-propose.mjs", "find": "/\\p{L}/u.test( words ) && facts.attr( node.name, labelSetting )", "replace": "facts.attr( node.name, labelSetting )", "why": "a bare glyph leaves the block's default close label"},
+	{"file": "lib/skeleton-propose.mjs", "find": "R[ r.rule ]?.part && partPending.push( { e, into: r.into, part: R[ r.rule ].part, rule: r.rule } );", "replace": "R[ r.rule ]?.part && partPending.push( { e, into: r.into, part: R[ r.rule ].part } );", "why": "the close part names the rule that gives its label setting"}
+]
