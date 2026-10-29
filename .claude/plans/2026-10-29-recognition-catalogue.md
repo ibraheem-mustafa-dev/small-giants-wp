@@ -52,4 +52,4 @@ From the register's "Fix pass status" table: the modal frame look (S8), the mega
 
 ## Status (2026-10-29)
 
-Superseded by `plans/2026-10-29-skeleton-declarations.md` (Bean's rulings after the read-first evaluation): declared surfaces and a fixed section-purpose vocabulary in surfaces.json decide what a part is, recognition reads block names and attributes, and the DB's naming columns are regenerated from source. The unread-surface fixes and the store-call openers recorded above are on `main`; the gift-card test passed. Move this file to `plans/archive/` at the next handoff.
+The signature design above was not adopted (Bean, 2026-10-29); the root causes it records stand. How the skeleton stage should recognise parts is being re-read against Spec 48 §3.4 and Spec 48A §3 (register row "Recognition"). The unread-surface fixes and the store-call openers are on `main`; the gift-card test passed. Move this file to `plans/archive/` at the next handoff.
