@@ -1,0 +1,607 @@
+{
+ "version": 1,
+ "purposes": [
+  {
+   "purpose": "hero",
+   "label": "Hero",
+   "means": "The big opening banner of a page: headline, short text, buttons and a picture.",
+   "maps_to": "sgs/hero",
+   "settings_hint": "variant split|centred|image-bg; CTAs via multi-button; trust chips as children",
+   "evidence": [
+    "eye-care: sgs-hero",
+    "indus: Home Hero",
+    "mamas: S-07 hero + trust bar"
+   ],
+   "db_check": "blocks: sgs/hero tier class-section, variant_attr=variant"
+  },
+  {
+   "purpose": "page-intro",
+   "label": "Page intro",
+   "means": "The compact title band at the top of an inner page: eyebrow, title, one line of intro, optional breadcrumb.",
+   "maps_to": "sgs/hero",
+   "settings_hint": "variant compact; no image/CTAs; breadcrumb on",
+   "evidence": [
+    "indus: shared inner-page hero (S-17..S-44)",
+    "mamas: Shop heading band, Contact/Help/Basket/Sign-in heroes",
+    "eye-care: sgs-page-about/lenses/help/contact intros"
+   ],
+   "db_check": "blocks: sgs/hero (variant_attr=variant); same block as hero, differs in variant and visitor meaning"
+  },
+  {
+   "purpose": "breadcrumb",
+   "label": "Breadcrumb",
+   "means": "The trail showing where this page sits (Home > Shop > Frame).",
+   "maps_to": "sgs/breadcrumbs",
+   "settings_hint": "auto from hierarchy; separator",
+   "evidence": [
+    "eye-care: sgs-breadcrumb",
+    "mamas: S-14 breadcrumb",
+    "indus: hero breadcrumb label"
+   ],
+   "db_check": "blocks.slug='sgs/breadcrumbs' exists (sgs family)"
+  },
+  {
+   "purpose": "brand-marquee",
+   "label": "Brand marquee",
+   "means": "A moving strip of brand logos (brands the shop stocks or the firm owns).",
+   "maps_to": "sgs/brand-strip",
+   "settings_hint": "marquee on; logos from product brands (typed names stand for logos, Eye Care S9); fade edges; pause on hover",
+   "evidence": [
+    "eye-care: sgs-brand-marquee",
+    "indus: Home Our Brands marquee"
+   ],
+   "db_check": "blocks: sgs/brand-strip 'infinite marquee scroll, fade edges, direction control'"
+  },
+  {
+   "purpose": "logo-wall",
+   "label": "Logo wall",
+   "means": "A still grid of logos: partners, accreditations, brands on a brands page.",
+   "maps_to": "sgs/brand-strip",
+   "settings_hint": "marquee off; grid layout; greyscale optional",
+   "evidence": [
+    "indus: blocks \"logos\" (S-27)",
+    "indus footer accreditations (not rendered)"
+   ],
+   "db_check": "blocks: sgs/brand-strip (same block, marquee off); differs by motion and meaning"
+  },
+  {
+   "purpose": "trust-ticker",
+   "label": "Trust ticker",
+   "means": "A thin row of short reassurances (free delivery, handmade, registered business), static or scrolling on small screens.",
+   "maps_to": "sgs/trust-bar",
+   "settings_hint": "variant icon-circle|text-pill; marquee below 1024px",
+   "evidence": [
+    "eye-care: sgs-trust-ticker",
+    "mamas: S-07 trust bar, S-14 assurance row",
+    "indus: Home hero trust chips"
+   ],
+   "db_check": "blocks: sgs/trust-bar tier class-section, variant_attr=badgeStyle"
+  },
+  {
+   "purpose": "notice-bar",
+   "label": "Notice bar",
+   "means": "A slim announcement or promo line above or inside the header.",
+   "maps_to": "sgs/notice-banner",
+   "settings_hint": "rotating messages via notice-message; dismissible",
+   "evidence": [
+    "announcement bars on any site (no client declares one as a section",
+    "indus Top bar is contact pills)"
+   ],
+   "db_check": "blocks: sgs/notice-banner + sgs/notice-message"
+  },
+  {
+   "purpose": "reviews-google",
+   "label": "Google reviews",
+   "means": "Customer reviews pulled from the business Google listing, with the overall rating.",
+   "maps_to": "sgs/google-reviews",
+   "settings_hint": "source Google Business Profile; slider|grid; schema on",
+   "evidence": [
+    "eye-care: sgs-google-reviews"
+   ],
+   "db_check": "blocks.slug='sgs/google-reviews' exists (sgs family)"
+  },
+  {
+   "purpose": "reviews-trustpilot",
+   "label": "Trustpilot reviews",
+   "means": "Customer reviews in Trustpilot style.",
+   "maps_to": "sgs/trustpilot-reviews",
+   "settings_hint": "entered or fetched reviews; official style",
+   "evidence": [
+    "mamas: S-07 #reviews slider (6 Trustpilot reviews), hero \"4.3 on Trustpilot\""
+   ],
+   "db_check": "blocks.slug='sgs/trustpilot-reviews' exists (sgs family)"
+  },
+  {
+   "purpose": "testimonials",
+   "label": "Testimonials",
+   "means": "Hand-picked quotes from named customers or partners, one or a sliding few.",
+   "maps_to": "sgs/testimonial-slider",
+   "settings_hint": "autoplay; avatar; a single quote uses sgs/testimonial",
+   "evidence": [
+    "indus: Home Our Partners Love Us",
+    "template \"quotes\" (unused)"
+   ],
+   "db_check": "blocks: sgs/testimonial-slider and sgs/testimonial (7 variants)"
+  },
+  {
+   "purpose": "stats",
+   "label": "Stats",
+   "means": "A row of headline numbers (60+ years, 150 countries).",
+   "maps_to": "sgs/counter",
+   "settings_hint": "count-up animation; prefix/suffix; laid out in a container row",
+   "evidence": [
+    "indus: blocks \"stats\" (S-17, S-18)"
+   ],
+   "db_check": "blocks.slug='sgs/counter' exists (sgs family)"
+  },
+  {
+   "purpose": "feature-grid",
+   "label": "Feature grid",
+   "means": "A grid of short reasons or benefits, each with an icon, title and line of text.",
+   "maps_to": "sgs/feature-grid",
+   "settings_hint": "columns per breakpoint; children sgs/info-box",
+   "evidence": [
+    "indus: Home Why Choose Indus Foods (8 cards)",
+    "eye-care: sgs-why-buy"
+   ],
+   "db_check": "blocks: sgs/feature-grid (grid of sgs/info-box)"
+  },
+  {
+   "purpose": "feature-list",
+   "label": "Feature list",
+   "means": "A plain list of points with ticks or icons.",
+   "maps_to": "sgs/icon-list",
+   "settings_hint": "icon per item; one or two columns",
+   "evidence": [
+    "indus: blocks \"rows\" (S-19..S-26, ambiguous)",
+    "mamas: recipe card ingredients"
+   ],
+   "db_check": "blocks.slug='sgs/icon-list' exists (sgs family)"
+  },
+  {
+   "purpose": "link-cards",
+   "label": "Link cards",
+   "means": "Picture cards that each lead to another page (sectors, our story, path choices).",
+   "maps_to": "sgs/card-grid",
+   "settings_hint": "variant card|overlay; columns 4/2/1; pointer tilt optional",
+   "evidence": [
+    "indus: Home sector cards, blocks \"cards\", About 8 linked cards",
+    "mamas: Who are we baking for path cards, Contact channel cards, gifts tiles"
+   ],
+   "db_check": "blocks: sgs/card-grid 'image and content grid with overlay and card variants'"
+  },
+  {
+   "purpose": "category-tiles",
+   "label": "Category tiles",
+   "means": "Browse-by tiles for a product range (frame shapes, gift moments) leading to a filtered shop.",
+   "maps_to": "sgs/card-grid",
+   "settings_hint": "overlay variant; links carry shop filter query",
+   "evidence": [
+    "eye-care: sgs-shape-tiles",
+    "mamas: Gifts moment tiles"
+   ],
+   "db_check": "blocks: sgs/card-grid (same block, overlay variant, link target = shop filter)"
+  },
+  {
+   "purpose": "media-split",
+   "label": "Text and picture",
+   "means": "Copy on one side and a picture on the other, optionally flipped or tinted.",
+   "maps_to": "sgs/container",
+   "settings_hint": "two-column layout; sgs/media + heading/text/button children; flip; tint",
+   "evidence": [
+    "indus: blocks \"split\", \"gradients\"",
+    "eye-care: sgs-about-strip, sgs-optician",
+    "mamas: #story story polaroid"
+   ],
+   "db_check": "blocks: sgs/container 'fundamental building block for all page sections'; sgs/media"
+  },
+  {
+   "purpose": "process-steps",
+   "label": "How it works",
+   "means": "A numbered sequence of steps.",
+   "maps_to": "sgs/process-steps",
+   "settings_hint": "numbered; connector line",
+   "evidence": [
+    "indus: Home How to open a trade account",
+    "mamas: Gifts how gifting works"
+   ],
+   "db_check": "blocks.slug='sgs/process-steps' exists (sgs family)"
+  },
+  {
+   "purpose": "timeline",
+   "label": "Timeline",
+   "means": "Milestones in date order (a company history).",
+   "maps_to": "sgs/timeline",
+   "settings_hint": "vertical|horizontal; scroll effect (pinned hscroll as scroll effect)",
+   "evidence": [
+    "indus: Home Heritage, blocks \"hscroll\" (S-17, S-18), template \"timeline\""
+   ],
+   "db_check": "blocks.slug='sgs/timeline' exists (sgs family)"
+  },
+  {
+   "purpose": "faq",
+   "label": "FAQ",
+   "means": "Questions and answers that open and close, with FAQ structured data.",
+   "maps_to": "sgs/accordion",
+   "settings_hint": "FAQ schema on; first open; optional category chips and search via sgs/filter-search",
+   "evidence": [
+    "indus: blocks \"faq\" (S-34, S-38)",
+    "mamas: Home FAQ, Help FAQ list"
+   ],
+   "db_check": "blocks: sgs/accordion + sgs/accordion-item ('ideal for FAQs')"
+  },
+  {
+   "purpose": "info-accordion",
+   "label": "Details accordion",
+   "means": "Collapsible detail sections that are not questions (delivery, ingredients, care).",
+   "maps_to": "sgs/accordion",
+   "settings_hint": "FAQ schema off",
+   "evidence": [
+    "mamas: S-14 accordion"
+   ],
+   "db_check": "blocks: sgs/accordion (same block, schema off)"
+  },
+  {
+   "purpose": "call-to-action",
+   "label": "Call to action",
+   "means": "A band that asks for one next step (apply, call, buy).",
+   "maps_to": "sgs/container",
+   "settings_hint": "background colour/gradient; sgs/heading, sgs/text, sgs/multi-button children",
+   "evidence": [
+    "indus: blocks \"cta\" (most pages), Home final CTA band",
+    "mamas: Gifts gift-card band"
+   ],
+   "db_check": "blocks: sgs/container + sgs/multi-button (no dedicated CTA block)"
+  },
+  {
+   "purpose": "team",
+   "label": "Team",
+   "means": "People behind the business, with photo, role and bio.",
+   "maps_to": "sgs/team-member",
+   "settings_hint": "grid of cards; social links",
+   "evidence": [
+    "none in the three clients (framework coverage)"
+   ],
+   "db_check": "blocks.slug='sgs/team-member' exists (sgs family)"
+  },
+  {
+   "purpose": "pricing",
+   "label": "Pricing",
+   "means": "Plans or price tiers side by side.",
+   "maps_to": "sgs/pricing-table",
+   "settings_hint": "monthly/yearly toggle",
+   "evidence": [
+    "none in the three clients (framework coverage)"
+   ],
+   "db_check": "blocks.slug='sgs/pricing-table' exists (sgs family)"
+  },
+  {
+   "purpose": "gallery",
+   "label": "Gallery",
+   "means": "A set of photos to browse.",
+   "maps_to": "sgs/gallery",
+   "settings_hint": "grid|masonry|carousel; lightbox",
+   "evidence": [
+    "none declared (framework coverage)"
+   ],
+   "db_check": "blocks.slug='sgs/gallery' exists (sgs family)"
+  },
+  {
+   "purpose": "before-after",
+   "label": "Before and after",
+   "means": "Two pictures compared with a drag handle.",
+   "maps_to": "sgs/before-after",
+   "settings_hint": "draggable divider",
+   "evidence": [
+    "none in the three clients (framework coverage)"
+   ],
+   "db_check": "blocks.slug='sgs/before-after' exists (sgs family)"
+  },
+  {
+   "purpose": "countdown",
+   "label": "Countdown",
+   "means": "A timer counting to a date (sale, launch, cut-off).",
+   "maps_to": "sgs/countdown-timer",
+   "settings_hint": "target date or evergreen",
+   "evidence": [
+    "none in the three clients (framework coverage)"
+   ],
+   "db_check": "blocks.slug='sgs/countdown-timer' exists (sgs family)"
+  },
+  {
+   "purpose": "contact-details",
+   "label": "Contact details",
+   "means": "Address, phone, email and opening hours.",
+   "maps_to": "sgs/business-info",
+   "settings_hint": "fields from Settings > Business Details; hours; social-icons beside",
+   "evidence": [
+    "indus: blocks \"contact\", footer opening hours",
+    "mamas: Contact channel cards (or link-cards)",
+    "eye-care: Contact page details"
+   ],
+   "db_check": "blocks: sgs/business-info (+ sgs/local-time, sgs/social-icons)"
+  },
+  {
+   "purpose": "map",
+   "label": "Map",
+   "means": "An embedded map of where to visit.",
+   "maps_to": "core/embed",
+   "settings_hint": "NO SGS BLOCK: needs a decision",
+   "evidence": [
+    "none declared explicitly",
+    "contact pages show an address"
+   ],
+   "db_check": "gap: no map block in blocks table or src/blocks"
+  },
+  {
+   "purpose": "enquiry-form",
+   "label": "Enquiry form",
+   "means": "A form to send a message, request or application.",
+   "maps_to": "sgs/form",
+   "settings_hint": "fields by sgs/form-field-*; consent field; email via Sgs_Mailer",
+   "evidence": [
+    "indus: blocks \"form\", \"enquiry\" (S-22, S-33, S-37)",
+    "mamas: Contact message form"
+   ],
+   "db_check": "blocks: sgs/form + sgs/form-field-* family"
+  },
+  {
+   "purpose": "multi-step-form",
+   "label": "Multi-step form",
+   "means": "A long form split into steps with a review at the end.",
+   "maps_to": "sgs/form",
+   "settings_hint": "steps via sgs/form-step; sgs/form-review",
+   "evidence": [
+    "indus: blocks \"wizard\" (S-32 TradeApplication)"
+   ],
+   "db_check": "blocks: sgs/form, sgs/form-step, sgs/form-review"
+  },
+  {
+   "purpose": "newsletter-signup",
+   "label": "Newsletter signup",
+   "means": "A one-field email signup.",
+   "maps_to": "sgs/form",
+   "settings_hint": "single email field + consent; compact",
+   "evidence": [
+    "none declared (framework coverage)"
+   ],
+   "db_check": "blocks.slug='sgs/form' exists (sgs family)"
+  },
+  {
+   "purpose": "guided-finder",
+   "label": "Guided finder",
+   "means": "A short question flow that ends in a recommendation.",
+   "maps_to": "sgs/choice-flow",
+   "settings_hint": "questions + result",
+   "evidence": [
+    "mamas: Home Who are we baking for, Gifts finder card",
+    "eye-care: sgs-lens-configurator (open question)"
+   ],
+   "db_check": "blocks: sgs/choice-flow, -question, -result"
+  },
+  {
+   "purpose": "product-builder",
+   "label": "Product builder",
+   "means": "Pick base, flavours and pack size to build an item before adding to basket.",
+   "maps_to": "sgs/option-picker",
+   "settings_hint": "exclusive pill groups; price per pack",
+   "evidence": [
+    "mamas: Home #build, Product buy box builder"
+   ],
+   "db_check": "blocks: sgs/option-picker (single-select only; multi-select flavours is a gap)"
+  },
+  {
+   "purpose": "posts-list",
+   "label": "Posts list",
+   "means": "Latest articles or news cards, optionally filtered by category.",
+   "maps_to": "sgs/post-grid",
+   "settings_hint": "grid|list; category chips; pagination",
+   "evidence": [
+    "indus: blocks \"posts\""
+   ],
+   "db_check": "blocks.slug='sgs/post-grid' exists (sgs family)"
+  },
+  {
+   "purpose": "article-body",
+   "label": "Article body",
+   "means": "The long text of one post.",
+   "maps_to": "core/post-content",
+   "settings_hint": "single template with post-title, post-date, post-time-to-read",
+   "evidence": [
+    "indus: blocks \"article\" (S-39..S-44)"
+   ],
+   "db_check": "core/post-content: core/WooCommerce block, not in the SGS blocks table"
+  },
+  {
+   "purpose": "rich-text",
+   "label": "Rich text",
+   "means": "Plain headed copy such as terms or policies.",
+   "maps_to": "sgs/container",
+   "settings_hint": "sgs/heading + sgs/text + lists",
+   "evidence": [
+    "indus: blocks \"prose\" (S-35)",
+    "mamas: Help #delivery #allergens #legal"
+   ],
+   "db_check": "blocks.slug='sgs/container' exists (sgs family)"
+  },
+  {
+   "purpose": "shop-archive",
+   "label": "Shop archive",
+   "means": "The browsable product list with filters and sorting.",
+   "maps_to": "woocommerce/product-collection",
+   "settings_hint": "sgs/product-card in the template; filters; sort; sgs/filter-search; drawer on small screens",
+   "evidence": [
+    "eye-care: sgs-shop-layout, sgs-page-shop",
+    "mamas: S-12 product grid + sort + filter chips"
+   ],
+   "db_check": "blocks: sgs/product-card, sgs/filter-search; Woo: product-collection, product-filters, catalog-sorting"
+  },
+  {
+   "purpose": "product-collection",
+   "label": "Product row",
+   "means": "A curated row of products (best sellers, similar, more from this brand, related).",
+   "maps_to": "woocommerce/product-collection",
+   "settings_hint": "query by sales|related|brand; carousel or grid; sgs/product-card",
+   "evidence": [
+    "eye-care: sgs-best-sellers, sgs-product-similar, sgs-product-more-from-brand",
+    "mamas: S-14 related"
+   ],
+   "db_check": "woocommerce/product-collection: core/WooCommerce block, not in the SGS blocks table"
+  },
+  {
+   "purpose": "product-buybox",
+   "label": "Product buy box",
+   "means": "The product hero: gallery, price, options and add to basket.",
+   "maps_to": "sgs/buybox",
+   "settings_hint": "gallery column + config column; option pickers",
+   "evidence": [
+    "eye-care: sgs-product-main",
+    "mamas: S-14 gallery + buy box"
+   ],
+   "db_check": "blocks: sgs/buybox 'renders the full product hero'"
+  },
+  {
+   "purpose": "product-details",
+   "label": "Product details tabs",
+   "means": "Tabbed description, specification and delivery info on a product.",
+   "maps_to": "sgs/tabs",
+   "settings_hint": "horizontal tabs; deep link",
+   "evidence": [
+    "eye-care: sgs-product-tabs"
+   ],
+   "db_check": "blocks: sgs/tabs + sgs/tab"
+  },
+  {
+   "purpose": "product-reviews",
+   "label": "Product reviews",
+   "means": "Customer reviews of one product, including the empty state.",
+   "maps_to": "woocommerce/product-reviews",
+   "settings_hint": "ratings summary; empty state text",
+   "evidence": [
+    "eye-care: sgs-product-reviews, sgs-product-no-reviews",
+    "mamas: S-14 reviews"
+   ],
+   "db_check": "woocommerce/product-reviews: core/WooCommerce block, not in the SGS blocks table"
+  },
+  {
+   "purpose": "product-faq",
+   "label": "Product FAQ",
+   "means": "Questions about one product with structured FAQ data.",
+   "maps_to": "sgs/product-faq",
+   "settings_hint": "items sgs/product-faq-item",
+   "evidence": [
+    "none declared (framework coverage)"
+   ],
+   "db_check": "blocks.slug='sgs/product-faq' exists (sgs family)"
+  },
+  {
+   "purpose": "cart",
+   "label": "Basket page",
+   "means": "The full basket: lines, delivery progress, totals.",
+   "maps_to": "woocommerce/cart",
+   "settings_hint": "line items; gift toggle and upsell as extensions",
+   "evidence": [
+    "mamas: S-23 basket"
+   ],
+   "db_check": "woocommerce/cart: core/WooCommerce block, not in the SGS blocks table"
+  },
+  {
+   "purpose": "mini-cart",
+   "label": "Basket drawer",
+   "means": "The slide-out basket opened from the header.",
+   "maps_to": "sgs/cart",
+   "settings_hint": "drawer mode; count badge",
+   "evidence": [
+    "eye-care: sgs-bag-drawer"
+   ],
+   "db_check": "blocks: sgs/cart 'live item-count badge plus flyout or drawer'"
+  },
+  {
+   "purpose": "checkout",
+   "label": "Checkout",
+   "means": "Details, delivery, payment and express pay, as one or several steps.",
+   "maps_to": "woocommerce/checkout",
+   "settings_hint": "steps follow sgs/form-step surfaces; express pay block",
+   "evidence": [
+    "eye-care: sgs-page-checkout, sgs-checkout-contact/delivery/payment/express/prescription",
+    "mamas: S-25 steps 1-4 + pay + summary"
+   ],
+   "db_check": "woocommerce/checkout: core/WooCommerce block, not in the SGS blocks table"
+  },
+  {
+   "purpose": "order-confirmation",
+   "label": "Order confirmation",
+   "means": "The thank-you page after paying.",
+   "maps_to": "woocommerce/order-confirmation",
+   "settings_hint": "order number, status, summary",
+   "evidence": [
+    "eye-care: sgs-page-order-confirmed",
+    "mamas: Confirmation page"
+   ],
+   "db_check": "woocommerce/order-confirmation: core/WooCommerce block, not in the SGS blocks table"
+  },
+  {
+   "purpose": "account-area",
+   "label": "Account area",
+   "means": "Signed-in area: orders, details, addresses, subscriptions.",
+   "maps_to": "sgs/account",
+   "settings_hint": "sidebar/tabs menu; dashboard",
+   "evidence": [
+    "eye-care: sgs-page-account",
+    "mamas: S-49 My account"
+   ],
+   "db_check": "blocks: sgs/account 'wraps WooCommerce My Account'"
+  },
+  {
+   "purpose": "sign-in",
+   "label": "Sign in or register",
+   "means": "Login, register and reset password forms.",
+   "maps_to": "sgs/account",
+   "settings_hint": "logged-out view; mode login|register|reset",
+   "evidence": [
+    "eye-care: sgs-page-signin",
+    "mamas: S-40 sign in"
+   ],
+   "db_check": "blocks: sgs/account (same block, logged-out view)"
+  },
+  {
+   "purpose": "site-header",
+   "label": "Site header",
+   "means": "The header bar: logo, navigation, search, basket.",
+   "maps_to": "sgs/site-header",
+   "settings_hint": "rows top/middle/bottom; nav-bar-menu, search, cart",
+   "evidence": [
+    "eye-care: sgs-header",
+    "indus/mamas: sticky header"
+   ],
+   "db_check": "blocks.slug='sgs/site-header' exists (sgs family)"
+  },
+  {
+   "purpose": "site-footer",
+   "label": "Site footer",
+   "means": "The footer: contact band, link columns, bottom bar.",
+   "maps_to": "sgs/site-footer",
+   "settings_hint": "rows; social icons; business info",
+   "evidence": [
+    "eye-care: sgs-footer",
+    "indus: three-row footer",
+    "mamas: footer"
+   ],
+   "db_check": "blocks.slug='sgs/site-footer' exists (sgs family)"
+  },
+  {
+   "purpose": "plain-container",
+   "label": "Plain container",
+   "means": "A section that is only a styled wrapper around other content.",
+   "maps_to": "sgs/container",
+   "settings_hint": "last-resort purpose; use sparingly",
+   "evidence": [
+    "wrappers with no other purpose"
+   ],
+   "db_check": "blocks.slug='sgs/container' exists (sgs family)"
+  }
+ ],
+ "not_purposes": {
+  "decided_by_surface_kind": "mega-menu -> menu/panel kind (sgs/mega-panel); mobile-menu -> drawer (sgs/nav-drawer); size-guide -> modal (sgs/modal); checkout steps -> form-step; whatsapp-fab -> global (sgs/whatsapp-cta floating); toast -> framework behaviour, no block"
+ }
+}
