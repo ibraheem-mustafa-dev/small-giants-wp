@@ -9,6 +9,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import { formElement } from './skeleton-form-element.mjs';
 
 // The linked forms of a client's manifest (sites/<client>/build/surfaces.json and the intake record it names): none when the
 // client has no manifest or no intake record yet.
@@ -44,11 +45,15 @@ function innermostRoot( roots, elements ) {
 }
 
 // A function over inventory elements: the verdict of the form-link rule for an element, or null.
-//   { block, attributes }  the element is the form, so it becomes the linked reference block;
+//   { block, attributes }  the element is the form (lib/skeleton-form-element.mjs::formElement), so it becomes the linked
+//                          reference block;
 //   { remove: true }       another element under the same root: the form is one embed, so it goes.
+// When the first element is the page's layout around the form (formElement: the grid around the form card and the aside
+// beside it), that element and what it holds beside the form get no verdict: the page's own rules build them, and the saved
+// form never holds them.
 // view: lib/skeleton-record.mjs::recordView; scope: the surface's record context (surfaceContext); els: the inventory's
 // elements in document order; rule: decisions `rules.formLink`; links: formLinksOf's result.
-export function linkedFormOf( { view, scope, links, refs, els, rule } ) {
+export function linkedFormOf( { view, scope, links, refs, els, rule, m = null } ) {
 	const none = () => null;
 	if ( ! scope || ! rule?.block ) {
 		return none;
@@ -74,7 +79,9 @@ export function linkedFormOf( { view, scope, links, refs, els, rule } ) {
 	for ( const [ root, list ] of under ) {
 		const { ref, slug, block } = byRoot.get( root );
 		const attributes = { [ ref.flag ]: true, [ ref.key ]: slug };
-		list.forEach( ( e, i ) => verdicts.set( e.key, i ? { remove: true } : { block, attributes } ) );
+		const form = m ? formElement( m, list[ 0 ] ) : list[ 0 ];
+		verdicts.set( form.key, { block, attributes } );
+		list.slice( 1 ).forEach( ( e ) => verdicts.set( e.key, { remove: true } ) );
 	}
 	return ( e ) => verdicts.get( e.key ) ?? null;
 }

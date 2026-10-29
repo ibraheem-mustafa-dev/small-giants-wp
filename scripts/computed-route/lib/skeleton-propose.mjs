@@ -13,6 +13,8 @@ import { inventoryModel } from './skeleton-model.mjs';
 import { makeClassifier, overrideFor, W } from './skeleton-classify.mjs';
 import { collapsePoint, childSlots } from './skeleton-child-slots.mjs';
 import { partSlots, placePart } from './skeleton-part-slots.mjs';
+import { pairSkeletonParts } from './skeleton-part-pairing.mjs';
+import { sharedElementProblems } from './skeleton-one-node.mjs';
 import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-record.mjs';
 import { formStepNodes, formStepContext } from './skeleton-form-steps.mjs';
 import { formHostNodes } from './skeleton-form-host.mjs';
@@ -100,14 +102,15 @@ export const COVERAGE_WRITES = [
 const count = ( list ) => list.reduce( ( a, n ) => a + 1 + count( n.innerBlocks || [] ), 0 );
 
 // o: { inventory, facts, surface, surfaceKind, surfaceName, motion (template keys whose own animation loops a translate), clientDecisions, picks ({ key: decision }), calKeys (slug ->
-// calibration element keys), calSettings (slug -> the calibration's settings with their slots), states (the surface's handoff
+// calibration element keys), calSettings (slug -> the calibration's settings with their slots), calPaint (slug -> the calibration's default paint: element path to
+// its computed style per width, in document order), states (the surface's handoff
 // record states: name, how_to_reach, sc_if_tpl_ids), thresholds (the width thresholds the draft's code uses), db, openers (surface id to its surfaces.json opened_by words, read from the handoff folder when omitted), factRecord (the
 // client's fact record, lib/fact-record.mjs: loaded from `facts.client` when omitted, none when the client has no record),
 // formLinks (lib/skeleton-form-link.mjs::formLinksOf: the saved forms a page may link), refs (lib/references.mjs::detectReferences),
 // draftLinks (lib/draft-link.mjs::draftLinksFor: the client's page map and routing that turn a draft link into a site address;
 // null resolves every draft route to no address), pageMap (the page-map rows: which surface is a choice flow or a block-owned
 // part, lib/skeleton-surface-role.mjs) and surfaceId (the surface's surfaces.json id; the record's matching surface when omitted) }.
-export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, filters = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null, pageMap = [], surfaceId = null, loops = null, scriptOf = () => null } ) {
+export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, filters = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), calPaint = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null, pageMap = [], surfaceId = null, loops = null, scriptOf = () => null } ) {
 	const m = inventoryModel( inventory );
 	const { composition } = facts;
 	const overrides = ( e, words ) => overrideFor( e, { clientDecisions, picks, facts, surface, words } );
@@ -118,7 +121,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	const view = recordView( factRecord, { openers: openers ?? ( factRecord ? openersFor( facts ) : {} ), rootComponent } );
 	const scope = factRecord ? surfaceContext( view, { kind: surfaceKind, name: surfaceName, id: surfaceId } ) : null;
 	m.els.forEach( ( e ) => view.checkParent( e, m.byKey[ e.parentKey ] ) );
-	const formLinkOf = linkedFormOf( { view, scope, links: formLinks, refs, els: m.els, rule: facts.decisions.rules?.formLink } );
+	const formLinkOf = linkedFormOf( { view, scope, links: formLinks, refs, els: m.els, m, rule: facts.decisions.rules?.formLink } );
 	// A draft link's destination as a site address (lib/draft-link.mjs), for every writer of a link setting.
 	const siteLink = siteLinkResolver( draftLinks, rootComponent );
 	// The page map's role for the surface: a choice flow, or a part another row's block draws (lib/skeleton-surface-role.mjs).
@@ -142,7 +145,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	const w = {};
 	const ctx = {
 		m, facts, cls, R, view, overrides, base, finder, rootOf, inventory, carried, surfaceKind, calSettings, rows, rowOf, w, siteLink,
-		widthAlternatives: [], variantsOf: new Map(), railIds: null, carryProblems: [], slotProblems: [], openedModals: new Map(), nodeOfKey: {}, partPending: [], hosts: [], stripRoots: [],
+		widthAlternatives: [], variantsOf: new Map(), railIds: null, carryProblems: [], slotProblems: [], openedModals: new Map(), nodeOfKey: {}, partPending: [], hosts: [], stripRoots: [], unitItems: new Map(),
 	};
 	const { widthAlternatives, carryProblems, slotProblems, nodeOfKey, partPending, hosts } = ctx;
 	Object.assign( w, makeRecorder( ctx ) );
@@ -395,6 +398,9 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const notes = [ ...made.notes, ...( frameOf ? [] : [ `the ${ surface } modal has no sgs_modal row in the page map, so its frame carries no anchor and no page can take its look` ] ) ];
 		notes.length && rowOf[ m.root.key ] && ( rowOf[ m.root.key ].slotNotes = [ ...( rowOf[ m.root.key ].slotNotes || [] ), ...notes ] );
 	}
+	// Every part a block draws itself, paired with the draft element standing there (lib/skeleton-part-pairing.mjs); a slot an
+	// earlier pass gave (a form field's input, the burger) stands.
+	const partPairing = db ? pairSkeletonParts( { db, tree: skeleton, m, finder, rowOf, calSettings, calPaint, unitItems: ctx.unitItems, mediaSpec: R.mediaElement } ) : null;
 	rows.forEach( ( x ) => {
 		const top = rootOf( m.byKey[ x.key ] );
 		top !== m.root && ( x.strip = top.key );
@@ -411,7 +417,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		skeleton.push( frame.node );
 		frame.missing && carryProblems.push( frame.missing );
 	}
-	const problems = [ ...skeletonProblems( skeleton ), ...carryProblems, ...slotProblems, ...( db ? lintSkeleton( skeleton, db ) : [] ), ...[ noRegionProblem( { surface, commerce, region: cls.commerceRegion } ) ].filter( Boolean ) ];
+	const problems = [ ...skeletonProblems( skeleton ), ...sharedElementProblems( skeleton ), ...carryProblems, ...slotProblems, ...( db ? lintSkeleton( skeleton, db ) : [] ), ...[ noRegionProblem( { surface, commerce, region: cls.commerceRegion } ) ].filter( Boolean ) ];
 	// A draft sort option WooCommerce's sorting cannot express is a missing feature on its own row (lib/intake-missing.mjs).
 	for ( const x of cls.commerceRegion?.toolbar?.missing || [] ) {
 		rowOf[ x.key ] && ( rowOf[ x.key ].missingFeature = { line: x.line, why: x.why } );
@@ -436,6 +442,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		...( cls.filterRail ? { filterRail: cls.filterRail.note ? { note: cls.filterRail.note } : { key: cls.filterRail.key, groups: cls.filterRail.groups, notes: cls.filterRail.notes, attributeIds: ctx.railIds || {} } } : {} ),
 		counts: { inventoryElements: m.els.length, parts: m.els.filter( m.isPart ).length, rows: rows.length, skeletonNodes: count( skeleton ), expandedNodes: count( expandSiteInfoRows( skeleton ) ), low: rows.filter( ( r ) => r.low && ! r.action ).length, removed: rows.filter( ( r ) => [ 'remove', 'absorbed', 'unwrap' ].includes( r.action ) ).length, unresolved: rows.filter( ( r ) => 'unresolved' === r.action ).length, byRule: rows.reduce( ( o, r ) => ( r.rule ? { ...o, [ r.rule ]: ( o[ r.rule ] || 0 ) + 1 } : o ), {} ) },
 		...( ctx.openedModals.size ? { openedModals: [ ...ctx.openedModals.values() ].map( ( t ) => ( { slug: t.row.slug, anchor: t.anchor, surface: t.surface.id } ) ), openerNotes } : {} ),
+		...( partPairing ? { partPairing } : {} ),
 		widthAlternatives, problems, rows,
 	};
 	return { skeleton, proposal, problems };

@@ -14534,7 +14534,7 @@
       "slug": "sgs/icon",
       "attr": "iconRotate",
       "fields": {
-        "css_property": "transform",
+        "css_property": "rotate",
         "css_element": "shape"
       }
     },
@@ -18451,9 +18451,8 @@
       "slug": "sgs/nav-drawer-menu",
       "attr": "itemOrnamentFrames",
       "fields": {
-        "css_property": "animation",
-        "css_element": "ornament-glyph",
-        "css_state": "focus"
+        "css_property": "input:frame-sequence",
+        "css_element": "ornament"
       }
     },
     {
@@ -39035,6 +39034,14 @@
       "attr": "featureColourGradient",
       "fields": {
         "css_property": "background-image",
+        "css_element": "feature"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "featureSeparators",
+      "fields": {
+        "css_property": "input:separators",
         "css_element": "feature"
       }
     },

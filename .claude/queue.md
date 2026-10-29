@@ -58,3 +58,5 @@ The signal between parallel sessions working the cloning tool plan (`.claude/pla
 - 2026-10-29 S reseed-start (sgs-update-v2.py from clean main 8df66b7a1: allowedBlocks clears, whatsapp-cta variant enum, gallery mediaItems fields)
 - 2026-10-29 S reseed-end (exit 0; allowedBlocks 3 updated)
 - 2026-10-29 S calibrate-start local-indus,local-mamas,local-eye-care (root-cause fix pass: 25 missing slot maps plus Mama's and Eye Care default paint; container, heading, text, label after Tracks D and M merge; main f1b2fc142)
+- 2026-10-29 S reseed-start (sgs-update-v2.py from clean main dbd3d50c2: Track D's block-source readers, allowed values and item fields, block_source_gaps)
+- 2026-10-29 S reseed-end (exit 0; array_item_schema 118 -> 153, block_source_gaps 61 new, icon-list markerType enum icon/emoji/bullet/numbered/none, schema drift clean)

@@ -156,6 +156,8 @@ export function makeUnits( ctx ) {
 		const r = finish( C );
 		const node = base( els.find( ( l ) => ! removedBy( l ) ), slug, { ...( ( enumOf( slug, 'markerType' ) || [] ).includes( 'none' ) ? { markerType: 'none' } : {} ), items } );
 		handover.length && ( node.handover = handover );
+		// The list's items are the copies its repeated item part pairs with (lib/skeleton-part-pairing.mjs).
+		ctx.unitItems.set( node, els.filter( ( l ) => ! removedBy( l ) ) );
 		els.forEach( ( l, i ) => {
 			if ( removedBy( l ) ) {
 				const o = overrides( l, m.words( l ) );

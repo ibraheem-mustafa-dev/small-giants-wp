@@ -10,6 +10,7 @@ import { linkAttrDecisions, blockSupportsAnchor } from './fill-link-attrs.mjs';
 import { imageSlots, mediaDecisions, nestedImage, factImage, pictureSlotOf, pictureSettles } from './fill-media.mjs';
 import { mapDecisions } from './fill-map.mjs';
 import { iconDecisions, imageIconDecisions } from './fill-icon.mjs';
+import { listMarkerDecisions } from './fill-list-marker.mjs';
 import { handoverEntry } from './fill-handover.mjs';
 import { unreadOf } from './fill-unread.mjs';
 import { fillBand, bandSetting } from './fill-band.mjs';
@@ -93,6 +94,8 @@ function fillContent( st, rec, ref, cal ) {
 	}
 	take( imageIconDecisions( { img: atDesktop[ '' ]?.svg ? null : image, words: atDesktop[ '' ]?.words, schema: blockSchema( rec.name ), attributes: node.attributes || {}, folder: st.draftFolder ?? null, origin: st.origin, href: hrefs[ '' ] ?? '' } ) );
 	take( iconDecisions( { svg: atDesktop[ '' ]?.svg ?? null, schema: blockSchema( rec.name ), attributes: node.attributes || {}, href: hrefs[ '' ] ?? '' } ) );
+	// Each list item's own marker, read at the item's paired marker part, and the list's marker type (lib/fill-list-marker.mjs).
+	st.db && take( listMarkerDecisions( { db: st.db, block: rec.name, cal, attributes: node.attributes || {}, reads: atDesktop } ) );
 	if ( 'map' === node.attributes?.displayType ) {
 		const embeds = Object.fromEntries( [ 1440, 768, 375 ].map( ( w ) => [ w, st.reads.widths[ w ]?.[ rec.targets.find( ( t ) => '' === t.slot )?.id ]?.embed ] ).filter( ( [ , e ] ) => e ) );
 		take( mapDecisions( { schema: blockSchema( rec.name ), attributes: node.attributes || {}, embeds } ) );

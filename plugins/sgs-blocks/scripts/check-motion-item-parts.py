@@ -50,7 +50,11 @@ EACH = "Each "
 ITEM_ARRAY_CALL = re.compile(r"Sgs_Motion_Loop_Delays::item_array\(\s*'(sgs/[a-z0-9-]+)'")
 
 # Corpus blocks with no motion part for one item. Each reason is a fact read from the block's own parts.
-GAPS: dict[str, str] = {}
+GAPS: dict[str, str] = {
+    "sgs/form-field-select": "its options are <option> elements inside the native select, which draws them itself; no part per option",
+    "sgs/team-member": "its social links have one part for the whole row (social), none per link",
+    "sgs/trustpilot-reviews": "its review cards have no part of their own; only the grid (inner) and each card's title",
+}
 
 # The repeated-item parts --fix names, per block, and the label each takes (None keeps the old label, "Whole " becoming
 # "Each "). Used to bring the existing blocks to the rule; the check never reads it.

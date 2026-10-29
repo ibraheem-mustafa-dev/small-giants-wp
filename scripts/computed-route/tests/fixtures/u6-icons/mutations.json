@@ -49,7 +49,7 @@
 	},
 	{
 		"file": "lib/fill-icon.mjs",
-		"find": "if ( ! svg?.markup || ! iconSettings( schema ).length ) {",
+		"find": "if ( ! svg?.markup || ! ( requireSvg ? iconSettings( schema ).length : ICON_SETTINGS.some( ( a ) => a in ( schema || {} ) ) ) ) {",
 		"replace": "if ( ! svg?.markup ) {",
 		"why": "a block with no iconSvg setting is written to"
 	},

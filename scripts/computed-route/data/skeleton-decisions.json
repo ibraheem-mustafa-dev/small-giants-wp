@@ -669,7 +669,9 @@
 		"formHost": {
 			"tag": "form",
 			"block": "sgs/form",
-			"reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part"
+			"reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part",
+			"layoutReason": "the page's layout around the form (it holds the form beside an aside or a bar): the page lays it out, so the saved form's root is the form block inside it",
+			"besideReason": "drawn beside the form by the page (an aside or a bar outside the form's own element): the page holds it, never the saved form"
 		},
 		"cardHeading": {
 			"block": "sgs/heading",

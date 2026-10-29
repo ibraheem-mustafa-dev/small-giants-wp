@@ -45,8 +45,8 @@
 					"_note": "The `<ul class=\"sgs-language-switch__list\">` row of language links."
 				},
 				"link": {
-					"label": "Language link",
-					"order": 1,
+					"label": "Each language link",
+					"order": 0.5,
 					"clusters": [
 						"text"
 					],
