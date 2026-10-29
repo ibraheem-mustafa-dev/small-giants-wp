@@ -94,7 +94,7 @@
 						"css:border-color-gradient": "borderColourGradient",
 						"css:border-radius": "borderRadius",
 						"css:width": "shapeSize",
-						"css:transform": "iconRotate",
+						"css:rotate": "iconRotate",
 						"css:box-shadow": "boxShadow"
 					},
 					"states": {

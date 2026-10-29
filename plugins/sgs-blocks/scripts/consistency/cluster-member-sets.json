@@ -420,6 +420,13 @@
 						"OUTER"
 					],
 					"note": "Same ruling. Inline SVG markup, not a CSS property — input:code-svg's own label is 'Raw SVG markup (decorative background shape)'."
+				},
+				{
+					"key": "input:separators",
+					"label": "Separators between items",
+					"suffixes": [
+						"Separators"
+					]
 				}
 			]
 		},
@@ -784,6 +791,13 @@
 						"OUTER"
 					],
 					"note": "Same ruling. The shape SELECTOR — a choice from a closed set, which is what input:enum-select describes."
+				},
+				{
+					"key": "css:rotate",
+					"label": "Rotate",
+					"suffixes": [
+						"Rotate"
+					]
 				}
 			]
 		},
@@ -853,6 +867,13 @@
 					"suffixes": [
 						"FrameDuration",
 						"DurationMs"
+					]
+				},
+				{
+					"key": "input:frame-sequence",
+					"label": "Glyph frame sequence",
+					"suffixes": [
+						"Frames"
 					]
 				}
 			]

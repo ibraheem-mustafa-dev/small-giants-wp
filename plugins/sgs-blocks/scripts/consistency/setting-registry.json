@@ -3477,6 +3477,72 @@
 			"divergence": "none",
 			"divergence_severity": "none",
 			"notes": "Added 2026-10-25, Phase 3 loop 1 (plan .claude/plans/2026-10-25-phase3-loop1.md U7a)."
+		},
+		{
+			"setting_key": "css:rotate",
+			"category": "css-property",
+			"label": "Rotate (degrees)",
+			"optimal_control": {
+				"component": "RangeControl (degrees, withInputField, allowReset)",
+				"props": {},
+				"preset_layer": null,
+				"units": "n/a",
+				"responsive_device_tier": false,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "n/a",
+				"reset_disclosure": "allowReset clears to the block.json default"
+			},
+			"shared_component": null,
+			"spec_ref": "Spec 35 Part C (Effects)",
+			"current_state": "1 instance (sgs/icon iconRotate, a number of degrees applied as a paint-time rotate on the shape).",
+			"divergence": "none",
+			"divergence_severity": "none",
+			"notes": "A turn in degrees that leaves the layout box unchanged. Distinct from css:transform, which is the flip and invert booleans."
+		},
+		{
+			"setting_key": "input:separators",
+			"category": "input-type",
+			"label": "Separators between items",
+			"optimal_control": {
+				"component": "SeparatorsControl (style, width, colour per axis)",
+				"props": {},
+				"preset_layer": null,
+				"units": "n/a",
+				"responsive_device_tier": false,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "n/a",
+				"reset_disclosure": "allowReset clears to the block.json default"
+			},
+			"shared_component": null,
+			"spec_ref": "Spec 35 Part B (Separators)",
+			"current_state": "sgs/pricing-table featureSeparators: the lines between feature rows.",
+			"divergence": "none",
+			"divergence_severity": "none",
+			"notes": "An input type, not a painted property: the value is an object per axis that compiles to border or gradient lines between repeated items."
+		},
+		{
+			"setting_key": "input:frame-sequence",
+			"category": "input-type",
+			"label": "Glyph frame sequence",
+			"optimal_control": {
+				"component": "Repeater of custom SVG frames (at most 8) with a per-device on/off",
+				"props": {},
+				"preset_layer": null,
+				"units": "n/a",
+				"responsive_device_tier": false,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "n/a",
+				"reset_disclosure": "allowReset clears to the block.json default"
+			},
+			"shared_component": null,
+			"spec_ref": "Spec 35 FR-35-6 (animation cluster member)",
+			"current_state": "sgs/nav-drawer-menu itemOrnamentFrames: the ordered glyph frames an ornament flashes through on row hover or focus.",
+			"divergence": "none",
+			"divergence_severity": "none",
+			"notes": "A block-owned frame sequence, not an sgsMotion layer; its timing is anim:duration."
 		}
 	]
 }
