@@ -1,0 +1,21 @@
+[
+	{"file": "lib/skeleton-recognise.mjs", "find": "! D || ! e.tag || ! simple( e )", "replace": "! D || ! e.tag", "why": "only plain parts qualify: a section carrying a block word in its class is not the block"},
+	{"file": "lib/skeleton-recognise.mjs", "find": "all.length <= D.maxParts &&", "replace": "true &&", "why": "a recognised element holds few parts"},
+	{"file": "lib/skeleton-recognise.mjs", "find": "|header|footer|main|aside", "replace": "", "why": "a header is never a banner"},
+	{"file": "lib/skeleton-recognise.mjs", "find": "( b ) => b.bearing )", "replace": "( b ) => true )", "why": "only a mode-bearing block is a candidate"},
+	{"file": "lib/skeleton-recognise.mjs", "find": "top.score < D.minScore", "replace": "false", "why": "the top score must reach minScore"},
+	{"file": "lib/skeleton-recognise.mjs", "find": "'floating' === f.mode && modeAttr", "replace": "true && modeAttr", "why": "only a fixed element is floating"},
+	{"file": "lib/skeleton-recognise.mjs", "find": "'flow' === f.mode && modeAttr", "replace": "false && modeAttr", "why": "an element in flow takes the inline or static value"},
+	{"file": "lib/skeleton-recognise.mjs", "find": "a[ corner.attr_name ] = f.corner", "replace": "0", "why": "the corner the draft fixes it to is written"},
+	{"file": "lib/skeleton-recognise.mjs", "find": "off && ( a[ off.attr_name ] = { desktop: f.offset } )", "replace": "0", "why": "the offset the draft declares is written"},
+	{"file": "lib/skeleton-recognise.mjs", "find": "below && ( a[ hide.attr_name ] = below )", "replace": "0", "why": "the width the label hides below is written"},
+	{"file": "lib/skeleton-recognise.mjs", "find": "shown && ws.some( ( w ) => w < shown && ! label.visible[ w ] ) ? shown : null", "replace": "shown", "why": "a label shown at every width hides below nothing"},
+	{"file": "lib/skeleton-recognise.mjs", "find": "label && ( a[ label.attr_name ] = allText )", "replace": "0", "why": "the draft's words are the label"},
+	{"file": "lib/skeleton-recognise.mjs", "find": "'flow' !== mode && isBar( src )", "replace": "isBar( src )", "why": "a bar is wide only when out of flow or sticky"},
+	{"file": "lib/skeleton-recognise.mjs", "find": "s >= D.barShare", "replace": "s >= 0", "why": "a bar spans the width"},
+	{"file": "lib/skeleton-recognise.mjs", "find": "sticky && ( a[ sticky.attr_name ] = f.edge || 'top' )", "replace": "0", "why": "the sticky edge is written"},
+	{"file": "lib/skeleton-recognise.mjs", "find": "hosts[ hostOf( e.attrs?.href ) ] || null", "replace": "null", "why": "the link host stands for a kind"},
+	{"file": "lib/skeleton-rules.mjs", "find": "const r = recogniser.recognise( e );", "replace": "const r = null;", "why": "the recognise rule is consulted"},
+	{"file": "lib/skeleton-recognise.mjs", "find": "|| ( next && next.score >= top.score )", "replace": "", "why": "a tie is no verdict"},
+	{"file": "lib/skeleton-recognise.mjs", "find": "e.box[ w ].h <= D.barMaxHeightPx", "replace": "true", "why": "a bar is short: a full-screen fixed overlay is not a banner"}
+]

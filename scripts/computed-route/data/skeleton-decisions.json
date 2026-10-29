@@ -434,7 +434,21 @@
 				"whatsapp": "whatsapp",
 				"google": "google"
 			},
-			"reason": "the shared link source each Site Info kind becomes on a link"
+			"hosts": {
+				"wa.me": "whatsapp",
+				"api.whatsapp.com": "whatsapp",
+				"web.whatsapp.com": "whatsapp"
+			},
+			"reason": "the shared link source each Site Info kind becomes on a link; hosts is the short and API addresses a kind uses that the brand registry cannot derive from the brand name"
+		},
+		"recognise": {
+			"modes": { "floating": "floating", "flow": [ "static", "inline" ] },
+			"featureWords": { "bar": [ "bar", "banner", "announcement", "notice" ] },
+			"barShare": 0.98,
+			"barMaxHeightPx": 120,
+			"minScore": 1,
+			"maxParts": 8,
+			"reason": "an element is the block whose name or setting values hold the words of its own features (its link host, class, aria-label, position and shape); the mode follows the element alone: fixed to the viewport is the floating setting with the corner, offset and hidden-label width the draft shows, sticky is the sticky setting, in flow is the static or inline value"
 		},
 		"navigation": {
 			"bySurface": {

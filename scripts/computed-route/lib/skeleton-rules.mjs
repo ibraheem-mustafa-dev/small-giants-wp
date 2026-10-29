@@ -27,6 +27,7 @@ import { modalFrameParts } from './skeleton-modal-frame.mjs';
 import { parseInstanceKey } from './fact-key.mjs';
 import { formOpenerOf, prefillHref } from './skeleton-form-prefill.mjs';
 import { makeFieldGroups } from './skeleton-field-groups.mjs';
+import { makeRecogniser, hostKindOf } from './skeleton-recognise.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
 // them reads Site Info too.
@@ -112,6 +113,7 @@ const HEADING = /^h[1-6]$/;
 export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), view = recordView( null ), scope = null } ) {
 	const R = facts.decisions.rules || {};
 	const panel = makePanelRules( { m, view, scope, R, facts, surface, declared } );
+	const recogniser = makeRecogniser( { m, facts } );
 	const arrayBlocks = new Set( facts.q( 'SELECT DISTINCT block_slug FROM array_item_schema' ).map( ( r ) => r.block_slug ) );
 	const drawsListed = Object.fromEntries( ( R.drawsChildren?.blocks || [] ).map( ( d ) => [ d.block, d.reason ] ) );
 
@@ -380,7 +382,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const linkKindOf = ( e ) => {
 		const kinds = [ ...hooks.siteInfoKinds( e ) ].map( ( [ k ] ) => k );
 		const map = R.linkSourceForKind?.map || {};
-		const k = kinds.find( ( x ) => map[ x ] );
+		const hostKind = hostKindOf( e.attrs?.href, R.linkSourceForKind?.hosts );
+		const k = kinds.find( ( x ) => map[ x ] ) || ( map[ hostKind ] ? hostKind : null );
 		return k ? { kind: k, source: map[ k ] } : null;
 	};
 	// Whether the element's words are the Site Info value itself (a typed phone number or email address), so the label
@@ -474,6 +477,12 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const centred = st[ 'max-width' ] && /\bauto\b/.test( `${ st.margin || '' } ${ st[ 'margin-inline' ] || '' } ${ st[ 'margin-left' ] || '' }` );
 			const laysOut = /grid|flex/.test( st.display || e.display || '' );
 			return ! m.words( e ) && kidsB.length && parentBlock && 'wrapper-shell' !== role && centred && ! ( 'section-root' === role && laysOut ) ? v( 'widthWrapper', { action: 'unwrap' } ) : null;
+		},
+		// An element whose own features (link host, class, aria-label, position, shape) are held by one mode-bearing block's name and
+		// setting values is that block, in the mode the element itself shows (lib/skeleton-recognise.mjs).
+		( { e } ) => {
+			const r = recogniser.recognise( e );
+			return r ? v( 'recognise', { block: r.block, attributes: r.attributes, absorb: true, reason: r.evidence.join( '; ' ) } ) : null;
 		},
 		// A back-to-top control is a link whose source is 'top'.
 		( { e, text, kidsB } ) => {
