@@ -274,10 +274,12 @@ export const ICON_SETTINGS = [ 'iconSource', 'brandName', 'iconName', 'iconSvg',
 export const iconSettings = ( schema ) => ( schema && 'iconSvg' in schema ? ICON_SETTINGS.filter( ( a ) => a in schema ) : [] );
 
 // svg: the element's read ({ markup, position }) or null. schema: the block's settings. attributes: what the node already holds.
-// href: the address the mark links to in the draft (or ''), the evidence a Site Info brand row is that brand.
-export function iconDecisions( { svg, schema, attributes = {}, allowed = null, href = '' } ) {
+// href: the address the mark links to in the draft (or ''), the evidence a Site Info brand row is that brand. requireSvg
+// false reads a mark for settings that hold no `iconSvg` (a list item's iconSource and iconName, lib/fill-list-marker.mjs):
+// a mark that is neither a brand nor a Lucide icon is then a named row.
+export function iconDecisions( { svg, schema, attributes = {}, allowed = null, href = '', requireSvg = true } ) {
 	const out = { writes: [], unmapped: [], notes: [] };
-	if ( ! svg?.markup || ! iconSettings( schema ).length ) {
+	if ( ! svg?.markup || ! ( requireSvg ? iconSettings( schema ).length : ICON_SETTINGS.some( ( a ) => a in ( schema || {} ) ) ) ) {
 		return out;
 	}
 	const tree = parseTree( svg.markup );
@@ -323,6 +325,9 @@ export function iconDecisions( { svg, schema, attributes = {}, allowed = null, h
 	} else if ( lucide ) {
 		put( 'iconSource', 'lucide' );
 		put( 'iconName', lucide );
+	} else if ( ! ( 'iconSvg' in schema ) ) {
+		// Settings with no place for the client's own markup (a list item's iconSource and iconName) take no custom source.
+		out.unmapped.push( { property: 'svg', value: '<svg>', slot: '', reason: 'the draft mark is neither a registry brand nor a Lucide icon, and the settings hold no iconSvg for the client markup' } );
 	} else {
 		put( 'iconSource', 'custom' );
 		put( 'iconSvg', render( kept ) );
