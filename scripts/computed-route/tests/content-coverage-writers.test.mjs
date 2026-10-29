@@ -40,7 +40,9 @@ test( 'every FORM_BLOCK_SETTINGS name is written by the form pass', () => {
 	const steps = [ { key: 'a', label: 'Business', fields: [ { name: 'x', label: 'X' } ] }, { key: 'review', label: 'Review', intro: 'Check your answers', fields: [] } ];
 	const FACTS = {
 		logic: { statics: { Apply: { entries: [ { name: 'schema', source: 'getter', kind: 'array', length: 2, value: steps } ] } } },
-		elements: { 'Apply/edit': { template: { key: 'Apply/edit', tag: 'button', words: 'Edit section', membership: { scFor: [ 'step' ] } } } },
+		// The form's sent state: a result surface rooted on the form, one worded element.
+		surfaces: { 'S-1': { kind: 'form', dc: 'Apply', roots: [ 'Apply/6' ] }, 'S-2': { kind: 'result', dc: 'Apply', parent: 'S-1', roots: [ 'Apply/9' ] } },
+		elements: { 'Apply/edit': { template: { key: 'Apply/edit', tag: 'button', words: 'Edit section', membership: { scFor: [ 'step' ] } } }, 'Apply/6': { template: { key: 'Apply/6', component: 'Apply', n: '6', tag: 'form', parentChain: [], membership: { scIf: [], scFor: [] } } }, 'Apply/9': { template: { key: 'Apply/9', component: 'Apply', n: '9', tag: 'p', parentChain: [ 'Apply/9' ], words: 'Thanks, we have it', membership: { scIf: [], scFor: [] } } } },
 	};
 	const flags = [ { kind: 'prototype-only', draftId: 'Apply.dc.html:js:1:1', text: 'localStorage.setItem(KEY, v)', why: 'browser storage write' } ];
 	const flat = [
@@ -49,7 +51,7 @@ test( 'every FORM_BLOCK_SETTINGS name is written by the form pass', () => {
 		{ name: 'sgs/form-review', attributes: {}, innerBlocks: [], ref: 'review' },
 		{ name: 'sgs/button', attributes: {}, innerBlocks: [], ref: 'btn' },
 	];
-	const nodes = flat.map( ( n, i ) => ( { index: i, name: n.name, targets: [ { id: `${ i }:`, slot: '' } ] } ) );
+	const nodes = flat.map( ( n, i ) => ( { index: i, name: n.name, targets: [ { id: `${ i }:`, slot: '', ...( 'sgs/form' === n.name ? { finder: { tpl: 'Root>Apply@1#0/6#0' } } : {} ) } ] } ) );
 	const reads = { widths: { 1440: { '3:': { form: { tag: 'button', type: 'submit' } } } } };
 	const out = formWrites( { nodes, flat, refOf: ( n ) => n.ref, reads, facts: FACTS, flags, db, component: 'Apply' } );
 	const written = new Set( out.writes.map( ( w ) => `${ w.block }.${ w.attr }` ) );
