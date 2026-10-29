@@ -219,10 +219,10 @@ test( 'MUST FAIL (one draft element is one node\'s): a node and a node inside it
 } );
 
 // Content identity (QC of RC1): parts that all hold words are told apart by the content setting each shows.
-const one = ( name, tpl, els, extra = {} ) => {
+const one = ( name, tpl, els, extra = {}, fields = F.fields ) => {
 	const m = inventoryModel( { elements: els } );
 	const node = { name, draftRef: { tpl }, attributes: {}, innerBlocks: [], ...extra };
-	const out = pairSkeletonParts( { db, tree: [ node ], m, finder, calSettings: ( b ) => F.cal[ b ]?.settings || {}, calPaint: ( b ) => F.cal[ b ]?.elements || {}, calText: ( b ) => F.cal[ b ]?.text || {}, fieldsOf: ( e ) => F.fields[ e.key ] || [] } );
+	const out = pairSkeletonParts( { db, tree: [ node ], m, finder, calSettings: ( b ) => F.cal[ b ]?.settings || {}, calPaint: ( b ) => F.cal[ b ]?.elements || {}, calText: ( b ) => F.cal[ b ]?.text || {}, fieldsOf: ( e ) => fields[ e.key ] || [] } );
 	return { slots: node.draftSlots || {}, unpaired: out.unpaired };
 };
 const META = '.sgs-testimonial__footer > .sgs-testimonial__meta';
@@ -263,7 +263,8 @@ test( 'wrappers only the draft draws around a loop or around the parts pass thro
 
 test( 'MUST FAIL (an hours row): the business hours block\'s first row is the draft row and its day the day span; the rows the draft does not draw are named', () => {
 	const ROW = ( k ) => `.sgs-business-info > .sgs-business-hours__row:nth-of-type(${ k })`;
-	const r = one( 'sgs/business-info', 'Root/677#0', F.elements.hours, { attributes: { displayType: 'hours' } } );
+	// The draft prints the row's day and hours as fields (`{{ hr.d }}`, `{{ hr.t }}`) no content setting takes: they stay free.
+	const r = one( 'sgs/business-info', 'Root/677#0', F.elements.hours, { attributes: { displayType: 'hours' } }, { 'Root/678#0': [ 'd' ], 'Root/679#0': [ 't' ] } );
 	assert.equal( r.slots[ ROW( 1 ) ]?.tpl, 'Root/677#0' );
 	assert.equal( r.slots[ `${ ROW( 1 ) } > .sgs-business-hours__day` ]?.tpl, 'Root/678#0' );
 	assert.ok( r.unpaired.some( ( u ) => ROW( 2 ) === u.slot ), 'the second row, which the draft does not draw here, stays unpaired' );

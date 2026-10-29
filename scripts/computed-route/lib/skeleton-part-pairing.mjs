@@ -469,10 +469,8 @@ export function pairSkeletonParts( { db, tree, m, finder, rowOf = {}, calSetting
 		const walkOwn = ( e ) => m.kids( e ).filter( own ).forEach( ( k ) => mine.push( k ) && walkOwn( k ) );
 		( items || [ el ] ).forEach( ( e ) => mine.push( e ) && walkOwn( e ) );
 		const content = contentPairs( { text: calText( n.name ), attributes: n.attributes || {}, els: mine, fieldsOf, words: ( e ) => m.words( e ) } );
-		// A draft element printing content of a block that shows content settings is that content's, never a box or a mark: one
-		// whose field no setting takes (a review's headline beside a testimonial's quote) is no other part either.
-		const text = calText( n.name );
-		const reserved = new Set( Object.keys( text ).length ? mine.filter( ( e ) => e !== el && ! ( items || [] ).includes( e ) && fieldsOf( e ).length && ! Object.values( content.pairs ).includes( e ) ) : [] );
+		// An element printing content the block's content settings take only as a later role is that content's, no other part.
+		const reserved = new Set( content.reserved.filter( ( e ) => e !== el && ! ( items || [] ).includes( e ) ) );
 		const made = pairParts( { db, block: n.name, cal: { settings: calSettings( n.name ) }, paint: calPaint( n.name ), m, el, items, own, isMedia, children, fixed: content.pairs, reserved, finder } );
 		made.unpaired.push( ...content.notes.filter( ( c ) => ! ( c.slot in made.slots ) ) );
 		const fresh = Object.fromEntries( Object.entries( made.slots ).filter( ( [ k ] ) => ! ( k in ( n.draftSlots || {} ) ) ) );
