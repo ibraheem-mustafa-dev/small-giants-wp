@@ -3,7 +3,7 @@ Prepare this project for handoff to Claude Code. Work through every step without
 1. Run "Handoff to Claude Code" for the current drafts.
 2. Run the design-system skill, so the project's design system and its tokens/ folder (colors.css, typography.css, spacing.css) match the current drafts.
 3. Rewrite the handoff README.md from handoff-schema/README.template.md, keeping its headings, and check every statement against the drafts' code (routes, header, footer, forms, assets, animations). Don't map the design to WordPress or SGS blocks.
-4. Inventory the drafts by following handoff-schema/METHOD.md exactly. Write animations.json and surfaces.json into the handoff folder and validate both against the schemas in handoff-schema/. Leave the runtime trace out.
+4. Inventory the drafts by following handoff-schema/METHOD.md exactly. Write animations.json and surfaces.json into the handoff folder and validate both against the schemas in handoff-schema/. Where a state's way in or a width threshold is known exactly, also write the structured fields METHOD.md section 7 describes; give meaningful elements a stable data-part id. Leave the runtime trace out.
 5. Write READING-DC-FILES.md into the handoff folder for this project's drafts, modelled on handoff-schema/READING-DC-FILES.example.md. The example was written for another project: keep its structure and every runtime, template and logic fact that still holds; replace its examples, hook names, routes and data model with this project's.
 6. Check every draft for the runtime traps listed in CLAUDE.md and list each hit under "unresolved" in animations.json.
 7. Copy tokens/ and handoff-schema/ into the handoff folder, so the handoff folder is the only thing I download.

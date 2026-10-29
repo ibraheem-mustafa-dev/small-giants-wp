@@ -210,6 +210,19 @@ export function blockMappingHeadings( markdown ) {
 	return [ ...markdown.matchAll( /^#{1,3}[ \t]+(.+?)[ \t#]*$/gm ) ].map( ( m ) => m[ 1 ] ).filter( ( h ) => /\bsgs\b|block[\s-]*mapping/i.test( h ) );
 }
 
+// The lines two copies of a text differ by, as a sentence: the first few lines only the export has and only the master has.
+export function lineDifferences( exported, master ) {
+	const norm = ( t ) => t.replace( /\r\n/g, '\n' ).split( '\n' ).map( ( l ) => l.trim() ).filter( Boolean );
+	const e = norm( exported );
+	const m = norm( master );
+	const shortLine = ( l ) => `"${ l.length > 70 ? `${ l.slice( 0, 70 ) }...` : l }"`;
+	const list = ( lines, other ) => {
+		const only = lines.filter( ( l ) => ! other.includes( l ) );
+		return only.length ? `${ only.length } line${ 1 === only.length ? '' : 's' } (${ only.slice( 0, 3 ).map( shortLine ).join( ', ' ) }${ only.length > 3 ? ', ...' : '' })` : 'none';
+	};
+	return `Only in the export: ${ list( e, m ) }. Only in the master: ${ list( m, e ) }.`;
+}
+
 // The whole check. Returns { errors, warnings, sha } where sha is support.js's SHA-256 (null when it is missing).
 // `known` is the known-runtimes object, `schemas` the master schema folder.
 export function checkHandoff( root, { known = readKnown(), schemas = MASTER_SCHEMAS, ajv = null } = {} ) {
@@ -294,7 +307,7 @@ export function checkHandoff( root, { known = readKnown(), schemas = MASTER_SCHE
 		errors.push( 'FR-48A-3 MANIFEST.json: draft and script reachability is not checked without a valid entry_drafts list' );
 	}
 	for ( const f of files ) {
-		if ( required.has( f ) || f.startsWith( 'assets/' ) ) {
+		if ( required.has( f ) || f.startsWith( 'assets/' ) || 'CLAUDE.md' === f ) {
 			continue;
 		}
 		if ( isDraft( f ) ) {
@@ -318,12 +331,19 @@ export function checkHandoff( root, { known = readKnown(), schemas = MASTER_SCHE
 		}
 	}
 
-	// FR-48A-6
+	// FR-48A-6: the export's schema set and its own CLAUDE.md (when it carries one) against the master copies.
+	const masterName = ( dir ) => path.relative( REPO, dir ).split( path.sep ).join( '/' );
 	for ( const f of files.filter( ( x ) => x.startsWith( 'handoff-schema/' ) ) ) {
 		const master = path.join( schemas, f.slice( 'handoff-schema/'.length ) );
-		if ( fs.existsSync( master ) && fs.statSync( master ).isFile() && ! read( f ).equals( fs.readFileSync( master ) ) ) {
-			warnings.push( `FR-48A-6 ${ f }: differs from the master copy (${ path.relative( REPO, schemas ).split( path.sep ).join( '/' ) }); the check validates with the master` );
+		if ( fs.existsSync( master ) && fs.statSync( master ).isFile() ) {
+			if ( ! read( f ).equals( fs.readFileSync( master ) ) ) {
+				warnings.push( `FR-48A-6 ${ f }: differs from the master copy (${ masterName( schemas ) }); the check validates with the master. ${ lineDifferences( read( f ).toString( 'utf8' ), fs.readFileSync( master, 'utf8' ) ) }` );
+			}
 		}
+	}
+	const masterClaude = path.join( schemas, '..', 'CLAUDE.md' );
+	if ( has.has( 'CLAUDE.md' ) && fs.existsSync( masterClaude ) && ! read( 'CLAUDE.md' ).equals( fs.readFileSync( masterClaude ) ) ) {
+		warnings.push( `FR-48A-6 CLAUDE.md: differs from the master copy (${ masterName( path.dirname( masterClaude ) ) }/CLAUDE.md), so the export was made from older or edited instructions. ${ lineDifferences( read( 'CLAUDE.md' ).toString( 'utf8' ), fs.readFileSync( masterClaude, 'utf8' ) ) }` );
 	}
 
 	// FR-48A-7

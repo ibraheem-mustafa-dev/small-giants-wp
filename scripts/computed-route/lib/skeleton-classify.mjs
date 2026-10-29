@@ -71,7 +71,7 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 	const { composition, capsOf, tagMap, decisions } = facts;
 	const minLinks = decisions.structural?.linkList?.minLinks ?? 2;
 	const textBlock = tagMap.p?.core_block_slug || null;
-	const sectionRoots = Object.values( composition ).filter( ( r ) => 'section-root' === r.composition_role && r.accepts );
+	const sectionRoots = Object.values( composition ).filter( ( r ) => 'section-root' === r.composition_role );
 
 	// Brand-registry hits for an element: which brand's address it links to, which placeholder it is bound to, its label.
 	const brandFor = ( e ) => {
@@ -156,9 +156,10 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 			const fits = ( accepted ) => bk.some( ( c ) => ( 'content-block' === composition[ accepted ]?.composition_role && m.blockKids( c ).length ) || tagMap[ c.tag ]?.core_block_slug === accepted );
 			rootRule.forEach( ( r ) => {
 				add( C, r.block_slug, 'capability', W.capability * 2, `block_capabilities: ${ r.block_slug } lists "${ e.tag }" (the draft root tag)` );
-				add( C, r.block_slug, 'db', W.composition, `block_composition: ${ r.block_slug } is a section-root accepting ${ JSON.stringify( r.accepts ) }` );
+				add( C, r.block_slug, 'db', W.composition, `block_composition: ${ r.block_slug } is a section-root accepting ${ r.accepts ? JSON.stringify( r.accepts ) : 'any block' }` );
 				add( C, r.block_slug, 'structure', 0.15, 'the root of the surface' );
-				const fit = r.accepts.filter( fits );
+				// A null list is a declared "accepts any block" (edit.js sets no allowedBlocks): it fits whatever the root holds.
+				const fit = r.accepts ? r.accepts.filter( fits ) : [];
 				fit.length && add( C, r.block_slug, 'structure', W.structure, `the root's children fit what it accepts (${ fit.join( ', ' ) })` );
 			} );
 			return { ...finish( C ), stale };

@@ -229,6 +229,26 @@ test( 'FR-48A-6: a handoff-schema copy that differs from the master passes with 
 	assert.deepEqual( r.warnings.map( ( w ) => w.split( ':' )[ 0 ] ), [ 'FR-48A-6 handoff-schema/METHOD.md' ] );
 } );
 
+test( 'FR-48A-6 (MUST FAIL): the warning names the lines that differ in a schema file and in the export CLAUDE.md when it differs from the master', () => {
+	const root = folder();
+	fs.appendFileSync( path.join( root, 'handoff-schema', 'METHOD.md' ), '\nA local edit.\n' );
+	fs.writeFileSync( path.join( root, 'CLAUDE.md' ), '# Older instructions\n' );
+	writeManifest( root, [ 'Home.dc.html' ] );
+	const r = check( root );
+	assert.deepEqual( r.errors, [] );
+	const text = r.warnings.join( '\n' );
+	assert.match( text, /handoff-schema\/METHOD\.md: differs.*Only in the export: 1 line \("A local edit\."\)/ );
+	assert.match( text, /CLAUDE\.md: differs from the master copy.*Only in the export: 1 line \("# Older instructions"\)/ );
+} );
+
+test( 'FR-48A-6 negative control: an export whose CLAUDE.md equals the master adds no warning, and one without a CLAUDE.md none either', () => {
+	const root = folder();
+	fs.copyFileSync( path.join( MASTER_SCHEMAS, '..', 'CLAUDE.md' ), path.join( root, 'CLAUDE.md' ) );
+	writeManifest( root, [ 'Home.dc.html' ] );
+	const r = check( root );
+	assert.deepEqual( [ r.errors, r.warnings ], [ [], [] ] );
+} );
+
 test( 'reference resolution: dc-import, href, src, script and x-import values', () => {
 	assert.equal( resolveRef( './a%20b.dc.html?x=1#y' ), 'a b.dc.html' );
 	assert.equal( resolveRef( 'mailto:a@b.c' ), null );

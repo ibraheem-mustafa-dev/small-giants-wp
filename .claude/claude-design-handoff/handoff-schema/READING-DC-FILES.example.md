@@ -59,7 +59,7 @@ function dcLogic(name) {
 }
 const L = dcLogic('Indus Foods Website v2');
 L.state;                         // read state
-L.setState({ w: 1400, active: 2 });   // e.g. force desktop + open the Sectors mega menu
+L.setState({ w: 1440, active: 2 });   // e.g. force desktop + open the Sectors mega menu
 ```
 
 Use this to reach closed states (menus, drawer, FAQ items, form steps) without simulating pointer input.
@@ -67,7 +67,7 @@ Use this to reach closed states (menus, drawer, FAQ items, form steps) without s
 ## 2. Rendered DOM shape
 
 - Each DC renders as `<div class="sc-host" data-sc-name="Name">…</div>`. The root sits at `#dc-root > div.sc-host`. These wrappers are runtime-only. Don't port them, and allow for them in `>` selectors.
-- **Every template element carries `data-dc-tpl="N"`** in the rendered DOM. This is the reliable link from a rendered node back to its source element in `__dcAnnotatedTemplate`. Elements repeated by `sc-for` share one N.
+- **Every template element carries `data-dc-tpl="N"`** in the rendered DOM. This is the reliable link from a rendered node back to its source element in `__dcAnnotatedTemplate`. Elements repeated by `sc-for` share one N. A `data-part="<id>"` attribute is an optional stable name the author gives a meaningful element (`hero-cta`, `nav-drawer`, `filter-rail`) so it stays findable when the template is edited and `data-dc-tpl` renumbers. It names the element's role in the design, never a WordPress block, and the same id marks the same element on every page.
 - Each text hole renders as `<span class="sc-interp">value</span>`. Text measured in the DOM therefore has extra spans that aren't in the source.
 - Pseudo-state attributes become generated classes `scp0`, `scp1`, … in one runtime `<style>`. These are the only classes on the page.
 - Nodes **without** `data-dc-tpl` were created by code: `React.createElement` output from the logic (icons: `arrow()`, `caret()`, `icon()`, `whyIcon()`, `glyph()`), DOM built imperatively (ripple and shine spans, the scatter layer), SVG inlined by `indus-logo.js` and `setHeroSvgEl`, and `image-slot` shadow DOM.

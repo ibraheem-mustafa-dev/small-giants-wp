@@ -2145,22 +2145,21 @@ def scrape_allowed_blocks(edit_js_path: Path) -> list[str] | None:
     Returns:
         list[str]  — the block slugs found in the literal array (may include
                      non-sgs slugs such as 'core/heading').
-        None       — the file has no allowedBlocks declaration at all, OR the
-                     declaration is dynamic (runtime expression); callers must
-                     treat both as "leave NULL in DB".  The distinction between
-                     "absent" and "dynamic" is surfaced only via the
-                     dynamic_skipped counter in the summary stats.
+        None       — the file declares no allowedBlocks at all: the block accepts
+                     any block, and the DB column must be NULL.
+        _DYNAMIC_SKIP — a declaration exists (or the source cannot be read) but
+                     its list cannot be read statically: unknown, so the stored
+                     value is kept and the block is counted in dynamic_skipped.
 
-    Raises nothing — on any read or parse error the function returns None and
-    the caller counts the block in dynamic_skipped.
+    Raises nothing — on any read or parse error the function returns _DYNAMIC_SKIP.
     """
     try:
         # edit.js plus the in-block components it imports: the array may sit in a component
         text = edit_source(edit_js_path.parent)
     except Exception:  # noqa: BLE001
-        return None
+        return _DYNAMIC_SKIP  # type: ignore[return-value]
 
-    # Fast-path: no relevant keyword at all → absent (leave NULL, no skip count)
+    # Fast-path: no relevant keyword at all → absent (accepts any block)
     if "allowedBlocks" not in text and "ALLOWED_BLOCKS" not in text:
         return None
 
@@ -2168,8 +2167,8 @@ def scrape_allowed_blocks(edit_js_path: Path) -> list[str] | None:
     # cards-with-aside and default variants) accepts the union of them, in order of first appearance.
     matches = list(_ALLOWED_BLOCKS_OPEN_RE.finditer(text))
     if not matches:
-        # Keyword present but not in a recognisable pattern — treat as dynamic.
-        return None
+        # Keyword present but not in a recognisable pattern — unknown, not "none".
+        return _DYNAMIC_SKIP  # type: ignore[return-value]
 
     slugs: list[str] = []
     for match in matches:
@@ -2204,10 +2203,10 @@ def scrape_allowed_blocks(edit_js_path: Path) -> list[str] | None:
             if m.group(2) not in slugs:
                 slugs.append(m.group(2))
 
-    # If the pattern matched but yielded no slugs (e.g. empty array or
-    # only comments), honour NULL semantics — empty restriction ≠ no restriction.
+    # The pattern matched but yielded no slugs (empty array or only comments): the list
+    # is unknown, never "accepts any".
     if not slugs:
-        return None
+        return _DYNAMIC_SKIP  # type: ignore[return-value]
 
     return slugs
 
@@ -3207,22 +3206,24 @@ def _populate_allowed_blocks(
     write a JSON-array string into block_composition.accepts_allowed_blocks
     (UPDATE only when the stored value differs — write-on-drift, idempotent).
 
-    Blocks with no allowedBlocks found, or a dynamic allowedBlocks expression, leave the
-    stored value untouched (dynamic ones are counted in dynamic_skipped): the scraper
-    returns None both when edit.js declares no list and when it cannot parse the
-    declaration (sgs/multi-button's `const allowedBlocks = [...]`), so a None never clears
-    a value written earlier.
+    A block whose edit.js declares no allowedBlocks accepts any block: its stored value is
+    cleared to NULL (write-on-drift), so a declaration removed from edit.js never survives in
+    the DB. A dynamic or unparseable declaration is unknown: the stored value is kept and the
+    block is counted in dynamic_skipped. NULL in the column therefore means "accepts any
+    block", never "not yet scraped".
 
     Returns counters:
         allowed_blocks_scanned    — edit.js files examined
         allowed_blocks_populated  — rows that now carry a non-NULL value
                                     (newly written + already-correct)
-        allowed_blocks_updated    — rows actually UPDATEd this run (drift)
+        allowed_blocks_updated    — rows actually UPDATEd this run (drift, including clears)
+        allowed_blocks_cleared    — rows set back to NULL because edit.js declares none
         allowed_blocks_dynamic_skipped — edit.js with dynamic expressions
     """
     scanned = 0
     populated = 0
     updated = 0
+    cleared = 0
     dynamic_skipped = 0
 
     for block_dir in sorted(blocks_dir.iterdir()):
@@ -3238,13 +3239,10 @@ def _populate_allowed_blocks(
 
         if result is _DYNAMIC_SKIP:
             dynamic_skipped += 1
-            continue  # leave column NULL — dynamic means we cannot know statically
+            continue  # unknown — keep whatever is stored
 
-        if result is None:
-            continue  # no declaration → leave column NULL
-
-        # Literal array found — serialise to canonical JSON.
-        new_value = json.dumps(result, ensure_ascii=False)
+        # No declaration → accepts any block → NULL. A literal array → canonical JSON.
+        new_value = None if result is None else json.dumps(result, ensure_ascii=False)
 
         # Derive block slug from block.json (same logic as _index_sgs_block_files).
         block_json_path = block_dir / "block.json"
@@ -3265,9 +3263,10 @@ def _populate_allowed_blocks(
                 (slug,),
             ).fetchone()
             if existing_row is not None:
-                populated += 1
+                populated += new_value is not None
                 if existing_row[0] != new_value:
                     updated += 1
+                    cleared += new_value is None
             continue
 
         # Write-on-drift: fetch current stored value.
@@ -3288,13 +3287,15 @@ def _populate_allowed_blocks(
                 (new_value, slug),
             )
             updated += 1
+            cleared += new_value is None
 
-        populated += 1
+        populated += new_value is not None
 
     return {
         "allowed_blocks_scanned": scanned,
         "allowed_blocks_populated": populated,
         "allowed_blocks_updated": updated,
+        "allowed_blocks_cleared": cleared,
         "allowed_blocks_dynamic_skipped": dynamic_skipped,
     }
 

@@ -210,12 +210,9 @@ const innerBlocksProps = useInnerBlocksProps(blockProps, {
     allowedBlocks,
 });
 """)
-        # No literal ALLOWED_BLOCKS = [ ... ] or allowedBlocks: [ ... ] here,
-        # so the parser returns None (absent), not _DYNAMIC_SKIP.  The container
-        # block is the canonical live example of the dynamic pattern — tested in
-        # the integration suite below.
-        result = scrape_allowed_blocks(edit)
-        assert result is None  # absent declaration, not a dynamic array literal
+        # The keyword is present but no literal array follows: the list is unknown, so the
+        # parser returns the sentinel (stored value kept), never None ("accepts any block").
+        assert scrape_allowed_blocks(edit) is _DYNAMIC_SKIP
 
     def test_dynamic_variable_passed_as_prop(self, tmp_path: Path) -> None:
         """ALLOWED_BLOCKS const containing a spread is classified dynamic."""
@@ -242,14 +239,17 @@ export default function Edit({ attributes, setAttributes }) {
         result = scrape_allowed_blocks(edit)
         assert result is None
 
-    def test_empty_allowed_blocks_array_returns_none(self, tmp_path: Path) -> None:
-        """allowedBlocks: [] (empty array) → None — absence of restriction ≠ empty."""
+    def test_empty_allowed_blocks_array_is_unknown(self, tmp_path: Path) -> None:
+        """allowedBlocks: [] (empty array) is unknown, never "accepts any block"."""
         edit = _write_edit_js(tmp_path, """
 allowedBlocks: [],
 """)
-        result = scrape_allowed_blocks(edit)
-        # No slugs found → treated as None by the parser
-        assert result is None
+        assert scrape_allowed_blocks(edit) is _DYNAMIC_SKIP
+
+    def test_no_declaration_returns_none(self, tmp_path: Path) -> None:
+        """A file with no allowedBlocks at all returns None: the block accepts any block."""
+        edit = _write_edit_js(tmp_path, "const innerBlocksProps = useInnerBlocksProps( blockProps, { template: TEMPLATE } );")
+        assert scrape_allowed_blocks(edit) is None
 
     def test_template_const_not_confused_with_allowed(self, tmp_path: Path) -> None:
         """CTA_TEMPLATE = [ ... ] must NOT be confused with an allowed-blocks list."""
@@ -415,3 +415,85 @@ class TestIntegrationRealBlocks:
         assert row[0] > 0, (
             "No rows have accepts_allowed_blocks populated — scrape sub-step did not write."
         )
+
+
+
+# ---------------------------------------------------------------------------
+# Stale values: "declares none" clears, "unknown" keeps, and the DB agrees with every edit.js
+# ---------------------------------------------------------------------------
+
+def _fake_blocks_dir(tmp_path: Path, edit_js: str) -> Path:
+    block = tmp_path / "blocks" / "demo"
+    block.mkdir(parents=True)
+    (block / "block.json").write_text(json.dumps({"name": "sgs/demo"}), encoding="utf-8")
+    (block / "edit.js").write_text(edit_js, encoding="utf-8")
+    return tmp_path / "blocks"
+
+
+def _demo_conn(stored: str | None) -> sqlite3.Connection:
+    conn = sqlite3.connect(":memory:")
+    conn.execute("CREATE TABLE block_composition (block_slug TEXT PRIMARY KEY, accepts_allowed_blocks TEXT)")
+    conn.execute("INSERT INTO block_composition VALUES ('sgs/demo', ?)", (stored,))
+    return conn
+
+
+class TestStaleAcceptsList:
+    def test_removed_declaration_clears_the_stored_list(self, tmp_path: Path) -> None:
+        """MUST FAIL before the fix: an edit.js with no allowedBlocks (accepts any block) clears a value written earlier."""
+        blocks = _fake_blocks_dir(tmp_path, "const t = [ [ 'sgs/label' ] ];")
+        conn = _demo_conn('["sgs/media"]')
+        counts = _populate_allowed_blocks(blocks, conn.cursor(), dry_run=False)
+        assert conn.execute("SELECT accepts_allowed_blocks FROM block_composition").fetchone()[0] is None
+        assert counts["allowed_blocks_cleared"] == 1 and counts["allowed_blocks_updated"] == 1
+
+    def test_unparseable_declaration_keeps_the_stored_list(self, tmp_path: Path) -> None:
+        """Negative control: a declaration the scraper cannot read is unknown and never clears."""
+        blocks = _fake_blocks_dir(tmp_path, "const allowedBlocks = cond ? X : undefined; use( { allowedBlocks } );")
+        conn = _demo_conn('["sgs/media"]')
+        counts = _populate_allowed_blocks(blocks, conn.cursor(), dry_run=False)
+        assert conn.execute("SELECT accepts_allowed_blocks FROM block_composition").fetchone()[0] == '["sgs/media"]'
+        assert counts["allowed_blocks_dynamic_skipped"] == 1 and counts["allowed_blocks_cleared"] == 0
+
+    def test_literal_declaration_still_writes(self, tmp_path: Path) -> None:
+        blocks = _fake_blocks_dir(tmp_path, "const ALLOWED_BLOCKS = [ 'sgs/button' ];")
+        conn = _demo_conn('["sgs/media"]')
+        _populate_allowed_blocks(blocks, conn.cursor(), dry_run=False)
+        assert conn.execute("SELECT accepts_allowed_blocks FROM block_composition").fetchone()[0] == '["sgs/button"]'
+
+    @staticmethod
+    def _disagreements(conn: sqlite3.Connection) -> list[str]:
+        """Every sgs block whose stored list differs from its edit.js declaration (unknown declarations excluded)."""
+        out: list[str] = []
+        for block_dir in sorted(_BLOCKS_DIR.iterdir()):
+            edit_js = block_dir / "edit.js"
+            bj = block_dir / "block.json"
+            if block_dir.name in _UPDATE_MOD.EXCLUDED_DIRS or not edit_js.exists() or not bj.exists():
+                continue
+            slug = json.loads(bj.read_text(encoding="utf-8")).get("name", f"sgs/{block_dir.name}")
+            row = conn.execute("SELECT accepts_allowed_blocks FROM block_composition WHERE block_slug = ?", (slug,)).fetchone()
+            declared = scrape_allowed_blocks(edit_js)
+            if row is None or declared is _DYNAMIC_SKIP:
+                continue
+            expected = None if declared is None else json.dumps(declared, ensure_ascii=False)
+            if row[0] != expected:
+                out.append(f"{slug}: DB {row[0]} vs edit.js {expected}")
+        return out
+
+    def test_scratch_db_agrees_with_every_edit_js_after_populate(self) -> None:
+        conn = _scratch_db_copy()
+        try:
+            before = self._disagreements(conn)
+            _populate_allowed_blocks(_BLOCKS_DIR, conn.cursor(), dry_run=False)
+            assert self._disagreements(conn) == [], "populate left a block disagreeing with its edit.js"
+        finally:
+            conn.close()
+        # Negative control: the scratch copy of an unseeded DB is allowed to disagree beforehand; the check itself runs.
+        assert isinstance(before, list)
+
+    def test_framework_db_agrees_with_every_edit_js(self) -> None:
+        """The shared framework DB matches every edit.js. Red means a reseed (sgs-update-v2.py) is needed."""
+        src = sqlite3.connect(f"file:{_REAL_DB.as_posix()}?mode=ro", uri=True)
+        try:
+            assert self._disagreements(src) == []
+        finally:
+            src.close()

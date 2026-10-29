@@ -32,3 +32,23 @@ export function reachCalls( text ) {
 	}
 	return out;
 }
+
+// A surfaces.json state's structured way in (Spec 48A FR-48A-13): `how_to_reach_structured` is
+// { setState: { <key>: <value> }, storeCalls: [ { path: 'MM.account.signIn', args: [ ...literals ] } ], event: { type, target } }.
+// Returns { set: [{ ident, args }], store: [{ ident, store: true, path, args }] } in the shapes reachCalls and
+// intake-store-calls.mjs::storeCalls give, or null when the state carries no setState and no store call (the caller then
+// reads the how_to_reach prose). `event` is recorded for the reader and not run here.
+export function structuredReach( state ) {
+	const s = state?.how_to_reach_structured;
+	if ( ! s || 'object' !== typeof s ) {
+		return null;
+	}
+	const set = s.setState && 'object' === typeof s.setState && ! Array.isArray( s.setState ) && Object.keys( s.setState ).length ? [ { ident: 'this', args: JSON.stringify( s.setState ) } ] : [];
+	const store = ( Array.isArray( s.storeCalls ) ? s.storeCalls : [] )
+		.filter( ( c ) => 'string' === typeof c?.path && c.path.includes( '.' ) && ( c.args === undefined || Array.isArray( c.args ) ) )
+		.map( ( c ) => {
+			const parts = c.path.split( '.' ).map( ( p ) => p.trim() ).filter( Boolean );
+			return { ident: parts[ 0 ], store: true, path: parts.slice( 1 ), args: c.args || [] };
+		} );
+	return set.length || store.length ? { set, store } : null;
+}
