@@ -72,6 +72,11 @@ test( 'MUST FAIL (an icon\'s shape is paired): a block root with no box settings
 	assert.ok( ! ( '.sgs-icon__shape > .sgs-icon__glyph' in r.slots ) );
 } );
 
+test( 'negative control: a draft that draws a whole testimonial as one paragraph gives none of its word parts that paragraph', () => {
+	const r = run( 'sgs/testimonial', [ { key: 'Root/1#0', parentKey: null, depth: 0, tag: 'p', words: 'Lovely biscuits, Sam', visible: { 375: true, 768: true, 1440: true } } ], 'Root/1#0' );
+	assert.ok( ! ( '.sgs-testimonial__quote' in r.slots ), 'two word parts are no evidence for either' );
+} );
+
 test( 'negative control: a block whose root holds its own box settings never pairs a part onto a leaf draft element (a heading\'s link part on a bare h1)', () => {
 	const r = run( 'sgs/heading', [ { key: 'Root/1#0', parentKey: null, depth: 0, tag: 'h1', words: 'Title', visible: { 375: true, 768: true, 1440: true } } ], 'Root/1#0' );
 	assert.deepEqual( r.slots, {} );
@@ -247,6 +252,11 @@ test( 'MUST FAIL (a product card\'s content part): the saving badge is the eleme
 	assert.ok( ! Object.entries( r.slots ).some( ( [ k, f ] ) => 'Root>Frame Card@139#0/15#0' === f.tpl && /__(title|attribute-tag|saving)/.test( k ) ) );
 	// A loop deep in one branch (the card's colour swatches) is no copy of a part standing at the card's top.
 	assert.ok( ! /\/31#/.test( r.slots[ 'div:nth-of-type(1)' ]?.tpl ?? '' ), 'the image box is no swatch' );
+	// The card's image box and body are not the section that wraps the card: their parts pair deeper, so neither is guessed.
+	for ( const part of [ 'div:nth-of-type(1)', '.sgs-product-card__body' ] ) {
+		assert.ok( ! ( part in r.slots ), `${ part } is not the wrapping section` );
+		assert.match( r.unpaired.find( ( u ) => part === u.slot ).reason, /only wraps it/ );
+	}
 } );
 
 test( 'wrappers only the draft draws around a loop or around the parts pass through', () => {
@@ -268,6 +278,11 @@ test( 'MUST FAIL (an hours row): the business hours block\'s first row is the dr
 	assert.equal( r.slots[ ROW( 1 ) ]?.tpl, 'Root/677#0' );
 	assert.equal( r.slots[ `${ ROW( 1 ) } > .sgs-business-hours__day` ]?.tpl, 'Root/678#0' );
 	assert.ok( r.unpaired.some( ( u ) => ROW( 2 ) === u.slot ), 'the second row, which the draft does not draw here, stays unpaired' );
+	// Negative control: a day span printing content of its own that the block holds no setting for (a title) is no day part.
+	const titled = one( 'sgs/business-info', 'Root/677#0', F.elements.hours, { attributes: { displayType: 'hours' } }, { 'Root/678#0': [ 'title' ], 'Root/679#0': [ 't' ] } );
+	assert.ok( ! ( `${ ROW( 1 ) } > .sgs-business-hours__day` in titled.slots ) );
+	const alone = one( 'sgs/business-info', 'Root/677#0', F.elements.hours.filter( ( e ) => 'Root/679#0' !== e.key ), { attributes: { displayType: 'hours' } }, { 'Root/678#0': [ 'title' ] } );
+	assert.ok( ! ( `${ ROW( 1 ) } > .sgs-business-hours__day` in alone.slots ), 'even as the only candidate' );
 } );
 
 test( 'content identity: a written value finds the one element showing it, folded; two elements that could supply it are no evidence', () => {
@@ -278,4 +293,36 @@ test( 'content identity: a written value finds the one element showing it, folde
 	assert.match( r.notes.find( ( n ) => '.x__twin' === n.slot ).reason, /2 draft elements could supply twin/ );
 	const fields = contentPairs( { text, els, fieldsOf: ( e ) => ( [ 'c', 'd' ].includes( e.key ) ? [ 'label' ] : [] ) } );
 	assert.equal( fields.pairs[ '.x__label' ], undefined, 'a field two elements print supplies no part' );
+	// A field a setting would take only by a later role (a title for a name) supplies no part: it is not that setting's content.
+	const later = contentPairs( { text: { name: { path: '.x__name' } }, els: [ { key: 'h' } ], fieldsOf: () => [ 'title' ] } );
+	assert.equal( later.pairs[ '.x__name' ], undefined );
+	// A setting's role is its head word's: a review link's label is a label, never the review's text.
+	const label = contentPairs( { text: { reviewLinkLabel: { path: '.x__link' } }, els: [ { key: 'q' } ], fieldsOf: () => [ 'text' ] } );
+	assert.equal( label.pairs[ '.x__link' ], undefined );
+	// A field plays only its first role (a name is an author, never a label), and a label holds only where field and setting
+	// share a word of their own (a saveLabel is the savingLabel; a ratingLabel is no noImageLabel).
+	const labels = { noImageLabel: { path: '.x__none' }, savingLabel: { path: '.x__save' } };
+	const by = contentPairs( { text: labels, els: [ { key: 'n' }, { key: 'r' }, { key: 's' } ], fieldsOf: ( e ) => ( { n: [ 'name' ], r: [ 'ratingLabel' ], s: [ 'saveLabel' ] }[ e.key ] ) } );
+	assert.deepEqual( [ by.pairs[ '.x__none' ], by.pairs[ '.x__save' ]?.key ], [ undefined, 's' ] );
+} );
+
+const REVIEW = ( k ) => `.sgs-google-reviews__slider > .sgs-google-reviews__list > .sgs-google-reviews__review:nth-of-type(${ k })`;
+test( 'MUST FAIL (a loop of cards in the layout the block paints): the reviews slider\'s review cards are the draft\'s review copies; the grid layout\'s bare list is the other render\'s', () => {
+	const r = run( 'sgs/google-reviews', F.elements.reviews, 'Root/191#0' );
+	assert.equal( r.slots[ REVIEW( 1 ) ]?.tpl, 'Root/193#0' );
+	assert.equal( r.slots[ REVIEW( 2 ) ]?.tpl, 'Root/193#1' );
+	assert.match( r.unpaired.find( ( u ) => '.sgs-google-reviews__list' === u.slot ).reason, /another render/ );
+	// Negative controls: the aggregate's stars and the breakdown rows, which the draft does not draw, never take the review
+	// copies, and nothing inside a card is guessed where its parts cannot be told apart.
+	assert.ok( ! Object.keys( r.slots ).some( ( k ) => /__aggregate|__breakdown/.test( k ) ), 'the aggregate and breakdown the draft does not draw read nothing' );
+	assert.ok( ! Object.keys( r.slots ).some( ( k ) => /__review-header > /.test( k ) ) );
+} );
+
+test( 'MUST FAIL (the reviews block as the proposal pairs it, with the fact record\'s fields): each card is its copy, and no part inside a card is guessed where the draft gives no evidence', () => {
+	const r = one( 'sgs/google-reviews', 'Root/191#0', F.elements.reviews, { attributes: { maxReviews: 3 } } );
+	assert.deepEqual( [ 1, 2, 3 ].map( ( k ) => r.slots[ REVIEW( k ) ]?.tpl ), [ 'Root/193#0', 'Root/193#1', 'Root/193#2' ] );
+	assert.deepEqual( Object.keys( r.slots ).filter( ( k ) => /__review:nth-of-type\(\d\) > /.test( k ) ), [], 'no header, content, date, text or link part takes an element by a guess' );
+	// An element printing content the block holds no setting for (the record's fields here) is no part at all.
+	const printing = Object.keys( F.fields ).filter( ( k ) => F.elements.reviews.some( ( e ) => e.key === k ) && ! k.startsWith( 'Root/193#' ) );
+	assert.ok( ! Object.values( r.slots ).some( ( f ) => printing.includes( f.tpl ) ) );
 } );

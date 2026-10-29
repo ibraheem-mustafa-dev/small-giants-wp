@@ -247,6 +247,18 @@ test( 'MUST FAIL: a key\'s later role takes a field when the block\'s item has n
 	assert.deepEqual( matchFields( [ { name: 'customer', image: false }, { name: 'heading', image: false } ], [ { key: 'name' }, { key: 'title' } ] ).map, { customer: 'name', heading: 'title' } );
 } );
 
+test( "MUST FAIL (a setting takes the field named for it first): a client's testimonial loop prints title, text, name and date; the reviewer's name takes the name field, never the headline, and no setting takes the headline by a word that only qualifies it", () => {
+	// The fields Mama's testimonial loop prints (the fact record's holes r.title, r.text, r.name, r.date, in document order)
+	// and sgs/testimonial's content keys as the DB lists them (lib/fill-list-content.mjs::listTarget on sgs/testimonial-slider).
+	const fields = [ 'title', 'text', 'name', 'date' ].map( ( name ) => ( { name, image: false } ) );
+	const keys = [ 'quote', 'summaryPhrase', 'reviewerName', 'reviewerRole', 'orgName', 'avatarMedia', 'orgLogo', 'workMedia', 'reviewDate', 'sourcePlatform' ].map( ( key ) => ( { key } ) );
+	const got = matchFields( fields, keys );
+	assert.deepEqual( got.map, { text: 'quote', name: 'reviewerName', date: 'reviewDate' } );
+	assert.deepEqual( got.unmatched, [ 'title' ], 'the headline is a named row, never the organisation' );
+	// Negative control: a key whose word is its primary role's keeps taking a later role (the team member's name above).
+	assert.deepEqual( matchFields( [ { name: 'title', image: false } ], [ { key: 'name' } ] ).map, { title: 'name' } );
+} );
+
 test( 'the item-role vocabulary is data: a file breaking its schema or naming a role twice is refused', () => {
 	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'item-roles-' ) );
 	fs.copyFileSync( ITEM_ROLES_FILE.replace( /\.json$/, '.schema.json' ), path.join( dir, 'item-roles.schema.json' ) );

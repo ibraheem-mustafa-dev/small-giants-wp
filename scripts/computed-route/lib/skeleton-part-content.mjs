@@ -8,7 +8,7 @@
 //     dashes).
 // A setting two elements could supply stays unpaired with its reason; parts whose settings all hold words (a quote, a name, a
 // role) are told apart this way where kinds and order cannot.
-import { matchFields } from './fill-list-content.mjs';
+import { matchFields, fieldRoles } from './fill-list-content.mjs';
 
 // The words of a value or an element, folded: white space collapsed, curly quotes straight, dashes one hyphen.
 export const fold = ( s ) => String( s ?? '' ).replace( /[‘’‚‛]/g, '\'' ).replace( /[“”„‟]/g, '"' ).replace( /[‐-―−]/g, '-' ).replace( /\s+/g, ' ' ).trim();
@@ -16,8 +16,9 @@ export const fold = ( s ) => String( s ?? '' ).replace( /[‘’‚‛]/g, '\'' 
 // text: the slot map's `text` section ({ <attr>: { path } }); attributes: the node's settings; els: the draft elements the node
 // owns (its own subtree, other nodes' elements excluded); fieldsOf( e ): the text fields element e prints ([ name ]); words( e ):
 // its own words. Returns { pairs: { <path>: element }, notes: [ { slot, reason } ], reserved: [ element ] }: `reserved` are the
-// elements printing a field the matcher gives one of the block's content settings only as a later role (a review headline
-// beside a testimonial's name), which are that content's and no other part.
+// elements printing a field that plays a content role (data/item-roles.json) no setting of the block takes (a review headline
+// beside a testimonial's quote), which are that content's and no other part; a field playing no role (an hours row's `d`)
+// leaves its element free.
 export function contentPairs( { text = {}, attributes = {}, els = [], fieldsOf = () => [], words = ( e ) => e.words } ) {
 	const out = { pairs: {}, notes: [], reserved: [] };
 	const paths = Object.fromEntries( Object.entries( text ).filter( ( [ , t ] ) => 'string' === typeof t?.path && t.path ).map( ( [ a, t ] ) => [ a, t.path ] ) );
@@ -27,8 +28,7 @@ export function contentPairs( { text = {}, attributes = {}, els = [], fieldsOf =
 	const byField = new Map();
 	els.forEach( ( e ) => fieldsOf( e ).forEach( ( f ) => byField.set( f, [ ...( byField.get( f ) || [] ), e ] ) ) );
 	const { map } = matchFields( [ ...byField.keys() ].map( ( name ) => ( { name } ) ), Object.keys( paths ).map( ( key ) => ( { key } ) ), { primaryOnly: true } );
-	const loose = matchFields( [ ...byField.keys() ].map( ( name ) => ( { name } ) ), Object.keys( paths ).map( ( key ) => ( { key } ) ) ).map;
-	out.reserved = Object.keys( loose ).filter( ( f ) => ! ( f in map ) ).flatMap( ( f ) => byField.get( f ) );
+	out.reserved = [ ...byField.keys() ].filter( ( f ) => ! ( f in map ) && fieldRoles( f ).length ).flatMap( ( f ) => byField.get( f ) );
 	const supplier = {};
 	for ( const [ field, attr ] of Object.entries( map ) ) {
 		supplier[ attr ] = byField.get( field );

@@ -46,13 +46,20 @@ export const wordsOf = ( name ) => String( name ).split( '.' ).pop().replace( /(
 // Every role a name's words name, in priority order: a field may take each; a key's first is its primary role.
 export const fieldRoles = ( name ) => ITEM_ROLES.filter( ( [ , words ] ) => wordsOf( name ).some( ( w ) => words.has( w ) ) ).map( ( [ r ] ) => r );
 export const keyRole = ( name ) => fieldRoles( name )[ 0 ] ?? null;
+// Whether a key plays `role` as a later role through the words that give it its primary one: a team member's `name` is an
+// author and, by the same word, a title; an `orgName` is an organisation, and its `name` only says which of the
+// organisation's words it holds, so it never takes a title.
+const viaWords = ( name, role ) => wordsOf( name ).filter( ( w ) => ITEM_ROLES.find( ( [ r ] ) => r === role )?.[ 1 ].has( w ) );
+export const laterRole = ( name, role ) => fieldRoles( name ).includes( role ) && viaWords( name, role ).every( ( w ) => viaWords( name, keyRole( name ) ).includes( w ) );
 
 // Each draft field's item key: { map: { field: key }, unmatched: [field] }. fields: [{ name, image }]; keys: [{ key }].
-// A field takes the key of its own name first. Otherwise, for each role the field plays in order, it takes an open key whose
-// primary role that is; only when the block's item has no such key does a key that names the role as a later one take it
-// (a team member's `name`, primary role author, takes a draft `title` when the item has no title key). Within either
-// tier a tie goes to the key sharing a word with the field. primaryOnly keeps to a key of the field's own name or of a role
-// the key holds first (lib/skeleton-part-content.mjs: a part is paired only where the field is that setting's content).
+// A field takes the key of its own name first. Then every field, for each role it plays in order, takes an open key whose
+// primary role that is, so a setting takes the field named for it before any field takes it by a later role (a testimonial's
+// `name` field is its reviewer's name even when a `title` field comes first). Only then does a field left over take a key
+// that plays one of its roles as a later one through the words of its primary role (laterRole: a team member's `name`, primary
+// role author, takes a draft `title` when the item has no title key; an `orgName` never does). Within either tier a tie goes to the key sharing a word with the field. primaryOnly stops before the later
+// roles (lib/skeleton-part-content.mjs: a part is paired only where the field is that setting's content).
+const GENERIC = [ 'title', 'description' ];
 export function matchFields( fields, keys, { primaryOnly = false } = {} ) {
 	const map = {};
 	const used = new Set();
@@ -65,17 +72,25 @@ export function matchFields( fields, keys, { primaryOnly = false } = {} ) {
 		k && take( f, k );
 	}
 	const pick = ( f, open ) => open.find( ( k ) => wordsOf( k.key ).some( ( w ) => wordsOf( f.name ).includes( w ) ) ) ?? open[ 0 ];
-	for ( const f of fields.filter( ( x ) => ! ( x.name in map ) ) ) {
-		for ( const role of f.image ? [ 'image' ] : fieldRoles( f.name ) ) {
-			const free = keys.filter( ( k ) => ! used.has( k.key ) );
-			const primary = free.filter( ( k ) => keyRole( k.key ) === role );
-			const open = primary.length || primaryOnly ? primary : free.filter( ( k ) => fieldRoles( k.key ).includes( role ) );
-			if ( open.length ) {
-				take( f, pick( f, open ) );
-				break;
+	const tier = ( holds ) => {
+		for ( const f of fields.filter( ( x ) => ! ( x.name in map ) ) ) {
+			for ( const role of f.image ? [ 'image' ] : fieldRoles( f.name ) ) {
+				const open = keys.filter( ( k ) => ! used.has( k.key ) && holds( k, role ) && ( ! primaryOnly || kin( k, f, role ) ) );
+				if ( open.length ) {
+					take( f, pick( f, open ) );
+					break;
+				}
 			}
 		}
-	}
+	};
+	// In primaryOnly a key's role is its head word's (the last word of a compound: a reviewLinkLabel is a label, not a review),
+	// and a label or text role, which many settings share, holds only where field and key also share a word of their own (a
+	// `saveLabel` is the `savingLabel`; a `ratingLabel` or a `name` is no `noImageLabel`).
+	const head = ( name ) => fieldRoles( wordsOf( name ).at( -1 ) ?? '' )[ 0 ] ?? keyRole( name );
+	const own = ( name ) => wordsOf( name ).filter( ( w ) => ! fieldRoles( w ).length ).map( ( w ) => w.slice( 0, 3 ) );
+	const kin = ( k, f, role ) => ! GENERIC.includes( role ) || own( k.key ).some( ( w ) => own( f.name ).includes( w ) );
+	tier( ( k, role ) => ( primaryOnly ? head( k.key ) : keyRole( k.key ) ) === role );
+	primaryOnly || tier( ( k, role ) => laterRole( k.key, role ) );
 	return { map, unmatched: fields.filter( ( f ) => ! ( f.name in map ) ).map( ( f ) => f.name ) };
 }
 
