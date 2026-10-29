@@ -1,0 +1,68 @@
+[
+ {
+  "file": "lib/fill-list-content.mjs",
+  "find": "|| ! has( 'id', [ 'integer', 'number' ] ) ) {",
+  "replace": "|| false ) {",
+  "why": "an item without an id key is taken for a media-slot item"
+ },
+ {
+  "file": "lib/fill-list-content.mjs",
+  "find": "if ( keys.some( ( k ) => 'image' === keyRole( k.key ) ) ||",
+  "replace": "if (",
+  "why": "an item with an image-role key is also given a picture slot"
+ },
+ {
+  "file": "lib/fill-list-content.mjs",
+  "find": "Object.assign( attrs, { [ slot.url ]: hit.url, [ slot.id ]: hit.id } );",
+  "replace": "void hit;",
+  "why": "a picture the media map holds is not written"
+ },
+ {
+  "file": "lib/fill-list-content.mjs",
+  "find": "slot.alt && alt && ( attrs[ slot.alt ] = alt );",
+  "replace": "void alt;",
+  "why": "the draft's alt text is not written"
+ },
+ {
+  "file": "lib/fill-list-content.mjs",
+  "find": "const matched = matchFields( slot ? list.fields.filter( ( f ) => ! pictures.includes( f ) ) : list.fields, target.keys.filter( ( k ) => ! slotKeys.includes( k.key ) ) );",
+  "replace": "const matched = matchFields( list.fields, target.keys );",
+  "why": "the picture field and the picture keys are matched like any other field and key"
+ },
+ {
+  "file": "lib/fill-list-content.mjs",
+  "find": "...pictures.slice( 1 ).map( ( f ) => f.name )",
+  "replace": "",
+  "why": "a second picture field is dropped without a row"
+ },
+ {
+  "file": "lib/fill-list-content.mjs",
+  "find": "out.rows.push( 1 === rows.length ? rows[ 0 ] :",
+  "replace": "out.rows.push( rows[ 0 ] ); void (",
+  "why": "a list of missing pictures is not one row"
+ },
+ {
+  "file": "lib/fill-list-content.mjs",
+  "find": "built.forEach( ( b ) => out.rows.push( ...b.rows.filter( ( r ) => ! r.picture ) ) );",
+  "replace": "built.forEach( ( b ) => out.rows.push( ...b.rows ) );",
+  "why": "each missing picture is also its own row"
+ },
+ {
+  "file": "lib/fill-list-content.mjs",
+  "find": "rows.push( { field: pictureField, value: v ?? '', picture: true,",
+  "replace": "rows.push( { field: pictureField, value: v ?? '',",
+  "why": "a missing picture is no longer told from other rows"
+ },
+ {
+  "file": "lib/fill-list-items.mjs",
+  "find": "...( isAlt( f ) ? { alt: true } : {} ) } );\n\t\t\t\tif ( f.image ) {",
+  "replace": "...{} } );\n\t\t\t\tif ( f.image ) {",
+  "why": "the picture's description field is not marked in a loop"
+ },
+ {
+  "file": "lib/fill-list-items.mjs",
+  "find": "const isAlt = ( f ) => 'alt' === f.attr || 'placeholder' === f.attr;",
+  "replace": "const isAlt = ( f ) => false;",
+  "why": "no field is the picture's description"
+ }
+]

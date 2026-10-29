@@ -39,6 +39,9 @@ export function holeField( hole, tag ) {
 	return { head: parts[ 0 ], name: parts.slice( 1 ).join( '.' ), image, text: 'text' === hole.where, attr: /^attr:(.+)$/.exec( hole.where )?.[ 1 ] ?? null };
 }
 
+// Whether an item field is the description of the item's picture: an `alt` attribute, or an image placeholder's `placeholder`.
+const isAlt = ( f ) => 'alt' === f.attr || 'placeholder' === f.attr;
+
 // The fact record's template element for an inventory instance key.
 const factOf = ( facts, key, rootComponent ) => facts?.elements?.[ templateKeyOf( key, rootComponent ) ]?.template ?? null;
 
@@ -104,7 +107,7 @@ export function loopItems( { inventory, facts, rootKey, rootComponent = null } )
 			const own = ( t?.holes || [] ).map( ( h ) => holeField( h, t.realTag || t.tag ) ).filter( ( f ) => f && f.head === loop.as );
 			const texts = own.filter( ( f ) => f.text );
 			for ( const f of own ) {
-				fields.set( f.name, { name: f.name, image: f.image } );
+				fields.set( f.name, { name: f.name, image: f.image, ...( isAlt( f ) ? { alt: true } : {} ) } );
 				if ( f.image ) {
 					// The rendered inventory keeps no image address: the item names its field, its value unread.
 					item[ f.name ] ??= null;
@@ -142,7 +145,7 @@ export function currentItems( { facts, rootKey, rootComponent = null, idx } ) {
 			const f = holeField( h, t.realTag || t.tag );
 			if ( f && ! loopVars.has( f.head ) ) {
 				const list = heads.get( f.head ) ?? new Map();
-				list.set( f.name, { name: f.name, image: f.image } );
+				list.set( f.name, { name: f.name, image: f.image, ...( isAlt( f ) ? { alt: true } : {} ) } );
 				heads.set( f.head, list );
 			}
 		}

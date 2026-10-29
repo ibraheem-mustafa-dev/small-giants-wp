@@ -78,6 +78,18 @@ export function matchFields( fields, keys ) {
 	return { map, unmatched: fields.filter( ( f ) => ! ( f.name in map ) ).map( ( f ) => f.name ) };
 }
 
+// The picture slot of a list item that holds the unified media-slot shape (the shape lib/skeleton-write-content.mjs and
+// sgs_render_media() read: a `url` string and an `id` number, with an optional `alt`) and has no key of its own for a picture
+// (no key whose name plays the image role): { url, id, alt } key names, else null. A draft picture field is written into it
+// through the media map, as an image-role key would be.
+export function pictureSlot( keys ) {
+	const has = ( name, types ) => keys.find( ( k ) => k.key === name && types.includes( k.type ) );
+	if ( keys.some( ( k ) => 'image' === keyRole( k.key ) ) || ! has( 'url', [ 'string' ] ) || ! has( 'id', [ 'integer', 'number' ] ) ) {
+		return null;
+	}
+	return { url: 'url', id: 'id', alt: has( 'alt', [ 'string' ] ) ? 'alt' : null };
+}
+
 const typeOf = ( v ) => ( Array.isArray( v ) ? 'array' : null === v ? null : 'number' === typeof v ? 'number' : typeof v );
 const one = ( t ) => [].concat( t ?? [] )[ 0 ] ?? null;
 
@@ -125,9 +137,23 @@ const escapeText = ( s ) => String( s ).replace( /&/g, '&amp;' ).replace( /</g, 
 export const itemPicture = pictureEntry;
 
 // One item's settings from the draft item: { attrs, rows } where rows are [{ field, value, reason }] the item cannot hold.
-export function itemAttrs( item, { map, keys, media, pages = null, label } ) {
+export function itemAttrs( item, { map, keys, media, pages = null, label, slot = null, pictureField = null, altField = null } ) {
 	const attrs = {};
 	const rows = [];
+	// The draft's picture goes into the item's picture slot: the file the media map holds for it (url and attachment id), else
+	// the item keeps an empty picture and its row says the picture is the client's to supply. The picture's description is the
+	// draft's own alt text.
+	if ( slot && pictureField ) {
+		const v = item[ pictureField ];
+		const hit = null === v || undefined === v ? null : itemPicture( v, media );
+		if ( hit ) {
+			Object.assign( attrs, { [ slot.url ]: hit.url, [ slot.id ]: hit.id } );
+		} else {
+			rows.push( { field: pictureField, value: v ?? '', picture: true, reason: `${ label }'s picture (${ pictureField }${ v ? ` "${ v }"` : '' }) is chosen by the draft at run time or is no uploaded file: choose it in the item's ${ slot.url } setting` } );
+		}
+		const alt = altField ? String( item[ altField ] ?? '' ).replace( /\s+/g, ' ' ).trim() : '';
+		slot.alt && alt && ( attrs[ slot.alt ] = alt );
+	}
 	for ( const [ field, key ] of Object.entries( map ) ) {
 		const k = keys.find( ( x ) => x.key === key );
 		const v = item[ field ];
@@ -183,8 +209,15 @@ export function listDecisions( { block, target, node, list, media = {}, pages = 
 	if ( kids.some( ( k ) => k.name !== target.child ) ) {
 		return out;
 	}
-	const { map, unmatched } = matchFields( list.fields, target.keys );
-	const built = list.items.map( ( item, i ) => itemAttrs( item, { map, keys: target.keys, media, pages, label: `item ${ i + 1 }` } ) );
+	// An item that holds the media-slot shape takes the draft's first picture field into it; the other fields are matched to the rest of its keys.
+	const slot = pictureSlot( target.keys );
+	const pictures = slot ? list.fields.filter( ( f ) => f.image ) : [];
+	const slotKeys = slot ? [ slot.url, slot.id, slot.alt ] : [];
+	const matched = matchFields( slot ? list.fields.filter( ( f ) => ! pictures.includes( f ) ) : list.fields, target.keys.filter( ( k ) => ! slotKeys.includes( k.key ) ) );
+	const { map } = matched;
+	const unmatched = [ ...matched.unmatched, ...pictures.slice( 1 ).map( ( f ) => f.name ) ];
+	const altField = list.fields.find( ( f ) => f.alt )?.name ?? null;
+	const built = list.items.map( ( item, i ) => itemAttrs( item, { map, keys: target.keys, media, pages, label: `item ${ i + 1 }`, slot, pictureField: pictures[ 0 ]?.name ?? null, altField } ) );
 	const fields = Object.entries( map ).map( ( [ f, k ] ) => `${ f } -> ${ k }` ).join( ', ' ) || 'none matched';
 	if ( kids.length ) {
 		if ( kids.length !== built.length ) {
@@ -214,7 +247,13 @@ export function listDecisions( { block, target, node, list, media = {}, pages = 
 	for ( const f of list.fields.filter( ( x ) => unmatched.includes( x.name ) && ( x.image || 'image' === keyRole( x.name ) ) ) ) {
 		out.rows.push( { field: f.name, value: '', reason: `the draft draws a picture in each of its ${ built.length } items (${ f.name }: an image the draft fills at run time, or a placeholder) and ${ block }'s ${ where } hold no picture setting Fill can write: choose each picture in the editor` } );
 	}
-	built.forEach( ( b ) => out.rows.push( ...b.rows ) );
+	// Items whose picture slot the draft names no uploaded file for share one row per field: the pictures are the client's to supply.
+	const absent = built.flatMap( ( b ) => b.rows.filter( ( r ) => r.picture ) );
+	built.forEach( ( b ) => out.rows.push( ...b.rows.filter( ( r ) => ! r.picture ) ) );
+	for ( const field of new Set( absent.map( ( r ) => r.field ) ) ) {
+		const rows = absent.filter( ( r ) => r.field === field );
+		out.rows.push( 1 === rows.length ? rows[ 0 ] : { field, value: rows.map( ( r ) => r.value ).filter( Boolean ).join( ' | ' ), reason: `${ rows.length } of the draft's ${ built.length } items draw a picture (${ field }: an image the draft fills at run time, or a placeholder) with no uploaded file, so each keeps an empty picture in ${ block }'s ${ where }: the client supplies the pictures (choose each in the item's picture setting)` } );
+	}
 	out.notes.push( `${ list.items.length } items from the draft's ${ list.source }, fields ${ fields }` );
 	if ( 'attr' === target.kind ) {
 		out.writes.push( { attr: target.attr, value: built.map( ( b ) => b.attrs ) } );
