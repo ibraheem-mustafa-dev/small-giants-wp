@@ -47,9 +47,10 @@ function innermostRoot( roots, elements ) {
 // A function over inventory elements: the verdict of the form-link rule for an element, or null.
 //   { block, attributes }  the element is the form (lib/skeleton-form-element.mjs::formElement), so it becomes the linked
 //                          reference block;
-//   { remove: true }       another element inside the form: the form is one embed, so it goes.
-// An element under the record's root outside the form (the grid around the form and the aside beside it) gets no verdict:
-// the page's own rules build it, and the saved form never holds it.
+//   { remove: true }       another element under the same root: the form is one embed, so it goes.
+// When the first element is the page's layout around the form (formElement: the grid around the form card and the aside
+// beside it), that element and what it holds beside the form get no verdict: the page's own rules build them, and the saved
+// form never holds them.
 // view: lib/skeleton-record.mjs::recordView; scope: the surface's record context (surfaceContext); els: the inventory's
 // elements in document order; rule: decisions `rules.formLink`; links: formLinksOf's result.
 export function linkedFormOf( { view, scope, links, refs, els, rule, m = null } ) {
@@ -79,16 +80,8 @@ export function linkedFormOf( { view, scope, links, refs, els, rule, m = null } 
 		const { ref, slug, block } = byRoot.get( root );
 		const attributes = { [ ref.flag ]: true, [ ref.key ]: slug };
 		const form = m ? formElement( m, list[ 0 ] ) : list[ 0 ];
-		const inForm = ( e ) => {
-			for ( let x = e; x; x = m?.byKey[ x.parentKey ] ) {
-				if ( x === form ) {
-					return true;
-				}
-			}
-			return false;
-		};
 		verdicts.set( form.key, { block, attributes } );
-		list.filter( ( e ) => e !== form && ( ! m || inForm( e ) ) ).forEach( ( e ) => verdicts.set( e.key, { remove: true } ) );
+		list.slice( 1 ).forEach( ( e ) => verdicts.set( e.key, { remove: true } ) );
 	}
 	return ( e ) => verdicts.get( e.key ) ?? null;
 }
