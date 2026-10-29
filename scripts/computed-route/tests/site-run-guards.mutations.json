@@ -1,0 +1,164 @@
+[
+	{
+		"file": "lib/site-run-reviewed.mjs",
+		"find": "if ( placed( old ) === placed( row ) ) {",
+		"replace": "if ( true ) {",
+		"why": "an unchanged row is the only skipped one"
+	},
+	{
+		"file": "lib/site-run-reviewed.mjs",
+		"find": "const open = r.changed.filter( ( c ) => ! c.why );",
+		"replace": "const open = [];",
+		"why": "an unexplained change fails the surface"
+	},
+	{
+		"file": "lib/site-run-reviewed.mjs",
+		"find": "SAVED.test( row.source || '' ) ?",
+		"replace": "true ?",
+		"why": "only a saved decision source explains a change"
+	},
+	{
+		"file": "lib/site-run-reviewed.mjs",
+		"find": "if ( ! ( reviewed || [] ).length ) {",
+		"replace": "if ( false ) {",
+		"why": "no reviewed rows cannot be compared"
+	},
+	{
+		"file": "lib/site-run-reviewed.mjs",
+		"find": "if ( ! r.common ) {",
+		"replace": "if ( false ) {",
+		"why": "no common key cannot be compared"
+	},
+	{
+		"file": "lib/site-run-reviewed.mjs",
+		"find": "const placed = ( r ) => `${ r.action ?? '' }|${ r.block ?? '' }`;",
+		"replace": "const placed = ( r ) => `${ r.block ?? '' }`;",
+		"why": "a removed row now kept is a change"
+	},
+	{
+		"file": "lib/site-run-blocks.mjs",
+		"find": "! r.action && /^sgs\\//",
+		"replace": "/^sgs\\//",
+		"why": "a removed row places no block"
+	},
+	{
+		"file": "lib/site-run-blocks.mjs",
+		"find": "filter( ( s ) => 'current' !== s.state )",
+		"replace": "filter( ( s ) => 'missing' === s.state )",
+		"why": "a stale slot map is not current"
+	},
+	{
+		"file": "lib/site-run-blocks.mjs",
+		"find": "if ( bad.length ) {",
+		"replace": "if ( false ) {",
+		"why": "an uncalibrated block refuses the surface"
+	},
+	{
+		"file": "lib/site-run-blocks.mjs",
+		"find": "recalibrate: true",
+		"replace": "recalibrate: false",
+		"why": "the command re-measures stale maps"
+	},
+	{
+		"file": "lib/site-run-walk.mjs",
+		"find": "if ( c.liveErrors ) {",
+		"replace": "if ( false ) {",
+		"why": "a live console error fails the walk"
+	},
+	{
+		"file": "lib/site-run-walk.mjs",
+		"find": "d.accepted ? accepted++ : open++;",
+		"replace": "open++;",
+		"why": "accepted rows are not open"
+	},
+	{
+		"file": "lib/site-run-walk.mjs",
+		"find": "/(\\d+) shots unreviewed/",
+		"replace": "/(\\d+) zzz/",
+		"why": "the unreviewed count is read"
+	},
+	{
+		"file": "lib/site-run-walk.mjs",
+		"find": "${ said } [${ c.open } open, ${ c.unreviewed } unreviewed, ${ c.liveErrors } live errors]",
+		"replace": "${ said }",
+		"why": "the counts are in the result"
+	},
+	{
+		"file": "lib/site-build-apply.mjs",
+		"find": "envFile: siteTarget?.envFile ||",
+		"replace": "envFile:",
+		"why": "the target's envFile is used"
+	},
+	{
+		"file": "lib/site-build-apply.mjs",
+		"find": "envKey: siteTarget?.envKey ||",
+		"replace": "envKey:",
+		"why": "the target's envKey is used"
+	},
+	{
+		"file": "site-build.mjs",
+		"find": "wpBuildPage( repo, site, target )",
+		"replace": "wpBuildPage( repo, site )",
+		"why": "the build runner gets the target"
+	},
+	{
+		"file": "lib/site-build-menus.mjs",
+		"find": "( 'catalogue' === p.needs ? problems : notes )",
+		"replace": "notes",
+		"why": "a catalogue wait stops the plan"
+	},
+	{
+		"file": "lib/site-run-certs.mjs",
+		"find": "env.NODE_EXTRA_CA_CERTS || find()",
+		"replace": "find() || env.NODE_EXTRA_CA_CERTS",
+		"why": "the variable comes first"
+	},
+	{
+		"file": "lib/site-run-certs.mjs",
+		"find": "0 === r?.status",
+		"replace": "true",
+		"why": "a failed interpreter is skipped"
+	},
+	{
+		"file": "lib/build-compare.mjs",
+		"find": "k in remote && byContent( k ) && local[ k ] !== remote[ k ]",
+		"replace": "false",
+		"why": "a content difference is a mismatch"
+	},
+	{
+		"file": "lib/build-compare.mjs",
+		"find": "const missing = Object.keys( local ).filter( ( k ) => ! ( k in remote ) ).sort();",
+		"replace": "const missing = [];",
+		"why": "a file only on the mirror is a mismatch"
+	},
+	{
+		"file": "lib/build-compare.mjs",
+		"find": "const extra = Object.keys( remote ).filter( ( k ) => ! ( k in local ) ).sort();",
+		"replace": "const extra = [];",
+		"why": "a file only on the test site is a mismatch"
+	},
+	{
+		"file": "build-compare.mjs",
+		"find": "if ( ! diff.same ) {",
+		"replace": "if ( false ) {",
+		"why": "a mismatch exits 1"
+	},
+	{
+		"file": "build-compare.mjs",
+		"find": "if ( ! Object.keys( a ).length || ! Object.keys( b ).length ) {",
+		"replace": "if ( false ) {",
+		"why": "an empty listing is not a match"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "const reviewed = reviewedVerdict(",
+		"replace": "const reviewed = ( () => '' )(",
+		"why": "the site run checks built against reviewed"
+	},
+	{
+		"file": "../local-wp/push-to-remote.sh",
+		"find": "|| { echo \"Refusing: the sgs-blocks build differs",
+		"replace": "|| true; { echo \"Refusing: the sgs-blocks build differs",
+		"why": "the push refuses on a mismatch"
+	}
+]

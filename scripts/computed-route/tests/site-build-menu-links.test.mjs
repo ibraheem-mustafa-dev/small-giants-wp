@@ -91,7 +91,7 @@ test( 'MUST FAIL: a product category entry is pending with its own reason (no ca
 	assert.match( pending[ 0 ].why, /category has no address to link to yet/ );
 } );
 
-test( 'MUST FAIL: desiredMenus puts the link item at its slot with the draft\'s text; a pending entry adds no item and says why', () => {
+test( 'MUST FAIL: desiredMenus puts the link item at its slot with the draft\'s text; a pending entry adds no item and stops the plan naming the catalogue step', () => {
 	const rows = ROWS();
 	const wanted = desiredMenus( rows, {}, {}, resolve() );
 	assert.deepEqual( wanted.menus.header.map( ( i ) => [ i.kind, i.label, i.title, i.url ?? null, i.order ] ), [
@@ -102,7 +102,7 @@ test( 'MUST FAIL: desiredMenus puts the link item at its slot with the draft\'s 
 	assert.ok( ! wanted.notes.some( ( n ) => /makes no post/.test( n ) ), 'no note asks a person to add the item by hand' );
 	const waiting = desiredMenus( rows, {}, {}, resolve( CATALOGUE( null ) ) );
 	assert.deepEqual( waiting.menus.header.map( ( i ) => i.label ), [ 'Home' ] );
-	assert.ok( waiting.notes.some( ( n ) => /^product:product: the header menu entry "Subscribe & save" adds no item yet: .*--catalogue/.test( n ) ) );
+	assert.ok( waiting.problems.some( ( n ) => /^product:product: the header menu entry "Subscribe & save" adds no item yet: .*--catalogue/.test( n ) ) );
 	assert.ok( desiredMenus( rows, {}, {} ).notes.some( ( n ) => /product:product: a product row makes no post/.test( n ) ), 'with no resolver the old note stands' );
 } );
 

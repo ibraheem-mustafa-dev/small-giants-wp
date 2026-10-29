@@ -41,7 +41,7 @@ import { readState } from './lib/site-build-state.mjs';
 import { readLinkTextReport, readSurfaces } from './lib/site-build-labels.mjs';
 import { PHASES, planBuild, tally } from './lib/site-build-plan.mjs';
 import { promoteSiteOptions, withSiteOptions } from './lib/site-build-options.mjs';
-import { applyPhase, wpBuildPage } from './lib/site-build-apply.mjs';
+import { applyPhase, siteEnv, wpBuildPage } from './lib/site-build-apply.mjs';
 import { openDetachedSession, readEnv } from './lib/wp-run-session.mjs';
 import { runFlowLinks } from './lib/site-build-flow-links.mjs';
 import { runFlowProducts } from './lib/site-build-flow-product.mjs';
@@ -188,11 +188,11 @@ try {
 		console.log( `${ counts.creates } to create, ${ counts.changes } to change, ${ counts.adopts } to adopt (dry run: re-run with --apply)` );
 		process.exit( templatesOnly || onlyRows ? 0 : runFlowLinks( { rows, runPhp, apply: false, pending: true } ) );
 	}
-	const build = wpBuildPage( repo, site );
+	const build = wpBuildPage( repo, site, target );
 	// One logged-in browser for every page the run builds, as its own process because the builds below run synchronously
 	// (lib/wp-run-session.mjs::openDetachedSession): each wp-build-page.js child attaches through SGS_CDP_URL instead of
 	// launching and logging in on its own.
-	const session = await openDetachedSession( site, readEnv( path.join( '.claude', 'secrets', `${ site }.env` ), site.toUpperCase().replace( /[^A-Z0-9]/g, '' ), repo ) );
+	const session = await openDetachedSession( site, readEnv( siteEnv( target, site ).envFile, siteEnv( target, site ).envKey, repo ) );
 	writeIdsSite( mapFile, site );
 	const onId = ( key, id ) => {
 		ids[ key ] = id;

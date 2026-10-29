@@ -3,6 +3,6 @@
 	{"file": "lib/site-run-walk.mjs", "find": "'(state)' !== key )?.[ 1 ]", "replace": "true )?.[ 1 ]", "why": "the state pair is not the surface root"},
 	{"file": "lib/site-run-walk.mjs", "find": "${ run.state } at ${ run.width }", "replace": "${ run.width }", "why": "the failure names the state and width"},
 	{"file": "lib/site-run-walk.mjs", "find": "if ( absent.length ) {\n\t\tthrow", "replace": "if ( false ) {\n\t\tthrow", "why": "an absent surface fails the walk"},
-	{"file": "lib/site-run-walk.mjs", "find": "fs.existsSync( file ) ? walkAbsence", "replace": "true ? walkAbsence", "why": "a missing report file is not judged here"},
+	{"file": "lib/site-run-walk.mjs", "find": "fs.existsSync( file ) ? JSON.parse", "replace": "true ? JSON.parse", "why": "a missing report file is not judged here"},
 	{"file": "site-run.mjs", "find": "return walkVerdict( said, path.join( parity, 'out', key, 'report.json' ) );", "replace": "return said;", "why": "the walk step judges the report"}
 ]

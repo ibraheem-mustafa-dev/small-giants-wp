@@ -22,13 +22,15 @@ export function desiredMenus( rows, linkText = {}, surfaces = {}, menuLinks = { 
 	// Mega row key -> its section page's row key, from every menu that pairs them.
 	const sections = {};
 	// A row that makes no post (a `product` or `product_cat` row, FR-48-55 part 1) has no post for a menu item to open: its
-	// entries are custom links where the product's address is known (`menuLinks`), else a note giving the reason.
+	// entries are custom links where the product's address is known (`menuLinks`), else a note giving the reason; an entry whose
+	// product the catalogue step has not recorded on the site is a problem naming that step.
 	for ( const r of rows.filter( ( x ) => ! hasPost( x ) && ( x.menus || [] ).length ) ) {
 		const waiting = menuLinks.pending.filter( ( p ) => p.rowKey === rowKey( r ) );
 		if ( ! waiting.length && ! ( menuLinks.links[ rowKey( r ) ] || [] ).length ) {
 			notes.push( `${ rowKey( r ) }: a ${ r.postType } row makes no post, so its ${ r.menus.map( ( m ) => m.menu ).join( ', ' ) } menu entr${ 1 === r.menus.length ? 'y adds' : 'ies add' } no item; link the menu item to a product or category in Appearance > Menus` );
 		}
-		waiting.forEach( ( p ) => notes.push( `${ p.rowKey }: the ${ p.menu } menu entry${ p.text ? ` "${ p.text }"` : '' } adds no item yet: ${ p.why }` ) );
+		// A product entry waiting for the catalogue step stops the plan: the order is --catalogue --apply, then the menus.
+		waiting.forEach( ( p ) => ( 'catalogue' === p.needs ? problems : notes ).push( `${ p.rowKey }: the ${ p.menu } menu entry${ p.text ? ` "${ p.text }"` : '' } adds no item yet: ${ p.why }` ) );
 	}
 	const entries = [
 		...rows.filter( hasPost ).flatMap( ( row ) => ( row.menus || [] ).map( ( m ) => ( { row, menu: m.menu, position: m.position, parentItem: m.parentItem || null } ) ) ),

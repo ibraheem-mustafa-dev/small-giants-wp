@@ -9,7 +9,7 @@
 	{ "file": "lib/site-build-menu-links.mjs", "find": ".find( ( r ) => 'address' === r.kind && ctx.routeRow.get( r.route ) && rowKey( ctx.routeRow.get( r.route ) ) === key );", "replace": ".find( ( r ) => 'address' === r.kind );", "why": "a link to a page of another row stands for the product row" },
 	{ "file": "lib/site-build-menu-links.mjs", "find": "( it.parentItem || null ) === ( entry.parentItem || null ) ) : null;", "replace": "true ) : null;", "why": "an item under another parent stands for the entry" },
 	{ "file": "lib/site-build-menus.mjs", "find": "...rows.filter( ( r ) => ! hasPost( r ) ).flatMap(", "replace": "...[].flatMap(", "why": "a product row's resolved link makes no menu item" },
-	{ "file": "lib/site-build-menus.mjs", "find": "\t\twaiting.forEach( ( p ) => notes.push(", "replace": "\t\t[].forEach( ( p ) => notes.push(", "why": "a pending entry says nothing" },
+	{ "file": "lib/site-build-menus.mjs", "find": "\t\twaiting.forEach( ( p ) => (", "replace": "\t\t[].forEach( ( p ) => (", "why": "a pending entry says nothing" },
 	{ "file": "lib/site-build-menus.mjs", "find": "if ( ! waiting.length && ! ( menuLinks.links[ rowKey( r ) ] || [] ).length ) {", "replace": "if ( false ) {", "why": "a row the resolver did not see loses the old note" },
 	{ "file": "lib/site-build-menus.mjs", "find": "\t\t\ttitle: e.link.text,\n\t\t\turl: e.link.url,", "replace": "\t\t\ttitle: '',\n\t\t\turl: e.link.url,", "why": "the link item shows no text of its own" },
 	{ "file": "lib/site-build-plan.mjs", "find": "'link' === it.kind ? 'custom' === e.type && addressOf( e.url ) === addressOf( it.url ) :", "replace": "", "why": "a link item is matched by its title, so a different address is not noticed" },
