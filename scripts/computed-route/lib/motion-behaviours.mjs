@@ -23,9 +23,9 @@
 // `ctx.records` is the whole animation inventory, whose style records give a code-created effect element's declarations
 // (lib/motion-effect-element.mjs: the sheen band's width, the ripple circle's size and colour).
 
-import { poseOf } from './motion-channels.mjs';
-import { props, nameOf, words, blob, triggerOf, scrollValueName, MINUS, TIMES, NUMBER, number, round, durationOf, easingOf, compact } from './motion-record-text.mjs';
-import { PINNED, headerScrollOf, dotPulseOf, accordionScrollOf, autoplayOf, pinnedTimelineOf, carouselOf } from './motion-behaviour-settings.mjs';
+import { poseOf, IDENTITY } from './motion-channels.mjs';
+import { props, nameOf, words, triggerOf, scrollValueName, MINUS, TIMES, NUMBER, number, round, durationOf, easingOf, compact } from './motion-record-text.mjs';
+import { pinnedSectionOf, headerScrollOf, dotPulseOf, accordionScrollOf, autoplayOf, pinnedTimelineOf, carouselOf } from './motion-behaviour-settings.mjs';
 import { hiddenStartOf } from './motion-reveal.mjs';
 import { effectElementStyle, effectElementOwner, colourOf, largerSideFactor } from './motion-effect-element.mjs';
 import { templateKey } from './fact-key.mjs';
@@ -174,16 +174,17 @@ function peekDragOf( r ) {
 }
 
 // A transform or translate written in proportion to the scroll position: a parallax (distance from the page top, or
-// from the element's own place in the view) and, for a scale written to the scroll fraction, a progress bar.
-function scrollOf( r ) {
+// from the element's own place in the view) and, for a scale written to the scroll fraction (the page's, or a pinned
+// section's progress, lib/motion-behaviour-settings.mjs::pinnedSectionOf), a progress bar.
+function scrollOf( r, ctx = {} ) {
 	const list = props( r );
 	if ( 'js-style-write' !== r.mechanism || 'scroll-position' !== triggerOf( r ) ) {
 		return null;
 	}
-	const bar = list.find( ( q ) => 'transform' === nameOf( q ) && /scale([XY])\(/i.test( words( q.to, q.formula ) ) && ( /scrollHeight|scrollable/i.test( words( q.formula ) ) || ( /^scale[XY]\(\s*p\s*\)$/i.test( words( q.formula ).trim() ) && PINNED.test( blob( r ) ) ) ) );
+	const pin = !! pinnedSectionOf( r, ctx );
+	const bar = list.find( ( q ) => 'transform' === nameOf( q ) && /scale([XY])\(/i.test( words( q.to, q.formula ) ) && ( pin || /scrollHeight|scrollable/i.test( words( q.formula ) ) ) );
 	if ( bar ) {
 		const axis = /scaleY/i.test( words( bar.to, bar.formula ) ) ? 'bar-y' : 'bar-x';
-		const pin = /data-pin\b|\[data-pin\]/i.test( blob( r ) );
 		return { effect: 'scroll-progress', panel: 'effects', trigger: 'scroll', values: { source: pin ? 'pin' : 'page', output: axis } };
 	}
 	const move = list.find( ( q ) => /^(?:translate|transform)$/.test( nameOf( q ) ) && scrollValueName( q, r ) );
@@ -241,20 +242,20 @@ function routeFadeOf( r, ctx ) {
 	return { style: 'fade', durationMs: durationOf( r ), easing: easingOf( r ) };
 }
 
-// The exit of an element's open entrance: a Web Animation on close, from the resting pose to another, held at the end.
-const CLOSE_WORDS = new Set( [ 'close', 'closes', 'closed', 'closing', 'dismiss', 'dismisses', 'dismissed', 'exit', 'exits', 'exiting' ] );
+// The exit of an element's open entrance: a Web Animation on an interaction (not the page's own entering), from the
+// resting pose to another, held at the end: the element leaves its rest and stays away.
 const ENTERING = new Set( [ 'mount', 'load', 'scroll-into-view' ] );
-
-// Whether the record's own function or name says it closes: whole words only, so `closest(` in a trigger's detail is not
-// a close, and the camel-case parts of a function name (`closeDrawer`, `onDismiss`) each count.
-const namesClose = ( r ) => words( r.source?.function, r.name ).replace( /([a-z])([A-Z])/g, '$1 $2' ).toLowerCase().split( /[^a-z]+/ ).some( ( w ) => CLOSE_WORDS.has( w ) );
+const restValue = ( k, v ) => k in IDENTITY && ( Number( v ) === IDENTITY[ k ] || parseFloat( v ) === IDENTITY[ k ] );
 
 function closeOf( r ) {
-	if ( 'waapi' !== r.mechanism || 'forwards' !== r.fill || ENTERING.has( triggerOf( r ) ) || ! namesClose( r ) ) {
+	if ( 'waapi' !== r.mechanism || 'forwards' !== r.fill || ENTERING.has( triggerOf( r ) ) ) {
 		return null;
 	}
 	const pose = poseOf( props( r ) );
 	if ( pose.unsupported.length || pose.other.length || ! Object.keys( pose.to ).length ) {
+		return null;
+	}
+	if ( ! Object.entries( pose.from ).every( ( [ k, v ] ) => restValue( k, v ) ) || Object.entries( pose.to ).every( ( [ k, v ] ) => restValue( k, v ) ) ) {
 		return null;
 	}
 	return { to: pose.to, duration: durationOf( r ), easing: easingOf( r ), delay: 'number' === typeof r.delay_ms && r.delay_ms > 0 ? r.delay_ms : null };
@@ -302,8 +303,8 @@ export function recogniseBehaviour( record, ctx = {} ) {
 	if ( fade ) {
 		return done( r, { kind: 'site', option: 'page-transition', value: { ...fade, settings: compact( { page_transitions: true, page_transition_style: fade.style, page_transition_duration: fade.durationMs, page_transition_easing: fade.easing } ) }, notes: [ `the page fades in on a route change: the site's page transition (${ fade.style }, ${ fade.durationMs }ms ${ fade.easing }) with the custom duration and easing, which win over the style's own`, 'the draft fades only the page body; SGS fades the page (an accepted difference, Ruling 5)' ] } );
 	}
-	for ( const make of [ ( x ) => headerScrollOf( x, ctx ), dotPulseOf, accordionScrollOf, autoplayOf, pinnedTimelineOf ] ) {
-		const e = make( r );
+	for ( const make of [ headerScrollOf, dotPulseOf, accordionScrollOf, autoplayOf, pinnedTimelineOf ] ) {
+		const e = make( r, ctx );
 		if ( e ) {
 			return done( r, { kind: 'settings', ...e } );
 		}
@@ -358,8 +359,8 @@ export function recogniseBehaviour( record, ctx = {} ) {
 	if ( reset ) {
 		return done( r, { kind: 'effect', effects: [], hoverState: compact( reset ) } );
 	}
-	for ( const make of [ ( x ) => sheenOf( x, ctx ), ( x ) => rippleOf( x, ctx ), ( x ) => peekOf( x, ctx ), scrollOf ] ) {
-		const e = make( r );
+	for ( const make of [ sheenOf, rippleOf, peekOf, scrollOf ] ) {
+		const e = make( r, ctx );
 		if ( e?.unmapped ) {
 			return done( r, { kind: 'unmapped', reason: e.unmapped } );
 		}

@@ -31,14 +31,14 @@
 	},
 	{
 		"file": "lib/motion-behaviours.mjs",
-		"find": "CLOSE_WORDS.has( w )",
-		"replace": "w.startsWith( 'clos' )",
-		"why": "closest( in a record name would be a close"
+		"find": "const restValue = ( k, v ) => k in IDENTITY && ( Number( v ) === IDENTITY[ k ] || parseFloat( v ) === IDENTITY[ k ] );",
+		"replace": "const restValue = ( k, v ) => k in IDENTITY;",
+		"why": "any channel value is its resting value"
 	},
 	{
 		"file": "lib/motion-behaviours.mjs",
-		"find": "ENTERING.has( triggerOf( r ) ) || ! namesClose( r )",
-		"replace": "! namesClose( r )",
+		"find": "'forwards' !== r.fill || ENTERING.has( triggerOf( r ) ) ) {",
+		"replace": "'forwards' !== r.fill ) {",
 		"why": "an entrance trigger could be an exit"
 	},
 	{

@@ -163,17 +163,26 @@ test( 'MUST FAIL: the behaviour constructs raise no row while covered, and each 
 // One planted record per settings behaviour; with the block's setting undeclared (the write ref nulled) it is raised as an unmapped row.
 const SETTINGS_PLANTED = [
 	[ 'sgs/site-header', 'scrolledOffset', { id: 'B-1', mechanism: 'js-style-write', status: 'active', element: { dc: 'Site', template_tpl_id: '10', selector: 'ref setHeaderEl', description: 'Sticky header' }, trigger: { type: 'scroll-position', detail: 'window scroll: scrollY > 8' }, properties: [ { property: 'box-shadow', from: 'none', to: '0 10px 30px -18px rgba(20,40,60,.35)' } ] } ],
-	[ 'sgs/business-info', 'openStatusDotPulse', { id: 'B-2', mechanism: 'waapi', status: 'active', iterations: 'infinite', duration_ms: 1600, element: { dc: 'Site', template_tpl_id: '10', selector: 'ref setPulseEl', description: 'Status dot' }, trigger: { type: 'mount', detail: '' }, properties: [ { property: 'box-shadow', from: '0 0 0 0 currentColor', to: '0 0 0 8px transparent' } ] } ],
+	[ 'sgs/business-info', 'openStatusDotPulse', { id: 'B-2', mechanism: 'waapi', status: 'active', iterations: 'infinite', duration_ms: 1600, element: { dc: 'Site', template_tpl_id: '10', selector: 'ref ring', description: '' }, trigger: { type: 'mount', detail: '' }, properties: [ { property: 'box-shadow', from: '0 0 0 0 currentColor', to: '0 0 0 8px transparent' } ] } ],
 	[ 'sgs/testimonial-slider', 'autoplaySpeed', { id: 'B-3', mechanism: 'waapi', status: 'active', duration_ms: 520, element: { dc: 'Site', template_tpl_id: '10', selector: 'ref setCard', description: 'Testimonial card' }, trigger: { type: 'state', detail: 'state.i changes or the 6.5s setInterval', state_keys: [ 'i' ] }, properties: [ { property: 'opacity', from: 0, to: 1 } ] } ],
-	[ 'sgs/timeline', 'panelCounter', { id: 'B-4', mechanism: 'js-text-write', status: 'active', element: { dc: 'Site', template_tpl_id: '10', selector: '[data-pin] -> [data-pin-count]' }, trigger: { type: 'scroll-position', detail: 'updatePins() on window scroll' }, properties: [ { property: 'textContent', from: '01 / NN', to: 'NN / NN' } ] } ],
+	[ 'sgs/timeline', 'panelCounter', { id: 'B-4', mechanism: 'js-text-write', status: 'active', element: { dc: 'Site', template_tpl_id: '10', selector: '[data-count]' }, source: { file: 'Site.dc.html', function: 'move' }, trigger: { type: 'scroll-position', detail: 'move() on window scroll' }, properties: [ { property: 'textContent', from: '01 / NN', to: 'NN / NN' } ] },
+		[ { id: 'B-4t', mechanism: 'js-style-write', status: 'active', element: { dc: 'Site', template_tpl_id: '11', selector: '[data-track]' }, source: { file: 'Site.dc.html', function: 'move' }, trigger: { type: 'scroll-position', detail: 'move() on window scroll' }, properties: [ { property: 'transform', formula: "'translate3d(' + (-p * dist) + 'px,0,0)'" } ] } ] ],
 ];
+// The planted template the recognisers read: Site/9 is a sticky stage whose text is a script value (a live status pill);
+// Site/10 inside it is a round dot whose paint is a script value; Site/11 is the stage's sideways track.
+const RADII = [ 'top-left', 'top-right', 'bottom-right', 'bottom-left' ].map( ( c ) => [ `border-${ c }-radius`, '50%' ] );
+const SETTINGS_TEMPLATE = { elements: {
+	'Site/9': { realParent: 'Site/1', style: { static: [ [ 'position', 'sticky' ] ], holes: [] }, holes: [ { where: 'text', expr: 'label' } ], words: '{{ label }}', parentChain: [ 'Site/1' ] },
+	'Site/10': { realParent: 'Site/9', style: { static: [ [ 'width', '8px' ], [ 'height', '8px' ], ...RADII ], holes: [] }, holes: [ { where: 'style:background', expr: 'dot' } ], words: '', parentChain: [ 'Site/9', 'Site/1' ] },
+	'Site/11': { realParent: 'Site/9', style: { static: [ [ 'display', 'flex' ] ], holes: [] }, holes: [], words: '', parentChain: [ 'Site/9', 'Site/1' ] },
+} };
 
 test( 'MUST FAIL: each planted settings behaviour is written, and with its setting undeclared the record is raised as an unmapped row', () => {
-	for ( const [ block, attr, record ] of SETTINGS_PLANTED ) {
+	for ( const [ block, attr, record, beside = [] ] of SETTINGS_PLANTED ) {
 		const nodes = [ { index: 0, name: block, targets: [ { id: '0:', slot: '', finder: { tpl: 'Site/10#0' } } ] } ];
 		const call = ( hasAttr ) => {
 			const flat = [ { name: block, attributes: {}, ref: 'r0' } ];
-			const out = motionWrites( { nodes, flat, refOf: ( x ) => x.ref, records: [ record ], mdb, schema, rawSnapshot: { settings: { custom: {} } }, hasAttr } );
+			const out = motionWrites( { nodes, flat, refOf: ( x ) => x.ref, records: [ record, ...beside ], mdb, schema, rawSnapshot: { settings: { custom: {} } }, hasAttr, template: SETTINGS_TEMPLATE } );
 			return { out, flat };
 		};
 		const wrote = call( () => true );

@@ -8,7 +8,7 @@
 import { colourHex } from './tokens.mjs';
 import { shadowParts } from './motion-shadow.mjs';
 import { templateKey, templateKeyOf } from './fact-key.mjs';
-import { props, nameOf, words, blob, triggerOf, MINUS, NUMBER, number, durationOf } from './motion-record-text.mjs';
+import { props, nameOf, words, triggerOf, NUMBER, number, durationOf, codeTree, nodesOf, callsOf, expressionOf, negativeExpr, stringPieces } from './motion-record-text.mjs';
 
 const px = ( n ) => `${ n }px`;
 
@@ -24,10 +24,10 @@ function templateOfRecord( r, ctx ) {
 
 const staticStyle = ( e, name ) => ( e?.style?.static || [] ).find( ( [ n ] ) => n === name )?.[ 1 ] ?? null;
 
-// A header the draft pins: `position: sticky` or `fixed` on its own template element, or its description saying so.
+// A header the draft pins: `position: sticky` or `fixed` on its own template element.
 function stickyOf( r, ctx ) {
 	const t = templateOfRecord( r, ctx );
-	return /^(?:sticky|fixed)$/.test( String( staticStyle( t?.element, 'position' ) ?? '' ).trim() ) || /\b(?:sticky|fixed)\b/i.test( words( r.element?.description ) );
+	return /^(?:sticky|fixed)$/.test( String( staticStyle( t?.element, 'position' ) ?? '' ).trim() );
 }
 
 const PINS = /^(?:sticky|fixed)$/;
@@ -106,10 +106,39 @@ export function headerScrollOf( r, ctx ) {
 	};
 }
 
-// An endless ring that grows from a dot and fades (a box-shadow spread from nothing to transparent): the open-status dot.
-export function dotPulseOf( r ) {
+// The template elements of a record's own element and their parent chain, nearest first, from ctx.template: [ key, ... ].
+function chainOf( r, ctx ) {
+	const t = templateOfRecord( r, ctx );
+	return t ? [ t.key, ...( t.element.parentChain || [] ) ] : [];
+}
+
+// Whether a template element is drawn round: each corner's radius is 50% or more, or at least half the element's
+// declared width and height.
+function isRound( e ) {
+	const corners = [ 'top-left', 'top-right', 'bottom-right', 'bottom-left' ].map( ( c ) => String( staticStyle( e, `border-${ c }-radius` ) ?? '' ).trim() );
+	const half = Math.min( ...[ 'width', 'height' ].map( ( d ) => number( /^(\d*\.?\d+)px$/.exec( String( staticStyle( e, d ) ?? '' ).trim() )?.[ 1 ] ) ?? Infinity ) ) / 2;
+	return corners.every( ( v ) => {
+		const pct = /^(\d*\.?\d+)%$/.exec( v );
+		const len = /^(\d*\.?\d+)px$/.exec( v );
+		return pct ? Number( pct[ 1 ] ) >= 50 : !! len && Number.isFinite( half ) && Number( len[ 1 ] ) >= half;
+	} );
+}
+
+const holesOf = ( e, where ) => ( e?.holes || [] ).filter( ( h ) => where.test( String( h.where ?? '' ) ) );
+
+// The status element of a live status display: a round element with no words of its own whose paint (its background or
+// colour) is a script value, inside a parent whose text is one (the status the script computes and the dot that shows it).
+function statusDotOf( r, ctx ) {
+	const t = templateOfRecord( r, ctx );
+	const parent = t && ctx.template.elements[ t.element.realParent ?? t.element.parent ];
+	return !! t && !! parent && isRound( t.element ) && ! String( t.element.words ?? '' ).trim() && holesOf( t.element, /^style:(?:background|background-color|color)$/ ).length > 0 && holesOf( parent, /^text$/ ).length > 0;
+}
+
+// An endless ring that grows from nothing and fades (a box-shadow spread from 0 to a transparent spread) on the status
+// element of a live status display (statusDotOf): that display's dot pulse.
+export function dotPulseOf( r, ctx = {} ) {
 	const p = props( r ).find( ( q ) => 'box-shadow' === nameOf( q ) );
-	if ( ! p || ! /^(?:waapi|css-animation)$/.test( r.mechanism ) || ! [ 'infinite', Infinity ].includes( r.iterations ) || ! /\bdot\b|status|open/i.test( words( r.element?.description, r.name ) ) ) {
+	if ( ! p || ! /^(?:waapi|css-animation)$/.test( r.mechanism ) || ! [ 'infinite', Infinity ].includes( r.iterations ) || ! statusDotOf( r, ctx ) ) {
 		return null;
 	}
 	const from = shadowParts( p.from );
@@ -120,13 +149,29 @@ export function dotPulseOf( r ) {
 	return { blocks: { 'sgs/business-info': [ { attr: 'openStatusDotPulse', value: true }, ...( durationOf( r ) ? [ { attr: 'openStatusDotPulseDuration', value: durationOf( r ) } ] : [] ) ] }, notes: [ 'the dot pulses an endless expanding ring' ] };
 }
 
-// A script that scrolls a container to the accordion row it just opened.
+// Whether a record's code calls `scrollTo` with an options object holding `top`, read from its syntax tree.
+export const scrollsToTop = ( r ) => callsOf( codeTree( r.source?.code ), 'scrollTo' ).some( ( c ) => 'ObjectExpression' === c.arguments[ 0 ]?.type && c.arguments[ 0 ].properties.some( ( q ) => 'top' === ( q.key?.name ?? q.key?.value ) ) );
+
+// The gap a scroll target keeps above an element's offset: the number in `<element>.offsetTop - <n>`, read from the syntax
+// tree of the property's target value or formula, or null.
+function offsetGap( p ) {
+	for ( const text of [ p.to, p.formula ] ) {
+		const hit = nodesOf( codeTree( text ), ( n ) => 'BinaryExpression' === n.type && '-' === n.operator && 'MemberExpression' === n.left.type && 'offsetTop' === n.left.property?.name && 'NumericLiteral' === n.right.type )[ 0 ];
+		if ( hit ) {
+			return hit.right.value;
+		}
+	}
+	return null;
+}
+
+// A script that scrolls a page element (a template element, not the window) to an offset when a state changes: the
+// container scrolled to the row it just opened. Its gap is the distance the code keeps above the row's offset.
 export function accordionScrollOf( r ) {
-	const p = props( r ).find( ( q ) => 'scrolltop' === nameOf( q ) );
-	if ( 'js-scroll' !== r.mechanism || ! p || ! /scrollTo\s*\(\s*\{\s*top/.test( words( r.source?.code ) ) || ! /\bacc/i.test( words( r.source?.function, r.trigger?.detail, r.trigger?.state_keys?.join( ' ' ) ) ) ) {
+	const p = props( r ).find( ( q ) => /^(?:scrolltop|scroll-position)$/.test( nameOf( q ) ) );
+	if ( 'js-scroll' !== r.mechanism || ! p || 'state' !== triggerOf( r ) || null == r.element?.template_tpl_id || ! scrollsToTop( r ) ) {
 		return null;
 	}
-	const gap = number( new RegExp( `offsetTop\\s*${ MINUS }\\s*${ NUMBER }` ).exec( words( p.to ) )?.[ 1 ] );
+	const gap = offsetGap( p );
 	return {
 		blocks: {
 			'sgs/nav-drawer-menu': [ { attr: 'accordionScrollIntoView', value: true } ],
@@ -136,12 +181,12 @@ export function accordionScrollOf( r ) {
 	};
 }
 
-// A state-driven entrance whose trigger also names an interval timer: the testimonial slider's autoplay (one card, the
-// interval, the change duration).
+// A state-driven entrance whose trigger also names an interval timer: the element replayed on a timer, the testimonial
+// slider's autoplay (one card, the interval, the change duration).
 export function autoplayOf( r ) {
 	const every = new RegExp( `${ NUMBER }\\s*s\\s+setInterval|setInterval[^.]*?${ NUMBER }\\s*s\\b`, 'i' ).exec( words( r.trigger?.detail ) );
 	const secs = number( every?.[ 1 ] ?? every?.[ 2 ] );
-	if ( null === secs || ! /^(?:waapi|css-animation)$/.test( r.mechanism ) || 'state' !== triggerOf( r ) || ! /\bcard\b|testimonial|slide/i.test( words( r.element?.description, r.name ) ) ) {
+	if ( null === secs || ! /^(?:waapi|css-animation)$/.test( r.mechanism ) || 'state' !== triggerOf( r ) ) {
 		return null;
 	}
 	return {
@@ -154,46 +199,109 @@ export function autoplayOf( r ) {
 	};
 }
 
-// The pinned horizontal timeline, written by one scroll function: its track, counter, proximity focus and active year
-// map onto `sgs/timeline`'s settings (Ruling 9).
-export const PINNED = /\[data-pin|updatePins|pin\.offsetHeight/i;
-export function pinnedTimelineOf( r ) {
-	if ( ! /^js-(?:style|text)-write$/.test( r.mechanism ) || 'scroll-position' !== triggerOf( r ) || ! PINNED.test( blob( r ) ) ) {
+// A write that moves its element sideways: the value it writes is a translate3d whose second and third arguments are 0, or
+// a translateX, and whose first argument is negative (the track travels left as the scroll advances). The value is read
+// from the formula's syntax tree (its string pieces, each computed piece judged by its expression), else from the stated
+// end value.
+export function movesSideways( q ) {
+	const expr = expressionOf( codeTree( q?.formula ) );
+	const pieces = expr ? stringPieces( expr ) : 'string' === typeof q?.to ? [ q.to ] : [];
+	const exprs = pieces.filter( ( x ) => 'string' !== typeof x );
+	const value = pieces.map( ( x ) => ( 'string' === typeof x ? x : `\u0001${ exprs.indexOf( x ) }\u0001` ) ).join( '' );
+	const fn = /^\s*(translate3d|translateX)\(([^()]*)\)\s*$/i.exec( value );
+	const args = fn ? fn[ 2 ].split( ',' ).map( ( a ) => a.trim() ) : [];
+	const flat = 'translate3d' === fn?.[ 1 ].toLowerCase() ? 3 === args.length && args.slice( 1 ).every( ( a ) => /^0(?:px)?$/.test( a ) ) : 1 === args.length;
+	if ( ! fn || ! flat ) {
+		return false;
+	}
+	const computed = /\u0001(\d+)\u0001/.exec( args[ 0 ] );
+	return computed ? negativeExpr( exprs[ Number( computed[ 1 ] ) ] ) : /^-\s*\S/.test( args[ 0 ] );
+}
+
+// The section a scroll write holds in place: the nearest ancestor of its element positioned `sticky` (the stage that stays
+// while its taller parent scrolls past), as its template key, or null.
+function heldBy( r, ctx ) {
+	return chainOf( r, ctx ).slice( 1 ).find( ( k ) => 'sticky' === String( staticStyle( ctx.template.elements[ k ], 'position' ) ?? '' ).trim() ) ?? null;
+}
+
+const writerOf = ( r ) => ( r.source?.function ? `${ r.source.file ?? '' }|${ r.source.function }` : null );
+const scrollWrite = ( r ) => /^js-(?:style|text)-write$/.test( r.mechanism ) && 'scroll-position' === triggerOf( r ) && 'active' === ( r.status ?? 'active' );
+
+// The pinned track a scroll write belongs to: its writer (the function that writes it) also translates an element held in
+// a sticky section sideways, and the record's own element, when it names one, lies in that section. The section's
+// template key, or null. ctx.records is the whole inventory; ctx.template the fact record's template.
+export function pinnedSectionOf( r, ctx = {} ) {
+	if ( ! scrollWrite( r ) || ! ctx.template?.elements ) {
+		return null;
+	}
+	const track = ( x ) => ( scrollWrite( x ) && props( x ).some( ( q ) => /^(?:transform|translate)$/.test( nameOf( q ) ) && movesSideways( q ) ) ? heldBy( x, ctx ) : null );
+	const own = track( r );
+	if ( own ) {
+		return own;
+	}
+	const writer = writerOf( r );
+	const held = writer ? [ ...new Set( ( ctx.records || [] ).filter( ( x ) => x !== r && writerOf( x ) === writer ).map( track ).filter( Boolean ) ) ] : [];
+	if ( 1 !== held.length ) {
+		return null;
+	}
+	const chain = chainOf( r, ctx );
+	return ! chain.length || chain.includes( held[ 0 ] ) ? held[ 0 ] : null;
+}
+
+// The edge and focus values of a proximity write `1 - <distance> * <depth>` (the distance from the centre runs 0 to 1):
+// { edge, focus } from a stated from and to, else from the formula's syntax tree, else null.
+function proximityEnds( q ) {
+	const stated = ( v ) => null !== v && undefined !== v && '' !== v && Number.isFinite( Number( v ) );
+	if ( stated( q.from ) && stated( q.to ) ) {
+		return { edge: Number( q.from ), focus: Number( q.to ) };
+	}
+	const product = ( n ) => 'BinaryExpression' === n?.type && '*' === n.operator ? [ n.left, n.right ].find( ( x ) => 'NumericLiteral' === x.type ) ?? null : null;
+	const hit = nodesOf( codeTree( q.formula ), ( n ) => 'BinaryExpression' === n.type && '-' === n.operator && 'NumericLiteral' === n.left.type && 1 === n.left.value && product( n.right ) )[ 0 ];
+	const depth = hit ? product( hit.right ).value : null;
+	return null === depth ? null : { edge: Math.round( ( 1 - depth ) * 1000 ) / 1000, focus: 1 };
+}
+
+// The pinned horizontal timeline (pinnedSectionOf): its track, counter, proximity focus and active year map onto
+// `sgs/timeline`'s settings (Ruling 9).
+export function pinnedTimelineOf( r, ctx = {} ) {
+	if ( ! pinnedSectionOf( r, ctx ) ) {
 		return null;
 	}
 	const list = props( r );
-	const get = ( name ) => list.find( ( q ) => name === nameOf( q ) );
+	const get = ( ...names ) => list.find( ( q ) => names.includes( nameOf( q ) ) );
 	const text = get( 'textcontent' );
 	if ( 'js-text-write' === r.mechanism && text ) {
-		const padded = /padStart|\bNN\b|\b0\d\b/.test( words( r.source?.code, text.from, text.to ) );
+		const padded = [ r.source?.code, text.formula ].map( codeTree ).some( ( t ) => callsOf( t, 'padStart' ).length > 0 );
 		return { blocks: { 'sgs/timeline': [ { attr: 'panelCounter', value: true }, { attr: 'panelCounterFormat', value: padded ? 'padded-index-of-total' : 'index-of-total' } ] }, notes: [ 'the counter reads the pin\'s progress' ] };
 	}
-	const move = get( 'transform' );
-	if ( move && /translate3d|translateX/i.test( words( move.to, move.formula ) ) && new RegExp( `${ MINUS }\\s*p\\b` ).test( words( move.formula ) ) ) {
-		const carousel = /native horizontal scroller|scroll-snap/i.test( words( r.trigger?.detail ) );
+	const move = get( 'transform', 'translate' );
+	if ( move && movesSideways( move ) ) {
 		return {
-			blocks: { 'sgs/timeline': [ { attr: 'scrollEffect', value: 'pinned-horizontal' }, { attr: 'orientation', value: 'horizontal', companion: true }, ...( carousel ? [ { attr: 'mobileLayout', value: 'carousel' } ] : [] ) ] },
+			blocks: { 'sgs/timeline': [ { attr: 'scrollEffect', value: 'pinned-horizontal' }, { attr: 'orientation', value: 'horizontal', companion: true } ] },
 			accepted: 'the draft switches to its touch-only strip at 1024px; SGS pins from 768px and swipes below (Ruling 9)',
 			notes: [ 'the track moves sideways with the scroll while pinned' ],
 		};
 	}
 	const opacity = get( 'opacity' );
 	const scale = get( 'scale' );
-	if ( opacity && scale && /\bk\b/.test( words( opacity.formula ) ) ) {
-		const set = [ [ 'panelEdgeOpacity', opacity.from ], [ 'panelFocusOpacity', opacity.to ], [ 'panelEdgeScale', scale.from ], [ 'panelFocusScale', scale.to ] ].filter( ( [ , v ] ) => Number.isFinite( Number( v ) ) );
-		return { blocks: { 'sgs/timeline': [ { attr: 'panelProximityFocus', value: true }, ...set.map( ( [ attr, v ] ) => ( { attr, value: Number( v ) } ) ) ] }, notes: [ 'entries scale and fade with distance from the centre' ] };
+	if ( opacity || scale ) {
+		const o = opacity ? proximityEnds( opacity ) : null;
+		const sc = scale ? proximityEnds( scale ) : null;
+		const set = [ [ 'panelEdgeOpacity', o?.edge ], [ 'panelFocusOpacity', o?.focus ], [ 'panelEdgeScale', sc?.edge ], [ 'panelFocusScale', sc?.focus ] ].filter( ( [ , v ] ) => Number.isFinite( v ) );
+		return { blocks: { 'sgs/timeline': [ { attr: 'panelProximityFocus', value: true }, ...set.map( ( [ attr, v ] ) => ( { attr, value: v } ) ) ] }, notes: [ 'entries scale and fade with distance from the centre' ] };
 	}
 	const colour = get( 'color' );
-	const stroke = get( '-webkit-text-stroke-color' );
-	if ( colour && colourHex( colour.to ) ) {
-		return { blocks: { 'sgs/timeline': [ { attr: 'dateActiveColour', value: colourHex( colour.to ), colour: true }, ...( stroke && colourHex( stroke.to ) ? [ { attr: 'dateActiveTextStrokeColour', value: colourHex( stroke.to ), colour: true } ] : [] ) ] }, notes: [ 'the entry nearest the centre takes the active year colour' ] };
+	const stroke = get( '-webkit-text-stroke-color', 'webkit-text-stroke-color' );
+	const active = [ ...( colour && colourHex( colour.to ) ? [ { attr: 'dateActiveColour', value: colourHex( colour.to ), colour: true } ] : [] ), ...( stroke && colourHex( stroke.to ) ? [ { attr: 'dateActiveTextStrokeColour', value: colourHex( stroke.to ), colour: true } ] : [] ) ];
+	if ( active.length ) {
+		return { blocks: { 'sgs/timeline': active }, notes: [ 'the entry nearest the centre takes the active year colour' ] };
 	}
 	return null;
 }
 
 // A scroll track the draft's script drives, which the testimonial slider is: a timer that steps the track sideways
-// (`setInterval every 6000ms via step`, a `scrollTo( { left: ... } )`) is the slider's autoplay and its interval; pointer
-// dragging that suspends scroll snapping and moves `scrollLeft` is its drag to scroll; prev and next controls that step
+// (`setInterval every 6000ms via step`, a `scrollTo( { left: ... } )`) is the slider's autoplay and its interval; one writer
+// that suspends scroll snapping (`scroll-snap-type: none`) and moves `scrollLeft` directly is its drag to scroll; prev and next controls that step
 // the same function are its arrows; press controls of another function that scroll the same track to an offset derived from
 // an index (`scrollTo( { left: i * w } )` inside the object each dot returns) are its dots. The track's other script writes (the drag handlers, the arrows' steps) are the slider's
 // own. Returns a behaviour ({ kind: 'settings' | 'covered', ... }) or null. `ctx.records` is the whole inventory.
@@ -208,13 +316,17 @@ export function carouselOf( r, ctx = {} ) {
 		return null;
 	}
 	const fn = timer.source?.function;
-	const drags = all.filter( ( x ) => /drag/i.test( x.source?.function ?? '' ) && 'js-style-write' === x.mechanism && props( x ).some( ( q ) => 'scroll-snap-type' === nameOf( q ) ) );
-	const moves = all.filter( ( x ) => /drag/i.test( x.source?.function ?? '' ) && 'js-scroll' === x.mechanism );
+	// A drag suspends the track's snapping and moves its scroll offset directly, both in one writer.
+	const suspends = all.filter( ( x ) => 'js-style-write' === x.mechanism && props( x ).some( ( q ) => 'scroll-snap-type' === nameOf( q ) && /^none$/i.test( String( q.to ?? '' ).trim() ) ) );
+	const offsets = all.filter( ( x ) => 'js-scroll' === x.mechanism && ! isStep( x ) && props( x ).some( ( q ) => /^scroll-?left$/.test( nameOf( q ) ) ) );
+	const sameWriter = ( x, y ) => !! writerOf( x ) && writerOf( x ) === writerOf( y );
+	const drags = suspends.filter( ( x ) => offsets.some( ( y ) => sameWriter( x, y ) ) );
+	const moves = offsets.filter( ( y ) => drags.some( ( x ) => sameWriter( x, y ) ) );
 	const steps = all.filter( ( x ) => x.source?.function === fn && isStep( x ) && 'interval' !== triggerOf( x ) );
 	const trackTpl = timer.element?.template_tpl_id;
 	const dots = all.filter( ( x ) => isStep( x ) && 'press' === triggerOf( x ) && x.source?.function !== fn && null != trackTpl && trackTpl === x.element?.template_tpl_id && INDEXED.test( words( x.source?.code ) ) );
 	const owns = new Set( [ ...all.filter( ( x ) => isStep( x ) && 'interval' === triggerOf( x ) && x.source?.function === fn ), ...drags, ...moves, ...steps, ...dots ].map( ( x ) => x.id ) );
-	const dragging = drags.length > 0 && moves.length > 0;
+	const dragging = drags.length > 0;
 	const arrows = steps.length > 0;
 	const dotted = dots.length > 0;
 	if ( timer.id !== r.id ) {

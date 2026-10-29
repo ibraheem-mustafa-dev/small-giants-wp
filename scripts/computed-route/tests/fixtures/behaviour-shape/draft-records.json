@@ -1,0 +1,2623 @@
+{
+	"source": "a wholesale food client's saved intake: intake.json inventory.animations.records and facts.json elements[*].template, read 2026-10-29",
+	"records": [
+		{
+			"id": "A-02",
+			"name": "Web Animation in setPulseEl on ref setPulseEl",
+			"mechanism": "waapi",
+			"element": {
+				"dc": "Draft Site v2",
+				"template_tpl_id": "674",
+				"selector": "ref setPulseEl",
+				"description": "animated element: ref setPulseEl"
+			},
+			"source": {
+				"file": "Draft Site v2.dc.html",
+				"function": "setPulseEl",
+				"ref": "setPulseEl",
+				"line": 1128,
+				"code": "el.animate([{ boxShadow: '0 0 0 0 currentColor' }, { boxShadow: '0 0 0 8px transparent' }], { duration: 1600, iterations: Infinity })"
+			},
+			"trigger": {
+				"type": "mount",
+				"detail": "ref callback setPulseEl on Draft Site v2:674"
+			},
+			"properties": [
+				{
+					"property": "box-shadow",
+					"from": "0 0 0 0 currentColor",
+					"to": "0 0 0 8px transparent"
+				}
+			],
+			"duration_ms": 1600,
+			"delay_ms": 0,
+			"stagger": null,
+			"easing": "linear",
+			"iterations": "infinite",
+			"direction": "normal",
+			"fill": "auto",
+			"reduced_motion": {
+				"behaviour": "skip",
+				"detail": "guarded by el && !el._p && !this.rm"
+			},
+			"status": "active"
+		},
+		{
+			"id": "A-24",
+			"name": "Web Animation in closeMobile on ref setDrawerEl",
+			"mechanism": "waapi",
+			"element": {
+				"dc": "Draft Site v2",
+				"template_tpl_id": "108",
+				"selector": "ref setDrawerEl",
+				"description": "animated element: ref setDrawerEl"
+			},
+			"source": {
+				"file": "Draft Site v2.dc.html",
+				"function": "closeMobile",
+				"ref": "setDrawerEl",
+				"line": 1310,
+				"code": "el.animate([{ transform: 'none' }, { transform: 'translateX(100%)' }], { duration: 340, easing: 'cubic-bezier(.7,0,.84,0)', fill: 'forwards' })"
+			},
+			"trigger": {
+				"type": "press",
+				"detail": "onClick on Draft Site v2:118 (closeMobile) (and 6 more: keydown listener on window (this._key) via closeMobile; click listener on el via closeMobile; onClick on Draft Site v2:106 (closeBackdrop) (and 1 more: onClick on Draft Site v2:106 (closeBackdrop → closeBackdrop)) via closeMobile; …)"
+			},
+			"properties": [
+				{
+					"property": "transform",
+					"from": "none",
+					"to": "translateX(100%)"
+				}
+			],
+			"duration_ms": 340,
+			"delay_ms": 0,
+			"stagger": null,
+			"easing": "cubic-bezier(.7,0,.84,0)",
+			"iterations": 1,
+			"direction": "normal",
+			"fill": "forwards",
+			"reduced_motion": {
+				"behaviour": "skip",
+				"detail": "returns early under !el || this.rm"
+			},
+			"status": "active"
+		},
+		{
+			"id": "J-05",
+			"name": "js-style-write in updatePins on [data-pin-track]",
+			"mechanism": "js-style-write",
+			"element": {
+				"dc": "Draft Site v2",
+				"template_tpl_id": "444",
+				"selector": "[data-pin-track]",
+				"description": "written element: [data-pin-track]"
+			},
+			"source": {
+				"file": "Draft Site v2.dc.html",
+				"function": "updatePins",
+				"ref": null,
+				"line": 1085,
+				"code": "track.style.transform = 'translate3d(' + (-p * dist).toFixed(1) + 'px,0,0)'"
+			},
+			"trigger": {
+				"type": "scroll-position",
+				"detail": "scroll listener on window (this._scroll) via updateHeader via updatePins"
+			},
+			"properties": [
+				{
+					"property": "transform",
+					"from": null,
+					"to": null,
+					"formula": "'translate3d(' + (-p * dist).toFixed(1) + 'px,0,0)'"
+				}
+			],
+			"duration_ms": 0,
+			"delay_ms": 0,
+			"stagger": null,
+			"easing": null,
+			"iterations": 1,
+			"direction": null,
+			"fill": null,
+			"reduced_motion": {
+				"behaviour": "unchanged",
+				"detail": "no reduced-motion guard on this code path"
+			},
+			"status": "active"
+		},
+		{
+			"id": "J-06",
+			"name": "js-style-write in updatePins on [data-pin-bar]",
+			"mechanism": "js-style-write",
+			"element": {
+				"dc": "Draft Site v2",
+				"template_tpl_id": "442",
+				"selector": "[data-pin-bar]",
+				"description": "written element: [data-pin-bar]"
+			},
+			"source": {
+				"file": "Draft Site v2.dc.html",
+				"function": "updatePins",
+				"ref": null,
+				"line": 1086,
+				"code": "bar.style.transform = 'scaleX(' + p.toFixed(4) + ')'"
+			},
+			"trigger": {
+				"type": "scroll-position",
+				"detail": "scroll listener on window (this._scroll) via updateHeader via updatePins"
+			},
+			"properties": [
+				{
+					"property": "transform",
+					"from": null,
+					"to": null,
+					"formula": "'scaleX(' + p.toFixed(4) + ')'"
+				}
+			],
+			"duration_ms": 0,
+			"delay_ms": 0,
+			"stagger": null,
+			"easing": null,
+			"iterations": 1,
+			"direction": null,
+			"fill": null,
+			"reduced_motion": {
+				"behaviour": "unchanged",
+				"detail": "no reduced-motion guard on this code path"
+			},
+			"status": "active"
+		},
+		{
+			"id": "J-07",
+			"name": "js-style-write in updatePins on [...track.querySelectorAll('[data-pin-card]')]",
+			"mechanism": "js-style-write",
+			"element": {
+				"dc": "Draft Site v2",
+				"template_tpl_id": null,
+				"selector": "[...track.querySelectorAll('[data-pin-card]')]",
+				"selection_rule": "resolved at runtime",
+				"description": "written element: [...track.querySelectorAll('[data-pin-card]')]"
+			},
+			"source": {
+				"file": "Draft Site v2.dc.html",
+				"function": "updatePins",
+				"ref": null,
+				"line": 1093,
+				"code": "c.style.opacity = (1 - k * 0.45).toFixed(3)"
+			},
+			"trigger": {
+				"type": "scroll-position",
+				"detail": "scroll listener on window (this._scroll) via updateHeader via updatePins"
+			},
+			"properties": [
+				{
+					"property": "opacity",
+					"from": null,
+					"to": null,
+					"formula": "(1 - k * 0.45).toFixed(3)"
+				}
+			],
+			"duration_ms": 0,
+			"delay_ms": 0,
+			"stagger": null,
+			"easing": null,
+			"iterations": 1,
+			"direction": null,
+			"fill": null,
+			"reduced_motion": {
+				"behaviour": "final-state",
+				"detail": "still written; its CSS transition is forced to about zero by the reduced-motion rule"
+			},
+			"status": "active"
+		},
+		{
+			"id": "J-08",
+			"name": "js-style-write in updatePins on [...track.querySelectorAll('[data-pin-card]')]",
+			"mechanism": "js-style-write",
+			"element": {
+				"dc": "Draft Site v2",
+				"template_tpl_id": null,
+				"selector": "[...track.querySelectorAll('[data-pin-card]')]",
+				"selection_rule": "resolved at runtime",
+				"description": "written element: [...track.querySelectorAll('[data-pin-card]')]"
+			},
+			"source": {
+				"file": "Draft Site v2.dc.html",
+				"function": "updatePins",
+				"ref": null,
+				"line": 1094,
+				"code": "c.style.scale = (1 - k * 0.06).toFixed(3)"
+			},
+			"trigger": {
+				"type": "scroll-position",
+				"detail": "scroll listener on window (this._scroll) via updateHeader via updatePins"
+			},
+			"properties": [
+				{
+					"property": "scale",
+					"from": null,
+					"to": null,
+					"formula": "(1 - k * 0.06).toFixed(3)"
+				}
+			],
+			"duration_ms": 0,
+			"delay_ms": 0,
+			"stagger": null,
+			"easing": null,
+			"iterations": 1,
+			"direction": null,
+			"fill": null,
+			"reduced_motion": {
+				"behaviour": "final-state",
+				"detail": "still written; its CSS transition is forced to about zero by the reduced-motion rule"
+			},
+			"status": "active"
+		},
+		{
+			"id": "J-09",
+			"name": "js-style-write in updatePins on [data-pin-year]",
+			"mechanism": "js-style-write",
+			"element": {
+				"dc": "Draft Site v2",
+				"template_tpl_id": "448",
+				"selector": "[data-pin-year]",
+				"description": "written element: [data-pin-year]"
+			},
+			"source": {
+				"file": "Draft Site v2.dc.html",
+				"function": "updatePins",
+				"ref": null,
+				"line": 1096,
+				"code": "y.style.color = i === best ? '#D8CA50' : 'transparent'"
+			},
+			"trigger": {
+				"type": "scroll-position",
+				"detail": "scroll listener on window (this._scroll) via updateHeader via updatePins"
+			},
+			"properties": [
+				{
+					"property": "color",
+					"from": null,
+					"to": null,
+					"formula": "i === best ? '#D8CA50' : 'transparent'"
+				}
+			],
+			"duration_ms": 500,
+			"delay_ms": 0,
+			"stagger": null,
+			"easing": "ease",
+			"iterations": 1,
+			"direction": null,
+			"fill": null,
+			"reduced_motion": {
+				"behaviour": "final-state",
+				"detail": "still written; its CSS transition is forced to about zero by the reduced-motion rule"
+			},
+			"status": "active"
+		},
+		{
+			"id": "J-10",
+			"name": "js-style-write in updatePins on [data-pin-year]",
+			"mechanism": "js-style-write",
+			"element": {
+				"dc": "Draft Site v2",
+				"template_tpl_id": "448",
+				"selector": "[data-pin-year]",
+				"description": "written element: [data-pin-year]"
+			},
+			"source": {
+				"file": "Draft Site v2.dc.html",
+				"function": "updatePins",
+				"ref": null,
+				"line": 1096,
+				"code": "y.style.webkitTextStrokeColor = i === best ? '#D8CA50' : '#0A7EA8'"
+			},
+			"trigger": {
+				"type": "scroll-position",
+				"detail": "scroll listener on window (this._scroll) via updateHeader via updatePins"
+			},
+			"properties": [
+				{
+					"property": "webkit-text-stroke-color",
+					"from": null,
+					"to": null,
+					"formula": "i === best ? '#D8CA50' : '#0A7EA8'"
+				}
+			],
+			"duration_ms": 0,
+			"delay_ms": 0,
+			"stagger": null,
+			"easing": null,
+			"iterations": 1,
+			"direction": null,
+			"fill": null,
+			"reduced_motion": {
+				"behaviour": "unchanged",
+				"detail": "no reduced-motion guard on this code path"
+			},
+			"status": "active"
+		},
+		{
+			"id": "J-11",
+			"name": "js-text-write in updatePins on [data-pin-count]",
+			"mechanism": "js-text-write",
+			"element": {
+				"dc": "Draft Site v2",
+				"template_tpl_id": "440",
+				"selector": "[data-pin-count]",
+				"description": "written element: [data-pin-count]"
+			},
+			"source": {
+				"file": "Draft Site v2.dc.html",
+				"function": "updatePins",
+				"ref": null,
+				"line": 1097,
+				"code": "cnt.textContent = String(best + 1).padStart(2, '0') + ' / ' + String(cards.length).padStart(2, '0')"
+			},
+			"trigger": {
+				"type": "scroll-position",
+				"detail": "scroll listener on window (this._scroll) via updateHeader via updatePins"
+			},
+			"properties": [
+				{
+					"property": "textContent",
+					"from": null,
+					"to": null,
+					"formula": "String(best + 1).padStart(2, '0') + ' / ' + String(cards.length).padStart(2, '0')"
+				}
+			],
+			"duration_ms": 0,
+			"delay_ms": 0,
+			"stagger": null,
+			"easing": null,
+			"iterations": 1,
+			"direction": null,
+			"fill": null,
+			"reduced_motion": {
+				"behaviour": "unchanged",
+				"detail": "no reduced-motion guard on this code path"
+			},
+			"status": "active"
+		},
+		{
+			"id": "J-31",
+			"name": "js-scroll in animateAcc on ref setMobEl",
+			"mechanism": "js-scroll",
+			"element": {
+				"dc": "Draft Site v2",
+				"template_tpl_id": "121",
+				"selector": "ref setMobEl",
+				"description": "written element: ref setMobEl"
+			},
+			"source": {
+				"file": "Draft Site v2.dc.html",
+				"function": "animateAcc",
+				"ref": "setMobEl",
+				"line": 1276,
+				"code": "sc.scrollTo({ top, behavior: this.rm ? 'auto' : 'smooth' })"
+			},
+			"trigger": {
+				"type": "state",
+				"detail": "componentDidUpdate when acc, mobileOpen changes via animateAcc",
+				"state_keys": [
+					"acc",
+					"mobileOpen"
+				]
+			},
+			"properties": [
+				{
+					"property": "scroll-position",
+					"from": null,
+					"to": null,
+					"formula": "sc.scrollTo({ top, behavior: this.rm ? 'auto' : 'smooth' })"
+				}
+			],
+			"duration_ms": 0,
+			"delay_ms": 560,
+			"stagger": null,
+			"easing": null,
+			"iterations": 1,
+			"direction": null,
+			"fill": null,
+			"reduced_motion": {
+				"behaviour": "final-state",
+				"detail": "behavior 'auto' under reduced motion"
+			},
+			"status": "active"
+		},
+		{
+			"id": "J-220",
+			"name": "js-scroll in componentDidUpdate on window",
+			"mechanism": "js-scroll",
+			"element": {
+				"dc": "TradeApplication",
+				"template_tpl_id": null,
+				"selector": "window",
+				"selection_rule": "resolved at runtime",
+				"description": "written element: window"
+			},
+			"source": {
+				"file": "TradeApplication.dc.html",
+				"function": "componentDidUpdate",
+				"ref": null,
+				"line": 172,
+				"code": "window.scrollTo({ top, behavior: this.rm ? 'auto' : 'smooth' })"
+			},
+			"trigger": {
+				"type": "state",
+				"detail": "componentDidUpdate when step changes",
+				"state_keys": [
+					"step"
+				]
+			},
+			"properties": [
+				{
+					"property": "scroll-position",
+					"from": null,
+					"to": null,
+					"formula": "window.scrollTo({ top, behavior: this.rm ? 'auto' : 'smooth' })"
+				}
+			],
+			"duration_ms": 0,
+			"delay_ms": 0,
+			"stagger": null,
+			"easing": null,
+			"iterations": 1,
+			"direction": null,
+			"fill": null,
+			"reduced_motion": {
+				"behaviour": "final-state",
+				"detail": "behavior 'auto' under reduced motion"
+			},
+			"status": "active"
+		}
+	],
+	"template": {
+		"elements": {
+			"Draft Site v2/107": {
+				"tag": "sc-if",
+				"realTag": "sc-if",
+				"attrs": {
+					"value": "{{ mobileVisible }}",
+					"hint-placeholder-val": "{{ false }}"
+				},
+				"style": {
+					"static": [],
+					"holes": []
+				},
+				"holes": [
+					{
+						"id": "attr:value#0",
+						"where": "attr:value",
+						"expr": "mobileVisible",
+						"path": "mobileVisible",
+						"whole": true
+					},
+					{
+						"id": "attr:hint-placeholder-val#1",
+						"where": "attr:hint-placeholder-val",
+						"expr": "false",
+						"path": "false",
+						"whole": true
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/8",
+				"realParent": "Draft Site v2/8",
+				"parentChain": [
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/108": {
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {
+					"ref": "{{ setDrawerEl }}",
+					"role": "dialog",
+					"aria-label": "Site menu"
+				},
+				"style": {
+					"static": [
+						[
+							"position",
+							"fixed"
+						],
+						[
+							"top",
+							"0px"
+						],
+						[
+							"right",
+							"0px"
+						],
+						[
+							"bottom",
+							"0px"
+						],
+						[
+							"z-index",
+							"300"
+						],
+						[
+							"background-image",
+							"linear-gradient(165deg, rgb(14, 139, 184) 0%, rgb(10, 126, 168) 45%, rgb(7, 94, 128) 100%)"
+						],
+						[
+							"background-position-x",
+							"initial"
+						],
+						[
+							"background-position-y",
+							"initial"
+						],
+						[
+							"background-size",
+							"initial"
+						],
+						[
+							"background-repeat",
+							"initial"
+						],
+						[
+							"background-attachment",
+							"initial"
+						],
+						[
+							"background-origin",
+							"initial"
+						],
+						[
+							"background-clip",
+							"initial"
+						],
+						[
+							"background-color",
+							"initial"
+						],
+						[
+							"display",
+							"flex"
+						],
+						[
+							"flex-direction",
+							"column"
+						],
+						[
+							"overflow-x",
+							"hidden"
+						],
+						[
+							"overflow-y",
+							"hidden"
+						],
+						[
+							"box-shadow",
+							"rgba(0, 0, 0, 0.45) -30px 0px 60px -30px"
+						]
+					],
+					"holes": [
+						"style:width#1"
+					]
+				},
+				"holes": [
+					{
+						"id": "attr:ref#0",
+						"where": "attr:ref",
+						"expr": "setDrawerEl",
+						"path": "setDrawerEl",
+						"whole": true
+					},
+					{
+						"id": "style:width#1",
+						"where": "style:width",
+						"expr": "R.drawerW",
+						"path": "R.drawerW",
+						"whole": true
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/107",
+				"realParent": "Draft Site v2/8",
+				"parentChain": [
+					"Draft Site v2/107",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/121": {
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {
+					"ref": "{{ setMobEl }}",
+					"data-drawer-scroll": ""
+				},
+				"style": {
+					"static": [
+						[
+							"position",
+							"relative"
+						],
+						[
+							"flex-grow",
+							"1"
+						],
+						[
+							"flex-shrink",
+							"1"
+						],
+						[
+							"flex-basis",
+							"0%"
+						],
+						[
+							"min-height",
+							"0px"
+						],
+						[
+							"overflow-y",
+							"auto"
+						],
+						[
+							"overscroll-behavior-x",
+							"contain"
+						],
+						[
+							"overscroll-behavior-y",
+							"contain"
+						],
+						[
+							"padding-top",
+							"4px"
+						],
+						[
+							"padding-right",
+							"20px"
+						],
+						[
+							"padding-bottom",
+							"28px"
+						],
+						[
+							"padding-left",
+							"20px"
+						],
+						[
+							"scrollbar-width",
+							"thin"
+						],
+						[
+							"scrollbar-color",
+							"rgba(231, 215, 104, 0.75) transparent"
+						]
+					],
+					"holes": []
+				},
+				"holes": [
+					{
+						"id": "attr:ref#0",
+						"where": "attr:ref",
+						"expr": "setMobEl",
+						"path": "setMobEl",
+						"whole": true
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/108",
+				"realParent": "Draft Site v2/108",
+				"parentChain": [
+					"Draft Site v2/108",
+					"Draft Site v2/107",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/201": {
+				"tag": "main",
+				"realTag": "main",
+				"attrs": {
+					"ref": "{{ setMainEl }}"
+				},
+				"style": {
+					"static": [
+						[
+							"position",
+							"relative"
+						],
+						[
+							"z-index",
+							"1"
+						]
+					],
+					"holes": []
+				},
+				"holes": [
+					{
+						"id": "attr:ref#0",
+						"where": "attr:ref",
+						"expr": "setMainEl",
+						"path": "setMainEl",
+						"whole": true
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/8",
+				"realParent": "Draft Site v2/8",
+				"parentChain": [
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/343": {
+				"tag": "sc-for",
+				"realTag": "sc-for",
+				"attrs": {
+					"list": "{{ blocks }}",
+					"as": "b",
+					"hint-placeholder-count": "4"
+				},
+				"style": {
+					"static": [],
+					"holes": []
+				},
+				"holes": [
+					{
+						"id": "attr:list#0",
+						"where": "attr:list",
+						"expr": "blocks",
+						"path": "blocks",
+						"whole": true
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/201",
+				"realParent": "Draft Site v2/201",
+				"parentChain": [
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/344": {
+				"tag": "section",
+				"realTag": "section",
+				"attrs": {
+					"data-reveal": ""
+				},
+				"style": {
+					"static": [
+						[
+							"position",
+							"relative"
+						],
+						[
+							"overflow-x",
+							"clip"
+						],
+						[
+							"overflow-y",
+							"clip"
+						]
+					],
+					"holes": [
+						"style:padding#0",
+						"style:padding#1",
+						"style:padding#2",
+						"style:background#3",
+						"style:--acc#4",
+						"style:--accfg#5",
+						"style:--accline#6"
+					]
+				},
+				"holes": [
+					{
+						"id": "style:padding#0",
+						"where": "style:padding",
+						"expr": "b.padT",
+						"path": "b.padT",
+						"whole": false
+					},
+					{
+						"id": "style:padding#1",
+						"where": "style:padding",
+						"expr": "R.px",
+						"path": "R.px",
+						"whole": false
+					},
+					{
+						"id": "style:padding#2",
+						"where": "style:padding",
+						"expr": "b.padB",
+						"path": "b.padB",
+						"whole": false
+					},
+					{
+						"id": "style:background#3",
+						"where": "style:background",
+						"expr": "b.bg",
+						"path": "b.bg",
+						"whole": true
+					},
+					{
+						"id": "style:--acc#4",
+						"where": "style:--acc",
+						"expr": "b.acc",
+						"path": "b.acc",
+						"whole": true
+					},
+					{
+						"id": "style:--accfg#5",
+						"where": "style:--accfg",
+						"expr": "b.accFg",
+						"path": "b.accFg",
+						"whole": true
+					},
+					{
+						"id": "style:--accline#6",
+						"where": "style:--accline",
+						"expr": "b.accLine",
+						"path": "b.accLine",
+						"whole": true
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/343",
+				"realParent": "Draft Site v2/201",
+				"parentChain": [
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/345": {
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"position",
+							"relative"
+						],
+						[
+							"z-index",
+							"1"
+						],
+						[
+							"max-width",
+							"1240px"
+						],
+						[
+							"margin-top",
+							"0px"
+						],
+						[
+							"margin-right",
+							"auto"
+						],
+						[
+							"margin-bottom",
+							"0px"
+						],
+						[
+							"margin-left",
+							"auto"
+						]
+					],
+					"holes": []
+				},
+				"holes": [],
+				"words": "",
+				"parent": "Draft Site v2/344",
+				"realParent": "Draft Site v2/344",
+				"parentChain": [
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/435": {
+				"tag": "sc-if",
+				"realTag": "sc-if",
+				"attrs": {
+					"value": "{{ b.isHscroll }}",
+					"hint-placeholder-val": "{{ false }}"
+				},
+				"style": {
+					"static": [],
+					"holes": []
+				},
+				"holes": [
+					{
+						"id": "attr:value#0",
+						"where": "attr:value",
+						"expr": "b.isHscroll",
+						"path": "b.isHscroll",
+						"whole": true
+					},
+					{
+						"id": "attr:hint-placeholder-val#1",
+						"where": "attr:hint-placeholder-val",
+						"expr": "false",
+						"path": "false",
+						"whole": true
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/345",
+				"realParent": "Draft Site v2/345",
+				"parentChain": [
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/436": {
+				"tag": "sc-if",
+				"realTag": "sc-if",
+				"attrs": {
+					"value": "{{ R.pin }}",
+					"hint-placeholder-val": "{{ true }}"
+				},
+				"style": {
+					"static": [],
+					"holes": []
+				},
+				"holes": [
+					{
+						"id": "attr:value#0",
+						"where": "attr:value",
+						"expr": "R.pin",
+						"path": "R.pin",
+						"whole": true
+					},
+					{
+						"id": "attr:hint-placeholder-val#1",
+						"where": "attr:hint-placeholder-val",
+						"expr": "true",
+						"path": "true",
+						"whole": true
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/435",
+				"realParent": "Draft Site v2/345",
+				"parentChain": [
+					"Draft Site v2/435",
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/437": {
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {
+					"data-pin": ""
+				},
+				"style": {
+					"static": [
+						[
+							"position",
+							"relative"
+						]
+					],
+					"holes": [
+						"style:height#0"
+					]
+				},
+				"holes": [
+					{
+						"id": "style:height#0",
+						"where": "style:height",
+						"expr": "b.pinH",
+						"path": "b.pinH",
+						"whole": true
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/436",
+				"realParent": "Draft Site v2/345",
+				"parentChain": [
+					"Draft Site v2/436",
+					"Draft Site v2/435",
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/438": {
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"position",
+							"sticky"
+						],
+						[
+							"width",
+							"100vw"
+						],
+						[
+							"margin-left",
+							"calc(50% - 50vw)"
+						],
+						[
+							"display",
+							"flex"
+						],
+						[
+							"flex-direction",
+							"column"
+						],
+						[
+							"justify-content",
+							"center"
+						],
+						[
+							"overflow-x",
+							"hidden"
+						],
+						[
+							"overflow-y",
+							"hidden"
+						]
+					],
+					"holes": [
+						"style:top#0",
+						"style:height#1"
+					]
+				},
+				"holes": [
+					{
+						"id": "style:top#0",
+						"where": "style:top",
+						"expr": "R.pinTop",
+						"path": "R.pinTop",
+						"whole": true
+					},
+					{
+						"id": "style:height#1",
+						"where": "style:height",
+						"expr": "R.pinTop",
+						"path": "R.pinTop",
+						"whole": false
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/437",
+				"realParent": "Draft Site v2/437",
+				"parentChain": [
+					"Draft Site v2/437",
+					"Draft Site v2/436",
+					"Draft Site v2/435",
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/439": {
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"max-width",
+							"1240px"
+						],
+						[
+							"width",
+							"100%"
+						],
+						[
+							"margin-top",
+							"0px"
+						],
+						[
+							"margin-right",
+							"auto"
+						],
+						[
+							"margin-bottom",
+							"0px"
+						],
+						[
+							"margin-left",
+							"auto"
+						],
+						[
+							"box-sizing",
+							"border-box"
+						],
+						[
+							"display",
+							"flex"
+						],
+						[
+							"align-items",
+							"center"
+						],
+						[
+							"row-gap",
+							"20px"
+						],
+						[
+							"column-gap",
+							"20px"
+						]
+					],
+					"holes": [
+						"style:padding#0"
+					]
+				},
+				"holes": [
+					{
+						"id": "style:padding#0",
+						"where": "style:padding",
+						"expr": "R.px",
+						"path": "R.px",
+						"whole": false
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/438",
+				"realParent": "Draft Site v2/438",
+				"parentChain": [
+					"Draft Site v2/438",
+					"Draft Site v2/437",
+					"Draft Site v2/436",
+					"Draft Site v2/435",
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/440": {
+				"tag": "span",
+				"realTag": "span",
+				"attrs": {
+					"data-pin-count": ""
+				},
+				"style": {
+					"static": [
+						[
+							"font-family",
+							"Montserrat, sans-serif"
+						],
+						[
+							"font-weight",
+							"800"
+						],
+						[
+							"font-size",
+							"15px"
+						],
+						[
+							"color",
+							"rgb(10, 126, 168)"
+						],
+						[
+							"min-width",
+							"64px"
+						],
+						[
+							"font-variant-numeric",
+							"tabular-nums"
+						]
+					],
+					"holes": []
+				},
+				"holes": [
+					{
+						"id": "text#0",
+						"where": "text",
+						"expr": "b.count",
+						"path": "b.count",
+						"whole": false
+					}
+				],
+				"words": "01 / {{ b.count }}",
+				"parent": "Draft Site v2/439",
+				"realParent": "Draft Site v2/439",
+				"parentChain": [
+					"Draft Site v2/439",
+					"Draft Site v2/438",
+					"Draft Site v2/437",
+					"Draft Site v2/436",
+					"Draft Site v2/435",
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/441": {
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"flex-grow",
+							"1"
+						],
+						[
+							"flex-shrink",
+							"1"
+						],
+						[
+							"flex-basis",
+							"0%"
+						],
+						[
+							"height",
+							"4px"
+						],
+						[
+							"border-top-left-radius",
+							"4px"
+						],
+						[
+							"border-top-right-radius",
+							"4px"
+						],
+						[
+							"border-bottom-right-radius",
+							"4px"
+						],
+						[
+							"border-bottom-left-radius",
+							"4px"
+						],
+						[
+							"background-image",
+							"initial"
+						],
+						[
+							"background-position-x",
+							"initial"
+						],
+						[
+							"background-position-y",
+							"initial"
+						],
+						[
+							"background-size",
+							"initial"
+						],
+						[
+							"background-repeat",
+							"initial"
+						],
+						[
+							"background-attachment",
+							"initial"
+						],
+						[
+							"background-origin",
+							"initial"
+						],
+						[
+							"background-clip",
+							"initial"
+						],
+						[
+							"background-color",
+							"rgba(44, 62, 80, 0.12)"
+						],
+						[
+							"overflow-x",
+							"hidden"
+						],
+						[
+							"overflow-y",
+							"hidden"
+						]
+					],
+					"holes": []
+				},
+				"holes": [],
+				"words": "",
+				"parent": "Draft Site v2/439",
+				"realParent": "Draft Site v2/439",
+				"parentChain": [
+					"Draft Site v2/439",
+					"Draft Site v2/438",
+					"Draft Site v2/437",
+					"Draft Site v2/436",
+					"Draft Site v2/435",
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/442": {
+				"tag": "span",
+				"realTag": "span",
+				"attrs": {
+					"data-pin-bar": ""
+				},
+				"style": {
+					"static": [
+						[
+							"display",
+							"block"
+						],
+						[
+							"height",
+							"100%"
+						],
+						[
+							"transform-origin",
+							"0px 50%"
+						],
+						[
+							"transform",
+							"scaleX(0)"
+						],
+						[
+							"background-image",
+							"linear-gradient(90deg, rgb(216, 202, 80), rgb(46, 173, 226))"
+						],
+						[
+							"background-position-x",
+							"initial"
+						],
+						[
+							"background-position-y",
+							"initial"
+						],
+						[
+							"background-size",
+							"initial"
+						],
+						[
+							"background-repeat",
+							"initial"
+						],
+						[
+							"background-attachment",
+							"initial"
+						],
+						[
+							"background-origin",
+							"initial"
+						],
+						[
+							"background-clip",
+							"initial"
+						],
+						[
+							"background-color",
+							"initial"
+						],
+						[
+							"border-top-left-radius",
+							"4px"
+						],
+						[
+							"border-top-right-radius",
+							"4px"
+						],
+						[
+							"border-bottom-right-radius",
+							"4px"
+						],
+						[
+							"border-bottom-left-radius",
+							"4px"
+						]
+					],
+					"holes": []
+				},
+				"holes": [],
+				"words": "",
+				"parent": "Draft Site v2/441",
+				"realParent": "Draft Site v2/441",
+				"parentChain": [
+					"Draft Site v2/441",
+					"Draft Site v2/439",
+					"Draft Site v2/438",
+					"Draft Site v2/437",
+					"Draft Site v2/436",
+					"Draft Site v2/435",
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/444": {
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {
+					"data-pin-track": ""
+				},
+				"style": {
+					"static": [
+						[
+							"display",
+							"flex"
+						],
+						[
+							"row-gap",
+							"32px"
+						],
+						[
+							"column-gap",
+							"32px"
+						],
+						[
+							"margin-top",
+							"36px"
+						],
+						[
+							"will-change",
+							"transform"
+						],
+						[
+							"width",
+							"max-content"
+						]
+					],
+					"holes": [
+						"style:padding#0",
+						"style:padding#1"
+					]
+				},
+				"holes": [
+					{
+						"id": "style:padding#0",
+						"where": "style:padding",
+						"expr": "R.px",
+						"path": "R.px",
+						"whole": false
+					},
+					{
+						"id": "style:padding#1",
+						"where": "style:padding",
+						"expr": "R.px",
+						"path": "R.px",
+						"whole": false
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/438",
+				"realParent": "Draft Site v2/438",
+				"parentChain": [
+					"Draft Site v2/438",
+					"Draft Site v2/437",
+					"Draft Site v2/436",
+					"Draft Site v2/435",
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/445": {
+				"tag": "sc-for",
+				"realTag": "sc-for",
+				"attrs": {
+					"list": "{{ b.items }}",
+					"as": "t",
+					"hint-placeholder-count": "5"
+				},
+				"style": {
+					"static": [],
+					"holes": []
+				},
+				"holes": [
+					{
+						"id": "attr:list#0",
+						"where": "attr:list",
+						"expr": "b.items",
+						"path": "b.items",
+						"whole": true
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/444",
+				"realParent": "Draft Site v2/444",
+				"parentChain": [
+					"Draft Site v2/444",
+					"Draft Site v2/438",
+					"Draft Site v2/437",
+					"Draft Site v2/436",
+					"Draft Site v2/435",
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/446": {
+				"tag": "article",
+				"realTag": "article",
+				"attrs": {
+					"data-pin-card": ""
+				},
+				"style": {
+					"static": [
+						[
+							"flex-grow",
+							"0"
+						],
+						[
+							"flex-shrink",
+							"0"
+						],
+						[
+							"flex-basis",
+							"auto"
+						],
+						[
+							"display",
+							"grid"
+						],
+						[
+							"row-gap",
+							"28px"
+						],
+						[
+							"column-gap",
+							"28px"
+						],
+						[
+							"align-items",
+							"center"
+						],
+						[
+							"background-image",
+							"initial"
+						],
+						[
+							"background-position-x",
+							"initial"
+						],
+						[
+							"background-position-y",
+							"initial"
+						],
+						[
+							"background-size",
+							"initial"
+						],
+						[
+							"background-repeat",
+							"initial"
+						],
+						[
+							"background-attachment",
+							"initial"
+						],
+						[
+							"background-origin",
+							"initial"
+						],
+						[
+							"background-clip",
+							"initial"
+						],
+						[
+							"background-color",
+							"rgb(255, 255, 255)"
+						],
+						[
+							"border-top-left-radius",
+							"30px"
+						],
+						[
+							"border-top-right-radius",
+							"30px"
+						],
+						[
+							"border-bottom-right-radius",
+							"30px"
+						],
+						[
+							"border-bottom-left-radius",
+							"30px"
+						],
+						[
+							"padding-top",
+							"26px"
+						],
+						[
+							"padding-right",
+							"26px"
+						],
+						[
+							"padding-bottom",
+							"26px"
+						],
+						[
+							"padding-left",
+							"26px"
+						],
+						[
+							"box-shadow",
+							"rgba(44, 62, 80, 0.65) 0px 40px 70px -46px"
+						],
+						[
+							"border-top-width",
+							"1px"
+						],
+						[
+							"border-right-width",
+							"1px"
+						],
+						[
+							"border-bottom-width",
+							"1px"
+						],
+						[
+							"border-left-width",
+							"1px"
+						],
+						[
+							"border-top-style",
+							"solid"
+						],
+						[
+							"border-right-style",
+							"solid"
+						],
+						[
+							"border-bottom-style",
+							"solid"
+						],
+						[
+							"border-left-style",
+							"solid"
+						],
+						[
+							"border-top-color",
+							"rgba(44, 62, 80, 0.08)"
+						],
+						[
+							"border-right-color",
+							"rgba(44, 62, 80, 0.08)"
+						],
+						[
+							"border-bottom-color",
+							"rgba(44, 62, 80, 0.08)"
+						],
+						[
+							"border-left-color",
+							"rgba(44, 62, 80, 0.08)"
+						],
+						[
+							"border-image-source",
+							"initial"
+						],
+						[
+							"border-image-slice",
+							"initial"
+						],
+						[
+							"border-image-width",
+							"initial"
+						],
+						[
+							"border-image-outset",
+							"initial"
+						],
+						[
+							"border-image-repeat",
+							"initial"
+						],
+						[
+							"transition-behavior",
+							"normal, normal"
+						],
+						[
+							"transition-duration",
+							"0.4s, 0.5s"
+						],
+						[
+							"transition-timing-function",
+							"ease, cubic-bezier(0.2, 0.8, 0.2, 1)"
+						],
+						[
+							"transition-delay",
+							"0s, 0s"
+						],
+						[
+							"transition-property",
+							"opacity, scale"
+						]
+					],
+					"holes": [
+						"style:width#0",
+						"style:grid-template-columns#1"
+					]
+				},
+				"holes": [
+					{
+						"id": "style:width#0",
+						"where": "style:width",
+						"expr": "R.hsCardW",
+						"path": "R.hsCardW",
+						"whole": true
+					},
+					{
+						"id": "style:grid-template-columns#1",
+						"where": "style:grid-template-columns",
+						"expr": "R.hsCardCols",
+						"path": "R.hsCardCols",
+						"whole": true
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/445",
+				"realParent": "Draft Site v2/444",
+				"parentChain": [
+					"Draft Site v2/445",
+					"Draft Site v2/444",
+					"Draft Site v2/438",
+					"Draft Site v2/437",
+					"Draft Site v2/436",
+					"Draft Site v2/435",
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/447": {
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"min-width",
+							"0px"
+						]
+					],
+					"holes": []
+				},
+				"holes": [],
+				"words": "",
+				"parent": "Draft Site v2/446",
+				"realParent": "Draft Site v2/446",
+				"parentChain": [
+					"Draft Site v2/446",
+					"Draft Site v2/445",
+					"Draft Site v2/444",
+					"Draft Site v2/438",
+					"Draft Site v2/437",
+					"Draft Site v2/436",
+					"Draft Site v2/435",
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/448": {
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {
+					"data-pin-year": ""
+				},
+				"style": {
+					"static": [
+						[
+							"font-family",
+							"Montserrat, sans-serif"
+						],
+						[
+							"font-weight",
+							"800"
+						],
+						[
+							"line-height",
+							"0.9"
+						],
+						[
+							"letter-spacing",
+							"-0.04em"
+						],
+						[
+							"color",
+							"transparent"
+						],
+						[
+							"-webkit-text-stroke-width",
+							"2px"
+						],
+						[
+							"-webkit-text-stroke-color",
+							"rgb(10, 126, 168)"
+						],
+						[
+							"transition-behavior",
+							"normal, normal"
+						],
+						[
+							"transition-duration",
+							"0.5s, 0.5s"
+						],
+						[
+							"transition-timing-function",
+							"ease, ease"
+						],
+						[
+							"transition-delay",
+							"0s, 0s"
+						],
+						[
+							"transition-property",
+							"color, -webkit-text-stroke-color"
+						]
+					],
+					"holes": [
+						"style:font-size#1"
+					]
+				},
+				"holes": [
+					{
+						"id": "text#0",
+						"where": "text",
+						"expr": "t.year",
+						"path": "t.year",
+						"whole": false
+					},
+					{
+						"id": "style:font-size#1",
+						"where": "style:font-size",
+						"expr": "R.hsYear",
+						"path": "R.hsYear",
+						"whole": true
+					}
+				],
+				"words": "{{ t.year }}",
+				"parent": "Draft Site v2/447",
+				"realParent": "Draft Site v2/447",
+				"parentChain": [
+					"Draft Site v2/447",
+					"Draft Site v2/446",
+					"Draft Site v2/445",
+					"Draft Site v2/444",
+					"Draft Site v2/438",
+					"Draft Site v2/437",
+					"Draft Site v2/436",
+					"Draft Site v2/435",
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/653": {
+				"tag": "footer",
+				"realTag": "footer",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"position",
+							"relative"
+						],
+						[
+							"z-index",
+							"1"
+						],
+						[
+							"background-image",
+							"initial"
+						],
+						[
+							"background-position-x",
+							"initial"
+						],
+						[
+							"background-position-y",
+							"initial"
+						],
+						[
+							"background-size",
+							"initial"
+						],
+						[
+							"background-repeat",
+							"initial"
+						],
+						[
+							"background-attachment",
+							"initial"
+						],
+						[
+							"background-origin",
+							"initial"
+						],
+						[
+							"background-clip",
+							"initial"
+						],
+						[
+							"background-color",
+							"rgb(44, 62, 80)"
+						],
+						[
+							"color",
+							"rgb(255, 255, 255)"
+						],
+						[
+							"overflow-x",
+							"hidden"
+						],
+						[
+							"overflow-y",
+							"hidden"
+						]
+					],
+					"holes": []
+				},
+				"holes": [],
+				"words": "",
+				"parent": "Draft Site v2/8",
+				"realParent": "Draft Site v2/8",
+				"parentChain": [
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/656": {
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"position",
+							"relative"
+						],
+						[
+							"max-width",
+							"1240px"
+						],
+						[
+							"margin-top",
+							"0px"
+						],
+						[
+							"margin-right",
+							"auto"
+						],
+						[
+							"margin-bottom",
+							"0px"
+						],
+						[
+							"margin-left",
+							"auto"
+						]
+					],
+					"holes": [
+						"style:padding#0",
+						"style:padding#1"
+					]
+				},
+				"holes": [
+					{
+						"id": "style:padding#0",
+						"where": "style:padding",
+						"expr": "R.footPad",
+						"path": "R.footPad",
+						"whole": false
+					},
+					{
+						"id": "style:padding#1",
+						"where": "style:padding",
+						"expr": "R.px",
+						"path": "R.px",
+						"whole": false
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/653",
+				"realParent": "Draft Site v2/653",
+				"parentChain": [
+					"Draft Site v2/653",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/657": {
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"display",
+							"grid"
+						],
+						[
+							"row-gap",
+							"16px"
+						],
+						[
+							"column-gap",
+							"16px"
+						]
+					],
+					"holes": [
+						"style:grid-template-columns#0"
+					]
+				},
+				"holes": [
+					{
+						"id": "style:grid-template-columns#0",
+						"where": "style:grid-template-columns",
+						"expr": "R.footTopCols",
+						"path": "R.footTopCols",
+						"whole": true
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/656",
+				"realParent": "Draft Site v2/656",
+				"parentChain": [
+					"Draft Site v2/656",
+					"Draft Site v2/653",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/670": {
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"position",
+							"relative"
+						],
+						[
+							"display",
+							"flex"
+						],
+						[
+							"row-gap",
+							"18px"
+						],
+						[
+							"column-gap",
+							"18px"
+						],
+						[
+							"align-items",
+							"flex-start"
+						],
+						[
+							"padding-top",
+							"26px"
+						],
+						[
+							"padding-right",
+							"26px"
+						],
+						[
+							"padding-bottom",
+							"26px"
+						],
+						[
+							"padding-left",
+							"26px"
+						],
+						[
+							"border-top-left-radius",
+							"22px"
+						],
+						[
+							"border-top-right-radius",
+							"22px"
+						],
+						[
+							"border-bottom-right-radius",
+							"22px"
+						],
+						[
+							"border-bottom-left-radius",
+							"22px"
+						],
+						[
+							"background-image",
+							"initial"
+						],
+						[
+							"background-position-x",
+							"initial"
+						],
+						[
+							"background-position-y",
+							"initial"
+						],
+						[
+							"background-size",
+							"initial"
+						],
+						[
+							"background-repeat",
+							"initial"
+						],
+						[
+							"background-attachment",
+							"initial"
+						],
+						[
+							"background-origin",
+							"initial"
+						],
+						[
+							"background-clip",
+							"initial"
+						],
+						[
+							"background-color",
+							"rgba(255, 255, 255, 0.05)"
+						],
+						[
+							"border-top-width",
+							"1px"
+						],
+						[
+							"border-right-width",
+							"1px"
+						],
+						[
+							"border-bottom-width",
+							"1px"
+						],
+						[
+							"border-left-width",
+							"1px"
+						],
+						[
+							"border-top-style",
+							"solid"
+						],
+						[
+							"border-right-style",
+							"solid"
+						],
+						[
+							"border-bottom-style",
+							"solid"
+						],
+						[
+							"border-left-style",
+							"solid"
+						],
+						[
+							"border-top-color",
+							"rgba(255, 255, 255, 0.12)"
+						],
+						[
+							"border-right-color",
+							"rgba(255, 255, 255, 0.12)"
+						],
+						[
+							"border-bottom-color",
+							"rgba(255, 255, 255, 0.12)"
+						],
+						[
+							"border-left-color",
+							"rgba(255, 255, 255, 0.12)"
+						],
+						[
+							"border-image-source",
+							"initial"
+						],
+						[
+							"border-image-slice",
+							"initial"
+						],
+						[
+							"border-image-width",
+							"initial"
+						],
+						[
+							"border-image-outset",
+							"initial"
+						],
+						[
+							"border-image-repeat",
+							"initial"
+						],
+						[
+							"color",
+							"rgb(255, 255, 255)"
+						],
+						[
+							"transition-behavior",
+							"normal, normal, normal, normal"
+						],
+						[
+							"transition-duration",
+							"0.35s, 0.3s, 0.3s, 0.3s"
+						],
+						[
+							"transition-timing-function",
+							"cubic-bezier(0.2, 0.8, 0.2, 1), ease, ease, ease"
+						],
+						[
+							"transition-delay",
+							"0s, 0s, 0s, 0s"
+						],
+						[
+							"transition-property",
+							"transform, background, border-color, box-shadow"
+						],
+						[
+							"flex-direction",
+							"column"
+						],
+						[
+							"row-gap",
+							"14px"
+						],
+						[
+							"column-gap",
+							"14px"
+						]
+					],
+					"holes": [
+						"style:grid-column#0"
+					]
+				},
+				"holes": [
+					{
+						"id": "style:grid-column#0",
+						"where": "style:grid-column",
+						"expr": "R.footHoursSpan",
+						"path": "R.footHoursSpan",
+						"whole": true
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/657",
+				"realParent": "Draft Site v2/657",
+				"parentChain": [
+					"Draft Site v2/657",
+					"Draft Site v2/656",
+					"Draft Site v2/653",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/671": {
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"display",
+							"flex"
+						],
+						[
+							"align-items",
+							"center"
+						],
+						[
+							"justify-content",
+							"space-between"
+						],
+						[
+							"row-gap",
+							"12px"
+						],
+						[
+							"column-gap",
+							"12px"
+						],
+						[
+							"width",
+							"100%"
+						]
+					],
+					"holes": []
+				},
+				"holes": [],
+				"words": "",
+				"parent": "Draft Site v2/670",
+				"realParent": "Draft Site v2/670",
+				"parentChain": [
+					"Draft Site v2/670",
+					"Draft Site v2/657",
+					"Draft Site v2/656",
+					"Draft Site v2/653",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/673": {
+				"tag": "span",
+				"realTag": "span",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"display",
+							"inline-flex"
+						],
+						[
+							"align-items",
+							"center"
+						],
+						[
+							"row-gap",
+							"8px"
+						],
+						[
+							"column-gap",
+							"8px"
+						],
+						[
+							"font-weight",
+							"700"
+						],
+						[
+							"font-size",
+							"14px"
+						],
+						[
+							"padding-top",
+							"5px"
+						],
+						[
+							"padding-right",
+							"12px"
+						],
+						[
+							"padding-bottom",
+							"5px"
+						],
+						[
+							"padding-left",
+							"12px"
+						],
+						[
+							"border-top-left-radius",
+							"999px"
+						],
+						[
+							"border-top-right-radius",
+							"999px"
+						],
+						[
+							"border-bottom-right-radius",
+							"999px"
+						],
+						[
+							"border-bottom-left-radius",
+							"999px"
+						],
+						[
+							"white-space-collapse",
+							"collapse"
+						],
+						[
+							"text-wrap-mode",
+							"nowrap"
+						]
+					],
+					"holes": [
+						"style:background#1",
+						"style:color#2"
+					]
+				},
+				"holes": [
+					{
+						"id": "text#0",
+						"where": "text",
+						"expr": "hoursNow.label",
+						"path": "hoursNow.label",
+						"whole": false
+					},
+					{
+						"id": "style:background#1",
+						"where": "style:background",
+						"expr": "hoursNow.bg",
+						"path": "hoursNow.bg",
+						"whole": true
+					},
+					{
+						"id": "style:color#2",
+						"where": "style:color",
+						"expr": "hoursNow.fg",
+						"path": "hoursNow.fg",
+						"whole": true
+					}
+				],
+				"words": "{{ hoursNow.label }}",
+				"parent": "Draft Site v2/671",
+				"realParent": "Draft Site v2/671",
+				"parentChain": [
+					"Draft Site v2/671",
+					"Draft Site v2/670",
+					"Draft Site v2/657",
+					"Draft Site v2/656",
+					"Draft Site v2/653",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/674": {
+				"tag": "span",
+				"realTag": "span",
+				"attrs": {
+					"ref": "{{ setPulseEl }}"
+				},
+				"style": {
+					"static": [
+						[
+							"width",
+							"8px"
+						],
+						[
+							"height",
+							"8px"
+						],
+						[
+							"border-top-left-radius",
+							"50%"
+						],
+						[
+							"border-top-right-radius",
+							"50%"
+						],
+						[
+							"border-bottom-right-radius",
+							"50%"
+						],
+						[
+							"border-bottom-left-radius",
+							"50%"
+						]
+					],
+					"holes": [
+						"style:background#1",
+						"style:color#2"
+					]
+				},
+				"holes": [
+					{
+						"id": "attr:ref#0",
+						"where": "attr:ref",
+						"expr": "setPulseEl",
+						"path": "setPulseEl",
+						"whole": true
+					},
+					{
+						"id": "style:background#1",
+						"where": "style:background",
+						"expr": "hoursNow.dot",
+						"path": "hoursNow.dot",
+						"whole": true
+					},
+					{
+						"id": "style:color#2",
+						"where": "style:color",
+						"expr": "hoursNow.dot",
+						"path": "hoursNow.dot",
+						"whole": true
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/673",
+				"realParent": "Draft Site v2/673",
+				"parentChain": [
+					"Draft Site v2/673",
+					"Draft Site v2/671",
+					"Draft Site v2/670",
+					"Draft Site v2/657",
+					"Draft Site v2/656",
+					"Draft Site v2/653",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/8": {
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"background-image",
+							"initial"
+						],
+						[
+							"background-position-x",
+							"initial"
+						],
+						[
+							"background-position-y",
+							"initial"
+						],
+						[
+							"background-size",
+							"initial"
+						],
+						[
+							"background-repeat",
+							"initial"
+						],
+						[
+							"background-attachment",
+							"initial"
+						],
+						[
+							"background-origin",
+							"initial"
+						],
+						[
+							"background-clip",
+							"initial"
+						],
+						[
+							"background-color",
+							"rgb(255, 255, 255)"
+						],
+						[
+							"color",
+							"rgb(30, 42, 60)"
+						],
+						[
+							"min-height",
+							"100vh"
+						],
+						[
+							"font-family",
+							"\"Source Sans 3\", \"Source Sans Pro\", system-ui, sans-serif"
+						],
+						[
+							"font-size",
+							"19px"
+						],
+						[
+							"line-height",
+							"1.55"
+						],
+						[
+							"position",
+							"relative"
+						],
+						[
+							"overflow-x",
+							"clip"
+						],
+						[
+							"-webkit-font-smoothing",
+							"antialiased"
+						]
+					],
+					"holes": []
+				},
+				"holes": [],
+				"words": "",
+				"parent": null,
+				"realParent": null,
+				"parentChain": []
+			}
+		}
+	}
+}

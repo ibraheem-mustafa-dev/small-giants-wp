@@ -43,8 +43,8 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "{ attr: 'orientation', value: 'horizontal', companion: true }, ",
-		"replace": "",
+		"find": "{ attr: 'orientation', value: 'horizontal', companion: true } ] },",
+		"replace": "] },",
 		"why": "the pinned timeline is written without its orientation"
 	},
 	{
@@ -61,13 +61,7 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "const dragging = drags.length > 0 && moves.length > 0;",
-		"replace": "const dragging = drags.length > 0 || moves.length > 0;",
-		"why": "either half of the drag is enough"
-	},
-	{
-		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "const dragging = drags.length > 0 && moves.length > 0;",
+		"find": "const dragging = drags.length > 0;",
 		"replace": "const dragging = false;",
 		"why": "drag to scroll is never written"
 	},
@@ -103,9 +97,9 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "/drag/i.test( x.source?.function ?? '' ) && 'js-style-write' === x.mechanism",
-		"replace": "'js-style-write' === x.mechanism",
-		"why": "any snap write is a drag"
+		"find": "const drags = suspends.filter( ( x ) => offsets.some( ( y ) => sameWriter( x, y ) ) );",
+		"replace": "const drags = [];",
+		"why": "the drag is never read"
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
