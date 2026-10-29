@@ -676,7 +676,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// The commerce region of a WooCommerce page surface (lib/skeleton-commerce-region.mjs), found once for the surface.
 	const region = commerceRegion( { m, commerce: surface.commerce, rule: R.commerceRegion, toolbarRule: R.shopToolbar } );
 	// A loop of products, brands or reviews on any page is the working block its items say (lib/skeleton-loop-blocks.mjs).
-	const loopRegions = new Map( loopBlocks( { m, rows: surface.loops?.rows || [], brands: surface.loops?.brands || [], commerce: surface.commerce, rule: R.loopBlocks, money: R.commerceRegion?.money, shop: R.commerceRegion?.roles?.shop } ).regions.map( ( x ) => [ x.key, x ] ) );
+	const loopResult = loopBlocks( { m, rows: surface.loops?.rows || [], brands: surface.loops?.brands || [], carousels: surface.loops?.carousels || new Set(), commerce: surface.commerce, rule: R.loopBlocks, money: R.commerceRegion?.money, shop: R.commerceRegion?.roles?.shop } );
+	const loopRegions = new Map( loopResult.regions.map( ( x ) => [ x.key, x ] ) );
+	// The cards of a review carousel are its testimonials (each draws its own quote, name and rating).
+	const carouselCardOf = new Map( loopResult.regions.filter( ( x ) => x.cards ).flatMap( ( x ) => x.cards.map( ( k ) => [ k, x ] ) ) );
 	// The shop's filter rail beside its product listing (lib/skeleton-filter-rail.mjs), from the draft catalogue's facets.
 	const rail = region?.key ? filterRail( { m, region, filters: surface.commerce.filters, rule: R.filterRail, money: R.commerceRegion.money } ) : null;
 	// A surface the page map holds as an sgs_choice_flow row: what the flow holds, read from the fact record.
@@ -705,7 +708,11 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// A holder of looped products, brands or reviews is the working block, which draws its items (rules.loopBlocks).
 		( { e } ) => {
 			const loop = loopRegions.get( e.key );
-			return loop ? v( 'loopBlocks', { block: loop.block, absorb: true, attributes: loop.attributes, inner: loop.inner, item: loop.item?.key ?? null, kind: loop.kind, ...( loop.handover ? { handover: loop.handover } : {} ), reason: loop.reason } ) : null;
+			const card = carouselCardOf.get( e.key );
+			if ( card ) {
+				return v( 'loopBlocks', { block: card.cardBlock, absorb: true, attributes: {}, kind: 'carouselCard', reason: card.reason } );
+			}
+			return loop ? v( 'loopBlocks', { block: loop.block, absorb: false !== loop.absorb, attributes: loop.attributes, inner: loop.inner, item: loop.item?.key ?? null, kind: loop.kind, ...( loop.handover ? { handover: loop.handover } : {} ), reason: loop.reason } ) : null;
 		},
 		// The draft's sort control and result count (and the wrappers holding only them) are drawn by the toolbar row at the top of the
 		// shop's product collection (rules.shopToolbar): absorbed into the collection.
@@ -782,8 +789,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 				return null;
 			}
 			const logos = desc( e ).some( isMedia );
+			// Labels that are not a page's own section cannot be the trust bar (a section block); the layout block that offers the
+			// marquee takes them as its text items, since the block a button group or a link run would pick offers none.
 			if ( ! logos && ! pageSection( e, R.marquee?.itemBlock ) ) {
-				return null;
+				return R.marquee?.textBlock ? v( 'marquee', { block: R.marquee.textBlock, attributes: { ...( R.marquee.textAttributes || {} ) }, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: 'the labels of this strip: add each as a brand name' } } ) : null;
 			}
 			return v( 'marquee', logos ? { block: R.marquee?.logoBlock, attributes: {}, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: 'the brand logos: add each logo image to the strip' } } : { block: R.marquee?.itemBlock, attributes: {}, absorb: true } );
 		},

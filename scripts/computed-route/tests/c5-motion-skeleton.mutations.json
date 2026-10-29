@@ -1,0 +1,98 @@
+[
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "return R.marquee?.textBlock ? v( 'marquee', { block: R.marquee.textBlock, attributes: { ...( R.marquee.textAttributes || {} ) }, absorb: true,",
+		"replace": "return false ? v( 'marquee', { block: R.marquee.textBlock, attributes: { ...( R.marquee.textAttributes || {} ) }, absorb: true,",
+		"why": "labels inside another block are no marquee"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "attributes: { ...( R.marquee.textAttributes || {} ) }, absorb: true,",
+		"replace": "attributes: {}, absorb: true,",
+		"why": "the names are not shown as text"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "if ( ! logos && ! pageSection( e, R.marquee?.itemBlock ) ) {",
+		"replace": "if ( ! logos ) {",
+		"why": "a page-level strip of labels loses the trust bar"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "if ( ! loops( e ) || ! kidsB.length ) {\n\t\t\t\treturn null;\n\t\t\t}\n\t\t\tconst logos",
+		"replace": "if ( ! kidsB.length ) {\n\t\t\t\treturn null;\n\t\t\t}\n\t\t\tconst logos",
+		"why": "a strip nothing loops is a marquee"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "carousels: surface.loops?.carousels || new Set(),",
+		"replace": "carousels: new Set(),",
+		"why": "the stepped tracks never reach the loop reader"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const card = carouselCardOf.get( e.key );\n\t\t\tif ( card ) {",
+		"replace": "const card = null;\n\t\t\tif ( card ) {",
+		"why": "the cards are not testimonials"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "block: loop.block, absorb: false !== loop.absorb,",
+		"replace": "block: loop.block, absorb: true,",
+		"why": "the slider absorbs its cards"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "return v( 'loopBlocks', { block: card.cardBlock, absorb: true, attributes: {}, kind: 'carouselCard', reason: card.reason } );",
+		"replace": "return v( 'loopBlocks', { block: card.cardBlock, absorb: false, attributes: {}, kind: 'carouselCard', reason: card.reason } );",
+		"why": "a card does not draw its own quote"
+	},
+	{
+		"file": "lib/skeleton-loop-blocks.mjs",
+		"find": "if ( ! hit && rule.carousel && carousels.has( templateKey( { dc: holder.template, tpl: holder.tpl } ) ) ) {",
+		"replace": "if ( ! hit && rule.carousel ) {",
+		"why": "any review loop is a carousel"
+	},
+	{
+		"file": "lib/skeleton-loop-blocks.mjs",
+		"find": "if ( ! hit && rule.carousel && carousels.has( templateKey( { dc: holder.template, tpl: holder.tpl } ) ) ) {",
+		"replace": "if ( rule.carousel && carousels.has( templateKey( { dc: holder.template, tpl: holder.tpl } ) ) ) {",
+		"why": "a carousel overrides the provider the links name"
+	},
+	{
+		"file": "lib/skeleton-loop-blocks.mjs",
+		"find": "if ( ! hit && rule.carousel && carousels.has(",
+		"replace": "if ( ! hit && carousels.has(",
+		"why": "the decision is not what switches the carousel on"
+	},
+	{
+		"file": "lib/skeleton-loop-blocks.mjs",
+		"find": "cards: items.map( ( it ) => it.key ), cardBlock: rule.carousel.cardBlock,",
+		"replace": "cards: [], cardBlock: rule.carousel.cardBlock,",
+		"why": "no card is named"
+	},
+	{
+		"file": "lib/skeleton-rerun.mjs",
+		"find": "filter( ( r ) => recogniseBehaviour( r, { records } )?.blocks?.[ 'sgs/testimonial-slider' ] )",
+		"replace": "filter( ( r ) => recogniseBehaviour( r, { records } ) )",
+		"why": "any recognised behaviour is a carousel"
+	},
+	{
+		"file": "lib/skeleton-rerun.mjs",
+		"find": "filter( ( r ) => recogniseBehaviour( r, { records } )?.blocks?.[ 'sgs/testimonial-slider' ] )",
+		"replace": "filter( ( r ) => recogniseBehaviour( r, {} )?.blocks?.[ 'sgs/testimonial-slider' ] )",
+		"why": "a track is read without the rest of the inventory"
+	},
+	{
+		"file": "lib/skeleton-rerun.mjs",
+		"find": "export const carouselKeys = ( animations ) => {\n\tconst records = animations?.records || [];\n\treturn new Set( records.filter( ( r ) => recogniseBehaviour( r, { records } )?.blocks?.[ 'sgs/testimonial-slider' ] ).flatMap( ( r ) => ( null == r.element?.template_tpl_id ? tplIds( r.element?.nearest_tpl_id ) : tplIds( r.element.template_tpl_id ) )",
+		"replace": "export const carouselKeys = ( animations ) => {\n\tconst records = animations?.records || [];\n\treturn new Set( records.filter( ( r ) => recogniseBehaviour( r, { records } )?.blocks?.[ 'sgs/testimonial-slider' ] ).flatMap( ( r ) => tplIds( r.element?.template_tpl_id )",
+		"why": "a track named only by its nearest element is dropped"
+	},
+	{
+		"file": "lib/skeleton-facts.mjs",
+		"find": "[ 'rules.loopBlocks.carousel.cardBlock', r.loopBlocks?.carousel?.cardBlock ],",
+		"replace": "",
+		"why": "a carousel card block that is no block is accepted"
+	}
+]

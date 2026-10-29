@@ -26,7 +26,7 @@ import { assertDraftPage, serveDraft } from './lib/draft.mjs';
 import { readInventory } from './lib/skeleton-inventory.mjs';
 import { loadFacts, decisionsProblems, REPO } from './lib/skeleton-facts.mjs';
 import { proposeSkeleton } from './lib/skeleton-propose.mjs';
-import { loopingKeys } from './lib/skeleton-rerun.mjs';
+import { loopingKeys, carouselKeys } from './lib/skeleton-rerun.mjs';
 import { isServedInventory, servedDecisions, servedMotion } from './lib/key-space.mjs';
 import { reviewHtml } from './lib/skeleton-review.mjs';
 import { calKeysFor, calSettingsFor, statesOfRecord, thresholdsOf } from './lib/skeleton-context.mjs';
@@ -95,7 +95,7 @@ export function intakeContext( { client, surface, repo = REPO } ) {
 	// The handoff record of the same id carries the states (with the sc-if templates each shows); the draft's width thresholds are intake's.
 	const states = statesOfRecord( { repo, client, id: entry.id } );
 	const thresholds = thresholdsOf( intake.breakpoints );
-	return { slug, id: entry.id ?? null, pageMap: intake.pageMap || [], kind: entry.kind, name: entry.name, built: built[ entry.id ] || built[ slug ] || null, rootComponent: entry.inventory?.checks?.rootName || null, motion: loopingKeys( intake.inventory?.animations ), states, thresholds };
+	return { slug, id: entry.id ?? null, pageMap: intake.pageMap || [], kind: entry.kind, name: entry.name, built: built[ entry.id ] || built[ slug ] || null, rootComponent: entry.inventory?.checks?.rootName || null, motion: loopingKeys( intake.inventory?.animations ), carousels: carouselKeys( intake.inventory?.animations ), states, thresholds };
 }
 
 // The intake context and the saved client decisions of a surface as propose and review read them: decisions under the intake
@@ -137,7 +137,7 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	const catalogue = loadCatalogue( repo, client );
 	const commerce = commerceOf( readSurface( repo, client, surface ), rows, catalogue, loadShopParts( path.join( repo, 'sites', client, 'build' ) ) );
 	// A loop of products, brands or reviews on any page is a working block (lib/skeleton-loop-blocks.mjs): the page map names the product page, the catalogue the brands.
-	const loops = { rows, brands: catalogue ? filtersOf( catalogue ).brands : [] };
+	const loops = { rows, brands: catalogue ? filtersOf( catalogue ).brands : [], carousels: served ? servedMotion( ctx.carousels, ctx.rootComponent ) : ctx.carousels };
 	const r = propose( { inventory, facts, formLinks, refs, draftLinks: draftLinksFor( { repo, client } ), surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, commerce, loops, built: ctx.built, carried: carriedIds( { repo, client, site: readSurface( repo, client, surface ).site, rootComponent: served ? ctx.rootComponent : null } ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: readPicks( p.picks ), calKeys: calKeysFor( readSurface( repo, client, surface ).site ), calSettings: calSettingsFor( readSurface( repo, client, surface ).site ), states: ctx.states, thresholds: ctx.thresholds, pageMap: ctx.pageMap, surfaceId: ctx.id, db } );
 	json( p.skeleton, r.skeleton );
 	json( p.proposal, r.proposal );

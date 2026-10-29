@@ -29,13 +29,13 @@ test( 'the committed footer inventory holds a root-host paragraph with words (th
 } );
 
 // A temp repo holding one surface: the manifest entry, intake.json, the inventory and the saved files.
-function fixture( { entry = { site: 'x', intakeSurface: 'site-footer' }, decisions = { surfaces: {} }, built = null } = {} ) {
+function fixture( { entry = { site: 'x', intakeSurface: 'site-footer' }, decisions = { surfaces: {} }, built = null, extra = [] } = {} ) {
 	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'skel-ctx-' ) );
 	const build = path.join( repo, 'sites', CLIENT, 'build' );
 	fs.mkdirSync( path.join( build, 'intake' ), { recursive: true } );
 	fs.mkdirSync( path.join( build, 'skeleton' ), { recursive: true } );
 	fs.writeFileSync( path.join( build, 'surfaces.json' ), JSON.stringify( { footer: entry } ) );
-	const animations = { records: [ { iterations: 'infinite', element: { dc: ROOT, template_tpl_id: '847' }, properties: [ { property: 'transform', from: 'translateX(0)', to: 'translateX(-50%)' } ] } ] };
+	const animations = { records: [ { iterations: 'infinite', element: { dc: ROOT, template_tpl_id: '847' }, properties: [ { property: 'transform', from: 'translateX(0)', to: 'translateX(-50%)' } ] }, ...extra ] };
 	fs.writeFileSync( path.join( build, 'intake', 'intake.json' ), JSON.stringify( { skeletons: { 'site-footer': { id: 'S-14', kind: 'footer', name: 'Footer', inventory: { checks: { rootName: ROOT } } } }, inventory: { animations } } ) );
 	fs.writeFileSync( path.join( build, 'skeleton', 'footer.inventory.json' ), JSON.stringify( footer ) );
 	fs.writeFileSync( path.join( build, 'skeleton', 'decisions.json' ), JSON.stringify( decisions ) );
@@ -113,6 +113,21 @@ test( 'the intake context carries the handoff record states of the intake skelet
 	assert.deepEqual( ctx.states.map( ( x ) => x.name ), [ 'desktop nav' ] );
 	assert.deepEqual( ctx.thresholds.sort( ( a, b ) => a - b ), [ 768, 1024 ] );
 	f.done();
+} );
+
+test( 'MUST FAIL (C5 skeleton 12): propose passes the scroll tracks the draft script steps, keyed in the served space, with the loops the loop reader gets', () => {
+	const timer = { id: 'J-1', mechanism: 'js-scroll', status: 'active', element: { dc: ROOT, template_tpl_id: '312' }, source: { function: 'step', code: 't.scrollTo({ left: 0 })' }, trigger: { type: 'interval', detail: 'setInterval every 6000ms via step' }, properties: [ { property: 'scroll-position' } ] };
+	const seen = [];
+	const f = fixture( { extra: [ timer ] } );
+	proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, propose: spy( seen ) } );
+	assert.deepEqual( [ ...seen[ 0 ].loops.carousels ], [ 'Root/312' ] );
+	assert.deepEqual( [ ...intakeContext( { client: CLIENT, surface: 'footer', repo: f.repo } ).carousels ], [ `${ ROOT }/312` ], 'intake keys it by the entry component' );
+	f.done();
+	const plain = [];
+	const g = fixture();
+	proposeSurface( { client: CLIENT, surface: 'footer', repo: g.repo, db, propose: spy( plain ) } );
+	assert.equal( plain[ 0 ].loops.carousels.size, 0, 'negative control: a marquee track is no carousel' );
+	g.done();
 } );
 
 test( 'key-space helpers rewrite only a root-host key', () => {

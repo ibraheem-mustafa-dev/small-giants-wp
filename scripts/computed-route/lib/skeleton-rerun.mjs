@@ -11,6 +11,7 @@ import { readDecisions, skeletonDir } from './skeleton-finalise.mjs';
 import { rowsOf, summaryOf } from './intake-skeletons.mjs';
 import { collapseSkeletons } from './intake-run-collapse.mjs';
 import { templateKey } from './fact-key.mjs';
+import { recogniseBehaviour } from './motion-behaviours.mjs';
 import { proposalContext } from './skeleton-context.mjs';
 import { assertCurrent, sourcesOf } from './freshness.mjs';
 import { fingerprintsOf } from './identity.mjs';
@@ -26,6 +27,15 @@ const tplIds = ( v ) => ( null == v ? [] : [].concat( v ) );
 const oneWay = ( a, p ) => ! /^alternate/.test( String( a.direction ?? '' ) ) && ( null != p.formula || String( p.from ?? '' ).replace( /\s+/g, '' ) !== String( p.to ?? '' ).replace( /\s+/g, '' ) );
 const translatesForEver = ( a ) => 'infinite' === String( a.iterations ) && ( a.properties || [] ).some( ( p ) => 'transform' === p.property && /translate/.test( `${ p.from ?? '' } ${ p.to ?? '' } ${ p.formula ?? '' }` ) && oneWay( a, p ) );
 export const loopingKeys = ( animations ) => new Set( ( animations?.records || [] ).filter( translatesForEver ).flatMap( ( a ) => ( null == a.element?.template_tpl_id ? tplIds( a.element?.nearest_tpl_id ) : tplIds( a.element.template_tpl_id ) ).map( ( tpl ) => templateKey( { dc: a.element.dc, tpl } ) ) ) );
+
+// The template keys (`<component>/<tpl>`) of the scroll tracks the draft's script drives as a carousel (a timer that steps the
+// track, pointer drag, prev and next controls: lib/motion-behaviour-settings.mjs::carouselOf recognises them as the testimonial
+// slider's settings), from intake.json's re-derived motion inventory. A record names its track by `template_tpl_id`, else by the
+// nearest template element.
+export const carouselKeys = ( animations ) => {
+	const records = animations?.records || [];
+	return new Set( records.filter( ( r ) => recogniseBehaviour( r, { records } )?.blocks?.[ 'sgs/testimonial-slider' ] ).flatMap( ( r ) => ( null == r.element?.template_tpl_id ? tplIds( r.element?.nearest_tpl_id ) : tplIds( r.element.template_tpl_id ) ).map( ( tpl ) => templateKey( { dc: r.element.dc, tpl } ) ) ) );
+};
 
 // The breakpoints in the client's saved intake.json: the width thresholds the proposals collapse at when the caller does not pass its own.
 const savedBreakpoints = ( repo, client ) => {

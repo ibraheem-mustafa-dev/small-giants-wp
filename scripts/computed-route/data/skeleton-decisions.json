@@ -131,6 +131,12 @@
 				"minMatches": 2,
 				"reason": "a loop of links labelled with the catalogue's brands is the brand strip reading the product brands (FR-48-83)"
 			},
+			"carousel": {
+				"block": "sgs/testimonial-slider",
+				"cardBlock": "sgs/testimonial",
+				"attributes": {},
+				"reason": "a loop of review cards whose holder is a scroll track the draft's script steps (a timer, pointer drag or arrow controls, never a name) is the testimonial slider, each card one of its testimonials (Spec 48 FR-48-77, register row C5)"
+			},
 			"reviews": {
 				"rating": "[\u2605\u2B50]{3,}|(?:\u00e2\u02dc\u2026){3,}|\\b[1-5](?:\\.\\d)?\\s*(?:out of 5|\\/\\s*5)\\b",
 				"quoteLength": 40,
@@ -458,7 +464,9 @@
 		"marquee": {
 			"logoBlock": "sgs/brand-strip",
 			"itemBlock": "sgs/trust-bar",
-			"reason": "a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels make sgs/trust-bar, and the repeated items are its items; the route writes no marquee motion until M7"
+			"textBlock": "sgs/brand-strip",
+			"textAttributes": { "brandDisplay": "text" },
+			"reason": "a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels that are a page's own section make sgs/trust-bar, labels inside another block make sgs/brand-strip showing the names as text (the section block cannot sit inside a section, and a button group does not offer the marquee effect), and the repeated items are its items"
 		},
 		"trustBar": {
 			"block": "sgs/trust-bar",
