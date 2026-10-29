@@ -27,8 +27,14 @@ export function compareRL( prop, renderedDraft, renderedLive, fontPx = 16 ) {
 
 // The verdict table. dr: the D–R result a record holds ('agree', 'runtime', 'disagree', 'no-declared', 'unreadable',
 // 'no-target'); fr34Passes: intake lists the declaration as never painting (the record's D–R verdict was draft-defect);
-// rl: R–L's result. Returns { verdict, pending, reason }.
-export function liveVerdict( dr, fr34Passes, rl ) {
+// rl: R–L's result; ep: the setting-level prediction's result on the record (lib/fill-emitter.mjs). Returns { verdict, pending, reason }.
+export function liveVerdict( dr, fr34Passes, rl, ep = null ) {
+	const v = liveVerdictTable( dr, fr34Passes, rl );
+	// A setting predicted to paint something other than the draft's render never confirms (FR-48-76).
+	return 'differs' === ep && 'confirmed' === v.verdict ? { verdict: 'open', pending: null, reason: 'emitter: the setting is predicted to paint something other than the draft render' } : v;
+}
+
+function liveVerdictTable( dr, fr34Passes, rl ) {
 	if ( 'disagree' === dr && fr34Passes ) {
 		return { verdict: 'draft-defect', pending: null, reason: null };
 	}
@@ -120,7 +126,7 @@ export function fillLive( records, report, { stateMap = null, media = {} } = {} 
 		const hit = livePair( report, rec, rec.width, rest );
 		const live = hit.live ? ( layer ? hit.live.pseudo?.[ layer ]?.[ rec.property ] : hit.live.styles?.[ rec.property ] ) ?? null : null;
 		const { rl, tolerance } = compareRL( rec.property, rec.renderedDraft, live, parseFloat( hit.live?.styles?.[ 'font-size' ] ) || 16 );
-		const v = liveVerdict( rec.dr, 'draft-defect' === rec.verdict, rl );
+		const v = liveVerdict( rec.dr, 'draft-defect' === rec.verdict, rl, rec.ep );
 		return { ...rec, renderedLive: live, rl, rlTolerance: tolerance, ...( hit.why ? { liveWhy: hit.why } : {} ), verdict: v.verdict, pending: v.pending, ...( v.reason ? { reason: v.reason } : {} ) };
 	} );
 }
