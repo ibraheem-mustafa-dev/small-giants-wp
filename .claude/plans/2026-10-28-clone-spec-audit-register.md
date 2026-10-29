@@ -116,7 +116,7 @@ Fix: per stage as above: sample and read script reveal constants; recognisers fo
 
 ## D. Measurement and census (trust in the numbers; no visible fault)
 
-- **D1** the walker reads a container's wrapper where the value paints on its inner band (RL-6, PI-10: of 1,701 padding rows 1,177 are present on the inner element).
+- **D1** the walker reads a container's wrapper where the value paints on its inner band (RL-6, PI-10: of 1,701 padding rows 1,177 are present on the inner element). **Ruled (Bean, 2026-10-29):** for each value Fill wrote, the walker reads the live value at the element that setting paints (the block's calibrated slot), never the wrapper; the draft-to-live pairing is unchanged.
 - **D2** the census counts hover-only and superseded writes as "Fill wrote" (`lib/census-mechanism.mjs::surfaceRows`).
 - **D3** `unassessed` (59% of rows) is a class FR-48-65 does not define (RL-7, see S6).
 - **D4** reduced-motion rules counted once per element (3,156 rows from 6 rules): one page-level row each, classed handled (Bean 2026-10-28).
