@@ -26,3 +26,13 @@ test( 'MUST FAIL: the entry component\'s keys, parents, host and root become Roo
 test( 'an inventory with no entry component is unchanged', () => {
 	assert.deepEqual( servedInventory( inv, null ).elements.map( ( e ) => e.key ), inv.elements.map( ( e ) => e.key ) );
 } );
+
+test( 'MUST FAIL: the siblings read beside the root (a footer\'s fixed chat link) are named in the served space, so the footer finds its floating strip', () => {
+	const out = servedInventory( { ...inv, beside: [ { key: 'Site/728#0', side: 'after', distance: 1, position: 'fixed', renders: true, holdsOtherRoot: false } ], elements: [ ...inv.elements, { key: 'Site/728#0', parentKey: null, strip: { side: 'after', distance: 1 }, template: 'Site', tpl: 728 } ] }, 'Site' );
+	assert.deepEqual( out.beside.map( ( b ) => [ b.key, b.side, b.position ] ), [ [ 'Root/728#0', 'after', 'fixed' ] ] );
+	assert.ok( out.elements.some( ( e ) => e.key === out.beside[ 0 ].key ), 'the beside key names an element of the inventory' );
+} );
+
+test( 'negative control: an inventory read with no siblings beside its root gains no beside list', () => {
+	assert.equal( 'beside' in servedInventory( inv, 'Site' ), false );
+} );

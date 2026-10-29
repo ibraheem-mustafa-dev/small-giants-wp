@@ -19,5 +19,16 @@
 	{ "file": "lib/site-build-options.mjs", "find": "[ name, sourced( client, name, entry ) ]", "replace": "[ name, { ...checked( name, entry ), sources: entry.sources } ]", "why": "the reader never checks the source" },
 	{ "file": "lib/site-build-options.mjs", "find": "if ( ! fillRun( client ).test( where ) ) {", "replace": "if ( false ) {", "why": "a site-options.json outside the client's Fill output is promoted" },
 	{ "file": "lib/site-build-options.mjs", "find": "sources: [ ...new Set( [ ...was.sources, where ] ) ].sort(),", "replace": "sources: [ where ],", "why": "an earlier run's source is dropped" },
-	{ "file": "lib/site-build-options.mjs", "find": "/build/qa/fill/[^\\s]+/site-options", "replace": "/build/qa/[^\\s]+/site-options", "why": "any qa file counts as a Fill run" }
+	{ "file": "lib/site-build-options.mjs", "find": "/build/qa/fill/[^\\s]+/site-options", "replace": "/build/qa/[^\\s]+/site-options", "why": "any qa file counts as a Fill run" },
+	{"file": "lib/site-build-options.mjs", "find": "const desired = { ...skeleton.options, ...readSiteOptions( repo, client ) };", "replace": "const desired = readSiteOptions( repo, client );", "why": "the skeleton rows' site options never reach the site build"},
+	{"file": "lib/site-build-options.mjs", "find": ".filter( ( r ) => isObject( r.siteOptions ) );", "replace": ".filter( ( r ) => false );", "why": "no row's site options are read"},
+	{"file": "lib/site-build-options.mjs", "find": "if ( held && ! same( held.value, value ) ) {", "replace": "if ( false ) {", "why": "two rows disagreeing on one option go unnoticed"},
+	{"file": "lib/site-build-options.mjs", "find": "clash.forEach( ( n ) => delete out.options[ n ] );", "replace": "", "why": "a disputed option is still planned"},
+	{"file": "lib/site-build-options.mjs", "find": "Object.entries( out.options ).forEach( ( [ n, o ] ) => checkedScalar( n, o.value ) );", "replace": "", "why": "a bad scalar option is planned"},
+	{"file": "lib/site-build-options.mjs", "find": "if ( ! NAME.test( name ) || ! [ 'string', 'number', 'boolean' ].includes( typeof value ) ) {", "replace": "if ( ! [ 'string', 'number', 'boolean' ].includes( typeof value ) ) {", "why": "a scalar option with a bad name is planned"},
+	{"file": "lib/site-build-options.mjs", "find": "out.options[ name ] = { records: [ ...new Set( [ ...( held?.records || [] ), r.rowId ] ) ], value, sources: [ source ] };", "replace": "out.options[ name ] = { records: [], value, sources: [] };", "why": "the scalar option names no record or source"},
+	{"file": "lib/site-build-options.mjs", "find": "! same( held ?? undefined, value ) && out.actions.push(", "replace": "out.actions.push(", "why": "a scalar option the site already holds is planned again"},
+	{"file": "lib/site-build-options.mjs", "find": "\t\tif ( ! isObject( value ) ) {\n", "replace": "\t\tif ( false ) {\n", "why": "a scalar option is planned as an array of keys"},
+	{"file": "lib/site-build-options.mjs", "find": "plan.notes.push( ...skeleton.notes, ...mine.notes );", "replace": "plan.notes.push( ...mine.notes );", "why": "the plan hides a disputed option"},
+	{"file": "lib/intake-skeletons.mjs", "find": "...( r.siteOptions ? { siteOptions: r.siteOptions } : {} ),\n\tcandidates", "replace": "\n\tcandidates", "why": "intake.json drops the site options a row sets"}
 ]

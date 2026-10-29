@@ -7,14 +7,16 @@ import fs from 'fs';
 import path from 'path';
 import { servedKey, SERVED_ROOT } from './key-space.mjs';
 
-// inv: a saved inventory; rootComponent: the entry component's name (checks.rootName). Returns the inventory in the served space.
+// inv: a saved inventory; rootComponent: the entry component's name (checks.rootName). Returns the inventory in the served space,
+// its elements, root key and `beside` list alike.
 export function servedInventoryOf( inv, rootComponent ) {
 	const served = ( key ) => servedKey( rootComponent && String( key ).startsWith( `${ rootComponent }>` ) ? `${ SERVED_ROOT }${ String( key ).slice( rootComponent.length ) }` : key, rootComponent );
 	const own = ( e ) => ( e.template === rootComponent ? SERVED_ROOT : e.template );
 	const checks = inv.checks ? { ...inv.checks, ...( inv.checks.rootName === rootComponent ? { rootName: SERVED_ROOT } : {} ), ...( inv.checks.rootKey ? { rootKey: served( inv.checks.rootKey ) } : {} ) } : inv.checks;
-	// The saved inventory's top element hangs under a parent that is not in it; the surface root has no parent.
+	// The saved inventory's top element hangs under a parent that is not in it; the surface root has no parent. The
+	// siblings read beside the root (`beside`, the strips' roots) are named in the same space as the elements.
 	const keys = new Set( inv.elements.map( ( e ) => e.key ) );
-	return { ...inv, checks, elements: inv.elements.map( ( e ) => ( { ...e, key: served( e.key ), ...( e.parentKey && keys.has( e.parentKey ) ? { parentKey: served( e.parentKey ) } : { parentKey: null } ), template: own( e ) } ) ) };
+	return { ...inv, checks, ...( inv.beside ? { beside: inv.beside.map( ( b ) => ( { ...b, key: served( b.key ) } ) ) } : {} ), elements: inv.elements.map( ( e ) => ( { ...e, key: served( e.key ), ...( e.parentKey && keys.has( e.parentKey ) ? { parentKey: served( e.parentKey ) } : { parentKey: null } ), template: own( e ) } ) ) };
 }
 
 // The saved inventory of a manifest surface in the served space. surfaces: the parsed surfaces.json; intake: the parsed
