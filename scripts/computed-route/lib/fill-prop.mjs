@@ -308,12 +308,20 @@ export function resolveProperty( ctx ) {
 	const contextOf = ( w ) => ( { position: siblings.position?.[ w ], direction: siblings.direction?.[ w ], ...contextAt( w ) } );
 	const known = knownPaths( calibration ).map( LOOSE );
 	let firstGap = null;
+	// The first slot where the draft already matches: a property can be inert there (flex-wrap on a block root) while the
+	// slot where it paints (the inner content band) still differs, so every other candidate slot is judged before the
+	// property is called equal.
+	let equalAt = null;
 	for ( const slot of slots ) {
 		// The baseline's own context is calibration's where the baseline is the calibrated default paint.
 		const baselineContext = ( w ) => ( undefined !== baseline( slot, w ) && baseline( slot, w ) === defaultPaint( calibration, slot, w, prop ) ? calibratedContext( calibration, slot, w ) : null );
-		const included = tiersDiffering( prop, draft, ( w ) => baseline( slot, w ), ( w ) => defaultPaint( calibration, slot, w, prop ), contextOf, baselineContext );
+		// After a slot that matched, a later slot is judged only at the widths its baseline is known: an unmeasured slot is not
+		// evidence that the draft differs there.
+		const judged = null === equalAt ? draft : Object.fromEntries( Object.entries( draft ).filter( ( [ w ] ) => undefined !== baseline( slot, Number( w ) ) ) );
+		const included = tiersDiffering( prop, judged, ( w ) => baseline( slot, w ), ( w ) => defaultPaint( calibration, slot, w, prop ), contextOf, baselineContext );
 		if ( ! Object.keys( included ).length ) {
-			return { status: 'equal', slot };
+			equalAt ??= slot;
+			continue;
 		}
 		if ( calibration && ! known.includes( LOOSE( slot ) ) ) {
 			firstGap ??= { gap: 'unmapped-element', detail: `${ block } path "${ slot }" is not a calibrated element`, slot };
@@ -361,5 +369,5 @@ export function resolveProperty( ctx ) {
 		}
 		return { status: 'written', slot, writes, included, how, ...( fit ? { fluid: fit } : {} ) };
 	}
-	return { status: 'gap', ...firstGap };
+	return null !== equalAt ? { status: 'equal', slot: equalAt } : { status: 'gap', ...firstGap };
 }
