@@ -40,15 +40,20 @@ export function makeRecorder( ctx ) {
 	// beside the number shown above it) is a width variation no single setting holds: it becomes one block instance per
 	// variation (FR-48-50). A variation with words is the block's own node again with those words in its text setting; any
 	// other content (an icon, a different child count) is built as the sibling block it is. Fill's width gate hides each
-	// instance on the other's widths. An element no instance can be made of is listed in the proposal's widthAlternatives
-	// and as a handover entry on the block's node, so the review shows it and it reaches Bean.
+	// instance on the other's widths. An element shown beside its parent's own content at its widths (a phone-only toggle
+	// above a form shown at every width) is an addition, not an alternative: it is built as the sibling block it is and the
+	// block is not hidden. A block that draws itself from its own source (a commerce region's WooCommerce block, a linked
+	// form: `top.drawsItself`) draws what it shows at narrow widths too, so the element is absorbed into it. An element no
+	// instance can be made of is listed in the proposal's widthAlternatives and as a handover entry on the block's node, so
+	// the review shows it and it reaches Bean.
 	const takeVariants = ( node ) => {
 		const list = variantsOf.get( node ) || [];
 		variantsOf.delete( node );
 		return list;
 	};
 	function widthVariant( k, top, node, parentBlock ) {
-		const textAttr = node && m.words( k ) ? facts.firstAttrByRole( top.block, 'text-content' ) : null;
+		const beside = m.blockKids( m.byKey[ k.parentKey ] ).some( ( c ) => m.shownAt( k ).some( ( w ) => c.visible?.[ w ] ) );
+		const textAttr = node && ! beside && m.words( k ) ? facts.firstAttrByRole( top.block, 'text-content' ) : null;
 		let made = null;
 		if ( textAttr && node.attributes?.[ textAttr ] ) {
 			// An attribute the block's verdict set because its words are a Site Info value (the label reading the phone
@@ -68,16 +73,22 @@ export function makeRecorder( ctx ) {
 			return false;
 		}
 		list[ 0 ].widthShown = m.shownAt( k );
-		node.widthVariants = [ ...( node.widthVariants || [] ), { key: k.key, shown: m.shownAt( k ) } ];
+		beside || ( node.widthVariants = [ ...( node.widthVariants || [] ), { key: k.key, shown: m.shownAt( k ) } ] );
 		variantsOf.set( node, [ ...( variantsOf.get( node ) || [] ), ...list ] );
 		return true;
 	}
 	function absorbWidthKids( e, top, rule, node, parentBlock = null ) {
 		m.widthKids( e ).forEach( ( k ) => {
+			const at = m.shownAt( k ).join( ' and ' );
+			if ( top.drawsItself ) {
+				const why = `an element shown only at ${ at }px inside a block that draws its content from its own source: the block draws it itself`;
+				record( k, { action: 'absorbed', reason: `drawn by ${ top.block }: ${ why }`, confidence: 1, candidates: [], rule, into: top.key } );
+				absorbSubtree( k, top, why, rule, node, parentBlock );
+				return;
+			}
 			if ( widthVariant( k, top, node, parentBlock ) ) {
 				return;
 			}
-			const at = m.shownAt( k ).join( ' and ' );
 			const what = m.words( k ) ? `a label shown only at ${ at }px inside a block with one label: no setting holds a per-width label` : `an element shown only at ${ at }px inside a block that draws its own content: no setting holds a per-width alternative`;
 			record( k, { action: 'absorbed', reason: `drawn by ${ top.block }: ${ what }`, confidence: 1, candidates: [], rule, into: top.key } );
 			widthAlternatives.push( { key: k.key, into: top.key, block: top.block, widths: m.shownAt( k ), words: m.words( k ), reason: what } );

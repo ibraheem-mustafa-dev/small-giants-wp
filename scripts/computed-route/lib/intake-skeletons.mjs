@@ -11,7 +11,13 @@
 // record of that kind names, are each a `surface-root` gap row (R-48-3). Skeleton surfaces are the CPT kinds (header,
 // footer, drawer, each mega menu panel, each form, modal), the always-rendered globals, and each page route's main
 // content root; the other kinds (backdrop, accordion, panel, form step, result) are states or parts of a parent
-// surface and are listed as `parts`, never read on their own. A page surface is read from its route's <main>.
+// surface and are listed as `parts`, never read on their own. A page surface is read from its route's <main>. A record whose
+// root is the draft's <helmet> (the document head's styles and scripts, which render nothing on the page) and a record of a
+// component the export carries no draft file for (a build report the handoff names but does not ship) are no site surface:
+// each is listed in `parts` with its reason. A census <header> or <footer> of a component that a page record names, that no
+// record of its kind claims while another component's record of that kind is the site's own, is that page's own header or
+// footer (a checkout's own slim header in place of the site header): a surface of that kind on the page's route. With no
+// record of the kind anywhere it is the site's own one left unrecorded, a gap row.
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -65,10 +71,17 @@ export function tabPanels( r ) {
 	return open.length > 1 && same && own ? open : [];
 }
 
+// The draft files an export ships (its MANIFEST.json `files`), or null when the folder has no manifest.
+function exportFiles( folder ) {
+	const file = folder ? path.join( folder, 'MANIFEST.json' ) : null;
+	return file && fs.existsSync( file ) ? new Set( ( JSON.parse( fs.readFileSync( file, 'utf8' ) ).files || [] ).map( ( f ) => f.path ) ) : null;
+}
+
 // Surface roots from `folder/surfaces.json` (or `records`), checked against the census. Returns { surfaces, parts, gaps }:
 // surfaces [{ id, name, kind, component, rootTpl, tpls, route, slug, selector, panel? (the tab state a panel surface of a
-// several-panel menu record opens, tabPanels) }], parts [{ id, name, kind, parent, why }].
-export function surfaceRoots( { folder, census, records = null } ) {
+// several-panel menu record opens, tabPanels), pageOwn? (the page record whose own header or footer it is) }], parts [{ id,
+// name, kind, parent, why }]. `files` (default: the folder's MANIFEST.json files) are the draft files the export ships.
+export function surfaceRoots( { folder, census, records = null, files = exportFiles( folder ) } ) {
 	const gaps = [];
 	let recs = records;
 	if ( ! recs ) {
@@ -83,11 +96,28 @@ export function surfaceRoots( { folder, census, records = null } ) {
 	const surfaces = [];
 	const parts = [];
 	const slugs = new Set();
+	const byId = new Map( recs.map( ( r ) => [ r.id, r ] ) );
+	// The records a surface shows inside, root-most first (its `parent` chain): each one's root renders before the surface's
+	// own can (a signed-in account page before its tabs' panels). A record with no root the census holds, or whose root is
+	// the <helmet>, has nothing to open and is left out.
+	const ancestorsOf = ( r ) => {
+		const out = [];
+		for ( let p = byId.get( r.parent ), seen = new Set(); p && ! seen.has( p.id ); seen.add( p.id ), p = byId.get( p.parent ) ) {
+			const root = tplsOf( p ).at( -1 );
+			const el = elements.get( `${ p.dc }:${ root }` );
+			el && 'helmet' !== el.detail?.tag && out.unshift( { id: p.id, kind: p.kind, component: p.dc, rootTpl: root, states: p.states || [], openedBy: p.opened_by ?? null } );
+		}
+		return out;
+	};
 	for ( const r of recs ) {
 		const tpls = tplsOf( r );
 		const where = `${ r.id ?? '?' } ${ r.kind } "${ r.name }"`;
 		if ( ! tpls.length ) {
 			gaps.push( gap( 'surface-root', `${ r.dc }:${ r.id }`, `${ where } has no template_tpl_id` ) );
+			continue;
+		}
+		if ( ! components.has( r.dc ) && files && ! files.has( `${ r.dc }.dc.html` ) ) {
+			parts.push( { id: r.id, name: r.name, kind: r.kind, parent: r.parent ?? null, why: `the export ships no draft file for component "${ r.dc }" (MANIFEST.json files), so the record names nothing on the site` } );
 			continue;
 		}
 		if ( ! components.has( r.dc ) ) {
@@ -97,6 +127,10 @@ export function surfaceRoots( { folder, census, records = null } ) {
 		const missing = tpls.filter( ( n ) => ! elements.has( `${ r.dc }:${ n }` ) );
 		if ( missing.length ) {
 			gaps.push( gap( 'surface-root', `${ r.dc }:${ missing[ 0 ] }`, `${ where } names template id(s) ${ missing.join( ', ' ) }, which the census does not hold` ) );
+			continue;
+		}
+		if ( 'helmet' === elements.get( `${ r.dc }:${ tpls.at( -1 ) }` ).detail?.tag ) {
+			parts.push( { id: r.id, name: r.name, kind: r.kind, parent: r.parent ?? null, why: `its root ${ r.dc }:${ tpls.at( -1 ) } is the draft's <helmet> (the document head's styles and scripts), which renders nothing on the page` } );
 			continue;
 		}
 		if ( ! SURFACE_KINDS.includes( r.kind ) ) {
@@ -113,14 +147,25 @@ export function surfaceRoots( { folder, census, records = null } ) {
 			}
 			slugs.add( s );
 			const rootTpl = tpls.at( -1 );
-			surfaces.push( { id: r.id, name: panel ? `${ r.name }: ${ panel.name }` : r.name, kind: r.kind, component: r.dc, rootTpl, tpls, route: r.route ?? null, slug: s, rootTag: elements.get( `${ r.dc }:${ rootTpl }` ).detail.tag, selector: `[${ ROOT_MARK }="${ s }"]`, states: panel ? [ panel ] : r.states || [], openedBy: r.opened_by ?? null, ...( panel ? { panel: panel.name } : {} ) } );
+			surfaces.push( { id: r.id, name: panel ? `${ r.name }: ${ panel.name }` : r.name, kind: r.kind, component: r.dc, rootTpl, tpls, route: r.route ?? null, slug: s, rootTag: elements.get( `${ r.dc }:${ rootTpl }` ).detail.tag, selector: `[${ ROOT_MARK }="${ s }"]`, states: panel ? [ panel ] : r.states || [], openedBy: r.opened_by ?? null, ancestors: ancestorsOf( r ), ...( panel ? { panel: panel.name } : {} ) } );
 		}
 	}
-	// A census CPT element (by tag) in a component that no record of a claiming kind names.
+	// A census CPT element (by tag) in a component that no record of a claiming kind names. A header or footer of a page's
+	// own component, where another component's record of that kind is the site's, is that page's own header or footer: a
+	// surface of its kind on the page's route.
 	const claimed = ( component, kinds ) => recs.some( ( r ) => r.dc === component && kinds.includes( r.kind ) );
 	for ( const e of elements.values() ) {
 		const kinds = CENSUS_CPT[ e.detail.tag ];
-		if ( kinds && ! claimed( e.component, kinds ) ) {
+		const page = [ 'header', 'footer' ].includes( e.detail.tag ) && recs.some( ( r ) => r.kind === e.detail.tag && r.dc !== e.component ) ? recs.find( ( r ) => 'page' === r.kind && r.dc === e.component && tplsOf( r ).length ) : null;
+		if ( kinds && ! claimed( e.component, kinds ) && page ) {
+			const tpl = e.draftId.slice( e.component.length + 1 );
+			let s = slug( `${ page.name } ${ e.detail.tag }` );
+			for ( let i = 2; slugs.has( s ); i++ ) {
+				s = `${ s.replace( /-\d+$/, '' ) }-${ i }`;
+			}
+			slugs.add( s );
+			surfaces.push( { id: `${ page.id }:${ e.detail.tag }`, name: `${ page.name }: its own ${ e.detail.tag }`, kind: e.detail.tag, component: e.component, rootTpl: tpl, tpls: [ tpl ], route: page.route ?? null, slug: s, rootTag: e.detail.tag, selector: `[${ ROOT_MARK }="${ s }"]`, states: [], openedBy: null, ancestors: [], pageOwn: page.id } );
+		} else if ( kinds && ! claimed( e.component, kinds ) ) {
 			gaps.push( gap( 'surface-root', e.draftId, `the census holds a <${ e.detail.tag }> in ${ e.component } and surfaces.json has no ${ kinds.join( ' or ' ) } record for that component` ) );
 		}
 	}
@@ -273,15 +318,40 @@ async function closeAgain( page, settle ) {
 	await settle( page );
 }
 
+// Whether a drawer whose root is marked at rest is a part of the page read in the same run: its root renders inside the
+// page's content root (<main>), as a sticky filter rail beside a product listing does. The page surface reads it, and its
+// narrow-width open state is the placed block's own overlay, so it is never read as a drawer of its own.
+export async function pagePart( page, s, group ) {
+	return 'drawer' === s.kind && group.some( ( x ) => 'page' === x.kind ) && page.evaluate( ( sel ) => !! document.querySelector( sel )?.parentElement?.closest( 'main' ), s.selector );
+}
+
+// Opens the records a surface shows inside (`s.ancestors`, root-most first): an ancestor whose root does not render is opened
+// by the first of its own openers that renders it, and its state stays for the surface's own opener. The marks are removed
+// again, so no read sees them.
+export async function openAncestors( page, s, settle, census, widthKeys ) {
+	for ( const a of s.ancestors || [] ) {
+		const up = { ...a, slug: `${ s.slug }--within-${ slug( a.id ) }` };
+		// markAt applies a way only while the root is absent, so a parent that renders is left as it is.
+		for ( const o of openers( up, census, widthKeys ) ) {
+			if ( ! ( await markAt( page, { ...up, kind: 'ancestor' }, settle, o ) ).error ) {
+				break;
+			}
+		}
+		await page.evaluate( ( [ attr, mark ] ) => document.querySelectorAll( `[${ attr }="${ mark }"]` ).forEach( ( e ) => e.removeAttribute( attr ) ), [ ROOT_MARK, up.slug ] );
+	}
+}
+
 // Tries each opener: at every inventory width the root is marked, opened when absent, and marked again; a width the
 // opener's state does not hold at is opened by the way that holds there (lib/intake-openers.mjs::wayAt). The first opener
 // under which the root renders at one width or more wins. Returns { opener, at (widths it renders at), readAt ({ width: the
 // nearest rendering width read in its place }), ways ({ width: the way applied there }), tried } or { error, tried }. The
-// state stays open on success; the caller closes it.
-async function openSurface( page, s, settle, list ) {
+// state stays open on success; the caller closes it. `within` (optional) opens the records the surface shows inside before
+// each opener is tried (openAncestors).
+async function openSurface( page, s, settle, list, within = null ) {
 	const tried = [];
 	await snapshotDraftState( page );
 	for ( const o of list ) {
+		within && await within();
 		const errors = [];
 		const at = [];
 		const ways = {};
@@ -448,7 +518,7 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 						let open = null;
 						let inventory;
 						if ( m.error && openStates ) {
-							open = await openSurface( h.page, s, settle, openers( s, census, widthKeys ) );
+							open = await openSurface( h.page, s, settle, openers( s, census, widthKeys ), s.ancestors?.length ? () => openAncestors( h.page, s, settle, census, widthKeys ) : null );
 							if ( open.error ) {
 								throw new Error( `${ m.error }; ${ open.error }` );
 							}
@@ -460,6 +530,9 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 							}
 						} else if ( m.error ) {
 							throw new Error( m.error );
+						} else if ( await pagePart( h.page, s, g.list ) ) {
+							log( `${ s.slug }: its root renders at rest inside the page's <main>, so the page surface reads it; its narrow-width open state is the placed block's own overlay` );
+							continue;
 						} else {
 							inventory = await readInventory( { page: h.page, root: s.selector, settle, shotsDir: shotsDir ? path.join( shotsDir, s.slug ) : null, url: h.page.url(), strips: stripOptions( s, everySurface() ) } );
 						}

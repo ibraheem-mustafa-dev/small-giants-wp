@@ -1,0 +1,19 @@
+[
+	{ "file": "lib/intake-skeletons.mjs", "find": "if ( ! components.has( r.dc ) && files && ! files.has( `${ r.dc }.dc.html` ) ) {", "replace": "if ( false ) {", "why": "a record of a file the export never ships would be a gap" },
+	{ "file": "lib/intake-skeletons.mjs", "find": "if ( ! components.has( r.dc ) && files && ! files.has(", "replace": "if ( ! components.has( r.dc ) && ! files?.has(", "why": "with no manifest every record outside the census would be dropped as unshipped" },
+	{ "file": "lib/intake-skeletons.mjs", "find": "if ( 'helmet' === elements.get( `${ r.dc }:${ tpls.at( -1 ) }` ).detail?.tag ) {", "replace": "if ( false ) {", "why": "the document head would be a surface no opener ever renders" },
+	{ "file": "lib/intake-skeletons.mjs", "find": "el && 'helmet' !== el.detail?.tag && out.unshift(", "replace": "el && out.unshift(", "why": "the shell's helmet would be opened before every surface" },
+	{ "file": "lib/intake-skeletons.mjs", "find": "out.unshift( { id: p.id,", "replace": "out.push( { id: p.id,", "why": "a nested parent would be opened before the record it shows inside" },
+	{ "file": "lib/intake-skeletons.mjs", "find": "openedBy: r.opened_by ?? null, ancestors: ancestorsOf( r ),", "replace": "openedBy: r.opened_by ?? null, ancestors: [],", "why": "a surface would not know the records it shows inside" },
+	{ "file": "lib/intake-skeletons.mjs", "find": "if ( kinds && ! claimed( e.component, kinds ) && page ) {", "replace": "if ( false ) {", "why": "a page's own header would stay a gap and never be read" },
+	{ "file": "lib/intake-skeletons.mjs", "find": "&& recs.some( ( r ) => r.kind === e.detail.tag && r.dc !== e.component ) ?", "replace": "?", "why": "a site header left unrecorded would be read as one page's own header" },
+	{ "file": "lib/intake-skeletons.mjs", "find": "recs.find( ( r ) => 'page' === r.kind && r.dc === e.component && tplsOf( r ).length )", "replace": "recs.find( ( r ) => 'page' === r.kind && tplsOf( r ).length )", "why": "a header in a component no page names would be any page's header" },
+	{ "file": "lib/intake-skeletons.mjs", "find": "route: page.route ?? null, slug: s, rootTag: e.detail.tag,", "replace": "route: null, slug: s, rootTag: e.detail.tag,", "why": "the page's own header would be read at the entry instead of on the page's route" },
+	{ "file": "lib/intake-skeletons.mjs", "find": "return 'drawer' === s.kind && group.some( ( x ) => 'page' === x.kind ) && page.evaluate(", "replace": "return group.some( ( x ) => 'page' === x.kind ) && page.evaluate(", "why": "a form inside the page would never be read as its own surface" },
+	{ "file": "lib/intake-skeletons.mjs", "find": "&& group.some( ( x ) => 'page' === x.kind ) && page.evaluate(", "replace": "&& page.evaluate(", "why": "a drawer would be dropped with no page read beside it" },
+	{ "file": "lib/intake-skeletons.mjs", "find": "!! document.querySelector( sel )?.parentElement?.closest( 'main' )", "replace": "!! document.querySelector( sel )", "why": "every drawer that renders at rest would be dropped" },
+	{ "file": "lib/intake-reach-calls.mjs", "find": "(?:(dcLogic)\\s*\\(\\s*(['\"])([^'\"]+)\\2\\s*\\)|([A-Za-z_$][\\w$]*))", "replace": "(?:(dcLogic)\\s*\\(\\s*(['\"])([^'\"]+)\\2\\s*\\)x|([A-Za-z_$][\\w$]*))", "why": "a dcLogic('<component>') call would give no way to open" },
+	{ "file": "lib/intake-reach-calls.mjs", "find": "...( m[ 1 ] ? { component: m[ 3 ] } : {} )", "replace": "", "why": "the call would run on every component's logic" },
+	{ "file": "lib/intake-state.mjs", "find": "patch.calls.filter( ( c ) => ! c.component || c.component === name )", "replace": "patch.calls", "why": "a call naming one component would run on another's logic" },
+	{ "file": "lib/state-openers.mjs", "find": "c.component ? `${ c.ident }('${ c.component }')` : c.ident", "replace": "c.ident", "why": "the refusal would name a call the record never wrote" }
+]

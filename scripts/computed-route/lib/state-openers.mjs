@@ -99,7 +99,7 @@ export const boundsText = ( b ) => ( b || [] ).map( ( x ) => `${ x.key } ${ null
 // <draftId>`, with ` at <bounds>` when the way holds only at some widths.
 export function describeWay( w ) {
 	const how = 'state' === w.via ? `state "${ w.state }" ${ JSON.stringify( w.keys ) }`
-		: 'reach' === w.via ? `reach "${ w.state }" ${ w.calls.map( ( c ) => `${ c.ident }.setState(${ c.args })` ).join( '; ' ) }`
+		: 'reach' === w.via ? `reach "${ w.state }" ${ w.calls.map( ( c ) => `${ c.component ? `${ c.ident }('${ c.component }')` : c.ident }.setState(${ c.args })` ).join( '; ' ) }`
 			: `trigger ${ w.event } on ${ w.draftId }${ w.method ? ` (${ w.method })` : '' }`;
 	return `${ how }${ w.bounds?.length ? ` at ${ boundsText( w.bounds ) }` : '' }`;
 }

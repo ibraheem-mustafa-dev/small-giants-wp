@@ -1,0 +1,9 @@
+[
+	{ "file": "lib/skeleton-write-record.mjs", "find": "const beside = m.blockKids( m.byKey[ k.parentKey ] ).some( ( c ) => m.shownAt( k ).some( ( w ) => c.visible?.[ w ] ) );", "replace": "const beside = false;", "why": "an addition would hide the block it sits beside" },
+	{ "file": "lib/skeleton-write-record.mjs", "find": "m.shownAt( k ).some( ( w ) => c.visible?.[ w ] ) );", "replace": "m.shownAt( k ).some( ( w ) => true ) );", "why": "every width-only element would be read as an addition, so an alternative would never hide its default" },
+	{ "file": "lib/skeleton-write-record.mjs", "find": "const textAttr = node && ! beside && m.words( k ) ?", "replace": "const textAttr = node && m.words( k ) ?", "why": "an added label would be the pill again, measured on the pill" },
+	{ "file": "lib/skeleton-write-record.mjs", "find": "beside || ( node.widthVariants = ", "replace": "( node.widthVariants = ", "why": "an addition would hide the block it sits beside" },
+	{ "file": "lib/skeleton-write-record.mjs", "find": "if ( top.drawsItself ) {", "replace": "if ( false ) {", "why": "a static copy of the region's phone-only toggle would be built" },
+	{ "file": "lib/skeleton-write-record.mjs", "find": "record( k, { action: 'absorbed', reason: `drawn by ${ top.block }: ${ why }`, confidence: 1, candidates: [], rule, into: top.key } );\n\t\t\t\tabsorbSubtree( k, top, why, rule, node, parentBlock );\n\t\t\t\treturn;", "replace": "return;", "why": "the toggle would have no row in the proposal" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "wordBound: top.wordBound, drawsItself }, drawn,", "replace": "wordBound: top.wordBound }, drawn,", "why": "the region would not say it draws its own narrow-width pieces" }
+]

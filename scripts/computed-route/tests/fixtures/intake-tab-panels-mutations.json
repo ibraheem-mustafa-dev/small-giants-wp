@@ -8,6 +8,6 @@
  {"file": "lib/intake-skeletons.mjs", "find": "return open.length > 1 && same && own ? open : [];", "replace": "return open.length > 1 && same ? open : [];", "why": "two states with one value are one panel"},
  {"file": "lib/intake-skeletons.mjs", "find": "slug( panel ? `${ r.name } ${ panel.name }` : r.name )", "replace": "slug( r.name )", "why": "each panel surface is named after its tab"},
  {"file": "lib/intake-skeletons.mjs", "find": "states: panel ? [ panel ] : r.states || [],", "replace": "states: r.states || [],", "why": "each panel surface opens only its own tab"},
- {"file": "lib/intake-skeletons.mjs", "find": "openedBy: r.opened_by ?? null, ...( panel ? { panel: panel.name } : {} ) } );", "replace": "openedBy: r.opened_by ?? null } );", "why": "the surface names its panel"},
+ {"file": "lib/intake-skeletons.mjs", "find": "ancestors: ancestorsOf( r ), ...( panel ? { panel: panel.name } : {} ) } );", "replace": "ancestors: ancestorsOf( r ) } );", "why": "the surface names its panel"},
  {"file": "lib/intake-skeletons.mjs", "find": "route: s.route, ...( s.panel ? { panel: s.panel } : {} ), root:", "replace": "route: s.route, root:", "why": "the skeleton entry names its panel, the manifest's link"}
 ]
