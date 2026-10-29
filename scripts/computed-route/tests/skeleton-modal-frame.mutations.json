@@ -20,7 +20,7 @@
 	{"file": "lib/skeleton-rules.mjs", "find": "'scrim' === part || 'close' === part ? 'absorbed' : 'unwrap'", "replace": "'unwrap'", "why": "the backdrop and the close are absorbed into the frame"},
 	{"file": "lib/skeleton-rules.mjs", "find": ", ...( 'scrim' === part || 'close' === part ? { into: m.root.key } : {} )", "replace": "", "why": "an absorbed part names the element it goes into"},
 	{"file": "lib/skeleton-rules.mjs", "find": "[ modalFrameRule, ...STRUCTURES, ...RULES ]", "replace": "[ ...STRUCTURES, ...RULES ]", "why": "the frame rule is consulted"},
-	{"file": "lib/skeleton-propose.mjs", "find": "! built && R.modalFrame ? cls.modalParts() : null", "replace": "null", "why": "a modal surface gets its frame node"},
+	{"file": "lib/skeleton-propose.mjs", "find": "R.modalFrame ? cls.modalParts() : null", "replace": "null", "why": "a modal surface gets its frame node"},
 	{"file": "lib/skeleton-propose.mjs", "find": "skeleton.push( made.node );", "replace": "", "why": "the frame node stands in the skeleton"},
 	{"file": "lib/skeleton-propose.mjs", "find": "anchor: frameOf?.anchor ?? null", "replace": "anchor: null", "why": "the frame carries its page-map anchor"},
 	{"file": "lib/skeleton-propose.mjs", "find": "( frameOf ? [] : [", "replace": "( true ? [] : [", "why": "a modal with no page map row says so"},

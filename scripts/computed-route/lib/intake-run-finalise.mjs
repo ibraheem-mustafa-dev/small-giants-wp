@@ -1,4 +1,4 @@
-// The intake command's agent-run finaliser step (Spec 48 §3.4 steps 3 and 4, FR-48-17) and its re-render, without any
+// The intake command's finalise step, answered by the agent running the clone (Spec 48 §3.4 steps 3 and 4, FR-48-17) and its re-render, without any
 // browser stage. The command stays deterministic: it never calls a model.
 //   --finalise <client>     writes build/intake/finalise-request.json: per surface, lib/skeleton-finalise.mjs::
 //                           finaliseRequest over the skeleton rows (after collapsing) that are low confidence or
@@ -210,7 +210,7 @@ export function runFinalise( at, o, { log } ) {
 	writeJson( file, req, '\t' );
 	const bytes = fs.statSync( file ).size;
 	say( `${ o.client }: ${ req.counts.rows } low-confidence or unresolved skeleton rows on ${ req.counts.surfaces } surfaces (${ ( bytes / 1024 ).toFixed( 0 ) } KB) written to ${ file }` );
-	say( req.counts.rows ? `next: dispatch an agent with ${ FINALISER_PROMPT } to write ${ path.join( at.dir, 'finalise-picks.json' ) } (shape ${ req.picksShape }), then run intake.mjs --apply-picks ${ o.client }` : 'nothing for the finaliser to decide' );
+	say( req.counts.rows ? `next: follow ${ FINALISER_PROMPT } to write ${ path.join( at.dir, 'finalise-picks.json' ) } (shape ${ req.picksShape }), then run intake.mjs --apply-picks ${ o.client }` : 'nothing for the finaliser to decide' );
 	return 0;
 }
 
@@ -220,7 +220,7 @@ export function runApplyPicks( at, o, { log, recordProblems, knownBlock = null }
 	const files = { request: path.join( at.dir, 'finalise-request.json' ), picks: path.join( at.dir, 'finalise-picks.json' ) };
 	for ( const f of [ at.intake, files.request, files.picks ] ) {
 		if ( ! fs.existsSync( f ) ) {
-			say( `${ f } is missing: ${ f === at.intake ? 'run the intake first' : f === files.request ? `run --finalise ${ o.client } first` : 'the finaliser agent has not written its picks' }` );
+			say( `${ f } is missing: ${ f === at.intake ? 'run the intake first' : f === files.request ? `run --finalise ${ o.client } first` : 'the picks have not been written' }` );
 			return 1;
 		}
 	}

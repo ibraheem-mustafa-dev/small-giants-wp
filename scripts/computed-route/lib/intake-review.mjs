@@ -133,15 +133,12 @@ const unique = ( list ) => {
 };
 
 // Why a skeleton or missing-feature row needs Bean's judgement rather than a glance (null: a confident proposal Accept
-// all covers). Skeleton: the finaliser agent picked it, no block fits, or its confidence is low. Missing feature: it is
+// all covers). Skeleton: the clone agent picked it, no block fits, or its confidence is low. Missing feature: it is
 // on the main flow, or it proposes no block (Accept all cannot mark it).
 export const NEEDS_ORDER = [ 'agent-pick', 'unresolved', 'low', 'main-flow', 'no-block' ];
-// The cause that settled a skeleton row, for grouping the review by cause (Spec 48 FR-48-6): the client's built post or
-// the standing rule (lib/skeleton-rules.mjs), with its reason; {} for a row the scoring proposed.
+// The cause that settled a skeleton row, for grouping the review by cause (Spec 48 FR-48-6): the standing rule
+// (lib/skeleton-rules.mjs), with its reason; {} for a row the scoring proposed.
 const causeOf = ( r ) => {
-	if ( r.builtPost ) {
-		return { cause: `built post ${ r.builtPost.postType } ${ r.builtPost.postId }`, causeReason: `the client already built this surface (${ r.builtPost.title || r.builtPost.postType } on ${ r.builtPost.site })` };
-	}
 	return r.rule && 'agent' !== r.finalisedBy ? { cause: `rule ${ r.rule }`, causeReason: r.reason || '' } : {};
 };
 const skeletonNeeds = ( r ) => ( 'agent' === r.finalisedBy ? 'agent-pick' : 'unresolved' === r.action ? 'unresolved' : r.low ? 'low' : null );
@@ -260,7 +257,7 @@ const splitByNeed = ( rows, changed ) => [
 const SPLIT = new Set( [ 'skeleton-block', 'missing-feature' ] );
 
 // The skeleton rows grouped by cause, never by page: [ [ heading, rows ] ]. First the rows changed since the last export
-// (`changed`, a Set of row IDs: they lost their mark), then the rows still needing Bean's judgement, by what they need (NEEDS_ORDER) and the block proposed; then each standing rule and built post with its
+// (`changed`, a Set of row IDs: they lost their mark), then the rows still needing Bean's judgement, by what they need (NEEDS_ORDER) and the block proposed; then each standing rule with its
 // reason, so one rule's rows are approved together; then the confident scored proposals.
 export function byCause( rows, changed = new Set() ) {
 	const groups = new Map();
@@ -305,7 +302,7 @@ const manifestHash = ( m ) => sha( canonical( m?.files || {} ) ).slice( 0, 16 );
 // The Markdown of review.md. `changed` is the rowIds changed since the previous export (by default the review rows
 // carryOver set `changed: true` on); they are listed first in their section (and surface) with a **changed** marker.
 // The skeleton section is grouped by cause (byCause: the rows needing judgement by need and proposed block, then each
-// standing rule or built post with its reason, then the confident proposals); in the missing-feature section the rows
+// standing rule with its reason, then the confident proposals); in the missing-feature section the rows
 // needing judgement come next (NEEDS_ORDER), then the confident rows under a `### Confident proposals (Accept all
 // covers these)` sub-heading; the header states how
 // many rows need reading. Marks already in intake.review (carried or applied before) show in the Mark cell.

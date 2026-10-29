@@ -1,5 +1,5 @@
 // Spec 48 §3.4 steps 3 and 4 and FR-48-17 in the intake command (lib/intake-run-finalise.mjs, lib/intake-review.mjs):
-// `--finalise` asks the finaliser agent about exactly the low-confidence and unresolved skeleton rows; `--apply-picks`
+// `--finalise` asks the agent running the clone about exactly the low-confidence and unresolved skeleton rows; `--apply-picks`
 // refuses an invalid pick and writes nothing, else the pick becomes the proposal with the writer's original kept and
 // every other mark carried; review.md lists the rows needing judgement before the confident ones and still reads every
 // Mark cell; `--apply-review` saves only block:<slug> marks and accepted picks to the client decisions file; blocked
@@ -90,7 +90,7 @@ test( 'MUST FAIL: --finalise asks about exactly the low-confidence and unresolve
 	const r = run( '--finalise', CLIENT );
 	assert.equal( r.code, 0, r.out );
 	assert.match( r.out, /3 low-confidence or unresolved skeleton rows on 2 surfaces/ );
-	assert.match( r.out, /dispatch an agent with scripts\/computed-route\/prompts\/skeleton-finaliser\.md to write .*finalise-picks\.json/ );
+	assert.match( r.out, /follow scripts\/computed-route\/prompts\/skeleton-finaliser\.md to write .*finalise-picks\.json/ );
 	const req = JSON.parse( read( 'finalise-request.json' ) );
 	assert.deepEqual( Object.fromEntries( Object.entries( req.surfaces ).map( ( [ s, x ] ) => [ s, x.rows.map( ( y ) => y.key ) ] ) ), { header: [ 'Site/5#0', 'Site/9#0' ], footer: [ 'Site/18' ] } );
 	const phone = req.surfaces.header.rows[ 0 ];

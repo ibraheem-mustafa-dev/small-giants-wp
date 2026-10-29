@@ -3,8 +3,7 @@
 // `inventoriesDir`), with today's rules, standing decisions and framework database. No browser opens, so a rule change
 // is measured against a whole client in seconds. This is the one proposal path: the intake run's `proposals` stage (after the
 // facts stage has rewritten facts.json, which the proposals read) and `--rerun-skeletons` both call it. Surface ids, kinds
-// and names come from intake.json's `skeletons` (the roots the run read) and built posts from the client's
-// built-surfaces.json.
+// and names come from intake.json's `skeletons` (the roots the run read).
 import fs from 'fs';
 import path from 'path';
 import { proposeSkeleton } from './skeleton-propose.mjs';
@@ -51,20 +50,18 @@ const savedPageMap = ( repo, client ) => {
 };
 
 // o: { client, db, repo?, skeletons (intake.json's `skeletons`: { <slug>: { id, kind, name } }), motion? (loopingKeys), picks? ({ surface: { key:
-// decision } }), useBuilt? (false proposes even a surface the client built, to measure the rules on it), breakpoints? (intake.json's
+// decision } }), breakpoints? (intake.json's
 // `breakpoints`; the saved file's by default), pageMap? (intake.json's `pageMap`; the saved file's by default), routing? (intake.json's
 // `routing`, the draft-link context's; the saved file's by default), carousels? (carouselKeys of the motion inventory), inventoriesDir?
 // (the saved inventories; the client's by default), codeRepo? (where the framework's block.json files are read; `repo` by default), propose? (the proposer; proposeSkeleton by default) }. Each surface is proposed with the
 // context `skeleton.mjs propose` passes (lib/skeleton-context.mjs::proposalContext): its handoff states, the thresholds, the calibration
 // keys and settings, the carried ids, the commerce region and the loops (rows, brands, carousels).
-// Returns { surfaces: { <slug>: { kind, name, built, rows, counts, problems, skeleton, entry, fingerprints } }, missing: [slug], failed: [{ slug, error }], absorbed: { <slug>: { into (the header surface's slug), root (the strip's root key) } } }; throws when
+// Returns { surfaces: { <slug>: { kind, name, rows, counts, problems, skeleton, entry, fingerprints } }, missing: [slug], failed: [{ slug, error }], absorbed: { <slug>: { into (the header surface's slug), root (the strip's root key) } } }; throws when
 // the decisions data is not sound (lib/skeleton-facts.mjs::decisionsProblems), as the intake run refuses it. A surface whose
 // proposal throws (its fact record stale, say) keeps an entry with its inventory summary, no rows and `proposalGap`, and is listed
 // in `failed`: its saved inventory is intact, so the next run proposes it again.
-export function rerunSkeletons( { client, db, repo = REPO, codeRepo = repo, skeletons, motion = new Set(), carousels = new Set(), picks = {}, useBuilt = true, breakpoints = savedBreakpoints( repo, client ), pageMap = savedPageMap( repo, client ), routing = null, inventoriesDir = null, propose = proposeSkeleton } ) {
+export function rerunSkeletons( { client, db, repo = REPO, codeRepo = repo, skeletons, motion = new Set(), carousels = new Set(), picks = {}, breakpoints = savedBreakpoints( repo, client ), pageMap = savedPageMap( repo, client ), routing = null, inventoriesDir = null, propose = proposeSkeleton } ) {
 	const dir = inventoriesDir || path.join( repo, 'sites', client, 'build', 'intake', 'inventories' );
-	const builtFile = path.join( repo, 'sites', client, 'build', 'skeleton', 'built-surfaces.json' );
-	const built = useBuilt && fs.existsSync( builtFile ) ? JSON.parse( fs.readFileSync( builtFile, 'utf8' ) ).surfaces || {} : {};
 	const decisionsFile = path.join( skeletonDir( repo, client ), 'decisions.json' );
 	const clientDecisions = fs.existsSync( decisionsFile ) ? readDecisions( decisionsFile ) : {};
 	const facts = loadFacts( { db, client, repo, codeRepo, siteName: clientDecisions.siteName || null } );
@@ -99,19 +96,18 @@ export function rerunSkeletons( { client, db, repo = REPO, codeRepo = repo, skel
 			absorbed[ s.slug ] = { into: absorbedKeys.get( inventory.checks.rootKey ), root: inventory.checks.rootKey };
 			continue;
 		}
-		const b = built[ s.id ] || built[ s.slug ] || null;
 		let r;
 		try {
 			const ctx = proposalContext( { repo, client, slug: s.slug, id: s.id, breakpoints, routing, pageMap, carousels, rootComponent: inventory.checks?.rootName || null } );
-			r = propose( { inventory, facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: b, motion, clientDecisions, picks: picks[ s.slug ] || {}, ...ctx, db, pageMap, surfaceId: s.id } );
+			r = propose( { inventory, facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, motion, clientDecisions, picks: picks[ s.slug ] || {}, ...ctx, db, pageMap, surfaceId: s.id } );
 		} catch ( e ) {
 			const error = e.message.split( '\n' )[ 0 ];
 			failed.push( { slug: s.slug, error } );
-			out[ s.slug ] = { kind: s.kind, name: s.name, built: b, rows: [], counts: null, problems: [], skeleton: [], entry: { ...entryOf( s.slug, skeletons[ s.slug ], { proposal: { counts: null, rows: [] }, problems: [] }, inventory ), proposalGap: error }, fingerprints: fingerprintsOf( inventory ) };
+			out[ s.slug ] = { kind: s.kind, name: s.name, rows: [], counts: null, problems: [], skeleton: [], entry: { ...entryOf( s.slug, skeletons[ s.slug ], { proposal: { counts: null, rows: [] }, problems: [] }, inventory ), proposalGap: error }, fingerprints: fingerprintsOf( inventory ) };
 			continue;
 		}
 		r.proposal.stripRoots?.forEach( ( k ) => absorbedKeys.set( k, s.slug ) );
-		out[ s.slug ] = { kind: s.kind, name: s.name, built: b, rows: r.proposal.rows, counts: r.proposal.counts, problems: r.problems, skeleton: r.skeleton, entry: entryOf( s.slug, skeletons[ s.slug ], r, inventory ), fingerprints: fingerprintsOf( inventory ) };
+		out[ s.slug ] = { kind: s.kind, name: s.name, rows: r.proposal.rows, counts: r.proposal.counts, problems: r.problems, skeleton: r.skeleton, entry: entryOf( s.slug, skeletons[ s.slug ], r, inventory ), fingerprints: fingerprintsOf( inventory ) };
 	}
 	Object.entries( skeletons ).filter( ( [ , x ] ) => ! read( x ) ).forEach( ( [ slug ] ) => missing.push( slug ) );
 	const ordered = Object.fromEntries( Object.keys( skeletons ).filter( ( k ) => out[ k ] ).map( ( k ) => [ k, out[ k ] ] ) );

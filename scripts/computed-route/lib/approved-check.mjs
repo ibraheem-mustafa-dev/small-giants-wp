@@ -49,8 +49,8 @@ export function aliasAbsorbed( { rows, fingerprints }, absorbed = {} ) {
 	}
 }
 
-// ctx: { rows: { [rowId]: row (with surface and built) }, fingerprints }. Returns one of
-//   { refused: why }, { noRow: true }, { settled: true } (a client-built post settles it), { setting: true },
+// ctx: { rows: { [rowId]: row (with surface) }, fingerprints }. Returns one of
+//   { refused: why }, { noRow: true }, { setting: true },
 //   { match: true } (every copy agrees) or { mismatches: [ line ] } (each copy that disagrees);
 // each also carries `how` / `to` from resolveApproval.
 export function checkApproval( approval, ctx ) {
@@ -63,13 +63,10 @@ export function checkApproval( approval, ctx ) {
 		return { ...meta, noRow: true };
 	}
 	const r = found.row;
-	if ( r.built && 'clientBuiltSurface' === r.rule ) {
-		return { ...meta, settled: true };
-	}
 	const want = wanted( approval.approvedBlock );
 	if ( 'setting' === want.kind ) {
 		return { ...meta, setting: true };
 	}
-	const mismatches = ( found.copies?.length ? found.copies : [ r ] ).filter( ( c ) => ! ( c.built && 'clientBuiltSurface' === c.rule ) ).map( ( c ) => disagreement( c, want, ctx.rows ) ).filter( Boolean );
+	const mismatches = ( found.copies?.length ? found.copies : [ r ] ).map( ( c ) => disagreement( c, want, ctx.rows ) ).filter( Boolean );
 	return mismatches.length ? { ...meta, mismatches } : { ...meta, match: true };
 }

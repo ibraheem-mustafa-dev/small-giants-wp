@@ -213,14 +213,14 @@ test( 'MUST FAIL (FR-48-6): skeleton rows are grouped by cause, never by page: o
 	const pill = ( surface, key ) => ( { rowId: `skeleton:${ surface }:${ key }`, key, tag: 'a', words: 'Call', block: 'sgs/button', confidence: 1, rule: 'pillButton', reason: 'a link holding one label and an icon is one button' } );
 	const intake = fixture( { skeletons: {
 		header: { rows: [ pill( 'header', 'call' ), { rowId: 'skeleton:header:wrap', key: 'wrap', tag: 'div', words: '', block: 'sgs/container', confidence: 0.4, low: true, reason: 'wrapper' } ] },
-		footer: { rows: [ pill( 'footer', 'call' ), { rowId: 'skeleton:footer:nav', key: 'nav', tag: 'nav', words: '', block: 'sgs/nav-drawer-menu', confidence: 1, rule: 'clientBuiltSurface', builtPost: { site: 'canary', postType: 'sgs_drawer', postId: 7, title: 'Drawer' } } ] },
+		footer: { rows: [ pill( 'footer', 'call' ), { rowId: 'skeleton:footer:nav', key: 'nav', tag: 'nav', words: '', block: 'sgs/nav-drawer-menu', confidence: 1, rule: 'logoElement', reason: 'a custom element named as a logo is the logo block' } ] },
 	} } );
 	const md = renderReview( intake );
 	const sk = md.slice( md.indexOf( '## Skeleton block choices' ) ).split( '\n## ' )[ 0 ];
 	const headings = sk.split( '\n' ).filter( ( l ) => l.startsWith( '### ' ) );
 	assert.deepEqual( headings, [
 		'### Needs a decision (low): block:sgs/container (1)',
-		'### Settled by built post sgs_drawer 7: the client already built this surface (Drawer on canary) (1)',
+		'### Settled by rule logoElement: a custom element named as a logo is the logo block (1)',
 		'### Settled by rule pillButton: a link holding one label and an icon is one button (2)',
 	] );
 	const group = sk.slice( sk.indexOf( '### Settled by rule pillButton' ) ).split( '\n### ' )[ 0 ];
