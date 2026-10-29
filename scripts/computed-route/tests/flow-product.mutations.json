@@ -1,0 +1,146 @@
+[
+	{
+		"file": "lib/flow-product.mjs",
+		"find": "'add' !== n.callee.property.name",
+		"replace": "false",
+		"why": "any call's object is a basket object"
+	},
+	{
+		"file": "lib/flow-product.mjs",
+		"find": "follow( ctx, src, n.arguments[ 0 ] ).filter(",
+		"replace": "[ { node: n.arguments[ 0 ], src } ].filter(",
+		"why": "a basket object reached through a variable or a conditional is missed"
+	},
+	{
+		"file": "lib/flow-product.mjs",
+		"find": "if ( 'StringLiteral' === v?.type || 'NumericLiteral' === v?.type ) {",
+		"replace": "if ( v ) {",
+		"why": "an id that is no literal is read"
+	},
+	{
+		"file": "lib/flow-product.mjs",
+		"find": "\t\tcode = splitDraft( script ).logic;",
+		"replace": "\t\tsplitDraft( script );",
+		"why": "a whole draft's template is parsed as logic"
+	},
+	{
+		"file": "lib/flow-product.mjs",
+		"find": "\t\treturn [ ...new Set( basketObjects( { idx: parseLogic( code ) } ).map( ( b ) => b.id ) ) ];\n\t} catch {\n\t\treturn [];",
+		"replace": "\t\treturn [ ...new Set( basketObjects( { idx: parseLogic( code ) } ).map( ( b ) => b.id ) ) ];\n\t} catch {\n\t\treturn [ 'a' ];",
+		"why": "a script that does not parse adds an id"
+	},
+	{
+		"file": "lib/flow-product.mjs",
+		"find": "basketObjects( src ).map( ( b ) => b.id ).filter( ( id ) => products.has( id ) )",
+		"replace": "basketObjects( src ).map( ( b ) => b.id )",
+		"why": "an id the catalogue lacks is sold"
+	},
+	{
+		"file": "lib/flow-product.mjs",
+		"find": "if ( 1 !== ids.length ) {",
+		"replace": "if ( 0 === ids.length ) {",
+		"why": "a flow adding several products sells the first"
+	},
+	{
+		"file": "lib/flow-product.mjs",
+		"find": "return [ ...keys.values() ].filter( ( k ) => ! k.gatedBy ).map(",
+		"replace": "return [ ...keys.values() ].map(",
+		"why": "a gated choice is asked"
+	},
+	{
+		"file": "lib/flow-product.mjs",
+		"find": "filter( ( c ) => c.name && [ 'choice', 'multi' ].includes( c.kind ) )",
+		"replace": "filter( ( c ) => c.name && [ 'choice' ].includes( c.kind ) )",
+		"why": "a multi-choice is no step"
+	},
+	{
+		"file": "lib/flow-product.mjs",
+		"find": "export const sameValues = ( a, b ) => a.length > 0 && a.length === b.length && a.every( ( v ) => b.includes( v ) );",
+		"replace": "export const sameValues = ( a, b ) => a.length > 0 && a.some( ( v ) => b.includes( v ) );",
+		"why": "a list sharing one value is the attribute"
+	},
+	{
+		"file": "lib/skeleton-choice-flow.mjs",
+		"find": "const sold = sale?.steps.find( ( s ) => s.binding && s.binding === q.loop.path ) ?? null;",
+		"replace": "const sold = sale?.steps[ 0 ] ?? null;",
+		"why": "every question is the first attribute's step"
+	},
+	{
+		"file": "lib/skeleton-choice-flow.mjs",
+		"find": "\t\t\tquestion.productAttribute = `pa_${ attr.slug }`;",
+		"replace": "\t\t\tquestion.productAttribute = attr.slug;",
+		"why": "the step names no pa_ taxonomy"
+	},
+	{
+		"file": "lib/skeleton-choice-flow.mjs",
+		"find": "label: o.term, value: slugify( o.term ),",
+		"replace": "label: o.term, value: o.term,",
+		"why": "an option's value is not the term slug"
+	},
+	{
+		"file": "lib/skeleton-choice-flow.mjs",
+		"find": "...( o.badge ? { badge: o.badge } : {} ),",
+		"replace": "",
+		"why": "the catalogue's badge never reaches the step"
+	},
+	{
+		"file": "lib/skeleton-choice-flow.mjs",
+		"find": "...( attr.default === o.term ? { isDefault: true } : {} ),",
+		"replace": "",
+		"why": "the product's default is not marked"
+	},
+	{
+		"file": "lib/skeleton-choice-flow.mjs",
+		"find": "...( 'multi' === sold.kind ? [",
+		"replace": "...( false ? [",
+		"why": "a multi-choice step names no missing feature"
+	},
+	{
+		"file": "lib/skeleton-choice-flow.mjs",
+		"find": "...( own.filter( ( x ) => x !== label && x !== cost && x.vals?.v.some( price ) ).map(",
+		"replace": "...( [].map(",
+		"why": "a second price per option is dropped silently"
+	},
+	{
+		"file": "lib/skeleton-choice-flow.mjs",
+		"find": "if ( cost?.vals?.v.length && ! attr?.variation ) {",
+		"replace": "if ( cost?.vals?.v.length ) {",
+		"why": "the product's own prices go to the add-on price list"
+	},
+	{
+		"file": "lib/skeleton-choice-flow.mjs",
+		"find": "if ( cost?.vals?.v.length && ! attr?.variation ) {",
+		"replace": "if ( cost?.vals?.v.length && ! attr ) {",
+		"why": "prices an answer attribute does not hold lose their hand-over"
+	},
+	{
+		"file": "lib/skeleton-choice-flow.mjs",
+		"find": "const unheld = badgeWords.filter( ( w ) => ! attr?.options.some( ( o ) => o.badge === w ) );",
+		"replace": "const unheld = badgeWords;",
+		"why": "a badge the product holds is handed over"
+	},
+	{
+		"file": "lib/skeleton-choice-flow.mjs",
+		"find": "const unheld = badgeWords.filter( ( w ) => ! attr?.options.some( ( o ) => o.badge === w ) );",
+		"replace": "const unheld = attr ? [] : badgeWords;",
+		"why": "a badge the product lacks is not handed over"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "for ( const x of flowNode ? cls.choiceFlow.missing : [] ) {",
+		"replace": "for ( const x of [] ) {",
+		"why": "a step's missing feature is never listed"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "const row = rows.find( ( r ) => view.entry( m.byKey[ r.key ] )?.template.key === x.key ) ?? rowOf[ m.root.key ];",
+		"replace": "const row = rowOf[ m.root.key ];",
+		"why": "the missing feature lands on the flow root, not the question"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "sale: flowRoot && surface.saleOf ? surface.saleOf( flowRoot.component ) : null",
+		"replace": "sale: null",
+		"why": "the flow's sale never reaches the model"
+	}
+]
