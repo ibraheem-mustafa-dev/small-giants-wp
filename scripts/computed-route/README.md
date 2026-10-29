@@ -2216,7 +2216,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 
 ### `lib/skeleton-part-content.mjs`
 - `fold(s)` → words with white space collapsed, curly quotes straight and dashes one hyphen.
-- `contentPairs({ text, attributes, els, fieldsOf, words })` → `{ pairs: { <path>: element }, notes: [{ slot, reason }], reserved: [element] }` (`reserved`: elements printing a field a content setting takes only as a later role, no other part).
+- `contentPairs({ text, attributes, els, fieldsOf, words })` → `{ pairs: { <path>: element }, notes: [{ slot, reason }], reserved: [element] }` (`reserved`: elements printing a field that plays a content role no setting of the block takes, no other part).
 
 ### `lib/skeleton-one-node.mjs`
 - `sharedElementProblems(tree)` → the problems of two nodes on one draft element in one branch, naming both.
@@ -2854,6 +2854,9 @@ FR-48-57: the words of a multi-step form's own buttons. The draft's Next and Bac
 - `buttonWords`: The words one button shows: its own text, or the one text hole the fact record reads as a string (an element hole, an icon, is no words); static text beside a hole, several holes or an unread hole is a `{ reason }`; no words is null.
 - `stepButtonLabels`: `{ labels, notes }`: the Next button's words give `nextLabel` (and `submitLabel` from its last-step words), the Back button's one set of words `prevLabel`; copies that disagree, unreadable words and a Back button that changes words by step write nothing and are notes.
 - `stepButtonWrites`: The writes for the form node: each label that differs from what the node reads as now (its value, else the block default); a label the block holds no setting for is a named UNMAPPED row.
+
+### `lib/fill-list-content.mjs` (matcher)
+- `laterRole(name, role)` → whether a key plays `role` as a later role through the words of its primary role (a team member's `name` takes a title; an `orgName` never does); `matchFields(fields, keys, { primaryOnly })` gives every field its primary-role key before any field takes a key by a later role.
 
 ### `lib/fill-list-marker.mjs`
 - `iconItems(db, block)` → `{ attr, fields }`, the block's item array whose item schema holds an icon setting the icon reader writes, or null.
