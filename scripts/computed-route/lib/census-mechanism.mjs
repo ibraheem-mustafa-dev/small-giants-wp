@@ -208,7 +208,9 @@ export function surfaceRows( { client, surface, report, run, lookup, rules = loa
 		const k = keyOf( f.node, f.slot, f.property, f.state );
 		fillBy.set( k, [ ...( fillBy.get( k ) ?? [] ), f ] );
 	}
-	const wrote = new Set( ( run?.writes ?? [] ).map( ( w ) => keyOf( w.node, w.slot, w.prop, 'default' ) ) );
+	// A write stands for the state it was written for (a hover hold is no resting write) and only while a later write on the
+	// same setting has not replaced it (lib/fill-report.mjs::supersededWrites marks it `supersededBy`).
+	const wrote = new Set( ( run?.writes ?? [] ).filter( ( w ) => null == w.supersededBy ).map( ( w ) => keyOf( w.node, w.slot, w.prop, w.state || 'default' ) ) );
 	const confirmBy = new Map( ( run?.confirm ?? [] ).map( ( c ) => [ keyOf( c.node, c.slot, c.property, c.state ), c.verdict ] ) );
 	const ruleOf = ( f ) => classify( f.reason, 'unmapped' === f.origin ? rules.unmapped : rules.held );
 	const slugOf = ( ref, slug, cls ) => slug || blocks.get( ref ) || ( cls && cls.startsWith( 'sgs-' ) ? `sgs/${ cls.slice( 4 ) }` : null );
