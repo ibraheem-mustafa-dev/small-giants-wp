@@ -27,7 +27,8 @@
 	position: relative;
 }
 
-[data-sgs-fx~="particles"]:where( a, span, em, strong, label, code ) {
+/* Zero specificity throughout: only an otherwise-unstyled inline host is promoted; any block's own `display` wins. */
+:where( [data-sgs-fx~="particles"] ):where( a, span, em, strong, label, code ) {
 	display: inline-block;
 }
 
