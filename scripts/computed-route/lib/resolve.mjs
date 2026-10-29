@@ -4,7 +4,8 @@
 // calibration decides which candidate paints that slot (R-47-6); values snap to the site's tokens (R-47-7).
 import { nearestHome } from './resolve-nearest.mjs';
 import { sideEffectFree } from './resolve-side-effects.mjs';
-import { isBoxRow, boxTierValue, calibratedPaint } from './box-tier.mjs';
+import { isBoxRow, boxTierValue, calibratedPaint, radiusCorners, CORNERS } from './box-tier.mjs';
+export { radiusCorners, CORNERS };
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -398,23 +399,10 @@ export function discoveredEffects( calibration, attr, value, slot, anyIndex = fa
 // siblings: the element's other draft properties, for settings found by calibration }.
 // ctx: { db, calibration: { settings: { attr: { slot, forms } } } | null, snapshot, log }.
 // Returns { writes: [{ attr, value, merge: 'deep'|'replace' }] } or { gap, detail }.
-// A border-radius box stores corners, never sides (helpers-box.php::sgs_border_radius_tiers reads topLeft, topRight,
-// bottomLeft, bottomRight and ignores any other key), per device when the attribute's default is a tier object.
-export const CORNERS = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ];
 
 // A per-device size held as { width, height } in each tier (block.json describes it "{desktop:{width,height},…}";
 // icon/render.php reads `shapeSize[tier]['width']` and ignores a plain length). True for such a setting's schema entry.
 export const isSizeBox = ( def ) => /\{desktop:\{width,\s*height\}/.test( def?.description ?? '' );
-
-// The computed border-radius shorthand ("8px", "8px 4px", …) as corners, or null for an elliptical radius.
-export function radiusCorners( raw ) {
-	const v = String( raw ).trim().split( /\s+/ );
-	if ( ! v.length || v.length > 4 || v.some( ( x ) => '/' === x || ! parseLength( x ) ) ) {
-		return null;
-	}
-	const [ a, b = a, c = a, d = b ] = v;
-	return Object.fromEntries( CORNERS.map( ( k, i ) => [ k, [ a, b, c, d ][ i ] ] ) );
-}
 
 // A longhand that reached its setting through the shorthand family (a corner reaching `border-radius`, a side reaching a
 // single-colour `border-color`, an `overflow-x` reaching `overflow`) is one part of the shape the setting holds, so its value

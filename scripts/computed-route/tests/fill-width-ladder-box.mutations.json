@@ -1,13 +1,110 @@
 [
-	{ "file": "lib/box-tier.mjs", "find": "if ( ! isBoxRow( row ) ) {\n\t\treturn value;", "replace": "if ( true ) {\n\t\treturn value;", "why": "a box row passes through as the flat value" },
-	{ "file": "lib/box-tier.mjs", "find": "return { ...seeds, [ side ]: value };", "replace": "return { ...seeds };", "why": "the side's own value is dropped" },
-	{ "file": "lib/box-tier.mjs", "find": "? null : Object.fromEntries( SIDES.map( ( s ) => [ s, value ] ) );", "replace": "? Object.fromEntries( SIDES.map( ( s ) => [ s, value ] ) ) : Object.fromEntries( SIDES.map( ( s ) => [ s, value ] ) );", "why": "a several-value shorthand is spread over four sides" },
-	{ "file": "lib/box-tier.mjs", "find": "if ( corner || 'border-radius' === short ) {\n\t\treturn null;", "replace": "if ( false ) {\n\t\treturn null;", "why": "a corner or radius row is built as sides" },
-	{ "file": "lib/box-tier.mjs", "find": "'border-width' === short && ! ( existing && Object.keys( existing ).length )", "replace": "false", "why": "a border width seeds nothing" },
-	{ "file": "lib/box-tier.mjs", "find": "'border-width' === short && ! ( existing && Object.keys( existing ).length )", "replace": "'border-width' === short", "why": "a border width reseeds sides already held" },
-	{ "file": "lib/box-tier.mjs", "find": "const key = Object.keys( elements ).find( ( k ) => loose( k ) === slot ) ?? slot;", "replace": "const key = slot;", "why": "the loose path match is lost" },
-	{ "file": "lib/fill-width-ladder.mjs", "find": "[ t, box ? boxOf( t, v ) : v ]", "replace": "[ t, v ]", "why": "rung 2 writes the flat string again" },
-	{ "file": "lib/fill-width-ladder.mjs", "find": "if ( Object.values( built ).some( ( v ) => null === v ) ) {\n\t\t\tcontinue;", "replace": "if ( false ) {\n\t\t\tcontinue;", "why": "an unbuildable box is written as null" },
-	{ "file": "lib/fill-width-ladder.mjs", "find": "[ { attr: r.attr_name, value: built, merge: 'deep' } ]", "replace": "[ { attr: r.attr_name, value: built, merge: 'replace' } ]", "why": "the four side rows overwrite one another" },
-	{ "file": "lib/fill-width-ladder.mjs", "find": "existing: 'flat_sibling' === r.tier_shape ? node.attributes?.[ named( t ) ] : node.attributes?.[ r.attr_name ]?.[ t ]", "replace": "existing: undefined", "why": "a border width reseeds sides the node already holds" }
+	{
+		"file": "lib/box-tier.mjs",
+		"find": "if ( ! isBoxRow( row ) ) {\n\t\treturn value;",
+		"replace": "if ( true ) {\n\t\treturn value;",
+		"why": "a box row passes through as the flat value"
+	},
+	{
+		"file": "lib/box-tier.mjs",
+		"find": "return { ...seeds, [ side ]: value };",
+		"replace": "return { ...seeds };",
+		"why": "the side's own value is dropped"
+	},
+	{
+		"file": "lib/box-tier.mjs",
+		"find": "? null : Object.fromEntries( SIDES.map( ( s ) => [ s, value ] ) );",
+		"replace": "? Object.fromEntries( SIDES.map( ( s ) => [ s, value ] ) ) : Object.fromEntries( SIDES.map( ( s ) => [ s, value ] ) );",
+		"why": "a several-value shorthand is spread over four sides"
+	},
+	{
+		"file": "lib/box-tier.mjs",
+		"find": "'border-width' === short && ! ( existing && Object.keys( existing ).length )",
+		"replace": "false",
+		"why": "a border width seeds nothing"
+	},
+	{
+		"file": "lib/box-tier.mjs",
+		"find": "'border-width' === short && ! ( existing && Object.keys( existing ).length )",
+		"replace": "'border-width' === short",
+		"why": "a border width reseeds sides already held"
+	},
+	{
+		"file": "lib/box-tier.mjs",
+		"find": "const key = Object.keys( elements ).find( ( k ) => loose( k ) === slot ) ?? slot;",
+		"replace": "const key = slot;",
+		"why": "the loose path match is lost"
+	},
+	{
+		"file": "lib/fill-width-ladder.mjs",
+		"find": "[ t, box ? boxOf( t, v ) : v ]",
+		"replace": "[ t, v ]",
+		"why": "rung 2 writes the flat string again"
+	},
+	{
+		"file": "lib/fill-width-ladder.mjs",
+		"find": "if ( Object.values( built ).some( ( v ) => null === v ) ) {\n\t\t\tcontinue;",
+		"replace": "if ( false ) {\n\t\t\tcontinue;",
+		"why": "an unbuildable box is written as null"
+	},
+	{
+		"file": "lib/fill-width-ladder.mjs",
+		"find": "[ { attr: r.attr_name, value: built, merge: 'deep' } ]",
+		"replace": "[ { attr: r.attr_name, value: built, merge: 'replace' } ]",
+		"why": "the four side rows overwrite one another"
+	},
+	{
+		"file": "lib/fill-width-ladder.mjs",
+		"find": "existing: 'flat_sibling' === r.tier_shape ? node.attributes?.[ named( t ) ] : node.attributes?.[ r.attr_name ]?.[ t ]",
+		"replace": "existing: undefined",
+		"why": "a border width reseeds sides the node already holds"
+	},
+	{
+		"file": "lib/box-tier.mjs",
+		"find": "if ( corner ) {\n\t\t\treturn key &&",
+		"replace": "if ( false ) {\n\t\t\treturn key &&",
+		"why": "a corner row is built as a whole radius"
+	},
+	{
+		"file": "lib/box-tier.mjs",
+		"find": "? { [ key ]: value } : null;",
+		"replace": "? radiusCorners( value ) : null;",
+		"why": "a corner row writes all four corners"
+	},
+	{
+		"file": "lib/box-tier.mjs",
+		"find": "return key && 1 === String",
+		"replace": "return 1 === String",
+		"why": "an unknown corner part is keyed undefined"
+	},
+	{
+		"file": "lib/box-tier.mjs",
+		"find": "&& 1 === String(",
+		"replace": "&& 0 < String(",
+		"why": "a corner given several lengths is built"
+	},
+	{
+		"file": "lib/box-tier.mjs",
+		"find": "return radiusCorners( value );\n\t}",
+		"replace": "return null;\n\t}",
+		"why": "a whole radius builds nothing"
+	},
+	{
+		"file": "lib/box-tier.mjs",
+		"find": "if ( corner || 'border-radius' === short ) {",
+		"replace": "if ( corner ) {",
+		"why": "a whole radius is built as sides"
+	},
+	{
+		"file": "lib/box-tier.mjs",
+		"find": "v.some( ( x ) => '/' === x || ! parseLength( x ) )",
+		"replace": "v.some( ( x ) => '/' === x )",
+		"why": "a non-length corner value is accepted"
+	},
+	{
+		"file": "lib/box-tier.mjs",
+		"find": "v.length > 4",
+		"replace": "v.length > 5",
+		"why": "five lengths are accepted as a radius"
+	}
 ]

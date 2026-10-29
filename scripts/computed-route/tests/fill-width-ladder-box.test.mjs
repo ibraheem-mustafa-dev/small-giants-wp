@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { widthLadderWrites } from '../lib/fill-width-ladder.mjs';
-import { boxTierValue, isBoxRow, calibratedPaint } from '../lib/box-tier.mjs';
+import { boxTierValue, isBoxRow, calibratedPaint, radiusCorners } from '../lib/box-tier.mjs';
 import { ONE_VALUE_EVERY_WIDTH } from '../lib/resolve.mjs';
 import { openDb } from '../lib/db.mjs';
 import { fixtureDb } from './fixtures/framework-db.mjs';
@@ -84,16 +84,47 @@ test( 'a non-box tier-object setting still writes a flat value per device', () =
 	assert.deepEqual( w.flat[ 0 ].attributes.justify, { desktop: 'flex-start', mobile: 'center' } );
 } );
 
-test( 'a corner of a box border-radius setting is skipped, never written as a string', () => {
+test( 'MUST FAIL WITHOUT THE RADIUS BUILDER: four corner rows of one border-radius setting that vary by width compose into per-device corners', () => {
 	const w = world();
-	run( w, [ rowOf( 'border-top-left-radius', { 375: '2px', 768: '4px', 1440: '8px' } ) ], cal( 'radius' ) );
+	const r = run( w, [
+		rowOf( 'border-top-left-radius', { 375: '2px', 768: '4px', 1440: '8px' } ),
+		rowOf( 'border-top-right-radius', { 375: '3px', 768: '5px', 1440: '9px' } ),
+		rowOf( 'border-bottom-right-radius', { 375: '2px', 768: '4px', 1440: '8px' } ),
+		rowOf( 'border-bottom-left-radius', { 375: '3px', 768: '5px', 1440: '9px' } ),
+	], cal( 'radius' ) );
+	assert.deepEqual( r.unmapped, [] );
+	assert.deepEqual( w.flat[ 0 ].attributes.radius, {
+		desktop: { topLeft: '8px', topRight: '9px', bottomRight: '8px', bottomLeft: '9px' },
+		tablet: { topLeft: '4px', topRight: '5px', bottomRight: '4px', bottomLeft: '5px' },
+		mobile: { topLeft: '2px', topRight: '3px', bottomRight: '2px', bottomLeft: '3px' },
+	} );
+	assert.equal( w.flat[ 0 ].attributes.sgsCustomCss, undefined );
+} );
+
+test( 'a whole border-radius row writes all four corners per device, never sides', () => {
+	const w = world();
+	run( w, [ rowOf( 'border-radius', { 375: '2px', 768: '4px 8px', 1440: '8px' } ) ], cal( 'radius' ) );
+	assert.deepEqual( w.flat[ 0 ].attributes.radius.tablet, { topLeft: '4px', topRight: '8px', bottomRight: '4px', bottomLeft: '8px' } );
+	assert.deepEqual( w.flat[ 0 ].attributes.radius.mobile, { topLeft: '2px', topRight: '2px', bottomRight: '2px', bottomLeft: '2px' } );
+} );
+
+test( 'a corner holding an elliptical radius builds no box and the setting is not written', () => {
+	const w = world();
+	run( w, [ rowOf( 'border-top-left-radius', { 375: '2px 4px', 768: '4px', 1440: '8px' } ) ], cal( 'radius' ) );
 	assert.equal( w.flat[ 0 ].attributes.radius, undefined );
 } );
 
-test( 'boxTierValue: several shorthand values, a corner and a radius build no box; one shorthand value fills four sides; a non-box passes through', () => {
+test( 'boxTierValue: several shorthand values, a corner or whole radius builds corners, an elliptical one nothing; one shorthand value fills four sides; a non-box passes through', () => {
 	const box = { tier_shape: 'tier_object', box_family: 'padding' };
 	assert.equal( boxTierValue( { row: box, short: 'padding', side: null, value: '8px 4px' } ), null );
-	assert.equal( boxTierValue( { row: box, short: 'border-radius', side: null, corner: 'topLeft', value: '8px' } ), null );
+	assert.equal( boxTierValue( { row: box, short: 'border-radius', side: null, corner: 'top-left', value: '8px 4px' } ), null );
+	assert.equal( boxTierValue( { row: box, short: 'border-radius', side: null, corner: 'nonsense', value: '8px' } ), null );
+	assert.deepEqual( boxTierValue( { row: box, short: 'border-radius', side: null, corner: 'bottom-right', value: '8px' } ), { bottomRight: '8px' } );
+	assert.equal( boxTierValue( { row: box, short: 'border-radius', side: null, value: '8px / 4px' } ), null );
+	assert.deepEqual( boxTierValue( { row: box, short: 'border-radius', side: null, value: '8px 2px' } ), { topLeft: '8px', topRight: '2px', bottomRight: '8px', bottomLeft: '2px' } );
+	assert.equal( radiusCorners( '8px auto' ), null, 'a non-length value' );
+	assert.equal( radiusCorners( '1px 2px 3px 4px 5px' ), null, 'five lengths' );
+	assert.deepEqual( radiusCorners( '1px 2px 3px' ), { topLeft: '1px', topRight: '2px', bottomRight: '3px', bottomLeft: '2px' } );
 	assert.deepEqual( boxTierValue( { row: box, short: 'padding', side: null, value: '8px' } ), { top: '8px', right: '8px', bottom: '8px', left: '8px' } );
 	assert.equal( boxTierValue( { row: { tier_shape: 'tier_object' }, short: 'gap', side: null, value: '8px' } ), '8px' );
 	assert.equal( isBoxRow( { tier_shape: 'box_only' } ), true );
