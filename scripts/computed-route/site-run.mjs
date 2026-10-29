@@ -38,6 +38,7 @@ import { rowKey, treeHash } from './lib/site-build-map.mjs';
 import { deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site-build-apply.mjs';
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
 import { pointAfterBuild } from './lib/site-run-layout.mjs';
+import { walkVerdict } from './lib/site-run-walk.mjs';
 import { WHOLE_TREE, commonChain, contentUnder, copyFile, copyTree, readShell, splitShell, writeCopy } from './lib/template-copies.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
@@ -358,14 +359,18 @@ export async function main( argv ) {
 			return note( key, 'walk', true, 0, 'pages' === entry.copy?.from ? `skipped: walked with its pages (${ entry.copy.surfaces.join( ', ' ) })` : 'page' === entry.copy?.from ? 'skipped: no draft surface plays it' : `skipped: the ${ slug } template shows only at a WooCommerce endpoint` );
 		}
 		const parity = path.join( build, 'qa', 'parity' );
-		await step( 'walk', () => exec( 'walk', 'node', [ 'scripts/parity/draft-live-walk.mjs', path.join( parity, path.basename( entry.walkerFull ) ),
-			'--out', path.join( parity, 'out', key ), '--widths', widths, '--headless', '--no-review' ], { SGS_DRAFT_URL: ctx.walkUrl, NODE_EXTRA_CA_CERTS: certs } ).catch( ( e ) => {
-			// The walker exits 1 for open differences; the report is what counts.
-			if ( fs.existsSync( path.join( parity, 'out', key, 'report.json' ) ) ) {
-				return `report written (${ String( e.message ).slice( 0, 200 ) })`;
-			}
-			throw e;
-		} ) );
+		await step( 'walk', async () => {
+			const said = await exec( 'walk', 'node', [ 'scripts/parity/draft-live-walk.mjs', path.join( parity, path.basename( entry.walkerFull ) ),
+				'--out', path.join( parity, 'out', key ), '--widths', widths, '--headless', '--no-review' ], { SGS_DRAFT_URL: ctx.walkUrl, NODE_EXTRA_CA_CERTS: certs } ).catch( ( e ) => {
+				// The walker exits 1 for open differences; the report is what counts.
+				if ( fs.existsSync( path.join( parity, 'out', key, 'report.json' ) ) ) {
+					return `report written (${ String( e.message ).slice( 0, 200 ) })`;
+				}
+				throw e;
+			} );
+			// A report whose live page lacks the surface's root is a failed walk, whatever the walker's exit status.
+			return walkVerdict( said, path.join( parity, 'out', key, 'report.json' ) );
+		} );
 	}
 
 	// The site's wp-cli for recording template copies and setting the active layouts (a local mirror's runs in WSL,

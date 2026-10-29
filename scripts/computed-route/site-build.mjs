@@ -13,7 +13,7 @@
 // (a post carrying a row key is adopted) and its write-back replaces them. The site phase also sets the site options the
 // draft's behaviours need (the route fade) from sites/<client>/build/site-options.json, which --promote-options fills from a
 // Fill run (lib/site-build-options.mjs). --flow-links runs only the product flow links (lib/site-build-flow-links.mjs):
-// each published product covered by a page-map product row with `opensFlow` gets that flow's slug as `_sgs_choice_flow`
+// each published product covered by a page-map product row whose `opens` names one flow gets that flow's slug as `_sgs_choice_flow`
 // (a dry run without --apply), reading the page map and writing nothing else, the map included; a whole build (neither
 // --templates-only nor --only) runs the same step after its four phases. --catalogue runs only the draft catalogue
 // (lib/site-build-catalogue.mjs, FR-48-92): every product of sites/<client>/build/catalogue.json planned by SKU (create,

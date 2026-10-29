@@ -17,7 +17,7 @@ import { crossCheck } from './intake-pagemap-hints.mjs';
 import { wooSlugs, shopTitle, orderConfirmations, wooPages, ownedSurfaces } from './intake-pagemap-owners.mjs';
 import { commerceFacts, commerceKinds, declaredKind } from './intake-pagemap-commerce.mjs';
 import { frontRoute, routerFallbacks, surfaceTemplates, genericTemplates } from './intake-pagemap-templates.mjs';
-import { flowOpeners } from './intake-pagemap-flow-openers.mjs';
+import { pageOpeners } from './intake-pagemap-flow-openers.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const PAGE_MAP_SCHEMA = path.join( HERE, '..', 'data', 'page-map.schema.json' );
@@ -301,8 +301,9 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 			gaps.push( gap( 'page-map', part.draftId, `the ${ part.kind } "${ part.label }" belongs to the site chrome, and the map has no header row to hold it` ) );
 		}
 	} );
-	// A product page whose control opens a choice flow names it (`opensFlow`), for the product's flow link (Spec 43 FR-43-25).
-	gaps.push( ...flowOpeners( { exp, rows, hint, pageOfTag: code.pageOfTag } ) );
+	// A page whose control opens a modal or a choice flow names it (`opens`): the modal's opener link the skeleton writes, and the
+	// product's flow link (Spec 43 FR-43-25).
+	gaps.push( ...pageOpeners( { exp, rows, hint, pageOfTag: code.pageOfTag } ) );
 	const bySlug = new Map( rows.map( ( r ) => [ r.slug, r ] ) );
 	const rowOf = ( href, file ) => {
 		const k = routeOfHref( href, file, routeSlug, home );

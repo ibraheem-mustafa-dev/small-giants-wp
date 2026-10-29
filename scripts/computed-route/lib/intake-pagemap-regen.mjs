@@ -17,7 +17,7 @@ import { loadAjv, schemaProblems } from './handoff.mjs';
 
 const SCHEMA = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'data', 'intake.schema.json' );
 
-const FIELDS = [ 'route', 'title', 'parent', 'template', 'postType', 'collection', 'menus', 'flags', 'parts', 'draftId', 'opensFlow', 'id' ];
+const FIELDS = [ 'route', 'title', 'parent', 'template', 'postType', 'collection', 'menus', 'flags', 'parts', 'draftId', 'opens', 'id' ];
 // The fields a review mark may edit.
 export const EDITABLE = new Set( [ 'route', 'title', 'parent', 'template', 'slug', 'postType', 'collection' ] );
 const rowIdOf = ( row ) => safeRowId( `page:${ row.postType }:${ row.slug }` );

@@ -19,7 +19,8 @@ import { filterRail } from './skeleton-filter-rail.mjs';
 import { linkWrite, siteLinkResolver } from './draft-link.mjs';
 import { choiceFlowModel } from './skeleton-choice-flow.mjs';
 import { blockPartSurfaces } from './skeleton-surface-role.mjs';
-import { handlerOpens, opensOn } from './skeleton-handler-opens.mjs';
+import { handlerCloses, handlerOpens, handlerWrites, opensOn, opensOnWrites } from './skeleton-handler-opens.mjs';
+import { modalTargets } from './skeleton-opener.mjs';
 import { makeFieldGroups } from './skeleton-field-groups.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
@@ -613,6 +614,21 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const handlerKeys = ( e ) => ( [ 'a', 'button' ].includes( e.tag ) && facts.repo && facts.client
 		? handlerOpens( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: view.entry( e )?.template.component, handler: handlerOf( e ) } )
 		: new Set() );
+	// The modals the page map holds as `sgs_modal` rows (lib/skeleton-opener.mjs), and the one a button or link opens: its click
+	// handler (a renderVals key of its component) writes the state one of the modal's surfaces.json states holds, a key at true or
+	// the very literal written (lib/skeleton-handler-opens.mjs::opensOnWrites). The modal's own surface opens nothing of itself.
+	const modals = R.modalOpener ? modalTargets( { pageMap: surface.pageMap, surfaces: view.surfaces } ).filter( ( t ) => t.surface.id !== scope?.id ) : [];
+	const opensModal = ( e ) => {
+		if ( ! modals.length || ! [ 'a', 'button' ].includes( e.tag ) || ! handlerOf( e ) || ! facts.repo || ! facts.client ) {
+			return null;
+		}
+		const written = handlerWrites( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: view.entry( e )?.template.component, handler: handlerOf( e ) } );
+		return modals.find( ( t ) => opensOnWrites( t.surface, written ) ) ?? null;
+	};
+	// The state keys a button or link's click handler writes a falsy value to (lib/skeleton-handler-opens.mjs::handlerCloses).
+	const closeKeys = ( e ) => ( facts.repo && facts.client
+		? handlerCloses( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: view.entry( e )?.template.component, handler: handlerOf( e ) } )
+		: new Set() );
 	// A button or link that opens a drawer surface: its click handler writes a state key one of the drawer's surfaces.json
 	// states holds at true, or the handler is named in the drawer's recorded opener words.
 	const opensDrawer = ( e ) => {
@@ -696,6 +712,22 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		( { e } ) => ( region?.toolbar?.absorb.includes( e.key ) ? v( 'shopToolbar', { action: 'absorbed', into: region.key, reason: R.shopToolbar.reason } ) : null ),
 		// The shop's filter rail is the framework's working filter (rules.filterRail): the rail's children are absorbed into it.
 		( { e } ) => ( rail?.key === e.key ? v( 'filterRail', { block: R.filterRail.block, absorb: true, attributes: rail.attributes, inner: rail.inner, reason: rail.reason } ) : null ),
+		// A button or link that opens a draft modal the page map holds as an sgs_modal row is a button linking `#<anchor>` of the
+		// modal frame the page carries (lib/skeleton-opener.mjs): the frame, and the modal post it shows, open on that link.
+		( { e, text } ) => {
+			const hit = opensModal( e );
+			const [ link, label ] = hit ? [ facts.firstAttrByRole( R.modalOpener.block, 'link-href' ), facts.firstAttrByRole( R.modalOpener.block, 'text-content' ) ] : [];
+			return hit && link ? v( 'modalOpener', { block: R.modalOpener.block, absorb: true, opens: hit, attributes: { ...( label && text ? { [ label ]: text } : {} ), [ link ]: `#${ hit.anchor }` }, reason: `${ R.modalOpener.reason }; it opens ${ hit.surface.id } (${ hit.surface.name }), the ${ hit.row.slug } row` } ) : null;
+		},
+		// The draft's own close control of a drawer surface is the drawer block's close (FR-36-6: close is the drawer's own chrome):
+		// the block draws its close above its body, so the control is absorbed into the surface root and its look is read into
+		// the block's close settings (the node's draftSlots at the close part). The surface's own record is found by its kind, so only a
+		// drawer surface has one; a drawer another block draws is that block's whole, root and children.
+		( { e } ) => {
+			const own = scope?.id ? view.surfaces[ scope.id ] : null;
+			const control = own && e !== m.root && [ 'a', 'button' ].includes( e.tag ) && handlerOf( e );
+			return control && opensOn( own, closeKeys( e ) ) ? v( 'drawerClose', { action: 'absorbed', into: m.root.key } ) : null;
+		},
 		// The control that opens the drawer, inside a header whose navigation block draws its own opener below its collapse
 		// point: the navigation block draws it, so it is absorbed there.
 		( { e } ) => {

@@ -1,14 +1,14 @@
 // Spec 48 FR-48-55, Spec 43 FR-43-25: the site build's product flow links (lib/site-build-flow-links.mjs). A page-map
-// product row naming the flow its page opens links every published product to that flow by `_sgs_choice_flow`; the run
+// product row whose `opens` names the one flow its page opens links every published product to that flow by `_sgs_choice_flow`; the run
 // reads the site through one PHP read, changes only unset links, stops on a flow the site lacks, and with --apply writes
 // and reads back. The site is an in-memory fake answering the PHP the step sends.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { flowLinkRows, planFlowLinks, runFlowLinks, flowStatePhp, flowApplyPhp, FLOW_META } from '../lib/site-build-flow-links.mjs';
+import { flowOf, flowLinkRows, planFlowLinks, runFlowLinks, flowStatePhp, flowApplyPhp, FLOW_META } from '../lib/site-build-flow-links.mjs';
 
 const FLOW = 'choice-flow-add-lenses';
 const rows = ( extra = {} ) => [
-	{ route: 'product', slug: 'product', title: 'Product', postType: 'product', collection: 'live', id: null, opensFlow: FLOW, ...extra },
+	{ route: 'product', slug: 'product', title: 'Product', postType: 'product', collection: 'live', id: null, opens: [ { kind: 'flow', slug: FLOW } ], ...extra },
 	{ slug: FLOW, title: 'Add lenses', postType: 'sgs_choice_flow', collection: 'static', id: 120 },
 ];
 const products = () => [
@@ -88,12 +88,12 @@ test( 'MUST FAIL: a flow the site lacks stops the run before any write; a whole 
 } );
 
 test( 'MUST FAIL: the page map\'s own problems stop the run: a flow no row holds, two live rows opening different flows', () => {
-	assert.deepEqual( flowLinkRows( rows( { opensFlow: 'missing' } ) ).problems, [ 'product row "product" opens flow "missing", which no sgs_choice_flow row of the page map holds' ] );
-	const two = [ ...rows(), { slug: 'other', postType: 'product', collection: 'live', opensFlow: 'flow-b' }, { slug: 'flow-b', postType: 'sgs_choice_flow' } ];
+	assert.deepEqual( flowLinkRows( rows( { opens: [ { kind: 'flow', slug: 'missing' } ] } ) ).problems, [ 'product row "product" opens flow "missing", which no sgs_choice_flow row of the page map holds' ] );
+	const two = [ ...rows(), { slug: 'other', postType: 'product', collection: 'live', opens: [ { kind: 'flow', slug: 'flow-b' } ] }, { slug: 'flow-b', postType: 'sgs_choice_flow' } ];
 	assert.match( flowLinkRows( two ).problems.join( '\n' ), /live product rows open different flows \(choice-flow-add-lenses, flow-b\)/ );
-	const same = [ ...rows(), { slug: 'other', postType: 'product', collection: 'live', opensFlow: FLOW } ];
+	const same = [ ...rows(), { slug: 'other', postType: 'product', collection: 'live', opens: [ { kind: 'flow', slug: FLOW } ] } ];
 	assert.deepEqual( flowLinkRows( same ).problems, [] );
-	assert.deepEqual( flowLinkRows( [ ...rows(), { slug: 'page', postType: 'page', opensFlow: FLOW } ] ).linking.map( ( r ) => r.slug ), [ 'product' ], 'only product rows link' );
+	assert.deepEqual( flowLinkRows( [ ...rows(), { slug: 'page', postType: 'page', opens: [ { kind: 'flow', slug: FLOW } ] } ] ).linking.map( ( r ) => r.slug ), [ 'product' ], 'only product rows link' );
 } );
 
 test( 'MUST FAIL: a static product row links no product; a map with no flow row plans nothing and reads nothing', () => {
@@ -102,7 +102,7 @@ test( 'MUST FAIL: a static product row links no product; a map with no flow row 
 	assert.match( plan.notes[ 0 ], /is static/ );
 	const { runPhp, calls } = fakeSite( { flows: {}, products: [] } );
 	const q = quiet();
-	assert.equal( runFlowLinks( { rows: rows( { opensFlow: undefined } ), runPhp, apply: true, ...q } ), 0 );
+	assert.equal( runFlowLinks( { rows: rows( { opens: undefined } ), runPhp, apply: true, ...q } ), 0 );
 	assert.equal( calls.length, 0 );
 	assert.match( planFlowLinks( rows(), { flows: { [ FLOW ]: 120 }, products: [] } ).notes[ 0 ], /no published product/ );
 } );
@@ -116,4 +116,13 @@ test( 'MUST FAIL: the PHP carries only slugs and integer ids, base64-encoded, an
 	const write = flowApplyPhp( [ { id: 10, to: FLOW }, { id: '11', to: FLOW }, { id: 12, to: 'Bad Slug' } ] );
 	assert.deepEqual( JSON.parse( Buffer.from( /base64_decode\( '([^']*)' \)/.exec( write )[ 1 ], 'base64' ).toString() ), [ [ 10, FLOW ] ] );
 	assert.match( write, /update_post_meta\( \(int\) \$link\[0\], '_sgs_choice_flow', \$link\[1\] \)/ );
+} );
+
+test( 'MUST FAIL: a row links the one flow its page opens; a page opening two flows, a modal alone or nothing links none', () => {
+	const flow = ( slug ) => ( { kind: 'flow', slug } );
+	assert.equal( flowOf( { opens: [ { kind: 'modal', slug: 'size' }, flow( 'a' ) ] } ), 'a', 'a modal beside the flow does not hide it' );
+	assert.equal( flowOf( { opens: [ flow( 'a' ), flow( 'b' ) ] } ), null );
+	assert.equal( flowOf( { opens: [ { kind: 'modal', slug: 'size' } ] } ), null, 'a modal is no flow link' );
+	assert.equal( flowOf( {} ), null );
+	assert.deepEqual( flowLinkRows( rows( { opens: [ flow( FLOW ), flow( 'flow-b' ) ] } ) ).linking, [], 'two flows: no product link' );
 } );

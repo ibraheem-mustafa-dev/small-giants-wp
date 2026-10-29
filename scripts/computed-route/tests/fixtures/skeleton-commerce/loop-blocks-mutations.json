@@ -18,7 +18,7 @@
 	{ "file": "lib/skeleton-loop-blocks.mjs", "find": "const els = m.els.filter( shown );", "replace": "const els = m.els;", "why": "an element never shown counts" },
 	{ "file": "lib/skeleton-propose.mjs", "find": "'categoryChips' === r.rule || loopProducts ) {", "replace": "'categoryChips' === r.rule ) {", "why": "the product collection reads the draft's holder look" },
 	{ "file": "lib/skeleton-propose.mjs", "find": "( 'commerceRegion' === r.rule || loopProducts ) && r.inner ) {", "replace": "( 'commerceRegion' === r.rule ) && r.inner ) {", "why": "the looped product collection holds no product card" },
-	{ "file": "lib/skeleton-classify.mjs", "find": ", ...( r.kind ? { kind: r.kind } : {} ) };", "replace": " };", "why": "a loop block's kind is lost" },
+	{ "file": "lib/skeleton-classify.mjs", "find": "...( r.kind ? { kind: r.kind } : {} ), ...( r.opens", "replace": "...( r.opens", "why": "a loop block's kind is lost" },
 	{ "file": "lib/skeleton-rules.mjs", "find": "return loop ? v( 'loopBlocks', {", "replace": "return false ? v( 'loopBlocks', {", "why": "no loop is ever a working block" },
 	{ "file": "lib/skeleton-rules.mjs", "find": "money: R.commerceRegion?.money, shop:", "replace": "shop:", "why": "no currency pattern is given to the loop reader" },
 	{ "file": "data/skeleton-decisions.json", "find": "\"minMatches\": 2,\n\t\t\t\t\"reason\": \"a loop of links labelled", "replace": "\"minMatches\": 1,\n\t\t\t\t\"reason\": \"a loop of links labelled", "why": "one catalogue brand makes a strip" },

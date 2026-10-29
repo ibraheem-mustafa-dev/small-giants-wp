@@ -1,16 +1,18 @@
-// The choice flow a product page opens (Spec 48 FR-48-30, Spec 43 FR-43-25): a `product` row whose page holds an
-// element whose click handler makes the state writes that open an `sgs_choice_flow` row's surface gets
-// `opensFlow: <that flow row's slug>`, which the site build writes as each product's `_sgs_choice_flow` meta
-// (lib/site-build-flow-links.mjs), so the buybox opens the cloned flow. Read from the draft code, never from prose:
-// - a flow's opening writes are the literal state values its surfaces.json record's open states set through their
+// What a page opens (Spec 48 FR-48-30, FR-48-55, Spec 43 FR-43-25): a row whose page holds an element whose click handler
+// makes the state writes that open an `sgs_modal` or `sgs_choice_flow` row's surface gets `opens: [ { kind: 'modal' | 'flow',
+// slug } ]`, the rows it opens. A product row's flow is written by the site build as each product's `_sgs_choice_flow`
+// meta (lib/site-build-flow-links.mjs), so the buybox opens the cloned flow; a modal is opened by the `#<anchor>` link the
+// skeleton writes (lib/skeleton-opener.mjs). Read from the draft code, never from prose:
+// - a surface's opening writes are the literal state values its surfaces.json record's open states set through their
 //   how_to_reach setState calls (lib/intake-reach-calls.mjs), path by path (`lens.open = true`), kept where every open
 //   state sets the same value, less a key the state describes as a comparison (`w: ">= 768"`, a width the harness sets,
 //   not a value the page's code writes);
 // - an element's writes are the literal values its onClick handler's functions pass to setState, through the logic's
 //   own functions with their arguments bound (`openLens: () => setL({open:true})`,
 //   `setL = patch => this.setState(s => ({lens: Object.assign({}, s.lens, patch)}))`), object spreads and Object.assign;
-// - the element opens the flow when one function its handler names makes every opening write.
-// A product page that opens two flows records neither and leaves a gap row, since a product links one flow.
+// - the element opens the surface when one function its handler names makes every opening write.
+// A product page that opens two flows leaves a gap row, since a product links one flow.
+export const OPENS_KINDS = { sgs_choice_flow: 'flow', sgs_modal: 'modal' };
 import { parseExpression } from '@babel/parser';
 import { attrOf, readBinding, isFn, keyName, propName, resolveName, subtree } from './intake-ast.mjs';
 import { reachCalls } from './intake-reach-calls.mjs';
@@ -167,32 +169,31 @@ function handlerFns( idx, value ) {
 	return name ? fnsOf( idx, name ) : [];
 }
 
-// Sets `opensFlow` on each product row whose page holds an element opening a flow row's surface. `exp` is the loaded
-// export, `hint` handoff/surfaces.json, `pageOfTag( 'file:line:col' )` the route key holding a template element
+// Sets `opens` on each row whose page holds an element opening a flow or modal row's surface. `exp` is the loaded export,
+// `hint` handoff/surfaces.json, `pageOfTag( 'file:line:col' )` the route key holding a template element
 // (lib/intake-pagemap-surfaces.mjs::codeSurfaces). Returns gap rows for a product page that opens two flows.
-export function flowOpeners( { exp, rows, hint, pageOfTag } ) {
+export function pageOpeners( { exp, rows, hint, pageOfTag } ) {
 	const records = new Map( ( hint?.records || [] ).map( ( r ) => [ r.id, r ] ) );
-	const flows = rows.filter( ( r ) => 'sgs_choice_flow' === r.postType && r.draftId )
-		.map( ( r ) => ( { row: r, writes: openingWrites( records.get( r.draftId.replace( /^surfaces\.json /, '' ) ) ) } ) )
+	const targets = rows.filter( ( r ) => OPENS_KINDS[ r.postType ] && r.draftId )
+		.map( ( r ) => ( { row: r, kind: OPENS_KINDS[ r.postType ], writes: openingWrites( records.get( r.draftId.replace( /^surfaces\.json /, '' ) ) ) } ) )
 		.filter( ( f ) => f.writes.length );
 	const opened = new Map();
-	for ( const d of flows.length ? exp.drafts.filter( ( x ) => ! x.error && x.idx ) : [] ) {
+	for ( const d of targets.length ? exp.drafts.filter( ( x ) => ! x.error && x.idx ) : [] ) {
 		for ( const t of d.tags.filter( ( x ) => attrOf( x, 'onClick' ) ) ) {
 			const fns = handlerFns( d.idx, attrOf( t, 'onClick' ) );
 			const sets = fns.map( ( fn ) => fnWrites( d.idx, fn ) );
 			const page = pageOfTag( `${ d.file }:${ t.line }:${ t.col }` );
-			for ( const f of flows.filter( ( x ) => sets.some( ( s ) => x.writes.every( ( w ) => s.has( w ) ) ) ) ) {
-				opened.set( page, new Set( [ ...( opened.get( page ) || [] ), f.row.slug ] ) );
+			for ( const f of targets.filter( ( x ) => sets.some( ( s ) => x.writes.every( ( w ) => s.has( w ) ) ) ) ) {
+				( opened.get( page ) || opened.set( page, new Map() ).get( page ) ).set( `${ f.kind }:${ f.row.slug }`, { kind: f.kind, slug: f.row.slug } );
 			}
 		}
 	}
 	const gaps = [];
-	for ( const row of rows.filter( ( r ) => 'product' === r.postType && r.route && opened.has( r.route ) ) ) {
-		const slugs = [ ...opened.get( row.route ) ];
-		if ( 1 === slugs.length ) {
-			row.opensFlow = slugs[ 0 ];
-		} else {
-			gaps.push( { construct: 'page-map', draftId: row.route, error: `the product page opens ${ slugs.length } choice flows (${ slugs.join( ', ' ) }) and a product links one, so none is recorded` } );
+	for ( const row of rows.filter( ( r ) => r.route && opened.has( r.route ) ) ) {
+		row.opens = [ ...opened.get( row.route ).values() ].sort( ( a, b ) => a.kind.localeCompare( b.kind ) || a.slug.localeCompare( b.slug ) );
+		const flows = row.opens.filter( ( o ) => 'flow' === o.kind ).map( ( o ) => o.slug );
+		if ( 'product' === row.postType && flows.length > 1 ) {
+			gaps.push( { construct: 'page-map', draftId: row.route, error: `the product page opens ${ flows.length } choice flows (${ flows.join( ', ' ) }) and a product links one, so none is linked` } );
 		}
 	}
 	return gaps;

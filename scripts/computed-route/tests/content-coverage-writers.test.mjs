@@ -105,7 +105,7 @@ const SK = {
 test( 'every setting skeletonSettings claims is written by contentAttrs or carriedAttrs', () => {
 	const db = openDb( fixtureDb( SK ) );
 	const facts = loadFacts( { db, client: '' } );
-	const m = { words: ( e ) => e.words ?? '', textWithBreaks: ( e ) => e.words ?? '', blockKids: () => [] };
+	const m = { words: ( e ) => e.words ?? '', textWithBreaks: ( e ) => e.words ?? '', blockKids: () => [], els: [], byKey: {} };
 	const carried = { logo: () => ( { id: 5, asset: 'logo.png' } ), menu: () => 9 };
 	const { contentAttrs, carriedAttrs } = makeContent( { m, facts, view: 1440, carried, surfaceKind: 'header', siteLink: ( href ) => ( { kind: 'url', value: href } ) } );
 	const e = { key: 'k', tag: 'nav', words: 'Hello', display: 'flex', flexDirection: 'column', attrs: { href: '/x', target: '_blank' } };

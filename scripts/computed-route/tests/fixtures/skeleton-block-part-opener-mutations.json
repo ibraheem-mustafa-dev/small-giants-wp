@@ -18,7 +18,7 @@
 	{ "file": "lib/skeleton-rules.mjs", "find": "aria && ! /\\{\\{/.test( aria )", "replace": "aria", "why": "a bound aria-label is no typed name" },
 	{ "file": "lib/skeleton-rules.mjs", "find": "attributes: { ...( d.own.attributes || {} ), ...triggerOf( e, d.own.trigger ) }", "replace": "attributes: { ...triggerOf( e, d.own.trigger ) }", "why": "the block keeps its owning entry's drawer mode" },
 	{ "file": "lib/skeleton-propose.mjs", "find": "commerce, role, pageMap, loops }", "replace": "commerce, role, loops }", "why": "the rules see the page map" },
-	{ "file": "lib/skeleton-handler-opens.mjs", "find": "&& keyName( p ) && ! falsy( p.value ) )", "replace": "&& keyName( p ) )", "why": "a key written with a closing value opens nothing" },
+	{ "file": "lib/skeleton-handler-opens.mjs", "find": "closing === falsy( p.value ) ).map( keyName )", "replace": "true ).map( keyName )", "why": "a key written with a closing value opens nothing" },
 	{ "file": "lib/skeleton-handler-opens.mjs", "find": "isFn( arg ) && 'ObjectExpression' === arg.body?.type ? arg.body : null", "replace": "null", "why": "a setState given a function returning the patch" },
 	{ "file": "lib/skeleton-handler-opens.mjs", "find": "( 'NumericLiteral' === n?.type && 0 === n.value ) ||", "replace": "", "why": "zero closes" },
 	{ "file": "lib/skeleton-handler-opens.mjs", "find": "true === v && keys.has( k )", "replace": "keys.has( k )", "why": "only a state holding the key at true opens the surface" },

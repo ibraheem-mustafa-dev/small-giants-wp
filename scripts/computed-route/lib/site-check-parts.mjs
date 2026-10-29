@@ -48,12 +48,16 @@ export function readPartsInPage( mark ) {
 	return { modals, flows, forms };
 }
 
-// The page-map choice-flow rows (sgs_choice_flow) no rendered flow shows. `flows` are readPartsInPage's flows from every
-// checked page. A flow that names its saved flow (data-flow-slug, choice-flow/render.php) is that row by slug; a flow that
-// names none (an older render) is that row by its aria-label, case ignored. A flow naming another row's slug is never
-// matched by label.
-export function missingFlowRows( rows, flows ) {
-	return rows.filter( ( r ) => 'sgs_choice_flow' === r.postType ).filter( ( r ) => ! flows.some( ( f ) => ( f.flowSlug ? f.flowSlug === r.slug : String( f.label || '' ).toLowerCase() === String( r.title ).toLowerCase() ) ) );
+// The page-map choice-flow rows (sgs_choice_flow) no rendered flow shows, and the modal rows (sgs_modal) no rendered modal
+// shows. `flows` and `modals` are readPartsInPage's from every checked page. A flow that names its saved flow
+// (data-flow-slug, choice-flow/render.php) is that row by slug; a flow that names none (an older render) is that row by its
+// aria-label, case ignored. A flow naming another row's slug is never matched by label. A modal is the row whose slug is its
+// anchor (the frame's `anchor`, where the opener links point), else the row whose title is its accessible name (the saved
+// modal post's title, modal/render.php), case ignored.
+export function missingFlowRows( rows, flows, modals = [] ) {
+	const flowRows = rows.filter( ( r ) => 'sgs_choice_flow' === r.postType ).filter( ( r ) => ! flows.some( ( f ) => ( f.flowSlug ? f.flowSlug === r.slug : String( f.label || '' ).toLowerCase() === String( r.title ).toLowerCase() ) ) );
+	const modalRows = rows.filter( ( r ) => 'sgs_modal' === r.postType ).filter( ( r ) => ! modals.some( ( m ) => m.anchor === r.slug || String( m.label || '' ).toLowerCase() === String( r.title ).toLowerCase() ) );
+	return [ ...flowRows, ...modalRows ];
 }
 
 // One modal on the loaded page (marked by readPartsInPage): opens from its trigger, closes by its close button or
