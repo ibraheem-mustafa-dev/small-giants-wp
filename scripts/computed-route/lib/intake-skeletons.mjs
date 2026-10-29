@@ -35,6 +35,7 @@ import { stateRouteHash } from './state-route.mjs';
 import { loadCalibration } from './cache.mjs';
 import { openDb } from './db.mjs';
 import { reachCalls } from './intake-reach-calls.mjs';
+import { preconditionWays } from './intake-store-calls.mjs';
 import { setDraftState, reachDraftState, fireTrigger, snapshotDraftState, restoreDraftState } from './intake-state.mjs';
 import { widthStateKeys } from './state-reach.mjs';
 import { openers, wayAt } from './intake-openers.mjs';
@@ -194,11 +195,17 @@ function markRoot( [ component, tpl, mark, attr, isPage ] ) {
 		if ( ! /^sc-(if|for|else)$/.test( src.localName ) ) {
 			return { error: `<${ src.localName }> ${ component }:${ tpl } is not rendered at this route and state` };
 		}
+		// The bare bindings the surface's own condition and every condition around it test (`{{ signed }}`, `{{ gift.on }}`).
+		const needs = [];
+		for ( let p = src; p; p = p.parentElement ) {
+			const b = /^sc-(?:if|else)$/.test( p.localName ) ? /^\{\{\s*([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)\s*\}\}$/.exec( p.getAttribute( 'value' ) || '' ) : null;
+			b && needs.push( b[ 1 ] );
+		}
 		const ids = new Set( [ ...src.querySelectorAll( '[data-dc-tpl]' ) ].map( ( x ) => x.dataset.dcTpl ) );
 		const els = [ ...document.querySelectorAll( '[data-dc-tpl]' ) ].filter( ( e ) => ids.has( e.dataset.dcTpl ) && hostName( e ) === component );
 		const top = els.filter( ( e ) => ! els.some( ( o ) => o !== e && o.contains( e ) ) );
 		if ( ! top.length ) {
-			return { error: `<${ src.localName }> ${ component }:${ tpl } renders nothing at this route and state` };
+			return { error: `<${ src.localName }> ${ component }:${ tpl } renders nothing at this route and state`, needs };
 		}
 		root = top[ 0 ];
 		while ( top.length > 1 && ! top.every( ( e ) => root.contains( e ) ) ) {
@@ -300,6 +307,8 @@ async function markAt( page, s, settle, opener = null, width = null ) {
 	if ( ( ! m.error && ! bounded ) || ! opener ) {
 		return m;
 	}
+	// The draft's store calls the way needs first (a signed-in account behind the surface's condition, preconditionWays).
+	opener.before && await reachDraftState( page, { component: s.component, calls: opener.before.calls } );
 	const reached = 'state' === opener.via ? await setDraftState( page, { component: s.component, keys: opener.keys } )
 		: 'reach' === opener.via ? await reachDraftState( page, { component: s.component, calls: opener.calls } )
 			: await fireTrigger( page, { component: s.component, draftId: opener.draftId }, opener.event );
@@ -348,10 +357,16 @@ export async function openAncestors( page, s, settle, census, widthKeys ) {
 // nearest rendering width read in its place }), ways ({ width: the way applied there }), tried } or { error, tried }. The
 // state stays open on success; the caller closes it. `within` (optional) opens the records the surface shows inside before
 // each opener is tried (openAncestors).
-async function openSurface( page, s, settle, list, within = null ) {
+async function openSurface( page, s, settle, list, within = null, preWays = null ) {
 	const tried = [];
+	const needs = new Set();
 	await snapshotDraftState( page );
-	for ( const o of list ) {
+	// The queue grows once, when every own way has failed and the root's enclosing conditions name store calls the draft's
+	// surfaces.json gives (preconditionWays): each own way is then tried again after one of them.
+	const queue = [ ...list ];
+	let grown = ! preWays;
+	for ( let k = 0; k < queue.length; k++ ) {
+		const o = queue[ k ];
 		within && await within();
 		const errors = [];
 		const at = [];
@@ -360,15 +375,20 @@ async function openSurface( page, s, settle, list, within = null ) {
 			await page.setViewportSize( { width: w, height: 900 } );
 			await settle( page );
 			const way = wayAt( list, o, w );
-			const m = way ? await markAt( page, s, settle, way, w ) : { error: `no state of the surface holds at ${ w }px` };
-			m.error ? errors.push( `${ w }px: ${ m.error }` ) : ( at.push( w ), ways[ w ] = way );
+			const m = way ? await markAt( page, s, settle, way.before || ! o.before ? way : { ...way, before: o.before }, w ) : { error: `no state of the surface holds at ${ w }px` };
+			( m.needs || [] ).forEach( ( n ) => needs.add( n ) );
+			m.error ? errors.push( `${ w }px: ${ m.error }` ) : ( at.push( w ), ways[ w ] = o.before && ! way.before ? { ...way, before: o.before } : way );
 		}
 		if ( at.length ) {
 			const nearest = ( w ) => at.reduce( ( b, x ) => ( Math.abs( x - w ) < Math.abs( b - w ) ? x : b ), at[ 0 ] );
 			return { opener: o, at, readAt: Object.fromEntries( INVENTORY_WIDTHS.filter( ( w ) => ! at.includes( w ) ).map( ( w ) => [ w, nearest( w ) ] ) ), ways, tried };
 		}
-		tried.push( `${ describeWay( o ) } (${ errors.join( '; ' ) })` );
+		tried.push( `${ o.before ? `after ${ describeWay( o.before ) }, ` : '' }${ describeWay( o ) } (${ errors.join( '; ' ) })` );
 		await closeAgain( page, settle );
+		if ( ! grown && k === list.length - 1 ) {
+			grown = true;
+			queue.push( ...preWays( [ ...needs ] ).flatMap( ( before ) => list.map( ( own ) => ( { ...own, before } ) ) ) );
+		}
 	}
 	return { error: list.length ? `still not rendered after ${ tried.join( '; then ' ) }` : 'no opener: no surfaces.json state gives a settable state key or a setState call, and opened_by names no template handler of the component', tried };
 }
@@ -519,7 +539,7 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 						let open = null;
 						let inventory;
 						if ( m.error && openStates ) {
-							open = await openSurface( h.page, s, settle, openers( s, census, widthKeys ), s.ancestors?.length ? () => openAncestors( h.page, s, settle, census, widthKeys ) : null );
+							open = await openSurface( h.page, s, settle, openers( s, census, widthKeys ), s.ancestors?.length ? () => openAncestors( h.page, s, settle, census, widthKeys ) : null, ( needs ) => preconditionWays( needs, everySurface() ) );
 							if ( open.error ) {
 								throw new Error( `${ m.error }; ${ open.error }` );
 							}

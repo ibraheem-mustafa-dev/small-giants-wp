@@ -8,7 +8,7 @@
 // Every function takes a Playwright page and returns once the call is made; the caller settles the page after it.
 
 // In-page: the logic state of every mounted instance of `comp` (every component when null), through its own setState.
-// op `set` applies `patch`; `reach` runs each { ident, args } of `patch.calls` as `<ident>.setState(<args>)` with the
+// op `set` applies `patch`; `reach` first runs each store call ({ ident, store: true, path, args }) of `patch.calls` once, then each { ident, args } as `<ident>.setState(<args>)` with the
 // instance's logic bound to `ident`, then puts back the keys `patch.keep` names (a state's width bounds: the viewport
 // keeps those) to their values before the calls (a call that throws reaches nothing on that instance); `get` lists the value of the key named by `patch` on each instance; `snapshot` keeps each instance's state; `restore` puts back every key changed since; `diff`
 // counts the instances with a key changed since, changing nothing. `slot` names a separate snapshot (the default one
@@ -20,6 +20,38 @@ export function logicState( { comp, op, patch, slot } ) {
 	const snap = slot ? ( slots[ slot ] ||= new Map() ) : ( window.__sgsStateSnap ||= new Map() );
 	const values = [];
 	let count = 0;
+	// A store call (`MM.cart.setGift({ on: true })`, lib/intake-store-calls.mjs) runs once, before any logic call, on a global the
+	// draft itself defines (a plain object, never a built-in such as Math, JSON, console or document), by plain property names only; the page's storage is kept first so
+	// `restore` puts it back. A call that cannot run reaches nothing.
+	if ( 'reach' === op && patch.calls.some( ( c ) => c.store ) ) {
+		window.__sgsStoreSnap ||= Object.fromEntries( Object.entries( localStorage ) );
+		for ( const c of patch.calls.filter( ( x ) => x.store ) ) {
+			const found = Object.getOwnPropertyDescriptor( window, c.ident )?.value;
+			const root = found && '[object Object]' === Object.prototype.toString.call( found ) && Object.getPrototypeOf( found ) === Object.prototype ? found : null;
+			let obj = root;
+			for ( const seg of c.path.slice( 0, -1 ) ) {
+				obj = obj && 'object' === typeof obj ? obj[ seg ] : null;
+			}
+			const fn = obj ? obj[ c.path.at( -1 ) ] : null;
+			if ( ! root || 'object' !== typeof root || 'function' !== typeof fn ) {
+				return 0;
+			}
+			try {
+				fn.apply( obj, c.args );
+			} catch {
+				return 0;
+			}
+		}
+		if ( ! patch.calls.some( ( c ) => ! c.store ) ) {
+			return 1;
+		}
+	}
+	if ( 'restore' === op && window.__sgsStoreSnap ) {
+		localStorage.clear();
+		Object.entries( window.__sgsStoreSnap ).forEach( ( [ k, v ] ) => localStorage.setItem( k, v ) );
+		window.dispatchEvent( new Event( 'storage' ) );
+		delete window.__sgsStoreSnap;
+	}
 	for ( const host of document.querySelectorAll( '.sc-host' ) ) {
 		const name = host.dataset.scName;
 		if ( comp && name !== comp ) {
@@ -41,7 +73,7 @@ export function logicState( { comp, op, patch, slot } ) {
 			const keep = patch.keep || [];
 			const was = Object.fromEntries( keep.map( ( k ) => [ k, logic.state[ k ] ] ) );
 			try {
-				patch.calls.filter( ( c ) => ! c.component || c.component === name ).forEach( ( c ) => new Function( c.ident, `${ c.ident }.setState(${ c.args });` )( logic ) );
+				patch.calls.filter( ( c ) => ! c.store && ( ! c.component || c.component === name ) ).forEach( ( c ) => new Function( c.ident, `${ c.ident }.setState(${ c.args });` )( logic ) );
 				keep.length && logic.setState( was );
 				count++;
 			} catch {

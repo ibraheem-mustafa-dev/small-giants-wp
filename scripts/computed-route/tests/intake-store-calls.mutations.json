@@ -1,0 +1,13 @@
+[
+	{"file": "lib/intake-store-calls.mjs", "find": "'dcLogic' !== m[ 1 ] && 'setState' !== path.at( -1 ) && args", "replace": "args", "why": "a logic call and the dcLogic lookup are not store calls"},
+	{"file": "lib/intake-store-calls.mjs", "find": "'setState' !== path.at( -1 ) && args", "replace": "args", "why": "the logic's own setState is not a store call"},
+	{"file": "lib/intake-store-calls.mjs", "find": "true === v || 'true' === v ?", "replace": "true ?", "why": "only a state giving the need the value true is a precondition"},
+	{"file": "lib/intake-store-calls.mjs", "find": "calls.length && ! seen.has( id )", "replace": "calls.length", "why": "two states with one call are one way"},
+	{"file": "lib/state-openers.mjs", "find": "const calls = [ ...storeCalls( st.how_to_reach ), ...reachCalls( st.how_to_reach ) ];", "replace": "const calls = reachCalls( st.how_to_reach );", "why": "a state's how_to_reach store calls are a way"},
+	{"file": "lib/state-openers.mjs", "find": "[ ...storeCalls( st.how_to_reach ), ...reachCalls( st.how_to_reach ) ]", "replace": "[ ...reachCalls( st.how_to_reach ), ...storeCalls( st.how_to_reach ) ]", "why": "store calls run before setState calls"},
+	{"file": "lib/intake-state.mjs", "find": "'[object Object]' === Object.prototype.toString.call( found ) && Object.getPrototypeOf( found ) === Object.prototype ? found : null", "replace": "found", "why": "a built-in is never the store"},
+	{"file": "lib/intake-state.mjs", "find": "} catch {\n\t\t\t\treturn 0;\n\t\t\t}\n\t\t}\n\t\tif ( ! patch.calls.some", "replace": "} catch {\n\t\t\t}\n\t\t}\n\t\tif ( ! patch.calls.some", "why": "a store call that throws reaches nothing"},
+	{"file": "lib/intake-state.mjs", "find": "window.__sgsStoreSnap ||= Object.fromEntries( Object.entries( localStorage ) );", "replace": "window.__sgsStoreSnap ||= {};", "why": "the storage is kept before the call"},
+	{"file": "lib/intake-state.mjs", "find": "delete window.__sgsStoreSnap;", "replace": "", "why": "a restore is done once"},
+	{"file": "lib/intake-state.mjs", "find": "if ( ! patch.calls.some( ( c ) => ! c.store ) ) {\n\t\t\treturn 1;", "replace": "if ( false ) {\n\t\t\treturn 1;", "why": "store calls alone reach without a mounted component"}
+]
