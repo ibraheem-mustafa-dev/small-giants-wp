@@ -760,7 +760,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// and any other growing child a plain container (lib/skeleton-panel-rules.mjs).
 		( { e } ) => {
 			const hit = panel.panelChild( e );
-			return hit ? v( hit.rule, { block: hit.block } ) : null;
+			return hit ? v( hit.rule, hit.action ? { action: hit.action } : { block: hit.block } ) : null;
 		},
 		// A group whose block children are all buttons carrying a pressed or checked state (a loop of chips, or two or more) is
 		// a choice the visitor makes: inside a form element it is that form's tiles field (`optionSetForm`); anywhere else it is

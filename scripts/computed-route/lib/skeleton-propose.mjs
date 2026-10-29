@@ -115,7 +115,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	// parent, kind and opener from `surfaces.json`, and the records whose parent is this surface (`surfaceParts`).
 	const factRecord = undefined === given ? recordFor( facts ) : given;
 	const view = recordView( factRecord, { openers: openers ?? ( factRecord ? openersFor( facts ) : {} ), rootComponent } );
-	const scope = factRecord ? surfaceContext( view, { kind: surfaceKind, name: surfaceName } ) : null;
+	const scope = factRecord ? surfaceContext( view, { kind: surfaceKind, name: surfaceName, id: surfaceId } ) : null;
 	m.els.forEach( ( e ) => view.checkParent( e, m.byKey[ e.parentKey ] ) );
 	const formLinkOf = linkedFormOf( { view, scope, links: formLinks, refs, els: m.els, rule: facts.decisions.rules?.formLink } );
 	// A draft link's destination as a site address (lib/draft-link.mjs), for every writer of a link setting.

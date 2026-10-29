@@ -74,8 +74,8 @@ export function gridTracks( value ) {
 		return rep ? Array.from( { length: Number( rep[ 1 ] ) }, () => gridTracks( rep[ 2 ] ) ).flat() : [ t ];
 	} );
 }
-// A track that shares the free space (a fraction, or minmax with a zero minimum) or has a fixed length.
-export const fractionalTrack = ( t ) => /\d\s*fr$/.test( t ) || /^minmax\(\s*0(?:px)?\s*,/.test( t );
+// A track that shares the free space (a fraction, or minmax with a zero minimum or a fractional maximum) or has a fixed length.
+export const fractionalTrack = ( t ) => /\d\s*fr$/.test( t ) || /^minmax\(\s*0(?:px)?\s*,/.test( t ) || /^minmax\(.*,\s*[\d.]+\s*fr\s*\)$/.test( t );
 export const fixedTrack = ( t ) => /^-?[\d.]+(?:px|rem|em|ch|vw|vh)$/.test( t );
 
 // The view of a record: o { record (or null), parts: { surface id: opened_by words } }.
@@ -208,10 +208,11 @@ export function recordView( record, { openers = {}, rootComponent = null } = {} 
 
 // The surface the proposal is for, read from the record's `surfaces` and the elements' memberships: { id, kind, parent: { id,
 // kind } | null, openedBy, headerDisclosure } plus `surfaceParts` (the records whose parent is this surface). Matched by kind
-// and name; null when the record names no such surface.
-export function surfaceContext( view, { kind, name } ) {
+// and name, or by the record's id when it is given (a state variant of a surface, `Mega menu: Sunglasses`, is named after the
+// record's `Mega menu`); null when the record names no such surface.
+export function surfaceContext( view, { kind, name, id = null } ) {
 	const all = Object.values( view.surfaces );
-	const hits = all.filter( ( s ) => s.kind === kind && ( null == name || s.name === name ) );
+	const hits = view.surfaces[ id ]?.kind === kind ? [ view.surfaces[ id ] ] : all.filter( ( s ) => s.kind === kind && ( null == name || s.name === name ) );
 	if ( ! hits.length ) {
 		return null;
 	}

@@ -63,7 +63,7 @@ function entry( key, realTag, attrs, st, holes, parent, realParent, loopKey = nu
 const record = ( recs, surfaces = {} ) => ( { schema: '1', client: 'fixture-client', elements: recs, surfaces: Object.fromEntries( Object.entries( surfaces ).map( ( [ id, s ] ) => [ id, { id, kind: s.kind, name: s.name, dc: 'Root', parent: s.parent || null, roots: s.roots || [], parts: [], states: [] } ] ) ) } );
 const run = ( root, o = {} ) => {
 	const b = build( root );
-	return proposeSkeleton( { inventory: b.inventory, facts: o.facts || facts(), surface: 'fixture', surfaceKind: o.kind || 'page', surfaceName: o.name || 'Fixture', motion: o.motion || new Set(), db, factRecord: 'record' in o ? o.record : record( b.recs, o.surfaces ), openers: o.openers || {} } );
+	return proposeSkeleton( { inventory: b.inventory, facts: o.facts || facts(), surface: 'fixture', surfaceKind: o.kind || 'page', surfaceName: o.name || 'Fixture', motion: o.motion || new Set(), db, factRecord: 'record' in o ? o.record : record( b.recs, o.surfaces ), openers: o.openers || {}, surfaceId: o.id || null, ...( o.calSettings ? { calSettings: o.calSettings } : {} ) } );
 };
 const rows = ( r ) => r.proposal.rows;
 const byWords = ( r, w ) => rows( r ).find( ( x ) => x.words === w );
@@ -123,6 +123,61 @@ test( 'megaGroup / megaAside: a grid panel is read by its tracks (a fractional t
 	] );
 	const r = run( grid, { kind: 'menu', name: 'Panel', surfaces: header, openers: OPEN } );
 	assert.deepEqual( [ outcome( kidAt( r, 0 ) ), outcome( kidAt( r, 1 ) ) ], [ 'sgs/mega-group', 'sgs/mega-aside' ] );
+} );
+
+// A header panel whose width wrapper holds the grid of columns: a heading and a run of text links, and a painted card.
+const wrapped = ( column = [ 'Pilot', 'Wayfarer' ], wrapperStyle = 'max-width:1200px;margin:0 auto' ) => N( 'div', {}, [ N( 'div', { style: wrapperStyle }, [ N( 'div', { style: 'display:grid;grid-template-columns:1fr 1fr 300px;gap:24px' }, [
+	N( 'div', {}, [ N( 'p', { words: 'By style' } ), N( 'div', { style: 'display:flex' }, column.map( ( w ) => N( 'a', { loop: true, words: w, attrs: { href: `/${ w }` } } ) ) ) ] ),
+	N( 'div', {}, [ N( 'p', { words: 'Shop by' } ), N( 'div', { style: 'display:flex' }, [ N( 'a', { words: 'Best sellers', attrs: { href: '/best' } } ), N( 'a', { words: '0121 729 8233', attrs: { href: 'tel:01217298233' }, style: 'font-weight:700' } ) ] ) ] ),
+	N( 'a', { style: 'aspect-ratio:4 / 3;background-color:rgb(10, 126, 168)', attrs: { href: '/rx' } }, [ N( 'span', { words: 'Prescription sunglasses' } ) ] ),
+] ) ] ) ] );
+const wrappedRun = ( tree, o = {} ) => run( tree, { kind: 'menu', name: 'Mega menu: Sunglasses', id: 'S-2', surfaces: header, openers: OPEN, ...o } );
+const rule = ( r, words ) => byWords( r, words )?.rule;
+
+test( 'megaPanelGrid: the grid inside a panel width wrapper is the panel layout, so its columns are mega groups and the mega aside; MUST FAIL without the entry', () => {
+	const r = wrappedRun( wrapped() );
+	const grid = rows( r ).find( ( x ) => 'megaPanelGrid' === x.rule );
+	assert.equal( grid?.action, 'unwrap' );
+	const columns = rows( r ).filter( ( x ) => x.depth === grid.depth + 1 );
+	assert.deepEqual( columns.map( ( x ) => [ x.block, x.rule ] ), [ [ 'sgs/mega-group', 'megaGroup' ], [ 'sgs/mega-group', 'megaGroup' ], [ 'sgs/mega-aside', 'megaAside' ] ] );
+	const off = wrappedRun( wrapped(), { facts: facts( 'megaPanelGrid' ) } );
+	assert.ok( rows( off ).every( ( x ) => 'megaPanelGrid' !== x.rule && ! [ 'sgs/mega-group', 'sgs/mega-aside' ].includes( x.block ) ) );
+} );
+
+test( 'megaPanelGrid: the surface is found by the record id when a state variant carries another name; the gap goes to the panel as groupGap', () => {
+	const r = wrappedRun( wrapped(), { name: 'Mega menu: Sunglasses', surfaces: { 'S-1': header[ 'S-1' ], 'S-2': { kind: 'menu', name: 'Mega menu', parent: 'S-1' } } } );
+	assert.ok( rows( r ).some( ( x ) => 'megaPanelGrid' === x.rule ) );
+	assert.ok( ! rows( wrappedRun( wrapped(), { id: null, name: 'Mega menu: Sunglasses', surfaces: { 'S-1': header[ 'S-1' ], 'S-2': { kind: 'menu', name: 'Mega menu', parent: 'S-1' } } } ) ).some( ( x ) => 'megaPanelGrid' === x.rule ), 'without the id the name does not match' );
+	const cal = ( block ) => ( 'sgs/mega-panel' === block ? { groupGap: { slot: '.sgs-mega-panel__content' } } : {} );
+	const held = wrappedRun( wrapped(), { calSettings: cal } );
+	const gridRow = rows( held ).find( ( x ) => 'megaPanelGrid' === x.rule );
+	assert.deepEqual( held.skeleton[ 0 ].draftSlots, { '.sgs-mega-panel__content': { tpl: `Root/${ gridRow.key.split( '/' )[ 1 ] }` } } );
+} );
+
+test( 'NEGATIVE: megaPanelGrid needs a width wrapper and a laid-out grid; a column of image-only links stays a container', () => {
+	// a wrapper that does not centre a width (no max-width) is not a width wrapper
+	assert.ok( ! rows( wrappedRun( wrapped( undefined, 'padding:8px' ) ) ).some( ( x ) => 'megaPanelGrid' === x.rule ) );
+	// the root laying its own grid out keeps the root case: its columns are its direct children, no unwrap
+	const direct = wrappedRun( N( 'div', { style: 'display:grid;grid-template-columns:1fr 300px' }, [ N( 'div', {}, [ card( 'One', '/one' ), card( 'Two', '/two' ) ] ), N( 'div', { style: 'aspect-ratio:4 / 3;box-shadow:0 1px 2px #000' }, [ N( 'p', { words: 'Feature' } ) ] ) ] ) );
+	assert.ok( ! rows( direct ).some( ( x ) => 'megaPanelGrid' === x.rule ) );
+	// a column whose links hold only an image (a logo wall) is a container, never a mega group
+	const logos = N( 'div', {}, [ N( 'div', { style: 'max-width:1200px;margin:0 auto' }, [ N( 'div', { style: 'display:grid;grid-template-columns:1fr 1fr' }, [
+		N( 'div', {}, [ N( 'p', { words: 'Our brands' } ), N( 'div', { style: 'display:grid' }, [ N( 'a', { loop: true, attrs: { href: '/a' } }, [ N( 'img', { attrs: { src: 'a.png', alt: '' } } ) ] ), N( 'a', { loop: true, attrs: { href: '/b' } }, [ N( 'img', { attrs: { src: 'b.png', alt: '' } } ) ] ) ] ) ] ),
+		N( 'div', {}, [ N( 'p', { words: 'More' } ) ] ),
+	] ) ] ) ] );
+	const r = wrappedRun( logos );
+	assert.ok( rows( r ).some( ( x ) => 'megaPanelGrid' === x.rule ) );
+	assert.equal( rule( r, 'Our brands' ) === 'megaGroup', false );
+	assert.equal( rows( r ).filter( ( x ) => 'megaGroup' === x.rule ).length, 0 );
+} );
+
+test( 'fractionalTrack: an auto-fit grid of minmax(.., 1fr) tracks shares the free space with every child', () => {
+	assert.ok( fractionalTrack( 'minmax(min(100%, 200px), 1fr)' ) && ! fractionalTrack( 'minmax(100px, 300px)' ) );
+	const auto = N( 'div', {}, [ N( 'div', { style: 'max-width:1200px;margin:0 auto' }, [ N( 'div', { style: 'display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 200px), 1fr))' }, [
+		N( 'div', {}, [ N( 'p', { words: 'A' } ), N( 'div', {}, [ N( 'a', { words: 'One', attrs: { href: '/1' } } ), N( 'a', { words: 'Two', attrs: { href: '/2' } } ) ] ) ] ),
+		N( 'div', {}, [ N( 'p', { words: 'B' } ), N( 'div', {}, [ N( 'a', { words: 'Three', attrs: { href: '/3' } } ), N( 'a', { words: 'Four', attrs: { href: '/4' } } ) ] ) ] ),
+	] ) ] ) ] );
+	assert.equal( rows( wrappedRun( auto ) ).filter( ( x ) => 'megaGroup' === x.rule ).length, 2 );
 } );
 
 test( 'drawerIconRun: a run of icon-only Site Info links in a drawer\'s top row is one social icons group in the icons slot; MUST FAIL without the entry', () => {
