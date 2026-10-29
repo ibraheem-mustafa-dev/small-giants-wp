@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "'IMAGE-SLOT' === e.tagName",
+		"replace": "true",
+		"why": "every element's id and placeholder are recorded"
+	},
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "[ 'id', 'placeholder' ]",
+		"replace": "[ 'id' ]",
+		"why": "the placeholder of an image placeholder is not recorded"
+	},
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "[ 'id', 'placeholder' ]",
+		"replace": "[ 'placeholder' ]",
+		"why": "the id of an image placeholder is not recorded"
+	}
+]

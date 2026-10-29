@@ -9,14 +9,14 @@
 //     showing `items[i]`). The draft renders one copy, so every item is read from the logic: each element of that array,
 //     each field read as one static string.
 // A field is named by its path after the loop variable (`ms.year` gives `year`); a field held by an <img> or an image
-// placeholder (`id`, `src` or `data-src`) is an image field. A hole in an element's style, an event, a placeholder text or
-// a list binding is no field. Returns { items: [{ field: value }], fields: [{ name, image }], source, reason }.
+// placeholder (`id`, `src` or `data-src`) is an image field. A hole in an element's style, an event, an input's placeholder text or
+// a list binding is no field (an image placeholder's `placeholder` is its alt, a text field). Returns { items: [{ field: value }], fields: [{ name, image }], source, reason }.
 import { templateKeyOf } from './fact-key.mjs';
 import { classMethod, isFn } from './intake-ast.mjs';
 import { ref, resolveRefs, propRefs, returnsOf, oneString } from './intake-ast-eval.mjs';
 
 // The template holes that print an item's content: its words, its address, and an image's source.
-const CONTENT_WHERE = /^(?:text|attr:(?:href|src|data-src|alt|id))$/;
+const CONTENT_WHERE = /^(?:text|attr:(?:href|src|data-src|alt|id|placeholder))$/;
 const IMAGE_TAGS = new Set( [ 'img', 'image-slot' ] );
 
 // The item field one template hole prints, or null: { head, name, image } for a content hole whose path has a head and a field.
@@ -26,6 +26,10 @@ export function holeField( hole, tag ) {
 	}
 	const image = IMAGE_TAGS.has( tag ) && /^attr:(?:id|src|data-src)$/.test( hole.where );
 	if ( 'attr:id' === hole.where && ! image ) {
+		return null;
+	}
+	// A placeholder is a text field only on an image placeholder element, where it is the picture's alt (lib/fill-media.mjs::factImage).
+	if ( 'attr:placeholder' === hole.where && 'image-slot' !== tag ) {
 		return null;
 	}
 	const parts = hole.path.split( '.' );
