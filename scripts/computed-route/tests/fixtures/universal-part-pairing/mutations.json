@@ -67,5 +67,7 @@
 	{ "file": "lib/skeleton-part-pairing.mjs", "find": "const standing = D.kids( xs ).filter( ( k ) => ownEl( k ) && ( free( k ) || reserved.has( k ) && ! taken.has( k ) ) && ! D.kinds( k ).has( 'node' ) );", "replace": "const standing = rest();", "why": "a reserved element drops out of the order, shifting parts onto its neighbour" },
 	{ "file": "lib/skeleton-part-pairing.mjs", "find": "if ( spread && spread.every( ( y, i ) => ! reserved.has( y ) && suits( left[ i ], y )", "replace": "if ( spread && spread.every( ( y, i ) => suits( left[ i ], y )", "why": "the order gives a part an element printing content of its own" },
 	{ "file": "lib/skeleton-part-pairing.mjs", "find": "const fits = ( kinds ) => ( y ) => ( free( y ) || reserved.has( y ) && ! taken.has( y ) ) && suits( c, y )", "replace": "const fits = ( kinds ) => ( y ) => free( y ) && suits( c, y )", "why": "a reserved element drops out, leaving its neighbour the only fit" },
-	{ "file": "lib/skeleton-part-pairing.mjs", "find": "if ( 1 === top.length && ! reserved.has( top[ 0 ] ) ) {", "replace": "if ( 1 === top.length ) {", "why": "a part takes an element printing content of its own" }
+	{ "file": "lib/skeleton-part-pairing.mjs", "find": "if ( 1 === top.length && ! reserved.has( top[ 0 ] ) ) {", "replace": "if ( 1 === top.length ) {", "why": "a part takes an element printing content of its own" },
+	{ "file": "lib/fill-list-content.mjs", "find": "&& ( ! primaryOnly || kin( k, f, role ) ) );", "replace": ");", "why": "any label field takes any label setting" },
+	{ "file": "lib/fill-list-content.mjs", "find": "const GENERIC = [ 'title', 'description' ];", "replace": "const GENERIC = [];", "why": "a label needs no shared word" }
 ]

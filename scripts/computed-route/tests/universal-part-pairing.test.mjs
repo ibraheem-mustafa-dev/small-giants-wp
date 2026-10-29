@@ -294,6 +294,11 @@ test( 'content identity: a written value finds the one element showing it, folde
 	// A setting's role is its head word's: a review link's label is a label, never the review's text.
 	const label = contentPairs( { text: { reviewLinkLabel: { path: '.x__link' } }, els: [ { key: 'q' } ], fieldsOf: () => [ 'text' ] } );
 	assert.equal( label.pairs[ '.x__link' ], undefined );
+	// A field plays only its first role (a name is an author, never a label), and a label holds only where field and setting
+	// share a word of their own (a saveLabel is the savingLabel; a ratingLabel is no noImageLabel).
+	const labels = { noImageLabel: { path: '.x__none' }, savingLabel: { path: '.x__save' } };
+	const by = contentPairs( { text: labels, els: [ { key: 'n' }, { key: 'r' }, { key: 's' } ], fieldsOf: ( e ) => ( { n: [ 'name' ], r: [ 'ratingLabel' ], s: [ 'saveLabel' ] }[ e.key ] ) } );
+	assert.deepEqual( [ by.pairs[ '.x__none' ], by.pairs[ '.x__save' ]?.key ], [ undefined, 's' ] );
 } );
 
 const REVIEW = ( k ) => `.sgs-google-reviews__slider > .sgs-google-reviews__list > .sgs-google-reviews__review:nth-of-type(${ k })`;

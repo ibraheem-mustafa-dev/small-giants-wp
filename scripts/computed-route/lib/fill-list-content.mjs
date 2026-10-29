@@ -59,6 +59,7 @@ export const laterRole = ( name, role ) => fieldRoles( name ).includes( role ) &
 // that plays one of its roles as a later one through the words of its primary role (laterRole: a team member's `name`, primary
 // role author, takes a draft `title` when the item has no title key; an `orgName` never does). Within either tier a tie goes to the key sharing a word with the field. primaryOnly stops before the later
 // roles (lib/skeleton-part-content.mjs: a part is paired only where the field is that setting's content).
+const GENERIC = [ 'title', 'description' ];
 export function matchFields( fields, keys, { primaryOnly = false } = {} ) {
 	const map = {};
 	const used = new Set();
@@ -74,7 +75,7 @@ export function matchFields( fields, keys, { primaryOnly = false } = {} ) {
 	const tier = ( holds ) => {
 		for ( const f of fields.filter( ( x ) => ! ( x.name in map ) ) ) {
 			for ( const role of f.image ? [ 'image' ] : fieldRoles( f.name ) ) {
-				const open = keys.filter( ( k ) => ! used.has( k.key ) && holds( k, role ) );
+				const open = keys.filter( ( k ) => ! used.has( k.key ) && holds( k, role ) && ( ! primaryOnly || kin( k, f, role ) ) );
 				if ( open.length ) {
 					take( f, pick( f, open ) );
 					break;
@@ -82,8 +83,12 @@ export function matchFields( fields, keys, { primaryOnly = false } = {} ) {
 			}
 		}
 	};
-	// In primaryOnly a key's role is its head word's (the last word of a compound: a reviewLinkLabel is a label, not a review).
+	// In primaryOnly a key's role is its head word's (the last word of a compound: a reviewLinkLabel is a label, not a review),
+	// and a label or text role, which many settings share, holds only where field and key also share a word of their own (a
+	// `saveLabel` is the `savingLabel`; a `ratingLabel` or a `name` is no `noImageLabel`).
 	const head = ( name ) => fieldRoles( wordsOf( name ).at( -1 ) ?? '' )[ 0 ] ?? keyRole( name );
+	const own = ( name ) => wordsOf( name ).filter( ( w ) => ! fieldRoles( w ).length ).map( ( w ) => w.slice( 0, 3 ) );
+	const kin = ( k, f, role ) => ! GENERIC.includes( role ) || own( k.key ).some( ( w ) => own( f.name ).includes( w ) );
 	tier( ( k, role ) => ( primaryOnly ? head( k.key ) : keyRole( k.key ) ) === role );
 	primaryOnly || tier( ( k, role ) => laterRole( k.key, role ) );
 	return { map, unmatched: fields.filter( ( f ) => ! ( f.name in map ) ).map( ( f ) => f.name ) };
