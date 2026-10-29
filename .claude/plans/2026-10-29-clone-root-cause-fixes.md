@@ -1,6 +1,6 @@
 # Cloning: fix the root causes behind the cloned sites' faults
 
-**Why (Bean, 2026-10-29):** the three live clones show missing content, dead links, the draft's look not carried, settings that are not plain CSS lost, broken hovers, mega menus unlike the hand-built reference, a split trade application form, static logos, a static vertical Our Story timeline, a missing About background SVG and missing images. The causes are in `.claude/reports/2026-10-29-clone-homepage-root-causes.md` (RC1 to RC11) with Bean's rulings. Every fix is universal (any client, any draft), proven on a real draft, and confirmed by the result matching its goal.
+**Why (Bean, 2026-10-29):** the three live clones show missing content, dead links, the draft's look not carried, settings that are not plain CSS lost, broken hovers, mega menus unlike the hand-built reference, a split trade application form, static logos, a static vertical Our Story timeline, a missing About background SVG and missing images. The causes are in `.claude/reports/2026-10-29-clone-homepage-root-causes.md` (RC1 to RC16) with Bean's rulings. Every fix is universal (any client, any draft), proven on a real draft, and confirmed by the result matching its goal.
 
 **How:** subagents build in worktrees on `B:/sgs-wt/` (never linking `node_modules` or `cache/`); the main session checks each track's diff and result with `/qc-inline`, merges to `main`, and runs the route suite and gates there. At most three tracks at once; a track that shares files with a running one waits.
 
@@ -25,6 +25,11 @@
 - RC13 (framework): a container whose height comes from its own aspect ratio or minimum height passes it to its content band, so a child set to fill it fills it (`sgs/container`, `.sgs-container__content-band`); built, deployed and checked live on a filled picture in a sized frame.
 - `clientBuiltSurface` is removed: a hand-built post is only a reference to compare a clone against.
 - The finaliser is not a separate agent: the agent running the clone makes the low-confidence picks and brings the open points to Bean; Spec 48 §3.4 and the intake docs say so.
+
+## Track F: the flow product (RC15, RC16)
+
+- A choice-flow question whose options are the terms of one attribute of the flow's product is written as that attribute's product-option step (`productAttribute`, Spec 43 FR-43-10): its options, prices, badges and stock come from the product, and the hand-over to the add-on price list (FR-43-17) is made only for prices the product does not hold. The flow's product is the catalogue product its basket call adds (`lib/site-build-flow-product.mjs`), read through the logic's syntax tree instead of the regex over the script.
+- The catalogue makes only the priced choice a variation axis; every other choice, the multi-choice included, is a product attribute that creates no variations and travels as an answer (Spec 43 FR-43-7); Spec 48 FR-48-92 says so. The draft's "pick up to 3" (a question taking several options) is a framework gap row for Bean.
 
 ## Track S: structure (after Track P merges; shares skeleton files)
 
