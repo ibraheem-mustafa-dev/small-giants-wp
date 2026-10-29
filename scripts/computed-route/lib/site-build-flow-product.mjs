@@ -1,20 +1,17 @@
 // The product a choice flow sells (Spec 48 FR-48-55, Spec 43 FR-43-10 and FR-43-20): an `sgs_choice_flow` post opened off a
 // product page has no product of its own, so its `sgs/choice-flow` root carries `flowProductId`, the WooCommerce product its
-// "add to bag" result adds. The draft names that product in the code the flow's result runs: the `id` of the basket call
-// (`M.cart.add({ key: …, id: 'zookies', … })`) in the script of the component that draws the flow's surface. That id is a
-// catalogue product's draft id (lib/catalogue-records.mjs), and the product on the site is the one with the catalogue's SKU.
+// "add to bag" result adds. The draft names that product in the code the flow's result runs: the literal `id` of the basket
+// call (`M.cart.add({ key: …, id: 'zookies', … })`) in the logic of the component that draws the flow's surface, read through
+// its syntax tree (lib/flow-product.mjs::addedIds). That id is a catalogue product's draft id (lib/catalogue-records.mjs), and
+// the product on the site is the one with the catalogue's SKU.
 // A flow whose script adds no catalogue product, or adds several, keeps `flowProductId` 0 and is named in a note: no product is
 // guessed. The step runs after the catalogue step has made the products; a product the site lacks is a note, never an error.
 import fs from 'node:fs';
 import path from 'node:path';
+import { addedIds } from './flow-product.mjs';
 
 const SLUG = /^[a-z0-9-]+$/;
 const SKU = /^[\w.-]+$/;
-
-// The draft ids of the products a script's basket calls add: every `.add({ … id: '<literal>' … })` object's first `id` string.
-export function addedIds( script ) {
-	return [ ...new Set( [ ...String( script || '' ).matchAll( /\.add\(\s*\{[^}]*?\bid\s*:\s*(['"])([\w-]+)\1/g ) ].map( ( m ) => m[ 2 ] ) ) ];
-}
 
 // The plan: { actions: [{ slug, postId, productId, draftId, say }], notes }. flows: the page map's `sgs_choice_flow` rows;
 // surfaces: the fact record's surfaces (`dc` names the component drawing each); scriptOf( dc ): that component's script text;

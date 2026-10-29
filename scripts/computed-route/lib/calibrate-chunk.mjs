@@ -6,9 +6,9 @@
 export const NODE_HEAP_FLAG = '--max-old-space-size=8192';
 export const MIN_CHUNK = 1;
 
-// The run itself holds every chunk's reads until the block's file is written: sgs/nav-bar-menu (744 blocks a page)
-// exhausted the default 4 GB heap after 46 minutes on 2026-10-07. A run started below this limit restarts itself with
-// NODE_HEAP_FLAG (calibrate.mjs).
+// The run holds each default reading whole and every other instance's difference from it (lib/calibrate.mjs::diffReads),
+// and reads one chunk at a time within ELEMENT_BUDGET; a run started below this limit restarts itself with NODE_HEAP_FLAG
+// (calibrate.mjs).
 export const RUN_HEAP_BYTES = 7 * 1024 ** 3;
 export const needsBiggerHeap = ( heapLimitBytes ) => heapLimitBytes < RUN_HEAP_BYTES;
 // How long each page load (the login, the editor, the save, and the front-end reads in calibrate-read.mjs and
@@ -41,6 +41,30 @@ export function planChunks( defaults, others, size ) {
 		chunks.push( [ ...defaults, ...others.slice( i, i + size ) ] );
 	}
 	return chunks.length ? chunks : [ defaults ];
+}
+
+// The elements one chunk's reading may hold, counting every instance on the page (its defaults and baselines too): a
+// reading is every element of each instance x every read property x 3 widths, and a page of sgs/nav-bar-menu (422
+// elements an instance) at 150 instances passed 7 GB while one chunk was read. About 50,000 elements (120 such instances)
+// stayed near 5 GB through a whole run.
+export const ELEMENT_BUDGET = 50000;
+
+// The non-default instances the next pages may hold once a page's reading shows how many elements each instance draws:
+// the page within ELEMENT_BUDGET with its `defaults` (defaults and baselines, which every page carries), never more than
+// `size` and never fewer than MIN_CHUNK.
+export function sizeForReading( size, perInstance, defaults, budget = ELEMENT_BUDGET ) {
+	return Math.max( MIN_CHUNK, Math.min( size, Math.floor( budget / perInstance ) - defaults ) );
+}
+
+// The pages still queued, planned again at `size` non-default instances each (the defaults of the first queued page carried
+// on every one), in the same order.
+export function replanQueue( queue, size ) {
+	if ( ! queue.length ) {
+		return queue;
+	}
+	const defaults = queue[ 0 ].filter( ( i ) => i.isDefault || i.isBase );
+	const others = queue.flatMap( ( list ) => list.filter( ( i ) => ! i.isDefault && ! i.isBase ) );
+	return planChunks( defaults, others, size );
 }
 
 // A page whose build timed out, split into smaller pages. Returns { size, chunks } with the halved size, or null when

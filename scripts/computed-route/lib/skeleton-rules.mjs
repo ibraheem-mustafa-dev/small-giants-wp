@@ -816,7 +816,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const drawerMissing = drawer ? drawer.notes.map( ( why ) => ( { key: m.root.key, line: 'The shop filter drawer: a full-viewport sheet, fade, locked page scroll and sticky footer', why } ) ) : [];
 	// A surface the page map holds as an sgs_choice_flow row: what the flow holds, read from the fact record.
 	const role = surface.role ?? null;
-	const flow = R.choiceFlow && 'choiceFlow' === role?.role ? choiceFlowModel( { view, rootKey: view.entry( m.root )?.template.key ?? null, R: R.choiceFlow, formControl: R.formControl, brands: facts.brands || [], surfaceKind: surface.kind, parts: scope?.surfaceParts ?? [] } ) : null;
+	// The catalogue product it sells (lib/flow-product.mjs::flowSale through `surface.saleOf( component )`) binds its product-option steps.
+	const flowRoot = view.entry( m.root )?.template ?? null;
+	const flow = R.choiceFlow && 'choiceFlow' === role?.role ? choiceFlowModel( { view, rootKey: flowRoot?.key ?? null, R: R.choiceFlow, formControl: R.formControl, brands: facts.brands || [], surfaceKind: surface.kind, parts: scope?.surfaceParts ?? [], sale: flowRoot && surface.saleOf ? surface.saleOf( flowRoot.component ) : null } ) : null;
 	const STRUCTURES = [
 		// A choice flow's root is sgs/choice-flow, whatever its surfaces.json kind (a modal, a form): the flow draws its frame, and
 		// its steps are composed from the record (lib/skeleton-choice-flow-tree.mjs), so the draft elements are absorbed.

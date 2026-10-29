@@ -32,7 +32,7 @@ import { assertWritable, assertQuiet, writeTree } from './lib/tree.mjs';
 import { acquireCalibrationLock, acquireSlotMapLock } from './lib/calibration-lock.mjs';
 import { slotMapSkip, paintSkip, dueOutputs, splitCalibration, writeSlotMap, writePaint, readSlotMap, slotMapWriteDecision, parseAllowLoss, refusedFile } from './lib/cache.mjs';
 import { md5, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
-import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, needsBiggerHeap, buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout } from './lib/calibrate-chunk.mjs';
+import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, needsBiggerHeap, buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout, sizeForReading, replanQueue } from './lib/calibrate-chunk.mjs';
 import { isContainerQueryBlock, renderedNothingReason } from './lib/calibrate-container.mjs';
 import { WIDTHS, READ_KEY, buildTree, slotFor, foldReading, defaultPaint, longhands, discoverEffects, diffReads, triggerFor, planInstances, instanceCtx, stateTarget, readAll, missedReason } from './lib/calibrate.mjs';
 import { contentRowsFor, planContentInstances, needlesOf, readContentAll, collectContent } from './lib/calibrate-content.mjs';
@@ -211,6 +211,17 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 		const settleGone = fixture.settleGone || null;
 		const owner = { block, site };
 		const passes = [ await readAll( shared.page, pageUrl, list, { settleGone, owner } ) ];
+		// Once a page shows how many elements each instance draws, the pages still queued hold no more than the element budget
+		// (lib/calibrate-chunk.mjs::sizeForReading): a block whose instances draw hundreds of elements reads fewer per page.
+		const drawn = Math.max( 0, ...WIDTHS.map( ( w ) => {
+			const reads = Object.values( passes[ 0 ][ w ] || {} );
+			return reads.length ? reads.reduce( ( a, r ) => a + Object.keys( r || {} ).length, 0 ) / reads.length : 0;
+		} ) );
+		const fits = sizeForReading( size, drawn, list.filter( ( i ) => i.isDefault || i.isBase ).length );
+		if ( fits < size ) {
+			size = fits;
+			queue.splice( 0, queue.length, ...replanQueue( queue, size ) );
+		}
 		if ( fixture.basket ) {
 			await setBasket( shared.page, env.url, fixture.basket );
 			try {

@@ -43,7 +43,7 @@
 	{ "file": "lib/site-build-catalogue-php.mjs", "find": "delete_post_meta( $id, '_sgs_photo_to_come' );", "replace": "", "why": "marker never cleared" },
 	{ "file": "lib/site-build-catalogue-php.mjs", "find": "'photoToCome' => '' !== (string) get_post_meta( $id, '_sgs_photo_to_come', true ), ", "replace": "", "why": "read never reports the marker" },
 	{ "file": "lib/site-build-catalogue-php.mjs", "find": "$shows = $ptc && function_exists( 'sgs_product_card_has_real_image' ) ? sgs_product_card_has_real_image( (string) wp_get_attachment_url( $ptc ) ) : null;", "replace": "$shows = null;", "why": "read never asks the card" },
-	{"file": "lib/site-build-catalogue.mjs", "find": "export const heldDraft = ( p ) => 'variable' === p.type && p.attributes.length > 0 && ! p.attributes.some( ( a ) => a.variesBy );", "replace": "export const heldDraft = () => false;", "why": "a product the preflight refuses is planned to publish and fails every run"},
+	{"file": "lib/site-build-catalogue.mjs", "find": "export const heldDraft = ( p ) => 'variable' === p.type && ! p.attributes.some( ( a ) => a.variation && a.variesBy );", "replace": "export const heldDraft = () => false;", "why": "a product the preflight refuses is planned to publish and fails every run"},
 	{"file": "lib/site-build-catalogue.mjs", "find": "if ( 'publish' !== s.status && ! heldDraft( p ) ) {", "replace": "if ( 'publish' !== s.status ) {", "why": "a held product's publishing is planned"},
 	{"file": "lib/site-build-catalogue.mjs", "find": "\t\tif ( terms && terms.some( ( v ) => '' === v ) ) {", "replace": "\t\tif ( false ) {", "why": "a term lacking its variesBy value is not completed"},
 	{"file": "lib/site-build-catalogue.mjs", "find": "for ( const a of p.attributes.filter( ( x ) => x.variesBy ) ) {", "replace": "for ( const a of p.attributes ) {", "why": "an unmapped axis is demanded"},
@@ -71,5 +71,9 @@
 	{"file": "lib/site-build-catalogue.mjs", "find": "if ( ! r.rules ) {", "replace": "if ( false ) {", "why": "a flush that leaves no rule for the base passes"},
 	{"file": "lib/site-build-catalogue.mjs", "find": ".pathname.startsWith( `/${ base }/` )", "replace": ".pathname.startsWith( '/' )", "why": "a product address off the new base passes"},
 	{"file": "lib/site-build-catalogue.mjs", "find": "if ( null !== r.http && 200 !== r.http ) {", "replace": "if ( false ) {", "why": "a product that answers 404 passes"},
-	{"file": "lib/site-build-catalogue.mjs", "find": "done.issues.push( `product base: ${ why }` )", "replace": "0", "why": "a failed proof is only a note, not an error"}
+	{"file": "lib/site-build-catalogue.mjs", "find": "done.issues.push( `product base: ${ why }` )", "replace": "0", "why": "a failed proof is only a note, not an error"},
+	{"file": "lib/site-build-catalogue-php.mjs", "find": "$attr->set_variation( ! empty( $a['variation'] ) );", "replace": "$attr->set_variation( true );", "why": "every attribute is written as a variation attribute (RC16)"},
+	{"file": "lib/site-build-catalogue.mjs", "find": "! p.attributes.some( ( a ) => a.variation && a.variesBy );", "replace": "! p.attributes.some( ( a ) => a.variesBy );", "why": "an answer attribute's axis is taken as the variations' axis"},
+	{"file": "lib/site-build-catalogue.mjs", "find": "${ p.attributes.some( ( a ) => ! a.variation ) ? `, answer attributes", "replace": "${ false ? `, answer attributes", "why": "the plan does not say which attributes are answers"},
+	{"file": "lib/site-build-catalogue.mjs", "find": "variations of ${ p.attributes.filter( ( a ) => a.variation ).map( attrSay )", "replace": "variations of ${ p.attributes.map( attrSay )", "why": "the plan names the answer attributes as variation axes"}
 ]

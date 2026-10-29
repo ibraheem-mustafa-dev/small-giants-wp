@@ -204,7 +204,7 @@ foreach ( $steps as $s ) {
 			$attr->set_name( $tax );
 			$attr->set_options( $ids );
 			$attr->set_visible( true );
-			$attr->set_variation( true );
+			$attr->set_variation( ! empty( $a['variation'] ) );
 			$list[ $tax ] = $attr;
 			$taxes[ $a['slug'] ] = $tax;
 		}
