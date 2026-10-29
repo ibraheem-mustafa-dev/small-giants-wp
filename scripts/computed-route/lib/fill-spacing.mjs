@@ -5,7 +5,9 @@
 // not confirm it, the rendered gaps decide (a gap is the distance between consecutive children's border boxes): when
 // every gap along an axis is equal the parent owns it (its gap setting holds that value and the children carry no margin
 // on that axis); otherwise the parent's gap is 0 and each child takes its own margin. A declared gap the render does not
-// confirm is reported on the decision (`disagree`).
+// confirm is reported on the decision (`disagree`). A parent whose own layout is neither flex nor grid (a plain block)
+// has no gap setting that paints: the draft spaces its children with their margins, so those margins stay margins
+// (the parent's gap is 0 and every child owns its side) whatever the rendered gaps are.
 
 // Equal means within this many px (the spread of the gaps).
 export const EQUAL_PX = 0.5;
@@ -55,42 +57,42 @@ export function declaredGap( declared, prop ) {
 }
 
 // One axis's decision from its rendered gaps, or null when the axis has none.
-function decideRendered( prop, gaps ) {
+function decideRendered( prop, gaps, gapPaints = true ) {
 	const spread = Math.max( ...gaps ) - Math.min( ...gaps );
 	const mean = gaps.reduce( ( a, b ) => a + b, 0 ) / gaps.length;
 	// A negative gap (boxes overlapping through negative margins) can never be a parent's gap.
-	const parent = spread <= EQUAL_PX + 1e-9 && mean >= 0;
+	const parent = gapPaints && spread <= EQUAL_PX + 1e-9 && mean >= 0;
 	return { prop, owner: parent ? 'parent' : 'children', value: parent ? `${ round2( mean ) }px` : '0px', gaps, margins: MARGINS[ prop ], source: 'rendered' };
 }
 
 // One axis's decision: the declared gap when the render confirms it, else the rendered gaps; null when the axis has none.
-function decide( prop, gaps, declared ) {
+function decide( prop, gaps, declared, gapPaints ) {
 	if ( ! gaps.length ) {
 		return null;
 	}
 	const want = declaredGap( declared, prop );
 	if ( null === want ) {
-		return decideRendered( prop, gaps );
+		return decideRendered( prop, gaps, gapPaints );
 	}
 	const distributed = justifiedAxis( declared ) === prop && DISTRIBUTED.test( String( declared[ 'justify-content' ] || '' ).trim() );
 	const confirmed = distributed ? gaps.every( ( g ) => g >= want - EQUAL_PX ) : gaps.every( ( g ) => Math.abs( g - want ) <= EQUAL_PX + 1e-9 );
 	if ( confirmed ) {
 		return { prop, owner: 'parent', value: `${ round2( want ) }px`, gaps, margins: MARGINS[ prop ], source: 'declared', ...( distributed ? { distributed: String( declared[ 'justify-content' ] ).trim() } : {} ) };
 	}
-	return { ...decideRendered( prop, gaps ), disagree: { declared: `${ round2( want ) }px`, ...( distributed ? { distributed: String( declared[ 'justify-content' ] ).trim() } : {} ) } };
+	return { ...decideRendered( prop, gaps, gapPaints ), disagree: { declared: `${ round2( want ) }px`, ...( distributed ? { distributed: String( declared[ 'justify-content' ] ).trim() } : {} ) } };
 }
 
 // rects: the parent's children's border boxes at one tier, in tree order: { x, y, w, h, inFlow? } for a rendered child,
 // null for one not rendered at this tier. unmeasured: how many children have no draft element to measure (the list is
 // partial, so nothing is decided). declared: the longhands the draft's code declares on the parent at this tier
-// (`display`, `column-gap`, `row-gap`, `justify-content`, `flex-direction`), or null. Returns { owner, count,
+// (`display`, `column-gap`, `row-gap`, `justify-content`, `flex-direction`), or null. parentDisplay: the parent's laid-out display as the draft renders it (`block`, `flex`, ...), null when unread. Returns { owner, count,
 // decisions }: owner is 'none' (fewer than two children render, no gap exists), 'unknown', 'parent', 'children' or
 // 'mixed' (one axis each, in a wrapped or grid layout); decisions holds one entry per axis that has gaps: { prop:
 // 'row-gap' (between lines) | 'column-gap' (within a line), owner, value (the parent's gap setting: the gap, or 0px when
 // the children own it), gaps (px, each), margins (the sides a child would take), source ('declared' | 'rendered'),
 // distributed? (the `space-*` justify-content that spreads the axis), disagree? ({ declared, distributed? }: the
 // declared gap the render did not confirm) }.
-export function spacingOwnership( rects, { unmeasured = 0, declared = null } = {} ) {
+export function spacingOwnership( rects, { unmeasured = 0, declared = null, parentDisplay = null } = {} ) {
 	const shown = rects.filter( flows );
 	if ( unmeasured > 0 ) {
 		return { owner: 'unknown', count: shown.length, decisions: [] };
@@ -98,13 +100,15 @@ export function spacingOwnership( rects, { unmeasured = 0, declared = null } = {
 	if ( shown.length < 2 ) {
 		return { owner: 'none', count: shown.length, decisions: [] };
 	}
+	// An unread parent display decides nothing about the parent's layout.
+	const gapPaints = null === parentDisplay || LAYOUTS.has( String( parentDisplay ).trim() );
 	const rows = bands( shown );
 	const inline = rows.flatMap( ( b ) => {
 		const xs = [ ...b.members ].sort( ( p, q ) => p.x - q.x );
 		return xs.slice( 1 ).map( ( r, i ) => round2( r.x - ( xs[ i ].x + xs[ i ].w ) ) );
 	} );
 	const block = rows.slice( 1 ).map( ( b, i ) => round2( b.top - rows[ i ].bottom ) );
-	const decisions = [ decide( 'column-gap', inline, declared ), decide( 'row-gap', block, declared ) ].filter( Boolean );
+	const decisions = [ decide( 'column-gap', inline, declared, gapPaints ), decide( 'row-gap', block, declared, gapPaints ) ].filter( Boolean );
 	if ( ! decisions.length ) {
 		return { owner: 'none', count: shown.length, decisions };
 	}

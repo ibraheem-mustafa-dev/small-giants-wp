@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/fill-spacing.mjs",
+		"find": "const parent = gapPaints && spread <= EQUAL_PX + 1e-9 && mean >= 0;",
+		"replace": "const parent = spread <= EQUAL_PX + 1e-9 && mean >= 0;",
+		"why": "a plain block parent would be handed the children's margins"
+	},
+	{
+		"file": "lib/fill-spacing.mjs",
+		"find": "const gapPaints = null === parentDisplay || LAYOUTS.has( String( parentDisplay ).trim() );",
+		"replace": "const gapPaints = null === parentDisplay;",
+		"why": "a flex or grid parent would lose its gap"
+	},
+	{
+		"file": "lib/fill-spacing.mjs",
+		"find": "const gapPaints = null === parentDisplay || LAYOUTS.has( String( parentDisplay ).trim() );",
+		"replace": "const gapPaints = true;",
+		"why": "the parent's display would be ignored"
+	},
+	{
+		"file": "lib/fill-spacing.mjs",
+		"find": "return decideRendered( prop, gaps, gapPaints );",
+		"replace": "return decideRendered( prop, gaps );",
+		"why": "the undeclared axis would ignore the parent's layout"
+	}
+]

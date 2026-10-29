@@ -162,3 +162,21 @@ test( 'MUST FAIL: no declared layout, a normal gap or a non-length gap leaves th
 	assert.equal( d.source, 'rendered' );
 	assert.equal( d.value, '30px' );
 } );
+
+test( 'MUST FAIL: equal gaps under a plain block parent stay margins, the parent gap is 0 (S11)', () => {
+	// The footer column: two children 18px apart, the parent a plain block in the draft.
+	const r = spacingOwnership( stack( 18 ), { parentDisplay: 'block' } );
+	assert.equal( r.owner, 'children' );
+	assert.deepEqual( r.decisions, [ { prop: 'row-gap', owner: 'children', value: '0px', gaps: [ 18 ], margins: [ 'margin-top', 'margin-bottom' ], source: 'rendered' } ] );
+	const inline = spacingOwnership( row( 12, 12 ), { parentDisplay: 'block' } );
+	assert.equal( inline.owner, 'children', 'side-by-side children of a block parent cannot be held by a gap either' );
+} );
+
+test( 'negative control: the same equal gaps under a flex or grid parent, or an unread parent, are still the parent\'s', () => {
+	for ( const parentDisplay of [ 'flex', 'inline-flex', 'grid', ' grid ', null ] ) {
+		const r = spacingOwnership( stack( 18 ), { parentDisplay } );
+		assert.equal( r.owner, 'parent', String( parentDisplay ) );
+		assert.equal( r.decisions[ 0 ].value, '18px' );
+	}
+	assert.equal( spacingOwnership( stack( 16, 16 ), { parentDisplay: 'flex', declared: { display: 'flex', 'row-gap': '16px' } } ).decisions[ 0 ].source, 'declared', 'a declared gap on a flex parent is unchanged' );
+} );

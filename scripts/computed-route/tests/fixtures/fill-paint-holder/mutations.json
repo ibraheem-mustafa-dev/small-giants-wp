@@ -1,0 +1,44 @@
+[
+	{
+		"file": "lib/fill-paint-holder.mjs",
+		"find": "if ( 1 !== up.children.length || ( null !== owner && owner !== String( j.owner ) ) ) {",
+		"replace": "if ( null !== owner && owner !== String( j.owner ) ) {",
+		"why": "a wrapper holding a sibling would be taken as the root's paint"
+	},
+	{
+		"file": "lib/fill-paint-holder.mjs",
+		"find": "if ( 1 !== up.children.length || ( null !== owner && owner !== String( j.owner ) ) ) {",
+		"replace": "if ( 1 !== up.children.length ) {",
+		"why": "another node's element would be taken as the root's paint"
+	},
+	{
+		"file": "lib/fill-paint-holder.mjs",
+		"find": "const open = Object.keys( groups ).filter( ( g ) => ! painted[ g ]( own ) );",
+		"replace": "const open = Object.keys( groups );",
+		"why": "a root's own paint would be replaced by its wrapper's"
+	},
+	{
+		"file": "lib/fill-paint-holder.mjs",
+		"find": "for ( const j of jobs.filter( ( x ) => x.surfaceRoot ) ) {",
+		"replace": "for ( const j of jobs.filter( ( x ) => x.root ) ) {",
+		"why": "every root, not only a state surface's, would read its wrapper"
+	},
+	{
+		"file": "lib/fill-paint-holder.mjs",
+		"find": "Object.assign( snap.styles, h.styles );",
+		"replace": "",
+		"why": "the root's own read would stand"
+	},
+	{
+		"file": "lib/fill-paint-holder.mjs",
+		"find": "Object.keys( wrap ).filter( ( p ) => GROUP_DECLARED[ g ].test( p ) ).forEach( ( p ) => ( own[ p ] = wrap[ p ] ) );",
+		"replace": "Object.keys( wrap ).forEach( ( p ) => ( own[ p ] = wrap[ p ] ) );",
+		"why": "a wrapper's declarations outside the group would move to the root"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "surfaceRoot: surface && null === n.parent && '' === ( t.slot ?? '' ),",
+		"replace": "surfaceRoot: false,",
+		"why": "no surface root would ever read its wrapper"
+	}
+]

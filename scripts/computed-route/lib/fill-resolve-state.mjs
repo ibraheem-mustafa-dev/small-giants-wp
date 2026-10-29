@@ -99,11 +99,12 @@ export function makeState( o ) {
 	};
 }
 
-// The element tag a node paints, for the theme's element styles: a heading's level, a block's tag, else the root tag
-// calibration saw.
+// The element tag a node paints, for the theme's element styles: its heading level or tag, as written, else the block's
+// default for it (what the clone renders when the tree leaves it out), else the root tag calibration saw.
 const tagOf = ( st, rec, cal ) => {
 	const a = st.flat[ rec.index ].attributes || {};
-	return a.level || a.tagName || cal?.elements?.[ '' ]?._tag;
+	const schema = blockSchema( rec.name );
+	return a.level || a.tagName || schema?.level?.default || schema?.tagName?.default || defaultPaint( cal, '', 1440, '_tag' );
 };
 
 // The value an ancestor's element shows for an inherited property at a width, nearest first. A line height is inherited
@@ -138,17 +139,44 @@ export function ownPaint( cal, slot, w, prop, fs ) {
 	return 'line-height' === prop && fs && base && ! Number.isNaN( px ) ? `${ Math.round( ( px / base ) * fs * 100 ) / 100 }px` : v;
 }
 
+// The horizontal padding of a block root that the block's wrapper gives a gutter: a block whose `padding` paints its content
+// band (it has the `contentWidth` and `padding` settings) takes the page's side gutter on its root while no band padding
+// states a horizontal side (SGS_Container_Wrapper, `has-global-padding`), and writing any horizontal padding value, a 0
+// included, removes it. The calibration fixture's root shows no gutter (its context nests it away), so the calibrated
+// value is not what the node shows.
+const GUTTER_PROPS = [ 'padding-left', 'padding-right' ];
+
+// Whether the node's root takes that gutter: the schema has the band settings and no tier states a full-bleed content width.
+function offersGutter( st, rec ) {
+	const schema = blockSchema( rec.name );
+	if ( ! schema?.contentWidth || ! schema?.padding ) {
+		return false;
+	}
+	const stated = st.flat[ rec.index ].attributes?.contentWidth ?? schema.contentWidth.default;
+	const tiers = 'object' === typeof stated && stated ? Object.values( stated ) : [ stated ];
+	return tiers.some( ( v ) => 'string' === typeof v && '' !== v && 'full' !== v );
+}
+
+// Whether the block's own paint of an inherited property at the root slot, read on the calibration fixture's element, is
+// the theme's style for the fixture's tag and not the block's: the node renders another tag (a heading calibrated as an
+// h4 and written as an h2), and the theme sets that property on the fixture's tag, so the fixture's value is the h4's.
+function fixtureThemed( st, cal, slot, w, prop, nodeTag ) {
+	const fixtureTag = '' === slot ? defaultPaint( cal, slot, w, '_tag' ) : undefined;
+	return !! fixtureTag && !! nodeTag && fixtureTag !== nodeTag && st.page( fixtureTag ).own( prop );
+}
+
 // What the node shows at a slot with nothing written. A non-inherited property shows its calibrated default paint. An
 // inherited one (R-47-5) shows the block's own paint of it where its stylesheet sets one (ownPaint), else what its parent
 // shows, or at the top of the surface what the theme gives the page; a theme element style (a heading's family and
-// weight) beats the parent. ownFontPx( width ): the element's own font size.
+// weight) beats the parent, and beats a fixture paint that is only the theme's style for the fixture's own tag
+// (fixtureThemed). ownFontPx( width ): the element's own font size.
 export function baselineFn( st, rec, cal, prop, ownFontPx = () => undefined ) {
 	const page = st.page( tagOf( st, rec, cal ) );
 	return ( slot, w ) => {
 		if ( INHERITED.includes( prop ) && ! slot.includes( '::' ) ) {
 			const fs = ownFontPx( w );
 			const own = ownPaint( cal, slot, w, prop, fs );
-			if ( undefined !== own ) {
+			if ( undefined !== own && ! fixtureThemed( st, cal, slot, w, prop, tagOf( st, rec, cal ) ) ) {
 				return own;
 			}
 			if ( page.own( prop ) ) {
@@ -156,6 +184,11 @@ export function baselineFn( st, rec, cal, prop, ownFontPx = () => undefined ) {
 			}
 			const here = '' === slot ? undefined : shownAt( st, rec.index, prop, w, fs );
 			return here ?? inheritedFrom( st, rec, prop, w, fs ) ?? page.value( prop, w, fs ) ?? defaultPaint( cal, slot, w, prop );
+		}
+		// A gutter the wrapper adds is unknown to the fixture's paint: no baseline equals the draft's side padding there, so a
+		// draft 0 is written over it.
+		if ( '' === slot && GUTTER_PROPS.includes( prop ) && offersGutter( st, rec ) ) {
+			return undefined;
 		}
 		// A property the calibration fixture switched on (lib/fill-fixture.mjs) is compared with its unstyled value.
 		return unstyledBaseline( st, rec.name, cal, blockSchema( rec.name ), slot, prop ) ?? defaultPaint( cal, slot, w, prop );
@@ -214,7 +247,9 @@ export function planSpacing( st, rec ) {
 			const s = st.reads.widths[ w ]?.[ `${ c }:` ];
 			return s && ! s.missing ? { ...s.rect, inFlow: s.inFlow } : null;
 		} );
-		const ownership = spacingOwnership( rects, { unmeasured, declared: ( holder && st.reads.declared?.[ w ]?.[ holder.id ] ) || null } );
+		const held = holder && st.reads.widths[ w ]?.[ holder.id ];
+		const parentDisplay = ( held && ! held.missing && ( held.layoutDisplay || held.styles?.display ) ) || null;
+		const ownership = spacingOwnership( rects, { unmeasured, parentDisplay, declared: ( holder && st.reads.declared?.[ w ]?.[ holder.id ] ) || null } );
 		if ( 'unknown' === ownership.owner || ownership.decisions.length ) {
 			st.out.spacing.push( { node: refOf( st.flat[ rec.index ] ), index: rec.index, width: w, owner: ownership.owner, count: ownership.count, decisions: ownership.decisions } );
 		}

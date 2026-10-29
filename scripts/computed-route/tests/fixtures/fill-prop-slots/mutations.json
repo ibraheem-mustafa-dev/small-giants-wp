@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "equalAt ??= slot;",
+		"replace": "return { status: 'equal', slot };",
+		"why": "the first matching slot would settle the property before the slot that paints it is judged"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "const judged = null === equalAt ? draft : Object.fromEntries( Object.entries( draft ).filter( ( [ w ] ) => undefined !== baseline( slot, Number( w ) ) ) );",
+		"replace": "const judged = draft;",
+		"why": "a slot with no measured baseline would count as differing and force a write"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "return null !== equalAt ? { status: 'equal', slot: equalAt } : { status: 'gap', ...firstGap };",
+		"replace": "return { status: 'gap', ...firstGap };",
+		"why": "a slot with no setting would turn a matching property into a gap"
+	}
+]

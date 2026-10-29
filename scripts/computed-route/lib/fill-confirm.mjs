@@ -4,6 +4,9 @@
 // (lib/confirm-live.mjs); the verdict is D–R's: `confirmed` (agree, or a value the code resolves at run time, which the render is),
 // `render-wins` (disagree: the rendered value is written and the row reported), `draft-defect` (disagree where intake
 // lists the element's declaration as never painting, FR-48-34) and `open` (no declared value: the render alone decides).
+// A value D–R confirms is also checked against what its setting will paint (lib/fill-emitter.mjs, FR-48-76): the predicted
+// paint is on the record (`predicted`, `ep`: 'agree' | 'differs' | null where nothing is predicted), and one that differs
+// from the draft's render is `open` with reason `emitter`, never `confirmed`.
 // A value of a discovered setting (a layout choice, calibration.discovered) paints more than the property it was chosen
 // for: each other property its measured effect changes on the element (stack's flex-direction column) gets a record of
 // its own (`check: 'effect'`), comparing what the written value paints with what the draft renders: `confirmed` where they
@@ -13,7 +16,8 @@ import { transformMatrix, sameMatrix } from './css-matrix.mjs';
 import { templateKeyOfSelector } from './fact-key.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
 import { safeAreaRead } from './fill-safe-area.mjs';
-import { discoveredEffects } from './resolve.mjs';
+import { discoveredEffects, blockSchema } from './resolve.mjs';
+import { emitterCheck } from './fill-emitter.mjs';
 
 // FR-48-36's tolerances by property type (provisional until calibrated on the first client clone).
 export const TOLERANCE = { colour: `ΔE ${ COLOUR_DE }, alpha 0.02`, length: '0.5px', 'font-family': 'first family', 'font-weight': 'exact', 'line-height': '0.5px', transform: 'matrix entries 0.01', time: '10ms', keyword: 'exact' };
@@ -160,7 +164,7 @@ export function verdictOf( dr, defect ) {
 // Every write's confirm records. writes: Fill's writes ({ node, index, block, slot, prop, attr, after }); nodes:
 // lib/fill-skeleton.mjs::skeletonNodes; reads: lib/fill-read.mjs::readDraft's result; defects: defectIndex();
 // rootComponent: the entry draft's component; calFor( block ): the block's calibration, for the effect records (none without it).
-export function confirmRecords( { writes, nodes, reads, defects = new Map(), rootComponent, calFor = null } ) {
+export function confirmRecords( { writes, nodes, reads, defects = new Map(), rootComponent, calFor = null, palette = [] } ) {
 	const out = [];
 	// A unit partner write (fontSizeUnit beside fontSize) is part of its value write's record, never one of its own.
 	for ( const w of writes.filter( ( x ) => x.prop && ! x.prop.startsWith( '(' ) && ! x.unit ) ) {
@@ -178,6 +182,8 @@ export function confirmRecords( { writes, nodes, reads, defects = new Map(), roo
 			continue;
 		}
 		const draftId = draftIdOf( target.finder, rootComponent );
+		const cal = layer || ! calFor ? null : calFor( w.block );
+		const schema = blockSchema( w.block );
 		for ( const width of READ_WIDTHS ) {
 			const snap = reads.widths?.[ width ]?.[ target.id ];
 			if ( ! snap || snap.missing ) {
@@ -187,9 +193,12 @@ export function confirmRecords( { writes, nodes, reads, defects = new Map(), roo
 			const rendered = ( layer ? snap.pseudo?.[ layer ]?.[ w.prop ] : snap.styles?.[ w.prop ] ) ?? null;
 			const c = compareDR( w.prop, declared, rendered, parseFloat( snap.styles?.[ 'font-size' ] ) || 16 );
 			const safeArea = layer ? null : safeAreaRead( declared, rendered );
-			out.push( { ...record, draftId, width, declared, renderedDraft: rendered, dr: c.dr, tolerance: c.tolerance, verdict: verdictOf( c.dr, defects.get( draftId )?.has( w.prop ) ), ...( safeArea ? { safeArea } : {} ) } );
+			const em = emitterCheck( w, width, rendered, cal, palette, schema );
+			const verdict = verdictOf( c.dr, defects.get( draftId )?.has( w.prop ) );
+			const blocked = 'confirmed' === verdict && 'differs' === em.ep;
+			out.push( { ...record, draftId, width, declared, renderedDraft: rendered, dr: c.dr, tolerance: c.tolerance, predicted: em.predicted, ep: em.ep, verdict: blocked ? 'open' : verdict, ...( blocked ? { reason: `emitter: ${ w.attr } is predicted to paint ${ em.predicted } here, the draft renders ${ rendered }` } : {} ), ...( safeArea ? { safeArea } : {} ) } );
 		}
-		out.push( ...effectRecords( { w, record, target, draftId, reads, cal: layer || ! calFor || 'string' !== typeof w.after ? null : calFor( w.block ) } ) );
+		out.push( ...effectRecords( { w, record, target, draftId, reads, cal: layer || ! calFor || 'string' !== typeof w.after ? null : cal } ) );
 	}
 	return out;
 }

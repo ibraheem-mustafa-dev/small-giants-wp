@@ -128,3 +128,25 @@ for ( const [ group, block, attr, prop, value, baseline, slot ] of [
 		assert.equal( r.writes[ 0 ].attr, attr );
 	} );
 }
+
+test( 'MUST FAIL: a draft equal at the root slot is not equal while the slot where the setting paints (the inner band) still differs', () => {
+	// The root is inert for the property (a block root: flex-wrap, gap); the inner band paints it at 24px; the draft states 0.
+	const draft = { 1440: '0px', 768: '0px', 375: '0px' };
+	const slots = [ '', '.sgs-container__inner' ];
+	const r = call( { draft, slots, baseline: ( slot ) => ( '' === slot ? '0px' : '24px' ) } );
+	assert.equal( r.status, 'written' );
+	assert.equal( r.slot, '.sgs-container__inner' );
+	assert.deepEqual( r.writes, [ { attr: 'gap', value: { desktop: '0px' }, merge: 'deep' } ] );
+	assert.deepEqual( r.included, { 1440: '0px' } );
+} );
+
+test( 'negative control: equal at the root and at every other candidate slot stays equal; an unmeasured or setting-less other slot never forces a write', () => {
+	const draft = { 1440: '0px', 768: '0px', 375: '0px' };
+	const slots = [ '', '.sgs-container__inner' ];
+	assert.equal( call( { draft, slots, baseline: () => '0px' } ).status, 'equal', 'inner band also 0px' );
+	assert.equal( call( { draft, slots, baseline: ( slot ) => ( '' === slot ? '0px' : undefined ) } ).status, 'equal', 'inner band unmeasured: no evidence it differs' );
+	const partial = call( { draft, slots, baseline: ( slot, w ) => ( '' === slot ? '0px' : 1440 === w ? '24px' : undefined ) } );
+	assert.deepEqual( [ partial.status, partial.included ], [ 'written', { 1440: '0px' } ], 'judged at the widths the inner band is measured' );
+	const noSetting = call( { draft, slots, calibration: { elements: { '': {}, '.sgs-container__inner': {} }, settings: {} }, baseline: ( slot ) => ( '' === slot ? '0px' : '24px' ) } );
+	assert.equal( noSetting.status, 'equal', 'no setting paints the inner band, so the root match stands' );
+} );

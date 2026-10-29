@@ -1,0 +1,62 @@
+[
+	{
+		"file": "lib/fill-confirm.mjs",
+		"find": "const blocked = 'confirmed' === verdict && 'differs' === em.ep;",
+		"replace": "const blocked = false;",
+		"why": "a value whose setting is predicted to paint another value would be confirmed"
+	},
+	{
+		"file": "lib/fill-confirm.mjs",
+		"find": "const blocked = 'confirmed' === verdict && 'differs' === em.ep;",
+		"replace": "const blocked = 'differs' === em.ep;",
+		"why": "a render-wins or draft-defect verdict would be turned open"
+	},
+	{
+		"file": "lib/confirm-live.mjs",
+		"find": "return 'differs' === ep && 'confirmed' === v.verdict ?",
+		"replace": "return false && 'confirmed' === v.verdict ?",
+		"why": "the live half would confirm what the setting does not emit"
+	},
+	{
+		"file": "lib/confirm-live.mjs",
+		"find": "return 'differs' === ep && 'confirmed' === v.verdict ?",
+		"replace": "return 'differs' === ep ?",
+		"why": "the live half would turn a render-wins verdict open"
+	},
+	{
+		"file": "lib/fill-emitter.mjs",
+		"find": "COLOUR_PROP.test( w.prop ) ? slugColour( painted.value, palette ) : painted.value;",
+		"replace": "slugColour( painted.value, palette );",
+		"why": "a font family slug named like a colour slug would be read as that colour"
+	},
+	{
+		"file": "lib/fill-emitter.mjs",
+		"find": "let value = null === painted ? own( x ) :",
+		"replace": "let value = null === painted ? undefined :",
+		"why": "a tier the write leaves to the block would predict nothing"
+	},
+	{
+		"file": "lib/fill-emitter.mjs",
+		"find": "value = undefined === side ? own( x ) : side;",
+		"replace": "value = undefined === side ? undefined : side;",
+		"why": "an unstated edge side would predict nothing"
+	},
+	{
+		"file": "lib/fill-emitter.mjs",
+		"find": "if ( ! cal || ! w.prop || w.from ||",
+		"replace": "if ( ! cal || ! w.prop ||",
+		"why": "a write made through another setting would be predicted against the wrong element"
+	},
+	{
+		"file": "lib/fill-emitter.mjs",
+		"find": "|| ! readable( w.prop, value, schema?.[ w.attr ] ) ) {",
+		"replace": ") {",
+		"why": "a design token's name would be predicted as a CSS value"
+	},
+	{
+		"file": "lib/fill-emitter.mjs",
+		"find": "const ok = a && b ? deltaE( a, b ) <= COLOUR_DE && Math.abs( a.a - b.a ) <= 0.02 : samePaint( w.prop, p.value, seen, ctx );",
+		"replace": "const ok = samePaint( w.prop, p.value, seen, ctx );",
+		"why": "a hex written value would differ from the browser's rgb() of the same colour"
+	}
+]
