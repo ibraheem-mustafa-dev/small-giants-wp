@@ -46,6 +46,15 @@ test( 'MUST FAIL (a block-drawn frame no rule names is paired): the hero\'s spli
 	assert.match( r.unpaired.find( ( u ) => '.sgs-hero__overlay' === u.slot ).reason, /no element of its own/ );
 } );
 
+test( 'MUST FAIL (content a draft places out of flow): the hero\'s content is the absolutely placed column holding its inner blocks, while its video layer stays the out-of-flow layer', () => {
+	const kids = [ 'Root/120#0', 'Root/121#0', 'Root/122#0', 'Root/123#0' ];
+	const r = run( 'sgs/hero', F.elements.layeredHero, 'Root/114#0', ( m ) => ( { own: ( e ) => ! kids.includes( e.key ), children: kids.map( ( k ) => ( { el: m.byKey[ k ], name: 'sgs/text' } ) ) } ) );
+	assert.equal( r.slots[ '.sgs-hero__content' ]?.tpl, 'Root/119#0' );
+	assert.equal( r.slots[ '.sgs-hero__video-bg' ]?.tpl, 'Root/115#0' );
+	// Negative control: the overlay part, which holds no kind, is not matched on the looser test.
+	assert.ok( ! ( '.sgs-hero__overlay' in r.slots ) );
+} );
+
 test( 'MUST FAIL (a slider\'s slide is paired): the draft draws one card at a time between its arrows, so the first slide is the card and the rest are named', () => {
 	const r = run( 'sgs/testimonial-slider', F.elements.slider, 'Root/270#0' );
 	assert.equal( r.slots[ SLIDE( 1 ) ]?.tpl, 'Root/274#0' );

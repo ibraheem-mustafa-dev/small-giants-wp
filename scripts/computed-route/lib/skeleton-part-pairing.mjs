@@ -303,8 +303,11 @@ export function pairParts( { db, block, cal, paint = [], m, el, items = null, ow
 			if ( ! sig.length ) {
 				continue;
 			}
-			const fits = ( y ) => free( y ) && suits( c, y ) && K.every( ( k ) => sig.includes( k ) === D.kinds( y ).has( k ) ) && ( sig.includes( 'node' ) || ! D.kinds( y ).has( 'node' ) );
-			const hits = D.below( x ).filter( fits );
+			const fits = ( kinds ) => ( y ) => free( y ) && suits( c, y ) && kinds.every( ( k ) => sig.includes( k ) === D.kinds( y ).has( k ) ) && ( sig.includes( 'node' ) || ! D.kinds( y ).has( 'node' ) );
+			// Out of flow tells layers apart, but a draft may place its content out of flow too: with no element matching it, a
+			// part that is no layer itself is matched on the other kinds.
+			const strict = D.below( x ).filter( fits( K ) );
+			const hits = strict.length || sig.includes( 'layer' ) ? strict : D.below( x ).filter( fits( K.filter( ( k ) => 'layer' !== k ) ) );
 			const top = hits.filter( ( y ) => D.depth( y ) === D.depth( hits[ 0 ] ) );
 			if ( 1 === top.length ) {
 				pair( c, top[ 0 ] );
