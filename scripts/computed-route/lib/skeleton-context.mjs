@@ -54,6 +54,8 @@ export function proposalContext( { repo, client, slug, id, breakpoints, site = s
 		carried: carriedIds( { repo, client, site, rootComponent } ), scriptOf: ( component ) => componentScript( path.join( repo, 'sites', client, 'handoff' ), component ),
 		// A WooCommerce page's template surface places WooCommerce's piece at the draft's commerce region, and a loop of products, brands or reviews is a working block.
 		commerce: commerceOf( manifestEntryOf( { repo, client, slug } ), rows, catalogue, loadShopParts( build ) ),
+		// The catalogue's filter data for a surface that is the shop filter's own drawer (lib/skeleton-filter-drawer.mjs).
+		filters: catalogue ? filtersOf( catalogue ) : null,
 		loops: { rows, brands: catalogue ? filtersOf( catalogue ).brands : [], carousels },
 	};
 }

@@ -194,6 +194,17 @@
 				"category": { "name": "woocommerce/product-filter-taxonomy", "attributes": { "taxonomy": "product_cat", "displayStyle": "woocommerce/product-filter-checkbox-list", "showCounts": true }, "innerBlocks": [ { "name": "woocommerce/product-filter-checkbox-list" } ] }
 			}
 		},
+		"filterDrawer": {
+			"id": "filterDrawer",
+			"reason": "a drawer whose root holds the catalogue's filter groups is the shop filter's own narrow-width open state, never a second drawer: its look is the filter block's overlay settings (Spec 48 FR-48-61), and what those settings cannot carry is a missing feature",
+			"block": "woocommerce/product-filters",
+			"modeAttribute": "overlayMode",
+			"positionAttribute": "overlayPosition",
+			"modes": { "rail": "mobile", "drawer": "always" },
+			"sides": { "left": "left", "right": "right" },
+			"minFacets": 2,
+			"fullShare": 0.95
+		},
 		"commerceRegion": {
 			"reason": "the draft's commerce region on a WooCommerce page is WooCommerce's working piece, placed as an ordinary block that draws the region itself (Bean, 2026-10-26: these are SGS pages with the WooCommerce piece in them); the region is found by structure (lib/skeleton-commerce-region.mjs), never by words, and everything around it stays the draft's own blocks",
 			"money": "(£|\\$|€|¥|₹)\\s?\\d|\\d[\\d.,]*\\s?(€|zł|kr)(?![a-z])",

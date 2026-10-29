@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-10-29",
+  "project": "Skeleton intake rail fixture",
+  "entry_drafts": [
+    "Home.dc.html"
+  ],
+  "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+  "files": [
+    {
+      "path": "Home.dc.html",
+      "bytes": 1926,
+      "sha256": "94ef7118a718825bb41033f32467b0e4cacea5e74859fd27ad6da7358034dc1d"
+    },
+    {
+      "path": "support.js",
+      "bytes": 66404,
+      "sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6"
+    },
+    {
+      "path": "surfaces.json",
+      "bytes": 747,
+      "sha256": "2982ac206c3bf8d61315ccf7a3eae891b208aa7f5b0aec6c5c4d4d137aa90a08"
+    }
+  ]
+}

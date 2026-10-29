@@ -1,0 +1,12 @@
+[
+	{"file": "lib/skeleton-filter-drawer.mjs", "find": "if ( found.length < rule.minFacets ) {", "replace": "if ( ! found.length ) {", "why": "a drawer holding one matching word would be the filter drawer"},
+	{"file": "lib/skeleton-filter-drawer.mjs", "find": "Object.values( e.visible || {} ).some( Boolean ) && labels.has(", "replace": "labels.has(", "why": "a label never shown would count"},
+	{"file": "lib/skeleton-filter-drawer.mjs", "find": "const mode = wide && narrow.length ? rule.modes.rail : narrow.length ? rule.modes.drawer : null;", "replace": "const mode = rule.modes.rail;", "why": "an overlay-only drawer would be mobile, and a rail with no drawer an overlay"},
+	{"file": "lib/skeleton-filter-drawer.mjs", "find": "if ( box && box.w >= view * rule.fullShare && box.h > 0 ) {", "replace": "if ( false ) {", "why": "a full-viewport sheet would raise no missing feature"},
+	{"file": "lib/skeleton-filter-drawer.mjs", "find": "attributes[ rule.positionAttribute ] = box.x <= 1 ? rule.sides.left : rule.sides.right;", "replace": "attributes[ rule.positionAttribute ] = rule.sides.left;", "why": "a right-anchored panel would open from the left"},
+	{"file": "lib/skeleton-rules.mjs", "find": "const drawer = 'drawer' === surface.kind && R.filterDrawer ?", "replace": "const drawer = R.filterDrawer ?", "why": "a page with filter labels would be the filter drawer"},
+	{"file": "lib/skeleton-rules.mjs", "find": "( { e } ) => ( drawer && e === m.root ? v( 'filterDrawer'", "replace": "( { e } ) => ( false && drawer && e === m.root ? v( 'filterDrawer'", "why": "the filter drawer would be the navigation drawer"},
+	{"file": "lib/skeleton-rules.mjs", "find": "filters: surface.filters ?? surface.commerce?.filters,", "replace": "filters: surface.commerce?.filters,", "why": "the drawer's catalogue facets would never arrive"},
+	{"file": "lib/skeleton-propose.mjs", "find": "for ( const x of cls.filterDrawer?.missing || [] ) {", "replace": "for ( const x of [] ) {", "why": "the sheet the overlay cannot draw would be lost silently"},
+	{"file": "lib/skeleton-context.mjs", "find": "filters: catalogue ? filtersOf( catalogue ) : null,", "replace": "filters: null,", "why": "a real run would never give the drawer its facets"}
+]

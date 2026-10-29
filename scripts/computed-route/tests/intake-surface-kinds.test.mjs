@@ -1,13 +1,13 @@
 // Which handoff records are site surfaces, and what a surface needs open before its own root renders (Spec 48 §3.4 step 1,
-// lib/intake-skeletons.mjs::surfaceRoots, openAncestors, pagePart; lib/intake-reach-calls.mjs). From the 2026-10-29 intakes:
+// lib/intake-skeletons.mjs::surfaceRoots, openAncestors, restFailsAt, landmarkBox; lib/intake-reach-calls.mjs). From the 2026-10-29 intakes:
 // Eye Care's "Storefront shell" record names the draft's <helmet> (the document head), its "WP Build Gap Map (report)"
 // record names a component the export ships no file for, Mama's checkout draws its own <header> outside the page's <main>
 // with no header record, Eye Care's account forms render only inside the signed-in account page their parent records
-// open, its filter drawer renders at rest as the shop page's sticky rail, and Mama's account records write their ways as
+// open, its filter drawer renders at rest as the shop page's sticky rail and is a drawer only below 1060px, and Mama's account records write their ways as
 // `dcLogic('Account').setState(...)`. Tests marked MUST FAIL fail before these rules.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { surfaceRoots, openAncestors, pagePart } from '../lib/intake-skeletons.mjs';
+import { surfaceRoots, openAncestors, restFailsAt, landmarkBox } from '../lib/intake-skeletons.mjs';
 import { reachCalls } from '../lib/intake-reach-calls.mjs';
 import { logicState } from '../lib/intake-state.mjs';
 import { describeWay } from '../lib/state-openers.mjs';
@@ -15,6 +15,12 @@ import { describeWay } from '../lib/state-openers.mjs';
 const row = ( component, tpl, tag ) => ( { kind: 'template-element', draftId: `${ component }:${ tpl }`, component, detail: { tag } } );
 const rec = ( o ) => ( { opened_by: 'Load', closed_by: 'n/a', time_dependent: { value: false, reason: 'none' }, states: [ { name: 'default', state_keys: {}, how_to_reach: 'Load' } ], route: '*', parent: null, ...o } );
 const CENSUS = { rows: [ row( 'Shop', '0', 'helmet' ), row( 'Shop', '1', 'header' ), row( 'Shop', '6', 'main' ), row( 'Shop', '20', 'div' ), row( 'Shop', '30', 'form' ), row( 'Checkout', '0', 'helmet' ), row( 'Checkout', '7', 'header' ), row( 'Checkout', '9', 'main' ), row( 'Lonely', '3', 'header' ) ] };
+const stamped = ( list ) => ( { elements: list.map( ( [ n, parent, tag, attrs = [] ] ) => ( { n: String( n ), parent: null === parent ? null : String( parent ), tag, attrs, words: '' } ) ), topTexts: [] } );
+CENSUS.sources = [
+	{ component: 'Shop', stamped: stamped( [ [ 0, null, 'helmet' ], [ 1, null, 'header' ], [ 6, null, 'main' ], [ 20, 6, 'div' ], [ 30, 20, 'form' ] ] ) },
+	{ component: 'Checkout', stamped: stamped( [ [ 0, null, 'helmet' ], [ 7, null, 'header' ], [ 71, 7, 'a', [ [ 'href', 'Home.dc.html' ] ] ], [ 72, 71, 'img' ], [ 9, null, 'main' ] ] ) },
+	{ component: 'Lonely', stamped: stamped( [ [ 3, null, 'header' ], [ 31, 3, 'nav' ] ] ) },
+];
 const FILES = new Set( [ 'Shop.dc.html', 'Checkout.dc.html', 'Lonely.dc.html' ] );
 const RECORDS = [
 	rec( { id: 'S-01', kind: 'global', name: 'Shell', dc: 'Shop', template_tpl_id: '0' } ),
@@ -104,24 +110,47 @@ test( 'negative control: a parent that already renders is left alone', async () 
 	assert.equal( page.calls.filter( ( c ) => /^(set|reach)/.test( c ) ).length, 0 );
 } );
 
-test( 'MUST FAIL: a drawer whose root renders at rest inside the page\'s <main> is the page\'s part; elsewhere, or with no page in the run, it is read', async () => {
-	const main = { closest: ( sel ) => ( 'main' === sel ? main : null ) };
-	const body = { closest: () => null };
-	const page = ( parent ) => ( { evaluate: async ( fn, sel ) => {
+// A fake page for the rest probe: the root renders at 1440 and at the other widths `rendersAt` names.
+const widthPage = ( rendersAt ) => {
+	let width = 1440;
+	return {
+		setViewportSize: async ( v ) => { width = v.width; },
+		evaluate: async ( fn ) => {
+			if ( 'markRoot' === fn.name ) {
+				return rendersAt.includes( width ) ? { copies: 1, tag: 'aside' } : { error: 'not rendered' };
+			}
+			return fn === logicState ? 1 : null;
+		},
+	};
+};
+const way = ( bounds ) => [ { via: 'state', state: 'drawer open', keys: { open: true }, ...( bounds ? { bounds } : {} ) } ];
+const RAIL = { slug: 'rail', component: 'Shop', rootTpl: '269', kind: 'drawer' };
+
+test( 'MUST FAIL: a surface that renders at 1440 but not at a narrower width where a width-bound way holds is read through its ways; elsewhere it is read as it stands', async () => {
+	const narrow = [ { key: 'w', min: null, max: 1059 } ];
+	assert.equal( await restFailsAt( widthPage( [ 1440 ] ), RAIL, settle, way( narrow ) ), true, 'a rail that is a drawer below 1060px' );
+	assert.equal( await restFailsAt( widthPage( [ 1440, 768, 375 ] ), RAIL, settle, way( narrow ) ), false, 'a root that renders at every width needs no way' );
+	assert.equal( await restFailsAt( widthPage( [ 1440 ] ), RAIL, settle, way( null ) ), false, 'a way with no width bound is not offered per width' );
+	assert.equal( await restFailsAt( widthPage( [ 1440 ] ), RAIL, settle, way( [ { key: 'w', min: 1060, max: null } ] ) ), false, 'no way holds at the narrow widths' );
+} );
+
+test( 'a page landmark must span the rendered page and sit above (a header) or below (a footer) its <main>', () => {
+	const box = ( top, bottom, width ) => ( { top, bottom, width } );
+	const run = ( el, main, tag ) => {
 		const was = globalThis.document;
-		globalThis.document = { querySelector: () => ( { parentElement: parent } ) };
+		const mainEl = { getBoundingClientRect: () => main, contains: () => false };
+		globalThis.document = { documentElement: { clientWidth: 1440 }, querySelector: ( sel ) => ( 'main' === sel ? mainEl : { getBoundingClientRect: () => el, contains: () => false } ) };
 		try {
-			return fn( sel );
+			return landmarkBox( [ '[x]', tag ] );
 		} finally {
 			globalThis.document = was;
 		}
-	} } );
-	const drawer = { kind: 'drawer', selector: '[x]' };
-	const group = [ { kind: 'page' }, drawer ];
-	assert.equal( await pagePart( page( main ), drawer, group ), true );
-	assert.equal( await pagePart( page( body ), drawer, group ), false, 'a drawer outside the page\'s content root (a fixed overlay at rest) is read' );
-	assert.equal( await pagePart( page( main ), drawer, [ drawer ] ), false, 'no page read in the run' );
-	assert.equal( await pagePart( page( main ), { ...drawer, kind: 'form' }, group ), false, 'a form inside the page is its own surface' );
+	};
+	assert.equal( run( box( 0, 72, 1440 ), box( 72, 900, 1440 ), 'header' ).ok, true );
+	assert.match( run( box( 0, 72, 600 ), box( 72, 900, 1440 ), 'header' ).why, /does not span the page/ );
+	assert.match( run( box( 100, 172, 1440 ), box( 72, 900, 1440 ), 'header' ).why, /not above/ );
+	assert.equal( run( box( 900, 1000, 1440 ), box( 72, 900, 1440 ), 'footer' ).ok, true );
+	assert.match( run( box( 500, 600, 1440 ), box( 72, 900, 1440 ), 'footer' ).why, /not below/ );
 } );
 
 test( 'MUST FAIL: a dcLogic(\'<component>\').setState(...) call is a way to open, run on that component only', () => {

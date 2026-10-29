@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0",
+  "project": "Skeleton intake rail fixture",
+  "generated": "2026-10-29",
+  "records": [
+    { "id": "S-01", "kind": "drawer", "name": "Filter rail / drawer", "dc": "Home", "template_tpl_id": "3", "route": "*", "parent": null, "opened_by": "Always visible as a rail at >= 1060px; below that the Filter button (toggleFilters)", "closed_by": "Close (toggleFilters)", "states": [ { "name": "rail", "state_keys": { "w": ">= 1060" }, "how_to_reach": "L.setState({w:1400})" }, { "name": "drawer open", "state_keys": { "w": "< 1060", "filtersOpen": true }, "how_to_reach": "Tap Filter; L.setState({w:900, filtersOpen:true})" } ], "time_dependent": { "value": true, "reason": "measure() polls the width every 120ms" } }
+  ]
+}

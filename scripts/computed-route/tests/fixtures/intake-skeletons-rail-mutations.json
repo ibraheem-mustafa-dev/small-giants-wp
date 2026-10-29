@@ -1,0 +1,3 @@
+[
+	{"file": "lib/intake-skeletons.mjs", "find": "if ( openStates && ( m.error || await restFailsAt( h.page, s, settle, ways ) ) ) {", "replace": "if ( openStates && m.error ) {", "why": "a rail that is a drawer below 1060px would be read at 375 with nothing to read"}
+]

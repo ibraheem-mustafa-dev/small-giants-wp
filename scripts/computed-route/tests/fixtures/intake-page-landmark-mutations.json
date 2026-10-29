@@ -1,0 +1,16 @@
+[
+	{"file": "lib/intake-page-landmark.mjs", "find": "const NOT_A_PAGE_LANDMARK = new Set( [ 'article', 'section', 'aside', 'dialog', 'form' ] );", "replace": "const NOT_A_PAGE_LANDMARK = new Set( [] );", "why": "a header inside an article, section, aside, dialog or form would be a page header"},
+	{"file": "lib/intake-page-landmark.mjs", "find": "|| /^(?:alert)?dialog$/i.test( attrOf( a, 'role' ) ?? '' ) );", "replace": ");", "why": "a header inside a role=dialog element would be a page header"},
+	{"file": "lib/intake-page-landmark.mjs", "find": ".filter( ( r ) => 'page' !== r.kind ).flatMap(", "replace": ".filter( ( r ) => 'page' === r.kind ).flatMap(", "why": "a header inside a recorded drawer or modal would be a page header, and the site header record's own element too"},
+	{"file": "lib/intake-page-landmark.mjs", "find": "hostsOf( c ).map( ( h ) => within( h.component, h.n, seen ) ).find( Boolean ) ?? null;", "replace": "null;", "why": "a header of a component imported inside a drawer would be a page header"},
+	{"file": "lib/intake-page-landmark.mjs", "find": "( 'header' === tag ? c.i > at.get( String( me.n ) ).i : c.i < at.get( String( me.n ) ).i )", "replace": "true", "why": "a header after the content, or a footer before it, would be the page's"},
+	{"file": "lib/intake-page-landmark.mjs", "find": "if ( 1 !== pages.length ) {", "replace": "if ( ! pages.length ) {", "why": "a header ahead of several pages' content would be one page's"},
+	{"file": "lib/intake-page-landmark.mjs", "find": "const wraps = chainOf( me ).some( ( a ) => String( a.n ) === String( root.e.n ) );", "replace": "const wraps = false;", "why": "a page record naming the file's outer wrapper would find no content beside its header"},
+	{"file": "lib/intake-page-landmark.mjs", "find": "els.filter( ( e ) => e === me || chainOf( e )", "replace": "els.filter( ( e ) => chainOf( e )", "why": "the site's name in the header's own words would not count"},
+	{"file": "lib/intake-page-landmark.mjs", "find": "( ROOT_HREF.test( String( attrOf( a, 'href' ) ?? '' ).trim() ) ||", "replace": "(", "why": "a link to the site root would not count as a home link"},
+	{"file": "lib/intake-page-landmark.mjs", "find": "'nav' === e.tag || 'img' === e.tag || 'dc-import' === e.tag || homeLink( e )", "replace": "false", "why": "a header holding nothing a header holds would be a page header"},
+	{"file": "lib/intake-page-landmark.mjs", "find": ": under.some( ( e ) => 'nav' === e.tag || 'a' === e.tag || 'dc-import' === e.tag );", "replace": ": true;", "why": "a footer holding nothing would be a page footer"},
+	{"file": "lib/intake-page-landmark.mjs", "find": "out.length <= els.length;", "replace": "out.length < 1;", "why": "an ancestor above the parent would not be seen"},
+	{"file": "lib/intake-page-landmark.mjs", "find": "return { why: `the census holds no stamped template for ${ component }:${ tpl }` };", "replace": "return { page: ( records || [] ).find( ( r ) => 'page' === r.kind && r.dc === component ) };", "why": "a census with no stamped template would be read as a page landmark"},
+	{"file": "lib/intake-skeletons.mjs", "find": "&& ! landmark?.heading ) {", "replace": ") {", "why": "a header inside an article or dialog would be a missing-record gap"}
+]

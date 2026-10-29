@@ -125,6 +125,12 @@ export function decisionsProblems( facts ) {
 		[ 'facet', 'price', 'brand', 'category' ].filter( ( k ) => ! f.groups?.[ k ]?.name ).forEach( ( k ) => problems.push( `rules.filterRail.groups.${ k } must name its block` ) );
 		[ 'choice', 'checkbox' ].filter( ( k ) => ! f.displayStyles?.[ k ] ).forEach( ( k ) => problems.push( `rules.filterRail.displayStyles.${ k } must name a block` ) );
 	}
+	if ( r.filterDrawer ) {
+		const d = r.filterDrawer;
+		[ 'block', 'modeAttribute', 'positionAttribute' ].filter( ( k ) => ! d[ k ] ).forEach( ( k ) => problems.push( `rules.filterDrawer.${ k } must be set` ) );
+		[ [ 'modes', [ 'rail', 'drawer' ] ], [ 'sides', [ 'left', 'right' ] ] ].forEach( ( [ k, names ] ) => names.filter( ( n ) => ! d[ k ]?.[ n ] ).forEach( ( n ) => problems.push( `rules.filterDrawer.${ k }.${ n } must be set` ) ) );
+		d.block && ! d.block.startsWith( 'woocommerce/' ) && known( d.block, 'rules.filterDrawer' );
+	}
 	if ( r.commerceRegion ) {
 		try {
 			new RegExp( r.commerceRegion.money );

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="font-family:system-ui,sans-serif;color:#222">
+  <main style="padding:24px;display:flex;gap:24px">
+    <sc-if value="{{ showFilters }}">
+      <aside style="width:240px;background:#fff;border:1px solid #ccc;padding:16px">
+        <sc-if value="{{ narrow }}">
+          <button onClick="{{ toggleFilters }}" aria-label="Close filters" style="min-height:44px">Close</button>
+        </sc-if>
+        <h2 style="font-size:18px">Shade</h2>
+        <h2 style="font-size:18px">Kind</h2>
+        <sc-if value="{{ narrow }}">
+          <div style="position:sticky;bottom:0"><button onClick="{{ toggleFilters }}" style="min-height:44px">Show frames</button></div>
+        </sc-if>
+      </aside>
+    </sc-if>
+    <section style="flex:1">
+      <sc-if value="{{ narrow }}">
+        <button onClick="{{ toggleFilters }}" style="min-height:44px">Filter</button>
+      </sc-if>
+      <p>Products</p>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;600px&quot;}}">
+class Component extends DCLogic {
+  state = { w: 1440, filtersOpen: false };
+  componentDidMount() {
+    this.measure();
+    this.timer = setInterval(() => this.measure(), 120);
+    window.addEventListener('resize', () => this.measure());
+  }
+  measure() {
+    const w = window.innerWidth;
+    if (w !== this.state.w) this.setState({ w });
+  }
+  toggleFilters = () => this.setState({ filtersOpen: !this.state.filtersOpen });
+  renderVals() {
+    const wide = this.state.w >= 1060;
+    return {
+      narrow: !wide,
+      showFilters: wide || this.state.filtersOpen,
+      toggleFilters: this.toggleFilters,
+    };
+  }
+}
+</script>
+</body>
+</html>

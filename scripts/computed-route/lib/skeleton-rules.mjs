@@ -16,7 +16,8 @@ import { sameNavLook } from './nav-link-look.mjs';
 import { makePanelRules } from './skeleton-panel-rules.mjs';
 import { commerceRegion } from './skeleton-commerce-region.mjs';
 import { loopBlocks } from './skeleton-loop-blocks.mjs';
-import { filterRail } from './skeleton-filter-rail.mjs';
+import { filterRail, placeableFacets } from './skeleton-filter-rail.mjs';
+import { filterDrawer } from './skeleton-filter-drawer.mjs';
 import { linkWrite, siteLinkResolver } from './draft-link.mjs';
 import { choiceFlowModel } from './skeleton-choice-flow.mjs';
 import { blockPartSurfaces } from './skeleton-surface-role.mjs';
@@ -750,6 +751,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const carouselCardOf = new Map( loopResult.regions.filter( ( x ) => x.cards ).flatMap( ( x ) => x.cards.map( ( k ) => [ k, x ] ) ) );
 	// The shop's filter rail beside its product listing (lib/skeleton-filter-rail.mjs), from the draft catalogue's facets.
 	const rail = region?.key ? filterRail( { m, region, filters: surface.commerce.filters, rule: R.filterRail, money: R.commerceRegion.money } ) : null;
+	// A drawer whose root holds the catalogue's filter groups is the shop filter's own narrow-width open state (lib/skeleton-filter-drawer.mjs).
+	const drawer = 'drawer' === surface.kind && R.filterDrawer ? filterDrawer( { m, filters: surface.filters ?? surface.commerce?.filters, rule: R.filterDrawer, placeable: placeableFacets } ) : null;
+	const drawerMissing = drawer ? drawer.notes.map( ( why ) => ( { key: m.root.key, line: 'The shop filter drawer: a full-viewport sheet, fade, locked page scroll and sticky footer', why } ) ) : [];
 	// A surface the page map holds as an sgs_choice_flow row: what the flow holds, read from the fact record.
 	const role = surface.role ?? null;
 	const flow = R.choiceFlow && 'choiceFlow' === role?.role ? choiceFlowModel( { view, rootKey: view.entry( m.root )?.template.key ?? null, R: R.choiceFlow, formControl: R.formControl, brands: facts.brands || [], surfaceKind: surface.kind, parts: scope?.surfaceParts ?? [] } ) : null;
@@ -757,6 +761,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// A choice flow's root is sgs/choice-flow, whatever its surfaces.json kind (a modal, a form): the flow draws its frame, and
 		// its steps are composed from the record (lib/skeleton-choice-flow-tree.mjs), so the draft elements are absorbed.
 		( { e } ) => ( flow && e === m.root ? v( 'choiceFlow', { block: R.choiceFlow.block, absorb: true, attributes: flow.attributes } ) : null ),
+		// The shop filter's drawer is the filter block with its overlay settings (rules.filterDrawer): the drawer's elements are absorbed.
+		( { e } ) => ( drawer && e === m.root ? v( 'filterDrawer', { block: R.filterDrawer.block, absorb: true, attributes: drawer.attributes, reason: drawer.reason } ) : null ),
 		// A surface the page map holds as a block-owned part of another row (the cart page's bag drawer) is that block, which
 		// draws everything in it (S5); a row template with no owning block named leaves the root to the scoring.
 		( { e } ) => {
@@ -944,5 +950,5 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		return null;
 	};
 
-	return { ruleFor, drawsChildren, declared, modalParts, iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, filterRail: rail, choiceFlow: flow };
+	return { ruleFor, drawsChildren, declared, modalParts, iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, filterRail: rail, filterDrawer: drawer ? { key: m.root.key, block: R.filterDrawer.block, attributes: drawer.attributes, facets: drawer.facets, notes: drawer.notes, missing: drawerMissing } : null, choiceFlow: flow };
 }

@@ -108,7 +108,7 @@ const count = ( list ) => list.reduce( ( a, n ) => a + 1 + count( n.innerBlocks 
 // draftLinks (lib/draft-link.mjs::draftLinksFor: the client's page map and routing that turn a draft link into a site address;
 // null resolves every draft route to no address), pageMap (the page-map rows: which surface is a choice flow or a block-owned
 // part, lib/skeleton-surface-role.mjs) and surfaceId (the surface's surfaces.json id; the record's matching surface when omitted) }.
-export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, built = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null, pageMap = [], surfaceId = null, loops = null, scriptOf = () => null } ) {
+export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, filters = null, built = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null, pageMap = [], surfaceId = null, loops = null, scriptOf = () => null } ) {
 	const m = inventoryModel( inventory );
 	const { composition } = facts;
 	const overrides = ( e, words ) => overrideFor( e, { clientDecisions, picks, facts, surface, words } );
@@ -124,7 +124,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	const siteLink = siteLinkResolver( draftLinks, rootComponent );
 	// The page map's role for the surface: a choice flow, or a part another row's block draws (lib/skeleton-surface-role.mjs).
 	const role = surfaceRole( { pageMap, id: surfaceId ?? scope?.id ?? null, kind: surfaceKind, m, view, postType: facts.decisions.rules?.choiceFlow?.postType } );
-	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce, role, pageMap, loops, formLinks }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
+	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, filters, kind: surfaceKind, name: surfaceName, commerce, role, pageMap, loops, formLinks }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
 	const R = facts.decisions.rules || {};
 	const rows = [];
 	const finder = ( e ) => m.tplFinder( e );
@@ -415,12 +415,17 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	for ( const x of cls.commerceRegion?.toolbar?.missing || [] ) {
 		rowOf[ x.key ] && ( rowOf[ x.key ].missingFeature = { line: x.line, why: x.why } );
 	}
+	// What the filter drawer's overlay settings cannot carry is a missing feature on the drawer's root row.
+	for ( const x of cls.filterDrawer?.missing || [] ) {
+		Object.assign( rowOf[ x.key ] ?? {}, { missingFeature: { line: x.line, why: x.why } } );
+	}
 	const proposal = {
 		generated: new Date().toISOString(), inventory: inventory.generated, source: inventory.source, surface, siteName: facts.siteName, surfaceParts: scope?.surfaceParts ?? [], stripRoots: ctx.stripRoots, recordDisagreements: view.disagreements, recordUntranslated: view.untranslated,
 		confidenceFormula: 'min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights', weights: W, ...( built ? { builtPost: built } : {} ),
 		...( role ? { surfaceRole: { role: role.role, row: role.row.slug, ...( role.part ? { part: role.part.label } : {} ) } } : {} ),
 		...( flowNode ? { choiceFlow: { steps: cls.choiceFlow.steps.length, questions: cls.choiceFlow.steps.filter( ( s ) => s.question ).length, results: cls.choiceFlow.steps.filter( ( s ) => s.result ).length, notes: cls.choiceFlow.notes } } : {} ),
 		...( cls.commerceRegion ? { commerceRegion: cls.commerceRegion.note ? { note: cls.commerceRegion.note } : { key: cls.commerceRegion.key, role: cls.commerceRegion.role, block: cls.commerceRegion.block, ...( cls.commerceRegion.toolbar ? { toolbar: { sort: cls.commerceRegion.toolbar.sort, count: cls.commerceRegion.toolbar.count, absorbed: cls.commerceRegion.toolbar.absorb, missing: cls.commerceRegion.toolbar.missing } } : {} ) } } : {} ),
+		...( cls.filterDrawer ? { filterDrawer: { key: cls.filterDrawer.key, block: cls.filterDrawer.block, attributes: cls.filterDrawer.attributes, facets: cls.filterDrawer.facets, notes: cls.filterDrawer.notes } } : {} ),
 		...( cls.filterRail ? { filterRail: cls.filterRail.note ? { note: cls.filterRail.note } : { key: cls.filterRail.key, groups: cls.filterRail.groups, notes: cls.filterRail.notes, attributeIds: ctx.railIds || {} } } : {} ),
 		counts: { inventoryElements: m.els.length, parts: m.els.filter( m.isPart ).length, rows: rows.length, skeletonNodes: count( skeleton ), expandedNodes: count( expandSiteInfoRows( skeleton ) ), low: rows.filter( ( r ) => r.low && ! r.action ).length, removed: rows.filter( ( r ) => [ 'remove', 'absorbed', 'unwrap' ].includes( r.action ) ).length, unresolved: rows.filter( ( r ) => 'unresolved' === r.action ).length, byRule: rows.reduce( ( o, r ) => ( r.rule ? { ...o, [ r.rule ]: ( o[ r.rule ] || 0 ) + 1 } : o ), {} ) },
 		...( ctx.openedModals.size ? { openedModals: [ ...ctx.openedModals.values() ].map( ( t ) => ( { slug: t.row.slug, anchor: t.anchor, surface: t.surface.id } ) ), openerNotes } : {} ),
