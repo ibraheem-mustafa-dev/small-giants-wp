@@ -108,9 +108,12 @@ export function partTree( { db, block, cal, paint = [], inner = false } ) {
 	};
 	// A part's child parts, in document order; an inner block's root and everything under it is not a part.
 	const kids = ( p ) => all.filter( ( q ) => parentOf( q ) === p && q !== p && ! isInner( q ) && ! stepsOf( p ).some( ( _, i ) => isInner( stepsOf( p ).slice( 0, i + 1 ).join( ' > ' ) ) ) );
+	// What a part is itself, not what it holds: 'svg' (an svg step) or 'media' (the element a fit setting was measured on, or a
+	// picture tag), else null.
+	const self = ( p ) => ( 'svg' === BARE.exec( lastOf( p ) )?.[ 1 ] ? 'svg' : media.has( p ) || MEDIA_TAGS.includes( BARE.exec( lastOf( p ) )?.[ 1 ] ) ? 'media' : null );
 	// The inner block a path stands in: the inner root step it passes through, or null.
 	const innerRoot = ( p ) => stepsOf( p ).map( ( _, i, s ) => s.slice( 0, i + 1 ).join( ' > ' ) ).find( isInner ) ?? null;
-	return { targets, band: band?.slot ?? null, blockOf, kids, kinds, innerRoot, painted: ( p ) => painted.includes( p ), anyPaint: painted.length > 0, boxRoot: ! rootBox };
+	return { targets, band: band?.slot ?? null, blockOf, kids, kinds, self, innerRoot, painted: ( p ) => painted.includes( p ), anyPaint: painted.length > 0, boxRoot: ! rootBox };
 }
 
 // The draft side: own children, the content kinds an element holds, and the copies of a repeated template under it.
@@ -163,6 +166,21 @@ function draftSide( { m, own, isMedia, items } ) {
 	return { kids, kinds, below, loop, depth };
 }
 
+// The draft children `kids` read in order with some read as their own children instead, giving exactly `n` elements: the
+// one such reading, or null when none or several do. Only a child holding two or more is read as its children.
+function spreads( kids, n, below ) {
+	if ( kids.length === n ) {
+		return kids;
+	}
+	const open = kids.map( ( y, i ) => ( below( y ).length > 1 ? i : -1 ) ).filter( ( i ) => i >= 0 );
+	const found = [];
+	for ( let mask = 1; open.length <= 8 && mask < 2 ** open.length; mask++ ) {
+		const list = kids.flatMap( ( y, i ) => ( open.includes( i ) && mask & ( 2 ** open.indexOf( i ) ) ? below( y ) : [ y ] ) );
+		list.length === n && found.push( list );
+	}
+	return 1 === found.length ? found[ 0 ] : null;
+}
+
 // The pairing of one node. el: the node's draft element; items: the elements of the unit the node was built from (a
 // list's items), or null; own( e ): whether e belongs to this node's draft (not another node's element); isMedia( e ): a
 // picture element; inner: whether the node holds inner blocks; finder( e ): the element's finder. Returns
@@ -190,6 +208,13 @@ export function pairParts( { db, block, cal, paint = [], m, el, items = null, ow
 	};
 	const free = ( y ) => ! taken.has( y ) && ! [ ...taken ].some( ( t ) => t !== y && holds( y, t ) && ! y.virtual );
 
+	// What a draft element is itself: 'svg', 'media' (a picture element) or null. A draft svg or picture is only ever a part that
+	// is itself an svg or a picture: a box around one is drawn by the draft's parent, or not at all.
+	const selfOf = ( y ) => ( y.virtual ? null : 'svg' === y.tag ? 'svg' : isMedia( y ) ? 'media' : null );
+	const suits = ( c, y ) => ! selfOf( y ) || selfOf( y ) === B.self( c );
+	// Whether a part under P has been paired with an element other than x.
+	const reached = ( P, x ) => [ ...at.entries() ].some( ( [ q, y ] ) => q.startsWith( `${ P } > ` ) && y !== x && ! y.virtual );
+
 	const align = ( P, x ) => {
 		const next = [];
 		const pair = ( c, y ) => {
@@ -211,37 +236,50 @@ export function pairParts( { db, block, cal, paint = [], m, el, items = null, ow
 		pending.filter( variant ).forEach( ( c ) => why.set( c, 'a wrapper another render of the block adds around a part, which this draft does not draw' ) );
 		pending = pending.filter( ( c ) => ! variant( c ) );
 
-		// loop: the copies of a repeated part standing here.
-		// Copies with no loop beside other parts (the slider's two arrows around its track) are left to the order rule.
-		for ( const g of [ ...new Set( pending.filter( ( c ) => NTH.test( lastOf( c ) ) ).map( LOOSE ) ) ] ) {
-			const L = D.loop( x );
+		// loop: the copies of a repeated part standing here, beside any other part (a timeline's entries beside its progress
+		// line). Two repeated parts drawn by different renders of the block (logo tiles, or text items) compete for one loop: the
+		// copies go to the one holding exactly the kinds a copy holds among the kinds that tell them apart. Copies with no loop
+		// beside other parts (the slider's two arrows around its track) are left to the order rule.
+		const groups = [ ...new Set( pending.filter( ( c ) => NTH.test( lastOf( c ) ) ).map( LOOSE ) ) ];
+		const L = groups.length ? D.loop( x ) : null;
+		const apart = KINDS.filter( ( k ) => groups.some( ( g ) => B.kinds( g ).has( k ) ) && ! groups.every( ( g ) => B.kinds( g ).has( k ) ) );
+		const fitsLoop = ( g ) => apart.every( ( k ) => B.kinds( g ).has( k ) === D.kinds( L[ 0 ] ).has( k ) );
+		for ( const g of groups ) {
 			const only = pending.every( ( c ) => LOOSE( c ) === g );
-			if ( L || only ) {
+			if ( L && groups.length > 1 && ! fitsLoop( g ) ) {
+				pending.filter( ( c ) => LOOSE( c ) === g ).forEach( ( c ) => why.set( c, 'a repeated part another render of the block draws: the draft copies hold other kinds' ) );
+				pending = pending.filter( ( c ) => LOOSE( c ) !== g );
+			} else if ( L || only ) {
 				copiesOf( pending.filter( ( c ) => LOOSE( c ) === g ), L, only );
 				pending = pending.filter( ( c ) => LOOSE( c ) !== g );
 			}
 		}
 		// loop: a part whose children are all copies of one repeated part (the list around its items) is the element holding the
-		// draft's copies, or a box the draft does not draw when the copies stand straight in x; with no copies and no sibling, the
-		// draft draws the part and its one copy as x.
+		// draft's copies; with no copies and no sibling, the draft draws the part and its one copy as x. Copies standing
+		// straight in x are reached through the pass rule below.
 		for ( const c of [ ...pending ] ) {
 			const sub = B.kids( c );
 			if ( ! sub.length || ! sub.every( ( k ) => NTH.test( lastOf( k ) ) && LOOSE( k ) === LOOSE( sub[ 0 ] ) ) ) {
 				continue;
 			}
-			const L = D.loop( x );
-			const box = L ? m.byKey[ L[ 0 ].parentKey ] : null;
-			if ( L && box && box !== x && ownEl( box ) && free( box ) && L.every( ( e ) => e.parentKey === box.key ) ) {
+			const loop = D.loop( x );
+			const box = loop ? m.byKey[ loop[ 0 ].parentKey ] : null;
+			if ( loop && box && box !== x && ownEl( box ) && free( box ) && loop.every( ( e ) => e.parentKey === box.key ) ) {
 				pair( c, box );
-			} else if ( L ) {
-				why.set( c, 'a box the draft does not draw: the copies stand straight in the element above' );
-				copiesOf( sub, L, false );
-			} else if ( 1 === pending.length ) {
+			} else if ( ! loop && 1 === pending.length ) {
 				pair( c, x );
 			} else {
 				continue;
 			}
 			pending = pending.filter( ( s ) => s !== c );
+		}
+
+		// self: a part that is itself an svg or a picture, where x is one no part here has taken.
+		for ( const c of [ ...pending ] ) {
+			if ( B.self( c ) && B.self( c ) === selfOf( x ) && ! next.some( ( [ , y ] ) => y === x ) ) {
+				pair( c, x );
+				pending = pending.filter( ( s ) => s !== c );
+			}
 		}
 
 		// kind: a part told apart from its siblings by the kinds it holds (K, the kinds some but not all of them hold) is the
@@ -253,12 +291,12 @@ export function pairParts( { db, block, cal, paint = [], m, el, items = null, ow
 			if ( ! sig.length ) {
 				continue;
 			}
-			const fits = ( y ) => free( y ) && K.every( ( k ) => sig.includes( k ) === D.kinds( y ).has( k ) ) && ( sig.includes( 'node' ) || ! D.kinds( y ).has( 'node' ) );
+			const fits = ( y ) => free( y ) && suits( c, y ) && K.every( ( k ) => sig.includes( k ) === D.kinds( y ).has( k ) ) && ( sig.includes( 'node' ) || ! D.kinds( y ).has( 'node' ) );
 			const hits = D.below( x ).filter( fits );
 			const top = hits.filter( ( y ) => D.depth( y ) === D.depth( hits[ 0 ] ) );
 			if ( 1 === top.length ) {
 				pair( c, top[ 0 ] );
-			} else if ( ! hits.length && ! x.virtual && sig.every( ( k ) => D.kinds( x ).has( k ) ) && ! D.below( x ).some( ( y ) => sig.some( ( k ) => D.kinds( y ).has( k ) ) ) ) {
+			} else if ( ! hits.length && ! x.virtual && suits( c, x ) && sig.every( ( k ) => D.kinds( x ).has( k ) ) && ! D.below( x ).some( ( y ) => sig.some( ( k ) => D.kinds( y ).has( k ) ) ) ) {
 				// x itself holds the kinds and nothing below it does (the item's own words).
 				pair( c, x );
 			} else {
@@ -267,25 +305,67 @@ export function pairParts( { db, block, cal, paint = [], m, el, items = null, ow
 			pending = pending.filter( ( s ) => s !== c );
 		}
 
-		// order: what the default render draws, against the draft element's own free children.
+		// shape: a part whose number of child parts no sibling shares pairs with the one own child holding that many children
+		// (a timeline entry's content holding its title and description, beside its date).
+		const rest = () => D.kids( x ).filter( ( k ) => ownEl( k ) && free( k ) && ! D.kinds( k ).has( 'node' ) );
+		const count = ( c ) => B.kids( c ).length;
+		for ( let again = true; again; ) {
+			again = false;
+			for ( const c of [ ...pending ] ) {
+				const same = rest().filter( ( y ) => D.kids( y ).filter( ownEl ).length === count( c ) && suits( c, y ) );
+				if ( 1 === same.length && 1 === pending.filter( ( s ) => count( s ) === count( c ) ).length ) {
+					pair( c, same[ 0 ] );
+					pending = pending.filter( ( s ) => s !== c );
+					again = true;
+				}
+			}
+		}
+
+		// order: what the default render draws, against the draft element's own free children, equal in number; a draft child
+		// holding several parts' contents and no part of its own (a span around a title and its text) is read as its children
+		// when that, and only that, makes the numbers equal, and every part left is a leaf (the contents, never a box of parts).
 		const left = B.anyPaint ? pending.filter( B.painted ) : [];
-		const rest = D.kids( x ).filter( ( k ) => ownEl( k ) && free( k ) && ! D.kinds( k ).has( 'node' ) );
-		if ( left.length && left.length === rest.length ) {
-			left.forEach( ( c, i ) => pair( c, rest[ i ] ) );
+		const spread = left.length ? spreads( rest(), left.length, ( y ) => D.kids( y ).filter( ownEl ) ) : null;
+		const leaves = spread && ( spread.length === rest().length || left.every( ( c ) => ! count( c ) ) );
+		if ( leaves && spread.every( ( y, i ) => suits( left[ i ], y ) ) ) {
+			left.forEach( ( c, i ) => pair( c, spread[ i ] ) );
 			pending = pending.filter( ( c ) => ! left.includes( c ) );
-		} else if ( 1 === pending.length && 1 === rest.length && [ ...B.kinds( pending[ 0 ] ) ].every( ( k ) => D.kinds( rest[ 0 ] ).has( k ) ) ) {
+		} else if ( 1 === pending.length && 1 === rest().length && suits( pending[ 0 ], rest()[ 0 ] ) && [ ...B.kinds( pending[ 0 ] ) ].every( ( k ) => D.kinds( rest()[ 0 ] ).has( k ) ) ) {
 			// One part left and one own child left, the child holding every kind the part holds (the media part's frame).
-			pair( pending[ 0 ], rest[ 0 ] );
+			pair( pending[ 0 ], rest()[ 0 ] );
 			pending = [];
 		}
 
 		// box: the block root's one child part is the box a childless draft element draws.
-		if ( '' === P && B.boxRoot && 1 === pending.length && ! x.virtual && ! D.kids( x ).filter( ownEl ).length ) {
+		if ( '' === P && B.boxRoot && 1 === pending.length && ! x.virtual && suits( pending[ 0 ], x ) && ! D.kids( x ).filter( ownEl ).length ) {
 			pair( pending[ 0 ], x );
 			pending = [];
 		}
-		pending.forEach( ( c ) => why.has( c ) || why.set( c, 'the draft has no element of its own here' ) );
 		next.forEach( ( [ c, y ] ) => align( c, y ) );
+		// pass: a part with parts of its own and no draft element here is a box the draft does not draw; its parts pair against
+		// x as though they stood here. It stays unpaired, and the pass is kept only when a part below it reaches an element.
+		for ( const c of pending ) {
+			if ( ! B.kids( c ).length ) {
+				continue;
+			}
+			const saved = [ new Map( at ), new Set( taken ), new Map( why ) ];
+			at.set( c, x );
+			align( c, x );
+			at.delete( c );
+			if ( reached( c, x ) ) {
+				// Two nested boxes the draft draws as one element (a logo tile and the link inside it): the one holding settings
+				// reads it, so a settings-holding box under a part holding none (a bare block root included) takes that element.
+				B.targets.includes( c ) && ( '' === P ? B.boxRoot : ! B.targets.includes( P ) ) && suits( c, x ) ? at.set( c, x ) : why.set( c, 'a box the draft does not draw: its parts pair inside the element above' );
+				continue;
+			}
+			at.clear();
+			saved[ 0 ].forEach( ( v, k ) => at.set( k, v ) );
+			taken.clear();
+			saved[ 1 ].forEach( ( v ) => taken.add( v ) );
+			why.clear();
+			saved[ 2 ].forEach( ( v, k ) => why.set( k, v ) );
+		}
+		pending.forEach( ( c ) => why.has( c ) || why.set( c, 'the draft has no element of its own here' ) );
 	};
 	align( '', root );
 
