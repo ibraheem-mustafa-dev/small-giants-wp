@@ -1,0 +1,5 @@
+[
+	{"file": "lib/intake-pagemap.mjs", "find": "if ( target && children.length ) {", "replace": "if ( target && children.length && children[ 0 ] !== target ) {", "why": "an item linking to its first child parents nothing"},
+	{"file": "lib/intake-pagemap.mjs", "find": "if ( target && children.length ) {", "replace": "if ( false ) {", "why": "no menu nesting gives a parent"},
+	{"file": "lib/intake-pagemap.mjs", "find": "children.filter( ( c ) => c && c !== target && ! c.parent && 'page' === c.postType )", "replace": "children.filter( ( c ) => c && ! c.parent && 'page' === c.postType )", "why": "the landing page becomes its own child"}
+]
