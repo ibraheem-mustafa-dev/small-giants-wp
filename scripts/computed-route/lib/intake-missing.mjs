@@ -92,9 +92,13 @@ const attrsOf = ( row ) => ( Array.isArray( row.attrs ) ? Object.fromEntries( ro
 
 // Rule 1: the skeleton rows no block fits.
 export function skeletonMissing( skeletonRows ) {
-	return skeletonRows.filter( ( r ) => ! [ 'remove', 'absorbed' ].includes( r.action ) && ( 'unresolved' === r.action || ( ! r.action && ! r.block && ! r.candidates?.length ) ) ).map( ( r ) => {
+	return skeletonRows.filter( ( r ) => r.missingFeature || ( ! [ 'remove', 'absorbed' ].includes( r.action ) && ( 'unresolved' === r.action || ( ! r.action && ! r.block && ! r.candidates?.length ) ) ) ).map( ( r ) => {
 		const draftId = r.draftId || draftIdOfKey( r.key ) || r.key;
 		const words = String( r.words || '' ).trim();
+		// A row a rule marked as a missing feature (a sort option WooCommerce's sorting cannot express) is listed whatever its action.
+		if ( r.missingFeature ) {
+			return { rowId: `missing:${ draftId }`, draftId, construct: `element <${ r.tag }>`, from: 'skeleton', key: r.key, line: r.missingFeature.line, mainFlow: false, why: r.missingFeature.why };
+		}
 		return {
 			rowId: `missing:${ draftId }`, draftId, construct: `element <${ r.tag }>`, from: 'skeleton', key: r.key,
 			line: `<${ r.tag }>${ words ? ` "${ words.slice( 0, 60 ) }"` : '' }: no SGS block fits it`,

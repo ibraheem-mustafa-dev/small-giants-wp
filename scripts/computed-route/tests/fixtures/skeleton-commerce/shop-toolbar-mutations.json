@@ -1,0 +1,21 @@
+[
+	{ "file": "lib/skeleton-shop-toolbar.mjs", "find": " && ! under( e, listing ) && ! under( listing, e ) ) || null;", "replace": " && ! under( listing, e ) ) || null;", "why": "a product card inside the listing can be taken for the sort control" },
+	{ "file": "lib/skeleton-shop-toolbar.mjs", "find": "kids( p ).every( ( k ) => taken.has( k ) || (", "replace": "kids( p ).every( ( k ) => true || (", "why": "a wrapper holding other content is drawn by the sorting" },
+	{ "file": "lib/skeleton-shop-toolbar.mjs", "find": " && ! INTERACTIVE.has( k.tag ) && squash", "replace": " && squash", "why": "a link beside the control counts as its bare label" },
+	{ "file": "lib/skeleton-shop-toolbar.mjs", "find": ".sort( ( a, b ) => m.els.indexOf( a.e ) - m.els.indexOf( b.e ) );", "replace": ";", "why": "the toolbar always puts the count first" },
+	{ "file": "lib/skeleton-shop-toolbar.mjs", "find": ".filter( ( x ) => ! orders.some( ( s ) => s.rx.test( x.value ) || s.rx.test( x.label ) ) )", "replace": ".filter( ( x ) => true )", "why": "every sort option is a missing feature" },
+	{ "file": "lib/skeleton-shop-toolbar.mjs", "find": ".filter( ( x ) => ! orders.some( ( s ) => s.rx.test( x.value ) || s.rx.test( x.label ) ) )", "replace": ".filter( ( x ) => false )", "why": "no sort option is ever a missing feature" },
+	{ "file": "lib/skeleton-shop-toolbar.mjs", "find": "if ( ! sort && ! count ) {", "replace": "if ( false ) {", "why": "a shop with neither control still gets a toolbar" },
+	{ "file": "lib/skeleton-shop-toolbar.mjs", "find": "const els = m.els.filter( shown );", "replace": "const els = m.els;", "why": "an element never shown counts as the sort control" },
+	{ "file": "lib/skeleton-commerce-region.mjs", "find": "const inner = toolbar && spec.inner ? [ toolbar.node, ...spec.inner ] : spec.inner || null;", "replace": "const inner = spec.inner || null;", "why": "the toolbar row is never placed in the collection" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "region?.toolbar?.absorb.includes( e.key ) ? v( 'shopToolbar'", "replace": "false ? v( 'shopToolbar'", "why": "the draft's own sort control and count stay beside the working ones" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "named.length >= R.categoryChips.minMatches )", "replace": "named.length >= 0 )", "why": "any chips on the shop are the category filter" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "if ( filter && R.categoryChips && 'shop' === surface.commerce?.role", "replace": "if ( filter && R.categoryChips", "why": "chips on any page are the category filter" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "if ( filter && R.categoryChips && 'shop'", "replace": "if ( R.categoryChips && 'shop'", "why": "chips that narrow no list are the category filter" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "|| 'categoryChips' === r.rule || loopProducts ) {", "replace": "|| loopProducts ) {", "why": "the category filter reads the draft's chip look" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "node.innerBlocks = r.inner.map( copy );\n\t\t}\n\t\t// The filter rail's groups", "replace": "\n\t\t}\n\t\t// The filter rail's groups", "why": "the category filter holds no taxonomy filter" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "rowOf[ x.key ] && ( rowOf[ x.key ].missingFeature = { line: x.line, why: x.why } );", "replace": "", "why": "an unsupported sort order is never a row" },
+	{ "file": "lib/intake-missing.mjs", "find": "skeletonRows.filter( ( r ) => r.missingFeature || (", "replace": "skeletonRows.filter( ( r ) => (", "why": "a row a rule marks as a missing feature is not listed" },
+	{ "file": "data/skeleton-decisions.json", "find": "\"taxonomy\": \"product_cat\", \"displayStyle\": \"woocommerce/product-filter-chips\"", "replace": "\"taxonomy\": \"product_brand\", \"displayStyle\": \"woocommerce/product-filter-chips\"", "why": "the category filter filters brands" },
+	{ "file": "data/skeleton-decisions.json", "find": "\"menu_order\": \"^(featured|", "replace": "\"menu_order\": \"^(", "why": "the default order is not recognised" }
+]

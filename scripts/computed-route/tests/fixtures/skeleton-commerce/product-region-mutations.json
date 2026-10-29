@@ -1,0 +1,16 @@
+[
+	{ "file": "lib/skeleton-product-region.mjs", "find": "stamps.includes( e.tpl ) );", "replace": "stamps.includes( e.tpl ) || 'button' === e.tag );", "why": "a button the record does not name is taken for the add control" },
+	{ "file": "lib/skeleton-product-region.mjs", "find": "'h1' === e.tag );", "replace": "'h2' === e.tag );", "why": "the page's heading is not the title" },
+	{ "file": "lib/skeleton-product-region.mjs", "find": "els.filter( ( e ) => e.parentKey === parent.key && e !== region && images( e ).length && ! under( add, e ) )", "replace": "els.filter( ( e ) => e.parentKey === parent.key && e !== region && ! under( add, e ) )", "why": "any sibling column counts as the gallery" },
+	{ "file": "lib/skeleton-product-region.mjs", "find": "const hero = gallery.length ? parent : region;", "replace": "const hero = region;", "why": "the composite is placed in the info column only, beside a second gallery" },
+	{ "file": "lib/skeleton-product-region.mjs", "find": "if ( ! region || ! title || region === m.root ) {", "replace": "if ( ! region || ! title ) {", "why": "the page's root is replaced by the composite" },
+	{ "file": "lib/skeleton-product-region.mjs", "find": "const els = m.els.filter( shown );", "replace": "const els = m.els;", "why": "an element never shown counts as evidence" },
+	{ "file": "lib/skeleton-shop-locators.mjs", "find": "( p ) => ADD_TO_BASKET === p.id )", "replace": "( p ) => true )", "why": "every buy box part is the add control" },
+	{ "file": "lib/skeleton-shop-locators.mjs", "find": "WOO_SORT === p.home?.contains", "replace": "true", "why": "every filter part is the sort control" },
+	{ "file": "lib/skeleton-shop-locators.mjs", "find": "WOO_COUNT === p.home?.contains", "replace": "true", "why": "every filter part is the result count" },
+	{ "file": "lib/skeleton-commerce-region.mjs", "find": "'single-product': 'product', ", "replace": "", "why": "the product template has no commerce role" },
+	{ "file": "lib/skeleton-commerce-region.mjs", "find": "'product' === role && located.add.length ? { buybox", "replace": "'product' === role ? { buybox", "why": "a product without a located add control still claims a buy box" },
+	{ "file": "lib/skeleton-commerce-region.mjs", "find": "if ( 'product' === commerce.role ) {", "replace": "if ( false ) {", "why": "the product role is never dispatched" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "item && false !== reads ?", "replace": "item && true ?", "why": "the composite reads the title's look" },
+	{ "file": "data/skeleton-decisions.json", "find": "{ \"name\": \"sgs/buybox\", \"attributes\": {}, \"reads\": false }", "replace": "{ \"name\": \"sgs/buybox\", \"attributes\": {} }", "why": "the composite carries no no-read flag" }
+]

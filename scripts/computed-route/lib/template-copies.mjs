@@ -25,8 +25,8 @@ const MAIN = { name: 'sgs/container', attributes: { tagName: 'main', anchor: 'ma
 
 // Templates whose inner block is the page's own content.
 export const PAGE_CONTENT = [ 'front-page', 'page' ];
-// Templates built from their surface's whole Filled tree: WooCommerce's pages.
-export const WHOLE_TREE = [ 'archive-product', 'single-product', 'cart', 'checkout' ];
+// Templates built from their surface's whole Filled tree: WooCommerce's pages (the order confirmation among them, FR-48-87).
+export const WHOLE_TREE = [ 'archive-product', 'single-product', 'cart', 'checkout', 'order-confirmation' ];
 // Templates the draft has no surface for: built from the site's own `page` copy with the theme template's own content.
 export const DERIVED = [ '404', 'search', 'archive', 'product-search-results', 'taxonomy-product_attribute' ];
 // The templates WordPress reaches by its template hierarchy (a page's slug reaches `page-<slug>`), never set as a page's
@@ -65,7 +65,14 @@ export function copySource( rows, slug ) {
 	return DERIVED.includes( slug ) ? 'page' : null;
 }
 
-const sameNode = ( a, b ) => a.name === b.name && JSON.stringify( a.attributes || {} ) === JSON.stringify( b.attributes || {} );
+// A node's attributes without the ref class a Fill run stamps on it (`cr-ref-…`, one per node of one page's tree): two pages'
+// wrappers that differ only by their own ref are the same wrapper.
+const withoutRef = ( attributes ) => {
+	const { className, ...rest } = attributes || {};
+	const kept = String( className ?? '' ).split( /\s+/ ).filter( ( t ) => t && ! /^cr-ref-/.test( t ) ).join( ' ' );
+	return kept ? { ...rest, className: kept } : rest;
+};
+const sameNode = ( a, b ) => a.name === b.name && JSON.stringify( withoutRef( a.attributes ) ) === JSON.stringify( withoutRef( b.attributes ) );
 
 // A Filled tree's shell: the run of single-child `sgs/container` wrappers from its root (each without its inner blocks),
 // and the content below it.

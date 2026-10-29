@@ -122,6 +122,47 @@
 				"reason": "a WooCommerce page's template copy prints the page's own content, WooCommerce's working block, where the draft's commerce region is (rules.commerceRegion)"
 			}
 		],
+		"loopBlocks": {
+			"reason": "a loop on any page is the working block its data and items say (Spec 48A FR-48A-8, Bean S5): products, brands or reviews, never decided by a section heading (FR-48-30)",
+			"products": { "reason": "a loop of items that show a price and link to a product page is the site's product collection, the block the shop region uses, with its own query (FR-48-83, Spec 27 FR-24-4)" },
+			"brands": {
+				"block": "sgs/brand-strip",
+				"attributes": { "source": "product-brands", "brandLinkToShop": true, "brandHideEmpty": true },
+				"minMatches": 2,
+				"reason": "a loop of links labelled with the catalogue's brands is the brand strip reading the product brands (FR-48-83)"
+			},
+			"reviews": {
+				"rating": "[\u2605\u2B50]{3,}|(?:\u00e2\u02dc\u2026){3,}|\\b[1-5](?:\\.\\d)?\\s*(?:out of 5|\\/\\s*5)\\b",
+				"quoteLength": 40,
+				"providers": {
+					"google": { "host": "(^|[./])(share\\.google|google\\.[a-z.]+|g\\.page|goo\\.gl)", "block": "sgs/google-reviews", "countAttribute": "maxReviews", "attributes": {}, "handover": { "owner": "content-page", "kind": "presence", "detail": "the Google place the reviews come from: set the place in the reviews block" } },
+					"trustpilot": { "host": "trustpilot\\.com", "block": "sgs/trustpilot-reviews", "attributes": {}, "handover": { "owner": "content-page", "kind": "presence", "detail": "the Trustpilot business unit the reviews come from: set it in the reviews block" } }
+				},
+				"reason": "a loop of items that each show a rating and a quote, linking to a review provider, is that provider's reviews block (FR-48-83)"
+			}
+		},
+		"shopToolbar": {
+			"block": "sgs/container",
+			"attributes": { "tagName": "div", "className": "sgs-shop-toolbar" },
+			"count": "woocommerce/product-results-count",
+			"sort": "woocommerce/catalog-sorting",
+			"sortOptions": {
+				"menu_order": "^(featured|default|menu_order|recommended|relevance)$|default sort",
+				"popularity": "popular|best.?sell",
+				"rating": "rating|rated",
+				"date": "newest|latest|recent|^date$",
+				"price": "price.?asc|low.{0,6}high|^low$|cheapest|lowest",
+				"price-desc": "price.?desc|high.{0,6}low|^high$|dearest|highest"
+			},
+			"missingReason": "WooCommerce's sorting block has a fixed set of orders; a draft order it cannot express needs a framework build or a Bean decision (FR-48-61)",
+			"reason": "the draft's sort control and result count are WooCommerce's catalog-sorting and product-results-count in a toolbar row at the top of the product collection, as the theme's archive-product copy composes them (the count reads its query from the collection around it); found by the shop parts record's stamps, never by words (FR-48-61, FR-48-87)"
+		},
+		"categoryChips": {
+			"block": "woocommerce/product-filters",
+			"inner": [ { "name": "woocommerce/product-filter-taxonomy", "attributes": { "taxonomy": "product_cat", "displayStyle": "woocommerce/product-filter-chips" }, "innerBlocks": [ { "name": "woocommerce/product-filter-chips", "attributes": {}, "innerBlocks": [] } ] } ],
+			"minMatches": 2,
+			"reason": "a group of pressable chips on the shop whose labels are the catalogue's product categories is WooCommerce's product category filter in its chips look, which narrows the listing for real (FR-48-61, FR-48-87); found by the catalogue's categories (FR-48-92), never by a heading"
+		},
 		"filterRail": {
 			"reason": "the draft's filter rail on the shop template is the framework's working filter: WooCommerce's product filters inside the theme's #sgs-shop-filters aside, one heading and filter per group, as archive-product.html composes it and the theme's filter drawer builds its groups from (Spec 48 FR-48-61); found by structure from the catalogue's facets (lib/skeleton-filter-rail.mjs), never by words",
 			"block": "sgs/container",
@@ -159,6 +200,21 @@
 			"roles": {
 				"cart": { "block": "core/post-content", "reason": "the cart page's content is WooCommerce's Cart block (site build keeps it, lib/site-build-plan.mjs::wooContentRole), which draws the order lines, the totals and the checkout button" },
 				"checkout": { "block": "core/post-content", "reason": "the checkout page's content is WooCommerce's Checkout block (kept by site build), which draws the payment form and the order summary" },
+				"product": {
+					"block": "sgs/container",
+					"attributes": { "tagName": "div" },
+					"inner": [
+						{ "name": "sgs/heading", "attributes": { "level": "h1", "metadata": { "bindings": { "content": { "source": "sgs-product/field", "args": { "key": "title", "source": "auto" } } } } } },
+						{ "name": "sgs/buybox", "attributes": {}, "reads": false }
+					],
+					"reason": "the single-product template is the whole draft page (FR-48-56); the area that varies per product is the working, bound pieces: the title is a heading bound to the product (sgs-product/field), and the hero (gallery, price, option pickers, stock line, add-to-basket) is sgs/buybox, the composite that draws them from the WooCommerce product, the stated fallback until the Spec 27 parts split exists (FR-48-60 step 1, Bean S13)"
+				},
+				"confirmation": {
+					"block": "woocommerce/order-confirmation-totals-wrapper",
+					"attributes": { "align": "wide" },
+					"inner": [ { "name": "woocommerce/order-confirmation-totals", "attributes": { "lock": { "remove": true } } } ],
+					"reason": "the order confirmation is a commerce page (FR-48-87, Bean S4): the draft's order summary, its lines and the amount paid, is WooCommerce's order-confirmation totals, which draw the placed order; the draft's heading, steps and notes around it stay its own blocks"
+				},
 				"account": { "block": "sgs/account", "reason": "the account page is an ordinary page (Bean, 2026-10-26; the hand-built reference shop's account page is the theme's page with WooCommerce's account output in it): its sign-in and account forms region is sgs/account, WooCommerce's account piece, which draws the forms, the menu and the dashboard" },
 				"shop": {
 					"block": "woocommerce/product-collection",

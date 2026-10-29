@@ -15,26 +15,37 @@
 //     folded into the account row by the page map) has as its region the shown branch of the condition that holds a link
 //     to that page: the account block draws the sign-in form there for a visitor, and the account itself once signed in;
 //   - shop: the element whose children are the items of the product loop (an `sc-for` of a mounted card that shows a
-//     currency amount); WooCommerce's product collection draws the products, each in the site's own product card.
+//     currency amount); WooCommerce's product collection draws the products, each in the site's own product card;
+//     the shop's sort control and result count become WooCommerce's sorting and count in a toolbar row at the top of that
+//     collection (lib/skeleton-shop-toolbar.mjs);
+//   - confirmation: the smallest element holding a loop of order lines (an `sc-for` whose items show a currency amount) and an
+//     amount outside that loop (the total paid), the order summary; WooCommerce's order-confirmation totals draw the lines
+//     and totals, and the draft's heading, steps and notes around it stay its own blocks;
+//   - product: the single-product template's hero, lib/skeleton-product-region.mjs (the buy box composite and the bound title).
 // Only shown elements count, so a closed panel (the header's basket drawer) never holds evidence; two candidates for one
 // role leave the surface as it is, with a note naming them. Pure: the inventory model in, the region out.
 
 import { templateKey } from './fact-key.mjs';
 import { isAccountRow } from './site-build-map.mjs';
+import { productRegion } from './skeleton-product-region.mjs';
+import { shopToolbar } from './skeleton-shop-toolbar.mjs';
+import { shopPartStamps } from './skeleton-shop-locators.mjs';
 
 // The commerce role of a surface, by the template it builds (surfaces.json `target.template`) or, for the account page
 // (an ordinary page holding WooCommerce's account piece), the page row its post is; the checkout page's route (a cart's
 // region links to it); and, for the account page, `signIn`: the other draft page files holding the account row's own
 // WooCommerce forms (its `parts` owned by `woocommerce`, each naming `<file>:<line>:<column> <tag>`), where a signed-out
-// view sends its visitor. The shop's role also carries `filters`, what the draft catalogue (sites/<client>/build/catalogue.json,
+// view sends its visitor. The product's role carries `buybox`, the draft stamps of its add-to-basket control, and the shop's
+// `toolbar`, those of its sort control and result count, both read from the client's shop parts record (`shopParts`,
+// lib/skeleton-shop-locators.mjs). The shop's role also carries `filters`, what the draft catalogue (sites/<client>/build/catalogue.json,
 // FR-48-92) says its filter rail can filter: { facets, brands, categories } (lib/skeleton-filter-rail.mjs).
-export const COMMERCE_ROLES = { 'archive-product': 'shop', cart: 'cart', checkout: 'checkout' };
+export const COMMERCE_ROLES = { 'archive-product': 'shop', 'single-product': 'product', cart: 'cart', checkout: 'checkout', 'order-confirmation': 'confirmation' };
 const draftFile = ( s ) => /^([^:?#]+\.dc\.html)(?=[:?#]|$)/i.exec( String( s ?? '' ) )?.[ 1 ] ?? null;
-const filtersOf = ( catalogue ) => {
+export const filtersOf = ( catalogue ) => {
 	const kept = ( catalogue?.products || [] ).filter( ( p ) => ! ( catalogue.dropped || [] ).includes( p.draftId ) );
 	return { facets: catalogue?.facets || [], brands: [ ...new Set( kept.map( ( p ) => p.brand ).filter( Boolean ) ) ], categories: [ ...new Set( kept.flatMap( ( p ) => p.categories || [] ) ) ] };
 };
-export function commerceOf( entry, rows = [], catalogue = null ) {
+export function commerceOf( entry, rows = [], catalogue = null, shopParts = null ) {
 	const page = null != entry?.target?.postId ? rows.find( ( r ) => r.id === entry.target.postId ) : null;
 	const role = COMMERCE_ROLES[ entry?.target?.template ] ?? ( page && isAccountRow( page ) ? 'account' : undefined );
 	if ( ! role ) {
@@ -42,7 +53,15 @@ export function commerceOf( entry, rows = [], catalogue = null ) {
 	}
 	const checkout = rows.find( ( r ) => 'page' === r.postType && 'checkout' === r.template )?.route ?? null;
 	const signIn = 'account' === role ? [ ...new Set( ( page.parts || [] ).filter( ( p ) => 'woocommerce' === p.owner ).map( ( p ) => draftFile( p.draftId ) ).filter( ( f ) => f && f !== draftFile( page.route ) ) ) ] : [];
-	return { role, checkout, ...( signIn.length ? { signIn } : {} ), ...( 'shop' === role && catalogue ? { filters: filtersOf( catalogue ) } : {} ) };
+	const located = shopPartStamps( shopParts );
+	return {
+		role,
+		checkout,
+		...( signIn.length ? { signIn } : {} ),
+		...( 'shop' === role && catalogue ? { filters: filtersOf( catalogue ) } : {} ),
+		...( 'product' === role && located.add.length ? { buybox: { add: located.add } } : {} ),
+		...( 'shop' === role && ( located.sort.length || located.count.length ) ? { toolbar: { sort: located.sort, count: located.count } } : {} ),
+	};
 }
 
 // An attribute as the draft's code writes it: the element's own opening tag (the inventory's `attrs` keeps a few only). The
@@ -68,9 +87,12 @@ export function leadsTo( href, route ) {
 // A page link without its query string and fragment (`SignIn.dc.html?mode=register` is the SignIn page); a hash link as it is.
 const pagePath = ( href ) => ( null == href ? href : String( href ).trim().startsWith( '#' ) ? href : String( href ).split( /[?#]/ )[ 0 ] );
 
-export function commerceRegion( { m, commerce, rule } ) {
+export function commerceRegion( { m, commerce, rule, toolbarRule = null } ) {
 	if ( ! commerce?.role || ! rule ) {
 		return null;
+	}
+	if ( 'product' === commerce.role ) {
+		return productRegion( { m, commerce, rule } );
 	}
 	const money = new RegExp( rule.money );
 	const els = m.els.filter( shown );
@@ -147,6 +169,13 @@ export function commerceRegion( { m, commerce, rule } ) {
 			const entry = checkoutEntryRegion();
 			entry && found.push( entry );
 		}
+	} else if ( 'confirmation' === commerce.role ) {
+		for ( const [ , list ] of moneyLoops ) {
+			// The loop's lowest ancestor that also holds an amount outside it: the order summary with its total.
+			const holder = common( list );
+			const summary = holder ? ancestors( holder ).find( ( a ) => els.some( ( e ) => ! list.includes( e ) && ancestors( e ).includes( a ) && ! ancestors( holder ).includes( e ) && money.test( m.words( e ) ) ) ) : null;
+			summary && found.push( { region: summary, evidence: [ `the order lines loop (${ list.length } elements)`, 'the amount paid beside it' ] } );
+		}
 	} else if ( 'account' === commerce.role && passwords.length ) {
 		found.push( { region: common( passwords ), evidence: [ `${ passwords.length } password field(s)` ] } );
 	} else if ( 'account' === commerce.role ) {
@@ -185,5 +214,8 @@ export function commerceRegion( { m, commerce, rule } ) {
 		const row = m.blockKids( region ).filter( ( k ) => null != top && k.box?.[ 1440 ]?.y === top ).length;
 		row > 0 && ( attributes.displayLayout.columns = row );
 	}
-	return { key: region.key, role: commerce.role, block: spec.block, attributes, inner: spec.inner || null, item: item || null, reason: `${ spec.reason } (${ evidence.join( '; ' ) })` };
+	// The shop's sort control and result count: a toolbar row at the top of the collection (lib/skeleton-shop-toolbar.mjs).
+	const toolbar = 'shop' === commerce.role ? shopToolbar( { m, commerce, region, rule: toolbarRule } ) : null;
+	const inner = toolbar && spec.inner ? [ toolbar.node, ...spec.inner ] : spec.inner || null;
+	return { key: region.key, role: commerce.role, block: spec.block, attributes, inner, item: item || null, ...( toolbar ? { toolbar } : {} ), reason: `${ spec.reason } (${ evidence.join( '; ' ) })` };
 }

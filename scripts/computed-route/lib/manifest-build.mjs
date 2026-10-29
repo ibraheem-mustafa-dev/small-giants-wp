@@ -97,7 +97,9 @@ export function matchRecord( row, records ) {
 	if ( ! kind ) {
 		return { reason: `no record kind for post type ${ row.postType }` };
 	}
-	let mine = records.filter( ( r ) => r.kind === kind );
+	// A `template` row (the order confirmation) is played by a page or a result record: the draft shows the confirmation as the
+	// page it opens or as the result of placing an order.
+	let mine = records.filter( ( r ) => r.kind === kind || ( 'template' === row.postType && 'result' === r.kind ) );
 	if ( 'page' === kind ) {
 		mine = mine.filter( ( r ) => null != row.route && r.page_key === pageKeyOf( row.route ) );
 	} else if ( 'form' === kind ) {
@@ -105,6 +107,8 @@ export function matchRecord( row, records ) {
 	} else if ( mine.length > 1 ) {
 		mine = mine.filter( ( r ) => norm( r.name ) === norm( row.title ) );
 	}
+	// A page record and a result record of the same page: the page is the surface.
+	mine.length > 1 && 'template' === row.postType && mine.some( ( r ) => 'page' === r.kind ) && ( mine = mine.filter( ( r ) => 'page' === r.kind ) );
 	if ( 1 === mine.length ) {
 		return { record: mine[ 0 ] };
 	}
