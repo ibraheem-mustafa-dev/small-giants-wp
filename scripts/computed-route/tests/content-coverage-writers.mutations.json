@@ -157,8 +157,8 @@
 	},
 	{
 		"file": "lib/skeleton-write-content.mjs",
-		"find": "( a.linkTarget = e.attrs.target );\n\t\t}\n\t\treturn { a: {",
-		"replace": "void e;\n\t\t}\n\t\treturn { a: {",
+		"find": "( a.linkTarget = e.attrs.target );\n\t}\n\n\t// The content settings",
+		"replace": "void e;\n\t}\n\n\t// The content settings",
 		"why": "linkTarget is never written"
 	},
 	{
@@ -181,8 +181,8 @@
 	},
 	{
 		"file": "lib/skeleton-write-content.mjs",
-		"find": "if ( linkAttr && href ) {",
-		"replace": "if ( false ) {",
+		"find": "linkAttr && linkSettings( block",
+		"replace": "false && linkSettings( block",
 		"why": "the first link setting is never written"
 	}
 ]

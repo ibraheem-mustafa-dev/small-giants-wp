@@ -59,6 +59,32 @@ export function makeContent( ctx ) {
 		return opts.includes( want ) ? { layout: want } : {};
 	};
 
+	// The link setting of one element: its href, or for a button with no href its click handler (`<button
+	// sc-camel-on-click="{{ goShop }}">`, FR-48-30), as a site address (lib/draft-link.mjs: a draft route is never written as
+	// it stands). Writes into `a` and `handover`. A handler the routing read recorded as a control (an opener, a toggle) is
+	// no link and says nothing.
+	function linkSettings( block, e, top, linkAttr, a, handover ) {
+		const href = e.attrs?.href;
+		const handler = elementHandler( e );
+		const byHandler = ! href && null !== handler;
+		if ( ! href && ! byHandler ) {
+			return;
+		}
+		const r = siteLink( href || '', e );
+		if ( 'none' === r.kind ) {
+			const onClick = handlerOf( handler );
+			const subject = byHandler ? 'draft button' : 'draft link is "#"';
+			const how = onClick ? `${ byHandler ? ' navigates' : ' and navigates' } by script ${ onClick }` : '';
+			const items = r.routes ? ` to one of ${ r.routes.map( ( x ) => `"${ x }"` ).join( ', ' ) } by the item it is clicked on` : '';
+			( ! byHandler || r.navigates ) && handover.push( { owner: 'behaviour', kind: 'link', detail: `${ subject }${ how }${ items }: destination not in the draft, url left empty` } );
+		} else if ( ! top.linkSource ) {
+			const out = linkWrite( r, href || handlerOf( handler ) );
+			null !== out.value && ( a[ linkAttr ] = out.value );
+			out.handover && handover.push( out.handover );
+		}
+		e.attrs?.target && attrExists( block, 'linkTarget' ) && ( a.linkTarget = e.attrs.target );
+	}
+
 	// The content settings of one element's block. Returns { a (attributes), handover }.
 	function contentAttrs( block, e, top ) {
 		const a = {};
@@ -93,20 +119,7 @@ export function makeContent( ctx ) {
 		const { text: textAttr, link: linkAttr } = skeletonSettings( facts, block );
 		textAttr && t && ( a[ textAttr ] = m.textWithBreaks( e ).includes( '<br>' ) ? m.textWithBreaks( e ) : t );
 		top.linkSource && ( a.linkSource = top.linkSource );
-		const href = e.attrs?.href;
-		if ( linkAttr && href ) {
-			// The draft's destination as a site address (lib/draft-link.mjs): a draft route is never written as it stands.
-			const r = siteLink( href, e );
-			if ( 'none' === r.kind ) {
-				const onClick = handlerOf( elementHandler( e ) );
-				handover.push( { owner: 'behaviour', kind: 'link', detail: `draft link is "#"${ onClick ? ` and navigates by script ${ onClick }` : '' }${ r.routes ? ` to one of ${ r.routes.map( ( x ) => `"${ x }"` ).join( ', ' ) } by the item it is clicked on` : '' }: destination not in the draft, url left empty` } );
-			} else if ( ! top.linkSource ) {
-				const out = linkWrite( r, href );
-				null !== out.value && ( a[ linkAttr ] = out.value );
-				out.handover && handover.push( out.handover );
-			}
-			e.attrs?.target && attrExists( block, 'linkTarget' ) && ( a.linkTarget = e.attrs.target );
-		}
+		linkAttr && linkSettings( block, e, top, linkAttr, a, handover );
 		return { a: { ...a, ...Object.fromEntries( Object.entries( top.attributes || {} ) ) }, handover };
 	}
 
