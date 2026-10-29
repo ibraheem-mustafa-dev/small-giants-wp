@@ -11,11 +11,11 @@
 - One draft element is one node's: a surface root that holds the form card and an aside (the trade application) makes the form block the card only.
 - Spec 48 §3.4 (skeleton output, `draftSlots`) states the universal pairing.
 
-## Track M: what the draft's code does (RC9, RC10, RC12)
+## Track M: what the draft's code does (RC9, RC10, RC12, RC14)
 
 - Content the draft computes from the clock (`Date`) is recognised from the code, never from the words it shows when read.
 - A behaviour effect is recognised by what it does (its shape, trigger and target), never by words or the draft's own identifiers in names; the pinned-track recogniser keyed on `updatePins`/`data-pin` is replaced.
-- The rules read what the draft states rather than its raw text: computed sizes per width (`clamp()` and `var()` today read as nothing, `lib/skeleton-rules.mjs::declared`, `lengthPx`) and every event binding the template and the logic make (`handlerOf` sees only one click form, in a snippet cut at 400 characters), from the fact record and the inventory.
+- RC14: one element-facts reader that every skeleton rule reads, each fact from its source under R-47-4: attributes and every event binding from the fact record (`template.attrs`, full, any event); what a handler does from the logic's syntax tree (the existing readers, fed the binding from the record); declared styles from the fact record; resolved values per width (a `clamp()`, `var()` or `calc()` result, and the inherited text properties such as font size, weight, tracking and case) from the inventory's browser read, beside the `display`, `position` and box it already measures. The string helpers go, the snippet stays only for the review page, and a lint refuses a skeleton module that reads `snippet` or the raw `style` attribute.
 - Content a draft's code injects (a fetched SVG in a stamped holder or a custom element) is read as that holder's content per width, and the motion on its parts is recorded against the stamped holder and the part's id (METHOD §5.2); the `html:custom-element` coverage entry stops excluding a custom element's internals; the logo and the hero carry it through the framework's inline SVG and motion settings, or a framework gap row names what cannot be carried.
 
 ## Track D: data, the container band and the review (RC2, RC13, RC4, the finaliser)
