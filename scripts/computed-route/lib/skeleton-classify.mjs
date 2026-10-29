@@ -117,7 +117,7 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 	const rules = makeRules( { m, facts, surface, motion, view, scope, hooks: { siteInfoKinds, isColumnLabel, blockOfKey, formLinkOf, siteLink, topBlock: ( k ) => classify( k, null ).candidates[ 0 ]?.block } } );
 	// A rule verdict in the classifier's result shape (lib/skeleton-rules.mjs).
 	const fromRule = ( r ) => {
-		const base = { rule: r.rule, source: `rule ${ r.rule }`, reason: r.reason, confidence: 1, ...( r.handover ? { handover: r.handover } : {} ), ...( r.inner ? { inner: r.inner, item: r.item } : {} ) };
+		const base = { rule: r.rule, source: `rule ${ r.rule }`, reason: r.reason, confidence: 1, ...( r.handover ? { handover: r.handover } : {} ), ...( r.inner ? { inner: r.inner, item: r.item } : {} ), ...( r.opens ? { opens: r.opens } : {} ) };
 		if ( r.action ) {
 			return { ...base, action: r.action, ...( r.into ? { into: r.into } : {} ), candidates: [] };
 		}

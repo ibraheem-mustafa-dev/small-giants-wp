@@ -1,0 +1,10 @@
+[
+	{"file": "lib/site-check-parts.mjs", "find": "return [ ...flowRows, ...modalRows ];", "replace": "return flowRows;", "why": "modal rows are covered"},
+	{"file": "lib/site-check-parts.mjs", "find": "rows.filter( ( r ) => 'sgs_modal' === r.postType )", "replace": "rows", "why": "only a modal row is a modal row"},
+	{"file": "lib/site-check-parts.mjs", "find": "m.anchor === r.slug || String( m.label || '' )", "replace": "String( m.label || '' )", "why": "a modal is its row by the frame's anchor"},
+	{"file": "lib/site-check-parts.mjs", "find": " || String( m.label || '' ).toLowerCase() === String( r.title ).toLowerCase() ) );\n\treturn [", "replace": "  ) );\n\treturn [", "why": "a modal is its row by its dialog's name too"},
+	{"file": "lib/site-check-parts.mjs", "find": "return [ ...flowRows, ...modalRows ];", "replace": "return [ ...modalRows, ...flowRows ];", "why": "flow rows come first"},
+	{"file": "site-check.mjs", "find": "seenModals.push( m );", "replace": "", "why": "the modals seen are checked against the rows"},
+	{"file": "site-check.mjs", "find": "missingFlowRows( rows, seenFlows, seenModals )", "replace": "missingFlowRows( rows, seenFlows )", "why": "the modals seen are passed to the rows check"},
+	{"file": "site-check.mjs", "find": "items.push( 'sgs_modal' === r.postType", "replace": "items.push( false", "why": "a modal row has its own failure"}
+]

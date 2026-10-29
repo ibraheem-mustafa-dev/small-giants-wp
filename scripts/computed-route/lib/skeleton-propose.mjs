@@ -25,6 +25,7 @@ import { makeRecorder } from './skeleton-write-record.mjs';
 import { makeUnits } from './skeleton-write-units.mjs';
 import { makeContent } from './skeleton-write-content.mjs';
 import { noRegionProblem } from './skeleton-commerce-refusal.mjs';
+import { modalFrame } from './skeleton-opener.mjs';
 import { makeSlotRows } from './skeleton-write-slots.mjs';
 import { siteLinkResolver } from './draft-link.mjs';
 
@@ -140,7 +141,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	const w = {};
 	const ctx = {
 		m, facts, cls, R, view, overrides, base, finder, rootOf, inventory, carried, surfaceKind, calSettings, rows, rowOf, w, siteLink,
-		widthAlternatives: [], variantsOf: new Map(), railIds: null, carryProblems: [], slotProblems: [], nodeOfKey: {}, partPending: [], hosts: [], stripRoots: [],
+		widthAlternatives: [], variantsOf: new Map(), railIds: null, carryProblems: [], slotProblems: [], openedModals: new Map(), nodeOfKey: {}, partPending: [], hosts: [], stripRoots: [],
 	};
 	const { widthAlternatives, carryProblems, slotProblems, nodeOfKey, partPending, hosts } = ctx;
 	Object.assign( w, makeRecorder( ctx ) );
@@ -198,6 +199,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const clash = Object.keys( carry ).filter( ( k ) => undefined !== top.attributes?.[ k ] && String( top.attributes[ k ] ) !== String( carry[ k ] ) );
 		r.handover && handover.push( r.handover );
 		const node = base( e, block, a );
+		'modalOpener' === r.rule && ctx.openedModals.set( r.opens.row.slug, r.opens );
 		// A linked form reads nothing from the draft: the saved form's own surface holds its look (Spec 48 §2). Nor does a
 		// commerce region's WooCommerce piece, which draws the region from WooCommerce; the product card inside the shop's
 		// collection is read at the draft's first card, whose look it takes.
@@ -371,6 +373,18 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		top !== m.root && ( x.strip = top.key );
 	} );
 	built && R.clientBuiltSurface && rows.forEach( ( x ) => Object.assign( x, { rule: 'clientBuiltSurface', builtPost: built, low: false }, 'unresolved' === x.action ? { action: null } : {} ) );
+	// Each modal a control of this surface opens is framed once on the page that holds the control (lib/skeleton-opener.mjs); a
+	// header, footer, drawer or other part has no page to stand a frame on, and the proposal says so.
+	const openerNotes = [];
+	for ( const target of ctx.openedModals.values() ) {
+		if ( surfaceKind && 'page' !== surfaceKind ) {
+			openerNotes.push( `the ${ target.row.slug } modal is opened from this ${ surfaceKind } surface, which stands on no page: a page that holds the modal frame is needed` );
+			continue;
+		}
+		const frame = modalFrame( { target, carried } );
+		skeleton.push( frame.node );
+		frame.missing && carryProblems.push( frame.missing );
+	}
 	const problems = [ ...skeletonProblems( skeleton ), ...carryProblems, ...slotProblems, ...( db ? lintSkeleton( skeleton, db ) : [] ), ...[ noRegionProblem( { surface, commerce, region: cls.commerceRegion } ) ].filter( Boolean ) ];
 	const proposal = {
 		generated: new Date().toISOString(), inventory: inventory.generated, source: inventory.source, surface, siteName: facts.siteName, surfaceParts: scope?.surfaceParts ?? [], stripRoots: ctx.stripRoots, recordDisagreements: view.disagreements, recordUntranslated: view.untranslated,
@@ -380,6 +394,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		...( cls.commerceRegion ? { commerceRegion: cls.commerceRegion.note ? { note: cls.commerceRegion.note } : { key: cls.commerceRegion.key, role: cls.commerceRegion.role, block: cls.commerceRegion.block } } : {} ),
 		...( cls.filterRail ? { filterRail: cls.filterRail.note ? { note: cls.filterRail.note } : { key: cls.filterRail.key, groups: cls.filterRail.groups, notes: cls.filterRail.notes, attributeIds: ctx.railIds || {} } } : {} ),
 		counts: { inventoryElements: m.els.length, parts: m.els.filter( m.isPart ).length, rows: rows.length, skeletonNodes: count( skeleton ), expandedNodes: count( expandSiteInfoRows( skeleton ) ), low: rows.filter( ( r ) => r.low && ! r.action ).length, removed: rows.filter( ( r ) => [ 'remove', 'absorbed', 'unwrap' ].includes( r.action ) ).length, unresolved: rows.filter( ( r ) => 'unresolved' === r.action ).length, byRule: rows.reduce( ( o, r ) => ( r.rule ? { ...o, [ r.rule ]: ( o[ r.rule ] || 0 ) + 1 } : o ), {} ) },
+		...( ctx.openedModals.size ? { openedModals: [ ...ctx.openedModals.values() ].map( ( t ) => ( { slug: t.row.slug, anchor: t.anchor, surface: t.surface.id } ) ), openerNotes } : {} ),
 		widthAlternatives, problems, rows,
 	};
 	return { skeleton, proposal, problems };

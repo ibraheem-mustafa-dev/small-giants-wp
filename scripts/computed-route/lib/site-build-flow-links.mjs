@@ -1,5 +1,5 @@
 // The product flow links (Spec 48 FR-48-55, Spec 43 FR-43-25): a page-map `product` row naming the choice flow its
-// page opens (`opensFlow`, lib/intake-pagemap-flow-openers.mjs) links every product that row covers to that flow by
+// page opens (`opens`, lib/intake-pagemap-flow-openers.mjs) links every product that row covers to that flow by
 // the product meta `_sgs_choice_flow` (the flow's slug), which makes the buybox open the flow
 // (plugins/sgs-blocks/includes/buybox-linked-flow.php). A `live` product row covers every published product (they all
 // use the one single-product template); a `static` row's items are content written into the page, so it covers none.
@@ -9,14 +9,21 @@
 export const FLOW_META = '_sgs_choice_flow';
 const SLUG = /^[a-z0-9-]+$/;
 
+// The flow a row links: the one flow its page opens (`opens`, kind flow); null when it opens none or several (a product
+// links one flow, and the page map holds a gap row for a page opening two).
+export function flowOf( row ) {
+	const flows = ( row?.opens || [] ).filter( ( o ) => 'flow' === o.kind );
+	return 1 === flows.length ? flows[ 0 ].slug : null;
+}
+
 // The product rows that link a flow, and the problems that stop the run (a flow slug no flow row of the map holds, two
 // live rows naming different flows).
 export function flowLinkRows( rows ) {
-	const linking = rows.filter( ( r ) => 'product' === r.postType && r.opensFlow );
+	const linking = rows.filter( ( r ) => 'product' === r.postType && flowOf( r ) );
 	const flows = new Set( rows.filter( ( r ) => 'sgs_choice_flow' === r.postType ).map( ( r ) => r.slug ) );
-	const problems = linking.filter( ( r ) => ! SLUG.test( r.opensFlow ) || ! flows.has( r.opensFlow ) )
-		.map( ( r ) => `product row "${ r.slug }" opens flow "${ r.opensFlow }", which no sgs_choice_flow row of the page map holds` );
-	const live = [ ...new Set( linking.filter( ( r ) => 'live' === r.collection ).map( ( r ) => r.opensFlow ) ) ];
+	const problems = linking.filter( ( r ) => ! SLUG.test( flowOf( r ) ) || ! flows.has( flowOf( r ) ) )
+		.map( ( r ) => `product row "${ r.slug }" opens flow "${ flowOf( r ) }", which no sgs_choice_flow row of the page map holds` );
+	const live = [ ...new Set( linking.filter( ( r ) => 'live' === r.collection ).map( ( r ) => flowOf( r ) ) ) ];
 	if ( live.length > 1 ) {
 		problems.push( `the live product rows open different flows (${ live.join( ', ' ) }) and every product uses one single-product template` );
 	}
@@ -62,8 +69,8 @@ export function planFlowLinks( rows, state, { pending = false } = {} ) {
 			notes.push( `product row "${ row.slug }" is static (its items are content written into the page), so it links no WordPress product` );
 			continue;
 		}
-		if ( ! state.flows?.[ row.opensFlow ] ) {
-			( pending ? notes : problems ).push( `flow "${ row.opensFlow }" is no published sgs_choice_flow post on the site; run the site build for its row first` );
+		if ( ! state.flows?.[ flowOf( row ) ] ) {
+			( pending ? notes : problems ).push( `flow "${ flowOf( row ) }" is no published sgs_choice_flow post on the site; run the site build for its row first` );
 			continue;
 		}
 		if ( ! state.products?.length ) {
@@ -74,14 +81,14 @@ export function planFlowLinks( rows, state, { pending = false } = {} ) {
 				notes.push( `product ${ p.id } "${ p.title }" is the calibration reference product, left on the framework's own buybox` );
 				continue;
 			}
-			if ( p.flow === row.opensFlow ) {
+			if ( p.flow === flowOf( row ) ) {
 				continue;
 			}
 			if ( p.flow ) {
-				notes.push( `product ${ p.id } "${ p.title }" links flow "${ p.flow }", left as it is (the page map's product row opens "${ row.opensFlow }")` );
+				notes.push( `product ${ p.id } "${ p.title }" links flow "${ p.flow }", left as it is (the page map's product row opens "${ flowOf( row ) }")` );
 				continue;
 			}
-			actions.push( { id: p.id, title: p.title, from: '', to: row.opensFlow, say: `product ${ p.id } "${ p.title }": ${ FLOW_META } (unset) -> ${ row.opensFlow } (flow post ${ state.flows[ row.opensFlow ] })` } );
+			actions.push( { id: p.id, title: p.title, from: '', to: flowOf( row ), say: `product ${ p.id } "${ p.title }": ${ FLOW_META } (unset) -> ${ flowOf( row ) } (flow post ${ state.flows[ flowOf( row ) ] })` } );
 		}
 	}
 	return { actions, notes, problems };
@@ -112,7 +119,7 @@ echo wp_json_encode( array( 'set' => $set, 'wrong' => $wrong ) );`;
 // Runs the step: prints the plan, and with `apply` writes it and checks a fresh read plans nothing. Returns the exit
 // code (0 done, 1 stopped or a read-back mismatch). The page map is only read.
 export function runFlowLinks( { rows, runPhp, apply, pending = false, log = console.log, error = console.error } ) {
-	const slugs = [ ...new Set( flowLinkRows( rows ).linking.map( ( r ) => r.opensFlow ) ) ];
+	const slugs = [ ...new Set( flowLinkRows( rows ).linking.map( ( r ) => flowOf( r ) ) ) ];
 	if ( ! slugs.length ) {
 		log( 'flow links: no product row of the page map opens a choice flow; nothing to link' );
 		return 0;

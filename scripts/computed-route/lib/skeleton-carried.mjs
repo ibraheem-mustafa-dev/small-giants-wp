@@ -12,7 +12,7 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { parseLogic, keyName } from './intake-ast.mjs';
-import { boundMenu } from './site-build-map.mjs';
+import { boundMenu, readIdsSite } from './site-build-map.mjs';
 import { templateKey } from './fact-key.mjs';
 import { SERVED_ROOT } from './key-space.mjs';
 import { recordSite } from './cache.mjs';
@@ -100,6 +100,21 @@ export function carriedIds( { repo, client, site, rootComponent = null } ) {
 		menu: ( kind, index = 0 ) => {
 			const id = menus[ boundMenu( kind, Object.keys( menus ), index ) ];
 			return Number.isInteger( id ) && id > 0 ? id : null;
+		},
+		// The post id the site build made for a page-map row (`sites/<client>/build/page-map.json` `id`, written back by site-build.mjs
+		// for the site recorded in `page-map.site`): { id } | { reason } | null (null when no site is named).
+		postId: ( postType, slug ) => {
+			if ( ! site ) {
+				return null;
+			}
+			const mapFile = path.join( build, 'page-map.json' );
+			const rows = readJson( mapFile );
+			const ids = readIdsSite( mapFile );
+			if ( ! ids || recordSite( ids ) !== recordSite( site ) ) {
+				return { reason: `page-map.json holds post ids for ${ ids ?? 'no site' }, not ${ recordSite( site ) } (run site-build.mjs --apply on it)` };
+			}
+			const row = ( rows || [] ).find( ( r ) => r.postType === postType && r.slug === slug );
+			return Number.isInteger( row?.id ) && row.id > 0 ? { id: row.id } : { reason: `the page map holds no post id for ${ postType } ${ slug } (run site-build.mjs --apply on ${ recordSite( site ) })` };
 		},
 		attribute: ( slug ) => {
 			if ( ! site ) {

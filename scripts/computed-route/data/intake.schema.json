@@ -731,9 +731,28 @@
           "type": "string",
           "pattern": "^surfaces\\.json \\S+$"
         },
-        "opensFlow": {
-          "type": "string",
-          "pattern": "^[a-z0-9-]+$"
+        "opens": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "slug"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "modal",
+                  "flow"
+                ]
+              },
+              "slug": {
+                "type": "string",
+                "pattern": "^[a-z0-9-]+$"
+              }
+            }
+          }
         },
         "id": {
           "type": [
