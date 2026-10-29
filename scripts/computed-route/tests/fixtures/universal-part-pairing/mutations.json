@@ -60,6 +60,6 @@
 	{ "file": "lib/skeleton-part-pairing.mjs", "find": "if ( count( c ) > 1 && 1 === same.length", "replace": "if ( 1 === same.length", "why": "a one-part box is matched by its count" },
 	{ "file": "lib/skeleton-part-pairing.mjs", "find": "if ( 1 === leafParts.length && 1 === leafEls.length && pending.length > 1 &&", "replace": "if ( false &&", "why": "the last leaf part never takes the last leaf element" },
 	{ "file": "lib/skeleton-part-pairing.mjs", "find": "const copy = ( y ) => rest().filter( ( o ) => D.tplOf( o ) === D.tplOf( y ) ).length > 1;", "replace": "const copy = () => false;", "why": "one copy of a loop is taken as a single part" },
-	{ "file": "lib/skeleton-part-pairing.mjs", "find": "} else if ( c === first || ! first || ! L ) {", "replace": "} else if ( true ) {", "why": "every copy is paired on its own, so a later copy guesses" },
-	{ "file": "lib/skeleton-part-pairing.mjs", "find": "B.has( qk ) && ek && ! at.has( qk ) && ( at.set( qk, ek ), taken.add( ek ) );", "replace": "", "why": "a later copy takes none of the first copy's parts" }
+	{ "file": "lib/skeleton-part-pairing.mjs", "find": "ek ? at.set( qk, ek ) : ( at.delete( qk ), why.set( qk, 'the first copy of this repeated part has no element here, so neither has this one' ) );", "replace": "ek && at.set( qk, ek );", "why": "every copy is paired on its own, so a later copy guesses" },
+	{ "file": "lib/skeleton-part-pairing.mjs", "find": "first && L && c !== first && mirror.push( [ first, L[ 0 ], c, y ] );", "replace": "", "why": "a later copy takes none of the first copy's parts" }
 ]

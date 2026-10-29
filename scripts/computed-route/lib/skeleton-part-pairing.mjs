@@ -255,8 +255,9 @@ export function pairParts( { db, block, cal, paint = [], m, el, items = null, ow
 		};
 		// A repeated part's copies: the k-th copy of the draft's loop under x, or, with no loop and the copies the only parts
 		// here (`only`), the first copy is the element x the draft draws one copy at a time as.
-		// The draft's copies are one template drawn again, so only the first copy's parts are paired by the rules; each later copy
-		// takes the same parts at the same template elements of its own copy (mirror), never a guess of its own.
+		// The draft's copies are one template drawn again, so a later copy's part that the first copy also has takes the first
+		// copy's verdict at the same template element of its own copy (mirror): paired where the first is, unpaired where it is not;
+		// only the parts the first copy lacks (another render of the item in the block's calibration) are paired on their own.
 		const mirror = [];
 		const copiesOf = ( copies, L, only ) => {
 			const first = copies.find( ( c ) => 1 === Number( NTH.exec( lastOf( c ) )[ 1 ] ) );
@@ -265,12 +266,9 @@ export function pairParts( { db, block, cal, paint = [], m, el, items = null, ow
 				const y = L ? L[ k - 1 ] : only && 1 === k ? x : null;
 				if ( ! y ) {
 					why.set( c, L ? `the draft draws ${ L.length } copies of this repeated part` : 'the draft draws one copy of this repeated part, at the first' );
-				} else if ( c === first || ! first || ! L ) {
-					pair( c, y );
 				} else {
-					at.set( c, y );
-					taken.add( y );
-					mirror.push( [ first, L[ 0 ], c, y ] );
+					pair( c, y );
+					first && L && c !== first && mirror.push( [ first, L[ 0 ], c, y ] );
 				}
 			} );
 		};
@@ -413,14 +411,20 @@ export function pairParts( { db, block, cal, paint = [], m, el, items = null, ow
 		}
 		next.forEach( ( [ c, y ] ) => align( c, y ) );
 		for ( const [ c1, y1, ck, yk ] of mirror ) {
-			const inK = D.below( yk );
-			for ( const [ q, e ] of [ ...at ] ) {
-				if ( ! q.startsWith( `${ c1 } > ` ) || e.virtual || ! holds( y1, e ) ) {
+			const inK = [ yk, ...D.below( yk ) ];
+			for ( const qk of [ ...at.keys() ].filter( ( q ) => q.startsWith( `${ ck } > ` ) ) ) {
+				const q1 = `${ c1 }${ qk.slice( ck.length ) }`;
+				if ( ! B.has( q1 ) ) {
 					continue;
 				}
-				const qk = `${ ck }${ q.slice( c1.length ) }`;
-				const ek = e === y1 ? yk : inK.find( ( o ) => D.tplOf( o ) === D.tplOf( e ) );
-				B.has( qk ) && ek && ! at.has( qk ) && ( at.set( qk, ek ), taken.add( ek ) );
+				const e1 = at.get( q1 );
+				const ek = e1 && ! e1.virtual && holds( y1, e1 ) ? inK.find( ( o ) => D.tplOf( o ) === D.tplOf( e1 ) ) : null;
+				ek ? at.set( qk, ek ) : ( at.delete( qk ), why.set( qk, 'the first copy of this repeated part has no element here, so neither has this one' ) );
+			}
+			for ( const [ q1, e1 ] of [ ...at ] ) {
+				const qk = `${ ck }${ q1.slice( c1.length ) }`;
+				const ek = q1.startsWith( `${ c1 } > ` ) && ! e1.virtual && holds( y1, e1 ) && B.has( qk ) && ! at.has( qk ) ? inK.find( ( o ) => D.tplOf( o ) === D.tplOf( e1 ) ) : null;
+				ek && at.set( qk, ek );
 			}
 		}
 		// pass: a part with parts of its own and no draft element here is a box the draft does not draw; its parts pair against
