@@ -209,6 +209,12 @@
 					],
 					"reason": "the single-product template is the whole draft page (FR-48-56); the area that varies per product is the working, bound pieces: the title is a heading bound to the product (sgs-product/field), and the hero (gallery, price, option pickers, stock line, add-to-basket) is sgs/buybox, the composite that draws them from the WooCommerce product, the stated fallback until the Spec 27 parts split exists (FR-48-60 step 1, Bean S13)"
 				},
+				"confirmation": {
+					"block": "woocommerce/order-confirmation-totals-wrapper",
+					"attributes": { "align": "wide" },
+					"inner": [ { "name": "woocommerce/order-confirmation-totals", "attributes": { "lock": { "remove": true } } } ],
+					"reason": "the order confirmation is a commerce page (FR-48-87, Bean S4): the draft's order summary, its lines and the amount paid, is WooCommerce's order-confirmation totals, which draw the placed order; the draft's heading, steps and notes around it stay its own blocks"
+				},
 				"account": { "block": "sgs/account", "reason": "the account page is an ordinary page (Bean, 2026-10-26; the hand-built reference shop's account page is the theme's page with WooCommerce's account output in it): its sign-in and account forms region is sgs/account, WooCommerce's account piece, which draws the forms, the menu and the dashboard" },
 				"shop": {
 					"block": "woocommerce/product-collection",

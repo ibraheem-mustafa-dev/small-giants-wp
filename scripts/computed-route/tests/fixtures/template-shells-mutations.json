@@ -1,0 +1,12 @@
+[
+	{ "file": "lib/template-copies.mjs", "find": ".filter( ( t ) => t && ! /^cr-ref-/.test( t ) )", "replace": ".filter( ( t ) => t )", "why": "a node's own ref class makes its wrapper differ from every other page's" },
+	{ "file": "lib/template-copies.mjs", "find": "return kept ? { ...rest, className: kept } : rest;", "replace": "return rest;", "why": "a class that is not a ref is ignored too" },
+	{ "file": "lib/manifest-build.mjs", "find": "( 'template' === row.postType && 'result' === r.kind ) );", "replace": "'result' === r.kind );", "why": "an ordinary page row takes a result record" },
+	{ "file": "lib/manifest-build.mjs", "find": "mine.length > 1 && 'template' === row.postType && mine.some( ( r ) => 'page' === r.kind ) && ( mine = mine.filter( ( r ) => 'page' === r.kind ) );", "replace": "", "why": "a page and a result record of one page are ambiguous" },
+	{ "file": "lib/manifest-build.mjs", "find": "( r ) => r.kind === kind || ( 'template'", "replace": "( r ) => r.kind === kind && ( 'template'", "why": "a template row never reaches a result record" },
+	{ "file": "lib/template-copies.mjs", "find": "'cart', 'checkout', 'order-confirmation' ];\n// Templates the draft", "replace": "'cart', 'checkout' ];\n// Templates the draft", "why": "the order confirmation is built from the theme's content, not the whole Filled tree" },
+	{ "file": "lib/skeleton-commerce-region.mjs", "find": "checkout: 'checkout', 'order-confirmation': 'confirmation' };", "replace": "checkout: 'checkout' };", "why": "the order confirmation template has no commerce role" },
+	{ "file": "lib/skeleton-commerce-region.mjs", "find": "&& money.test( m.words( e ) ) ) ) : null;", "replace": "&& true ) ) : null;", "why": "any element beside the lines is the amount paid" },
+	{ "file": "lib/skeleton-commerce-region.mjs", "find": "els.some( ( e ) => ! list.includes( e ) && ancestors( e ).includes( a )", "replace": "els.some( ( e ) => ancestors( e ).includes( a )", "why": "the lines' own amounts are the amount paid beside them" },
+	{ "file": "data/skeleton-decisions.json", "find": "\"block\": \"woocommerce/order-confirmation-totals-wrapper\"", "replace": "\"block\": \"core/post-content\"", "why": "the order summary is the page's content block" }
+]

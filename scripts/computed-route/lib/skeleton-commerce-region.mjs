@@ -18,6 +18,9 @@
 //     currency amount); WooCommerce's product collection draws the products, each in the site's own product card;
 //     the shop's sort control and result count become WooCommerce's sorting and count in a toolbar row at the top of that
 //     collection (lib/skeleton-shop-toolbar.mjs);
+//   - confirmation: the smallest element holding a loop of order lines (an `sc-for` whose items show a currency amount) and an
+//     amount outside that loop (the total paid), the order summary; WooCommerce's order-confirmation totals draw the lines
+//     and totals, and the draft's heading, steps and notes around it stay its own blocks;
 //   - product: the single-product template's hero, lib/skeleton-product-region.mjs (the buy box composite and the bound title).
 // Only shown elements count, so a closed panel (the header's basket drawer) never holds evidence; two candidates for one
 // role leave the surface as it is, with a note naming them. Pure: the inventory model in, the region out.
@@ -36,7 +39,7 @@ import { shopPartStamps } from './skeleton-shop-locators.mjs';
 // `toolbar`, those of its sort control and result count, both read from the client's shop parts record (`shopParts`,
 // lib/skeleton-shop-locators.mjs). The shop's role also carries `filters`, what the draft catalogue (sites/<client>/build/catalogue.json,
 // FR-48-92) says its filter rail can filter: { facets, brands, categories } (lib/skeleton-filter-rail.mjs).
-export const COMMERCE_ROLES = { 'archive-product': 'shop', 'single-product': 'product', cart: 'cart', checkout: 'checkout' };
+export const COMMERCE_ROLES = { 'archive-product': 'shop', 'single-product': 'product', cart: 'cart', checkout: 'checkout', 'order-confirmation': 'confirmation' };
 const draftFile = ( s ) => /^([^:?#]+\.dc\.html)(?=[:?#]|$)/i.exec( String( s ?? '' ) )?.[ 1 ] ?? null;
 export const filtersOf = ( catalogue ) => {
 	const kept = ( catalogue?.products || [] ).filter( ( p ) => ! ( catalogue.dropped || [] ).includes( p.draftId ) );
@@ -165,6 +168,13 @@ export function commerceRegion( { m, commerce, rule, toolbarRule = null } ) {
 		} else {
 			const entry = checkoutEntryRegion();
 			entry && found.push( entry );
+		}
+	} else if ( 'confirmation' === commerce.role ) {
+		for ( const [ , list ] of moneyLoops ) {
+			// The loop's lowest ancestor that also holds an amount outside it: the order summary with its total.
+			const holder = common( list );
+			const summary = holder ? ancestors( holder ).find( ( a ) => els.some( ( e ) => ! list.includes( e ) && ancestors( e ).includes( a ) && ! ancestors( holder ).includes( e ) && money.test( m.words( e ) ) ) ) : null;
+			summary && found.push( { region: summary, evidence: [ `the order lines loop (${ list.length } elements)`, 'the amount paid beside it' ] } );
 		}
 	} else if ( 'account' === commerce.role && passwords.length ) {
 		found.push( { region: common( passwords ), evidence: [ `${ passwords.length } password field(s)` ] } );
