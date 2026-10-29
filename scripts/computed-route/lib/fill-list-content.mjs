@@ -51,8 +51,9 @@ export const keyRole = ( name ) => fieldRoles( name )[ 0 ] ?? null;
 // A field takes the key of its own name first. Otherwise, for each role the field plays in order, it takes an open key whose
 // primary role that is; only when the block's item has no such key does a key that names the role as a later one take it
 // (a team member's `name`, primary role author, takes a draft `title` when the item has no title key). Within either
-// tier a tie goes to the key sharing a word with the field.
-export function matchFields( fields, keys ) {
+// tier a tie goes to the key sharing a word with the field. primaryOnly keeps to a key of the field's own name or of a role
+// the key holds first (lib/skeleton-part-content.mjs: a part is paired only where the field is that setting's content).
+export function matchFields( fields, keys, { primaryOnly = false } = {} ) {
 	const map = {};
 	const used = new Set();
 	const take = ( f, k ) => {
@@ -68,7 +69,7 @@ export function matchFields( fields, keys ) {
 		for ( const role of f.image ? [ 'image' ] : fieldRoles( f.name ) ) {
 			const free = keys.filter( ( k ) => ! used.has( k.key ) );
 			const primary = free.filter( ( k ) => keyRole( k.key ) === role );
-			const open = primary.length ? primary : free.filter( ( k ) => fieldRoles( k.key ).includes( role ) );
+			const open = primary.length || primaryOnly ? primary : free.filter( ( k ) => fieldRoles( k.key ).includes( role ) );
 			if ( open.length ) {
 				take( f, pick( f, open ) );
 				break;

@@ -11,6 +11,7 @@ import { pairParts, pairSkeletonParts, partTree, spreads } from '../lib/skeleton
 import { listMarkerDecisions } from '../lib/fill-list-marker.mjs';
 import { formElement } from '../lib/skeleton-form-element.mjs';
 import { sharedElementProblems } from '../lib/skeleton-one-node.mjs';
+import { contentPairs } from '../lib/skeleton-part-content.mjs';
 
 const db = openDb();
 const F = JSON.parse( fs.readFileSync( new URL( './fixtures/universal-part-pairing/reduced.json', import.meta.url ), 'utf8' ) );
@@ -215,4 +216,66 @@ test( 'MUST FAIL (one draft element is one node\'s): a node and a node inside it
 	const steps = [ { name: 'sgs/form', innerBlocks: [ { name: 'sgs/form-step', innerBlocks: [ at( 'Root/23#0', 'sgs/heading' ) ] }, { name: 'sgs/form-step', innerBlocks: [ at( 'Root/23#0', 'sgs/heading' ) ] } ] } ];
 	assert.deepEqual( sharedElementProblems( steps ), [] );
 	assert.deepEqual( sharedElementProblems( [ at( 'Root/14#0', 'sgs/button' ), { ...at( 'Root/14#0', 'sgs/button' ), variantKey: 'Root/18#0' } ] ), [] );
+} );
+
+// Content identity (QC of RC1): parts that all hold words are told apart by the content setting each shows.
+const one = ( name, tpl, els, extra = {}, fields = F.fields ) => {
+	const m = inventoryModel( { elements: els } );
+	const node = { name, draftRef: { tpl }, attributes: {}, innerBlocks: [], ...extra };
+	const out = pairSkeletonParts( { db, tree: [ node ], m, finder, calSettings: ( b ) => F.cal[ b ]?.settings || {}, calPaint: ( b ) => F.cal[ b ]?.elements || {}, calText: ( b ) => F.cal[ b ]?.text || {}, fieldsOf: ( e ) => fields[ e.key ] || [] } );
+	return { slots: node.draftSlots || {}, unpaired: out.unpaired };
+};
+const META = '.sgs-testimonial__footer > .sgs-testimonial__meta';
+test( 'MUST FAIL (a card of word parts): the testimonial\'s quote, name and date are the elements printing the fields the quote, name and date settings take', () => {
+	const r = one( 'sgs/testimonial', 'Root/224#0', F.elements.testimonial );
+	assert.equal( r.slots[ '.sgs-testimonial__quote' ]?.tpl, 'Root/229#0' );
+	assert.equal( r.slots[ `${ META } > .sgs-testimonial__name` ]?.tpl, 'Root/231#0' );
+	assert.equal( r.slots[ '.sgs-testimonial__rating-meta > .sgs-testimonial__date' ]?.tpl, 'Root/232#0' );
+	// Negative controls: the headline the testimonial has no setting for is no other part, and role and org the draft lacks stay unpaired.
+	assert.ok( ! Object.values( r.slots ).some( ( f ) => 'Root/228#0' === f.tpl ), 'the review headline is no rating or name' );
+	assert.ok( r.unpaired.some( ( u ) => `${ META } > .sgs-testimonial__role` === u.slot ) );
+	// Without the fact record's fields, nothing tells the word parts apart and no name is guessed.
+	const m = inventoryModel( { elements: F.elements.testimonial } );
+	const bare = { name: 'sgs/testimonial', draftRef: { tpl: 'Root/224#0' }, attributes: {}, innerBlocks: [] };
+	pairSkeletonParts( { db, tree: [ bare ], m, finder, calSettings: ( b ) => F.cal[ b ].settings, calPaint: () => ( {} ), calText: ( b ) => F.cal[ b ].text } );
+	assert.ok( ! ( `${ META } > .sgs-testimonial__name` in ( bare.draftSlots || {} ) ) );
+} );
+
+test( 'MUST FAIL (a product card\'s content part): the saving badge is the element printing the saving label; the product name, which the block draws from the product, pairs with no content part', () => {
+	const r = one( 'sgs/product-card', 'Root/138#0', F.elements.card );
+	assert.equal( r.slots[ 'div:nth-of-type(1) > .sgs-product-card__saving-badge' ]?.tpl, 'Root>Frame Card@139#0/9#0' );
+	assert.ok( ! Object.entries( r.slots ).some( ( [ k, f ] ) => 'Root>Frame Card@139#0/15#0' === f.tpl && /__(title|attribute-tag|saving)/.test( k ) ) );
+	// A loop deep in one branch (the card's colour swatches) is no copy of a part standing at the card's top.
+	assert.ok( ! /\/31#/.test( r.slots[ 'div:nth-of-type(1)' ]?.tpl ?? '' ), 'the image box is no swatch' );
+} );
+
+test( 'wrappers only the draft draws around a loop or around the parts pass through', () => {
+	// The logo copies inside one more box: the box is the set the copies stand in, and the tiles still pair.
+	const boxed = [ ...F.elements.strip.map( ( e ) => ( /^Root\/224#/.test( e.key ) ? { ...e, parentKey: 'Root/990#0' } : e ) ), { key: 'Root/990#0', parentKey: 'Root/222#0', depth: 1, tag: 'div', words: '', visible: { 375: true, 768: true, 1440: true } } ];
+	assert.equal( run( 'sgs/brand-strip', boxed, 'Root/222#0' ).slots[ `${ TILE( 1 ) } > .sgs-brand-strip__item > .sgs-media` ]?.tpl, 'Root/225#0' );
+	// The slider's stage and controls inside one more box: the parts stand against the box's children.
+	const wrapped = [ ...F.elements.slider.map( ( e ) => ( [ 'Root/271#0', 'Root/284#0' ].includes( e.key ) ? { ...e, parentKey: 'Root/991#0' } : e ) ), { key: 'Root/991#0', parentKey: 'Root/270#0', depth: 1, tag: 'div', words: '', visible: { 375: true, 768: true, 1440: true } } ];
+	assert.equal( run( 'sgs/testimonial-slider', wrapped, 'Root/270#0' ).slots[ SLIDE( 1 ) ]?.tpl, 'Root/274#0' );
+	// The process steps inside one more box: the steps are still the loop's copies, never the node's element.
+	const inBox = [ ...F.elements.steps.map( ( e ) => ( /^Root\/300#/.test( e.key ) ? { ...e, parentKey: 'Root/992#0' } : e ) ), { key: 'Root/992#0', parentKey: 'Root/298#0', depth: 1, tag: 'div', words: '', visible: { 375: true, 768: true, 1440: true } } ];
+	assert.equal( run( 'sgs/process-steps', inBox, 'Root/298#0' ).slots[ STEP( 2 ) ]?.tpl, 'Root/300#1' );
+} );
+
+test( 'MUST FAIL (an hours row): the business hours block\'s first row is the draft row and its day the day span; the rows the draft does not draw are named', () => {
+	const ROW = ( k ) => `.sgs-business-info > .sgs-business-hours__row:nth-of-type(${ k })`;
+	// The draft prints the row's day and hours as fields (`{{ hr.d }}`, `{{ hr.t }}`) no content setting takes: they stay free.
+	const r = one( 'sgs/business-info', 'Root/677#0', F.elements.hours, { attributes: { displayType: 'hours' } }, { 'Root/678#0': [ 'd' ], 'Root/679#0': [ 't' ] } );
+	assert.equal( r.slots[ ROW( 1 ) ]?.tpl, 'Root/677#0' );
+	assert.equal( r.slots[ `${ ROW( 1 ) } > .sgs-business-hours__day` ]?.tpl, 'Root/678#0' );
+	assert.ok( r.unpaired.some( ( u ) => ROW( 2 ) === u.slot ), 'the second row, which the draft does not draw here, stays unpaired' );
+} );
+
+test( 'content identity: a written value finds the one element showing it, folded; two elements that could supply it are no evidence', () => {
+	const els = [ { key: 'a', words: 'Chat with  our team' }, { key: 'b', words: 'Opening \u2013 \u201Csoon\u201D' }, { key: 'c', words: 'Twice' }, { key: 'd', words: 'Twice' } ];
+	const text = { label: { path: '.x__label' }, note: { path: '.x__note' }, twin: { path: '.x__twin' } };
+	const r = contentPairs( { text, attributes: { label: 'Chat with our team', note: 'Opening - "soon"', twin: 'Twice' }, els, words: ( e ) => e.words } );
+	assert.deepEqual( [ r.pairs[ '.x__label' ]?.key, r.pairs[ '.x__note' ]?.key, r.pairs[ '.x__twin' ] ], [ 'a', 'b', undefined ] );
+	assert.match( r.notes.find( ( n ) => '.x__twin' === n.slot ).reason, /2 draft elements could supply twin/ );
+	const fields = contentPairs( { text, els, fieldsOf: ( e ) => ( [ 'c', 'd' ].includes( e.key ) ? [ 'label' ] : [] ) } );
+	assert.equal( fields.pairs[ '.x__label' ], undefined, 'a field two elements print supplies no part' );
 } );
