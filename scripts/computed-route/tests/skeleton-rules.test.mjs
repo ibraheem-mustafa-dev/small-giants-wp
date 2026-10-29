@@ -13,6 +13,7 @@ import { makeRules } from '../lib/skeleton-rules.mjs';
 import { inventoryModel } from '../lib/skeleton-model.mjs';
 import { skeletonProblems } from '../lib/fill-skeleton.mjs';
 import { handoverProblems } from '../lib/fill-handover.mjs';
+import { needsFinaliser } from '../lib/intake-run-finalise.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -725,4 +726,60 @@ test( 'dotMarker never takes a control and needs text beside it; cardHeading rea
 	assert.notEqual( byTag( run( section( [ swatch ] ) ), 'span' ).rule, 'dotMarker' );
 	const card = ( y ) => E( 'div', { y }, [ E( 'div', { words: `Wholesale ${ y }`, style: 'font-weight:bold;font-size:1.25rem' } ), E( 'div', { words: 'Pallet volumes for cash and carries.', style: 'font-size:1rem' } ) ] );
 	assert.equal( byWords( run( section( [ E( 'div', { display: 'grid' }, [ card( 0 ), card( 1 ) ] ) ] ) ), 'Wholesale 0' ).rule, 'cardHeading' );
+} );
+
+test( 'MUST FAIL: two links drawn as buttons (padding and a ground) stacked by their wrapping row are a button group, never a list', () => {
+	const pill = ( w, y, style ) => E( 'a', { attrs: { href: `/${ w }` }, y, words: w, style } );
+	const ground = 'display:inline-flex;background:rgb(0, 0, 0);color:rgb(216, 202, 80);padding:15px 26px;border-radius:999px';
+	const edged = 'display:inline-flex;background:transparent;border:2px solid rgb(0, 0, 0);padding:15px 26px';
+	for ( const style of [ ground, edged ] ) {
+		const r = run( section( [ E( 'div', { display: 'flex', style: 'display:flex;flex-wrap:wrap;gap:14px' }, [ pill( 'Apply', 0, style ), pill( 'Catalogue', 60, style ) ] ) ] ) );
+		assert.equal( byTag( r, 'div' ).block, 'sgs/multi-button', style );
+		assert.deepEqual( r.proposal.rows.filter( ( x ) => 'a' === x.tag ).map( ( x ) => x.block ), [ 'sgs/button', 'sgs/button' ] );
+	}
+} );
+
+test( 'NEGATIVE: stacked links with no ground, no padding, a clear background or a zero border are still a list', () => {
+	const link = ( w, y, style ) => E( 'a', { attrs: { href: `/${ w }` }, y, words: w, style } );
+	for ( const style of [ 'color:rgb(0, 0, 0)', 'background:rgb(0, 0, 0)', 'padding:4px 0px;background:rgba(0, 0, 0, 0)', 'padding:4px 8px;border:0px solid rgb(0, 0, 0)', 'padding:0px;background:rgb(0, 0, 0)', 'padding:4px;background:none', 'padding:4px;background-color:transparent' ] ) {
+		const r = run( section( [ E( 'div', {}, [ link( 'Trade', 0, style ), link( 'Brands', 30, style ) ] ) ] ) );
+		assert.deepEqual( settled( byTag( r, 'div' ) ), { block: null, action: 'unwrap', rule: 'listWrapper' }, style );
+	}
+} );
+
+// D1 (Bean, 2026-10-29): a rule row whose framework DB scoring strongly prefers another block goes to the finaliser.
+const mapFrame = () => section( [ E( 'iframe', { attrs: { src: 'https://www.google.com/maps/embed?pb=1' } } ) ] );
+const withFacts = ( edit ) => {
+	const f = facts();
+	edit( f.decisions.rules );
+	return f;
+};
+
+test( 'MUST FAIL (D1): a rule row the DB scores as another specific block keeps the rule\'s block at low confidence, with both candidates and both reasons, so the finaliser decides it', () => {
+	const x = byTag( run( mapFrame() ), 'iframe' );
+	assert.equal( x.rule, 'mapEmbed' );
+	assert.equal( x.block, 'sgs/business-info', 'the rule still wins the build' );
+	assert.deepEqual( [ x.low, x.action, x.confidence ], [ true, null, 0.5 ] );
+	assert.deepEqual( x.candidates.map( ( c ) => c.block ), [ 'sgs/business-info', 'sgs/media' ] );
+	assert.deepEqual( [ x.conflict.ruleBlock, x.conflict.dbBlock ], [ 'sgs/business-info', 'sgs/media' ] );
+	assert.match( x.reason, /map display; the framework DB prefers sgs\/media \(confidence 0\.75: html_tag_to_core_block: iframe -> sgs\/media/ );
+	assert.ok( needsFinaliser( x ), 'the finaliser is asked about it' );
+} );
+
+test( 'NEGATIVE (D1): no conflict without the rule entry, under the confidence floor, above the rule-share ceiling, or when the DB only offers a generic wrapper', () => {
+	const plain = ( f ) => byTag( run( mapFrame(), { facts: f } ), 'iframe' );
+	assert.deepEqual( [ plain( facts( 'ruleConflict' ) ).confidence, plain( facts( 'ruleConflict' ) ).conflict ], [ 1, undefined ], 'the rule entry removed' );
+	assert.equal( plain( withFacts( ( R ) => ( R.ruleConflict.minConfidence = 0.8 ) ) ).conflict, undefined, 'the DB is not confident enough' );
+	assert.ok( plain( withFacts( ( R ) => ( R.ruleConflict.minConfidence = 0.75 ) ) ).conflict, 'a DB confidence at the floor counts' );
+	assert.equal( plain( withFacts( ( R ) => ( R.ruleConflict.maxRuleShare = -1 ) ) ).conflict, undefined, 'a DB scoring holding more of the rule block than the ceiling is no disagreement' );
+	// A pill label with a marker dot is the label block by its rule; the DB's own top for it is the generic wrapper shell
+	// (it holds a child), which is no preference.
+	const pill = run( section( [ E( 'span', { words: 'CERTIFIED', style: 'display:inline-flex;text-transform:uppercase;padding:7px 13px;border-radius:999px' }, [ E( 'span', { style: 'width:7px;height:7px;border-radius:50%' } ) ] ), E( 'p', { words: 'Body copy for the section.' } ) ] ) );
+	const dot = byWords( pill, 'CERTIFIED' );
+	assert.deepEqual( [ dot.rule, dot.conflict, dot.confidence ], [ 'label', undefined, 1 ] );
+	// A label is a rule row whose DB alternative is the generic wrapper shell, which is no preference.
+	const label = byWords( run( section( [ E( 'span', { words: 'NEW', style: 'text-transform:uppercase' } ), E( 'p', { words: 'Body copy for the section.' } ) ] ) ), 'NEW' );
+	assert.equal( label.rule, 'label' );
+	assert.equal( label.conflict, undefined );
+	assert.equal( label.confidence, 1 );
 } );

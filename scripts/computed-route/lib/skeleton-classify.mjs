@@ -117,7 +117,7 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 	const rules = makeRules( { m, facts, surface, motion, view, scope, hooks: { siteInfoKinds, isColumnLabel, blockOfKey, formLinkOf, siteLink, topBlock: ( k ) => classify( k, null ).candidates[ 0 ]?.block } } );
 	// A rule verdict in the classifier's result shape (lib/skeleton-rules.mjs).
 	const fromRule = ( r ) => {
-		const base = { rule: r.rule, source: `rule ${ r.rule }`, reason: r.reason, confidence: 1, ...( r.handover ? { handover: r.handover } : {} ), ...( r.inner ? { inner: r.inner, item: r.item } : {} ), ...( r.kind ? { kind: r.kind } : {} ), ...( r.opens ? { opens: r.opens } : {} ) };
+		const base = { rule: r.rule, source: `rule ${ r.rule }`, reason: r.reason, confidence: 1, ...( r.handover ? { handover: r.handover } : {} ), ...( r.inner ? { inner: r.inner, item: r.item } : {} ), ...( r.kind ? { kind: r.kind } : {} ), ...( r.opens ? { opens: r.opens } : {} ), ...( r.missingFeature ? { missingFeature: r.missingFeature } : {} ), ...( r.siteOptions ? { siteOptions: r.siteOptions } : {} ) };
 		if ( r.action ) {
 			return { ...base, action: r.action, ...( r.into ? { into: r.into } : {} ), candidates: [] };
 		}
@@ -126,14 +126,41 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 		return { ...finish( C ), ...base, absorb: !! r.absorb };
 	};
 
-	// The candidates for one element. ctx: { parentBlock, typedBrand (the element is part of a typed brand name) }.
+	// A rule that names a block keeps winning, unless the framework DB's own scoring of the element (the same classifier with
+	// the rules set aside) strongly prefers another block (Bean, D1, 2026-10-29): its top SGS block differs from the rule's,
+	// it is a specific block (a generic wrapper shell, the fallback for any element with children, is no preference), its
+	// confidence reaches rules.ruleConflict.minConfidence, and the rule's block holds no more than
+	// rules.ruleConflict.maxRuleShare of the DB's candidates. Such a row stays the rule's block but is low confidence, with
+	// both reasons and both candidates, so the finaliser and the review decide it instead of the rule being final.
+	const ruleAgainstDb = ( e, parentBlock, ctx, out ) => {
+		const D = decisions.rules?.ruleConflict;
+		const ruleBlock = out.candidates?.[ 0 ]?.block;
+		if ( ! D || ! ruleBlock ) {
+			return out;
+		}
+		const db = sgsOnly( classify( e, parentBlock, { ...ctx, noRule: true } ), facts.replacedBy, decisions.rules?.coreExceptions || [] );
+		const top = db.candidates?.[ 0 ];
+		const ruleShare = db.candidates.find( ( c ) => c.block === ruleBlock )?.share ?? 0;
+		if ( ! top || top.block === ruleBlock || facts.wrapperShells.includes( top.block ) || db.confidence < D.minConfidence || ruleShare > D.maxRuleShare ) {
+			return out;
+		}
+		const dbReason = `the framework DB prefers ${ top.block } (confidence ${ db.confidence }: ${ top.evidence.map( ( x ) => x.text ).join( '; ' ) })`;
+		return {
+			...out, confidence: D.confidence, conflict: { rule: out.rule, ruleBlock, dbBlock: top.block, dbConfidence: db.confidence, why: D.reason },
+			reason: `${ out.reason }; ${ dbReason }; ${ D.reason }`,
+			candidates: [ { ...out.candidates[ 0 ], share: 0.5 }, { ...top, share: 0.5 } ],
+		};
+	};
+
+	// The candidates for one element. ctx: { parentBlock, typedBrand (the element is part of a typed brand name), noRule (the
+	// standing rules set aside: the DB's own scoring) }.
 	function classify( e, parentBlock = null, ctx = {} ) {
 		const C = {};
 		const words = m.words( e );
 		const over = overrides( e, words );
-		const verdict = ! ctx.typedBrand && 'client decision' !== over?.source ? rules.ruleFor( e, parentBlock ) : null;
+		const verdict = ! ctx.typedBrand && ! ctx.noRule && 'client decision' !== over?.source ? rules.ruleFor( e, parentBlock ) : null;
 		if ( verdict ) {
-			return fromRule( verdict );
+			return ruleAgainstDb( e, parentBlock, ctx, fromRule( verdict ) );
 		}
 		if ( over?.remove ) {
 			return { action: 'remove', reason: over.reason || over.source, source: over.source, candidates: [], confidence: 1 };
@@ -247,5 +274,5 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 		return { ...finish( C ), stale };
 	}
 
-	return { classify: ( ...a ) => sgsOnly( classify( ...a ), facts.replacedBy, facts.decisions.rules?.coreExceptions || [] ), brandFor, siteInfoKinds, isColumnLabel, briefOnly, drawsChildren: rules.drawsChildren, modalParts: rules.modalParts, iconRun: rules.iconRun, siteInfoBrand: rules.siteInfoBrand, commerceRegion: rules.commerceRegion, filterRail: rules.filterRail, filterDrawer: rules.filterDrawer, choiceFlow: rules.choiceFlow };
+	return { classify: ( ...a ) => sgsOnly( classify( ...a ), facts.replacedBy, facts.decisions.rules?.coreExceptions || [] ), brandFor, siteInfoKinds, isColumnLabel, briefOnly, timedPopup: rules.timedPopup, drawsChildren: rules.drawsChildren, modalParts: rules.modalParts, iconRun: rules.iconRun, siteInfoBrand: rules.siteInfoBrand, commerceRegion: rules.commerceRegion, filterRail: rules.filterRail, filterDrawer: rules.filterDrawer, choiceFlow: rules.choiceFlow };
 }

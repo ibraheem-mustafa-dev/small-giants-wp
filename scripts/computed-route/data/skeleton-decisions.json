@@ -308,7 +308,24 @@
 		"readingProgress": {
 			"maxHeightPx": 6,
 			"reason": "a full-width bar a few pixels tall, fixed to the viewport, is the Floating UI reading progress setting, not a block",
-			"handover": "Floating UI reading progress bar: its height and its colour or gradient (shared gradient picker) are site settings"
+			"handover": "Floating UI reading progress bar: its height and its colour or gradient (shared gradient picker) are site settings",
+			"options": { "enabled": "sgs_floating_ui_reading_progress_enabled", "colour": "sgs_floating_ui_reading_progress_colour", "gradient": "sgs_floating_ui_reading_progress_gradient", "height": "sgs_floating_ui_reading_progress_height" },
+			"range": [ 2, 8 ]
+		},
+		"cookieConsent": {
+			"patterns": [ "\\bcookies?\\b", "\\bconsent\\b" ],
+			"flags": "i",
+			"why": "a cookie consent banner fixed to the viewport has no framework equivalent (Spec 48 FR-48-84 reads cookie consent; no block or setting offers it), so it is a missing feature"
+		},
+		"persistentBar": {
+			"minShare": 0.98,
+			"maxHeightPx": 140,
+			"why": "a bar fixed across the bottom of the viewport holding a link or a button (cart, sale, call to action) is the persistent bottom bar of Spec 18 section 1.1, which is not built, so it is a missing feature"
+		},
+		"timedPopup": {
+			"patterns": [ "\\bafter\\s+\\d+\\s*(?:ms|s|secs?|seconds?|minutes?)\\b", "\\bexit[- ]intent\\b", "\\btimer\\b", "\\bon a delay\\b" ],
+			"flags": "i",
+			"why": "sgs/modal opens from a trigger or a hash and has no delay or exit-intent setting, so a popup that opens on a timer or on exit intent is a missing feature"
 		},
 		"decorationLayer": {
 			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in"
@@ -357,6 +374,10 @@
 			},
 			"wholeBlock": "sgs/container",
 			"lone": "sgs/button",
+			"floating": {
+				"options": { "enabled": "sgs_floating_ui_back_to_top_enabled", "position": "sgs_floating_ui_back_to_top_position", "background": "sgs_floating_ui_back_to_top_bg_colour", "icon": "sgs_floating_ui_back_to_top_icon_colour" },
+				"reason": "a back-to-top control fixed to the viewport is the Floating UI back-to-top setting (Spec 18 section 2.1), not a block: its side, background and icon colour are site options"
+			},
 			"reason": "a back-to-top control is a link whose source is 'top' (the shared link source): a container whose whole box is the link when it holds a label and an icon, a button when it is words alone"
 		},
 		"mapEmbed": {
@@ -409,6 +430,18 @@
 				"close": "the modal's close control (its click handler writes a falsy value to the state the modal opens on): the sgs/modal frame draws the close and its look becomes the frame's close settings; the draft's button is never built as a second, dead close"
 			}
 		},
+		"ruleConflict": {
+			"minConfidence": 0.7,
+			"maxRuleShare": 0.2,
+			"confidence": 0.5,
+			"confirm": "Bean, 2026-10-29 (D1): rules keep winning by default, but a rule row whose DB evidence strongly prefers another block goes to the finaliser and the review instead of being final",
+			"reason": "a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two"
+		},
+		"drawerLogo": {
+			"part": "chromeLogo",
+			"idSetting": "chromeLogoId",
+			"reason": "a logo in a drawer's top row (the row holding the drawer's own close control, not its navigation) is the drawer block's own top-row logo (Spec 36 FR-36-6: sgs/nav-drawer draws its logo from its chrome logo settings above its body), so the block takes it: the logo's carried attachment is the block's logo setting and its look the block's logo settings; the draft's logo is never built as a second logo block"
+		},
 		"drawerClose": {
 			"part": "close",
 			"labelSetting": "closeLabel",
@@ -434,7 +467,21 @@
 				"whatsapp": "whatsapp",
 				"google": "google"
 			},
-			"reason": "the shared link source each Site Info kind becomes on a link"
+			"hosts": {
+				"wa.me": "whatsapp",
+				"api.whatsapp.com": "whatsapp",
+				"web.whatsapp.com": "whatsapp"
+			},
+			"reason": "the shared link source each Site Info kind becomes on a link; hosts is the short and API addresses a kind uses that the brand registry cannot derive from the brand name"
+		},
+		"recognise": {
+			"modes": { "floating": "floating", "flow": [ "static", "inline" ] },
+			"featureWords": { "bar": [ "bar", "banner", "announcement", "notice" ] },
+			"barShare": 0.98,
+			"barMaxHeightPx": 120,
+			"minScore": 1,
+			"maxParts": 8,
+			"reason": "an element is the block whose name or setting values hold the words of its own features (its link host, class, aria-label, position and shape); the mode follows the element alone: fixed to the viewport is the floating setting with the corner, offset and hidden-label width the draft shows, sticky is the sticky setting, in flow is the static or inline value"
 		},
 		"navigation": {
 			"bySurface": {

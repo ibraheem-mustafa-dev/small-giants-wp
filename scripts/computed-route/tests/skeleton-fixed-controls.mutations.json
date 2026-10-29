@@ -1,0 +1,22 @@
+[
+	{"file": "lib/skeleton-fixed-controls.mjs", "find": "'fixed' === st.position || Object.keys", "replace": "false || Object.keys", "why": "a declared fixed position counts"},
+	{"file": "lib/skeleton-fixed-controls.mjs", "find": "&& 'fixed' === e.position?.[ w ] );", "replace": "&& 'fixed' !== e.position?.[ w ] );", "why": "a computed fixed position counts"},
+	{"file": "lib/skeleton-fixed-controls.mjs", "find": "st.left && ! st.right ? 'left' : 'right'", "replace": "'right'", "why": "the side the control sits on is written"},
+	{"file": "lib/skeleton-fixed-controls.mjs", "find": "bg && ( out[ o.background ] = bg )", "replace": "0", "why": "the control's background is written"},
+	{"file": "lib/skeleton-fixed-controls.mjs", "find": "icon && ( out[ o.icon ] = icon )", "replace": "0", "why": "the control's icon colour is written"},
+	{"file": "lib/skeleton-fixed-controls.mjs", "find": "/gradient\\(/i.test( paint )", "replace": "false", "why": "a gradient fill is the gradient option"},
+	{"file": "lib/skeleton-fixed-controls.mjs", "find": "Math.min( spec.range[ 1 ], Math.max( spec.range[ 0 ], Math.round( h ) ) )", "replace": "h", "why": "the height is held to the setting's range"},
+	{"file": "lib/skeleton-fixed-controls.mjs", "find": "e.box[ w ].w / Number( w ) >= P.minShare && e.box[ w ].h <= P.maxHeightPx", "replace": "true", "why": "a persistent bar is across the width and short"},
+	{"file": "lib/skeleton-fixed-controls.mjs", "find": "px( st.bottom ) <= 0 && ! st.top", "replace": "true", "why": "a persistent bar is anchored to the bottom edge"},
+	{"file": "lib/skeleton-fixed-controls.mjs", "find": "[ 'a', 'button' ].includes( x.tag ) );", "replace": "true );", "why": "a persistent bar holds a link or a button"},
+	{"file": "lib/skeleton-fixed-controls.mjs", "find": "if ( ! fixedAt( e, st ) ) {\n\t\treturn null;\n\t}", "replace": "", "why": "only a fixed element is a missing fixed feature"},
+	{"file": "lib/skeleton-fixed-controls.mjs", "find": "rgb[ 4 ] && 1 !== Number.parseFloat", "replace": "rgb[ 4 ] && 0 !== Number.parseFloat", "why": "a translucent colour is not a plain colour"},
+	{"file": "lib/skeleton-rules.mjs", "find": "isBackToTop( e, text ) && fixedAt( e, st ) ?", "replace": "isBackToTop( e, text ) ?", "why": "only a fixed back-to-top control is the setting"},
+	{"file": "lib/skeleton-rules.mjs", "find": "...( R.readingProgress?.options ? { siteOptions: readingProgressOptions( e, st, R.readingProgress ) } : {} )", "replace": "", "why": "the reading progress bar writes its options"},
+	{"file": "lib/skeleton-rules.mjs", "find": "const miss = missingFixedFeature( { e, st, text, R, m } );", "replace": "const miss = null;", "why": "the missing fixed feature rule is consulted"},
+	{"file": "lib/skeleton-write-record.mjs", "find": "...( r.siteOptions ? { siteOptions: r.siteOptions } : {} ),", "replace": "", "why": "the row carries the options"},
+	{"file": "lib/skeleton-write-record.mjs", "find": "...( r.missingFeature ? { missingFeature: r.missingFeature } : {} ),", "replace": "", "why": "the row carries the missing feature"},
+	{"file": "lib/skeleton-propose.mjs", "find": "const siteOptions = Object.assign( {}, ...rows.map( ( r ) => r.siteOptions ) );", "replace": "const siteOptions = {};", "why": "the proposal carries the surface's options"},
+	{"file": "lib/skeleton-propose.mjs", "find": "timed && rowOf[ m.root.key ] && ( rowOf[ m.root.key ].missingFeature = timed );", "replace": "", "why": "a timed popup's root row carries the missing feature"},
+	{"file": "lib/skeleton-rules.mjs", "find": "( 'modal' === surface.kind ? timedPopupMissing", "replace": "( true ? timedPopupMissing", "why": "only a modal surface can be a timed popup"}
+]

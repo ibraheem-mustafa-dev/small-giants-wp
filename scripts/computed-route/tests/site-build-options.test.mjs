@@ -7,7 +7,8 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { applyPhase } from '../lib/site-build-apply.mjs';
-import { optionsPhp, planSiteOptions, promoteSiteOptions, readSiteOptions, readStoredOptions, siteOptionsFile, withSiteOptions } from '../lib/site-build-options.mjs';
+import { optionsPhp, planSiteOptions, promoteSiteOptions, readSiteOptions, readStoredOptions, siteOptionsFile, skeletonSiteOptions, withSiteOptions } from '../lib/site-build-options.mjs';
+import { rowsOf } from '../lib/intake-skeletons.mjs';
 
 const RUN = 'sites/acme/build/qa/fill/header/run-1/site-options.json';
 const FADE = { option: 'sgs_motion_settings', records: [ 'route-fade-1' ], value: { page_transitions: true, page_transition_style: 'fade', page_transition_duration: 350, page_transition_easing: 'ease-out' } };
@@ -158,4 +159,53 @@ test( 'MUST FAIL: a stored value that is not an array of settings is noted and r
 test( 'MUST FAIL: the PHP read only ever names plain option names', () => {
 	assert.match( optionsPhp( [ 'sgs_motion_settings', 'blogname' ] ), /array\( 'sgs_motion_settings', 'blogname' \)/ );
 	assert.throws( () => optionsPhp( [ "a'); evil(); ('" ] ), /not a plain option name/ );
+} );
+
+// An intake record whose skeleton rows carry the site options the skeleton writer read (a reading progress bar on a surface no build surface proposes).
+const BAR = { sgs_floating_ui_reading_progress_enabled: true, sgs_floating_ui_reading_progress_height: 3, sgs_floating_ui_reading_progress_gradient: 'linear-gradient(90deg, #ebdd78 0%, #0a7ea8 100%)' };
+function withIntake( repo, skeletons ) {
+	const dir = path.join( repo, 'sites', 'acme', 'build', 'intake' );
+	fs.mkdirSync( dir, { recursive: true } );
+	fs.writeFileSync( path.join( dir, 'intake.json' ), JSON.stringify( { skeletons } ) );
+}
+
+test( 'MUST FAIL: a skeleton row\'s site options (the reading progress bar) are planned and written as scalar options, and a second plan is empty', () => {
+	const { repo } = fixture( { fill: null } );
+	withIntake( repo, { 'progress-bar': { rows: [ { rowId: 'skeleton:progress-bar:Site/38#0', siteOptions: BAR } ] }, footer: { rows: [ { rowId: 'skeleton:footer:Site/1#0' } ] } } );
+	assert.deepEqual( skeletonSiteOptions( repo, 'acme' ).options.sgs_floating_ui_reading_progress_height, { records: [ 'skeleton:progress-bar:Site/38#0' ], value: 3, sources: [ 'sites/acme/build/intake/intake.json' ] } );
+	const site = fakeSite( { sgs_floating_ui_reading_progress_height: 3 } );
+	const plan = withSiteOptions( empty(), { repo, client: 'acme', runPhp: site.runPhp } );
+	assert.deepEqual( plan.actions.map( ( a ) => [ a.name, a.value ] ).sort(), [ [ 'sgs_floating_ui_reading_progress_enabled', true ], [ 'sgs_floating_ui_reading_progress_gradient', BAR.sgs_floating_ui_reading_progress_gradient ] ], 'the height the site already holds is not planned' );
+	assert.deepEqual( plan.options.find( ( o ) => 'sgs_floating_ui_reading_progress_enabled' === o.name ), { name: 'sgs_floating_ui_reading_progress_enabled', before: '(unset)', after: 'true' } );
+	assert.equal( applyPhase( plan.actions, 'site', { wp: site.wp } ), 2 );
+	assert.equal( site.options.sgs_floating_ui_reading_progress_enabled, true );
+	assert.equal( withSiteOptions( empty(), { repo, client: 'acme', runPhp: site.runPhp } ).actions.length, 0 );
+} );
+
+test( 'MUST FAIL: two rows setting one option to different values plan neither and say so; a bad option name is refused', () => {
+	const { repo } = fixture( { fill: null } );
+	withIntake( repo, { a: { rows: [ { rowId: 'r1', siteOptions: { sgs_floating_ui_back_to_top_position: 'left' } }, { rowId: 'r2', siteOptions: { sgs_floating_ui_back_to_top_position: 'right' } } ] } } );
+	const s = skeletonSiteOptions( repo, 'acme' );
+	assert.deepEqual( s.options, {} );
+	assert.match( s.notes[ 0 ], /sgs_floating_ui_back_to_top_position: r1 set "left" and r2 sets "right"/ );
+	const plan = withSiteOptions( empty(), { repo, client: 'acme', runPhp: fakeSite().runPhp } );
+	assert.deepEqual( [ plan.actions.length, plan.notes ], [ 0, s.notes ], 'the site build plans neither value and its notes say why' );
+	withIntake( repo, { a: { rows: [ { rowId: 'r1', siteOptions: { 'bad name': 1 } } ] } } );
+	assert.throws( () => skeletonSiteOptions( repo, 'acme' ), /not a plain option name/ );
+	withIntake( repo, { a: { rows: [ { rowId: 'r1', siteOptions: { sgs_x: { nested: 1 } } } ] } } );
+	assert.throws( () => skeletonSiteOptions( repo, 'acme' ), /string, number or boolean/ );
+} );
+
+test( 'negative control: rows with no site options, or no intake record, plan nothing from the skeleton', () => {
+	const { repo } = fixture( { fill: null } );
+	assert.deepEqual( skeletonSiteOptions( repo, 'acme' ), { options: {}, notes: [] } );
+	withIntake( repo, { a: { rows: [ { rowId: 'r1' } ] } } );
+	assert.deepEqual( skeletonSiteOptions( repo, 'acme' ), { options: {}, notes: [] } );
+} );
+
+test( 'MUST FAIL: intake.json\'s skeleton rows carry the site options a proposal row sets', () => {
+	const row = { key: 'Site/38#0', tag: 'div', words: '', block: null, confidence: 1, low: false, reason: 'r', rule: 'readingProgress', candidates: [], action: 'remove', snippet: '', screenshots: {} };
+	const rows = rowsOf( 'progress-bar', { rows: [ { ...row, siteOptions: BAR }, { ...row, key: 'Site/39#0' } ] }, { elements: [ { key: 'Site/38#0', parentKey: null }, { key: 'Site/39#0', parentKey: null } ] } );
+	assert.deepEqual( rows[ 0 ].siteOptions, BAR );
+	assert.equal( 'siteOptions' in rows[ 1 ], false );
 } );

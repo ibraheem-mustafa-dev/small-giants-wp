@@ -4,5 +4,7 @@
  { "file": "lib/skeleton-saved-inventory.mjs", "find": "rootKey: served( inv.checks.rootKey )", "replace": "rootKey: inv.checks.rootKey", "why": "the root key is not translated" },
  { "file": "lib/skeleton-saved-inventory.mjs", "find": "String( key ).startsWith( `${ rootComponent }>` )", "replace": "false", "why": "an imported host's chain keeps the component name" },
  { "file": "lib/skeleton-saved-inventory.mjs", "find": "template: own( e )", "replace": "template: e.template", "why": "the host name is not translated" },
- { "file": "lib/skeleton-saved-inventory.mjs", "find": "{ parentKey: null } ), template", "replace": "{ parentKey: served( e.parentKey ) } ), template", "why": "the saved top element keeps a parent that is not in the inventory" }
+ { "file": "lib/skeleton-saved-inventory.mjs", "find": "{ parentKey: null } ), template", "replace": "{ parentKey: served( e.parentKey ) } ), template", "why": "the saved top element keeps a parent that is not in the inventory" },
+ { "file": "lib/skeleton-saved-inventory.mjs", "find": "beside: inv.beside.map( ( b ) => ( { ...b, key: served( b.key ) } ) )", "replace": "beside: inv.beside", "why": "the beside keys stay in intake's space and the footer drops its floating strip" },
+ { "file": "lib/skeleton-saved-inventory.mjs", "find": "...( inv.beside ? {", "replace": "...( true ? {", "why": "an inventory with no beside list gains one" }
 ]

@@ -27,6 +27,8 @@ import { modalFrameParts } from './skeleton-modal-frame.mjs';
 import { parseInstanceKey } from './fact-key.mjs';
 import { formOpenerOf, prefillHref } from './skeleton-form-prefill.mjs';
 import { makeFieldGroups } from './skeleton-field-groups.mjs';
+import { makeRecogniser, hostKindOf } from './skeleton-recognise.mjs';
+import { backToTopOptions, fixedAt, missingFixedFeature, readingProgressOptions, timedPopupMissing } from './skeleton-fixed-controls.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
 // them reads Site Info too.
@@ -112,6 +114,7 @@ const HEADING = /^h[1-6]$/;
 export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), view = recordView( null ), scope = null } ) {
 	const R = facts.decisions.rules || {};
 	const panel = makePanelRules( { m, view, scope, R, facts, surface, declared } );
+	const recogniser = makeRecogniser( { m, facts } );
 	const arrayBlocks = new Set( facts.q( 'SELECT DISTINCT block_slug FROM array_item_schema' ).map( ( r ) => r.block_slug ) );
 	const drawsListed = Object.fromEntries( ( R.drawsChildren?.blocks || [] ).map( ( d ) => [ d.block, d.reason ] ) );
 
@@ -140,6 +143,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	};
 	const hasSvg = ( e ) => m.kids( e ).some( ( k ) => 'svg' === k.tag );
 	const bare = ( e ) => ! m.words( e ) && ! m.blockKids( e ).length;
+	// Whether the element is a back-to-top control: a link, button or handler whose words or handler name say so.
+	const isBackToTop = ( e, text ) => ( [ 'a', 'button' ].includes( e.tag ) || !! handlerOf( e ) ) && !! ( specHit( R.backToTop, `${ text } ${ e.attrs?.[ 'aria-label' ] || '' }` ) || specHit( R.backToTop?.handlers, handlerOf( e ) ) );
 	const iconOnly = ( e ) => bare( e ) && hasSvg( e );
 	const emojiOnly = ( e ) => ! m.blockKids( e ).length && EMOJI.test( m.words( e ).replace( /\s+/g, '' ) );
 	const desc = ( e ) => m.blockKids( e ).flatMap( ( k ) => [ k, ...desc( k ) ] );
@@ -380,7 +385,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const linkKindOf = ( e ) => {
 		const kinds = [ ...hooks.siteInfoKinds( e ) ].map( ( [ k ] ) => k );
 		const map = R.linkSourceForKind?.map || {};
-		const k = kinds.find( ( x ) => map[ x ] );
+		const hostKind = hostKindOf( e.attrs?.href, R.linkSourceForKind?.hosts );
+		const k = kinds.find( ( x ) => map[ x ] ) || ( map[ hostKind ] ? hostKind : null );
 		return k ? { kind: k, source: map[ k ] } : null;
 	};
 	// Whether the element's words are the Site Info value itself (a typed phone number or email address), so the label
@@ -423,7 +429,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		},
 		// A full-width bar a few pixels tall, fixed to the viewport, drawing only a fill: the Floating UI reading progress
 		// setting.
-		( { e, st } ) => ( bare( e ) && ! hasSvg( e ) && 'fixed' === st.position && ( px( st.height ) ?? 99 ) <= ( R.readingProgress?.maxHeightPx ?? 6 ) && /^100(?:%|vw)$/.test( st.width || '' ) ? v( 'readingProgress', { action: 'remove', handover: { owner: 'behaviour', kind: 'behaviour', detail: R.readingProgress?.handover || 'reading progress bar' } } ) : null ),
+		( { e, st } ) => ( bare( e ) && ! hasSvg( e ) && 'fixed' === st.position && ( px( st.height ) ?? 99 ) <= ( R.readingProgress?.maxHeightPx ?? 6 ) && /^100(?:%|vw)$/.test( st.width || '' ) ? v( 'readingProgress', { action: 'remove', handover: { owner: 'behaviour', kind: 'behaviour', detail: R.readingProgress?.handover || 'reading progress bar' }, ...( R.readingProgress?.options ? { siteOptions: readingProgressOptions( e, st, R.readingProgress ) } : {} ) } ) : null ),
 		// A layer that holds nothing: a ring is a decorative image; a fill, gradient or glow folds into the background of
 		// the block it sits in.
 		( { e, st } ) => {
@@ -475,10 +481,22 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const laysOut = /grid|flex/.test( st.display || e.display || '' );
 			return ! m.words( e ) && kidsB.length && parentBlock && 'wrapper-shell' !== role && centred && ! ( 'section-root' === role && laysOut ) ? v( 'widthWrapper', { action: 'unwrap' } ) : null;
 		},
+		// A back-to-top control fixed to the viewport is the Floating UI back-to-top setting, read from the control's own look.
+		( { e, st, text } ) => ( R.backToTop?.floating && isBackToTop( e, text ) && fixedAt( e, st ) ? v( 'backToTop', { action: 'remove', reason: R.backToTop.floating.reason, siteOptions: backToTopOptions( e, st, R.backToTop.floating ), handover: { owner: 'behaviour', kind: 'behaviour', detail: R.backToTop.floating.reason } } ) : null ),
+		// A cookie consent banner or a persistent bottom bar fixed to the viewport has no framework equivalent: a missing feature.
+		( { e, st, text } ) => {
+			const miss = missingFixedFeature( { e, st, text, R, m } );
+			return miss ? v( miss.rule, { action: 'remove', reason: miss.why, missingFeature: { line: miss.line, why: miss.why } } ) : null;
+		},
+		// An element whose own features (link host, class, aria-label, position, shape) are held by one mode-bearing block's name and
+		// setting values is that block, in the mode the element itself shows (lib/skeleton-recognise.mjs).
+		( { e } ) => {
+			const r = recogniser.recognise( e );
+			return r ? v( 'recognise', { block: r.block, attributes: r.attributes, absorb: true, reason: r.evidence.join( '; ' ) } ) : null;
+		},
 		// A back-to-top control is a link whose source is 'top'.
 		( { e, text, kidsB } ) => {
-			const control = [ 'a', 'button' ].includes( e.tag ) || !! handlerOf( e );
-			if ( ! control || ! ( specHit( R.backToTop, `${ text } ${ e.attrs?.[ 'aria-label' ] || '' }` ) || specHit( R.backToTop?.handlers, handlerOf( e ) ) ) ) {
+			if ( ! isBackToTop( e, text ) ) {
 				return null;
 			}
 			return kidsB.length ? v( 'backToTop', { block: R.backToTop?.wholeBlock, attributes: { sgsBlockLinkSource: 'top' } } ) : v( 'backToTop', { block: R.backToTop?.lone, attributes: { linkSource: 'top', label: text } } );
@@ -647,6 +665,30 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const closeKeys = ( e ) => ( facts.repo && facts.client
 		? handlerCloses( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: view.entry( e )?.template.component, handler: handlerOf( e ) } )
 		: new Set() );
+	// The draft's own close control of a drawer surface: a button or link below the root whose click handler writes a falsy
+	// value to a state key the drawer's own surfaces.json record opens on (rules.drawerClose).
+	const ownDrawer = () => ( scope?.id ? view.surfaces[ scope.id ] : null );
+	const closesOwnDrawer = ( e ) => {
+		const own = ownDrawer();
+		return !! own && e !== m.root && [ 'a', 'button' ].includes( e.tag ) && !! handlerOf( e ) && opensOn( own, closeKeys( e ) );
+	};
+	// Whether an element sits in the drawer's top row: the nearest element above it that holds the drawer's own close
+	// control is not the surface root and holds no navigation (the drawer's body), so the element shares the close's row.
+	const inDrawerTopRow = ( e ) => {
+		const holder = ( function up( k ) {
+			const p = m.byKey[ k.parentKey ];
+			return ! p ? null : desc( p ).some( closesOwnDrawer ) ? p : up( p );
+		}( e ) );
+		return !! holder && holder !== m.root && 'nav' !== holder.tag && ! desc( holder ).some( ( d ) => 'nav' === d.tag );
+	};
+	// A logo verdict in the drawer's top row, when the surface root's block draws the top row's logo from its own setting
+	// (rules.drawerLogo.idSetting is a setting of that block): the logo is that setting, absorbed into the root, never a second
+	// logo block; any other verdict is null.
+	const drawerLogo = ( e, out ) => {
+		const D = R.drawerLogo;
+		const rootBlock = ( R.surfaceRoot?.entries || [] ).find( ( x ) => x.kind === surface.kind && new RegExp( x.namePattern, 'i' ).test( surface.name || '' ) )?.block;
+		return D && rootBlock && facts.logoBlocks.includes( out.block ) && facts.attr( rootBlock, D.idSetting ) && inDrawerTopRow( e ) ? v( 'drawerLogo', { action: 'absorbed', into: m.root.key } ) : null;
+	};
 	// The anchor a saved form is reached by (lib/skeleton-form-prefill.mjs): the slug a page's linked form block references it by
 	// (lib/skeleton-form-link.mjs), set on the form block that roots the form's own post, so a link `…#<slug>` on any page lands on it.
 	const formAnchor = 'form' === surface.kind && scope?.id ? ( surface.formLinks || [] ).find( ( l ) => l.recordId === scope.id )?.slug ?? null : null;
@@ -811,11 +853,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// the block draws its close above its body, so the control is absorbed into the surface root and its look is read into
 		// the block's close settings (the node's draftSlots at the close part). The surface's own record is found by its kind, so only a
 		// drawer surface has one; a drawer another block draws is that block's whole, root and children.
-		( { e } ) => {
-			const own = scope?.id ? view.surfaces[ scope.id ] : null;
-			const control = own && e !== m.root && [ 'a', 'button' ].includes( e.tag ) && handlerOf( e );
-			return control && opensOn( own, closeKeys( e ) ) ? v( 'drawerClose', { action: 'absorbed', into: m.root.key } ) : null;
-		},
+		( { e } ) => ( closesOwnDrawer( e ) ? v( 'drawerClose', { action: 'absorbed', into: m.root.key } ) : null ),
 		// The control that opens the drawer, inside a header whose navigation block draws its own opener below its collapse
 		// point: the navigation block draws it, so it is absorbed there.
 		( { e } ) => {
@@ -944,11 +982,14 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		for ( const rule of [ modalFrameRule, ...STRUCTURES, ...RULES ] ) {
 			const out = rule( x );
 			if ( out ) {
-				return out;
+				return drawerLogo( e, out ) || out;
 			}
 		}
 		return null;
 	};
 
-	return { ruleFor, drawsChildren, declared, modalParts, iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, filterRail: rail, filterDrawer: drawer ? { key: m.root.key, block: R.filterDrawer.block, attributes: drawer.attributes, facets: drawer.facets, notes: drawer.notes, missing: drawerMissing } : null, choiceFlow: flow };
+	// The missing-features entry for a popup surface that opens on a timer or on exit intent (rules.timedPopup), or null.
+	const timedPopup = () => ( 'modal' === surface.kind ? timedPopupMissing( { openedBy: scope?.openedBy, R } ) : null );
+
+	return { ruleFor, timedPopup, drawsChildren, declared, modalParts, iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, filterRail: rail, filterDrawer: drawer ? { key: m.root.key, block: R.filterDrawer.block, attributes: drawer.attributes, facets: drawer.facets, notes: drawer.notes, missing: drawerMissing } : null, choiceFlow: flow };
 }

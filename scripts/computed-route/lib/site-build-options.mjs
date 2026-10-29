@@ -7,7 +7,11 @@
 // from (repo-relative, `sites/<client>/build/qa/fill/.../site-options.json`); the reader refuses an entry without one, so
 // the committed file only ever holds what a Fill run wrote and is never a second, hand-written source. `planSiteOptions` compares each option with the site's stored value
 // and plans one `site-option` action (applied by lib/site-build-apply.mjs) with a before-and-after row per changed key;
-// a stored value that already holds every desired key plans nothing.
+// a stored value that already holds every desired key plans nothing. The skeleton writer's site options are the second
+// input (`skeletonSiteOptions`): a draft element that is a site setting rather than a block (a fixed back-to-top control, a
+// reading progress bar: the Customiser's `sgs_floating_ui_*` options, each its own scalar option) is a row of the client's
+// intake.json carrying `siteOptions`, on any intake surface whether or not a build surface proposes it, and each of those
+// options is planned as one scalar `site-option` action.
 import fs from 'fs';
 import path from 'path';
 
@@ -117,6 +121,42 @@ export function readStoredOptions( runPhp, desired ) {
 
 const shown = ( v ) => ( undefined === v ? '(unset)' : JSON.stringify( v ) );
 
+// The site options the skeleton rows of the client's intake.json set (`rows[].siteOptions`, lib/intake-skeletons.mjs::rowsOf):
+// { <option>: { records (the row ids), value (a string, number or boolean), sources: [ 'sites/<client>/build/intake/intake.json' ] } },
+// {} without an intake record. Two rows setting one option to different values plan neither: a note names them.
+export function skeletonSiteOptions( repo, client ) {
+	const file = path.join( repo, 'sites', client, 'build', 'intake', 'intake.json' );
+	const out = { options: {}, notes: [] };
+	if ( ! fs.existsSync( file ) ) {
+		return out;
+	}
+	const source = path.relative( repo, file ).split( path.sep ).join( '/' );
+	const rows = Object.values( JSON.parse( fs.readFileSync( file, 'utf8' ) ).skeletons || {} ).flatMap( ( x ) => x.rows || [] ).filter( ( r ) => isObject( r.siteOptions ) );
+	const clash = new Set();
+	for ( const r of rows ) {
+		for ( const [ name, value ] of Object.entries( r.siteOptions ) ) {
+			const held = out.options[ name ];
+			if ( held && ! same( held.value, value ) ) {
+				clash.add( name );
+				out.notes.push( `${ name }: ${ held.records.join( ', ' ) } set ${ shown( held.value ) } and ${ r.rowId } sets ${ shown( value ) }; neither is applied` );
+				continue;
+			}
+			out.options[ name ] = { records: [ ...new Set( [ ...( held?.records || [] ), r.rowId ] ) ], value, sources: [ source ] };
+		}
+	}
+	clash.forEach( ( n ) => delete out.options[ n ] );
+	Object.entries( out.options ).forEach( ( [ n, o ] ) => checkedScalar( n, o.value ) );
+	return out;
+}
+
+// Throws on a scalar option the site build must not write: a name that is not a plain option name, or a value that is not a string, number or boolean.
+function checkedScalar( name, value ) {
+	if ( ! NAME.test( name ) || ! [ 'string', 'number', 'boolean' ].includes( typeof value ) ) {
+		throw new Error( `site option ${ JSON.stringify( name ) } is not a plain option name with a string, number or boolean value` );
+	}
+	return value;
+}
+
 // The plan for the site options: { actions, options, notes }. `desired` is readSiteOptions' result, `stored` is
 // readStoredOptions'. The written value is the stored one with the desired keys over it, so a key the site holds that
 // the draft does not set stays as it is.
@@ -124,6 +164,12 @@ export function planSiteOptions( { desired, stored } ) {
 	const out = { actions: [], options: [], notes: [] };
 	for ( const [ name, { value } ] of Object.entries( desired ) ) {
 		const held = stored[ name ];
+		// A scalar option (a skeleton row's Floating UI setting) is written whole when the stored value differs.
+		if ( ! isObject( value ) ) {
+			! same( held ?? undefined, value ) && out.options.push( { name, before: shown( held ?? undefined ), after: shown( value ) } );
+			! same( held ?? undefined, value ) && out.actions.push( { phase: 'site', type: 'site-option', name, value, say: `option ${ name }: set ${ shown( held ?? undefined ) } -> ${ shown( value ) }` } );
+			continue;
+		}
 		if ( null !== held && undefined !== held && ! isObject( held ) ) {
 			out.notes.push( `${ name } holds ${ shown( held ) }, not an array of settings: it is replaced by the draft's keys` );
 		}
@@ -138,12 +184,14 @@ export function planSiteOptions( { desired, stored } ) {
 	return out;
 }
 
-// The site build's plan with the site options added: the planner's own plan, then the options' actions and table rows.
+// The site build's plan with the site options added: the planner's own plan, then the options' actions and table rows,
+// for the committed site-options.json and the skeleton rows' scalar options alike.
 export function withSiteOptions( plan, { repo, client, runPhp } ) {
-	const desired = readSiteOptions( repo, client );
+	const skeleton = skeletonSiteOptions( repo, client );
+	const desired = { ...skeleton.options, ...readSiteOptions( repo, client ) };
 	const mine = planSiteOptions( { desired, stored: readStoredOptions( runPhp, desired ) } );
 	plan.actions.push( ...mine.actions );
 	plan.options.push( ...mine.options );
-	plan.notes.push( ...mine.notes );
+	plan.notes.push( ...skeleton.notes, ...mine.notes );
 	return plan;
 }

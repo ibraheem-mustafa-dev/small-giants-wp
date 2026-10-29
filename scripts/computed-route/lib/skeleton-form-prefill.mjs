@@ -10,6 +10,7 @@
 // The control becomes an `sgs/button` linking `?<field>=<value>…#<form anchor>` (the query comes BEFORE the hash: a form field's
 // `valueFromParam` reads the query string), and each prefilled field of the saved form carries `valueFromParam` (lib/fill-form.mjs).
 import { draftLogicOf } from './skeleton-narrowing.mjs';
+import { handlerValue } from './skeleton-handler-opens.mjs';
 import { keyName, isThisMember, isFn, subtree, propName } from './intake-ast.mjs';
 
 const SCROLLS = new Set( [ 'scrollTo', 'scrollIntoView', 'scroll' ] );
@@ -93,7 +94,7 @@ export function formOpenerOf( { folder, record, component, handler } ) {
 	const callsIn = ( node ) => subtree( d.idx, node ).filter( ( n ) => 'CallExpression' === n.type && [ ...openers.keys() ].some( ( name ) => isThisMember( n.callee, name ) ) );
 	const dot = handler.indexOf( '.' );
 	if ( dot < 0 ) {
-		const value = d.values.get( handler );
+		const value = handlerValue( d, handler );
 		const call = value ? callsIn( value )[ 0 ] : null;
 		return call ? { fields: openers.get( call.callee.property.name ) ? fieldsOf( call, null ) : [], loop: false } : null;
 	}

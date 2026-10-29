@@ -28,6 +28,7 @@ const SCRIPT = `class Site {
 	jump(sel) { const form = this._main.querySelector('form'); window.scrollTo(0, form.offsetTop); }
 	nudge() { window.scrollTo(0, 0); }
 	look() { const form = document.querySelector('form'); return form; }
+	toSales = () => this.toForm({ team: 'Sales' });
 	renderVals() {
 		return {
 			roles: ROLES.map((ro) => ({ ...ro, apply: () => this.toForm({ role: ro.title, team: ro.team }) })),
@@ -38,6 +39,7 @@ const SCRIPT = `class Site {
 			top: () => this.toForm(),
 			other: () => this.nudge(),
 			peek: () => this.look(),
+			member: this.toSales,
 		};
 	}
 }`;
@@ -61,6 +63,7 @@ test( 'MUST FAIL: a handler that calls a method scrolling to a form gives the fi
 	assert.deepEqual( opener( 'it.pick' ), { fields: [], loop: true }, 'an item field made without spreading the item reads no path' );
 	assert.deepEqual( opener( 'ro.deep' ), { fields: [], loop: true }, 'a path below a name other than the item is not read' );
 	assert.deepEqual( opener( 'skip' ), { fields: [], loop: false }, 'a method that sets no value names no field' );
+	assert.deepEqual( opener( 'member' ), { fields: [ { name: 'team', value: 'Sales' } ], loop: false }, 'a handler naming a member of the component reads that member' );
 } );
 
 test( 'NEGATIVE: a method that scrolls but looks up no form, one that looks a form up and does not scroll, an unknown handler and a draft with no opener give none', () => {

@@ -188,8 +188,9 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		// A rule's attributes are the block's settings; a block that draws its children takes no words from them.
 		const drawn = m.blockKids( e ).length ? ( r.absorb ? `rule ${ r.rule }` : cls.drawsChildren( block ) ) : null;
 		// A rule that sets a display type (a business detail) carries the block's settings itself: no generic text attribute.
+		// A block that draws its children still takes the element's own link (lib/skeleton-write-content.mjs::linkAttrs).
 		const own = r.rule && ( drawn || top.attributes?.displayType );
-		const { a, handover } = own ? { a: {}, handover: [] } : contentAttrs( block, e, top );
+		const { a, handover } = own ? ( drawn && ! top.attributes?.displayType ? w.linkAttrs( block, e, top ) : { a: {}, handover: [] } ) : contentAttrs( block, e, top );
 		// A navigation block's collapse point is the width the draft shows its navigation at.
 		const collapseAttr = 'nav' === e.tag ? R.navigation?.collapseAttribute?.[ block ] : null;
 		const collapse = collapseAttr ? collapsePoint( { e, states, thresholds } ) : null;
@@ -357,8 +358,8 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	}
 	const skeleton = flowNode ? [ ...flowSides.before, ...[].concat( rootNode || [] ), ...flowSides.after ] : formStepNodes( hiddenFieldNodes( formHostNodes( [].concat( rootNode || [] ), { factRecord } ), hiddenFieldContext( { factRecord, m, view, nodeOfKey, rowOf, rules: R, attr: facts.attr, scriptOf } ) ), { factRecord, surfaceKind, component: 'form' === surfaceKind ? view.recordOf( scope?.id )?.dc ?? null : null, ...formStepContext( { m, view, nodeOfKey, rowOf, rows, rules: R, attr: facts.attr } ) } );
 	// Each absorbed part element is its block node's draftSlots entry at the part's calibrated slot, with its children at
-	// the part's sub-part slots, and the block node stands in the part's wrapper beside the wrapper's other content, or
-	// the wrapper the part leaves empty is dropped (lib/skeleton-part-slots.mjs).
+	// the part's sub-part slots; the block node stays where its own element stands, and the wrapper the part leaves empty is
+	// dropped (lib/skeleton-part-slots.mjs).
 	partPending.forEach( ( p ) => {
 		const node = nodeOfKey[ p.into ];
 		if ( ! node ) {
@@ -368,8 +369,11 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const labelSetting = R[ p.rule ]?.labelSetting;
 		const words = labelSetting ? m.words( p.e ).trim() : '';
 		labelSetting && /\p{L}/u.test( words ) && facts.attr( node.name, labelSetting ) && ( node.attributes = { ...node.attributes, [ labelSetting ]: words } );
+		// A logo the block draws from its own setting (rules.drawerLogo) gives that setting the attachment the build carries for the logo.
+		const idSetting = R[ p.rule ]?.idSetting;
+		const logoId = idSetting && facts.attr( node.name, idSetting ) ? carriedAttrs( facts.logoBlocks[ 0 ], p.e ).attrs.logoId : null;
+		logoId && ( node.attributes = { ...node.attributes, [ idSetting ]: logoId } );
 		const place = placePart( { e: p.e, node, tree: skeleton, nodeOfKey, m } );
-		place?.placed && ( rowOf[ p.into ].placedIn = place.placed );
 		place?.dropped && Object.assign( rowOf[ place.dropped ], { action: 'remove', reason: place.note } );
 		place?.note && ( rowOf[ p.into ].slotNotes = [ ...( rowOf[ p.into ].slotNotes || [] ), place.note ] );
 		if ( ! db ) {
@@ -419,9 +423,15 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	for ( const x of cls.filterDrawer?.missing || [] ) {
 		Object.assign( rowOf[ x.key ] ?? {}, { missingFeature: { line: x.line, why: x.why } } );
 	}
+	// A popup that opens on a timer or on exit intent is a missing feature on the surface's root row (rules.timedPopup).
+	const timed = cls.timedPopup();
+	timed && rowOf[ m.root.key ] && ( rowOf[ m.root.key ].missingFeature = timed );
+	// The Floating UI site options the draft's fixed back-to-top control and reading progress bar set (rules.backToTop.floating, rules.readingProgress): one map for the surface, applied by the site build.
+	const siteOptions = Object.assign( {}, ...rows.map( ( r ) => r.siteOptions ) );
 	const proposal = {
 		generated: new Date().toISOString(), inventory: inventory.generated, source: inventory.source, surface, siteName: facts.siteName, surfaceParts: scope?.surfaceParts ?? [], stripRoots: ctx.stripRoots, recordDisagreements: view.disagreements, recordUntranslated: view.untranslated,
 		confidenceFormula: 'min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights', weights: W, ...( built ? { builtPost: built } : {} ),
+		...( Object.keys( siteOptions ).length ? { siteOptions } : {} ),
 		...( role ? { surfaceRole: { role: role.role, row: role.row.slug, ...( role.part ? { part: role.part.label } : {} ) } } : {} ),
 		...( flowNode ? { choiceFlow: { steps: cls.choiceFlow.steps.length, questions: cls.choiceFlow.steps.filter( ( s ) => s.question ).length, results: cls.choiceFlow.steps.filter( ( s ) => s.result ).length, notes: cls.choiceFlow.notes } } : {} ),
 		...( cls.commerceRegion ? { commerceRegion: cls.commerceRegion.note ? { note: cls.commerceRegion.note } : { key: cls.commerceRegion.key, role: cls.commerceRegion.role, block: cls.commerceRegion.block, ...( cls.commerceRegion.toolbar ? { toolbar: { sort: cls.commerceRegion.toolbar.sort, count: cls.commerceRegion.toolbar.count, absorbed: cls.commerceRegion.toolbar.absorb, missing: cls.commerceRegion.toolbar.missing } } : {} ) } } : {} ),
