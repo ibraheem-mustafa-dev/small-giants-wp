@@ -104,7 +104,7 @@ const count = ( list ) => list.reduce( ( a, n ) => a + 1 + count( n.innerBlocks 
 // draftLinks (lib/draft-link.mjs::draftLinksFor: the client's page map and routing that turn a draft link into a site address;
 // null resolves every draft route to no address), pageMap (the page-map rows: which surface is a choice flow or a block-owned
 // part, lib/skeleton-surface-role.mjs) and surfaceId (the surface's surfaces.json id; the record's matching surface when omitted) }.
-export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, built = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null, pageMap = [], surfaceId = null } ) {
+export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, built = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null, pageMap = [], surfaceId = null, loops = null } ) {
 	const m = inventoryModel( inventory );
 	const { composition } = facts;
 	const overrides = ( e, words ) => overrideFor( e, { clientDecisions, picks, facts, surface, words } );
@@ -120,7 +120,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	const siteLink = siteLinkResolver( draftLinks, rootComponent );
 	// The page map's role for the surface: a choice flow, or a part another row's block draws (lib/skeleton-surface-role.mjs).
 	const role = surfaceRole( { pageMap, id: surfaceId ?? scope?.id ?? null, kind: surfaceKind, m, view, postType: facts.decisions.rules?.choiceFlow?.postType } );
-	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce, role, pageMap }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
+	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce, role, pageMap, loops }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
 	const R = facts.decisions.rules || {};
 	const rows = [];
 	const finder = ( e ) => m.tplFinder( e );
@@ -200,11 +200,12 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		// A linked form reads nothing from the draft: the saved form's own surface holds its look (Spec 48 §2). Nor does a
 		// commerce region's WooCommerce piece, which draws the region from WooCommerce; the product card inside the shop's
 		// collection is read at the draft's first card, whose look it takes.
-		if ( 'formLink' === r.rule || 'commerceRegion' === r.rule || 'categoryChips' === r.rule ) {
+		const loopProducts = 'loopBlocks' === r.rule && 'products' === r.kind;
+		if ( 'formLink' === r.rule || 'commerceRegion' === r.rule || 'categoryChips' === r.rule || loopProducts ) {
 			delete node.draftRef;
 			delete node.draftFingerprint;
 		}
-		if ( 'commerceRegion' === r.rule && r.inner ) {
+		if ( ( 'commerceRegion' === r.rule || loopProducts ) && r.inner ) {
 			const item = r.item ? m.byKey[ r.item ] : null;
 			const copy = ( n ) => ( { name: n.name, attributes: { ...( n.attributes || {} ) }, innerBlocks: ( n.innerBlocks || [] ).map( copy ), ...( false === n.reads ? { reads: false } : {} ) } );
 			// An SGS block in the region reads the draft's item (the shop's product card its first card, the product page's

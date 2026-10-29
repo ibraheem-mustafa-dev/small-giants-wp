@@ -122,6 +122,25 @@
 				"reason": "a WooCommerce page's template copy prints the page's own content, WooCommerce's working block, where the draft's commerce region is (rules.commerceRegion)"
 			}
 		],
+		"loopBlocks": {
+			"reason": "a loop on any page is the working block its data and items say (Spec 48A FR-48A-8, Bean S5): products, brands or reviews, never decided by a section heading (FR-48-30)",
+			"products": { "reason": "a loop of items that show a price and link to a product page is the site's product collection, the block the shop region uses, with its own query (FR-48-83, Spec 27 FR-24-4)" },
+			"brands": {
+				"block": "sgs/brand-strip",
+				"attributes": { "source": "product-brands", "brandLinkToShop": true, "brandHideEmpty": true },
+				"minMatches": 2,
+				"reason": "a loop of links labelled with the catalogue's brands is the brand strip reading the product brands (FR-48-83)"
+			},
+			"reviews": {
+				"rating": "[\u2605\u2B50]{3,}|(?:\u00e2\u02dc\u2026){3,}|\\b[1-5](?:\\.\\d)?\\s*(?:out of 5|\\/\\s*5)\\b",
+				"quoteLength": 40,
+				"providers": {
+					"google": { "host": "(^|[./])(share\\.google|google\\.[a-z.]+|g\\.page|goo\\.gl)", "block": "sgs/google-reviews", "countAttribute": "maxReviews", "attributes": {}, "handover": { "owner": "content-page", "kind": "presence", "detail": "the Google place the reviews come from: set the place in the reviews block" } },
+					"trustpilot": { "host": "trustpilot\\.com", "block": "sgs/trustpilot-reviews", "attributes": {}, "handover": { "owner": "content-page", "kind": "presence", "detail": "the Trustpilot business unit the reviews come from: set it in the reviews block" } }
+				},
+				"reason": "a loop of items that each show a rating and a quote, linking to a review provider, is that provider's reviews block (FR-48-83)"
+			}
+		},
 		"shopToolbar": {
 			"block": "sgs/container",
 			"attributes": { "tagName": "div", "className": "sgs-shop-toolbar" },

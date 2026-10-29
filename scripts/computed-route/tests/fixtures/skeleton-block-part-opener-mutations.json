@@ -17,7 +17,7 @@
 	{ "file": "lib/skeleton-rules.mjs", "find": "...( count && 0 === Number( m.words( count ).trim() ) ? { [ T.showZero ]: true } : {} ),", "replace": "...( count ? { [ T.showZero ]: true } : {} ),", "why": "only a count showing zero at rest keeps showing it" },
 	{ "file": "lib/skeleton-rules.mjs", "find": "aria && ! /\\{\\{/.test( aria )", "replace": "aria", "why": "a bound aria-label is no typed name" },
 	{ "file": "lib/skeleton-rules.mjs", "find": "attributes: { ...( d.own.attributes || {} ), ...triggerOf( e, d.own.trigger ) }", "replace": "attributes: { ...triggerOf( e, d.own.trigger ) }", "why": "the block keeps its owning entry's drawer mode" },
-	{ "file": "lib/skeleton-propose.mjs", "find": "commerce, role, pageMap }", "replace": "commerce, role }", "why": "the rules see the page map" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "commerce, role, pageMap, loops }", "replace": "commerce, role, loops }", "why": "the rules see the page map" },
 	{ "file": "lib/skeleton-handler-opens.mjs", "find": "&& keyName( p ) && ! falsy( p.value ) )", "replace": "&& keyName( p ) )", "why": "a key written with a closing value opens nothing" },
 	{ "file": "lib/skeleton-handler-opens.mjs", "find": "isFn( arg ) && 'ObjectExpression' === arg.body?.type ? arg.body : null", "replace": "null", "why": "a setState given a function returning the patch" },
 	{ "file": "lib/skeleton-handler-opens.mjs", "find": "( 'NumericLiteral' === n?.type && 0 === n.value ) ||", "replace": "", "why": "zero closes" },

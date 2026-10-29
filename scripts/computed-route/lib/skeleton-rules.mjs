@@ -14,6 +14,7 @@ import { templateKey } from './fact-key.mjs';
 import { recordView } from './skeleton-record.mjs';
 import { makePanelRules } from './skeleton-panel-rules.mjs';
 import { commerceRegion } from './skeleton-commerce-region.mjs';
+import { loopBlocks } from './skeleton-loop-blocks.mjs';
 import { filterRail } from './skeleton-filter-rail.mjs';
 import { linkWrite, siteLinkResolver } from './draft-link.mjs';
 import { choiceFlowModel } from './skeleton-choice-flow.mjs';
@@ -658,6 +659,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	};
 	// The commerce region of a WooCommerce page surface (lib/skeleton-commerce-region.mjs), found once for the surface.
 	const region = commerceRegion( { m, commerce: surface.commerce, rule: R.commerceRegion, toolbarRule: R.shopToolbar } );
+	// A loop of products, brands or reviews on any page is the working block its items say (lib/skeleton-loop-blocks.mjs).
+	const loopRegions = new Map( loopBlocks( { m, rows: surface.loops?.rows || [], brands: surface.loops?.brands || [], commerce: surface.commerce, rule: R.loopBlocks, money: R.commerceRegion?.money, shop: R.commerceRegion?.roles?.shop } ).regions.map( ( x ) => [ x.key, x ] ) );
 	// The shop's filter rail beside its product listing (lib/skeleton-filter-rail.mjs), from the draft catalogue's facets.
 	const rail = region?.key ? filterRail( { m, region, filters: surface.commerce.filters, rule: R.filterRail, money: R.commerceRegion.money } ) : null;
 	// A surface the page map holds as an sgs_choice_flow row: what the flow holds, read from the fact record.
@@ -683,6 +686,11 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// A WooCommerce page's commerce region is WooCommerce's working piece, an ordinary block that draws the region
 		// itself (rules.commerceRegion): the region's children are absorbed into it.
 		( { e } ) => ( region?.key === e.key ? v( 'commerceRegion', { block: region.block, absorb: true, attributes: region.attributes, inner: region.inner, item: region.item?.key ?? null, reason: region.reason } ) : null ),
+		// A holder of looped products, brands or reviews is the working block, which draws its items (rules.loopBlocks).
+		( { e } ) => {
+			const loop = loopRegions.get( e.key );
+			return loop ? v( 'loopBlocks', { block: loop.block, absorb: true, attributes: loop.attributes, inner: loop.inner, item: loop.item?.key ?? null, kind: loop.kind, ...( loop.handover ? { handover: loop.handover } : {} ), reason: loop.reason } ) : null;
+		},
 		// The draft's sort control and result count (and the wrappers holding only them) are drawn by the toolbar row at the top of the
 		// shop's product collection (rules.shopToolbar): absorbed into the collection.
 		( { e } ) => ( region?.toolbar?.absorb.includes( e.key ) ? v( 'shopToolbar', { action: 'absorbed', into: region.key, reason: R.shopToolbar.reason } ) : null ),

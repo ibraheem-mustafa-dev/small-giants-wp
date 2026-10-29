@@ -12,7 +12,7 @@
 	{ "file": "lib/skeleton-rules.mjs", "find": "named.length >= R.categoryChips.minMatches )", "replace": "named.length >= 0 )", "why": "any chips on the shop are the category filter" },
 	{ "file": "lib/skeleton-rules.mjs", "find": "if ( filter && R.categoryChips && 'shop' === surface.commerce?.role", "replace": "if ( filter && R.categoryChips", "why": "chips on any page are the category filter" },
 	{ "file": "lib/skeleton-rules.mjs", "find": "if ( filter && R.categoryChips && 'shop'", "replace": "if ( R.categoryChips && 'shop'", "why": "chips that narrow no list are the category filter" },
-	{ "file": "lib/skeleton-propose.mjs", "find": "|| 'categoryChips' === r.rule ) {", "replace": ") {", "why": "the category filter reads the draft's chip look" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "|| 'categoryChips' === r.rule || loopProducts ) {", "replace": "|| loopProducts ) {", "why": "the category filter reads the draft's chip look" },
 	{ "file": "lib/skeleton-propose.mjs", "find": "node.innerBlocks = r.inner.map( copy );\n\t\t}\n\t\t// The filter rail's groups", "replace": "\n\t\t}\n\t\t// The filter rail's groups", "why": "the category filter holds no taxonomy filter" },
 	{ "file": "lib/skeleton-propose.mjs", "find": "rowOf[ x.key ] && ( rowOf[ x.key ].missingFeature = { line: x.line, why: x.why } );", "replace": "", "why": "an unsupported sort order is never a row" },
 	{ "file": "lib/intake-missing.mjs", "find": "skeletonRows.filter( ( r ) => r.missingFeature || (", "replace": "skeletonRows.filter( ( r ) => (", "why": "a row a rule marks as a missing feature is not listed" },
