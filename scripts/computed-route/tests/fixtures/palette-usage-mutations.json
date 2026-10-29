@@ -12,7 +12,7 @@
 	{ "file": "lib/intake-palette-usage.mjs", "find": "[ [ buttons, 'buttons' ], [ linkGrounds, 'links' ], [ grounds, 'elements' ] ]", "replace": "[ [ grounds, 'elements' ] ]", "why": "signal 2: primary and accent are read from button grounds first" },
 	{ "file": "lib/intake-palette-usage.mjs", "find": "strongest( ( g ) => g !== primary )", "replace": "strongest( () => true )", "why": "accent is not the primary value" },
 	{ "file": "lib/intake-palette-usage.mjs", "find": "opaque( g.hex ) && ! strong( g ) && g !== surface ), ( n )", "replace": "opaque( g.hex ) && g !== surface ), ( n )", "why": "surface-alt is a light (not strong) ground" },
-	{ "file": "lib/intake-palette-usage.mjs", "find": "! [ surface, alt, primary ].includes( g )", "replace": "! [ surface, primary ].includes( g )", "why": "section is not the raised ground" },
+	{ "file": "lib/intake-palette-usage.mjs", "find": "! [ surface, alt, primary, channel ].includes( g )", "replace": "! [ surface, primary, channel ].includes( g )", "why": "section is not the raised ground" },
 	{ "file": "lib/intake-palette-usage.mjs", "find": "lightness( g.hex ) < 40 )?.[ 0 ]", "replace": "lightness( g.hex ) < 0 )?.[ 0 ]", "why": "signal 3: text-inverse is the text on the dark ground" },
 	{ "file": "lib/intake-palette-usage.mjs", "find": "g.hexes.has( u.ground ), ( u ) =>", "replace": "true, ( u ) =>", "why": "signal 3: a pair is read on its own ground" },
 	{ "file": "lib/intake-palette-usage.mjs", "find": "* ( u.text ? 2 : 1 ) ),\n\t\t( x ) => x !== g && opaque( x.hex ) && contrast( x.hex, g.hex ) >= 3 ) : null );", "replace": "* ( u.text ? 2 : 1 ) ),\n\t\t( x ) => x !== g && opaque( x.hex ) ) : null );", "why": "signal 3: the paired text is readable on its ground" },

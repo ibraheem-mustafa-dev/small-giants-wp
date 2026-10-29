@@ -156,7 +156,6 @@ export const ruleStatus = ( c ) => {
 	const base = 'danger' === w ? 'error' : w;
 	return w ? { role: c.words.includes( 'light' ) ? `${ base }-light` : base, why: `name says ${ w }` } : null;
 };
-export const ruleWhatsapp = ( c ) => ( c.words.includes( 'whatsapp' ) ? { role: 'whatsapp', why: 'name says WhatsApp' } : null );
 export const ruleTextMuted = ( c ) => ( c.words.some( ( w ) => /^(muted|subtle)$/.test( w ) ) && ! c.words.some( ( w ) => /^(brand|surface|bg)$/.test( w ) ) ? { role: 'text-muted', why: 'name says muted text' } : null );
 export const ruleTextInverse = ( c ) => ( c.words.some( ( w ) => /^(inverse|inverted|reverse)$/.test( w ) ) ? { role: 'text-inverse', why: 'name says inverse text' } : null );
 export const ruleText = ( c ) => ( c.words.some( ( w ) => /^(text|body|copy|fg|foreground)$/.test( w ) ) && ! c.words.some( ( w ) => /^(surface|bg|background)$/.test( w ) ) ? { role: 'text', why: 'name says body text' } : null );
@@ -178,7 +177,7 @@ export const ruleBrand = ( c ) => {
 	return { role: null, why: `${ mod } shade of the ${ c.family.role } family has no slug` };
 };
 export const NAME_RULES = [ ruleLinkHover, ruleLink, ruleHeading, ruleReserved, ruleOnGround, ruleSection, ruleFooter, ruleBorder,
-	ruleStatus, ruleWhatsapp, ruleTextMuted, ruleTextInverse, ruleText, ruleSurface, ruleBrand ];
+	ruleStatus, ruleTextMuted, ruleTextInverse, ruleText, ruleSurface, ruleBrand ];
 
 // When a slug is not in the vocabulary yet, the closest existing slug to propose instead (FR-32-14 lands them).
 const STAND_IN = { heading: 'text', link: 'primary', 'link-hover': 'primary-dark', section: 'surface-alt', 'section-text': 'text' };
@@ -362,16 +361,17 @@ export function proposePalette( { tokens = [], usage = [], slugs = loadPaletteSl
 		const list = roles.get( g ) || [];
 		const row = { rowId: `palette:${ t.name }`, token: t.name, hex: t.hex, resolved: t.resolved, chain: t.chain, used: g.summary.total > 0,
 			uses: g.summary.uses, sharedWith: g.members.filter( ( m ) => m !== t.name ), ...( g.hexes.size > 1 ? { value: painted( g ) } : {} ) };
+		// A token named for a registry brand is that brand's colour, which the brand-aware blocks paint themselves
+		// (plugins/sgs-blocks/includes/data/brand-registry.json): no palette slot and no custom token (Bean, 2026-10-27),
+		// whether or not the draft paints it and whatever colour a rendered fact would give it.
+		const brand = list.length || wanted.has( g ) ? null : brandOfToken( t.name, brands );
+		if ( brand ) {
+			return { ...row, role: null, roles: [], brand: brand.slug, confidence: 0.9, why: `brand colour: ${ brand.label } (the brand registry names it), painted by the brand's own setting, so no palette slot`, by: 'brand' };
+		}
 		if ( ! row.used && ! list.some( ( r ) => 'declared' === r.by ) ) {
 			return { ...row, role: null, roles: [], confidence: 0, why: 'unused: no element in the draft uses this value', by: 'none' };
 		}
 		if ( ! list.length && ! wanted.has( g ) ) {
-			// A token named for a registry brand is that brand's colour, which the brand-aware blocks paint themselves
-			// (plugins/sgs-blocks/includes/data/brand-registry.json): no palette slot and no custom token (Bean, 2026-10-27).
-			const brand = brandOfToken( t.name, brands );
-			if ( brand ) {
-				return { ...row, role: null, roles: [], brand: brand.slug, confidence: 0.9, why: `brand colour: ${ brand.label } (the brand registry names it), painted by the brand's own setting, so no palette slot`, by: 'brand' };
-			}
 			const hit = hintOf.get( t.name );
 			const why = lost.get( t.name ) || ( hit && ! hit.role ? hit.why : 'no rendered fact or name gives it a slug; stays a custom colour (FR-33-2)' );
 			return { ...row, role: custom( t.name ), roles: [ custom( t.name ) ], confidence: hit && ! hit.role ? 0.8 : 0.3, why, by: hit && ! hit.role ? 'name' : 'none' };

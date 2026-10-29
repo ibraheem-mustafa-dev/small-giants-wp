@@ -1,5 +1,5 @@
 // Spec 48 FR-48-31, lib/intake-palette-usage.mjs: the rendered and code facts that tell apart colours a plain count
-// confuses. A colour painted on links that open WhatsApp is the whatsapp colour and never the accent; the accent's text
+// confuses. A colour painted on links that open WhatsApp is that brand's colour, which takes no slot, and is never the accent; the accent's text
 // is its own ink when the accent fill holds no text, and its light tint is the light ground of its hue that carries that
 // ink; the border is the line colour that draws the most pixels; muted text is the colour of the most text a clear step
 // lighter than the text; success is the green the code gives a status message even when nothing paints it at rest.
@@ -32,9 +32,9 @@ const USAGE = [
 const run = ( usage = USAGE ) => proposePalette( { tokens: TOKENS, usage, slugs: SLUGS } );
 const holder = ( p, slug ) => [ ...new Set( p.rows.filter( ( r ) => r.roles.includes( slug ) ).map( ( r ) => r.hex ) ) ];
 
-test( 'MUST FAIL: a colour painted on links that open WhatsApp is whatsapp and never the accent', () => {
+test( 'MUST FAIL: a colour painted on links that open WhatsApp takes no slot and is never the accent', () => {
 	const p = run();
-	assert.deepEqual( holder( p, 'whatsapp' ), [ '#25D366' ] );
+	assert.deepEqual( holder( p, 'whatsapp' ), [], 'WhatsApp is a brand colour the WhatsApp block paints: no palette slot' );
 	assert.deepEqual( holder( p, 'accent' ), [ '#9C8B78' ] );
 	const plain = USAGE.map( ( u ) => ( u.channel ? { ...u, channel: undefined } : u ) );
 	assert.deepEqual( holder( run( plain ), 'accent' ), [ '#25D366' ], 'without the link fact the louder green wins' );
