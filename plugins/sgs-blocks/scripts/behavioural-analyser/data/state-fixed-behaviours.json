@@ -2785,6 +2785,16 @@
    "file": "plugins/sgs-blocks/src/blocks/team-member/style.css",
    "selector": ".sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus-within .sgs-team-member__overlay-bio",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/gift-card.css",
+   "selector": ".sgs-gift-card-form__radio:checked + .sgs-gift-card-form__amount-label",
+   "reason": "the chosen gift-card amount is marked by an inset ring and a tick in the inherited text colour (currentcolor), a non-colour cue for WCAG 1.4.1; the colour comes from the theme, so there is no setting"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/gift-card.css",
+   "selector": ".sgs-gift-card-form__radio:checked + .sgs-gift-card-form__amount-label::after",
+   "reason": "the chosen gift-card amount is marked by an inset ring and a tick in the inherited text colour (currentcolor), a non-colour cue for WCAG 1.4.1; the colour comes from the theme, so there is no setting"
   }
  ]
 }
