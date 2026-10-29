@@ -210,7 +210,7 @@ export function skeletonProblems( tree ) {
 
 // `draftFingerprint` ({ tag, cls, styleHash }) is the skeleton writer's record of the draft element a tpl finder names;
 // Fill moves it into the surface's origin map (originMap) and strips it with the other draft keys.
-const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'draftFingerprint', 'handover', ...ROW_KEYS ];
+const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'draftFingerprint', 'handover', 'modalFrame', ...ROW_KEYS ];
 
 // The origin map of a skeleton: for every node whose draftRef is a tpl finder, { [cr-ref]: { tpl, fingerprint, slots } }
 // (slots: the slot path to the tpl key of each tpl slot finder). `refs[i]` is the cr-ref of node i (tree.mjs::refOf).

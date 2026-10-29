@@ -383,6 +383,21 @@
 			"block": "sgs/button",
 			"reason": "a button or link whose click handler writes the state a draft modal surface opens on (a state key one of its surfaces.json states holds at true, or at the literal the handler writes, lib/skeleton-handler-opens.mjs::opensOnWrites) opens that modal on the clone, and the page map holds the modal as an sgs_modal row: the control is a button linking #<anchor> of the sgs/modal frame the page carries (lib/skeleton-opener.mjs), which opens its modal post on any link to its anchor; the draft's control is never a dead button"
 		},
+		"formPrefillOpener": {
+			"block": "sgs/button",
+			"reason": "a button or link whose click handler scrolls to a form and sets its fields (a class method that looks a form element up and scrolls to it, called with the field values; lib/skeleton-form-prefill.mjs) opens that form on the clone, with the fields prefilled: the control is a button linking ?<field>=<value> (the query before the hash) and #<the form's anchor>, each loop copy's values read from the element printing them in that copy, and the form's fields read the query through valueFromParam; the draft's control is never a dead button"
+		},
+		"modalFrame": {
+			"block": "sgs/modal",
+			"names": { "scrim": "backdrop", "dialog": "dialog", "close": "close" },
+			"reason": "a modal surface's backdrop, panel and close control are the sgs/modal frame's own settings (Bean S8, 2026-10-28): the frame draws the scrim, the dialog and the close, so only the dialog's inner content is the modal post (lib/skeleton-modal-frame.mjs)",
+			"parts": {
+				"root": "the modal's full-viewport overlay: the sgs/modal frame draws the overlay, so its children are the post's content",
+				"dialog": "the modal's panel (the element declaring role dialog): the sgs/modal frame draws the panel and its paint becomes the frame's dialog settings, so its children are the post's content",
+				"scrim": "the modal's backdrop (an empty layer covering the overlay): its fill becomes the frame's scrim settings",
+				"close": "the modal's close control (its click handler writes a falsy value to the state the modal opens on): the sgs/modal frame draws the close and its look becomes the frame's close settings; the draft's button is never built as a second, dead close"
+			}
+		},
 		"drawerClose": {
 			"part": "close",
 			"labelSetting": "closeLabel",

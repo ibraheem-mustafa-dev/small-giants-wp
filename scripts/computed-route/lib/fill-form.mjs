@@ -22,6 +22,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { setAttr } from './tree.mjs';
+import { prefillParams } from './skeleton-form-prefill.mjs';
 import { formSchemaOf, schemaFieldOf, schemaFieldByName, schemaChipsOf, conditionsFromSource, linkParams, savesProgress, requiredCopyOf, copyFor } from './fill-form-schema.mjs';
 import { parseTplKey } from './fill-skeleton.mjs';
 import { detectReferences, referenceOf } from './references.mjs';
@@ -257,8 +258,9 @@ export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, 
 			walk( [ node ], ( n ) => linked.set( n, ref.value ) );
 		}
 	} );
+	// `params`: the query names a link of the draft hands to a form, and the fields a control that scrolls to the form sets (lib/skeleton-form-prefill.mjs).
 	const schema = formSchemaOf( facts, component );
-	const params = linkParams( facts );
+	const params = new Set( [ ...linkParams( facts ), ...( draftFolder ? prefillParams( { folder: draftFolder, record: facts } ) : [] ) ] );
 	const conditions = schema ? conditionsFromSource( sources[ schema.component ] ) : {};
 	const copies = Object.fromEntries( Object.entries( sources ).map( ( [ c, src ] ) => [ c, requiredCopyOf( src ) ] ) );
 	const steps = schema ? schema.steps.filter( ( s ) => s.fields.length ) : [];

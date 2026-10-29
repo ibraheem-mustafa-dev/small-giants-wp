@@ -7,7 +7,7 @@
 	},
 	{
 		"file": "lib/skeleton-part-slots.mjs",
-		"find": "out.slots[ homeSlot ] = finder( opener );",
+		"find": "out.slots[ homeSlot.replace( PSEUDO, '' ) ] = finder( opener );",
 		"replace": "",
 		"why": "the part's own element is not given a slot"
 	},

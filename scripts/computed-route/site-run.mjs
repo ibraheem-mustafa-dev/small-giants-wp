@@ -21,6 +21,7 @@
 //        [--stages inventory,propose,fill,build,walk] [--jobs 3] [--widths 1440,768,375] [--live-base <url>] [--with-content]
 // Output: sites/<client>/build/qa/site-run/<stamp>/status.json (rewritten after every stage) and <surface>.<stage>.log.
 // Fill and walks run <jobs> at a time; builds run one at a time (they write the site's database).
+import { framedTreeFile, framesIn } from './lib/site-build-modal-frame.mjs';
 import fs from 'fs';
 import path from 'path';
 import { spawn } from 'child_process';
@@ -342,6 +343,9 @@ export async function main( argv ) {
 		} else {
 			tree = path.relative( REPO, path.join( ctx.out, 'filled.tree.json' ) );
 		}
+		// A page's modal frames take the look the modal surface's Fill kept (lib/site-build-modal-frame.mjs).
+		const framed = framedTreeFile( { treeFile: path.join( REPO, tree ), frames: framesIn( path.join( build, 'qa', 'fill' ) ), outDir: ctx.out } );
+		framed && ( tree = path.relative( REPO, framed.file ), console.log( `${ key } modal frames take their look: ${ framed.merged.join( ', ' ) }` ) );
 		const builder = [ 'scripts/wp-build-page.js', '--env-file', entry.envFile, '--env-key', entry.envKey, '--tree', tree, ...( slug ? [ '--template', slug ] : [ '--post-id', String( entry.target.postId ) ] ) ];
 		if ( ! await step( 'build', () => exclusive( async () => {
 			await exec( 'dry', 'node', [ ...builder, '--dry-run' ] );

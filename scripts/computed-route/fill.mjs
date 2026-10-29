@@ -6,7 +6,7 @@
 //        [--out <dir>] [--open <regex>] [--cache <dir>] [--no-sweep] [--headed] [--allow-external] [--mirror <url> <file>]...
 //   node scripts/computed-route/fill.mjs --serve <folder> [--draft-index <file>]    serve a draft folder until Ctrl-C
 // Reads sites/<client>/build/surfaces.json (the surface's walker states), sites/<client>/theme-snapshot.json and the
-// divergence ledger; writes into --out (and adds each width-threshold snap to that ledger as a `breakpoint-snap` entry): filled.tree.json, fill-report.md, fill-report.json, unmapped.json,
+// divergence ledger; writes into --out (and adds each width-threshold snap to that ledger as a `breakpoint-snap` entry): filled.tree.json, modal-frame.json (a modal surface's frame look, lib/fill-modal-frame.mjs), fill-report.md, fill-report.json, unmapped.json,
 // handover.json, binding-groups.json, breakpoints.json, opener.json (the state a drawer or panel surface was opened with, the widths it rendered at and any state refused), the generated walker config and, when the draft's focus, press or link-state looks
 // live in the theme, theme-snapshot.patch.json (the keys to merge into the client's theme-snapshot.json: Fill never
 // edits it). It never builds a page and never writes the surface's own tree file. Beside the tree it writes <surface>.origin.json (cr-ref to tpl key and fingerprint) when the
@@ -20,6 +20,7 @@ import { readTree, addRefs, refOf, walk } from './lib/tree.mjs';
 import { lintSkeleton } from './lint.mjs';
 import { load as loadLedger, addEntries } from './lib/ledger.mjs';
 import { assertDraftPage, draftPageProblem, serveDraft } from './lib/draft.mjs';
+import { liftModalFrame } from './lib/fill-modal-frame.mjs';
 import { skeletonNodes, skeletonProblems, cleanTree, expandSiteInfoRows, originMap } from './lib/fill-skeleton.mjs';
 import { draftHashOf, stampOrigin } from './lib/origin-file.mjs';
 import { readDraft } from './lib/fill-read.mjs';
@@ -363,6 +364,9 @@ export async function fillSurface( o ) {
 		writeOrigin();
 		// A list host's new children join the tree last: every pass above reads the tree by its skeleton's node indices.
 		applyChildren( flat, listed.children );
+		// A modal surface's frame node leaves the post's tree; its look is kept for the page's frame (lib/fill-modal-frame.mjs).
+		const frame = liftModalFrame( { skeleton, tree } );
+		frame && put( 'modal-frame.json', `${ JSON.stringify( frame, null, 2 ) }\n` );
 		put( 'filled.tree.json', `${ JSON.stringify( tree, null, 2 ) }\n` );
 		siteOptions && put( 'site-options.json', `${ JSON.stringify( siteOptions, null, 2 ) }\n` );
 		put( 'fill-report.md', report.markdown );
