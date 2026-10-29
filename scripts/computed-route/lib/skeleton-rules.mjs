@@ -444,7 +444,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			if ( ! bare( e ) || hasSvg( e ) || DECORATION_TAGS.has( e.tag ) || ! ( 'true' === e.attrs?.[ 'aria-hidden' ] || [ 'absolute', 'fixed' ].includes( st.position ) ) ) {
 				return null;
 			}
-			const ring = [ 'top', 'right', 'bottom', 'left' ].some( ( side ) => ( pxOf( st[ `border-${ side }-width` ] ) ?? 0 ) > 0 && ! [ '', 'none', 'hidden', 'initial' ].includes( String( st[ `border-${ side }-style` ] ?? '' ).trim() ) );
+			// A ring draws its outline on every side (a one-sided line, a connector or a rule, is a layer).
+			const ring = [ 'top', 'right', 'bottom', 'left' ].every( ( side ) => ( pxOf( st[ `border-${ side }-width` ] ) ?? 0 ) > 0 && ! [ '', 'none', 'hidden', 'initial' ].includes( String( st[ `border-${ side }-style` ] ?? '' ).trim() ) );
 			return ring ? v( 'decorativeShape', { block: R.decorativeShape?.block || null } ) : v( 'decorationLayer', { action: 'remove' } );
 		},
 		( { e, kidsB } ) => ( ! kidsB.length && specHit( R.typedDivider, m.words( e ) ) ? v( 'typedDivider', { action: 'remove' } ) : null ),
@@ -956,9 +957,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// The frame that only clips or fades a marquee track goes: the strip draws its own overflow and edge fade.
 		( { e, kidsB } ) => ( ! m.words( e ) && 1 === kidsB.length && loops( kidsB[ 0 ] ) && desc( kidsB[ 0 ] ).some( isMedia ) ? v( 'marqueeFrame', { action: 'unwrap' } ) : null ),
 		// A wrapper that only aligns or spaces its content (text-align, padding, margin) goes: the blocks around and inside
-		// it align and pad themselves. Anything that paints (a background, border, shadow), positions or lays out stays.
+		// it align and pad themselves. Anything that paints (a background, border, shadow), positions or lays out stays. A
+		// property the template binds to a script value (`padding: {{ pad }}`) is declared as much as a written one.
 		( { e, st, kidsB, parentBlock } ) => {
-			const props = Object.keys( st );
+			const props = [ ...new Set( [ ...Object.keys( st ), ...read.bound( e ) ] ) ];
 			const only = new Set( R.alignWrapper?.properties || [] );
 			// A margin on a wrapper that follows a sibling is the gap between the two blocks, not spacing inside the wrapper:
 			// unwrapping it would lose that gap, so the wrapper stays.

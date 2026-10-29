@@ -745,7 +745,7 @@ test( 'MUST FAIL: two links drawn as buttons (padding and a ground) stacked by t
 
 test( 'NEGATIVE: stacked links with no ground, no padding, a clear background or a zero border are still a list', () => {
 	const link = ( w, y, style ) => E( 'a', { attrs: { href: `/${ w }` }, y, words: w, style } );
-	for ( const style of [ 'color:rgb(0, 0, 0)', 'background:rgb(0, 0, 0)', 'padding:4px 0px;background:rgba(0, 0, 0, 0)', 'padding:4px 8px;border:0px solid rgb(0, 0, 0)', 'padding:0px;background:rgb(0, 0, 0)', 'padding:4px;background:none', 'padding:4px;background-color:transparent' ] ) {
+	for ( const style of [ 'color:rgb(0, 0, 0)', 'background:rgb(0, 0, 0)', 'padding:4px 8px;background:rgba(0, 0, 0, 0)', 'padding:4px 8px;border:0px solid rgb(0, 0, 0)', 'padding:0px;background:rgb(0, 0, 0)', 'padding:4px;background:none', 'padding:4px;background-color:transparent' ] ) {
 		const r = run( section( [ E( 'div', {}, [ link( 'Trade', 0, style ), link( 'Brands', 30, style ) ] ) ] ) );
 		assert.deepEqual( settled( byTag( r, 'div' ) ), { block: null, action: 'unwrap', rule: 'listWrapper' }, style );
 	}

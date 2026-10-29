@@ -12,6 +12,7 @@ import { openDb } from '../lib/db.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
 import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
 import { recordView } from '../lib/skeleton-record.mjs';
+import { inventoryModel } from '../lib/skeleton-model.mjs';
 import { elementFacts, acrossWidths, pxOf } from '../lib/element-facts.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
@@ -112,6 +113,39 @@ test( 'MUST FAIL (cut snippet): a binding the snippet cut is read in full from t
 	assert.equal( fr.attr( field.inv, 'inputmode' ), 'numeric' );
 	assert.equal( fr.attr( field.inv, 'type' ), 'text' );
 	assert.equal( fr.attr( field.inv, 'missing' ), null );
+} );
+
+test( 'MUST FAIL (bound declaration): a wrapper whose padding the template binds to a script value only spaces its content, so it unwraps; negative control: a bound background paints, so it stays', () => {
+	const wrap = ( hole ) => {
+		const w = el( 2, 'section', { parent: 1 } );
+		w.rec.template.style.holes = [ `style:${ hole }#0` ];
+		w.rec.template.holes = [ { id: `style:${ hole }#0`, where: `style:${ hole }`, expr: 'L.v', path: 'L.v', whole: true } ];
+		const at = ( r ) => r.proposal.rows.find( ( x ) => 'Site/2#0' === x.key );
+		return at( propose( [ el( 1, 'div', { style: { display: 'flex' } } ), w, el( 3, 'h2', { parent: 2, depth: 2, words: 'Fresh every morning' } ), el( 4, 'p', { parent: 2, depth: 2, words: 'Baked in small batches before the shop opens.' } ) ] ) );
+	};
+	assert.equal( wrap( 'padding' ).rule, 'alignWrapper' );
+	assert.notEqual( wrap( 'background' ).rule, 'alignWrapper' );
+} );
+
+test( 'MUST FAIL (bound button look): a link whose padding and background the template binds to script values is drawn as a button; negative control: bound padding alone is not', () => {
+	const look = ( holes ) => {
+		const a = el( 2, 'a', { parent: 1, words: 'Order now', rendered: { href: '/order' } } );
+		a.rec.template.style.holes = holes.map( ( h ) => `style:${ h }#0` );
+		const view = recordView( { elements: { 'Site/2': a.rec }, surfaces: {} } );
+		return inventoryModel( { elements: [ el( 1, 'div' ).inv, a.inv ] }, elementFacts( view ) ).buttonStyled( a.inv );
+	};
+	assert.equal( look( [ 'padding', 'background' ] ), true );
+	assert.equal( look( [ 'padding-left', 'border-top-width' ] ), true );
+	assert.equal( look( [ 'padding' ] ), false );
+	assert.equal( look( [ 'background' ] ), false );
+} );
+
+test( 'MUST FAIL (ring): an empty floating shape drawing its outline on every side is a ring; negative control: a one-sided dashed connector line is a decoration layer', () => {
+	const shape = ( style ) => propose( [ el( 1, 'section' ), el( 2, 'span', { parent: 1, rendered: { 'aria-hidden': 'true' }, style: { position: 'absolute', ...style } } ), el( 3, 'p', { parent: 1, words: 'Since 1962 we have supplied kitchens across the region.' } ) ] ).proposal.rows.find( ( x ) => 'Site/2#0' === x.key );
+	const sides = ( w, st ) => Object.fromEntries( [ 'top', 'right', 'bottom', 'left' ].flatMap( ( s ) => [ [ `border-${ s }-width`, w ], [ `border-${ s }-style`, st ] ] ) );
+	assert.equal( shape( sides( '2px', 'solid' ) ).rule, 'decorativeShape' );
+	assert.equal( shape( { 'border-top-width': '2px', 'border-top-style': 'dashed' } ).rule, 'decorationLayer' );
+	assert.equal( shape( sides( '0px', 'solid' ) ).rule, 'decorationLayer' );
 } );
 
 test( 'MUST FAIL (marker by box): a dot is judged by the box it renders at each width; negative controls: a control and a large box are no marker', () => {

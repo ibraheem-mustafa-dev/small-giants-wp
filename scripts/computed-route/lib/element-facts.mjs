@@ -4,7 +4,8 @@
 //   - attributes and every event binding (any event name, in full) from the fact record's `template.attrs` and
 //     `template.events` (lib/fact-record.mjs), through lib/skeleton-record.mjs::recordView; an element with no record entry
 //     has its rendered attributes and no bindings;
-//   - declared styles from the record (`template.style.static`, longhands);
+//   - declared styles from the record (`template.style.static`, longhands), and the properties a style hole binds to a
+//     script value (`bound`: declared, their values the logic's);
 //   - resolved values per width from the inventory's browser read (lib/skeleton-inventory.mjs `resolved`): the result of a
 //     clamp(), var() or calc() and the inherited text properties, beside the box, position and visibility it measures;
 //   - the element's own text as the runtime rendered it (its line breaks kept, whether it opens before the children) from
@@ -76,7 +77,7 @@ export function elementFacts( view = EMPTY ) {
 	// The draft's own placeholders on the element (its attribute and text holes, `{{ phone }}`), not its children's.
 	const placeholders = ( e ) => ( entry( e )?.holes ?? [] ).filter( ( h ) => 'text' === h.where || String( h.where ).startsWith( 'attr:' ) ).map( ( h ) => `{{ ${ String( h.expr ).trim() } }}` );
 	return Object.freeze( readers.set( view, {
-		view, attr, events, handler, declared: ( e ) => view.declared( e ), widths, resolved, lengthAt, boxAt, textBinding, placeholders,
+		view, attr, events, handler, declared: ( e ) => view.declared( e ), bound: ( e ) => view.holeProps( e ), widths, resolved, lengthAt, boxAt, textBinding, placeholders,
 		// The element's text as rendered, each line break as <br> (only an element whose text holds one carries `textBreaks`).
 		textWithBreaks: ( e ) => String( e?.textBreaks ?? e?.allText ?? e?.words ?? '' ).replace( /\s+/g, ' ' ).trim(),
 		// Whether the element's own words open its content, before its first child element (an element read before the

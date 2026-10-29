@@ -59,16 +59,19 @@ export function inventoryModel( inventory, read = elementFacts() ) {
 		return ! i || ( a && b && b.y >= a.y + a.h - 1 );
 	} );
 	const isTextLink = ( e ) => 'a' === e.tag && !! words( e ) && ! blockKids( e ).length;
-	// Whether a link is drawn as a button: its declared style (the record's longhands) gives it side padding and a ground (a
-	// background that is not transparent, or a border of some width that is drawn), never a plain text link.
+	// Whether a link is drawn as a button: its declared style (the record's longhands, or a property the template binds to a
+	// script value) gives it side padding and a ground (a background that is not transparent, or a border of some width that
+	// is drawn), never a plain text link.
 	const buttonStyled = ( e ) => {
 		const st = read.declared( e );
 		const low = ( k ) => String( st[ k ] ?? '' ).trim().toLowerCase();
 		const clear = ( v ) => ! v || /^(none|transparent|initial|inherit|unset)$/.test( v ) || /^rgba\([^)]*,\s*0\s*\)$/.test( v );
 		const ground = ! clear( low( 'background-color' ) ) || ( !! low( 'background' ) && ! clear( low( 'background' ) ) );
 		const edge = [ 'top', 'right', 'bottom', 'left' ].some( ( side ) => /^(solid|dashed|dotted|double)$/.test( low( `border-${ side }-style` ) ) && ! /^0(px)?$/.test( low( `border-${ side }-width` ) || '0' ) );
-		const padded = [ 'padding-left', 'padding-right' ].some( ( k ) => low( k ) && ! /^0(px)?$/.test( low( k ) ) );
-		return 'a' === e.tag && padded && ( ground || edge );
+		const bound = read.bound( e );
+		const padded = [ 'padding-left', 'padding-right' ].some( ( k ) => low( k ) && ! /^0(px)?$/.test( low( k ) ) ) || bound.some( ( p ) => /^padding(?:-left|-right|-inline)?$/.test( p ) );
+		const boundGround = bound.some( ( p ) => /^(?:background|border)/.test( p ) );
+		return 'a' === e.tag && padded && ( ground || edge || boundGround );
 	};
 	const isIconLink = ( e ) => 'a' === e.tag && ! words( e ) && kids( e ).some( ( k ) => 'svg' === k.tag );
 	// The slot of an element in the draft's own naming: the copy of its tag among its parent's block children.
