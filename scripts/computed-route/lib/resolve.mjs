@@ -15,6 +15,7 @@ import { applyClamp } from './fill-values.mjs';
 import { familyOf, settingKey, foldParts, unfoldValue, physicalOf, storedKeys, reachedBy, canonicalName } from './css-families.mjs';
 import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword, sizeKeyword } from './resolve-declared.mjs';
 import { consult } from './css-equivalence/index.mjs';
+import { pictureEntry } from './fill-media.mjs';
 import { sameAlignment } from './css-equivalence/keywords.mjs';
 
 export const COVERAGE_WRITES = [
@@ -195,7 +196,7 @@ export function timeToMs( raw ) {
 
 // One measured value in the setting's form. Returns { value } or { error }. layout: the draft element's display, flex-wrap
 // and flex-direction at the tier's width, for an enum value spelt as another alignment keyword of the same edge.
-function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, log, where, layout = {} } ) {
+function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, log, where, layout = {}, media = null } ) {
 	if ( COLOUR_PROPS.includes( prop ) ) {
 		const s = snapColour( raw, snapshot, { log, where, prefer } );
 		if ( ! s ) {
@@ -226,10 +227,19 @@ function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, l
 			return { value: slug };
 		}
 	}
+	if ( 'background-image' === prop && /\burl\(/.test( String( raw ) ) && ! [].concat( def?.type || [] ).includes( 'object' ) ) {
+		// A gradient setting holds a gradient: a picture in the value is never written to it (the draft's own address would be).
+		return { error: `${ raw } paints a picture and the setting holds a gradient` };
+	}
 	if ( 'background-image' === prop && [].concat( def?.type || [] ).includes( 'object' ) ) {
-		// An image setting holds { url }: a measured url(...) maps to it; a gradient or several layers cannot.
-		const m = String( raw ).match( /^url\(["']?([^"')]+)["']?\)$/ );
-		return m ? { value: { url: m[ 1 ] } } : { error: `${ raw } is not one image` };
+		// An image setting holds the uploaded attachment { url, id } (FR-48-39): a measured url(...) is looked up in the media map
+		// by the file it names; an address the map does not hold, a gradient or several layers cannot be held.
+		const m = String( raw ).match( /^url\(\s*["']?([^"')]+)["']?\s*\)$/ );
+		if ( ! m ) {
+			return { error: `${ raw } is not one image` };
+		}
+		const hit = pictureEntry( m[ 1 ], media || {} );
+		return hit ? { value: { url: hit.url, id: hit.id } } : { error: `the picture ${ m[ 1 ] } is no file in the media map (run media-upload.mjs for the site), so no attachment can be written` };
 	}
 	if ( 'backdrop-filter' === prop ) {
 		// A backdrop blur setting holds the radius (helpers-scrim.php paints blur(<length>)): one blur() is its length,
@@ -621,7 +631,7 @@ export function resolve( input, ctx ) {
 		return [ p, pw[ { mobile: 375, tablet: 768, desktop: 1440 }[ t ] ] ?? ( 1 === all.length ? all[ 0 ] : undefined ) ];
 	} ) );
 	const fmt = ( t, raw, def ) => formatValue( { prop: short, raw, def, unit, fontPx: tierPx( t ), forms, prefer: typeof current[ attr ] === 'string' ? current[ attr ] : null,
-		snapshot: ctx.snapshot, log: ctx.log || [], where: `${ block } ${ slot } ${ prop }@${ t }`, layout: layoutAt( t ) } );
+		snapshot: ctx.snapshot, log: ctx.log || [], where: `${ block } ${ slot } ${ prop }@${ t }`, layout: layoutAt( t ), media: ctx.media || null } );
 	const folded = foldFamily( { prop, perWidth, siblings: input.siblings, row, attr, tiers } );
 	if ( folded.gap ) {
 		return folded;

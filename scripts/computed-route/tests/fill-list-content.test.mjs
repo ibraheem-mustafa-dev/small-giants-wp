@@ -19,6 +19,7 @@ const C = 'Demo';
 const SCHEMAS = {
 	'sgs/milestones': { entries: { type: 'array', default: [ { date: '2020-01-01', title: 'First', description: '<p>Text.</p>', image: 0 } ] } },
 	'sgs/steps': { steps: { type: 'array', default: [ { number: '1', title: 'First Step' } ], items: { type: 'object', properties: { icon: { type: 'string' }, number: { type: 'string' }, title: { type: 'string' }, description: { type: 'string' } } } } },
+	'sgs/gallery': { mediaItems: { type: 'array', default: [], items: { type: 'object', properties: { decorative: { type: 'boolean' }, _key: { type: 'string' }, objectFit: { type: 'string' }, focalPoint: { type: 'object' }, linkUrl: { type: 'string' }, linkUrlSource: { type: 'string' }, linkTarget: { type: 'string' }, linkLabel: { type: 'string' } } } } },
 	'sgs/logos': { logos: { type: 'array', default: [] , items: { type: 'object', properties: { media: { type: 'object' }, linkUrl: { type: 'string' } } } } },
 	'sgs/quotes': {},
 	'sgs/quote': { quote: { type: 'string' }, reviewerName: { type: 'string' }, orgName: { type: 'string' }, avatarMedia: { type: 'object' } },
@@ -33,7 +34,7 @@ function makeDb() {
 	db.exec( `INSERT INTO block_attributes VALUES
 		( 'sgs/milestones', 'entries', 'array', 'content', NULL, NULL ), ( 'sgs/milestones', 'titleColour', 'string', 'color', 'color', NULL ),
 		( 'sgs/steps', 'steps', 'array', 'content', NULL, NULL ),
-		( 'sgs/logos', 'logos', 'array', 'content', NULL, NULL ),
+		( 'sgs/logos', 'logos', 'array', 'content', NULL, NULL ), ( 'sgs/gallery', 'mediaItems', 'array', 'content', NULL, NULL ),
 		( 'sgs/quote', 'quote', 'string', 'text-content', NULL, NULL ), ( 'sgs/quote', 'reviewerName', 'string', 'content', NULL, NULL ),
 		( 'sgs/quote', 'orgName', 'string', 'text-content', NULL, NULL ), ( 'sgs/quote', 'avatarMedia', 'object', 'image-object', NULL, NULL ),
 		( 'sgs/quote', 'quoteColour', 'string', 'color', 'color', NULL ),
@@ -188,14 +189,14 @@ test( 'skeleton children that are the list take only the item values they lack; 
 	assert.match( one.r.handover[ 0 ].reason, /draws 2 items and the skeleton holds 1/ );
 } );
 
-test( 'items holding only links are not written; a hash route goes through the page map (MUST FAIL)', () => {
+test( 'items holding only links are written, never dropped (S7); a hash route goes through the page map (MUST FAIL)', () => {
 	const facts = { elements: Object.fromEntries( [ fact( 40, 'div' ), fact( 41, 'sc-for', [], [ 40 ] ), fact( 42, 'a', [ [ 'attr:href', 'l.href' ] ], [ 41, 40 ] ), fact( 43, 'image-slot', [ [ 'attr:id', 'l.id' ] ], [ 42, 41, 40 ] ) ] ) };
 	const inventory = { elements: [ inv( 'Root/40#0', null, 'div' ), ...[ 0, 1 ].flatMap( ( i ) => [ inv( `Root/42#${ i }`, 'Root/40#0', 'a', '', [ [ 41, 'l' ] ], { href: `#/brand-${ i }` } ), inv( `Root/43#${ i }`, `Root/42#${ i }`, 'image-slot', '', [ [ 41, 'l' ] ] ) ] ) ] };
 	const pages = [ { route: 'brand-0', slug: 'brand-0', postType: 'page' } ];
 	const bare = pass( [ [ 'sgs/logos', 'Root/40#0' ] ], { facts, inventory, pages } );
-	assert.equal( bare.r.writes.length, 0 );
-	assert.equal( bare.r.handover.length, 1 );
-	assert.match( bare.r.handover[ 0 ].reason, /carry no words or uploaded picture/ );
+	assert.equal( bare.r.writes.length, 1, 'the items are written with their links' );
+	assert.deepEqual( bare.flat[ 0 ].attributes.logos.map( ( l ) => l.linkUrl ), [ '/brand-0/', undefined ] );
+	assert.ok( bare.r.handover.some( ( h ) => /picture \(id\) is chosen by the draft at run time/.test( h.reason ) ), 'each unread picture is a named row' );
 	// With a drawn picture per item the pictures are written, each link as its page's permalink.
 	const drawn = pass( [ [ 'sgs/logos', 'Root/40#0' ] ], { facts, inventory, pages, picturesOf: () => [ 'https://images.unsplash.com/photo-1700000000-abcdef12?w=600', 'assets/chef.png' ] } );
 	assert.deepEqual( drawn.flat[ 0 ].attributes.logos.map( ( l ) => l.media ), [ { id: 502, url: 'https://acme.test/p1.jpg' }, { id: 501, url: 'https://acme.test/chef.png' } ] );
@@ -296,4 +297,23 @@ test( 'the page editor\'s picture row on the node is settled once the node holds
 	assert.equal( pictureSettles( { ...row, owner: 'site-info' }, [ { id: 7 } ] ), false );
 	assert.equal( pictureSettles( { ...row, kind: 'text' }, [ { id: 7 } ] ), false );
 	assert.equal( pictureSettles( { ...row, slot: '.x' }, [ { id: 7 } ] ), false );
+} );
+
+// The Indus brands mega gallery: ten logo slots (image placeholders the client fills), each inside a link. The block's items hold
+// no picture setting, so the picture field matches no key; the links are still the draft's content.
+test( 'MUST FAIL: a gallery of linked image slots keeps its ten links, and the picture field it holds no setting for is one row', () => {
+	const facts = { elements: Object.fromEntries( [ fact( 40, 'div' ), fact( 41, 'sc-for', [], [ 40 ] ), fact( 42, 'a', [ [ 'attr:href', 'l.href' ] ], [ 41, 40 ] ), fact( 43, 'image-slot', [ [ 'attr:id', 'l.id' ] ], [ 42, 41, 40 ] ) ] ) };
+	const inventory = { elements: [ inv( 'Root/40#0', null, 'div' ), ...[ 0, 1, 2 ].flatMap( ( i ) => [ inv( `Root/42#${ i }`, 'Root/40#0', 'a', '', [ [ 41, 'l' ] ], { href: `#/brand-${ i }` } ), inv( `Root/43#${ i }`, `Root/42#${ i }`, 'image-slot', '', [ [ 41, 'l' ] ] ) ] ) ] };
+	const pages = [ 0, 1, 2 ].map( ( i ) => ( { route: `brand-${ i }`, slug: `brand-${ i }`, postType: 'page' } ) );
+	const { r, flat } = pass( [ [ 'sgs/gallery', 'Root/40#0' ] ], { facts, inventory, pages } );
+	assert.deepEqual( flat[ 0 ].attributes.mediaItems, [ { linkUrl: '/brand-0/' }, { linkUrl: '/brand-1/' }, { linkUrl: '/brand-2/' } ] );
+	assert.equal( r.handover.filter( ( h ) => 'id' === h.evidence.key && /draws a picture in each of its 3 items/.test( h.reason ) ).length, 1, 'one row for the picture field, not one per item' );
+} );
+
+test( 'NEGATIVE: items carrying nothing at all are still not written; one row names the list', () => {
+	const facts = { elements: Object.fromEntries( [ fact( 40, 'div' ), fact( 41, 'sc-for', [], [ 40 ] ), fact( 43, 'image-slot', [ [ 'attr:id', 'l.id' ] ], [ 41, 40 ] ) ] ) };
+	const inventory = { elements: [ inv( 'Root/40#0', null, 'div' ), ...[ 0, 1 ].map( ( i ) => inv( `Root/43#${ i }`, 'Root/40#0', 'image-slot', '', [ [ 41, 'l' ] ] ) ) ] };
+	const { r, flat } = pass( [ [ 'sgs/gallery', 'Root/40#0' ] ], { facts, inventory } );
+	assert.equal( flat[ 0 ].attributes.mediaItems, undefined );
+	assert.match( r.handover[ 0 ].reason, /carry no words, link or uploaded picture/ );
 } );

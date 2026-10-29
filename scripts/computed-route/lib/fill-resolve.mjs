@@ -9,7 +9,7 @@ import { presenceDecisions, textDecisions, linkDecisions } from './fill-presence
 import { linkAttrDecisions, blockSupportsAnchor } from './fill-link-attrs.mjs';
 import { imageSlots, mediaDecisions, nestedImage, factImage, pictureSlotOf, pictureSettles } from './fill-media.mjs';
 import { mapDecisions } from './fill-map.mjs';
-import { iconDecisions } from './fill-icon.mjs';
+import { iconDecisions, imageIconDecisions } from './fill-icon.mjs';
 import { handoverEntry } from './fill-handover.mjs';
 import { unreadOf } from './fill-unread.mjs';
 import { fillBand } from './fill-band.mjs';
@@ -82,10 +82,16 @@ function fillContent( st, rec, ref, cal ) {
 	take( linkDecisions( { calibration: cal, attributes: node.attributes || {}, slots: hrefs, origin: st.origin, pages: st.pages } ) );
 	take( linkAttrDecisions( { calibration: cal, schema: blockSchema( rec.name ) || {}, anchor: blockSupportsAnchor( rec.name ), attributes: node.attributes || {}, slots: linkFacts, imageAlts: imageSlots( st.db, rec.name, blockSchema( rec.name ) ).map( ( s ) => s.alt ), pictureSlot: pictureSlotOf( atDesktop ) } ) );
 	// The fact record speaks for the element the image is drawn by: the target whose slot is the image's own (a nested image names its slot).
-	const image = nestedImage( atDesktop );
+	// The picture the node's own element paints as its background, when it holds no <img> (snap.bgImg).
+	const image = nestedImage( atDesktop ) ?? atDesktop[ '' ]?.bgImg ?? null;
 	const imageTarget = rec.targets.find( ( t ) => t.slot === ( image?.slot ?? '' ) && t.finder?.tpl ) ?? rec.targets.find( ( t ) => t.finder?.tpl );
 	const media = mediaDecisions( { slots: imageSlots( st.db, rec.name, blockSchema( rec.name ) ), schema: blockSchema( rec.name ), attributes: node.attributes || {}, img: image, media: { ...st.media, origin: st.origin }, fact: factImage( st.facts, imageTarget?.finder.tpl, st.rootComponent ) } );
 	take( media );
+	// A background photo the block's picture setting now holds: the element's `background-image` row is settled by it.
+	if ( 'background' === image?.tag && media.checks.length ) {
+		( st.pictures ??= new WeakMap() ).set( node, media.checks[ 0 ] );
+	}
+	take( imageIconDecisions( { img: atDesktop[ '' ]?.svg ? null : image, words: atDesktop[ '' ]?.words, schema: blockSchema( rec.name ), attributes: node.attributes || {}, folder: st.draftFolder ?? null, origin: st.origin, href: hrefs[ '' ] ?? '' } ) );
 	take( iconDecisions( { svg: atDesktop[ '' ]?.svg ?? null, schema: blockSchema( rec.name ), attributes: node.attributes || {}, href: hrefs[ '' ] ?? '' } ) );
 	if ( 'map' === node.attributes?.displayType ) {
 		const embeds = Object.fromEntries( [ 1440, 768, 375 ].map( ( w ) => [ w, st.reads.widths[ w ]?.[ rec.targets.find( ( t ) => '' === t.slot )?.id ]?.embed ] ).filter( ( [ , e ] ) => e ) );

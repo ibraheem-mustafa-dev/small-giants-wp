@@ -263,7 +263,7 @@ test( 'the form claims hold everything formFieldWrites writes', () => {
 	assert.ok( out.writes.length > 3 );
 	out.writes.forEach( ( w ) => assert.ok( formSettings( 'sgs/form-field-text' ).includes( w.attr ), w.attr ) );
 	assert.deepEqual( formSettings( 'sgs/hero' ), [] );
-	assert.deepEqual( formSettings( 'sgs/form' ), [ 'savedProgress', 'nextLabel', 'submitLabel', 'prevLabel' ] );
+	assert.deepEqual( formSettings( 'sgs/form' ), [ 'savedProgress', 'nextLabel', 'submitLabel', 'prevLabel', 'successMessage' ] );
 } );
 
 test( 'the list claims are the array setting, or the one child block\'s item settings', () => {

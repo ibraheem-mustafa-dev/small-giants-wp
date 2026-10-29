@@ -1,0 +1,44 @@
+[
+	{
+		"file": "lib/resolve.mjs",
+		"find": "/\\burl\\(/.test( String( raw ) ) && ! [].concat",
+		"replace": "false && ! [].concat",
+		"why": "a gradient setting takes the picture"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "hit ? { value: { url: hit.url, id: hit.id } }",
+		"replace": "true ? { value: { url: m[ 1 ] } }",
+		"why": "the preview server's address is written"
+	},
+	{
+		"file": "lib/fill-media.mjs",
+		"find": "return 1 === new Set( hits.map( ( h ) => h.id ) ).size ? hits[ 0 ] : null;\n}\n\n// The setting that holds",
+		"replace": "return hits[ 0 ] ?? null;\n}\n\n// The setting that holds",
+		"why": "two attachments for one file pick the first"
+	},
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "snap.bgImg = ! snap.img && bgm ?",
+		"replace": "snap.bgImg = bgm ?",
+		"why": "an element holding an <img> reads its background too"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "?? atDesktop[ '' ]?.bgImg ?? null;",
+		"replace": "?? null;",
+		"why": "a background photo is never read as the node's picture"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "( st.pictures ??= new WeakMap() ).set( node, media.checks[ 0 ] );",
+		"replace": "node;",
+		"why": "the background-image row is not settled by the picture"
+	},
+	{
+		"file": "lib/fill-resolve-element.mjs",
+		"find": "const placed = ! layer && '' === target.slot &&",
+		"replace": "const placed = false &&",
+		"why": "the row is never settled"
+	}
+]

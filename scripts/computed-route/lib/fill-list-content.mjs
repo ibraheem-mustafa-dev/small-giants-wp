@@ -16,8 +16,7 @@ import { fileURLToPath } from 'node:url';
 import { loadAjv, schemaProblems } from './handoff.mjs';
 import { setAttr } from './tree.mjs';
 import { handoverEntry } from './fill-handover.mjs';
-import { draftPath, mapEntries, stockEntries } from './fill-media.mjs';
-import { stockKey } from './media-stock.mjs';
+import { pictureEntry } from './fill-media.mjs';
 import { normaliseHref } from './fill-presence.mjs';
 import { templateKeyOf, parseTemplateKey } from './fact-key.mjs';
 import { loadDraft } from './intake-ast.mjs';
@@ -123,12 +122,7 @@ export function listClaims( block, target ) {
 const escapeText = ( s ) => String( s ).replace( /&/g, '&amp;' ).replace( /</g, '&lt;' ).replace( />/g, '&gt;' );
 
 // The attachment a picture field's value names in the media map, or null: a draft file path or a stock preview address.
-export function itemPicture( value, media = {} ) {
-	const file = draftPath( value, media.origin );
-	const stock = null === file ? stockKey( value ) : null;
-	const hits = null !== file && /\.(?:png|jpe?g|gif|webp|avif|svg)$/i.test( file ) ? mapEntries( media.map, media.site, file ) : null !== stock ? stockEntries( media.map, media.site, stock ) : [];
-	return 1 === new Set( hits.map( ( h ) => h.id ) ).size ? hits[ 0 ] : null;
-}
+export const itemPicture = pictureEntry;
 
 // One item's settings from the draft item: { attrs, rows } where rows are [{ field, value, reason }] the item cannot hold.
 export function itemAttrs( item, { map, keys, media, pages = null, label } ) {
@@ -210,11 +204,15 @@ export function listDecisions( { block, target, node, list, media = {}, pages = 
 	for ( const f of unmatched.filter( ( name ) => list.items.some( ( it ) => null != it[ name ] && '' !== it[ name ] ) ) ) {
 		out.rows.push( { field: f, value: list.items.map( ( it ) => it[ f ] ).filter( ( v ) => null != v ).join( ' | ' ), reason: `the draft's item field "${ f }" has no place in ${ block }'s ${ where } (no item key of its name or role)` } );
 	}
-	// Items holding nothing the block shows (only a link, or nothing) would replace the block's items with empty ones: one
-	// row names the list, never a row per item the block does not take.
-	if ( ! built.some( ( b ) => Object.keys( b.attrs ).some( ( k ) => 'link' !== keyRole( k ) ) ) ) {
-		out.rows.push( { field: '(items)', value: String( built.length ), reason: `the draft's ${ built.length } items carry no words or uploaded picture ${ block } can show, so its ${ where } are not written` } );
+	// A list is never dropped (Bean 2026-10-28, register ruling S7): items carrying a link are written as they are, and a
+	// picture field the block's items hold no setting for is one row naming the pictures to choose. Items carrying nothing at
+	// all would replace the block's items with empty ones: one row names the list, never a row per item.
+	if ( ! built.some( ( b ) => Object.keys( b.attrs ).length ) ) {
+		out.rows.push( { field: '(items)', value: String( built.length ), reason: `the draft's ${ built.length } items carry no words, link or uploaded picture ${ block } can show, so its ${ where } are not written` } );
 		return out;
+	}
+	for ( const f of list.fields.filter( ( x ) => unmatched.includes( x.name ) && ( x.image || 'image' === keyRole( x.name ) ) ) ) {
+		out.rows.push( { field: f.name, value: '', reason: `the draft draws a picture in each of its ${ built.length } items (${ f.name }: an image the draft fills at run time, or a placeholder) and ${ block }'s ${ where } hold no picture setting Fill can write: choose each picture in the editor` } );
 	}
 	built.forEach( ( b ) => out.rows.push( ...b.rows ) );
 	out.notes.push( `${ list.items.length } items from the draft's ${ list.source }, fields ${ fields }` );
