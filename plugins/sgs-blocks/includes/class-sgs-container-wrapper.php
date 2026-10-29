@@ -1837,6 +1837,14 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$classes[] = 'sgs-container--has-min-height';
 			}
 
+			// A container whose height comes from itself (an aspect ratio, a minimum height, a responsive minimum height) passes
+			// that height to its content band, so a child set to fill it fills it (style.css `.sgs-container--sized`). A
+			// grid/flex layout on the band is handled by the flex-fill above; this covers the plain band. Never added to a
+			// container sized by its content.
+			if ( ! $grid_on_inner && ( ( $has_min_height_capability && ( '' !== $min_height || $has_responsive_min_height ) ) || '' !== ( $sgs_box_ratio ?? '' ) ) ) {
+				$classes[] = 'sgs-container--sized';
+			}
+
 			// D6: universal, was section-only (the `if ( true )` wrapper this was
 			// left inside of has been removed as dead-conditional cleanup).
 			//
