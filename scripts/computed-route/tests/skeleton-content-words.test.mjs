@@ -114,3 +114,13 @@ test( 'MUST FAIL: a heading keeps the level of its draft tag (FR-48-6), and an e
 	assert.equal( heading( 'Second level' ).attributes.level, 'h2', 'a level equal to the block default is still written from the draft tag' );
 	assert.equal( flat( r.skeleton ).find( ( n ) => 'Plain copy' === n.attributes?.text ).attributes.level, undefined );
 } );
+
+test( 'MUST FAIL: a wordless control (a swatch, a dot) writes an empty label and its aria-label, never the block default "Click Here" (negative control: a labelled button keeps its words)', () => {
+	const r = propose( section( [ E( 'button', { attrs: { 'aria-label': 'Pick red' }, y: 0 } ), E( 'button', { words: 'Buy now', y: 30 } ) ] ) );
+	const buttons = flat( r.skeleton ).filter( ( n ) => 'sgs/button' === n.name );
+	assert.equal( buttons.length, 2 );
+	assert.equal( buttons[ 0 ].attributes.label, '' );
+	assert.equal( buttons[ 0 ].attributes.ariaLabel, 'Pick red' );
+	assert.equal( buttons[ 1 ].attributes.label, 'Buy now' );
+	assert.equal( buttons[ 1 ].attributes.ariaLabel, undefined );
+} );

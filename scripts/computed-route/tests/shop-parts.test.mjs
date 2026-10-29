@@ -276,3 +276,11 @@ test( 'MUST FAIL: the committed client records are what the structural reader an
 		assert.deepEqual( shape( buildRecord( { client, surfaces: all[ i ], vocab } ) ), shape( committed ), client );
 	} );
 } );
+
+test( 'MUST FAIL: the basket drawer\'s link to the basket page writes the draft\'s own words as the cart block\'s view-basket label (negative control: no link, no write)', () => {
+	const withLink = DRAFT.replace( '<button onClick="{{ sparkle }}">Add sparkle</button>', '<a href="Basket.dc.html">View full basket</a><button onClick="{{ sparkle }}">Add sparkle</button>' );
+	const sources = { 'Page.dc.html': withLink, 'Checkout.dc.html': CHECKOUT, 'Basket.dc.html': '<x-dc><main>Your basket</main></x-dc>' };
+	const rec = buildRecord( { client: 'planted', surfaces: readShopSurfaces( { records: RECORDS, sources }, ), vocab: resolveVocab( vocabFile, envFor( vocabFile ) ) } );
+	assert.deepEqual( part( rec, 'drawer', 'drawer-view-basket' ).write, { panelShowViewCart: true, viewCartLabel: 'View full basket' } );
+	assert.equal( part( record(), 'drawer', 'drawer-view-basket' ), undefined, 'a drawer with no basket link has no such part' );
+} );

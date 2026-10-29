@@ -149,6 +149,15 @@ export function makeContent( ctx ) {
 		const quoteBody = 'blockquote' === e.tag;
 		const cite = quoteBody ? citeOf( e ) : null;
 		textAttr && t && ! quoteBody && ( a[ textAttr ] = m.textWithBreaks( e ).includes( '<br>' ) ? m.textWithBreaks( e ) : t );
+		// A control with no words (a swatch, a dot) must not print the block's default label: the label is written empty and
+		// the draft's aria-label names the control. A block a rule configured (`top.attributes`) takes its settings from the
+		// rule, so its text setting is not this element's label.
+		const defaultText = textAttr && ! t && ! Object.keys( top.attributes || {} ).length ? JSON.parse( facts.attr( block, textAttr )?.default_value ?? 'null' ) : null;
+		if ( 'string' === typeof defaultText && '' !== defaultText ) {
+			a[ textAttr ] = '';
+			const aria = facts.firstAttrByRole( block, 'a11y-text' );
+			aria && e.attrs?.[ 'aria-label' ] && ( a[ aria ] = e.attrs[ 'aria-label' ] );
+		}
 		const levelAttr = textAttr ? levelSetting( facts, block ) : null;
 		levelAttr && enumOf( block, levelAttr ).includes( e.tag ) && ( a[ levelAttr ] = e.tag );
 		textAttr && cite && ( a[ textAttr ] = m.words( cite ) );

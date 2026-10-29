@@ -1,0 +1,3 @@
+[
+	{ "file": "lib/skeleton-write-content.mjs", "find": "const defaultText = textAttr && ! t && ! Object.keys( top.attributes || {} ).length ?", "replace": "const defaultText = textAttr && ! t ?", "why": "a block a rule configured (a basket opener) has its panel heading emptied as a wordless control's label" }
+]
