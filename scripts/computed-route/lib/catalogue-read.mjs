@@ -28,6 +28,8 @@ import { descriptionField, facetFields, imageFields, recordLists } from './catal
 import { basketLines, keyOptions, lineFor, lineKeys } from './catalogue-options.mjs';
 import { readFacets, settleFacets } from './catalogue-facets.mjs';
 import { componentSource, flowChoices, flowComponents, sameValues } from './flow-product.mjs';
+import { choiceLabel, stepNumberRule } from './catalogue-labels.mjs';
+import { loadFacts } from './fact-record.mjs';
 
 export const MAX_VARIATIONS = 100;
 export const SKU_PREFIX = 'sgs-draft-';
@@ -120,13 +122,15 @@ export function variesByOf( label, key, pack ) {
 }
 
 // One attribute from a choice: { key, label, slug, packSize, variesBy, variation, priced, options, default }; a choice a
-// flow asks (`answer`) creates variations only when it is priced.
-function attributeOf( choice, answer ) {
+// flow asks (`answer`) creates variations only when it is priced. named( choice, fallback ): the label the draft shows for
+// the choice (lib/catalogue-labels.mjs::choiceLabel); the slug stays the short one its key gives.
+function attributeOf( choice, answer, named ) {
 	const priced = choice.options.every( ( o ) => 'number' === typeof o.price );
 	const pack = priced && choice.options.every( ( o ) => Number.isInteger( o.value ) && o.value >= 2 ) && choice.options.some( ( o ) => o.price !== o.value );
-	const label = pack ? 'Pack size' : human( choice.name ) || human( choice.key ) || choice.key;
+	const short = human( choice.name ) || human( choice.key ) || choice.key;
+	const label = pack ? 'Pack size' : named( choice, short );
 	return {
-		key: choice.key, label, slug: pack ? PACK_SLUG : slugify( label ), packSize: pack, variesBy: variesByOf( label, choice.key, pack ), variation: priced || ! answer, priced,
+		key: choice.key, label, slug: pack ? PACK_SLUG : slugify( short ), packSize: pack, variesBy: variesByOf( label, choice.key, pack ), variation: priced || ! answer, priced,
 		options: choice.options.map( ( o ) => ( { value: o.value, term: String( o.label ?? o.value ), price: priced ? o.price : null, swatch: o.swatch || null, badge: pack ? o.badge || null : null } ) ),
 		default: choice.options.some( ( o ) => o.value === choice.first ) ? String( choice.options.find( ( o ) => o.value === choice.first ).label ?? choice.first ) : null,
 	};
@@ -142,8 +146,8 @@ function combinations( attrs, price ) {
 }
 
 // The choices of one record turned into attributes and gap rows: { attributes, gaps }. asks: the choices the flows selling
-// this record ask (lib/flow-product.mjs::flowChoices).
-function choicesOf( ctx, lines, list, record, draftId, asks ) {
+// this record ask (lib/flow-product.mjs::flowChoices); named: attributeOf's label reader.
+function choicesOf( ctx, lines, list, record, draftId, asks, named ) {
 	const gaps = [];
 	const gap = ( kind, detail ) => gaps.push( { draftId, kind, detail } );
 	const found = lineFor( ctx, lines, list, record );
@@ -179,7 +183,7 @@ function choicesOf( ctx, lines, list, record, draftId, asks ) {
 			gap( 'unread-choice', `the basket line reads choice "${ c.key }", whose options the code does not list statically; recorded, not built` );
 		}
 	}
-	let attributes = choices.map( ( c ) => attributeOf( c, asked( c ) ) );
+	let attributes = choices.map( ( c ) => attributeOf( c, asked( c ), named ) );
 	const priced = attributes.filter( ( a ) => a.priced );
 	if ( priced.length > 1 ) {
 		gap( 'priced-choices', `${ priced.length } choices each carry a price (${ priced.map( ( a ) => a.key ).join( ', ' ) }) and the code's combined price is not read; the product is made with none of them` );
@@ -211,8 +215,19 @@ const imageOf = ( v, roles, repo, folder ) => {
 	return { asset: path.relative( repo, path.join( folder, v ) ).split( path.sep ).join( '/' ) };
 };
 
-// The catalogue of a client: { catalogue (catalogue.json's shape, without `sites`), notes }.
-export function readCatalogue( { repo, client, rows } ) {
+// The client's fact record for the label reader, or null with a note saying why (a missing or stale record).
+function factRecordOf( repo, client, notes ) {
+	try {
+		return loadFacts( client, { repo } );
+	} catch ( e ) {
+		notes.push( `no fact record is read (${ String( e.message ).split( '\n' )[ 0 ] }), so a choice the code gives no label is named from its key` );
+		return null;
+	}
+}
+
+// The catalogue of a client: { catalogue (catalogue.json's shape, without `sites`), notes }. facts: the fact record the
+// attribute labels are read from (lib/catalogue-labels.mjs), else the client's build/intake/facts.json.
+export function readCatalogue( { repo, client, rows, facts = undefined } ) {
 	const folder = path.join( repo, 'sites', client, 'handoff' );
 	const base = { schemaVersion: 1, client, productBase: 'product', source: null, facets: [], products: [], gaps: [] };
 	const notes = [];
@@ -231,7 +246,18 @@ export function readCatalogue( { repo, client, rows } ) {
 	}
 	const file = productFile( ctx.exp, rows );
 	// The logic of each component a page-map choice flow is drawn by: the choices it asks are answers, not variations.
-	const flows = flowComponents( folder, rows ).map( ( f ) => componentSource( ctx, f.component ) ).filter( Boolean );
+	const flowRows = flowComponents( folder, rows );
+	const flows = flowRows.map( ( f ) => componentSource( ctx, f.component ) ).filter( Boolean );
+	// Each attribute's label: the code's own, else the heading the draft shows for its options on the product page, then in
+	// each choice flow; a choice the draft names nowhere is named from its key, and a note says so.
+	const record = undefined === facts ? factRecordOf( repo, client, notes ) : facts;
+	const components = [ file ? path.basename( file ).replace( /\.dc\.html$/i, '' ) : null, ...flowRows.map( ( f ) => f.component ) ];
+	const strip = stepNumberRule();
+	const named = ( choice, fallback ) => {
+		const r = choiceLabel( { ctx, record, components, choice, fallback, strip } );
+		'key' === r.from && notes.push( `choice "${ choice.key }": neither the code nor the draft's template names it, so its attribute is named "${ fallback }" from its key` );
+		return r.label;
+	};
 	const shopRow = rows.find( ( r ) => 'shop' === r.postType );
 	const shopFile = shopRow && ctx.exp.drafts.some( ( d ) => d.file === shopRow.route ) ? shopRow.route : file;
 	out.source = { files: [ ...new Set( lists.map( ( l ) => l.src.file ) ) ].sort(), productPage: file, idKey: lists[ 0 ].key };
@@ -253,7 +279,7 @@ export function readCatalogue( { repo, client, rows } ) {
 		for ( const r of list.records ) {
 			const draftId = String( r[ list.key ] );
 			const asks = flows.flatMap( ( src ) => flowChoices( ctx, src, draftId ) );
-			const { attributes, gaps } = choicesOf( ctx, lines, list, r, draftId, asks );
+			const { attributes, gaps } = choicesOf( ctx, lines, list, r, draftId, asks, named );
 			out.gaps.push( ...gaps );
 			const sku = skuOf( draftId );
 			const axes = attributes.filter( ( a ) => a.variation );
