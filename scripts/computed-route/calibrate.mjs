@@ -34,7 +34,7 @@ import { slotMapSkip, paintSkip, dueOutputs, splitCalibration, writeSlotMap, wri
 import { md5, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
 import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, needsBiggerHeap, buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout } from './lib/calibrate-chunk.mjs';
 import { isContainerQueryBlock, renderedNothingReason } from './lib/calibrate-container.mjs';
-import { WIDTHS, READ_KEY, buildTree, slotFor, foldReading, defaultPaint, longhands, discoverEffects, triggerFor, planInstances, instanceCtx, stateTarget, readAll, missedReason } from './lib/calibrate.mjs';
+import { WIDTHS, READ_KEY, buildTree, slotFor, foldReading, defaultPaint, longhands, discoverEffects, diffReads, triggerFor, planInstances, instanceCtx, stateTarget, readAll, missedReason } from './lib/calibrate.mjs';
 import { contentRowsFor, planContentInstances, needlesOf, readContentAll, collectContent } from './lib/calibrate-content.mjs';
 import { setBasket, pickPass } from './lib/calibrate-basket.mjs';
 import { withTestOrder } from './lib/calibrate-order.mjs';
@@ -256,7 +256,15 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 				? ( r ) => ! slotFor( inst.row, inst.marker, at( d, r ), at( n, r ), { own: stateTarget( block, inst.row ) } ).dead
 				: null;
 			const reads = pickPass( passes, n, d, reached );
-			kept.push( { ...inst, read: at( n, reads ), readScrolled: at( n, reads.scrolled ), def: at( d, reads ), defScrolled: at( d, reads.scrolled ), hoverMissed: reads.hoverMissed.includes( n ), hoverWhy: reads.hoverWhy?.[ n ], scrollMissed: reads.scrollMissed.includes( n ), ...( inst.content ? { contentRead: at( n, contentReads ), contentDef: at( d, contentReads ) } : {} ) } );
+			// A default or paint-state instance keeps its whole reading (the default paint is read from it); every other instance
+			// keeps only what differs from the default it is compared with (diffReads), so memory holds one whole reading per
+			// variant and chunk, not one per instance.
+			const whole = inst.isDefault || inst.paintState;
+			const def = at( d, reads );
+			const defScrolled = at( d, reads.scrolled );
+			const read = whole ? at( n, reads ) : diffReads( def, at( n, reads ) );
+			const readScrolled = whole ? at( n, reads.scrolled ) : diffReads( defScrolled, at( n, reads.scrolled ) );
+			kept.push( { ...inst, read, readScrolled, def, defScrolled, hoverMissed: reads.hoverMissed.includes( n ), hoverWhy: reads.hoverWhy?.[ n ], scrollMissed: reads.scrollMissed.includes( n ), ...( inst.content ? { contentRead: at( n, contentReads ), contentDef: at( d, contentReads ) } : {} ) } );
 		} );
 		done++;
 	}

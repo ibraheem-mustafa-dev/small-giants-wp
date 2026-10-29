@@ -1,0 +1,6 @@
+[
+	{"file": "lib/calibrate.mjs", "find": "filter( ( [ prop, v ] ) => v !== d[ p ]?.[ prop ] )", "replace": "filter( () => true )", "why": "every value would be kept, so the difference holds the whole reading again"},
+	{"file": "lib/calibrate.mjs", "find": "changed.length && ( keep[ p ] = Object.fromEntries( changed ) );", "replace": "keep[ p ] = Object.fromEntries( changed );", "why": "an element equal to the default would be kept as an empty entry"},
+	{"file": "lib/calibrate.mjs", "find": "const d = defReads?.[ w ] || {};", "replace": "const d = defReads?.[ 1440 ] || {};", "why": "every width would be compared with the desktop default"},
+	{"file": "lib/calibrate.mjs", "find": "\t\tout[ w ] = keep;\n\t}\n\treturn out;", "replace": "\t\tObject.keys( keep ).length && ( out[ w ] = keep );\n\t}\n\treturn out;", "why": "a width with no change would vanish instead of reading as no change"}
+]

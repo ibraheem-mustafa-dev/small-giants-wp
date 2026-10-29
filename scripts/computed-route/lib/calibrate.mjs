@@ -88,6 +88,25 @@ function formAccepted( marker, changes ) {
 	} );
 }
 
+// A marked reading kept as its difference from the default reading it is compared with: every element property whose value
+// is not strictly the default's, and every element the default does not hold ({ width: { path: { prop: value } } }). slotFor
+// and discoverEffects skip every value equal to the default's, so they give the same answer on the difference as on the
+// whole reading; a block whose instances each draw hundreds of elements keeps one whole reading per variant, not one per
+// instance.
+export function diffReads( defReads, markReads ) {
+	const out = {};
+	for ( const [ w, els ] of Object.entries( markReads || {} ) ) {
+		const d = defReads?.[ w ] || {};
+		const keep = {};
+		for ( const [ p, styles ] of Object.entries( els || {} ) ) {
+			const changed = Object.entries( styles || {} ).filter( ( [ prop, v ] ) => v !== d[ p ]?.[ prop ] );
+			changed.length && ( keep[ p ] = Object.fromEntries( changed ) );
+		}
+		out[ w ] = keep;
+	}
+	return out;
+}
+
 // Works out one setting's slot from the default and marked readings ({ width: { path: { prop: value } } }).
 // Returns { slot, slots, property, transform, reachedAt, oneWidth, effects, look? } or { dead }. containerQuery: the block's
 // tiers follow its container's width (an @container rule), so a tier reached at fewer page widths is expected, not oneWidth.
