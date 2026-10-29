@@ -51,8 +51,19 @@ function fillRun( qa, surface ) {
 	return { dir, unmapped: readJson( path.join( dir, 'unmapped.json' ) ), held: report.alreadyHeld ?? [], writes: report.writes ?? [], confirm: report.confirm ?? [], tree: fs.existsSync( treeFile ) ? readJson( treeFile ) : [] };
 }
 
-// Every surface's census rows of one client: [ { client, surface, rows, walk, sources } ].
-export function clientRows( client, qa, lookup, rules ) {
+// The motion record ids a client's site build holds as site options (sites/<client>/build/site-options.json, each option's
+// `records`): the route fade and the like, written once for the whole site. An absent or unreadable file holds none.
+export function siteOptionRecords( repo, client ) {
+	const file = path.join( repo, 'sites', client, 'build', 'site-options.json' );
+	try {
+		return new Set( Object.values( readJson( file ) ).flatMap( ( o ) => ( Array.isArray( o?.records ) ? o.records.map( String ) : [] ) ) );
+	} catch {
+		return new Set();
+	}
+}
+
+// Every surface's census rows of one client: [ { client, surface, rows, walk, sources } ]. siteRecords: siteOptionRecords.
+export function clientRows( client, qa, lookup, rules, siteRecords = new Set() ) {
 	const surfaces = [ ...new Set( [ ...dirs( path.join( qa, 'parity', 'out' ) ), ...dirs( path.join( qa, 'fill' ) ), ...dirs( path.join( qa, 'solve' ) ) ] ) ].sort();
 	const out = [];
 	for ( const surface of surfaces ) {
@@ -62,7 +73,7 @@ export function clientRows( client, qa, lookup, rules ) {
 			continue;
 		}
 		const report = reportFile ? readJson( reportFile ) : null;
-		const { rows, walk, dropped } = surfaceRows( { client, surface, report, run, lookup, rules } );
+		const { rows, walk, dropped } = surfaceRows( { client, surface, report, run, lookup, rules, siteRecords } );
 		out.push( { client, surface, rows, walk, dropped, sources: { walker: reportFile, fill: run?.dir ?? null } } );
 	}
 	return out;
@@ -128,7 +139,7 @@ export function censusAll( { root: repo, clients, db = openDb() } ) {
 	const lookup = blockLookup( db );
 	const rules = loadRules();
 	const all = clients ?? dirs( path.join( repo, 'sites' ) ).filter( ( c ) => fs.existsSync( path.join( repo, 'sites', c, 'build', 'qa' ) ) );
-	const raw = all.flatMap( ( c ) => clientRows( c, path.join( repo, 'sites', c, 'build', 'qa' ), lookup, rules ) );
+	const raw = all.flatMap( ( c ) => clientRows( c, path.join( repo, 'sites', c, 'build', 'qa' ), lookup, rules, siteOptionRecords( repo, c ) ) );
 	const calFor = calibrationReader( repo );
 	const classed = classifyRows( raw.flatMap( ( s ) => s.rows ), { db, calFor, calFiles: calFor.files, freshness: gitFreshness( { repo, db } ) } );
 	const surfaces = raw.map( ( s ) => ( { ...s, rows: classed.filter( ( r ) => r.client === s.client && r.surface === s.surface ) } ) );

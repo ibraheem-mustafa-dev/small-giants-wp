@@ -212,8 +212,9 @@ export function refParents( tree ) {
 const keyOf = ( node, slot, property, state ) => [ node, slot || '', property, state ].join( SEP );
 
 // Joins one surface's walker items to its Fill rows and returns the census rows (one per walker item or unjoined Fill row),
-// each carrying the signature parts. `run` is { unmapped, held, writes, confirm, tree }; `lookup` is `blockLookup`'s result.
-export function surfaceRows( { client, surface, report, run, lookup, rules = loadRules() } ) {
+// each carrying the signature parts. `run` is { unmapped, held, writes, confirm, tree }; `lookup` is `blockLookup`'s result;
+// `siteRecords` is the client's site-option record ids (census-all.mjs::siteOptionRecords).
+export function surfaceRows( { client, surface, report, run, lookup, rules = loadRules(), siteRecords = new Set() } ) {
 	const walk = report ? walkerItems( report ) : { items: [], widths: [], runStates: [], rows: 0, duplicates: 0 };
 	const fill = fillRows( run ?? {} );
 	const blocks = refBlocks( run?.tree );
@@ -227,7 +228,9 @@ export function surfaceRows( { client, surface, report, run, lookup, rules = loa
 	// same setting has not replaced it (lib/fill-report.mjs::supersededWrites marks it `supersededBy`).
 	const wrote = new Set( ( run?.writes ?? [] ).filter( ( w ) => null == w.supersededBy ).map( ( w ) => keyOf( w.node, w.slot, w.prop, w.state || 'default' ) ) );
 	const confirmBy = new Map( ( run?.confirm ?? [] ).map( ( c ) => [ keyOf( c.node, c.slot, c.property, c.state ), c.verdict ] ) );
-	const ruleOf = ( f ) => classify( f.reason, 'unmapped' === f.origin ? rules.unmapped : rules.held );
+	// A motion record the site build holds as a site option (siteRecords: the client's site-options.json) is handled whatever the
+	// Fill row says about it (the route fade is written once for the whole site, not as a block layer).
+	const ruleOf = ( f ) => ( 'motion' === f.property && siteRecords.has( String( f.value ) ) ? VOCAB.siteOptionRule : classify( f.reason, 'unmapped' === f.origin ? rules.unmapped : rules.held ) );
 	const slugOf = ( ref, slug, cls ) => slug || blocks.get( ref ) || ( cls && cls.startsWith( 'sgs-' ) ? `sgs/${ cls.slice( 4 ) }` : null );
 	const used = new Set();
 	const rows = [];

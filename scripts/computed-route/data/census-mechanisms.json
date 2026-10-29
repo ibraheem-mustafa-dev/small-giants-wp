@@ -23,5 +23,6 @@
 	},
 	"surfaceBlockFamily": "(surface)",
 	"pageRuleClasses": [ "reduced-motion" ],
-	"pageRuleElement": "(page)"
+	"pageRuleElement": "(page)",
+	"siteOptionRule": { "class": "site-option", "owner": "Spec 38A (the route fade and the like are site options written once for the whole site: sgs_motion_settings in sites/<client>/build/site-options.json; handled, not a block layer)", "frClass": "held" }
 }
