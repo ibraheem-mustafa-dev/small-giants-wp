@@ -17,8 +17,7 @@ The critique is a useful input, filtered. Its findings about faults are mostly t
 | 5 | Stage 0 calibrates a guessed block set (`FIXED_BLOCKS` plus slug-suffix matching); blocks the skeleton later picks rely on a gitignored local cache (reported as `uncalibrated`, not silent) | `lib/stage0.mjs::blocksForKinds`, `::FIXED_BLOCKS` | After review, check every confirmed block is calibrated and calibrate the missing ones before Fill |
 | 6 | The push copies the DB and uploads only; no plugin build comparison, no functional check after | `scripts/local-wp/push-to-remote.sh` | Compare the `sgs-blocks` build hash on mirror and target and refuse on a mismatch; run `site-check.mjs` on the remote |
 | 7 | A walker exit 1 (open differences, unreviewed rows, live errors) counts as a passed walk | `site-run.mjs` walk step; `lib/site-run-walk.mjs::walkVerdict` | Put the counts in the walk status |
-| 8 | `rules.surfaceRoot` maps every `drawer` surface to `sgs/nav-drawer` (and `menu` to `sgs/mega-panel`) at confidence 1, so the surfaces.json kind decides a block | `data/skeleton-decisions.json` `rules.surfaceRoot` | Bean decision D2 below |
-| 9 | Rule verdicts carry confidence 1, so the finaliser never sees a rule that fired wrongly (they do reach the review, grouped by rule). Spec 48's skeleton writer says "each with a confidence" | `lib/skeleton-classify.mjs::fromRule`; `lib/intake-run-finalise.mjs` (`LOW_BELOW = 0.7`) | Bean decision D1 below |
+| 8 | Rule verdicts carry confidence 1, so the finaliser never sees a rule that fired wrongly (they do reach the review, grouped by rule). Spec 48's skeleton writer says "each with a confidence" | `lib/skeleton-classify.mjs::fromRule`; `lib/intake-run-finalise.mjs` (`LOW_BELOW = 0.7`) | Bean (D1): rules keep winning by default; a rule row whose DB evidence strongly prefers another block goes to the finaliser and the review |
 
 ## Single-reviewer findings kept
 
@@ -60,10 +59,10 @@ The pipeline column predates the 2026-10-29 merges, so each pipeline row below i
 
 **Claude Design's invented names and values:** `site-header.stickyRow`; `button.variant`, `hidden`, `pinned`; `container.link`; `icon.icon`; `text.link`; `responsive-logo.variant`; `icon-list.columns`; `testimonial.of`; `media.shape`; `brand-strip.marquee`, `pauseOnHover`; `whatsapp-cta.labelShowOn`; `nav-drawer.bgSvg*`; `nav-drawer-menu.panelLayout`; `mega-panel.source`; `timeline.connector`, `process-steps.connector`; `mega-panel.style: logos`; `card-grid.variant: image`; `mega-group.linkSource: menu`; per-device `button.label`, `timeline.orientation`, `process-steps.layout`.
 
-## Decisions for Bean
+## Bean's answers (2026-10-29)
 
-- **D1 rule confidence:** keep rules winning by default but send a rule row to the finaliser and review when the DB evidence strongly prefers another block (recommended), or give rules real confidences below 1 (Spec 48's wording; reopens rule-settled rows across all three reviews).
-- **D2 `surfaceRoot`:** drop the kind-to-block entries to evidence below 0.7 so the finaliser and review see them (recommended, matches "surfaces.json never decides blocks"), or keep them and add a name or role guard.
-- **D3 `sgs/mega-panel`:** allow `sgs/label` directly in the panel (a block change plus reseed), or keep the eyebrow as the `brands` variant's `brandsEyebrow` setting.
-- **D4 per-device connector on `timeline` and `process-steps`:** Claude Design records Bean confirming it exists; no such attribute is in either `block.json`. Point to it, or it is a framework gap.
-- **D5 handoff asks for the next export:** optional `data-part` ids, a structured `how_to_reach` beside the prose, typed `state_keys`, one threshold form, `METHOD.md` widths at 375/768/1440. None names a block.
+- **D1 rule confidence:** rules keep winning by default; a rule row whose DB evidence strongly prefers another block is sent to the finaliser and the review.
+- **D2 drawers:** not a fault. A drawer surface is a CPT surface the handoff names, so its root block follows its record, and Bean already set how drawers differ. The filter drawer's rule (a drawer whose root holds the catalogue's filter groups is the shop filter's own overlay, `lib/skeleton-filter-drawer.mjs`) and the page-landmark rule were held on `fix/w3-debug`; merged to `main` in `7de9eecc6`.
+- **D3 `sgs/mega-panel`:** stays as it is (the eyebrow is the `brands` variant's `brandsEyebrow` setting).
+- **D4 per-device connector:** Bean only acknowledged reading Claude Design's point; there is no such setting. The draft shows the timeline line only at desktop and the steps connector from 768 up, so this is a framework gap row.
+- **D5 handoff asks:** yes, for the next export: optional `data-part` ids, a structured `how_to_reach` beside the prose, typed `state_keys`, one threshold form, `METHOD.md` widths at 375/768/1440.
