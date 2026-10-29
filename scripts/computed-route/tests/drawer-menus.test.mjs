@@ -10,12 +10,12 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
-import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
 import { boundMenu, placeholderTree, writeMenuMap } from '../lib/site-build-map.mjs';
 import { carriedIds } from '../lib/skeleton-carried.mjs';
 import crypto from 'crypto';
 import { handlerCloses } from '../lib/skeleton-handler-opens.mjs';
 import { linkContext } from '../lib/draft-link.mjs';
+import { proposeFixture } from './fixtures/fixture-facts.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -69,7 +69,7 @@ const DRAWER = [
 const inv = { generated: 'test', source: 'test', root: 'aside', keyFormat: 'tpl', checks: { duplicateKeys: 0 }, elements: DRAWER };
 const all = ( l ) => l.flatMap( ( n ) => [ n, ...all( n.innerBlocks || [] ) ] );
 const facts = () => loadFacts( { db, client: 'eye-care-ward-end', repo: REPO, siteName: 'Acme' } );
-const run = ( menu ) => proposeSkeleton( { inventory: inv, facts: facts(), surface: 'drawer', surfaceKind: 'drawer', surfaceName: 'Drawer', db, carried: { logo: () => null, menu } } );
+const run = ( menu ) => proposeFixture( { inventory: inv, facts: facts(), surface: 'drawer', surfaceKind: 'drawer', surfaceName: 'Drawer', db, carried: { logo: () => null, menu } } );
 
 test( 'MUST FAIL: the n-th navigation group of a drawer skeleton carries the n-th drawer menu', () => {
 	const asked = [];
@@ -118,7 +118,7 @@ function closeRun( o = {} ) {
 	const f = loadFacts( { db, client: 'fixture-client', repo: REPO } );
 	f.decisions = structuredClone( f.decisions );
 	o.edit && o.edit( f.decisions.rules );
-	return { ...proposeSkeleton( { inventory, facts: { ...f, repo }, surface: 'drawer', surfaceKind: o.kind ?? 'drawer', surfaceName: 'Mobile menu', db, factRecord, openers: { 'S-05': 'Menu button' }, pageMap: o.pageMap ?? [], ...( o.carried ? { carried: o.carried } : {} ), ...( o.draftLinks ? { draftLinks: o.draftLinks } : {} ) } ), repo, text };
+	return { ...proposeFixture( { inventory, facts: { ...f, repo }, surface: 'drawer', surfaceKind: o.kind ?? 'drawer', surfaceName: 'Mobile menu', db, factRecord, openers: { 'S-05': 'Menu button' }, pageMap: o.pageMap ?? [], ...( o.carried ? { carried: o.carried } : {} ), ...( o.draftLinks ? { draftLinks: o.draftLinks } : {} ) } ), repo, text };
 }
 const nodeAt = ( r, key ) => all( r.skeleton ).find( ( n ) => n.draftRef?.tpl === key );
 const rowAt = ( r, key ) => r.proposal.rows.find( ( x ) => x.key === key );

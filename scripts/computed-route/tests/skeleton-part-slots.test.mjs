@@ -7,7 +7,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
-import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
+import { proposeFixture } from './fixtures/fixture-facts.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -51,7 +51,7 @@ const CAL = {
 	burgerIconWidth: { slot: ICON, slots: [ ICON, BAR( 1 ), BAR( 2 ), BAR( 3 ) ] },
 	burgerBarThickness: { slot: BAR( 1 ), slots: [ BAR( 1 ), BAR( 2 ), BAR( 3 ) ] },
 };
-const run = ( elements, calSettings = () => CAL ) => proposeSkeleton( { inventory: inv( elements ), facts, surface: 'header', surfaceKind: 'header', surfaceName: 'Header', db, ...withDrawer, calSettings } );
+const run = ( elements, calSettings = () => CAL ) => proposeFixture( { inventory: inv( elements ), facts, surface: 'header', surfaceKind: 'header', surfaceName: 'Header', db, ...withDrawer, calSettings } );
 const slotsOf = ( r ) => nodeAt( r, 'Root/45#0' ).draftSlots || {};
 
 test( 'MUST FAIL (the opener is the nav\'s burger part): the absorbed button is the nav\'s draftSlots entry at the burger\'s calibrated slot', () => {

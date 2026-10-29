@@ -5,7 +5,6 @@
 // that opens on a timer), which is a missing-features row (lib/intake-missing.mjs). The option names and the patterns are the
 // decisions data (`rules.backToTop.floating`, `rules.readingProgress.options`, `rules.persistentBar`, `rules.cookieConsent`,
 // `rules.timedPopup`); this file holds the readings.
-import { declared } from './skeleton-rules.mjs';
 import { specHit } from './skeleton-facts.mjs';
 
 const px = ( v ) => {
@@ -13,8 +12,9 @@ const px = ( v ) => {
 	return n ? Number( n[ 1 ] ) : null;
 };
 
-// Whether the element is fixed to the viewport: declared fixed, or computed fixed at a width where it renders.
-export function fixedAt( e, st = declared( e ) ) {
+// Whether the element is fixed to the viewport: declared fixed (`st`, the record's declarations, lib/element-facts.mjs), or
+// computed fixed at a width where it renders.
+export function fixedAt( e, st ) {
 	return 'fixed' === st.position || Object.keys( e.box || {} ).some( ( w ) => e.box[ w ]?.w > 0 && false !== e.visible?.[ w ] && 'fixed' === e.position?.[ w ] );
 }
 
@@ -49,8 +49,9 @@ export function backToTopOptions( e, st, spec ) {
 }
 
 // The Floating UI reading progress options the draft's fixed bar sets: enabled, its fill colour or gradient and its height.
+// `heights` are its resolved heights at the widths it holds at (the first is written; its declared height when none).
 // spec: rules.readingProgress.options ({ enabled, colour, gradient, height }); the height is held to the setting's range.
-export function readingProgressOptions( e, st, spec ) {
+export function readingProgressOptions( e, st, spec, heights = [] ) {
 	const o = spec.options;
 	const out = { [ o.enabled ]: true };
 	const paint = st[ 'background-image' ] || st.background || '';
@@ -60,7 +61,7 @@ export function readingProgressOptions( e, st, spec ) {
 		const hex = hexOf( st[ 'background-color' ] || st.background );
 		hex && ( out[ o.colour ] = hex );
 	}
-	const h = px( st.height );
+	const h = heights.find( ( x ) => null != x ) ?? px( st.height );
 	null != h && ( out[ o.height ] = Math.min( spec.range[ 1 ], Math.max( spec.range[ 0 ], Math.round( h ) ) ) );
 	return out;
 }

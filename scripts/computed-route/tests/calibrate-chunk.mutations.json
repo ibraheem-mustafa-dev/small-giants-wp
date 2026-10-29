@@ -1,0 +1,7 @@
+[
+	{"file": "lib/calibrate-chunk.mjs", "find": "Math.floor( budget / perInstance ) - defaults", "replace": "Math.floor( budget / perInstance )", "why": "the defaults every page carries would not count against the budget"},
+	{"file": "lib/calibrate-chunk.mjs", "find": "return Math.max( MIN_CHUNK, Math.min( size, Math.floor( budget / perInstance ) - defaults ) );", "replace": "return Math.min( size, Math.floor( budget / perInstance ) - defaults );", "why": "a page whose defaults fill the budget would get no instance, or a negative count"},
+	{"file": "lib/calibrate-chunk.mjs", "find": "Math.min( size, Math.floor( budget / perInstance ) - defaults )", "replace": "Math.floor( budget / perInstance ) - defaults", "why": "a block of small instances would grow past its own chunk size"},
+	{"file": "lib/calibrate-chunk.mjs", "find": "const others = queue.flatMap( ( list ) => list.filter( ( i ) => ! i.isDefault && ! i.isBase ) );", "replace": "const others = queue[ 0 ].filter( ( i ) => ! i.isDefault && ! i.isBase );", "why": "only the first queued page's instances would be planned again, the rest lost"},
+	{"file": "lib/calibrate-chunk.mjs", "find": "const defaults = queue[ 0 ].filter( ( i ) => i.isDefault || i.isBase );", "replace": "const defaults = queue[ 0 ].filter( ( i ) => i.isDefault );", "why": "baselines would drop off the pages, leaving markers nothing to compare with"}
+]

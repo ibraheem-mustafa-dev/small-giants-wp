@@ -12,7 +12,7 @@
 	{"file": "lib/skeleton-fixed-controls.mjs", "find": "if ( ! fixedAt( e, st ) ) {\n\t\treturn null;\n\t}", "replace": "", "why": "only a fixed element is a missing fixed feature"},
 	{"file": "lib/skeleton-fixed-controls.mjs", "find": "rgb[ 4 ] && 1 !== Number.parseFloat", "replace": "rgb[ 4 ] && 0 !== Number.parseFloat", "why": "a translucent colour is not a plain colour"},
 	{"file": "lib/skeleton-rules.mjs", "find": "isBackToTop( e, text ) && fixedAt( e, st ) ?", "replace": "isBackToTop( e, text ) ?", "why": "only a fixed back-to-top control is the setting"},
-	{"file": "lib/skeleton-rules.mjs", "find": "...( R.readingProgress?.options ? { siteOptions: readingProgressOptions( e, st, R.readingProgress ) } : {} )", "replace": "", "why": "the reading progress bar writes its options"},
+	{"file": "lib/skeleton-rules.mjs", "find": "...( R.readingProgress?.options ? { siteOptions: readingProgressOptions( e, st, R.readingProgress, judged.holds.map( ( w ) => read.lengthAt( e, 'height', w ) ) ) } : {} )", "replace": "", "why": "the reading progress bar writes its options"},
 	{"file": "lib/skeleton-rules.mjs", "find": "const miss = missingFixedFeature( { e, st, text, R, m } );", "replace": "const miss = null;", "why": "the missing fixed feature rule is consulted"},
 	{"file": "lib/skeleton-write-record.mjs", "find": "...( r.siteOptions ? { siteOptions: r.siteOptions } : {} ),", "replace": "", "why": "the row carries the options"},
 	{"file": "lib/skeleton-write-record.mjs", "find": "...( r.missingFeature ? { missingFeature: r.missingFeature } : {} ),", "replace": "", "why": "the row carries the missing feature"},

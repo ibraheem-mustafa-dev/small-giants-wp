@@ -88,6 +88,7 @@ export function lintFolder( root ) {
 				problems.push( `${ f } exports ${ name }, which README.md does not list` );
 			}
 		}
+		problems.push( ...skeletonReadProblems( f, src ) );
 		for ( const m of src.matchAll( /(?:from\s+|import\s*\(\s*|require\s*\(\s*)['"`]([^'"`]+)['"`]/g ) ) {
 			if ( /sgs-blocks[\\/]+scripts|(^|\/)converter\// .test( m[ 1 ] ) ) {
 				problems.push( `${ f } imports ${ m[ 1 ] } (R-47-1: nothing from plugins/sgs-blocks/scripts/)` );
@@ -95,6 +96,25 @@ export function lintFolder( root ) {
 		}
 	}
 	return problems;
+}
+
+// RC14, R-47-4: a skeleton module reads an element's facts through lib/element-facts.mjs, never from the inventory's `snippet`
+// (a cut copy of the draft's markup kept for the review page) or its raw `style` attribute (Fill's fingerprint). The modules
+// that only carry the snippet to a review (the review page, the proposal row it prints, the finaliser's request) may copy
+// it into a review field (`snippet: e.snippet`, `esc( e.snippet )`) and nothing else.
+const SKELETON_MODULE = /^(?:lib\/skeleton-[\w-]+\.mjs|lib\/draft-link\.mjs|skeleton\.mjs)$/;
+const SNIPPET_CARRIERS = new Set( [ 'lib/skeleton-review.mjs', 'lib/skeleton-write-record.mjs', 'lib/skeleton-finalise.mjs' ] );
+const STYLE_ATTR_READ = /\battrs\s*(?:\?\.|\.)\s*style\b|\battrs\s*(?:\?\.)?\[\s*['"`]style['"`]\s*\]/;
+export function skeletonReadProblems( file, src ) {
+	if ( ! SKELETON_MODULE.test( file ) ) {
+		return [];
+	}
+	const code = src.replace( /\/\*[\s\S]*?\*\//g, '' ).replace( /(^|[^:'"`])\/\/.*$/gm, '$1' );
+	const copied = SNIPPET_CARRIERS.has( file ) ? code.replace( /(?:\bsnippet:\s*|\besc\(\s*)[\w$]+(?:\?\.|\.)snippet\b/g, '' ) : code;
+	return [
+		...( /(?:\?\.|\.)snippet\b|\[\s*['"`]snippet['"`]\s*\]/.test( copied ) ? [ `${ file } reads an inventory element's snippet (RC14: read the element's facts through lib/element-facts.mjs; the snippet is for the review page only)` ] : [] ),
+		...( STYLE_ATTR_READ.test( code ) ? [ `${ file } reads an element's raw style attribute (RC14: declared styles come from the fact record and resolved values from the inventory's per-width read, through lib/element-facts.mjs)` ] : [] ),
+	];
 }
 
 // An HTML tag carrying a style attribute inside a rich-text string (`<span style=…>`, `<img STYLE = …>`).

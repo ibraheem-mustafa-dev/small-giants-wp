@@ -13,6 +13,7 @@ import { specHit } from './skeleton-facts.mjs';
 import { formElement } from './skeleton-form-element.mjs';
 import { templateKey } from './fact-key.mjs';
 import { recordView } from './skeleton-record.mjs';
+import { acrossWidths, elementFacts, pxOf } from './element-facts.mjs';
 import { sameNavLook } from './nav-link-look.mjs';
 import { makePanelRules } from './skeleton-panel-rules.mjs';
 import { commerceRegion } from './skeleton-commerce-region.mjs';
@@ -38,61 +39,35 @@ export function isSiteInfoValue( text, kind ) {
 	return !! VALUE[ kind ]?.test( String( text ?? '' ) );
 }
 
-// The element's declared inline style as { property: value } (lower-case property names; values as written, which may
-// hold a draft binding such as {{ R.px }}).
-export function declared( e ) {
-	const out = {};
-	for ( const part of String( e.attrs?.style || '' ).split( ';' ) ) {
-		const at = part.indexOf( ':' );
-		if ( at > 0 ) {
-			out[ part.slice( 0, at ).trim().toLowerCase() ] = part.slice( at + 1 ).trim();
-		}
-	}
-	return out;
-}
-
-const px = ( v ) => {
-	const n = /^(-?[\d.]+)px$/.exec( String( v ?? '' ).trim() );
-	return n ? Number( n[ 1 ] ) : null;
-};
-// A letter-spacing in em (a px value over a 16px base).
-const em = ( v ) => {
-	const n = /^(-?[\d.]+)(em|px)$/.exec( String( v ?? '' ).trim() );
-	if ( ! n ) {
-		return null;
-	}
-	return 'em' === n[ 2 ] ? Number( n[ 1 ] ) : Number( n[ 1 ] ) / 16;
-};
 const DECORATION_TAGS = new Set( [ 'img', 'iframe', 'video', 'input', 'textarea', 'select', 'hr' ] );
 
-// A small marker that holds nothing, in the flow of the text beside it: a dot (both sides at most D.maxDotPx) or a short
-// bar (at most D.maxBarHeightPx tall and D.maxBarWidthPx wide). D is the decisions entry rules.dotMarker; none, never.
-export function isMarker( e, m, D, view = recordView( null ) ) {
-	const st = declared( e );
-	if ( ! D || m.words( e ) || m.blockKids( e ).length || m.kids( e ).some( ( k ) => 'svg' === k.tag ) || DECORATION_TAGS.has( e.tag ) || [ 'absolute', 'fixed' ].includes( st.position ) ) {
-		return false;
+// A small marker that holds nothing, in the flow of the text beside it: a dot (its rendered box at most D.maxDotPx on both
+// sides) or a short bar (at most D.maxBarHeightPx tall and D.maxBarWidthPx wide), judged at each width it renders
+// (lib/element-facts.mjs::acrossWidths: { holds, fails, every, some }). D is the decisions entry rules.dotMarker; none, never.
+// `read` is the element-facts reader (lib/element-facts.mjs; the model's own by default).
+export function markerWidths( e, m, D, read = m.read ) {
+	const none = acrossWidths( [], () => false );
+	const declaredOut = [ 'absolute', 'fixed' ].includes( read.declared( e ).position );
+	if ( ! D || m.words( e ) || m.blockKids( e ).length || m.kids( e ).some( ( k ) => 'svg' === k.tag ) || DECORATION_TAGS.has( e.tag ) || declaredOut ) {
+		return none;
 	}
-	// A control the visitor operates (a slider's pagination dot, a swatch) is never a marker.
-	if ( [ 'a', 'button' ].includes( e.tag ) || null != e.attrs?.[ 'aria-label' ] || null != e.attrs?.role || null != view.attr( e, 'tabindex' ) || /\s(?:sc-camel-on-click|onClick)=/.test( e.snippet || '' ) ) {
-		return false;
-	}
-	const w = px( st.width );
-	const h = px( st.height );
-	if ( null == w || null == h || ! ( ( w <= D.maxDotPx && h <= D.maxDotPx ) || ( h <= D.maxBarHeightPx && w <= D.maxBarWidthPx ) ) ) {
-		return false;
+	// A control the visitor operates (a slider's pagination dot, a swatch: any event binding) is never a marker.
+	if ( [ 'a', 'button' ].includes( e.tag ) || null != e.attrs?.[ 'aria-label' ] || null != e.attrs?.role || null != read.view.attr( e, 'tabindex' ) || read.events( e ).length ) {
+		return none;
 	}
 	// It marks text: its parent holds words of its own or in another child.
 	const p = m.byKey[ e.parentKey ];
-	return !! p && ( !! m.words( p ) || m.blockKids( p ).some( ( k ) => k !== e && String( k.allText ?? m.words( k ) ).trim() ) );
-}
-// A length in px, with rem and em read against a 16px root (the draft's declared lengths); null for anything else.
-function lengthPx( v ) {
-	const n = /^(-?[\d.]+)(px|rem|em)$/.exec( String( v ?? '' ).trim() );
-	if ( ! n ) {
-		return null;
+	if ( ! p || ! ( !! m.words( p ) || m.blockKids( p ).some( ( k ) => k !== e && String( k.allText ?? m.words( k ) ).trim() ) ) ) {
+		return none;
 	}
-	return 'px' === n[ 2 ] ? Number( n[ 1 ] ) : Number( n[ 1 ] ) * 16;
+	return acrossWidths( read.widths( e ), ( w ) => {
+		const b = read.boxAt( e, w );
+		const out = [ 'absolute', 'fixed' ].includes( e.position?.[ w ] );
+		return !! b && ! out && ( ( b.w <= D.maxDotPx && b.h <= D.maxDotPx ) || ( b.h <= D.maxBarHeightPx && b.w <= D.maxBarWidthPx ) );
+	} );
 }
+// A marker at every width it renders (markerWidths' `every`): what a row's structure reads (lib/skeleton-write-units.mjs).
+export const isMarker = ( e, m, D, read = m.read ) => markerWidths( e, m, D, read ).every;
 // A font weight as a number: keywords as CSS maps them (normal 400, bold and bolder 700, lighter 300).
 const WEIGHT_WORDS = { normal: 400, bold: 700, bolder: 700, lighter: 300 };
 function weightOf( v ) {
@@ -114,6 +89,9 @@ const HEADING = /^h[1-6]$/;
 // `surface.pageMap` the page-map rows (which drawer another row's block draws, for the control that opens it).
 export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), view = recordView( null ), scope = null } ) {
 	const R = facts.decisions.rules || {};
+	// Every fact of an element is read through the one reader (lib/element-facts.mjs).
+	const read = elementFacts( view );
+	const declared = read.declared;
 	const panel = makePanelRules( { m, view, scope, R, facts, surface, declared } );
 	const recogniser = makeRecogniser( { m, facts } );
 	const arrayBlocks = new Set( facts.q( 'SELECT DISTINCT block_slug FROM array_item_schema' ).map( ( r ) => r.block_slug ) );
@@ -145,24 +123,23 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const hasSvg = ( e ) => m.kids( e ).some( ( k ) => 'svg' === k.tag );
 	const bare = ( e ) => ! m.words( e ) && ! m.blockKids( e ).length;
 	// Whether the element is a back-to-top control: a link, button or handler whose words or handler name say so.
-	const isBackToTop = ( e, text ) => ( [ 'a', 'button' ].includes( e.tag ) || !! handlerOf( e ) ) && !! ( specHit( R.backToTop, `${ text } ${ e.attrs?.[ 'aria-label' ] || '' }` ) || specHit( R.backToTop?.handlers, handlerOf( e ) ) );
+	const isBackToTop = ( e, text ) => ( [ 'a', 'button' ].includes( e.tag ) || !! read.handler( e ) ) && !! ( specHit( R.backToTop, `${ text } ${ e.attrs?.[ 'aria-label' ] || '' }` ) || specHit( R.backToTop?.handlers, read.handler( e ) ) );
 	const iconOnly = ( e ) => bare( e ) && hasSvg( e );
 	const emojiOnly = ( e ) => ! m.blockKids( e ).length && EMOJI.test( m.words( e ).replace( /\s+/g, '' ) );
 	const desc = ( e ) => m.blockKids( e ).flatMap( ( k ) => [ k, ...desc( k ) ] );
-	const handlerOf = ( e ) => /sc-camel-on-click="\{\{\s*([^}\s]+)\s*\}\}"/.exec( e.snippet || '' )?.[ 1 ] || '';
-	// A control the visitor operates: a button, anything with a click handler, a pressed or expanded state. It is never
-	// static text (a label, a heading, a card title).
-	const interactive = ( e ) => 'button' === e.tag || !! handlerOf( e ) || null != view.attr( e, 'aria-pressed' ) || null != view.attr( e, 'aria-expanded' );
+	// A control the visitor operates: a button, anything binding an event (any event: a click, a change, a pointer or key),
+	// a pressed or expanded state. It is never static text (a label, a heading, a card title).
+	const interactive = ( e ) => 'button' === e.tag || read.events( e ).length > 0 || null != view.attr( e, 'aria-pressed' ) || null != view.attr( e, 'aria-expanded' );
 	// A disclosure or slider control (it opens, closes or steps something): never a pill button.
-	const disclosure = ( e ) => null != view.attr( e, 'aria-expanded' ) || null != view.attr( e, 'aria-pressed' ) || /toggle|prev|next|open|close|expand|collapse/i.test( handlerOf( e ) );
+	const disclosure = ( e ) => null != view.attr( e, 'aria-expanded' ) || null != view.attr( e, 'aria-pressed' ) || /toggle|prev|next|open|close|expand|collapse/i.test( read.handler( e ) );
 	// Words that are only a number (a count, an index "01"): never a label or a title.
 	const numberOnly = ( e ) => /^\d+$/.test( m.words( e ).trim() );
 	const textLeaves = ( e ) => desc( e ).filter( ( k ) => m.words( k ) && ! m.blockKids( k ).length );
 	const logoish = ( k ) => k.tag.endsWith( '-logo' ) || facts.logoBlocks.includes( hooks.topBlock( k ) );
 	// An element the draft fills from one script value (`{{ arrowIcon }}`) that renders no words: the value is a glyph,
 	// injected unstamped, so the inventory holds no child for it.
-	const bindingGlyph = ( e ) => bare( e ) && /^<[^>]+>\s*\{\{\s*[\w.$]+\s*\}\}\s*<\/[a-z0-9-]+>$/i.test( e.snippet || '' ) && Object.values( e.box || {} ).some( ( b ) => b?.w > 0 );
-	const srcOf = ( e ) => e.attrs?.src || /\ssrc="([^"]+)"/.exec( e.snippet || '' )?.[ 1 ] || '';
+	const bindingGlyph = ( e ) => bare( e ) && read.textBinding( e ) && Object.values( e.box || {} ).some( ( b ) => b?.w > 0 );
+	const srcOf = ( e ) => read.attr( e, 'src' ) || '';
 	// The first block child of a column that sits directly in a header or footer row: the column's heading.
 	const headsRowColumn = ( e ) => {
 		const col = m.byKey[ e.parentKey ];
@@ -356,17 +333,16 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		}
 		return out;
 	};
-	const markerShape = ( e ) => isMarker( e, m, R.dotMarker, view );
+	const markerShape = ( e ) => markerWidths( e, m, R.dotMarker, read );
 	// The first piece of text in a card that is not a bare number, set bold and larger than the next piece of text: the
-	// card's title. The card is the nearest ancestor (two levels up at most) holding two or more pieces of text.
-	const headsCard = ( e, st ) => {
+	// card's title. The card is the nearest ancestor (two levels up at most) holding two or more pieces of text. Its size and
+	// weight are the resolved values at each width it renders (a clamp() or an inherited size included), judged per width:
+	// { holds, fails, every, some } (lib/element-facts.mjs::acrossWidths).
+	const headsCard = ( e ) => {
 		const C = R.cardHeading;
-		if ( ! C || ! /\p{L}/u.test( m.words( e ) ) || m.blockKids( e ).length || HEADING.test( e.tag ) || 'a' === e.tag || 'label' === e.tag || interactive( e ) || numberOnly( e ) || hooks.siteInfoKinds( e ).size ) {
-			return false;
-		}
-		const size = lengthPx( st[ 'font-size' ] );
-		if ( ( weightOf( st[ 'font-weight' ] ) || 0 ) < C.minWeight || null == size || size < C.minSizePx || m.words( e ).split( ' ' ).length > C.maxWords ) {
-			return false;
+		const none = acrossWidths( [], () => false );
+		if ( ! C || ! /\p{L}/u.test( m.words( e ) ) || m.blockKids( e ).length || HEADING.test( e.tag ) || 'a' === e.tag || 'label' === e.tag || interactive( e ) || numberOnly( e ) || hooks.siteInfoKinds( e ).size || m.words( e ).split( ' ' ).length > C.maxWords ) {
+			return none;
 		}
 		let card = m.byKey[ e.parentKey ];
 		for ( let i = 0; card && i < 2 && textLeaves( card ).length < 2; i++ ) {
@@ -375,12 +351,26 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const texts = card ? textLeaves( card ).filter( ( k ) => ! numberOnly( k ) ) : [];
 		const next = texts[ texts.indexOf( e ) + 1 ];
 		if ( texts[ 0 ] !== e || ! next ) {
-			return false;
+			return none;
 		}
-		const ns = declared( next );
-		const nextSize = lengthPx( ns[ 'font-size' ] );
-		return null != nextSize ? nextSize < size : ( weightOf( ns[ 'font-weight' ] ) || 400 ) < C.minWeight;
+		return acrossWidths( read.widths( e ), ( w ) => {
+			const size = read.lengthAt( e, 'font-size', w );
+			if ( ( weightOf( read.resolved( e, 'font-weight', w ) ) || 0 ) < C.minWeight || null == size || size < C.minSizePx ) {
+				return false;
+			}
+			const nextSize = read.lengthAt( next, 'font-size', w );
+			return null != nextSize ? nextSize < size : ( weightOf( read.resolved( next, 'font-weight', w ) ) || 400 ) < C.minWeight;
+		} );
 	};
+	// A short run of words set in capitals or wide tracking (its tracking over its own font size), or drawn as a pill (a fully
+	// rounded corner and padding), judged at each width it renders from the resolved values.
+	const kickerLook = ( e ) => acrossWidths( read.widths( e ), ( w ) => {
+		const size = read.lengthAt( e, 'font-size', w );
+		const tracking = read.lengthAt( e, 'letter-spacing', w );
+		const caps = 'uppercase' === read.resolved( e, 'text-transform', w ) || ( null != tracking && size > 0 && tracking / size >= ( R.label?.minTrackingEm ?? 0.06 ) );
+		const pill = ( read.lengthAt( e, 'border-top-left-radius', w ) ?? 0 ) >= 99 && [ 'top', 'right', 'bottom', 'left' ].some( ( side ) => ( read.lengthAt( e, `padding-${ side }`, w ) ?? 0 ) > 0 );
+		return caps || pill;
+	} );
 
 	// The link source a Site Info kind becomes on a link (tel: is phone, a maps host is directions), or null.
 	const linkKindOf = ( e ) => {
@@ -398,10 +388,20 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const wordBound = ( lk ) => ( lk ? { wordBound: { labelFromSiteInfo: lk.kind } } : {} );
 	// A verdict of a rule, or null when the decisions data has no entry for it (each rule is switched on by its entry).
 	const v = ( rule, extra ) => ( R[ rule ] ? { rule, reason: R[ rule ].reason || rule, ...extra } : null );
+	// The verdict of a rule judged per width (acrossWidths' result): the rule's verdict when it holds at every width the
+	// element renders, the same verdict marked `widthDependent` (the widths it holds and fails at) when it holds at some
+	// only, so the review decides it (rules.widthDependent), and null when it holds at none.
+	const byWidth = ( judged, rule, extra ) => {
+		if ( judged.every ) {
+			return v( rule, extra );
+		}
+		const out = judged.some && R.widthDependent ? v( rule, { ...extra, widthDependent: { holds: judged.holds, fails: judged.fails } } ) : null;
+		return out && { ...out, reason: `${ out.reason }; width-dependent (holds at ${ judged.holds.join( ', ' ) }, not at ${ judged.fails.join( ', ' ) }): ${ R.widthDependent.reason }` };
+	};
 	// A link setting's value as a site address (lib/draft-link.mjs, through hooks.siteLink): { attributes, handover? }, the
 	// setting absent when the draft's destination resolves to no address.
 	const siteLinkOf = ( attr, e ) => {
-		const out = linkWrite( ( hooks.siteLink || siteLinkResolver( null ) )( realHref( e ), e ), realHref( e ) );
+		const out = linkWrite( ( hooks.siteLink || siteLinkResolver( null, null, read ) )( realHref( e ), e ), realHref( e ) );
 		return { attributes: null !== out.value ? { [ attr ]: out.value } : {}, ...( out.handover ? { handover: out.handover } : {} ) };
 	};
 	const linkAttrs = ( e, lk ) => {
@@ -430,14 +430,23 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		},
 		// A full-width bar a few pixels tall, fixed to the viewport, drawing only a fill: the Floating UI reading progress
 		// setting.
-		( { e, st } ) => ( bare( e ) && ! hasSvg( e ) && 'fixed' === st.position && ( px( st.height ) ?? 99 ) <= ( R.readingProgress?.maxHeightPx ?? 6 ) && /^100(?:%|vw)$/.test( st.width || '' ) ? v( 'readingProgress', { action: 'remove', handover: { owner: 'behaviour', kind: 'behaviour', detail: R.readingProgress?.handover || 'reading progress bar' }, ...( R.readingProgress?.options ? { siteOptions: readingProgressOptions( e, st, R.readingProgress ) } : {} ) } ) : null ),
+		// The bar is judged at each width it has a box at: fixed there, no taller than the rule's height, and declared full width.
+		( { e, st } ) => {
+			if ( ! bare( e ) || hasSvg( e ) || ! /^100(?:%|vw)$/.test( st.width || '' ) ) {
+				return null;
+			}
+			const laidOut = [ 375, 768, 1440 ].filter( ( w ) => read.boxAt( e, w ) );
+			const judged = acrossWidths( laidOut, ( w ) => ( 'fixed' === e.position?.[ w ] || 'fixed' === st.position ) && ( read.lengthAt( e, 'height', w ) ?? 99 ) <= ( R.readingProgress?.maxHeightPx ?? 6 ) );
+			return byWidth( judged, 'readingProgress', { action: 'remove', handover: { owner: 'behaviour', kind: 'behaviour', detail: R.readingProgress?.handover || 'reading progress bar' }, ...( R.readingProgress?.options ? { siteOptions: readingProgressOptions( e, st, R.readingProgress, judged.holds.map( ( w ) => read.lengthAt( e, 'height', w ) ) ) } : {} ) } );
+		},
 		// A layer that holds nothing: a ring is a decorative image; a fill, gradient or glow folds into the background of
 		// the block it sits in.
 		( { e, st } ) => {
 			if ( ! bare( e ) || hasSvg( e ) || DECORATION_TAGS.has( e.tag ) || ! ( 'true' === e.attrs?.[ 'aria-hidden' ] || [ 'absolute', 'fixed' ].includes( st.position ) ) ) {
 				return null;
 			}
-			const ring = /\d/.test( st.border || st[ 'border-width' ] || '' ) && ! /^(?:0|none)/.test( st.border || '' );
+			// A ring draws its outline on every side (a one-sided line, a connector or a rule, is a layer).
+			const ring = [ 'top', 'right', 'bottom', 'left' ].every( ( side ) => ( pxOf( st[ `border-${ side }-width` ] ) ?? 0 ) > 0 && ! [ '', 'none', 'hidden', 'initial' ].includes( String( st[ `border-${ side }-style` ] ?? '' ).trim() ) );
 			return ring ? v( 'decorativeShape', { block: R.decorativeShape?.block || null } ) : v( 'decorationLayer', { action: 'remove' } );
 		},
 		( { e, kidsB } ) => ( ! kidsB.length && specHit( R.typedDivider, m.words( e ) ) ? v( 'typedDivider', { action: 'remove' } ) : null ),
@@ -473,7 +482,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		},
 		// A small dot or short bar beside text is the marker of the block that holds the text (a label's dot, a list
 		// item's marker, the separator between a row's items): it gets no block of its own.
-		( { e } ) => ( markerShape( e ) ? v( 'dotMarker', { action: 'remove' } ) : null ),
+		( { e } ) => byWidth( markerShape( e ), 'dotMarker', { action: 'remove' } ),
 		// A custom element named as a logo (<brand-logo>) is the logo block, which reads the site logo.
 		( { e } ) => ( e.tag.includes( '-' ) && specHit( facts.decisions.logoImage, e.tag ) && facts.logoBlocks.length ? v( 'logoElement', { block: facts.logoBlocks[ 0 ], absorb: true, handover: { owner: 'site-info', kind: 'presence', detail: 'the logo image: choose the site logo in the editor' } } ) : null ),
 		// A custom element the draft uses as an image placeholder (<image-slot>) is the media block.
@@ -572,7 +581,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// A text link in a header outside its navigation element, in the navigation links' own type, joins the navigation.
 		( { e, kidsB } ) => {
 			const nav = 'a' === e.tag && 'header' === surface.kind && R.navigationLink && ! kidsB.length && ! hasSvg( e ) && m.words( e ) && ! ( e.membership || [] ).some( ( x ) => 'sc-for' === x.kind ) ? navigationOf() : null;
-			return nav && ( realHref( e ) || handlerOf( e ) ) && looksLikeNavLink( e, nav ) ? v( 'navigationLink', { action: 'absorbed', into: nav.key } ) : null;
+			return nav && ( realHref( e ) || read.handler( e ) ) && looksLikeNavLink( e, nav ) ? v( 'navigationLink', { action: 'absorbed', into: nav.key } ) : null;
 		},
 		( { e } ) => ( ! m.isIconLink( e ) && ( iconOnly( e ) || emojiOnly( e ) || bindingGlyph( e ) ) ? v( 'solitaryIcon', { block: R.solitaryIcon?.block } ) : null ),
 		// The call to action that ends a card link is the card's button, holding the card's link.
@@ -596,16 +605,14 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			if ( heading ) {
 				return heading;
 			}
-			const caps = 'uppercase' === st[ 'text-transform' ] || ( em( st[ 'letter-spacing' ] ) ?? 0 ) >= ( R.label?.minTrackingEm ?? 0.06 );
-			const pill = ( px( st[ 'border-radius' ] ) ?? 0 ) >= 99 && !! st.padding;
-			const label = ( caps || pill ) && ! hooks.isColumnLabel( e ) && v( 'label', { block: R.label?.block } );
+			const label = ! hooks.isColumnLabel( e ) && byWidth( kickerLook( e ), 'label', { block: R.label?.block } );
 			if ( label ) {
 				return label;
 			}
 			return titlesCard( e ) ? v( 'cardTitle', { block: R.cardTitle?.block } ) : null;
 		},
 		// The bold, larger first text of a card (not a link) titles it.
-		( { e, st } ) => ( headsCard( e, st ) ? v( 'cardHeading', { block: R.cardHeading?.block } ) : null ),
+		( { e } ) => byWidth( headsCard( e ), 'cardHeading', { block: R.cardHeading?.block } ),
 	];
 
 	// Whether an ancestor in the element's template parent chain is a form element (a `<form>`, its real tag).
@@ -659,29 +666,29 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// The state keys a button or link's click handler (a renderVals key of its component) writes with an opening value, a
 	// toggle included (lib/skeleton-handler-opens.mjs); an empty Set for any other element or a client with no draft folder.
 	const handlerKeys = ( e ) => ( [ 'a', 'button' ].includes( e.tag ) && facts.repo && facts.client
-		? handlerOpens( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: view.entry( e )?.template.component, handler: handlerOf( e ) } )
+		? handlerOpens( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: view.entry( e )?.template.component, handler: read.handler( e ) } )
 		: new Set() );
 	// The modals the page map holds as `sgs_modal` rows (lib/skeleton-opener.mjs), and the one a button or link opens: its click
 	// handler (a renderVals key of its component) writes the state one of the modal's surfaces.json states holds, a key at true or
 	// the very literal written (lib/skeleton-handler-opens.mjs::opensOnWrites). The modal's own surface opens nothing of itself.
 	const modals = R.modalOpener ? modalTargets( { pageMap: surface.pageMap, surfaces: view.surfaces } ).filter( ( t ) => t.surface.id !== scope?.id ) : [];
 	const opensModal = ( e ) => {
-		if ( ! modals.length || ! [ 'a', 'button' ].includes( e.tag ) || ! handlerOf( e ) || ! facts.repo || ! facts.client ) {
+		if ( ! modals.length || ! [ 'a', 'button' ].includes( e.tag ) || ! read.handler( e ) || ! facts.repo || ! facts.client ) {
 			return null;
 		}
-		const written = handlerWrites( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: view.entry( e )?.template.component, handler: handlerOf( e ) } );
+		const written = handlerWrites( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: view.entry( e )?.template.component, handler: read.handler( e ) } );
 		return modals.find( ( t ) => opensOnWrites( t.surface, written ) ) ?? null;
 	};
 	// The state keys a button or link's click handler writes a falsy value to (lib/skeleton-handler-opens.mjs::handlerCloses).
 	const closeKeys = ( e ) => ( facts.repo && facts.client
-		? handlerCloses( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: view.entry( e )?.template.component, handler: handlerOf( e ) } )
+		? handlerCloses( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: view.entry( e )?.template.component, handler: read.handler( e ) } )
 		: new Set() );
 	// The draft's own close control of a drawer surface: a button or link below the root whose click handler writes a falsy
 	// value to a state key the drawer's own surfaces.json record opens on (rules.drawerClose).
 	const ownDrawer = () => ( scope?.id ? view.surfaces[ scope.id ] : null );
 	const closesOwnDrawer = ( e ) => {
 		const own = ownDrawer();
-		return !! own && e !== m.root && [ 'a', 'button' ].includes( e.tag ) && !! handlerOf( e ) && opensOn( own, closeKeys( e ) );
+		return !! own && e !== m.root && [ 'a', 'button' ].includes( e.tag ) && !! read.handler( e ) && opensOn( own, closeKeys( e ) );
 	};
 	// Whether an element sits in the drawer's top row: the nearest element above it that holds the drawer's own close
 	// control is not the surface root and holds no navigation (the drawer's body), so the element shares the close's row.
@@ -716,7 +723,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// The form opener a button or link runs, as the link it becomes: the page's form with the control's fields in the query. A field is
 	// the same on every copy (a literal), or the words of the element that prints the item path in the control's own loop copy.
 	const opensForm = ( e ) => {
-		const handler = handlerOf( e );
+		const handler = read.handler( e );
 		if ( ! R.formPrefillOpener || ! handler || ! [ 'a', 'button' ].includes( e.tag ) || ! facts.repo || ! facts.client ) {
 			return null;
 		}
@@ -741,7 +748,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		if ( undefined === frameParts ) {
 			const own = scope?.id ? view.surfaces[ scope.id ] : null;
 			frameParts = R.modalFrame && 'modal' === own?.kind
-				? modalFrameParts( { m, closeKeysOf: ( e ) => ( [ 'a', 'button' ].includes( e.tag ) && handlerOf( e ) ? closeKeys( e ) : new Set() ), closes: ( keys ) => closesOn( own, keys ) } )
+				? modalFrameParts( { m, closeKeysOf: ( e ) => ( [ 'a', 'button' ].includes( e.tag ) && read.handler( e ) ? closeKeys( e ) : new Set() ), closes: ( keys ) => closesOn( own, keys ) } )
 				: null;
 		}
 		return frameParts;
@@ -754,7 +761,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// A button or link that opens a drawer surface: its click handler writes a state key one of the drawer's surfaces.json
 	// states holds at true, or the handler is named in the drawer's recorded opener words.
 	const opensDrawer = ( e ) => {
-		const h = handlerOf( e );
+		const h = read.handler( e );
 		if ( ! h || ! [ 'a', 'button' ].includes( e.tag ) ) {
 			return false;
 		}
@@ -809,7 +816,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const drawerMissing = drawer ? drawer.notes.map( ( why ) => ( { key: m.root.key, line: 'The shop filter drawer: a full-viewport sheet, fade, locked page scroll and sticky footer', why } ) ) : [];
 	// A surface the page map holds as an sgs_choice_flow row: what the flow holds, read from the fact record.
 	const role = surface.role ?? null;
-	const flow = R.choiceFlow && 'choiceFlow' === role?.role ? choiceFlowModel( { view, rootKey: view.entry( m.root )?.template.key ?? null, R: R.choiceFlow, formControl: R.formControl, brands: facts.brands || [], surfaceKind: surface.kind, parts: scope?.surfaceParts ?? [] } ) : null;
+	// The catalogue product it sells (lib/flow-product.mjs::flowSale through `surface.saleOf( component )`) binds its product-option steps.
+	const flowRoot = view.entry( m.root )?.template ?? null;
+	const flow = R.choiceFlow && 'choiceFlow' === role?.role ? choiceFlowModel( { view, rootKey: flowRoot?.key ?? null, R: R.choiceFlow, formControl: R.formControl, brands: facts.brands || [], surfaceKind: surface.kind, parts: scope?.surfaceParts ?? [], sale: flowRoot && surface.saleOf ? surface.saleOf( flowRoot.component ) : null } ) : null;
 	const STRUCTURES = [
 		// A choice flow's root is sgs/choice-flow, whatever its surfaces.json kind (a modal, a form): the flow draws its frame, and
 		// its steps are composed from the record (lib/skeleton-choice-flow-tree.mjs), so the draft elements are absorbed.
@@ -961,9 +970,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// The frame that only clips or fades a marquee track goes: the strip draws its own overflow and edge fade.
 		( { e, kidsB } ) => ( ! m.words( e ) && 1 === kidsB.length && loops( kidsB[ 0 ] ) && desc( kidsB[ 0 ] ).some( isMedia ) ? v( 'marqueeFrame', { action: 'unwrap' } ) : null ),
 		// A wrapper that only aligns or spaces its content (text-align, padding, margin) goes: the blocks around and inside
-		// it align and pad themselves. Anything that paints (a background, border, shadow), positions or lays out stays.
+		// it align and pad themselves. Anything that paints (a background, border, shadow), positions or lays out stays. A
+		// property the template binds to a script value (`padding: {{ pad }}`) is declared as much as a written one.
 		( { e, st, kidsB, parentBlock } ) => {
-			const props = Object.keys( st );
+			const props = [ ...new Set( [ ...Object.keys( st ), ...read.bound( e ) ] ) ];
 			const only = new Set( R.alignWrapper?.properties || [] );
 			// A margin on a wrapper that follows a sibling is the gap between the two blocks, not spacing inside the wrapper:
 			// unwrapping it would lose that gap, so the wrapper stays.
@@ -989,7 +999,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 
 	// The verdict for one element, or null.
 	const ruleFor = ( e, parentBlock = null ) => {
-		const x = { e, st: declared( e ), text: all( e ), kidsB: m.blockKids( e ), parentBlock };
+		const x = { e, st: read.declared( e ), text: all( e ), kidsB: m.blockKids( e ), parentBlock };
 		for ( const rule of [ modalFrameRule, ...STRUCTURES, ...RULES ] ) {
 			const out = rule( x );
 			if ( out ) {

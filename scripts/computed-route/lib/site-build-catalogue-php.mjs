@@ -49,8 +49,10 @@ $sgs_variesby = function ( $value ) {
 `;
 
 // The read: per product { draftId, id, how, fixture, type, status, sku, price, image, gallery, categories, brand, rrp,
-// draftMeta, photoToCome (the `_sgs_photo_to_come` marker), attributes (pa_ slugs), variesBy (per attribute taxonomy,
+// draftMeta, photoToCome (the `_sgs_photo_to_come` marker), attributes (pa_ slugs), attributeDetail (per taxonomy
+// attribute, whether it creates variations and its term names), variesBy (per attribute taxonomy,
 // the `_sgs_variesby_value` of each of the product's terms, '' for none, as the preflight reads it), variations (SKUs),
+// variationPrices (each variation's regular price by SKU),
 // permalink, facets (per facet slug, its term names) }, every image's attachment id, whether the product card shows the
 // photo-to-come attachment as a photo (includes/product-card-no-photo.php::sgs_product_card_has_real_image; null when the
 // site lacks it or the attachment), every facet's attribute (lib/site-build-catalogue-facets.mjs) and the site's
@@ -68,22 +70,32 @@ foreach ( $in as $p ) {
 	if ( $id ) {
 		$wc = wc_get_product( $id );
 		$attrs = array();
+		$detail = array();
 		$vb = array();
 		foreach ( $wc ? $wc->get_attributes() : array() as $tax => $a ) {
 			$attrs[] = (string) $tax;
+			if ( $a->is_taxonomy() ) {
+				$names = wc_get_product_terms( $id, $tax, array( 'fields' => 'names' ) );
+				$detail[ $tax ] = array( 'variation' => (bool) $a->get_variation(), 'terms' => is_wp_error( $names ) ? array() : array_values( $names ) );
+			}
 			if ( taxonomy_exists( $tax ) ) {
 				$vb[ $tax ] = array();
 				foreach ( wc_get_product_terms( $id, $tax, array( 'fields' => 'ids' ) ) as $tid ) { $vb[ $tax ][] = $sgs_variesby( get_term_meta( $tid, '_sgs_variesby_value', true ) ); }
 			}
 		}
 		$vars = array();
-		foreach ( $wc ? $wc->get_children() : array() as $vid ) { $vars[] = (string) get_post_meta( $vid, '_sku', true ); }
+		$var_prices = array();
+		foreach ( $wc ? $wc->get_children() : array() as $vid ) {
+			$vsku = (string) get_post_meta( $vid, '_sku', true );
+			$vars[] = $vsku;
+			$var_prices[ $vsku ] = (string) get_post_meta( $vid, '_regular_price', true );
+		}
 		$cats = wp_get_object_terms( $id, 'product_cat', array( 'fields' => 'names' ) );
 		$brand = taxonomy_exists( 'product_brand' ) ? wp_get_object_terms( $id, 'product_brand', array( 'fields' => 'names' ) ) : array();
 		$row += array( 'fixture' => $sgs_is_fixture( $id ), 'type' => $wc ? $wc->get_type() : get_post_type( $id ), 'status' => get_post_status( $id ), 'sku' => (string) get_post_meta( $id, '_sku', true ),
 			'price' => $wc ? (string) $wc->get_regular_price() : '', 'image' => (int) get_post_thumbnail_id( $id ), 'gallery' => $wc ? count( $wc->get_gallery_image_ids() ) : 0,
 			'categories' => is_wp_error( $cats ) ? array() : $cats, 'brand' => is_wp_error( $brand ) ? array() : $brand, 'rrp' => (string) get_post_meta( $id, '_sgs_rrp', true ),
-			'draftMeta' => (string) get_post_meta( $id, '_sgs_draft_product', true ), 'photoToCome' => '' !== (string) get_post_meta( $id, '_sgs_photo_to_come', true ), 'attributes' => $attrs, 'variesBy' => (object) $vb, 'variations' => $vars, 'permalink' => (string) get_permalink( $id ) );
+			'draftMeta' => (string) get_post_meta( $id, '_sgs_draft_product', true ), 'photoToCome' => '' !== (string) get_post_meta( $id, '_sgs_photo_to_come', true ), 'attributes' => $attrs, 'attributeDetail' => (object) $detail, 'variesBy' => (object) $vb, 'variations' => $vars, 'variationPrices' => (object) $var_prices, 'permalink' => (string) get_permalink( $id ) );
 		$row['facets'] = $sgs_product_facets( $id );
 	}
 	$out[] = $row;
@@ -185,8 +197,13 @@ foreach ( $steps as $s ) {
 	}
 	if ( '' === (string) $wc->get_regular_price() && 'simple' === $p['type'] ) { $wc->set_regular_price( (string) $p['price'] ); }
 	$taxes = array();
-	if ( ! $wc->get_attributes() && $p['attributes'] && $wc->is_type( $p['type'] ) ) {
+	// A product the catalogue made (its SKU) takes the record's attributes whatever it holds, keeping its filter attributes;
+	// another product keeps its own.
+	if ( ( $ours || ! $wc->get_attributes() ) && $p['attributes'] && $wc->is_type( $p['type'] ) ) {
 		$list = array();
+		foreach ( $wc->get_attributes() as $tax => $kept ) {
+			if ( in_array( $tax, $facet_tax, true ) ) { $list[ $tax ] = $kept; }
+		}
 		$defaults = array();
 		foreach ( $p['attributes'] as $a ) {
 			$tax = $attribute( $a['label'], $a['slug'] );
@@ -204,7 +221,7 @@ foreach ( $steps as $s ) {
 			$attr->set_name( $tax );
 			$attr->set_options( $ids );
 			$attr->set_visible( true );
-			$attr->set_variation( true );
+			$attr->set_variation( ! empty( $a['variation'] ) );
 			$list[ $tax ] = $attr;
 			$taxes[ $a['slug'] ] = $tax;
 		}
@@ -258,7 +275,15 @@ foreach ( $steps as $s ) {
 		$have = array();
 		foreach ( $wc->get_children() as $vid ) { $have[ (string) get_post_meta( $vid, '_sku', true ) ] = $vid; }
 		foreach ( $p['variations'] as $v ) {
-			if ( isset( $have[ $v['sku'] ] ) ) { continue; }
+			if ( isset( $have[ $v['sku'] ] ) ) {
+				$va = wc_get_product( $have[ $v['sku'] ] );
+				if ( $ours && $va && (float) $va->get_regular_price() !== (float) $v['price'] ) {
+					$va->set_regular_price( (string) $v['price'] );
+					$va->save();
+					$done[] = $p['draftId'] . ': variation ' . $v['sku'] . ' price ' . $v['price'];
+				}
+				continue;
+			}
 			$va = new WC_Product_Variation();
 			$va->set_parent_id( $id );
 			$va->set_sku( $v['sku'] );
@@ -280,6 +305,13 @@ foreach ( $steps as $s ) {
 					if ( $o['badge'] ) { update_post_meta( $vid, '_sgs_discount_label', $o['badge'] ); }
 				}
 			}
+		}
+		// A variation the record no longer has goes from a product the catalogue made.
+		$want = array_map( function ( $v ) { return $v['sku']; }, $p['variations'] );
+		foreach ( $ours ? $have : array() as $vsku => $vid ) {
+			if ( in_array( (string) $vsku, $want, true ) ) { continue; }
+			$va = wc_get_product( $vid );
+			if ( $va ) { $va->delete( true ); $done[] = $p['draftId'] . ': variation ' . $vsku . ' deleted'; }
 		}
 		WC_Product_Variable::sync( $id );
 	}

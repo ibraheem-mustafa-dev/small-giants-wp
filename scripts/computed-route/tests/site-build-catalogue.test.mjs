@@ -6,10 +6,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 import { readCatalogue } from '../lib/catalogue-read.mjs';
-import { PHOTO_TO_COME, catalogueImages, planCatalogue, recordSite, runCatalogue, tallyCatalogue } from '../lib/site-build-catalogue.mjs';
+import { PHOTO_TO_COME, catalogueImages, heldDraft, planCatalogue, recordSite, runCatalogue, tallyCatalogue } from '../lib/site-build-catalogue.mjs';
 import { catalogueApplyPhp, catalogueStatePhp, productBaseFlushPhp } from '../lib/site-build-catalogue-php.mjs';
 import { linkContext, resolveDraftLink, linkWrite } from '../lib/draft-link.mjs';
 import { repoWith } from './fixtures/catalogue/repo.mjs';
+import { FLOW_ROWS, withFlow } from './fixtures/catalogue/flow.mjs';
+import { spawnSync } from 'node:child_process';
 
 const ROWS = [ { route: 'Shop.dc.html', slug: 'shop', postType: 'shop', collection: 'live' }, { route: 'Item.dc.html', slug: 'product', postType: 'product', collection: 'live', template: 'single-product' } ];
 const setup = () => {
@@ -349,4 +351,77 @@ test( 'product base: a site that cannot call itself passes on the stored rules a
 	const same = baseRun( { repo, catalogue, want: 'product', flush: { ...BASE_OK, rules: 0 } } );
 	assert.deepEqual( same.calls, [ 'read', 'write', 'read' ] );
 	assert.equal( same.code, 0 );
+} );
+
+test( 'MUST FAIL (RC16): each attribute is written as a variation only when it creates variations; only those decide a held draft and are named as variations', () => {
+	const { repo, catalogue } = setup();
+	assert.match( writeOf( repo, catalogue ), /\$attr->set_variation\( ! empty\( \$a\['variation'\] \) \);/ );
+	assert.equal( heldDraft( { type: 'variable', attributes: [ { variation: true, variesBy: null }, { variation: false, variesBy: 'color' } ] } ), true, 'an answer attribute\'s axis never publishes the variations' );
+	const jar = catalogue.products[ 0 ];
+	const answered = { ...jar, attributes: jar.attributes.map( ( a ) => ( 'grain' === a.key ? { ...a, variation: false } : a ) ), variations: jar.variations.filter( ( v ) => 'Fine set' === v.options.grain ) };
+	const plan = planCatalogue( { ...catalogue, products: [ answered ] }, site( [ { draftId: 'jar', id: 0 } ] ) );
+	assert.match( plan.actions[ 0 ].say, /price 4, 2 variations of Pack size \(6\/12\), answer attributes Grain \(Fine set\/Coarse set\),/ );
+	// Negative control: a variation axis with a variesBy value publishes; a simple product is never held; with no answer
+	// attribute the plan names none.
+	assert.equal( heldDraft( { type: 'variable', attributes: [ { variation: true, variesBy: 'size' }, { variation: false, variesBy: null } ] } ), false );
+	assert.equal( heldDraft( { type: 'simple', attributes: [ { variation: false, variesBy: null } ] } ), false );
+	assert.doesNotMatch( planCatalogue( catalogue, site( [ { draftId: 'jar', id: 0 } ] ) ).actions[ 0 ].say, /answer attributes/ );
+} );
+
+// What a product carries on the site when it was made from a record: each attribute's role and terms, each variation's price.
+const madeFrom = ( p ) => ( {
+	attributes: [ ...p.attributes.map( ( a ) => `pa_${ a.slug }` ), ...Object.keys( p.facets ).map( ( k ) => `pa_${ k }` ) ],
+	attributeDetail: Object.fromEntries( p.attributes.map( ( a ) => [ `pa_${ a.slug }`, { variation: a.variation, terms: a.options.map( ( o ) => o.term ) } ] ) ),
+	variations: p.variations.map( ( v ) => v.sku ), variationPrices: Object.fromEntries( p.variations.map( ( v ) => [ v.sku, String( v.price ) ] ) ),
+} );
+
+test( 'MUST FAIL: a product the catalogue made (its SKU) is reconciled to its record: attribute roles and terms, a gone attribute, gone variations and changed prices', () => {
+	const repo = repoWith( 'shared', withFlow );
+	const now = readCatalogue( { repo, client: 'demo', rows: FLOW_ROWS } ).catalogue;
+	const before = readCatalogue( { repo, client: 'demo', rows: ROWS } ).catalogue;
+	const jar = now.products[ 0 ];
+	const old = before.products[ 0 ];
+	// The site holds the jar as the record without the flow made it: grain a variation axis, no toppings, 4 variations.
+	const held = { ...madeFrom( old ), attributeDetail: { ...madeFrom( old ).attributeDetail, 'pa_gone': { variation: true, terms: [ 'x', 'y' ] } }, variationPrices: { ...madeFrom( old ).variationPrices, 'sgs-draft-jar-6-fine-set': '3.5' } };
+	const plan = planCatalogue( now, site( [ found( jar, held ) ] ) );
+	assert.equal( plan.actions[ 0 ].action, 'complete' );
+	assert.equal( plan.actions[ 0 ].say, 'complete jar: product 40 (found by sku) lacks 2 of 2 variations, pa_grain as an answer attribute, attribute pa_top, the removal of attribute pa_gone, the removal of 4 variation(s) the record no longer has' );
+	const priced = planCatalogue( now, site( [ found( jar, { ...madeFrom( jar ), variationPrices: { 'sgs-draft-jar-6': '4', 'sgs-draft-jar-12': '7' } } ) ] ) );
+	assert.match( priced.actions[ 0 ].say, /lacks the price of 1 variation\(s\) \(sgs-draft-jar-12 7\.5\)/ );
+	const terms = planCatalogue( now, site( [ found( jar, { ...madeFrom( jar ), attributeDetail: { ...madeFrom( jar ).attributeDetail, 'pa_top': { variation: false, terms: [ 'Nuts' ] } } } ) ] ) );
+	assert.match( terms.actions[ 0 ].say, /lacks pa_top terms Nuts\/Seeds\/Comb/ );
+	for ( const held of [ [ 'Nuts', 'Seeds', 'Honey' ], [ 'Nuts', 'Seeds', 'Comb', 'Honey' ] ] ) {
+		const other = planCatalogue( now, site( [ found( jar, { ...madeFrom( jar ), attributeDetail: { ...madeFrom( jar ).attributeDetail, 'pa_top': { variation: false, terms: held } } } ) ] ) );
+		assert.match( other.actions[ 0 ].say, /lacks pa_top terms Nuts\/Seeds\/Comb/, held.join( '/' ) );
+	}
+	// The write takes the record's attributes for a product it made, keeps its filter attributes, sets changed prices and
+	// deletes gone variations, and only for its own products; the PHP parses.
+	const write = catalogueApplyPhp( [ { draftId: 'jar', product: jar, image: null, gallery: [] } ], {}, {}, null, now );
+	assert.match( write, /if \( \( \$ours \|\| ! \$wc->get_attributes\(\) \) && \$p\['attributes'\]/ );
+	assert.match( write, /if \( in_array\( \$tax, \$facet_tax, true \) \) \{ \$list\[ \$tax \] = \$kept; \}/ );
+	assert.match( write, /foreach \( \$ours \? \$have : array\(\) as \$vsku => \$vid \)/ );
+	assert.match( write, /if \( \$ours && \$va && \(float\) \$va->get_regular_price\(\) !== \(float\) \$v\['price'\] \)/ );
+	const lint = spawnSync( 'php', [ '-l' ], { input: `<?php
+${ write }
+`, encoding: 'utf8' } );
+	assert.equal( lint.status, 0, lint.stdout + lint.stderr );
+	const state = catalogueStatePhp( [ { draftId: 'jar', sku: jar.sku, slug: jar.slug } ], {}, now );
+	assert.match( state, /'attributeDetail' => \(object\) \$detail/ );
+	assert.match( state, /'variationPrices' => \(object\) \$var_prices/ );
+	assert.equal( spawnSync( 'php', [ '-l' ], { input: `<?php
+${ state }
+`, encoding: 'utf8' } ).status, 0 );
+} );
+
+test( 'NEGATIVE: a product made as its record plans nothing; a product found another way (not its SKU) is never reconciled', () => {
+	const repo = repoWith( 'shared', withFlow );
+	const now = readCatalogue( { repo, client: 'demo', rows: FLOW_ROWS } ).catalogue;
+	const old = readCatalogue( { repo, client: 'demo', rows: ROWS } ).catalogue.products[ 0 ];
+	const jar = now.products[ 0 ];
+	assert.equal( planCatalogue( now, site( [ found( jar, madeFrom( jar ) ) ] ) ).actions[ 0 ].say, 'exists jar: product 40' );
+	// Its filter attribute (a facet) is the facets' own, never removed.
+	const filtered = { ...madeFrom( jar ), attributeDetail: { ...madeFrom( jar ).attributeDetail, 'pa_origin': { variation: false, terms: [ 'hills' ] } } };
+	assert.equal( planCatalogue( now, site( [ found( jar, filtered ) ] ) ).actions[ 0 ].say, 'exists jar: product 40' );
+	const other = planCatalogue( now, site( [ found( jar, { ...madeFrom( old ), sku: 'SEEDED', how: 'slug' } ) ] ) );
+	assert.doesNotMatch( other.actions[ 0 ].say, /removal|as an answer|attribute pa_|price of/ );
 } );

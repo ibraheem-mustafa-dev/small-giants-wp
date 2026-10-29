@@ -8,8 +8,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts, decisionsProblems } from '../lib/skeleton-facts.mjs';
-import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
 import { hexOf, timedPopupMissing } from '../lib/skeleton-fixed-controls.mjs';
+import { proposeFixture } from './fixtures/fixture-facts.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -23,7 +23,7 @@ const el = ( key, parentKey, tag, words = '', x = {} ) => ( { key, parentKey, de
 const FIXED = every( 'fixed' );
 const STATIC = every( 'static' );
 const inv = ( elements ) => ( { generated: 'fixture', source: 'fixture', root: 'x', checks: { rootKey: 'Root/1#0' }, elements } );
-const run = ( elements ) => proposeSkeleton( { inventory: inv( elements ), facts: facts(), surface: 'page', surfaceKind: 'page', surfaceName: 'page', db } );
+const run = ( elements ) => proposeFixture( { inventory: inv( elements ), facts: facts(), surface: 'page', surfaceKind: 'page', surfaceName: 'page', db } );
 const page = ( ...kids ) => [ el( 'Root/1#0', null, 'section', '', { depth: 0 } ), el( 'Root/2#0', 'Root/1#0', 'p', 'Welcome to the shop.' ), ...kids ];
 const row = ( r, tpl ) => r.proposal.rows.find( ( x ) => `Root/${ tpl }#0` === x.key );
 
@@ -94,7 +94,7 @@ test( 'MUST FAIL: a popup that opens after a delay or on exit intent is a missin
 } );
 
 // A modal surface whose record says how it opens: the surfaces.json opener words reach the proposal as the root row's missing feature.
-const modalRun = ( openedBy, kind = 'modal' ) => proposeSkeleton( {
+const modalRun = ( openedBy, kind = 'modal' ) => proposeFixture( {
 	inventory: inv( [ el( 'Root/1#0', null, 'div', '', { depth: 0, attrs: { role: 'dialog' } } ), el( 'Root/2#0', 'Root/1#0', 'p', 'Join our newsletter' ) ] ), facts: facts(), surface: kind, surfaceKind: kind, surfaceName: 'Newsletter', db,
 	factRecord: { surfaces: { 'S-9': { id: 'S-9', kind, name: 'Newsletter', parent: null, roots: [] } }, elements: {}, sources: null }, openers: { 'S-9': openedBy }, surfaceId: 'S-9',
 } );

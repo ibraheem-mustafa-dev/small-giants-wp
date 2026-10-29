@@ -9,8 +9,8 @@ import { fileURLToPath } from 'url';
 import { linkContext, resolveDraftLink, linkWrite, elementFile } from '../lib/draft-link.mjs';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
-import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
 import { handoverProblems } from '../lib/fill-handover.mjs';
+import { proposeFixture } from './fixtures/fixture-facts.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const page = ( route, slug, x = {} ) => ( { route, slug, title: slug, parent: null, template: 'page', postType: 'page', ...x } );
@@ -72,12 +72,12 @@ const VARIANTS = [
 	[ 'files', 'order confirmation (no page)', 'Confirmation.dc.html', FILES, {}, [ 'unresolved', 'content-page' ] ],
 	[ 'files', 'page file no row holds', 'Gone.dc.html', FILES, {}, [ 'unresolved', 'content-page' ] ],
 	[ 'files', 'in-page anchor', '#reviews', FILES, {}, [ 'anchor', '#reviews' ] ],
-	[ 'state-page', 'go() with a literal page', '#', STATE, { file: 'Root.dc.html', handler: '{{ goShop }}' }, [ 'address', '/shop/' ] ],
-	[ 'state-page', 'go() to a route folded into the account row', '#', STATE, { file: 'Root.dc.html', handler: '{{ goOrders }}' }, [ 'address', '/my-account/' ] ],
-	[ 'state-page', 'go() per loop item (two pages)', '#', STATE, { file: 'Root.dc.html', handler: '{{ item.go }}' }, [ 'none', null ] ],
-	[ 'state-page', 'in-page control', '#', STATE, { file: 'Root.dc.html', handler: '{{ openBag }}' }, [ 'none', null ] ],
-	[ 'state-page', 'go() to no route', '#', STATE, { file: 'Root.dc.html', handler: '{{ goGone }}' }, [ 'none', null ] ],
-	[ 'state-page', 'go() of another draft file', '#', STATE, { file: 'Other.dc.html', handler: '{{ goShop }}' }, [ 'none', null ] ],
+	[ 'state-page', 'go() with a literal page', '#', STATE, { file: 'Root.dc.html', handler: 'goShop' }, [ 'address', '/shop/' ] ],
+	[ 'state-page', 'go() to a route folded into the account row', '#', STATE, { file: 'Root.dc.html', handler: 'goOrders' }, [ 'address', '/my-account/' ] ],
+	[ 'state-page', 'go() per loop item (two pages)', '#', STATE, { file: 'Root.dc.html', handler: 'item.go' }, [ 'none', null ] ],
+	[ 'state-page', 'in-page control', '#', STATE, { file: 'Root.dc.html', handler: 'openBag' }, [ 'none', null ] ],
+	[ 'state-page', 'go() to no route', '#', STATE, { file: 'Root.dc.html', handler: 'goGone' }, [ 'none', null ] ],
+	[ 'state-page', 'go() of another draft file', '#', STATE, { file: 'Other.dc.html', handler: 'goShop' }, [ 'none', null ] ],
 	[ 'any', 'web address', 'https://example.org/p?q=1', FILES, {}, [ 'external', 'https://example.org/p?q=1' ] ],
 	[ 'any', 'mailto', 'mailto:hello@example.org', HASH, {}, [ 'external', 'mailto:hello@example.org' ] ],
 	[ 'any', 'tel', 'tel:01000000000', STATE, {}, [ 'external', 'tel:01000000000' ] ],
@@ -95,8 +95,8 @@ test( `the variant table: ${ VARIANTS.length } adapter x shape rows resolve to t
 test( 'a dropped query and an ambiguous handler say so; a loop handler names its pages', () => {
 	assert.equal( resolveDraftLink( 'SignIn.dc.html?mode=register', FILES ).dropped, '?mode=register' );
 	assert.equal( resolveDraftLink( 'Contact.dc.html', FILES ).dropped, undefined );
-	assert.deepEqual( resolveDraftLink( '#', STATE, { file: 'Root.dc.html', handler: '{{ item.go }}' } ).routes, [ 'shop', 'lenses' ] );
-	assert.equal( resolveDraftLink( '#', STATE, { file: 'Root.dc.html', handler: '{{ goGone }}' } ).routes, undefined );
+	assert.deepEqual( resolveDraftLink( '#', STATE, { file: 'Root.dc.html', handler: 'item.go' } ).routes, [ 'shop', 'lenses' ] );
+	assert.equal( resolveDraftLink( '#', STATE, { file: 'Root.dc.html', handler: 'goGone' } ).routes, undefined );
 	assert.match( resolveDraftLink( 'Product.dc.html?id=box', FILES ).why, /"box"/ );
 } );
 
@@ -144,7 +144,7 @@ function inventory( root ) {
 	walk( root, null, 0 );
 	return { checks: {}, source: 'fixture', root: root.tag, generated: 'fixture', elements };
 }
-const propose = ( root, draftLinks ) => proposeSkeleton( { inventory: inventory( root ), facts: facts(), surface: 'fixture', surfaceKind: 'page', surfaceName: 'Fixture', db, factRecord: null, draftLinks } );
+const propose = ( root, draftLinks ) => proposeFixture( { inventory: inventory( root ), facts: facts(), surface: 'fixture', surfaceKind: 'page', surfaceName: 'Fixture', db, factRecord: null, draftLinks } );
 const rowOf = ( r, words ) => r.proposal.rows.find( ( x ) => x.words === words );
 const handovers = ( r ) => {
 	const all = [];
@@ -210,7 +210,7 @@ const SINGLE = linkContext( {
 	routeSlug: { signin: 'my-account', account: 'my-account', lensTabs: 'prescription-lenses' },
 	proposed: [ { route: 'signin', slug: 'my-account', postType: 'page' }, { route: 'lensTabs', slug: 'prescription-lenses', postType: 'page' } ],
 } );
-const proposeSingle = ( root, extra = {} ) => proposeSkeleton( { inventory: inventory( root ), facts: facts(), surface: 'fixture', surfaceKind: 'page', surfaceName: 'Fixture', db, factRecord: null, draftLinks: SINGLE, rootComponent: ENTRY, ...extra } );
+const proposeSingle = ( root, extra = {} ) => proposeFixture( { inventory: inventory( root ), facts: facts(), surface: 'fixture', surfaceKind: 'page', surfaceName: 'Fixture', db, factRecord: null, draftLinks: SINGLE, rootComponent: ENTRY, ...extra } );
 const handlerButton = ( handler, words ) => E( 'button', { words, snippet: `<button sc-camel-on-click="{{ ${ handler } }}" data-dc-tpl="9">${ words }</button>` } );
 
 test( 'MUST FAIL: on a single-file draft a handler is matched under the entry draft\'s real file, so a go() link holds its page (negative control: no entry component leaves it empty)', () => {

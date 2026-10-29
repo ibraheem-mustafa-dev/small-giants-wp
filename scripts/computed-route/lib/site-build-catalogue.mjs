@@ -7,6 +7,10 @@
 //   - apply: creates what is missing and only fills what an existing product lacks (a product the catalogue did not make
 //     keeps its name, price and choices; its variations are made only when it has none), then reads the site again, which
 //     must plan nothing, and records each draft id's product id and permalink in catalogue.json's `sites.<site>`;
+//   - a product the catalogue made (found by its SKU) is brought into line with its record, since the clone owns what it
+//     builds on its test site (Spec 48 R-48-2): its attributes (each a variation attribute or an answer, with the record's
+//     terms; one the record no longer has goes, a filter attribute stays) and its variations (a missing one made, a price
+//     the record changed set, one the record no longer has deleted). A product found another way is never reconciled;
 //   - the product base the draft's manifest declares is set when the site's differs; a product's address is then the
 //     one the link resolver writes (lib/draft-link.mjs);
 //   - each facet (a filter the draft's shop offers) is a global attribute with its terms, and each product's terms a
@@ -66,10 +70,11 @@ export function catalogueImages( repo, catalogue ) {
 }
 
 const keyOf = ( img ) => ( img ? img.url || img.asset : null );
+const attrSay = ( a ) => `${ a.label } (${ a.options.map( ( o ) => o.term ).join( '/' ) })`;
 
-// A variable product SGS's product preflight will not publish: none of its attributes is a Google variesBy axis (the
-// catalogue's `no-variesby` gap row). It is made and kept a draft.
-export const heldDraft = ( p ) => 'variable' === p.type && p.attributes.length > 0 && ! p.attributes.some( ( a ) => a.variesBy );
+// A variable product SGS's product preflight will not publish: none of the attributes that create its variations is a
+// Google variesBy axis (the catalogue's `no-variesby` gap row). It is made and kept a draft.
+export const heldDraft = ( p ) => 'variable' === p.type && ! p.attributes.some( ( a ) => a.variation && a.variesBy );
 const products = ( catalogue ) => catalogue.products.filter( ( p ) => ! ( catalogue.dropped || [] ).includes( p.draftId ) );
 
 // What one found product lacks of its catalogue record (names, for the plan line).
@@ -106,6 +111,7 @@ function missing( p, s, state, catalogue ) {
 		const lack = p.variations.filter( ( v ) => ! s.variations.includes( v.sku ) );
 		lack.length && out.push( `${ lack.length } of ${ p.variations.length } variations` );
 	}
+	ours && out.push( ...reconcileLack( p, s, catalogue ) );
 	for ( const a of p.attributes.filter( ( x ) => x.variesBy ) ) {
 		const terms = ( s.variesBy || {} )[ `pa_${ a.slug }` ];
 		if ( terms && terms.some( ( v ) => '' === v ) ) {
@@ -115,6 +121,37 @@ function missing( p, s, state, catalogue ) {
 	out.push( ...facetLack( catalogue, p, s ).map( ( f ) => `filter ${ f }` ) );
 	if ( 'publish' !== s.status && ! heldDraft( p ) ) {
 		out.push( `publishing (now ${ s.status })` );
+	}
+	return out;
+}
+
+// What a product the catalogue made (its SKU) holds that its record no longer says: attributes in the wrong role, with other
+// terms or no longer in the record (a filter attribute is the facets' own), variations whose price changed or that the
+// record no longer has. Read from the state's `attributeDetail` and `variationPrices`.
+function reconcileLack( p, s, catalogue ) {
+	const out = [];
+	const detail = s.attributeDetail || {};
+	const own = new Set( p.attributes.map( ( a ) => `pa_${ a.slug }` ) );
+	// A read with no attribute detail (an older state) reconciles the variations only.
+	const attrs = s.attributeDetail ? p.attributes : [];
+	const filters = new Set( [ ...writtenFacets( catalogue ).map( ( f ) => `pa_${ f.slug }` ), ...Object.keys( p.facets || {} ).map( ( k ) => `pa_${ k }` ) ] );
+	for ( const a of attrs ) {
+		const d = detail[ `pa_${ a.slug }` ];
+		const terms = a.options.map( ( o ) => o.term );
+		if ( ! d ) {
+			out.push( `attribute pa_${ a.slug }` );
+			continue;
+		}
+		d.variation !== a.variation && out.push( `pa_${ a.slug } as ${ a.variation ? 'a variation' : 'an answer' } attribute` );
+		( d.terms.length !== terms.length || terms.some( ( t ) => ! d.terms.includes( t ) ) ) && out.push( `pa_${ a.slug } terms ${ terms.join( '/' ) }` );
+	}
+	const gone = Object.keys( detail ).filter( ( t ) => ! own.has( t ) && ! filters.has( t ) );
+	gone.length && out.push( `the removal of attribute${ gone.length > 1 ? 's' : '' } ${ gone.join( ', ' ) }` );
+	if ( 'variable' === p.type && s.type === p.type ) {
+		const extra = s.variations.filter( ( sku ) => ! p.variations.some( ( v ) => v.sku === sku ) );
+		extra.length && out.push( `the removal of ${ extra.length } variation(s) the record no longer has` );
+		const priced = p.variations.filter( ( v ) => undefined !== s.variationPrices?.[ v.sku ] && Number( s.variationPrices[ v.sku ] ) !== v.price );
+		priced.length && out.push( `the price of ${ priced.length } variation(s) (${ priced.map( ( v ) => `${ v.sku } ${ v.price }` ).join( ', ' ) })` );
 	}
 	return out;
 }
@@ -136,7 +173,7 @@ export function planCatalogue( catalogue, state ) {
 		const address = productAddress( catalogue, p );
 		if ( ! s.id ) {
 			const imgs = [ p.image, ...p.gallery ].filter( Boolean ).filter( ( i ) => ! state.images[ keyOf( i ) ] ).length;
-			actions.push( { ...step, action: 'create', placeholder: step.photoToCome, say: `create ${ p.draftId } (${ p.sku }) ${ p.type } "${ p.name }" at ${ address }: price ${ p.price }${ p.rrp ? `, RRP ${ p.rrp }` : '' }${ p.variations.length ? `, ${ p.variations.length } variations of ${ p.attributes.map( ( a ) => `${ a.label } (${ a.options.map( ( o ) => o.term ).join( '/' ) })` ).join( ' x ' ) }` : '' }${ p.categories.length ? `, categories ${ p.categories.join( ', ' ) }` : '' }${ p.brand ? `, brand ${ p.brand }` : '' }${ p.image ? `, image ${ state.images[ keyOf( p.image ) ] ? `attachment ${ state.images[ keyOf( p.image ) ] }` : p.image.url ? 'to fetch' : 'to upload' }` : `, image photo to come (${ state.images[ PHOTO_TO_COME ] ? `attachment ${ state.images[ PHOTO_TO_COME ] }` : 'to upload' })` }${ imgs ? ` (${ imgs } image file(s) to add)` : '' }` } );
+			actions.push( { ...step, action: 'create', placeholder: step.photoToCome, say: `create ${ p.draftId } (${ p.sku }) ${ p.type } "${ p.name }" at ${ address }: price ${ p.price }${ p.rrp ? `, RRP ${ p.rrp }` : '' }${ p.variations.length ? `, ${ p.variations.length } variations of ${ p.attributes.filter( ( a ) => a.variation ).map( attrSay ).join( ' x ' ) }` : '' }${ p.attributes.some( ( a ) => ! a.variation ) ? `, answer attributes ${ p.attributes.filter( ( a ) => ! a.variation ).map( attrSay ).join( ', ' ) }` : '' }${ p.categories.length ? `, categories ${ p.categories.join( ', ' ) }` : '' }${ p.brand ? `, brand ${ p.brand }` : '' }${ p.image ? `, image ${ state.images[ keyOf( p.image ) ] ? `attachment ${ state.images[ keyOf( p.image ) ] }` : p.image.url ? 'to fetch' : 'to upload' }` : `, image photo to come (${ state.images[ PHOTO_TO_COME ] ? `attachment ${ state.images[ PHOTO_TO_COME ] }` : 'to upload' })` }${ imgs ? ` (${ imgs } image file(s) to add)` : '' }` } );
 			continue;
 		}
 		if ( s.fixture ) {

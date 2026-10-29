@@ -37,7 +37,7 @@ export function makeUnits( ctx ) {
 	// A bullet row that is not a link: a marker (rules.dotMarker) beside one piece of text and nothing else.
 	const markerRow = ( e ) => {
 		const kids = m.blockKids( e );
-		const marker = ( k ) => isMarker( k, m, R.dotMarker, view );
+		const marker = ( k ) => isMarker( k, m, R.dotMarker );
 		return 'a' !== e.tag && ! m.words( e ) && kids.some( marker ) && 1 === kids.filter( ( k ) => ! marker( k ) ).length && kids.every( ( k ) => marker( k ) || ( m.words( k ) && ! m.blockKids( k ).length ) );
 	};
 	// A run of list links: stacked one above the next, or every child of a grid (a list laid out in columns).

@@ -15,7 +15,7 @@
 	{ "file": "lib/skeleton-filter-rail.mjs", "find": ": named( text, filters.categories ) ? 'category'", "replace": ": false ? 'category'", "why": "a category group is not placed" },
 	{ "file": "lib/skeleton-filter-rail.mjs", "find": "text.includes( n ) ).length >= 2;", "replace": "text.includes( n ) ).length >= 1;", "why": "one catalogue name makes a whole filter group" },
 	{ "file": "lib/skeleton-filter-rail.mjs", "find": "c.parentKey === x.group.key && shown( c ) && ! ( c === x.label || under( x.label, c ) ) );", "replace": "c.parentKey === x.group.key && shown( c ) );", "why": "a closed group's own header row reads as open" },
-	{ "file": "lib/skeleton-filter-rail.mjs", "find": "under( c, x.group ) && 'input' === c.tag && 'checkbox' === attr( c, 'type' ).toLowerCase() );", "replace": "under( c, x.group ) && 'input' === c.tag );", "why": "any input makes a checkbox list" },
+	{ "file": "lib/skeleton-filter-rail.mjs", "find": "under( c, x.group ) && 'input' === c.tag && 'checkbox' === attr( m.read, c, 'type' ).toLowerCase() );", "replace": "under( c, x.group ) && 'input' === c.tag );", "why": "any input makes a checkbox list" },
 	{ "file": "lib/skeleton-filter-rail.mjs", "find": "const style = rule.displayStyles[ checkboxes( x ) ? 'checkbox' : 'choice' ];", "replace": "const style = rule.displayStyles.choice;", "why": "a checkbox group becomes chips" },
 	{ "file": "lib/skeleton-filter-rail.mjs", "find": "heading( x, x.facet?.terms?.some( ( t ) => t.swatch ) )", "replace": "heading( x, false )", "why": "a swatch facet loses the swatch look" },
 	{ "file": "lib/skeleton-filter-rail.mjs", "find": "open( x ) && rule.heading.openClass", "replace": "rule.heading.openClass", "why": "every group starts open" },

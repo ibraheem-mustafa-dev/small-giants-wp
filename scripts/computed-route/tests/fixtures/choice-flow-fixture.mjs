@@ -15,7 +15,7 @@ export const facts = ( edit = null ) => {
 };
 
 // A template element: n, tag, parent n, { words, attrs, text: [values] (a text hole), loop: { list n, as } (inside that loop),
-// list: { n } (an sc-for with n items), click (handler), pressed (an aria-pressed state bound to `is<n>`, recorded true or
+// items (an sc-for with that many items; `binds` names the render value its list reads, else `xs`), click (handler), pressed (an aria-pressed state bound to `is<n>`, recorded true or
 // false), rendered: [copies] (inventory copies; none = not rendered) }.
 export const E = ( n, tag, parent, o = {} ) => ( { n, tag, parent, ...o } );
 export function build( list, { ids = {}, statics = null } = {} ) {
@@ -63,10 +63,11 @@ export function build( list, { ids = {}, statics = null } = {} ) {
 			logic[ 'attr:aria-pressed#1' ] = { 1440: { v: [ { t: 'boolean', v: x.pressed } ], n: 1, loop: false } };
 		}
 		if ( 'sc-for' === x.tag ) {
-			holes.push( { id: 'attr:list#0', where: 'attr:list', expr: 'xs', path: 'xs', whole: true } );
+			const list = x.binds || 'xs';
+			holes.push( { id: 'attr:list#0', where: 'attr:list', expr: list, path: list, whole: true } );
 			logic[ 'attr:list#0' ] = { 1440: { v: [ { t: 'array', n: x.items } ], n: 1, loop: false } };
 			attrs.as = x.as;
-			attrs.list = '{{ xs }}';
+			attrs.list = `{{ ${ list } }}`;
 		}
 		const loop = loopOf( x );
 		elements[ key( x.n ) ] = {
@@ -159,6 +160,6 @@ export const FLOW = [
 export const FLOW_ROW = { slug: 'choice-flow-pick', postType: 'sgs_choice_flow', draftId: 'surfaces.json S-09' };
 export const run = ( list, o = {} ) => {
 	const b = build( list, { ids: { 'S-09': { kind: o.kind || 'modal', name: 'Flow', root: list[ 0 ].n } }, statics: o.statics ?? SCHEMA } );
-	return proposeSkeleton( { inventory: b.inventory, facts: o.facts || facts(), surface: 'flow', surfaceKind: o.kind || 'modal', surfaceName: 'Flow', db, factRecord: b.record, openers: {}, pageMap: o.pageMap ?? [ FLOW_ROW ], surfaceId: 'S-09', ...( o.calSettings ? { calSettings: o.calSettings } : {} ), ...( o.calKeys ? { calKeys: o.calKeys } : {} ) } );
+	return proposeSkeleton( { inventory: b.inventory, facts: o.facts || facts(), surface: 'flow', surfaceKind: o.kind || 'modal', surfaceName: 'Flow', db, factRecord: b.record, openers: {}, pageMap: o.pageMap ?? [ FLOW_ROW ], surfaceId: 'S-09', ...( o.saleOf ? { saleOf: o.saleOf } : {} ), ...( o.calSettings ? { calSettings: o.calSettings } : {} ), ...( o.calKeys ? { calKeys: o.calKeys } : {} ) } );
 };
 export const names = ( tree ) => ( JSON.stringify( tree ).match( /"name":"[^"]+"/g ) || [] ).map( ( x ) => x.slice( 8, -1 ) );

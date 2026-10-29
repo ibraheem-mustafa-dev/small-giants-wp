@@ -31,20 +31,20 @@
 	},
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": "return nav && ( realHref( e ) || handlerOf( e ) ) && looksLikeNavLink( e, nav )",
+		"find": "return nav && ( realHref( e ) || read.handler( e ) ) && looksLikeNavLink( e, nav )",
 		"replace": "return nav && looksLikeNavLink( e, nav )",
 		"why": "a link with no destination joins the navigation"
 	},
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": "return nav && ( realHref( e ) || handlerOf( e ) ) && looksLikeNavLink( e, nav )",
-		"replace": "return nav && ( realHref( e ) || handlerOf( e ) )",
+		"find": "return nav && ( realHref( e ) || read.handler( e ) ) && looksLikeNavLink( e, nav )",
+		"replace": "return nav && ( realHref( e ) || read.handler( e ) )",
 		"why": "any link outside the nav joins it, whatever its look"
 	},
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": "return nav && ( realHref( e ) || handlerOf( e ) ) && looksLikeNavLink( e, nav ) ? v( 'navigationLink', { action: 'absorbed', into: nav.key } ) : null;",
-		"replace": "return nav && ( realHref( e ) || handlerOf( e ) ) && looksLikeNavLink( e, nav ) ? v( 'navigationLink', { action: 'absorbed', into: 'Root/1#0' } ) : null;",
+		"find": "return nav && ( realHref( e ) || read.handler( e ) ) && looksLikeNavLink( e, nav ) ? v( 'navigationLink', { action: 'absorbed', into: nav.key } ) : null;",
+		"replace": "return nav && ( realHref( e ) || read.handler( e ) ) && looksLikeNavLink( e, nav ) ? v( 'navigationLink', { action: 'absorbed', into: 'Root/1#0' } ) : null;",
 		"why": "the link is absorbed into the wrong element"
 	},
 	{

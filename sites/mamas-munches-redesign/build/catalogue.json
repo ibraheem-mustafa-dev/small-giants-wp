@@ -89,6 +89,7 @@
           "slug": "pack-size",
           "packSize": true,
           "variesBy": "size",
+          "variation": true,
           "options": [
             {
               "value": 8,
@@ -120,6 +121,7 @@
           "slug": "base",
           "packSize": false,
           "variesBy": null,
+          "variation": false,
           "options": [
             {
               "value": "oat",
@@ -140,10 +142,11 @@
         },
         {
           "key": "chip",
-          "label": "Chip",
+          "label": "Chips",
           "slug": "chip",
           "packSize": false,
           "variesBy": null,
+          "variation": false,
           "options": [
             {
               "value": "milk",
@@ -175,222 +178,115 @@
             }
           ],
           "default": "Milk choc"
+        },
+        {
+          "key": "flav",
+          "label": "Flavours",
+          "slug": "flav",
+          "packSize": false,
+          "variesBy": null,
+          "variation": false,
+          "options": [
+            {
+              "value": "vanilla",
+              "term": "Vanilla",
+              "price": null,
+              "swatch": "#F6E7B8",
+              "badge": null
+            },
+            {
+              "value": "chocolate",
+              "term": "Chocolate",
+              "price": null,
+              "swatch": "#5A3522",
+              "badge": null
+            },
+            {
+              "value": "strawberry",
+              "term": "Strawberry",
+              "price": null,
+              "swatch": "#E8505B",
+              "badge": null
+            },
+            {
+              "value": "mango",
+              "term": "Mango",
+              "price": null,
+              "swatch": "#F5A623",
+              "badge": null
+            },
+            {
+              "value": "banana",
+              "term": "Banana",
+              "price": null,
+              "swatch": "#F4D35E",
+              "badge": null
+            },
+            {
+              "value": "coffee",
+              "term": "Coffee",
+              "price": null,
+              "swatch": "#8A5A3B",
+              "badge": null
+            },
+            {
+              "value": "mint",
+              "term": "Mint",
+              "price": null,
+              "swatch": "#8FD1A8",
+              "badge": null
+            },
+            {
+              "value": "caramel",
+              "term": "Caramel",
+              "price": null,
+              "swatch": "#C98A3A",
+              "badge": null
+            },
+            {
+              "value": "coconut",
+              "term": "Coconut",
+              "price": null,
+              "swatch": "#FFFFFF",
+              "badge": null
+            },
+            {
+              "value": "pistachio",
+              "term": "Pistachio",
+              "price": null,
+              "swatch": "#9DBF6B",
+              "badge": null
+            },
+            {
+              "value": "honey",
+              "term": "Honey",
+              "price": null,
+              "swatch": "#E8B230",
+              "badge": null
+            }
+          ],
+          "default": null
         }
       ],
       "variations": [
         {
-          "sku": "sgs-draft-zookies-8-classic-oat-milk-choc",
+          "sku": "sgs-draft-zookies-8",
           "options": {
-            "pack-size": "8",
-            "base": "Classic oat",
-            "chip": "Milk choc"
+            "pack-size": "8"
           },
           "price": 9.5
         },
         {
-          "sku": "sgs-draft-zookies-8-classic-oat-white-choc",
+          "sku": "sgs-draft-zookies-20",
           "options": {
-            "pack-size": "8",
-            "base": "Classic oat",
-            "chip": "White choc"
-          },
-          "price": 9.5
-        },
-        {
-          "sku": "sgs-draft-zookies-8-classic-oat-dark-choc",
-          "options": {
-            "pack-size": "8",
-            "base": "Classic oat",
-            "chip": "Dark choc"
-          },
-          "price": 9.5
-        },
-        {
-          "sku": "sgs-draft-zookies-8-classic-oat-no-chips",
-          "options": {
-            "pack-size": "8",
-            "base": "Classic oat",
-            "chip": "No chips"
-          },
-          "price": 9.5
-        },
-        {
-          "sku": "sgs-draft-zookies-8-vegan-oat-milk-choc",
-          "options": {
-            "pack-size": "8",
-            "base": "Vegan oat",
-            "chip": "Milk choc"
-          },
-          "price": 9.5
-        },
-        {
-          "sku": "sgs-draft-zookies-8-vegan-oat-white-choc",
-          "options": {
-            "pack-size": "8",
-            "base": "Vegan oat",
-            "chip": "White choc"
-          },
-          "price": 9.5
-        },
-        {
-          "sku": "sgs-draft-zookies-8-vegan-oat-dark-choc",
-          "options": {
-            "pack-size": "8",
-            "base": "Vegan oat",
-            "chip": "Dark choc"
-          },
-          "price": 9.5
-        },
-        {
-          "sku": "sgs-draft-zookies-8-vegan-oat-no-chips",
-          "options": {
-            "pack-size": "8",
-            "base": "Vegan oat",
-            "chip": "No chips"
-          },
-          "price": 9.5
-        },
-        {
-          "sku": "sgs-draft-zookies-20-classic-oat-milk-choc",
-          "options": {
-            "pack-size": "20",
-            "base": "Classic oat",
-            "chip": "Milk choc"
+            "pack-size": "20"
           },
           "price": 21.5
         },
         {
-          "sku": "sgs-draft-zookies-20-classic-oat-white-choc",
+          "sku": "sgs-draft-zookies-40",
           "options": {
-            "pack-size": "20",
-            "base": "Classic oat",
-            "chip": "White choc"
-          },
-          "price": 21.5
-        },
-        {
-          "sku": "sgs-draft-zookies-20-classic-oat-dark-choc",
-          "options": {
-            "pack-size": "20",
-            "base": "Classic oat",
-            "chip": "Dark choc"
-          },
-          "price": 21.5
-        },
-        {
-          "sku": "sgs-draft-zookies-20-classic-oat-no-chips",
-          "options": {
-            "pack-size": "20",
-            "base": "Classic oat",
-            "chip": "No chips"
-          },
-          "price": 21.5
-        },
-        {
-          "sku": "sgs-draft-zookies-20-vegan-oat-milk-choc",
-          "options": {
-            "pack-size": "20",
-            "base": "Vegan oat",
-            "chip": "Milk choc"
-          },
-          "price": 21.5
-        },
-        {
-          "sku": "sgs-draft-zookies-20-vegan-oat-white-choc",
-          "options": {
-            "pack-size": "20",
-            "base": "Vegan oat",
-            "chip": "White choc"
-          },
-          "price": 21.5
-        },
-        {
-          "sku": "sgs-draft-zookies-20-vegan-oat-dark-choc",
-          "options": {
-            "pack-size": "20",
-            "base": "Vegan oat",
-            "chip": "Dark choc"
-          },
-          "price": 21.5
-        },
-        {
-          "sku": "sgs-draft-zookies-20-vegan-oat-no-chips",
-          "options": {
-            "pack-size": "20",
-            "base": "Vegan oat",
-            "chip": "No chips"
-          },
-          "price": 21.5
-        },
-        {
-          "sku": "sgs-draft-zookies-40-classic-oat-milk-choc",
-          "options": {
-            "pack-size": "40",
-            "base": "Classic oat",
-            "chip": "Milk choc"
-          },
-          "price": 38
-        },
-        {
-          "sku": "sgs-draft-zookies-40-classic-oat-white-choc",
-          "options": {
-            "pack-size": "40",
-            "base": "Classic oat",
-            "chip": "White choc"
-          },
-          "price": 38
-        },
-        {
-          "sku": "sgs-draft-zookies-40-classic-oat-dark-choc",
-          "options": {
-            "pack-size": "40",
-            "base": "Classic oat",
-            "chip": "Dark choc"
-          },
-          "price": 38
-        },
-        {
-          "sku": "sgs-draft-zookies-40-classic-oat-no-chips",
-          "options": {
-            "pack-size": "40",
-            "base": "Classic oat",
-            "chip": "No chips"
-          },
-          "price": 38
-        },
-        {
-          "sku": "sgs-draft-zookies-40-vegan-oat-milk-choc",
-          "options": {
-            "pack-size": "40",
-            "base": "Vegan oat",
-            "chip": "Milk choc"
-          },
-          "price": 38
-        },
-        {
-          "sku": "sgs-draft-zookies-40-vegan-oat-white-choc",
-          "options": {
-            "pack-size": "40",
-            "base": "Vegan oat",
-            "chip": "White choc"
-          },
-          "price": 38
-        },
-        {
-          "sku": "sgs-draft-zookies-40-vegan-oat-dark-choc",
-          "options": {
-            "pack-size": "40",
-            "base": "Vegan oat",
-            "chip": "Dark choc"
-          },
-          "price": 38
-        },
-        {
-          "sku": "sgs-draft-zookies-40-vegan-oat-no-chips",
-          "options": {
-            "pack-size": "40",
-            "base": "Vegan oat",
-            "chip": "No chips"
+            "pack-size": "40"
           },
           "price": 38
         }
@@ -534,6 +430,7 @@
           "slug": "amount",
           "packSize": false,
           "variesBy": null,
+          "variation": true,
           "options": [
             {
               "value": 15,
@@ -593,11 +490,6 @@
     },
     {
       "draftId": "zookies",
-      "kind": "multi-choice",
-      "detail": "choice \"flav\" lets the shopper pick several of Vanilla, Chocolate, Strawberry, Mango, Banana, Coffee, Mint, Caramel, Coconut, Pistachio, Honey: a WooCommerce variation holds one value per attribute, so it needs a product add-ons field; recorded, not built"
-    },
-    {
-      "draftId": "zookies",
       "kind": "switch",
       "detail": "choice \"sub\" is an on/off switch that multiplies the price by 0.9; when on, the shopper also picks \"freq\" (2, 4): WooCommerce core holds no recurring or price-changing switch (a recurring order needs WooCommerce Subscriptions or an equivalent plugin); recorded, not built"
     },
@@ -609,7 +501,7 @@
     {
       "draftId": "giftcard",
       "kind": "no-variesby",
-      "detail": "no choice (\"amount\") is one of Google's variesBy axes (color, size, material, pattern, suggestedAge, suggestedGender), and SGS's product preflight publishes a variable product only when one of its variation terms maps to one (no_variesby); the product is made and kept a draft"
+      "detail": "no choice that creates variations (\"amount\") is one of Google's variesBy axes (color, size, material, pattern, suggestedAge, suggestedGender), and SGS's product preflight publishes a variable product only when one of its variation terms maps to one (no_variesby); the product is made and kept a draft"
     }
   ],
   "sites": {

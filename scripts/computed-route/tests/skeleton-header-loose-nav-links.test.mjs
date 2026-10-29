@@ -10,7 +10,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts, decisionsProblems } from '../lib/skeleton-facts.mjs';
-import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
+import { proposeFixture } from './fixtures/fixture-facts.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -19,7 +19,7 @@ const num = ( key ) => Number( /\/(\d+)#/.exec( key )[ 1 ] );
 const boxes = ( y, h = 20, w = 100, x = 0 ) => { const b = { x, y, w, h }; return { 375: b, 768: b, 1440: b }; };
 const el = ( key, parentKey, tag, words = '', x = {} ) => ( { key, parentKey, depth: x.depth ?? 1, tag, template: 'Root', tpl: num( key ), attrs: x.attrs || {}, words, allText: words, membership: [], srcTag: tag, srcOwnText: words, snippet: `<${ tag } data-dc-tpl="${ num( key ) }">${ words }</${ tag }>`, box: x.box || boxes( 100 ), visible: { 375: true, 768: true, 1440: true }, display: x.display || 'block', flexDirection: 'row', screenshots: {} } );
 const inv = ( elements ) => ( { generated: 'fixture', source: 'fixture', root: 'header', checks: { rootKey: 'Root/1#0' }, elements } );
-const run = ( inventory ) => proposeSkeleton( { inventory, facts: facts(), surface: 'header', surfaceKind: 'header', surfaceName: 'Header', db } );
+const run = ( inventory ) => proposeFixture( { inventory, facts: facts(), surface: 'header', surfaceKind: 'header', surfaceName: 'Header', db } );
 const flat = ( list ) => list.flatMap( ( n ) => [ n, ...flat( n.innerBlocks || [] ) ] );
 const rowOf = ( r, key ) => r.proposal.rows.find( ( x ) => x.key === key );
 const blockAt = ( r, key ) => flat( r.skeleton ).find( ( n ) => n.draftRef?.tpl === key )?.name ?? null;
@@ -112,7 +112,7 @@ test( 'negative control: a link with markup inside, a link beside an icon, a lin
 test( 'negative control: a link with a click handler and no href is a navigation link, and the same header in a drawer joins nothing', () => {
 	const handler = withAbout( ( a ) => { delete a.attrs.href; a.snippet = '<a data-dc-tpl="9" sc-camel-on-click="{{ goAbout }}">About us</a>'; } );
 	assert.equal( joins( handler ), true );
-	const drawer = proposeSkeleton( { inventory: inv( header() ), facts: facts(), surface: 'drawer', surfaceKind: 'drawer', surfaceName: 'Drawer', db } );
+	const drawer = proposeFixture( { inventory: inv( header() ), facts: facts(), surface: 'drawer', surfaceKind: 'drawer', surfaceName: 'Drawer', db } );
 	assert.notEqual( rowOf( drawer, 'Root/9#0' ).rule, 'navigationLink', 'only a header\'s own links join its navigation' );
 } );
 

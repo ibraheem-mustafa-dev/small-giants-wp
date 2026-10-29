@@ -1,10 +1,10 @@
 [
 	{"file":"lib/skeleton-write-units.mjs","find":"const listLink = ( e ) => ! m.buttonStyled( e ) && (","replace":"const listLink = ( e ) => (","why":"two button links stacked by their wrapping row become a list"},
-	{"file":"lib/skeleton-model.mjs","find":"return 'a' === e.tag && padded && ( ground || edge );","replace":"return 'a' === e.tag && ( ground || edge );","why":"a link with a ground but no padding is a button"},
-	{"file":"lib/skeleton-model.mjs","find":"return 'a' === e.tag && padded && ( ground || edge );","replace":"return 'a' === e.tag && padded;","why":"a padded link with no ground is a button"},
-	{"file":"lib/skeleton-model.mjs","find":"return 'a' === e.tag && padded && ( ground || edge );","replace":"return 'a' === e.tag && padded && ground;","why":"a bordered link is no button"},
+	{"file":"lib/skeleton-model.mjs","find":"return 'a' === e.tag && padded && ( ground || edge || boundGround );","replace":"return 'a' === e.tag && ( ground || edge || boundGround );","why":"a link with a ground but no padding is a button"},
+	{"file":"lib/skeleton-model.mjs","find":"return 'a' === e.tag && padded && ( ground || edge || boundGround );","replace":"return 'a' === e.tag && padded;","why":"a padded link with no ground is a button"},
+	{"file":"lib/skeleton-model.mjs","find":"return 'a' === e.tag && padded && ( ground || edge || boundGround );","replace":"return 'a' === e.tag && padded && ( ground || boundGround );","why":"a bordered link is no button"},
 	{"file":"lib/skeleton-model.mjs","find":"|| /^rgba\\([^)]*,\\s*0\\s*\\)$/.test( v );","replace":";","why":"a fully transparent rgba background is a ground"},
 	{"file":"lib/skeleton-model.mjs","find":"/^(none|transparent|initial|inherit|unset)$/.test( v )","replace":"false","why":"a background of none or transparent is a ground"},
-	{"file":"lib/skeleton-model.mjs","find":"&& ! /^0(px)?\\b/.test( st.border || '' );","replace":";","why":"a zero-width border is an edge"},
-	{"file":"lib/skeleton-model.mjs","find":"st[ k ] && ! /^0(px)?$/.test( st[ k ] ) );","replace":"st[ k ] );","why":"zero padding is padding"}
+	{"file":"lib/skeleton-model.mjs","find":"&& ! /^0(px)?$/.test( low( `border-${ side }-width` ) || '0' ) );","replace":");","why":"a zero-width border is an edge"},
+	{"file":"lib/skeleton-model.mjs","find":"low( k ) && ! /^0(px)?$/.test( low( k ) ) ) ||","replace":"low( k ) ) ||","why":"zero padding is padding"}
 ]

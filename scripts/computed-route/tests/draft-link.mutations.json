@@ -2,7 +2,7 @@
 	{ "file": "lib/skeleton-write-content.mjs", "find": "null !== out.value && ( a[ linkAttr ] = out.value );", "replace": "a[ linkAttr ] = href;", "why": "the content writer copies the draft href verbatim again (the defect)" },
 	{ "file": "lib/skeleton-write-units.mjs", "find": "...( null !== out.value ? { [ li.url ]: out.value } : {} )", "replace": "...( href && '#' !== href ? { [ li.url ]: href } : {} )", "why": "a link list's items copy the draft href verbatim again" },
 	{ "file": "lib/skeleton-rules.mjs", "find": "attributes: null !== out.value ? { [ attr ]: out.value } : {}", "replace": "attributes: { [ attr ]: realHref( e ) }", "why": "a whole-card link and a card's call to action copy the draft href verbatim again" },
-	{ "file": "lib/skeleton-propose.mjs", "find": "const siteLink = siteLinkResolver( draftLinks, rootComponent );", "replace": "const siteLink = siteLinkResolver( null, rootComponent );", "why": "the writer ignores the client's draft-link context" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "const siteLink = siteLinkResolver( draftLinks, rootComponent, m.read );", "replace": "const siteLink = siteLinkResolver( null, rootComponent, m.read );", "why": "the writer ignores the client's draft-link context" },
 	{ "file": "lib/skeleton-classify.mjs", "find": "formLinkOf, siteLink, topBlock:", "replace": "formLinkOf, topBlock:", "why": "the rules never receive the draft-link resolver" },
 	{ "file": "lib/draft-link.mjs", "find": "return { value: null, handover: { owner: r.owner,", "replace": "return { value: href, handover: { owner: r.owner,", "why": "an unresolved draft route is written as it stands" },
 	{ "file": "lib/draft-link.mjs", "find": "value: `${ at.address }${ fragment ? `#${ fragment }` : '' }`", "replace": "value: at.address", "why": "the draft's #fragment is dropped" },
@@ -25,7 +25,7 @@
 	{ "file": "lib/draft-link.mjs", "find": "const account = rowsHit.length ? named.find( ( x ) => isAccountRow( ctx.routeRow.get( x ) ) ) : null;", "replace": "const account = rowsHit.length ? named[ 0 ] : null;", "why": "any handler reaching several pages links to the first, not only an account trigger" },
 	{ "file": "lib/draft-link.mjs", "find": "! l.control && plain.add( k );", "replace": "plain.add( k );", "why": "a control handler is read as a navigating one" },
 	{ "file": "lib/draft-link.mjs", "find": "? { navigates: true } : {} ) };", "replace": "? {} : {} ) };", "why": "a navigating handler is never marked, so its handover row is lost" },
-	{ "file": "lib/skeleton-write-content.mjs", "find": "const byHandler = ! href && null !== handler;", "replace": "const byHandler = false;", "why": "a handler button with no href is not read as a link" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": "const byHandler = ! href && !! handler;", "replace": "const byHandler = false;", "why": "a handler button with no href is not read as a link" },
 	{ "file": "lib/skeleton-write-content.mjs", "find": "( ! byHandler || r.navigates ) && handover.push(", "replace": "handover.push(", "why": "a control handler button writes a handover row" },
 	{ "file": "lib/skeleton-write-content.mjs", "find": "( ! byHandler || r.navigates ) && handover.push(", "replace": "! byHandler && handover.push(", "why": "a handler button reaching no single page writes no handover row" },
 	{ "file": "lib/draft-link.mjs", "find": "if ( hit.length && hit.every( Boolean ) && 1 === rowsHit.length ) {", "replace": "if ( hit.length && hit.every( Boolean ) ) {", "why": "a per-item handler reaching two pages takes the first" }

@@ -10,9 +10,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts, decisionsProblems } from '../lib/skeleton-facts.mjs';
-import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
-import { inventoryModel } from '../lib/skeleton-model.mjs';
 import { commerceOf, commerceRegion } from '../lib/skeleton-commerce-region.mjs';
+import { proposeFixture, fixtureModel } from './fixtures/fixture-facts.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../../..' );
@@ -24,7 +23,7 @@ const KEY = ( n ) => `Eye Care Birmingham/${ n }#0`;
 const CHECKOUT = { role: 'checkout', checkout: null };
 const HIDDEN = { 375: false, 768: false, 1440: false };
 const withEls = ( elements ) => ( { ...INV, elements } );
-const of = ( commerce, elements = INV.elements, rule = RULE() ) => commerceRegion( { m: inventoryModel( withEls( elements ) ), commerce, rule } );
+const of = ( commerce, elements = INV.elements, rule = RULE() ) => commerceRegion( { m: fixtureModel( withEls( elements ) ), commerce, rule } );
 const find = ( tree, name ) => {
 	for ( const n of tree ) {
 		if ( n.name === name ) {
@@ -42,7 +41,7 @@ const edit = ( keys, fn ) => INV.elements.map( ( e ) => ( keys.includes( e.key )
 const FIELDS = [ 756, 757, 786, 787, 788, 789, 790, 810, 811, 812 ].map( KEY );
 
 test( 'MUST FAIL: Eye Care\'s checkout (no card-and-lines region) gets WooCommerce\'s Checkout block at its entry fields and order summary; the heading stays', () => {
-	const { skeleton, proposal, problems } = proposeSkeleton( { inventory: INV, facts: facts(), surface: 'test', commerce: CHECKOUT, db } );
+	const { skeleton, proposal, problems } = proposeFixture( { inventory: INV, facts: facts(), surface: 'test', commerce: CHECKOUT, db } );
 	assert.deepEqual( problems, [] );
 	assert.deepEqual( proposal.commerceRegion, { key: KEY( 741 ), role: 'checkout', block: 'core/post-content' }, 'the column holding the form sections and the order summary beside it' );
 	const pc = find( skeleton, 'core/post-content' );
@@ -98,7 +97,7 @@ test( 'negative controls: a checkout with card fields and order lines keeps its 
 	assert.equal( of( { role: 'shop', checkout: null } ), null );
 	assert.equal( of( null ), null, 'an ordinary page has no commerce role, however many fields it holds' );
 	assert.equal( commerceOf( { target: { template: 'page' } }, [] ), null, 'only the checkout template\'s surface has the checkout role' );
-	const plain = proposeSkeleton( { inventory: INV, facts: facts(), surface: 'test', commerce: commerceOf( { target: { template: 'page' } }, [] ), db } );
+	const plain = proposeFixture( { inventory: INV, facts: facts(), surface: 'test', commerce: commerceOf( { target: { template: 'page' } }, [] ), db } );
 	assert.equal( find( plain.skeleton, 'core/post-content' ), null, 'a form page that is not the checkout is built from the draft as it is' );
 	assert.equal( plain.proposal.commerceRegion, undefined );
 	// The same page given an order lines loop and a card autocomplete token: found by the card fields and the lines, as before.
@@ -112,7 +111,7 @@ test( 'negative controls: a checkout with card fields and order lines keeps its 
 } );
 
 test( 'the draft runtime\'s sc-camel spellings of autocomplete and inputmode are read like the plain attributes', () => {
-	const m = inventoryModel( INV );
+	const m = fixtureModel( INV );
 	assert.equal( m.els.filter( ( e ) => /sc-camel-input-mode="numeric"/.test( e.snippet ) ).length, 3, 'the draft\'s three card inputs are written sc-camel-input-mode' );
 	assert.match( m.els.find( ( e ) => KEY( 756 ) === e.key ).snippet, /sc-camel-auto-complete="email"/ );
 	// With the email no longer an identity field, the two or more numeric card inputs still are.
