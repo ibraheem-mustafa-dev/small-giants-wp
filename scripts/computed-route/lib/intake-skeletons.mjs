@@ -14,9 +14,10 @@
 // surface and are listed as `parts`, never read on their own. A page surface is read from its route's <main>. A record whose
 // root is the draft's <helmet> (the document head's styles and scripts, which render nothing on the page) and a record of a
 // component the export carries no draft file for (a build report the handoff names but does not ship) are no site surface:
-// each is listed in `parts` with its reason. A census <header> or <footer> of a component that a page record names and no
-// header or footer record claims is that page's own header or footer (a checkout's own slim header): a surface of that kind
-// on the page's route.
+// each is listed in `parts` with its reason. A census <header> or <footer> of a component that a page record names, that no
+// record of its kind claims while another component's record of that kind is the site's own, is that page's own header or
+// footer (a checkout's own slim header in place of the site header): a surface of that kind on the page's route. With no
+// record of the kind anywhere it is the site's own one left unrecorded, a gap row.
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -150,11 +151,12 @@ export function surfaceRoots( { folder, census, records = null, files = exportFi
 		}
 	}
 	// A census CPT element (by tag) in a component that no record of a claiming kind names. A header or footer of a page's
-	// own component is that page's own header or footer: a surface of its kind on the page's route.
+	// own component, where another component's record of that kind is the site's, is that page's own header or footer: a
+	// surface of its kind on the page's route.
 	const claimed = ( component, kinds ) => recs.some( ( r ) => r.dc === component && kinds.includes( r.kind ) );
 	for ( const e of elements.values() ) {
 		const kinds = CENSUS_CPT[ e.detail.tag ];
-		const page = [ 'header', 'footer' ].includes( e.detail.tag ) ? recs.find( ( r ) => 'page' === r.kind && r.dc === e.component && tplsOf( r ).length ) : null;
+		const page = [ 'header', 'footer' ].includes( e.detail.tag ) && recs.some( ( r ) => r.kind === e.detail.tag && r.dc !== e.component ) ? recs.find( ( r ) => 'page' === r.kind && r.dc === e.component && tplsOf( r ).length ) : null;
 		if ( kinds && ! claimed( e.component, kinds ) && page ) {
 			const tpl = e.draftId.slice( e.component.length + 1 );
 			let s = slug( `${ page.name } ${ e.detail.tag }` );

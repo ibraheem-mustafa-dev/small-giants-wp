@@ -50,6 +50,9 @@ test( 'MUST FAIL: a page\'s own <header> that no header record claims is a heade
 	assert.equal( r.gaps.filter( ( g ) => 'Checkout:7' === g.draftId ).length, 0 );
 	assert.ok( r.gaps.some( ( g ) => 'Lonely:3' === g.draftId ), 'a header in a component no page record names is still a gap' );
 	assert.equal( r.surfaces.filter( ( s ) => 'Shop' === s.component && 'header' === s.kind ).length, 1, 'a claimed header is its record\'s surface only' );
+	const noSiteHeader = roots( RECORDS.filter( ( x ) => 'header' !== x.kind ) );
+	assert.equal( noSiteHeader.surfaces.filter( ( s ) => 'header' === s.kind ).length, 0, 'with no header record anywhere a page\'s header is the site\'s own left unrecorded' );
+	assert.ok( noSiteHeader.gaps.some( ( g ) => 'Checkout:7' === g.draftId ) );
 } );
 
 test( 'MUST FAIL: a surface knows the records it shows inside, root-most first, the <helmet> record left out', () => {
