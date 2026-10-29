@@ -1,0 +1,5 @@
+[
+	{"file": "lib/skeleton-classify.mjs", "find": "'section-root' === r.composition_role );", "replace": "'section-root' === r.composition_role && r.accepts );", "why": "a section-root with no list (accepts any block) would be dropped as a candidate"},
+	{"file": "lib/skeleton-classify.mjs", "find": "r.accepts ? JSON.stringify( r.accepts ) : 'any block' }` );", "replace": "JSON.stringify( r.accepts ) }` );", "why": "the evidence would not say the root accepts any block"},
+	{"file": "lib/skeleton-classify.mjs", "find": "const fit = r.accepts ? r.accepts.filter( fits ) : [];", "replace": "const fit = r.accepts.filter( fits );", "why": "a null list would crash the classifier"}
+]
