@@ -82,7 +82,9 @@ export function matchFields( fields, keys, { primaryOnly = false } = {} ) {
 			}
 		}
 	};
-	tier( ( k, role ) => keyRole( k.key ) === role );
+	// In primaryOnly a key's role is its head word's (the last word of a compound: a reviewLinkLabel is a label, not a review).
+	const head = ( name ) => fieldRoles( wordsOf( name ).at( -1 ) ?? '' )[ 0 ] ?? keyRole( name );
+	tier( ( k, role ) => ( primaryOnly ? head( k.key ) : keyRole( k.key ) ) === role );
 	primaryOnly || tier( ( k, role ) => laterRole( k.key, role ) );
 	return { map, unmatched: fields.filter( ( f ) => ! ( f.name in map ) ).map( ( f ) => f.name ) };
 }

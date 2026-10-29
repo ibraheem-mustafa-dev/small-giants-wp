@@ -336,16 +336,17 @@ export function pairParts( { db, block, cal, paint = [], m, el, items = null, ow
 			if ( ! sig.length ) {
 				continue;
 			}
-			const fits = ( kinds ) => ( y ) => free( y ) && suits( c, y ) && kinds.every( ( k ) => sig.includes( k ) === D.kinds( y ).has( k ) ) && ( sig.includes( 'node' ) || ! D.kinds( y ).has( 'node' ) );
+			// A reserved element (content of its own) still counts as a candidate: two that fit are no evidence for either.
+			const fits = ( kinds ) => ( y ) => ( free( y ) || reserved.has( y ) && ! taken.has( y ) ) && suits( c, y ) && kinds.every( ( k ) => sig.includes( k ) === D.kinds( y ).has( k ) ) && ( sig.includes( 'node' ) || ! D.kinds( y ).has( 'node' ) );
 			// Out of flow tells layers apart, but a draft may place its content out of flow too: with no element matching it, a
 			// part that is no layer itself is matched on the other kinds.
 			const strict = D.below( x ).filter( fits( K ) );
 			const hits = strict.length || sig.includes( 'layer' ) ? strict : D.below( x ).filter( fits( K.filter( ( k ) => 'layer' !== k ) ) );
 			const top = hits.filter( ( y ) => D.depth( y ) === D.depth( hits[ 0 ] ) );
-			if ( 1 === top.length ) {
+			if ( 1 === top.length && ! reserved.has( top[ 0 ] ) ) {
 				pair( c, top[ 0 ] );
-			} else if ( ! hits.length && ! x.virtual && suits( c, x ) && sig.every( ( k ) => D.kinds( x ).has( k ) ) && ! D.below( x ).some( ( y ) => sig.some( ( k ) => D.kinds( y ).has( k ) ) ) ) {
-				// x itself holds the kinds and nothing below it does (the item's own words).
+			} else if ( ! hits.length && ! x.virtual && suits( c, x ) && sig.every( ( k ) => D.kinds( x ).has( k ) ) && ! D.below( x ).some( ( y ) => sig.some( ( k ) => D.kinds( y ).has( k ) ) ) && 1 === pending.filter( ( s ) => K.every( ( k ) => sig.includes( k ) === B.kinds( s ).has( k ) ) ).length ) {
+				// x itself holds the kinds and nothing below it does (the item's own words), for the one part here holding them.
 				pair( c, x );
 			} else {
 				continue;
@@ -394,8 +395,11 @@ export function pairParts( { db, block, cal, paint = [], m, el, items = null, ow
 		// holding several parts' contents and no part of its own (a span around a title and its text) is read as its children
 		// when that, and only that, makes the numbers equal, and every part left is a leaf (the contents, never a box of parts).
 		const left = B.anyPaint ? pending.filter( B.painted ) : [];
-		const spread = left.length ? spreads( rest(), left, ( y ) => D.kids( y ).filter( ownEl ), count ) : null;
-		if ( spread && spread.every( ( y, i ) => suits( left[ i ], y ) && ( NTH.test( lastOf( left[ i ] ) ) || ! copy( y ) ) ) ) {
+		// A reserved element (content of its own) still stands in the order, so no part is shifted onto its neighbour, and an order
+		// giving a part a reserved element is no evidence.
+		const standing = D.kids( xs ).filter( ( k ) => ownEl( k ) && ( free( k ) || reserved.has( k ) && ! taken.has( k ) ) && ! D.kinds( k ).has( 'node' ) );
+		const spread = left.length ? spreads( standing, left, ( y ) => D.kids( y ).filter( ownEl ), count ) : null;
+		if ( spread && spread.every( ( y, i ) => ! reserved.has( y ) && suits( left[ i ], y ) && ( NTH.test( lastOf( left[ i ] ) ) || ! copy( y ) ) ) ) {
 			left.forEach( ( c, i ) => pair( c, spread[ i ] ) );
 			pending = pending.filter( ( c ) => ! left.includes( c ) );
 		} else if ( 1 === pending.length && 1 === rest().length && suits( pending[ 0 ], rest()[ 0 ] ) && [ ...B.kinds( pending[ 0 ] ) ].every( ( k ) => D.kinds( rest()[ 0 ] ).has( k ) ) ) {
