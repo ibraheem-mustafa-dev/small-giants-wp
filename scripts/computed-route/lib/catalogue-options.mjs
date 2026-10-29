@@ -264,7 +264,8 @@ export function keyOptions( ctx, src, { key, gatedBy } ) {
 	const factor = switchFactor( ctx, src, key );
 	const unique = options.filter( ( o, i ) => UNREAD !== o.value && options.findIndex( ( x ) => x.value === o.value ) === i );
 	if ( Array.isArray( first ) ) {
-		return { key, kind: 'multi', options: unique.length ? unique : multiOptions( ctx, src, key ), name, gatedBy, first };
+		const listed = unique.length ? { options: unique, name } : multiOptions( ctx, src, key );
+		return { key, kind: 'multi', options: listed.options, name: listed.name, gatedBy, first };
 	}
 	if ( unique.length >= 2 && ! literals.length ) {
 		return { key, kind: 'choice', options: unique, name, gatedBy, first };
@@ -278,7 +279,8 @@ export function keyOptions( ctx, src, { key, gatedBy } ) {
 	return { key, kind: 'unread', options: unique, name, gatedBy, first };
 }
 
-// The options of a multi-choice key: the elements of a mapped list whose callback calls a local helper that writes it.
+// The options of a multi-choice key and the binding name its list is kept under: the elements of a mapped list whose
+// callback calls a local helper that writes it. { options, name }.
 function multiOptions( ctx, src, key ) {
 	for ( const n of src.idx.all ) {
 		if ( 'CallExpression' !== n.type || 'map' !== callee( n ) || ! isFn( n.arguments[ 0 ] ) ) {
@@ -291,13 +293,14 @@ function multiOptions( ctx, src, key ) {
 				&& written( s ).properties.some( ( p ) => 'ObjectProperty' === p.type && keyName( p ) === key ) );
 		} )() );
 		if ( helper ) {
-			return arraysOf( ctx, src, n.callee.object ).flatMap( ( a ) => {
+			const options = arraysOf( ctx, src, n.callee.object ).flatMap( ( a ) => {
 				const els = valueOf( ctx, a.src, a.node );
 				return UNREAD === els ? [] : els.map( ( el ) => ( { value: el?.id ?? el, label: el?.name ?? String( el ), price: null, swatch: Object.values( el || {} ).find( ( v ) => 'string' === typeof v && HEX.test( v ) ) || null, badge: null } ) );
 			} );
+			return { options, name: bindingName( src, n ) };
 		}
 	}
-	return [];
+	return { options: [], name: null };
 }
 
 // The price factor a switch applies: a test on the key whose arms are `x * n` and `x` (n, or 1 / n the other way), else null.

@@ -13,6 +13,7 @@ import { draftLinksFor } from './draft-link.mjs';
 import { carriedIds } from './skeleton-carried.mjs';
 import { commerceOf, filtersOf } from './skeleton-commerce-region.mjs';
 import { loadCatalogue } from './catalogue-read.mjs';
+import { flowSale } from './flow-product.mjs';
 import { loadShopParts } from './fill-shop-parts.mjs';
 import { componentScript } from './fill-form-success.mjs';
 
@@ -63,5 +64,7 @@ export function proposalContext( { repo, client, slug, id, breakpoints, site = s
 		// The catalogue's filter data for a surface that is the shop filter's own drawer (lib/skeleton-filter-drawer.mjs).
 		filters: catalogue ? filtersOf( catalogue ) : null,
 		loops: { rows, brands: catalogue ? filtersOf( catalogue ).brands : [], carousels },
+		// The catalogue product a choice flow drawn by a component sells, with the questions that are its attributes.
+		saleOf: ( component ) => flowSale( { folder: path.join( repo, 'sites', client, 'handoff' ), component, catalogue } ),
 	};
 }

@@ -40,8 +40,17 @@
 	{"file": "lib/catalogue-read.mjs", "find": "String( key || '' ).replace( /([a-z])([A-Z])/g, '$1 $2' )", "replace": "String( key || '' )", "why": "a camelCase state key is not split into words"},
 	{"file": "lib/catalogue-read.mjs", "find": "Object.hasOwn( VARIESBY_WORDS, w.replace( /s$/, '' ) ) ? w.replace( /s$/, '' ) : null", "replace": "null", "why": "a plural axis word is not named"},
 	{"file": "lib/catalogue-read.mjs", "find": "colour: 'color', color: 'color',", "replace": "colour: 'colour', color: 'color',", "why": "the UK spelling is written as an invalid variesBy value"},
-	{"file": "lib/catalogue-read.mjs", "find": "variesBy: variesByOf( label, choice.key, pack ), priced,", "replace": "variesBy: null, priced,", "why": "attributes never carry their axis"},
-	{"file": "lib/catalogue-read.mjs", "find": "\tif ( attributes.length && ! attributes.some( ( a ) => a.variesBy ) ) {", "replace": "\tif ( false ) {", "why": "a product with no axis is not a gap row"},
+	{"file": "lib/catalogue-read.mjs", "find": "variesBy: variesByOf( label, choice.key, pack ), variation: priced || ! answer, priced,", "replace": "variesBy: null, variation: priced || ! answer, priced,", "why": "attributes never carry their axis"},
+	{"file": "lib/catalogue-read.mjs", "find": "\tif ( axes().length && ! axes().some( ( a ) => a.variesBy ) ) {", "replace": "\tif ( false ) {", "why": "a product with no axis is not a gap row"},
 	{"file": "lib/catalogue-read.mjs", "find": "label || '' } ${ String(", "replace": "'' } ${ String(", "why": "the label is not read for the axis"},
-	{"file": "data/catalogue.schema.json", "find": "\"variesBy\": { \"enum\": [\"color\", \"size\", \"material\", \"pattern\", \"suggestedAge\", \"suggestedGender\", null],", "replace": "\"variesBy\": {", "why": "the schema accepts any variesBy value"}
+	{"file": "data/catalogue.schema.json", "find": "\"variesBy\": { \"enum\": [\"color\", \"size\", \"material\", \"pattern\", \"suggestedAge\", \"suggestedGender\", null],", "replace": "\"variesBy\": {", "why": "the schema accepts any variesBy value"},
+	{"file": "lib/catalogue-read.mjs", "find": "variation: priced || ! answer, priced,", "replace": "variation: true, priced,", "why": "a choice a flow asks creates variations (RC16)"},
+	{"file": "lib/catalogue-read.mjs", "find": "variation: priced || ! answer, priced,", "replace": "variation: priced, priced,", "why": "an unpriced choice no flow asks loses its variation axis (the buy box draws none)"},
+	{"file": "lib/catalogue-read.mjs", "find": "} else if ( 'multi' === c.kind && ! asked( c ) ) {", "replace": "} else if ( 'multi' === c.kind ) {", "why": "a multi-choice a flow asks stays a gap"},
+	{"file": "lib/catalogue-read.mjs", "find": "} else if ( 'choice' === c.kind || 'multi' === c.kind ) {", "replace": "} else if ( 'choice' === c.kind ) {", "why": "a multi-choice a flow asks is no answer attribute"},
+	{"file": "lib/catalogue-read.mjs", "find": "combined price is not read; the product is made with none of them` );\n\t\tattributes = attributes.filter( ( a ) => ! a.priced );", "replace": "combined price is not read; the product is made with none of them` );\n\t\tattributes = [];", "why": "two priced choices drop the answer attributes too"},
+	{"file": "lib/catalogue-read.mjs", "find": "const asks = flows.flatMap( ( src ) => flowChoices( ctx, src, draftId ) );", "replace": "const asks = [];", "why": "no flow's choices are read"},
+	{"file": "lib/catalogue-read.mjs", "find": "const variations = axes.length ? combinations( axes, r[ prices.price ] )", "replace": "const variations = attributes.length ? combinations( attributes, r[ prices.price ] )", "why": "the answer attributes multiply the variations"},
+	{"file": "lib/catalogue-read.mjs", "find": "\tif ( axes().length && ! axes().some( ( a ) => a.variesBy ) ) {", "replace": "\tif ( ! axes().some( ( a ) => a.variesBy ) ) {", "why": "a product with no variation is a no-variesby gap"},
+	{"file": "lib/flow-product.mjs", "find": "basketObjects( src ).filter( ( b ) => b.id === draftId )", "replace": "basketObjects( src )", "why": "a flow asks the choices of every product it adds"}
 ]

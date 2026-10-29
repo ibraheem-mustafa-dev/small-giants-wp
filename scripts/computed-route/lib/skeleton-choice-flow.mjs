@@ -21,6 +21,7 @@ import { specHit } from './skeleton-facts.mjs';
 import { brandOwnsAddress } from './brand-registry.mjs';
 import { toggleGroups, summaryOf as summaryLine, stageNoteOf, canvasOf } from './skeleton-choice-flow-canvas.mjs';
 import { flowPieces } from './skeleton-choice-flow-refs.mjs';
+import { slugify } from './catalogue-read.mjs';
 
 const HEADING = /^h[1-6]$/;
 const FIELD_TAGS = new Set( [ 'input', 'select', 'textarea', 'sc-raw-select' ] );
@@ -46,14 +47,17 @@ function recordTree( els, rootKey ) {
 
 // o: { view (lib/skeleton-record.mjs::recordView), rootKey (the flow root's record key), R (rules.choiceFlow), formControl
 // (rules.formControl), brands (lib/brand-registry.mjs), surfaceKind, parts (the surface's surfaces.json parts, from
-// surfaceContext) }. Returns { attributes (the root's settings), steps [{ key, label, question?, fields [{ block, label, key }],
+// surfaceContext), sale (lib/flow-product.mjs::flowSale: the catalogue product the flow sells and the render bindings of the
+// question loops that are its attributes; a question whose loop draws one is that attribute's product-option step,
+// `productAttribute`, Spec 43 FR-43-10) }. Returns { attributes (the root's settings), steps [{ key, label, question?, fields [{ block, label, key }],
 // result?, parts? (the record keys of the question's own pieces: heading, intro, description, badge, toggle), wrapper? (the
 // record key of the step's own element: a panel's), resultAt? (the record key a result part's result is drawn from) }], covered (record key -> what draws it), copies
 // [{ words, reason }], pieces (lib/skeleton-choice-flow-refs.mjs::flowPieces: the record keys of the flow's own pieces),
-// handovers, notes }.
-export function choiceFlowModel( { view, rootKey, R, formControl = null, brands = [], surfaceKind = null, parts = [] } ) {
+// handovers, notes, missing [{ key, line, why }] (what a product-option step cannot draw, a missing feature on the
+// question's row) }.
+export function choiceFlowModel( { view, rootKey, R, formControl = null, brands = [], surfaceKind = null, parts = [], sale = null } ) {
 	const els = view.elements || {};
-	const out = { attributes: {}, steps: [], covered: new Map(), copies: [], handovers: [], notes: [] };
+	const out = { attributes: {}, steps: [], covered: new Map(), copies: [], handovers: [], notes: [], missing: [] };
 	if ( ! rootKey || ! els[ rootKey ] ) {
 		out.notes.push( 'the flow root has no fact record entry: its questions cannot be read' );
 		return out;
@@ -82,7 +86,7 @@ export function choiceFlowModel( { view, rootKey, R, formControl = null, brands 
 		const button = t.desc( k ).find( ( d ) => 'button' === rec( d ).realTag && handler( d ).startsWith( `${ as }.` ) );
 		const list = rec( k ).holes.find( ( h ) => 'attr:list' === h.where );
 		const counted = list ? ( els[ k ].logic?.holes?.[ list.id ]?.[ 1440 ]?.v?.[ 0 ]?.n ?? null ) : null;
-		return button ? { k, as, button, count: counted ?? Math.max( 0, ...textHoles( t.desc( k ) ).map( ( x ) => x.vals?.n ?? 0 ) ) } : null;
+		return button ? { k, as, button, path: list?.path ?? null, count: counted ?? Math.max( 0, ...textHoles( t.desc( k ) ).map( ( x ) => x.vals?.n ?? 0 ) ) } : null;
 	} ).filter( Boolean );
 	const inLoop = ( loop ) => new Set( [ loop.k, ...t.desc( loop.k ) ] );
 	// The question's container: up from the loop while the element holds no other loop and no control outside this one.
@@ -178,7 +182,26 @@ export function choiceFlowModel( { view, rootKey, R, formControl = null, brands 
 		const description = own.find( ( x ) => x !== label && x !== cost && ! x.vals?.v.some( price ) );
 		const help = holes.find( ( x ) => ! inButton.has( x.k ) && conditional( x.k ) );
 		const name = `question ${ qi + 1 } "${ stripped || q.box }"`;
-		if ( aligned( label ) ) {
+		// A loop drawing a list the flow product's attribute holds is that attribute's step: its options are the product's
+		// terms (label, term slug), with the badges the catalogue holds and the draft's own per-option words beside them.
+		const sold = sale?.steps.find( ( s ) => s.binding && s.binding === q.loop.path ) ?? null;
+		const attr = sold?.attribute ?? null;
+		if ( attr ) {
+			const paired = ( x ) => aligned( x ) && x.vals.v.length === attr.options.length;
+			question.productAttribute = `pa_${ attr.slug }`;
+			question.options = attr.options.map( ( o, i ) => ( {
+				label: o.term, value: slugify( o.term ),
+				...( paired( description ) ? { description: description.vals.v[ i ] } : {} ),
+				...( paired( help ) ? { helpText: help.vals.v[ i ] } : {} ),
+				...( o.badge ? { badge: o.badge } : {} ),
+				...( attr.default === o.term ? { isDefault: true } : {} ),
+			} ) );
+			const lacks = [
+				...( 'multi' === sold.kind ? [ 'the shopper picks several of its options, and sgs/choice-flow-question has no setting for a question taking several options (it is a one-pick answer step)' ] : [] ),
+				...( own.filter( ( x ) => x !== label && x !== cost && x.vals?.v.some( price ) ).map( ( x ) => `each option shows a second price (${ x.vals.v.join( ', ' ) }), and a product-option step draws only the product's price` ) ),
+			];
+			lacks.length && out.missing.push( { key: q.box, line: `${ name } (sgs/choice-flow-question, ${ question.productAttribute }): ${ lacks.join( '; ' ) }`, why: lacks.join( '; ' ) } );
+		} else if ( aligned( label ) ) {
 			question.options = label.vals.v.map( ( l, i ) => ( {
 				label: l, value: slug( l ),
 				...( aligned( description ) ? { description: description.vals.v[ i ] } : {} ),
@@ -191,14 +214,15 @@ export function choiceFlowModel( { view, rootKey, R, formControl = null, brands 
 			out.notes.push( `${ name }: the loop ${ q.loop.k } recorded ${ label?.vals?.more ? `only ${ label.vals.v.length } of its ${ q.loop.count } labels` : 'no distinct label per option' }, so its options are not listed: add them in the editor` );
 			out.handovers.push( { owner: 'content-page', kind: 'text', detail: `${ name }: the options are not listed (the draft's loop recorded ${ label?.vals?.more ? `only ${ label.vals.v.length } of its ${ q.loop.count } labels` : 'no distinct label per option' }): enter every option in the editor` } );
 		}
-		if ( cost?.vals?.v.length ) {
+		if ( cost?.vals?.v.length && ! attr?.variation ) {
 			cost.vals.v.some( ( v ) => specHit( R.pricePrefixFrom, v ) ) && ( question.pricePrefix = 'from' );
 			out.handovers.push( { owner: 'product-data', kind: 'text', detail: `${ name}: the option prices (${ cost.vals.v.join( ', ' ) }) come from the add-on price list (FR-43-17): name the question's price group and enter the prices there` } );
 		}
 		t.desc( q.loop.button ).some( ( k ) => [ 'img', 'svg' ].includes( rec( k ).realTag ) ) && out.handovers.push( { owner: 'content-page', kind: 'presence', detail: `${ name }: each option shows a picture: choose each option's image (FR-43-15)` } );
 		const badges = t.desc( q.loop.button ).filter( ( k ) => conditional( k ) && ( literal( k ) || textHoles( [ k ] ).length ) );
 		const badgeWords = [ ...new Set( badges.map( ( k ) => literal( k ) || firstValue( k ) ).filter( Boolean ) ) ];
-		badgeWords.length && out.handovers.push( { owner: 'content-page', kind: 'text', detail: `${ name }: the badge "${ badgeWords.join( ', ' ) }" shows on some options: set it on those options` } );
+		const unheld = badgeWords.filter( ( w ) => ! attr?.options.some( ( o ) => o.badge === w ) );
+		unheld.length && out.handovers.push( { owner: 'content-page', kind: 'text', detail: `${ name }: the badge "${ unheld.join( ', ' ) }" shows on some options: set it on those options` } );
 		cover( q.box, `${ name }, sgs/choice-flow-question` );
 		q.lead.forEach( ( s ) => cover( s, `${ name }'s words, sgs/choice-flow-question` ) );
 		// The question's own pieces where the draft draws them: its heading, the intro after it, the first option's description
