@@ -29,8 +29,8 @@ const reads = ( looks, styles = RESTING ) => ( {
 	states: Object.fromEntries( W.map( ( w ) => [ w, { looks: { t: looks } } ] ) ),
 } );
 const look = ( states, declared ) => ( { states, declared, rendered: declared } );
-const run = ( { cal = buttonCal(), looks = [], block = 'sgs/button', attributes = {}, targets = [ { id: 't', slot: '' } ], styles } = {} ) => {
-	const tree = [ { name: block, attributes: { className: 'cr-ref-x-0', ...attributes }, innerBlocks: [] } ];
+const run = ( { cal = buttonCal(), looks = [], block = 'sgs/button', attributes = {}, targets = [ { id: 't', slot: '' } ], styles, children = [] } = {} ) => {
+	const tree = [ { name: block, attributes: { className: 'cr-ref-x-0', ...attributes }, innerBlocks: children.map( ( name ) => ( { name, attributes: {}, innerBlocks: [] } ) ) } ];
 	const result = fillStates( { tree, nodes: [ { index: 0, name: block, targets } ], reads: reads( looks, styles ), calFor: () => cal, db, snapshot } );
 	return { ...result, attrs: tree[ 0 ].attributes };
 };
@@ -149,4 +149,22 @@ test( 'the interaction states come from the DB vocabulary: hover, focus and pres
 	const s = interactionStates( db );
 	assert.ok( s.has( 'hover' ) && s.has( 'focus' ) && s.has( 'active' ) );
 	assert.ok( ! s.has( 'current' ) && ! s.has( 'open' ) );
+} );
+
+// The mega panel: its border colour paints the panel and the group tile (the `sgs/mega-group` child), and the tile's border turns
+// to the accent colour on hover by itself. The tile exists only where the panel holds a mega-group child.
+const TILE = '.sgs-mega-panel__content > .sgs-mega-group';
+const megaCal = () => ( { elements: { '': {}, [ TILE ]: {} }, settings: {
+	borderColour: setting( 'border-color', { slots: [ '', TILE ] } ),
+	groupBorderColourHover: setting( 'border-color', { state: 'hover', slot: TILE, slots: [ TILE ], effects: fx( TILE, BORDERS ) } ),
+} } );
+const megaRest = Object.fromEntries( BORDERS.map( ( b ) => [ b, 'rgb(30, 42, 60)' ] ) );
+
+test( 'MUST FAIL: the hover border of a group tile is held only on a panel that holds the group child', () => {
+	const args = { cal: megaCal(), block: 'sgs/mega-panel', attributes: { borderColour: '#1E2A3C' }, styles: megaRest };
+	assert.deepEqual( holds( run( { ...args, children: [ 'sgs/mega-group' ] } ) ), [ 'groupBorderColourHover' ], 'a panel with a group tile holds its hover border' );
+	const bare = run( { ...args, children: [ 'sgs/container', 'sgs/mega-aside' ] } );
+	assert.deepEqual( holds( bare ), [], 'a panel with no group tile has nothing to hold' );
+	assert.equal( bare.attrs.groupBorderColourHover, undefined );
+	assert.deepEqual( bare.unmapped.filter( ( u ) => /groupBorder|border-.*-color/.test( `${ u.property }${ u.attr || '' }` ) ), [], 'and no gap row names a part that is not drawn' );
 } );
