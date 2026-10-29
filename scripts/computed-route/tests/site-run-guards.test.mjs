@@ -47,6 +47,15 @@ test( 'MUST FAIL: no reviewed rows, or no key in common, cannot be compared and 
 	assert.throws( () => reviewedVerdict( { surface: 'home', reviewed: REVIEWED, proposed: [ rev( 'z', 'sgs/hero' ) ] } ), /has the key of a reviewed row/ );
 } );
 
+test( 'MUST FAIL: intake rows keyed by the entry draft component are compared with the served proposal Root keys', () => {
+	const reviewed = [ rev( 'Home Draft/1#0', 'sgs/hero' ), rev( 'Home Draft/2#0', 'sgs/heading' ), rev( 'Home Draft>Card@3#0/4#0', 'sgs/text' ) ];
+	const proposed = [ rev( 'Root/1#0', 'sgs/hero' ), rev( 'Root/2#0', 'sgs/text' ), rev( 'Home Draft>Card@3#0/4#0', 'sgs/text' ) ];
+	assert.throws( () => reviewedVerdict( { surface: 'home', reviewed, proposed, rootComponent: 'Home Draft' } ), /1 row\(s\) of home differ.*Root\/2#0 was sgs\/heading, now sgs\/text/ );
+	assert.equal( reviewedChanges( { reviewed, proposed, rootComponent: 'Home Draft' } ).common, 3 );
+	// Negative control: with no root component the spaces stay apart, so only the imported element is in common.
+	assert.equal( reviewedChanges( { reviewed, proposed } ).common, 1 );
+} );
+
 test( 'NEGATIVE: identical rows, a change a saved decision made and a stale row shown all pass, and the explanation is in the result', () => {
 	assert.match( reviewedVerdict( { surface: 'home', reviewed: REVIEWED, proposed: REVIEWED } ), /^3 rows match the reviewed proposal$/ );
 	const said = reviewedVerdict( { surface: 'home', reviewed: REVIEWED, proposed: [ rev( 'a', 'sgs/hero' ), rev( 'b', 'sgs/text', { source: 'client decision' } ), rev( 'c', null, { action: 'remove' } ) ] } );
@@ -151,7 +160,7 @@ test( 'MUST FAIL: NODE_EXTRA_CA_CERTS wins, else the certifi path a Python print
 
 test( 'MUST FAIL: site-run.mjs wires the three checks and no machine path', () => {
 	const t = fs.readFileSync( path.join( ROUTE, 'site-run.mjs' ), 'utf8' );
-	assert.match( t, /reviewedVerdict\( \{ surface: key, reviewed: skel\.rows, proposed: r\.proposal\.rows \} \)/ );
+	assert.match( t, /reviewedVerdict\( \{ surface: key, reviewed: skel\.rows, proposed: r\.proposal\.rows, rootComponent: skel\.inventory\?\.checks\?\.rootName \?\? null \} \)/ );
 	assert.match( t, /calibrationVerdict\( \{ surface: key, rows: r\.proposal\.rows,/ );
 	assert.match( t, /const certs = certsPath\(\);/ );
 	assert.doesNotMatch( t, /AppData|Python313/ );

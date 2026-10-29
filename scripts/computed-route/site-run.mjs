@@ -290,7 +290,7 @@ export async function main( argv ) {
 				throw new Error( r.problems.join( '; ' ).slice( 0, 500 ) );
 			}
 			// Built equals reviewed: the new proposal against the rows intake saved for Bean's review.
-			const reviewed = reviewedVerdict( { surface: key, reviewed: skel.rows, proposed: r.proposal.rows } );
+			const reviewed = reviewedVerdict( { surface: key, reviewed: skel.rows, proposed: r.proposal.rows, rootComponent: skel.inventory?.checks?.rootName ?? null } );
 			// Every block it places has a current slot map before Fill.
 			const calibrated = calibrationVerdict( { surface: key, rows: r.proposal.rows, client, site, cacheDir: CACHE, hashesOf: blockHashes, fixtures: calibrationFixtures() } );
 			return `${ r.proposal.counts.skeletonNodes } nodes, ${ r.proposal.counts.low } low; ${ reviewed }; ${ calibrated }`;

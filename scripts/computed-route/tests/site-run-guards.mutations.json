@@ -160,5 +160,17 @@
 		"find": "|| { echo \"Refusing: the sgs-blocks build differs",
 		"replace": "|| true; { echo \"Refusing: the sgs-blocks build differs",
 		"why": "the push refuses on a mismatch"
+	},
+	{
+		"file": "lib/site-run-reviewed.mjs",
+		"find": "[ servedKey( r.key, rootComponent ), r ]",
+		"replace": "[ r.key, r ]",
+		"why": "intake's component-keyed rows would never meet the served proposal's Root keys"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": ", rootComponent: skel.inventory?.checks?.rootName ?? null } );",
+		"replace": " } );",
+		"why": "the site run would compare the served proposal with intake's rows in another key space"
 	}
 ]
