@@ -31,7 +31,7 @@ Each is a per-site setting whose default is Bean's answer, so any client can dif
 
 ## Status (2026-10-28)
 
-Steps 1 and 2 are done: built and merged to `main` (`466457e97`, `82764a5f4`), not deployed. Next: step 3, deploy to mamas-test and the live purchase test.
+Steps 1 to 3 are done. Deployed to mamas-test with `14734d341` (2026-10-29). Live test passed (2026-10-29): product 285 published with £15 / £25 / £40; order 347 bought the £25 card through the block Checkout (cash on delivery, so the card was issued with the admin's "Issue the cards on a paid order", as designed for offline gateways); card 1 at 2500 pence, 24-month expiry, issue and code ledger rows, purchaser and recipient emails sent through FluentSMTP; order 348 redeemed £5 as a fee line after the product and shipping lines, balance 2000, reserve and consume ledger rows; three wrong codes gave the one uniform message; the form, apply field and confirmation fit at 375 / 768 / 1440 with visible focus on the amount choices. Two site faults, both cloning-route faults recorded in `plans/2026-10-28-clone-spec-audit-register.md`: the single-product template held no add-to-cart form (a scaffold template 346 `single-product-baby-shower-gift-card` was added on mamas-test for the test; the re-clone's buy box replaces it), and the checkout template hides its page content below 768px.
 
 ## Steps
 
