@@ -21,6 +21,7 @@ import { attrsFor } from './db.mjs';
 import { LOOSE } from './resolve.mjs';
 import { specHit } from './skeleton-facts.mjs';
 import { bandSetting } from './fill-band.mjs';
+import { contentPairs } from './skeleton-part-content.mjs';
 
 const NTH = /:nth-of-type\((\d+)\)$/;
 const LAYER = /::[a-z-]+$/;
@@ -153,14 +154,22 @@ function draftSide( { m, own, isMedia, items } ) {
 		return out;
 	};
 	const tplOf = ( e ) => String( e.key ).replace( /#\d+$/, '' );
-	// The copies of the shallowest template drawn more than once under x (a virtual root's copies are the unit's items).
+	// The copies of the template drawn more than once straight under x, or under a chain of x's only children (a list's box
+	// inside the node's element); a virtual root's copies are the unit's items. Copies deeper in one branch of several are
+	// that branch's, not x's.
 	const loop = ( x ) => {
 		if ( x.virtual ) {
 			return items;
 		}
-		const list = below( x );
-		const first = list.find( ( e ) => list.filter( ( o ) => tplOf( o ) === tplOf( e ) ).length > 1 );
-		return first ? list.filter( ( o ) => tplOf( o ) === tplOf( first ) ) : null;
+		for ( let at = x; at; ) {
+			const list = kids( at ).filter( own );
+			const first = list.find( ( e ) => list.filter( ( o ) => tplOf( o ) === tplOf( e ) ).length > 1 );
+			if ( first ) {
+				return list.filter( ( o ) => tplOf( o ) === tplOf( first ) );
+			}
+			at = 1 === list.length ? list[ 0 ] : null;
+		}
+		return null;
 	};
 	const depth = ( e ) => ( e.virtual ? -1 : e.depth ?? 0 );
 	return { kids, kinds, below, loop, depth };
@@ -191,7 +200,7 @@ export function spreads( kids, parts, below, hasParts = () => false ) {
 // list's items), or null; own( e ): whether e belongs to this node's draft (not another node's element); isMedia( e ): a
 // picture element; inner: whether the node holds inner blocks; finder( e ): the element's finder. Returns
 // { slots: { <calibrated slot>: finder }, unpaired: [ { slot, reason } ] }.
-export function pairParts( { db, block, cal, paint = [], m, el, items = null, own, isMedia, children = [], finder } ) {
+export function pairParts( { db, block, cal, paint = [], m, el, items = null, own, isMedia, children = [], fixed = {}, reserved = new Set(), finder } ) {
 	const B = partTree( { db, block, cal, paint, inner: children.length > 0 } );
 	const out = { slots: {}, unpaired: [] };
 	if ( ! B.targets.length ) {
@@ -204,6 +213,11 @@ export function pairParts( { db, block, cal, paint = [], m, el, items = null, ow
 	const at = new Map( [ [ '', root ], ...( B.band ? [ [ B.band, root ] ] : [] ) ] );
 	const why = new Map();
 	const taken = new Set();
+	// The parts content identity paired (lib/skeleton-part-content.mjs) stand first, their elements taken.
+	Object.entries( fixed ).forEach( ( [ p, e ] ) => {
+		at.set( p, e );
+		taken.add( e );
+	} );
 	const holds = ( a, b ) => {
 		for ( let p = b; p; p = m.byKey[ p.parentKey ] ) {
 			if ( p === a ) {
@@ -212,7 +226,7 @@ export function pairParts( { db, block, cal, paint = [], m, el, items = null, ow
 		}
 		return false;
 	};
-	const free = ( y ) => ! taken.has( y ) && ! [ ...taken ].some( ( t ) => t !== y && holds( y, t ) && ! y.virtual );
+	const free = ( y ) => ! taken.has( y ) && ! reserved.has( y ) && ! [ ...taken ].some( ( t ) => t !== y && holds( y, t ) && ! y.virtual );
 
 	// What a draft element is itself: 'svg', 'media' (a picture element) or null. A draft svg or picture is only ever a part that
 	// is itself an svg or a picture: a box around one is drawn by the draft's parent, or not at all.
@@ -322,7 +336,17 @@ export function pairParts( { db, block, cal, paint = [], m, el, items = null, ow
 
 		// shape: a part whose number of child parts no sibling shares pairs with the one own child holding that many children
 		// (a timeline entry's content holding its title and description, beside its date).
-		const rest = () => D.kids( x ).filter( ( k ) => ownEl( k ) && free( k ) && ! D.kinds( k ).has( 'node' ) );
+		// Wrappers only the draft draws: while x's one free own child is a plain box (no other node's element, no svg or picture)
+		// and several parts are left, the parts stand against that child's children (a card section around the card).
+		let xs = x;
+		for ( let only = null; pending.length > 1 && ! xs.virtual; xs = only ) {
+			const list = D.kids( xs ).filter( ownEl );
+			only = 1 === list.length && free( list[ 0 ] ) && ! selfOf( list[ 0 ] ) && ! D.kinds( list[ 0 ] ).has( 'node' ) ? list[ 0 ] : null;
+			if ( ! only ) {
+				break;
+			}
+		}
+		const rest = () => D.kids( xs ).filter( ( k ) => ownEl( k ) && free( k ) && ! D.kinds( k ).has( 'node' ) );
 		const count = ( c ) => B.kids( c ).length;
 		for ( let again = true; again; ) {
 			again = false;
@@ -383,6 +407,9 @@ export function pairParts( { db, block, cal, paint = [], m, el, items = null, ow
 	};
 	align( '', root );
 
+	for ( const [ p, e ] of Object.entries( fixed ) ) {
+		B.targets.includes( p ) || ( out.slots[ p ] = finder( e ) );
+	}
 	for ( const t of B.targets ) {
 		// An inner block's root (a grid item the block paints) is the k-th inner block's draft element, under the element the
 		// part holding the inner blocks is.
@@ -410,11 +437,12 @@ export function pairParts( { db, block, cal, paint = [], m, el, items = null, ow
 }
 
 // Every node of a proposed skeleton paired (proposeSkeleton's last pass). tree: the skeleton; m: the inventory model;
-// rowOf: element key to its proposal row; calSettings( slug ) / calPaint( slug ): the block's calibrated settings and its
-// default paint ({ <path>: { <width>: computed style } }, in document order); unitItems: node to the elements of the unit it was built from; mediaSpec: rules.mediaElement (the draft's
+// rowOf: element key to its proposal row; calSettings( slug ) / calPaint( slug ) / calText( slug ): the block's calibrated
+// settings, its default paint ({ <path>: { <width>: computed style } }, in document order) and the part each content setting
+// shows (the slot map's `text`); fieldsOf( e ): the text fields a draft element prints (lib/skeleton-part-content.mjs); unitItems: node to the elements of the unit it was built from; mediaSpec: rules.mediaElement (the draft's
 // picture custom elements). A node whose draftRef is not one draft element (a selector, none), or a modal frame, is not
 // paired. A slot a node already holds stands. Returns { paired, unpaired: [ { key, block, slot, reason } ] }, and each row gains `slots`.
-export function pairSkeletonParts( { db, tree, m, finder, rowOf = {}, calSettings = () => ( {} ), calPaint = () => ( {} ), unitItems = new Map(), mediaSpec = null } ) {
+export function pairSkeletonParts( { db, tree, m, finder, rowOf = {}, calSettings = () => ( {} ), calPaint = () => ( {} ), calText = () => ( {} ), fieldsOf = () => [], unitItems = new Map(), mediaSpec = null } ) {
 	const nodes = [];
 	const walk = ( list ) => list.forEach( ( n ) => {
 		nodes.push( n );
@@ -436,7 +464,17 @@ export function pairSkeletonParts( { db, tree, m, finder, rowOf = {}, calSetting
 		const items = unitItems.get( n ) || null;
 		const own = ( e ) => ! owners.has( e ) || owners.get( e ).includes( n ) || ( items || [] ).includes( e );
 		const children = ( n.innerBlocks || [] ).filter( elOf ).map( ( c ) => ( { el: elOf( c ), name: c.name } ) );
-		const made = pairParts( { db, block: n.name, cal: { settings: calSettings( n.name ) }, paint: calPaint( n.name ), m, el, items, own, isMedia, children, finder } );
+		// The node's own draft elements: its subtree, stopping at other nodes' elements.
+		const mine = [];
+		const walkOwn = ( e ) => m.kids( e ).filter( own ).forEach( ( k ) => mine.push( k ) && walkOwn( k ) );
+		( items || [ el ] ).forEach( ( e ) => mine.push( e ) && walkOwn( e ) );
+		const content = contentPairs( { text: calText( n.name ), attributes: n.attributes || {}, els: mine, fieldsOf, words: ( e ) => m.words( e ) } );
+		// A draft element printing content of a block that shows content settings is that content's, never a box or a mark: one
+		// whose field no setting takes (a review's headline beside a testimonial's quote) is no other part either.
+		const text = calText( n.name );
+		const reserved = new Set( Object.keys( text ).length ? mine.filter( ( e ) => e !== el && ! ( items || [] ).includes( e ) && fieldsOf( e ).length && ! Object.values( content.pairs ).includes( e ) ) : [] );
+		const made = pairParts( { db, block: n.name, cal: { settings: calSettings( n.name ) }, paint: calPaint( n.name ), m, el, items, own, isMedia, children, fixed: content.pairs, reserved, finder } );
+		made.unpaired.push( ...content.notes.filter( ( c ) => ! ( c.slot in made.slots ) ) );
 		const fresh = Object.fromEntries( Object.entries( made.slots ).filter( ( [ k ] ) => ! ( k in ( n.draftSlots || {} ) ) ) );
 		if ( Object.keys( fresh ).length ) {
 			n.draftSlots = { ...n.draftSlots, ...fresh };

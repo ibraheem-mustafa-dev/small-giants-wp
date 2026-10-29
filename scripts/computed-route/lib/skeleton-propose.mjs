@@ -15,6 +15,8 @@ import { collapsePoint, childSlots } from './skeleton-child-slots.mjs';
 import { partSlots, placePart } from './skeleton-part-slots.mjs';
 import { pairSkeletonParts } from './skeleton-part-pairing.mjs';
 import { sharedElementProblems } from './skeleton-one-node.mjs';
+import { holeField } from './fill-list-items.mjs';
+import { templateKeyOf } from './fact-key.mjs';
 import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-record.mjs';
 import { formStepNodes, formStepContext } from './skeleton-form-steps.mjs';
 import { formHostNodes } from './skeleton-form-host.mjs';
@@ -103,14 +105,14 @@ const count = ( list ) => list.reduce( ( a, n ) => a + 1 + count( n.innerBlocks 
 
 // o: { inventory, facts, surface, surfaceKind, surfaceName, motion (template keys whose own animation loops a translate), clientDecisions, picks ({ key: decision }), calKeys (slug ->
 // calibration element keys), calSettings (slug -> the calibration's settings with their slots), calPaint (slug -> the calibration's default paint: element path to
-// its computed style per width, in document order), states (the surface's handoff
+// its computed style per width, in document order), calText (slug -> the part each content setting shows), states (the surface's handoff
 // record states: name, how_to_reach, sc_if_tpl_ids), thresholds (the width thresholds the draft's code uses), db, openers (surface id to its surfaces.json opened_by words, read from the handoff folder when omitted), factRecord (the
 // client's fact record, lib/fact-record.mjs: loaded from `facts.client` when omitted, none when the client has no record),
 // formLinks (lib/skeleton-form-link.mjs::formLinksOf: the saved forms a page may link), refs (lib/references.mjs::detectReferences),
 // draftLinks (lib/draft-link.mjs::draftLinksFor: the client's page map and routing that turn a draft link into a site address;
 // null resolves every draft route to no address), pageMap (the page-map rows: which surface is a choice flow or a block-owned
 // part, lib/skeleton-surface-role.mjs) and surfaceId (the surface's surfaces.json id; the record's matching surface when omitted) }.
-export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, filters = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), calPaint = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null, pageMap = [], surfaceId = null, loops = null, scriptOf = () => null } ) {
+export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, filters = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), calPaint = () => ( {} ), calText = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null, pageMap = [], surfaceId = null, loops = null, scriptOf = () => null } ) {
 	const m = inventoryModel( inventory );
 	const { composition } = facts;
 	const overrides = ( e, words ) => overrideFor( e, { clientDecisions, picks, facts, surface, words } );
@@ -400,7 +402,12 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	}
 	// Every part a block draws itself, paired with the draft element standing there (lib/skeleton-part-pairing.mjs); a slot an
 	// earlier pass gave (a form field's input, the burger) stands.
-	const partPairing = db ? pairSkeletonParts( { db, tree: skeleton, m, finder, rowOf, calSettings, calPaint, unitItems: ctx.unitItems, mediaSpec: R.mediaElement } ) : null;
+	// The text fields a draft element prints: the fact record's text holes on its template (`{{ r.name }}` prints `name`).
+	const fieldsOf = ( e ) => {
+		const t = factRecord?.elements?.[ templateKeyOf( e.key, rootComponent ) ]?.template;
+		return ( t?.holes || [] ).map( ( h ) => holeField( h, t.realTag || t.tag ) ).filter( ( f ) => f?.text ).map( ( f ) => f.name );
+	};
+	const partPairing = db ? pairSkeletonParts( { db, tree: skeleton, m, finder, rowOf, calSettings, calPaint, calText, fieldsOf, unitItems: ctx.unitItems, mediaSpec: R.mediaElement } ) : null;
 	rows.forEach( ( x ) => {
 		const top = rootOf( m.byKey[ x.key ] );
 		top !== m.root && ( x.strip = top.key );
