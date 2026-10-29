@@ -23,6 +23,11 @@ export function copyrightPrefixParts( text, siteName = null ) {
 }
 export const copyrightPrefixOf = ( text, siteName = null ) => copyrightPrefixParts( text, siteName ).prefix;
 
+// The setting that holds the heading level of a text block (the tag-identity setting whose values are heading tags), or null.
+export function levelSetting( facts, block ) {
+	return facts.attrsByRole( block, 'tag-identity' ).map( ( r ) => r.attr_name ).find( ( n ) => ( facts.enumOf( block, n ) || [] ).includes( 'h1' ) ) ?? null;
+}
+
 // The settings the skeleton writer can give one block, from the facts alone (lib/skeleton-facts.mjs::loadFacts):
 // { text, link, others }. `text` and `link` are the block's first text-content and link-href settings (firstAttrByRole), the
 // ones a draft element's words and address go to; `others` are the identity and structure settings it writes by name: a
@@ -41,6 +46,7 @@ export function skeletonSettings( facts, block ) {
 	} else {
 		out.text = facts.firstAttrByRole( block, 'text-content' );
 		out.link = facts.firstAttrByRole( block, 'link-href' );
+		out.text && levelSetting( facts, block ) && out.others.push( levelSetting( facts, block ) );
 		const kinds = ( facts.enumOf( block, 'displayType' ) || [] ).filter( ( k ) => facts.displayTypes.includes( k ) );
 		kinds.length && out.others.push( 'displayType', ...( kinds.includes( 'copyright' ) && has( 'copyrightPrefix' ) ? [ 'copyrightPrefix' ] : [] ) );
 		has( 'linkTarget' ) && out.others.push( 'linkTarget' );
@@ -143,6 +149,8 @@ export function makeContent( ctx ) {
 		const quoteBody = 'blockquote' === e.tag;
 		const cite = quoteBody ? citeOf( e ) : null;
 		textAttr && t && ! quoteBody && ( a[ textAttr ] = m.textWithBreaks( e ).includes( '<br>' ) ? m.textWithBreaks( e ) : t );
+		const levelAttr = textAttr ? levelSetting( facts, block ) : null;
+		levelAttr && enumOf( block, levelAttr ).includes( e.tag ) && ( a[ levelAttr ] = e.tag );
 		textAttr && cite && ( a[ textAttr ] = m.words( cite ) );
 		top.linkSource && ( a.linkSource = top.linkSource );
 		linkAttr && linkSettings( block, e, top, linkAttr, a, handover );

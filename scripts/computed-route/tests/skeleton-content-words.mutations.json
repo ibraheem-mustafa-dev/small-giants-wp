@@ -8,5 +8,7 @@
 	{ "file": "lib/skeleton-model.mjs", "find": "|| isLabelIcon( e ) || isCite( e );", "replace": "|| isCite( e );", "why": "the icon beside a link's label makes the link a wrapper shell" },
 	{ "file": "lib/skeleton-model.mjs", "find": "|| isLabelIcon( e ) || isCite( e );", "replace": "|| isLabelIcon( e );", "why": "a blockquote's cite is a block of its own" },
 	{ "file": "lib/skeleton-model.mjs", "find": "const small = ! b || ( b.w <= ICON_PX && b.h <= ICON_PX );", "replace": "const small = true;", "why": "a photo beside a link's words is read as its icon" },
-	{ "file": "lib/read-logic.mjs", "find": "const MAX_VALUES = MAX_LOOP;", "replace": "const MAX_VALUES = 8;", "why": "a loop's labels are capped at eight again" }
+	{ "file": "lib/read-logic.mjs", "find": "const MAX_VALUES = MAX_LOOP;", "replace": "const MAX_VALUES = 8;", "why": "a loop's labels are capped at eight again" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": "levelAttr && enumOf( block, levelAttr ).includes( e.tag ) && ( a[ levelAttr ] = e.tag );", "replace": "void levelAttr;", "why": "a heading's level is never written from the draft tag" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": "levelAttr && enumOf( block, levelAttr ).includes( e.tag ) && ( a[ levelAttr ] = e.tag );", "replace": "levelAttr && ( a[ levelAttr ] = 'h2' );", "why": "every heading is written as h2" }
 ]

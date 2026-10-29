@@ -105,3 +105,12 @@ test( 'MUST FAIL: a loop of eleven labels is recorded with all eleven, not the f
 	assert.equal( all.more, undefined, 'nothing is left unrecorded' );
 	assert.deepEqual( ( await recordedValues( flavours.slice( 0, 2 ) ) ).v.map( ( x ) => x.v ), [ 'Flavour 1', 'Flavour 2' ] );
 } );
+
+test( 'MUST FAIL: a heading keeps the level of its draft tag (FR-48-6), and an element that is not a heading writes none', () => {
+	const r = propose( section( [ E( 'h1', { words: 'Welcome', y: 0 } ), E( 'h3', { words: 'Third level', y: 30 } ), E( 'h2', { words: 'Second level', y: 60 } ), E( 'p', { words: 'Plain copy', y: 90 } ) ] ) );
+	const heading = ( words ) => flat( r.skeleton ).find( ( n ) => words === n.attributes?.content );
+	assert.equal( heading( 'Welcome' ).attributes.level, 'h1' );
+	assert.equal( heading( 'Third level' ).attributes.level, 'h3' );
+	assert.equal( heading( 'Second level' ).attributes.level, 'h2', 'a level equal to the block default is still written from the draft tag' );
+	assert.equal( flat( r.skeleton ).find( ( n ) => 'Plain copy' === n.attributes?.text ).attributes.level, undefined );
+} );
