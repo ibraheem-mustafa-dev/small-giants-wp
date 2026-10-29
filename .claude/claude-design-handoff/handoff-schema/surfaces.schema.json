@@ -32,7 +32,7 @@
         "name": { "type": "string" },
         "state_keys": { "type": "object", "description": "Logic state (or derived value) that defines this state.", "additionalProperties": true },
         "sc_if_tpl_ids": { "type": "array", "items": { "type": "string" }, "description": "sc-if elements whose value flips for this state." },
-        "how_to_reach": { "type": "string", "description": "User action, plus the setState call that reaches it programmatically." },
+        "how_to_reach": { "type": "string", "description": "User action, plus the call that reaches it programmatically: a setState call on the live logic instance, and, where the state needs the draft's own store to hold something first (a signed-in account, a basket with a gift note), the draft's own store call written with literal arguments, such as MM.account.signIn() or MM.cart.setGift({ on: true }). Intake runs only such a call, on a plain-object global the draft defines." },
         "animation_ids": { "type": "array", "items": { "type": "string" } }
       }
     },

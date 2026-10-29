@@ -1,0 +1,229 @@
+===== indus-foods 61
+S-01 global    Top bar                                  ROW-IN-OTHER           in sticky-header block=sgs/site-header-row rule=clientBuiltSurface
+S-02 global    Scroll progress bar                      OWN-SKELETON           scroll-progress-bar root=None rule=readingProgress
+S-03 header    Sticky header                            OWN-SKELETON           sticky-header root=sgs/site-header rule=clientBuiltSurface
+S-04 menu      About mega menu                          OWN-SKELETON           about-mega-menu root=sgs/mega-panel rule=clientBuiltSurface
+S-05 menu      Sectors mega menu                        OWN-SKELETON           sectors-mega-menu root=sgs/container rule=clientBuiltSurface
+S-06 menu      Brands mega menu                         OWN-SKELETON           brands-mega-menu root=sgs/mega-panel rule=clientBuiltSurface
+S-07 menu      Trade mega menu                          OWN-SKELETON-EMPTY     trade-mega-menu gap=
+S-08 backdrop  Menu / drawer backdrop                   NO-ROW                 
+S-09 drawer    Mobile / tablet drawer                   OWN-SKELETON           mobile-tablet-drawer root=sgs/nav-drawer rule=clientBuiltSurface
+S-10 accordion Drawer accordion: About                  NO-ROW                 
+S-11 accordion Drawer accordion: Sectors                NO-ROW                 
+S-12 accordion Drawer accordion: Brands                 NO-ROW                 
+S-13 accordion Drawer accordion: Trade                  NO-ROW                 
+S-14 footer    Footer                                   OWN-SKELETON           footer root=sgs/site-footer rule=None
+S-15 global    WhatsApp button                          ROW-IN-OTHER           in footer block=sgs/button rule=pillButton
+S-16 page      home                                     OWN-SKELETON           page-home root=sgs/container rule=None
+S-17 page      A family business feeding the UK since 1 OWN-SKELETON           page-about root=sgs/hero rule=hero
+S-18 page      Three generations, one family, since 196 OWN-SKELETON           page-our-story root=None rule=decorationLayer
+S-19 page      Quality and safety, independently checke OWN-SKELETON           page-certifications root=sgs/container rule=None
+S-20 page      Rooted in Sparkbrook for over 60 years.  OWN-SKELETON           page-community root=sgs/container rule=None
+S-21 page      Sourcing responsibly from over 150 count OWN-SKELETON-EMPTY     page-sustainability gap=
+S-22 page      Grow with a family business.             OWN-SKELETON           page-careers root=sgs/text rule=None
+S-23 page      Food service supply for kitchens that ne OWN-SKELETON           page-food-service root=sgs/button rule=None
+S-24 page      Bulk ingredients for food manufacturers. OWN-SKELETON-EMPTY     page-manufacturing gap=
+S-25 page      Retail-ready ranges your customers look  OWN-SKELETON-EMPTY     page-retail gap=
+S-26 page      Pallet volumes for wholesalers and cash  OWN-SKELETON           page-wholesale root=sgs/container rule=None
+S-27 page      Our own brand, and the brands we distrib OWN-SKELETON           page-brands root=sgs/container rule=None
+S-28 page      Sanam: quality ingredients for restauran OWN-SKELETON           page-brand-sanam root=sgs/container rule=None
+S-29 page      Shan: halal Asian food at great prices.  OWN-SKELETON-EMPTY     page-brand-shan gap=
+S-30 page      Green Leaf: herbs, pulses and pantry sta OWN-SKELETON-EMPTY     page-brand-green-leaf gap=
+S-31 page      The Lemon Tree: delicious local baked go OWN-SKELETON-EMPTY     page-brand-lemon-tree gap=
+S-32 page      Apply for a trade account.               OWN-SKELETON           page-apply root=sgs/container rule=None
+S-33 page      Request our product catalogue.           OWN-SKELETON-EMPTY     page-catalogue gap=
+S-34 page      Delivered from our Birmingham hub.       OWN-SKELETON           page-delivery root=sgs/container rule=None
+S-35 page      Trade terms and conditions.              OWN-SKELETON           page-terms root=None rule=None
+S-36 page      News and insight from the trade.         OWN-SKELETON           page-blog root=None rule=None
+S-37 page      Talk to our team.                        OWN-SKELETON           page-contact root=sgs/container rule=None
+S-38 page      Frequently asked questions.              OWN-SKELETON-EMPTY     page-faqs gap=
+S-39 page      Supporting the trade through Ramadan     OWN-SKELETON           page-post-post-1 root=sgs/container rule=None
+S-40 page      Falak rice: exclusive UK distribution    OWN-SKELETON-EMPTY     page-post-post-2 gap=
+S-41 page      Inside our Birmingham packing line       OWN-SKELETON-EMPTY     page-post-post-3 gap=
+S-42 page      Sixty years in the Balti Triangle        OWN-SKELETON-EMPTY     page-post-post-4 gap=
+S-43 page      Ordering ahead for Eid                   OWN-SKELETON-EMPTY     page-post-post-5 gap=
+S-44 page      Why independents still matter            OWN-SKELETON-EMPTY     page-post-post-6 gap=
+S-45 accordion FAQ accordion (delivery)                 NO-ROW                 
+S-46 accordion FAQ accordion (faqs)                     NO-ROW                 
+S-47 panel     Blog category filter                     NO-ROW                 
+S-48 form      Inline form (careers)                    OWN-SKELETON           inline-form-careers root=sgs/heading rule=None
+S-49 result    Inline form thank-you (careers)          NO-ROW                 
+S-50 form      Inline form (catalogue)                  OWN-SKELETON-EMPTY     inline-form-catalogue gap=
+S-51 result    Inline form thank-you (catalogue)        NO-ROW                 
+S-52 form      Trade account application                OWN-SKELETON           trade-account-application root=sgs/container rule=None
+S-53 form-step Step 1: Tell us about your business      NO-ROW                 
+S-54 form-step Step 2: Where are you based?             NO-ROW                 
+S-55 form-step Step 3: Who should we speak to?          NO-ROW                 
+S-56 form-step Step 4: How will you order?              NO-ROW                 
+S-57 form-step Step 5: Check and submit                 NO-ROW                 
+S-58 result    Application received                     NO-ROW                 
+S-59 form      Contact enquiry                          OWN-SKELETON           contact-enquiry root=sgs/container rule=None
+S-60 result    Message sent                             NO-ROW                 
+S-61 panel     Careers open roles                       NO-ROW                 
+TALLY indus-foods
+   ('NO-ROW', 'accordion') 6
+   ('NO-ROW', 'backdrop') 1
+   ('NO-ROW', 'form-step') 5
+   ('NO-ROW', 'panel') 2
+   ('NO-ROW', 'result') 4
+   ('OWN-SKELETON', 'drawer') 1
+   ('OWN-SKELETON', 'footer') 1
+   ('OWN-SKELETON', 'form') 3
+   ('OWN-SKELETON', 'global') 1
+   ('OWN-SKELETON', 'header') 1
+   ('OWN-SKELETON', 'menu') 3
+   ('OWN-SKELETON', 'page') 16
+   ('OWN-SKELETON-EMPTY', 'form') 1
+   ('OWN-SKELETON-EMPTY', 'menu') 1
+   ('OWN-SKELETON-EMPTY', 'page') 13
+   ('ROW-IN-OTHER', 'global') 2
+===== mamas-munches-redesign 58
+S-01 header    Site header (announcement strip + bar)   OWN-SKELETON           site-header-announcement-strip-bar root=sgs/site-header rule=None
+S-02 drawer    Nav drawer (left)                        OWN-SKELETON           nav-drawer-left root=sgs/nav-drawer rule=surfaceRoot
+S-03 backdrop  Drawer scrim                             NO-ROW                 
+S-04 drawer    Basket drawer (right)                    OWN-SKELETON           basket-drawer-right root=sgs/cart rule=blockOwnedPart
+S-05 footer    Site footer                              OWN-SKELETON           site-footer root=sgs/site-footer rule=None
+S-06 panel     Product card                             ABSORBED/absorbed      in page-shop-dc-html rule=commerceRegion into=Shop/28#0
+S-07 page      Home                                     OWN-SKELETON           page-home-dc-html root=sgs/container rule=None
+S-08 form      Build your Zookie                        OWN-SKELETON           build-your-zookie root=sgs/choice-flow rule=choiceFlow
+S-09 panel     Gifts carousel                           ROW-IN-OTHER           in page-home-dc-html block=woocommerce/product-collection rule=loopBlocks
+S-10 panel     Review slider                            ROW-IN-OTHER           in page-home-dc-html block=sgs/testimonial-slider rule=loopBlocks
+S-11 accordion Home FAQ                                 NO-ROW                 
+S-12 page      Shop                                     OWN-SKELETON           page-shop-dc-html root=sgs/container rule=None
+S-13 form      Shop filter + sort                       OWN-SKELETON           shop-filter-sort root=sgs/option-picker rule=optionSetFilter
+S-14 page      Product                                  OWN-SKELETON           page-product-dc-html-id-zookies root=sgs/container rule=None
+S-15 form      Product buy box                          OWN-SKELETON           product-buy-box root=sgs/form rule=formHost
+S-16 form      Product gift note                        OWN-SKELETON           product-gift-note root=sgs/form rule=formHost
+S-17 accordion Product info accordion                   NO-ROW                 
+S-18 panel     Sticky mobile add-to-basket bar          NO-ROW                 
+S-19 page      Gifts                                    OWN-SKELETON           page-gifts-dc-html root=sgs/container rule=None
+S-20 form      Gift finder                              OWN-SKELETON           gift-finder root=sgs/form rule=formHost
+S-21 result    Gift results                             ROW-IN-OTHER           in page-gifts-dc-html block=sgs/container rule=None
+S-22 form      Gift note preview                        OWN-SKELETON           gift-note-preview root=sgs/form rule=formHost
+S-23 page      Basket                                   OWN-SKELETON           page-basket-dc-html root=sgs/container rule=None
+S-24 form      Basket gift note + upsell                OWN-SKELETON-EMPTY     basket-gift-note-upsell gap=<sc-if> Basket:47 renders nothing at this route and state; still not rendered after state 
+S-25 page      Checkout                                 OWN-SKELETON           page-checkout-dc-html root=sgs/container rule=None
+S-26 form      Checkout form                            OWN-SKELETON           checkout-form root=sgs/form rule=formHost
+S-27 form-step 1 · Your details (+ optional account)    ABSORBED/unwrap        in page-checkout-dc-html rule=heroInner into=None
+S-28 form-step 2 · Who’s it for?                        ABSORBED/unwrap        in page-checkout-dc-html rule=heroInner into=None
+S-29 form-step 3 · Delivery ("Her address & delivery" f ABSORBED/unwrap        in page-checkout-dc-html rule=heroInner into=None
+S-30 form-step 4 · Payment                              ABSORBED/unwrap        in page-checkout-dc-html rule=heroInner into=None
+S-31 accordion Mobile order summary                     NO-ROW                 
+S-32 result    Order confirmation                       NO-ROW                 
+S-33 page      Contact                                  OWN-SKELETON           page-contact-dc-html root=sgs/container rule=None
+S-34 form      Contact form                             OWN-SKELETON           contact-form root=sgs/heading rule=None
+S-35 result    Contact sent                             NO-ROW                 
+S-36 page      Help                                     OWN-SKELETON           page-help-dc-html root=sgs/container rule=None
+S-37 form      Help search + category chips             OWN-SKELETON           help-search-category-chips root=sgs/form rule=formHost
+S-38 accordion Help FAQ list                            NO-ROW                 
+S-39 result    Help no results                          NO-ROW                 
+S-40 page      Sign in / register                       OWN-SKELETON           page-signin-dc-html root=sgs/container rule=None
+S-41 result    Already signed in                        NO-ROW                 
+S-42 form      Sign in                                  OWN-SKELETON-EMPTY     sign-in gap=
+S-43 form      Create account                           OWN-SKELETON           create-account root=sgs/form rule=formHost
+S-44 form      Forgotten password flow                  OWN-SKELETON           forgotten-password-flow root=sgs/form rule=formHost
+S-45 form-step Forgot: enter email                      NO-ROW                 
+S-46 result    Forgot: check your inbox                 NO-ROW                 
+S-47 form-step Forgot: choose a new password            NO-ROW                 
+S-48 result    Forgot: password updated                 NO-ROW                 
+S-49 page      My account                               OWN-SKELETON           page-account-dc-html root=sgs/container rule=None
+S-50 result    Signed-out prompt                        NO-ROW                 
+S-51 panel     Account navigation                       NO-ROW                 
+S-52 panel     Orders list                              NO-ROW                 
+S-53 panel     Order detail                             NO-ROW                 
+S-54 panel     Subscriptions                            NO-ROW                 
+S-55 modal     Cancel subscription confirm              OWN-SKELETON-EMPTY     cancel-subscription-confirm gap=<sc-if> Account:129 renders nothing at this route and state; no opener: no surfaces.json s
+S-56 panel     Addresses                                NO-ROW                 
+S-57 form      Address form (add / edit)                OWN-SKELETON-EMPTY     address-form-add-edit gap=<sc-if> Account:160 renders nothing at this route and state; no opener: no surfaces.json s
+S-58 form      Account details + change password        OWN-SKELETON-EMPTY     account-details-change-password gap=<sc-if> Account:179 renders nothing at this route and state; still not rendered after stat
+TALLY mamas-munches-redesign
+   ('ABSORBED/absorbed', 'panel') 1
+   ('ABSORBED/unwrap', 'form-step') 4
+   ('NO-ROW', 'accordion') 4
+   ('NO-ROW', 'backdrop') 1
+   ('NO-ROW', 'form-step') 2
+   ('NO-ROW', 'panel') 6
+   ('NO-ROW', 'result') 7
+   ('OWN-SKELETON', 'drawer') 2
+   ('OWN-SKELETON', 'footer') 1
+   ('OWN-SKELETON', 'form') 11
+   ('OWN-SKELETON', 'header') 1
+   ('OWN-SKELETON', 'page') 10
+   ('OWN-SKELETON-EMPTY', 'form') 4
+   ('OWN-SKELETON-EMPTY', 'modal') 1
+   ('ROW-IN-OTHER', 'panel') 2
+   ('ROW-IN-OTHER', 'result') 1
+===== eye-care-ward-end 52
+S-01 global    Storefront shell                         OWN-SKELETON-EMPTY     storefront-shell gap=<sc-helmet> Eye Care Birmingham:0 is not rendered at this route and state; still not rende
+S-02 global    Trust ticker                             ROW-IN-OTHER           in header block=sgs/site-header-row rule=headerSlots
+S-03 header    Header                                   OWN-SKELETON           header root=sgs/site-header rule=None
+S-04 menu      Mega menu                                OWN-SKELETON           mega-menu-help root=sgs/card-grid rule=None
+S-05 drawer    Mobile menu                              OWN-SKELETON           mobile-menu root=sgs/nav-drawer rule=surfaceRoot
+S-06 footer    Footer                                   OWN-SKELETON           footer root=sgs/site-footer rule=None
+S-07 global    WhatsApp button (floating)               ROW-IN-OTHER           in footer block=sgs/button rule=pillButton
+S-08 page      Home                                     OWN-SKELETON           page-home root=sgs/container rule=None
+S-09 page      Shop                                     OWN-SKELETON           page-shop root=sgs/container rule=None
+S-10 page      Product                                  OWN-SKELETON           page-product root=sgs/container rule=None
+S-11 page      Lenses                                   OWN-SKELETON           page-lenses root=sgs/container rule=None
+S-12 page      About                                    OWN-SKELETON           page-about root=sgs/container rule=None
+S-13 page      Help                                     OWN-SKELETON           page-help root=sgs/container rule=None
+S-14 page      Contact                                  OWN-SKELETON           page-contact root=sgs/container rule=None
+S-15 page      Checkout                                 OWN-SKELETON           page-checkout root=sgs/container rule=None
+S-16 page      Order confirmed                          OWN-SKELETON           page-done root=sgs/container rule=None
+S-17 drawer    Shop filter rail / drawer                OWN-SKELETON-EMPTY     shop-filter-rail-drawer gap=no element matches [data-sgs-skeleton-root="shop-filter-rail-drawer"] at 375px
+S-18 accordion Filter groups (10)                       NO-ROW                 
+S-19 panel     Active filter chips                      NO-ROW                 
+S-20 result    No results                               NO-ROW                 
+S-21 panel     Product tabs                             ROW-IN-OTHER           in page-product block=sgs/container rule=None
+S-22 accordion Product questions accordion (4)          NO-ROW                 
+S-23 panel     Product reviews / no-reviews strip       NO-ROW                 
+S-24 drawer    Bag drawer                               OWN-SKELETON           bag-drawer root=sgs/cart rule=blockOwnedPart
+S-25 modal     Size guide                               OWN-SKELETON           size-guide root=sgs/container rule=None
+S-26 result    Toast                                    NO-ROW                 
+S-27 modal     Lens configurator                        OWN-SKELETON           lens-configurator root=sgs/choice-flow rule=choiceFlow
+S-28 form-step Lens step: Q1 What they are for          ABSORBED/absorbed      in lens-configurator rule=choiceFlow into=Eye Care Birmingham/1280#0
+S-29 form-step Lens step: Q2 How thin                   NO-ROW                 
+S-30 form-step Lens step: Q3 Finish                     NO-ROW                 
+S-31 form-step Lens step: Prescription                  NO-ROW                 
+S-32 accordion Lens option help                         NO-ROW                 
+S-33 panel     Lens prescription mode                   NO-ROW                 
+S-34 form      Contact form                             OWN-SKELETON           contact-form root=sgs/form rule=formHost
+S-35 form-step Checkout delivery method                 ROW-IN-OTHER           in page-checkout block=sgs/container rule=None
+S-36 form-step Checkout prescription                    NO-ROW                 
+S-37 panel     Frame Card (product card)                ABSORBED/absorbed      in page-home rule=loopBlocks into=Eye Care Birmingham/134#0
+S-38 page      WP Build Gap Map (report)                NO-ROW                 
+S-39 accordion FAQ accordion (8)                        NO-ROW                 
+S-40 panel     Lens preview finish label                NO-ROW                 
+S-41 page      Sign in / register                       OWN-SKELETON           page-signin root=sgs/container rule=None
+S-42 page      My account                               OWN-SKELETON           page-account root=sgs/container rule=None
+S-43 form      Sign-in and register forms               OWN-SKELETON           sign-in-and-register-forms root=sgs/form rule=formHost
+S-44 form-step Forgotten-password flow                  NO-ROW                 
+S-45 panel     Account navigation (tabs)                ROW-IN-OTHER           in page-account block=sgs/container rule=None
+S-46 panel     Orders list                              NO-ROW                 
+S-47 panel     Order detail                             NO-ROW                 
+S-48 panel     Subscriptions                            NO-ROW                 
+S-49 form      Addresses                                OWN-SKELETON-EMPTY     addresses gap=<sc-if> Eye Care Birmingham:1055 renders nothing at this route and state; still not render
+S-50 panel     Wishlist                                 NO-ROW                 
+S-51 form      Account details                          OWN-SKELETON-EMPTY     account-details gap=<sc-if> Eye Care Birmingham:1095 renders nothing at this route and state; still not render
+S-52 form-step Checkout account option                  NO-ROW                 
+TALLY eye-care-ward-end
+   ('ABSORBED/absorbed', 'form-step') 1
+   ('ABSORBED/absorbed', 'panel') 1
+   ('NO-ROW', 'accordion') 4
+   ('NO-ROW', 'form-step') 6
+   ('NO-ROW', 'page') 1
+   ('NO-ROW', 'panel') 8
+   ('NO-ROW', 'result') 2
+   ('OWN-SKELETON', 'drawer') 2
+   ('OWN-SKELETON', 'footer') 1
+   ('OWN-SKELETON', 'form') 2
+   ('OWN-SKELETON', 'header') 1
+   ('OWN-SKELETON', 'menu') 1
+   ('OWN-SKELETON', 'modal') 2
+   ('OWN-SKELETON', 'page') 11
+   ('OWN-SKELETON-EMPTY', 'drawer') 1
+   ('OWN-SKELETON-EMPTY', 'form') 2
+   ('OWN-SKELETON-EMPTY', 'global') 1
+   ('ROW-IN-OTHER', 'form-step') 1
+   ('ROW-IN-OTHER', 'global') 2
+   ('ROW-IN-OTHER', 'panel') 2

@@ -147,6 +147,7 @@
 		},
 		"variant": {
 			"type": "string",
+			"enum": [ "inline", "floating", "banner", "card" ],
 			"default": "floating"
 		},
 		"label": {

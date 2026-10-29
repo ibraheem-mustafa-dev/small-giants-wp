@@ -8,7 +8,6 @@
 	{"file": "lib/intake-skeletons.mjs", "find": "route: page.route ?? null, slug: s, rootTag: e.detail.tag,", "replace": "route: null, slug: s, rootTag: e.detail.tag,", "why": "the page's own header would be read at the entry instead of on the page's route"},
 	{"file": "lib/intake-reach-calls.mjs", "find": "(?:(dcLogic)\\s*\\(\\s*(['\"])([^'\"]+)\\2\\s*\\)|([A-Za-z_$][\\w$]*))", "replace": "(?:(dcLogic)\\s*\\(\\s*(['\"])([^'\"]+)\\2\\s*\\)x|([A-Za-z_$][\\w$]*))", "why": "a dcLogic('<component>') call would give no way to open"},
 	{"file": "lib/intake-reach-calls.mjs", "find": "...( m[ 1 ] ? { component: m[ 3 ] } : {} )", "replace": "", "why": "the call would run on every component's logic"},
-	{"file": "lib/intake-state.mjs", "find": "patch.calls.filter( ( c ) => ! c.component || c.component === name )", "replace": "patch.calls", "why": "a call naming one component would run on another's logic"},
 	{"file": "lib/state-openers.mjs", "find": "c.component ? `${ c.ident }('${ c.component }')` : c.ident", "replace": "c.ident", "why": "the refusal would name a call the record never wrote"},
 	{"file": "lib/intake-skeletons.mjs", "find": "if ( kinds && page ) {", "replace": "if ( false ) {", "why": "a page's own header would stay a gap and never be read"},
 	{"file": "lib/intake-skeletons.mjs", "find": "&& recs.some( ( r ) => r.kind === e.detail.tag && ! ( r.dc === e.component && tplsOf( r ).at( -1 ) === tpl ) );", "replace": ";", "why": "a site header left unrecorded would be read as one page's own header"},
@@ -17,5 +16,6 @@
 	{"file": "lib/intake-skeletons.mjs", "find": "( 'header' === tag ? r.bottom > m.top + 1 : r.top < m.bottom - 1 )", "replace": "false", "why": "a header below the page's content would be its header"},
 	{"file": "lib/intake-skeletons.mjs", "find": "if ( ( await markAt( page, s, settle ) ).error && waysHeldAt( bound, w ).length ) {", "replace": "if ( ( await markAt( page, s, settle ) ).error ) {", "why": "a root absent at a width where no way holds would be opened by nothing"},
 	{"file": "lib/intake-skeletons.mjs", "find": "const bound = list.filter( ( o ) => o.bounds?.length );\n\tif ( ! bound.length ) {\n\t\treturn false;\n\t}", "replace": "const bound = list;", "why": "a way with no width bound would be read per width"},
-	{"file": "lib/intake-skeletons.mjs", "find": "for ( const w of INVENTORY_WIDTHS.filter( ( x ) => x < 1440 ) ) {", "replace": "for ( const w of [] ) {", "why": "no narrower width would be probed"}
+	{"file": "lib/intake-skeletons.mjs", "find": "for ( const w of INVENTORY_WIDTHS.filter( ( x ) => x < 1440 ) ) {", "replace": "for ( const w of [] ) {", "why": "no narrower width would be probed"},
+	{"file": "lib/intake-state.mjs", "find": "patch.calls.filter( ( c ) => ! c.store && ( ! c.component || c.component === name ) )", "replace": "patch.calls.filter( ( c ) => ! c.store )", "why": "a call naming one component would run on another's logic"}
 ]

@@ -60,7 +60,9 @@ Status: checked by `handoff-check.mjs`.
 ### FR-48A-7 -- Inventories are current
 `animations.json` and `surfaces.json` validate against the master schemas, and every draft hash and the `runtime_sha256` recorded in `animations.json` match the files, so an inventory written before a design change is refused. The target, set by Bean's decision (e) of 2026-10-11, is that intake re-derives the inventory from the code by `METHOD.md` and Claude Design's copy is only a cross-check; until Spec 48 step 14b (FR-48-25) lands, Claude Design's inventories are used, cross-checked by `scripts/computed-route/trace-check.mjs` on a single-file draft's entry page (every Web Animations call, CSS animation start and CSS transition run matched to a record, `--shift=7` negative control).
 
-Status: schema and hash checks in `handoff-check.mjs`; trace cross-check built; intake re-derivation is a Spec 48 stage.
+A state's `how_to_reach` may name the draft's own store calls beside its `setState` call (`MM.account.signIn()`, `MM.cart.setGift({ on: true })`; Bean 2026-10-29): a call is `<Ident>.<path>(<literal arguments>)` on a plain-object global the draft defines, with a JSON-like literal as its arguments (prose such as `MM.cart.add(...)` is no call). Intake (`lib/intake-store-calls.mjs`, `lib/state-openers.mjs`, `lib/intake-state.mjs`) runs only such a call, never arbitrary code, before it opens the surface, and keeps and restores the page's storage around it. When every own way fails, a state of any surface that gives a condition around the root (`signed`, `gift.on`) the value true and names store calls is run first.
+
+Status: schema and hash checks in `handoff-check.mjs`; trace cross-check built; intake re-derivation is a Spec 48 stage; store-call openers built.
 
 ### FR-48A-8 -- README
 `README.md` is the human guide to the design, written from `handoff-schema/README.template.md`. Its sections are not enforced (cloning reads the code, Bean's decision of 2026-10-11). It never maps the design to SGS blocks; block choice is ours. A heading that names SGS or block mapping is a warning.
