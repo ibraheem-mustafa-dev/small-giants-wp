@@ -25,7 +25,7 @@
 	},
 	{
 		"file": "lib/skeleton-footer-slots.mjs",
-		"find": "const grids = flow.filter( isGrid );",
+		"find": "const grids = flow.filter( ( k ) => isGrid( k ) || holdsGrid( k ) );",
 		"replace": "const grids = [];",
 		"why": "a grid child would not be found, so everything would be columns"
 	},

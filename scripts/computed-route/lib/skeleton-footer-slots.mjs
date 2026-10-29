@@ -32,7 +32,7 @@ export function sideBySide( list ) {
 // element holding a link and a heading, a list, or two links. A child whose in-flow children are stacked (so no grid
 // itself) and which holds a grid below it (a width wrapper of the footer's bands) is read through to its children. The
 // columns are, in order of preference: (grid) the in-flow child that is itself a grid, two or more link groups side by
-// side, the one holding the most links when there are several (the others are strips); (band) with no such child, the link groups of
+// side, or that holds one through its only in-flow child (a coloured band around a width wrapper), the one holding the most links when there are several (the others are strips); (band) with no such child, the link groups of
 // the root's own children that sit side by side; (none) with neither, every in-flow child, all in the columns row: with no
 // grid no signal says where the footer's body ends and a strip begins, so nothing is split off. A child stacked wholly above
 // the columns at every width where both render is top, below is bottom; a child inline with them is part of them.
@@ -51,6 +51,12 @@ export function footerPlan( kids, { subtree, kidsOf, declared = () => null } ) {
 		const inner = kidsOf( k ).filter( ( x ) => ! isFloating( x, declared ) );
 		return inner.length >= 2 && ! sideBySide( inner ).length && subtree( k ).slice( 1 ).some( isGrid ) ? kidsOf( k ) : null;
 	};
+	// A band whose only in-flow child is the grid, or a wrapper of stacked bands holding the grid (a coloured band around a
+	// centring width wrapper), holds the grid: the band itself is the columns row, so its look is read on its own element.
+	const holdsGrid = ( k ) => {
+		const inner = kidsOf( k ).filter( ( x ) => ! isFloating( x, declared ) );
+		return 1 === inner.length && ( isGrid( inner[ 0 ] ) || !! through( inner[ 0 ] ) || holdsGrid( inner[ 0 ] ) );
+	};
 	const passed = [];
 	const open = ( list ) => list.flatMap( ( k ) => {
 		const inner = through( k );
@@ -62,7 +68,7 @@ export function footerPlan( kids, { subtree, kidsOf, declared = () => null } ) {
 	const flow = all.filter( ( k ) => ! floating.includes( k ) );
 	// Of two or more grids, the one holding the most links is the columns; the others are strips above or below it.
 	const linksIn = ( k ) => subtree( k ).filter( href ).length;
-	const grids = flow.filter( isGrid );
+	const grids = flow.filter( ( k ) => isGrid( k ) || holdsGrid( k ) );
 	const band = grids.length ? [] : sideBySide( flow.filter( linkGroup ) );
 	const mains = grids.length ? [ grids.reduce( ( a, b ) => ( linksIn( b ) > linksIn( a ) ? b : a ) ) ] : band.length >= 2 ? band : [];
 	if ( ! mains.length ) {

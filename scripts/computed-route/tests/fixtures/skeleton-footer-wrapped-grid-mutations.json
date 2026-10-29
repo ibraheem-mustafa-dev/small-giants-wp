@@ -1,0 +1,5 @@
+[
+	{ "file": "lib/skeleton-footer-slots.mjs", "find": "const grids = flow.filter( ( k ) => isGrid( k ) || holdsGrid( k ) );", "replace": "const grids = flow.filter( isGrid );", "why": "a band holding the grid through a width wrapper would leave the footer with no grid, and the bands would lose their own look" },
+	{ "file": "lib/skeleton-footer-slots.mjs", "find": "return 1 === inner.length && ( isGrid( inner[ 0 ] ) || !! through( inner[ 0 ] ) || holdsGrid( inner[ 0 ] ) );", "replace": "return 1 === inner.length && ( isGrid( inner[ 0 ] ) || holdsGrid( inner[ 0 ] ) );", "why": "a wrapper of stacked bands holding the grid would not make its band the grid's holder" },
+	{ "file": "lib/skeleton-footer-slots.mjs", "find": "return 1 === inner.length && ( isGrid(", "replace": "return 1 <= inner.length && ( isGrid(", "why": "a band of several children would be read as one grid holder" }
+]
