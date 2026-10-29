@@ -1,0 +1,12 @@
+[
+	{"file": "lib/skeleton-classify.mjs", "find": "return ruleAgainstDb( e, parentBlock, ctx, fromRule( verdict ) );", "replace": "return fromRule( verdict );", "why": "a rule row the DB disagrees with is final"},
+	{"file": "lib/skeleton-classify.mjs", "find": "const verdict = ! ctx.typedBrand && ! ctx.noRule &&", "replace": "const verdict = ! ctx.typedBrand &&", "why": "the DB's own scoring reruns the rule and never disagrees"},
+	{"file": "lib/skeleton-classify.mjs", "find": "if ( ! D || ! ruleBlock ) {", "replace": "if ( ! ruleBlock ) {", "why": "the check runs with no decisions entry"},
+	{"file": "lib/skeleton-classify.mjs", "find": "|| facts.wrapperShells.includes( top.block ) ||", "replace": "||", "why": "a generic wrapper shell counts as the DB preferring another block"},
+	{"file": "lib/skeleton-classify.mjs", "find": "|| db.confidence < D.minConfidence ||", "replace": "||", "why": "a weak DB score sends the row to the finaliser"},
+	{"file": "lib/skeleton-classify.mjs", "find": "|| ruleShare > D.maxRuleShare ) {", "replace": ") {", "why": "a DB scoring that also holds the rule's block counts as disagreeing"},
+	{"file": "lib/skeleton-classify.mjs", "find": "...out, confidence: D.confidence,", "replace": "...out, confidence: 1,", "why": "the disputed row is not low confidence"},
+	{"file": "lib/skeleton-classify.mjs", "find": "reason: `${ out.reason }; ${ dbReason }; ${ D.reason }`,", "replace": "reason: out.reason,", "why": "the review shows the rule's reason only"},
+	{"file": "lib/skeleton-classify.mjs", "find": "candidates: [ { ...out.candidates[ 0 ], share: 0.5 }, { ...top, share: 0.5 } ],", "replace": "candidates: out.candidates,", "why": "the finaliser is not offered the DB's block"},
+	{"file": "lib/skeleton-write-record.mjs", "find": "...( r.conflict ? { conflict: r.conflict } : {} ),", "replace": "", "why": "the row loses the conflict record"}
+]

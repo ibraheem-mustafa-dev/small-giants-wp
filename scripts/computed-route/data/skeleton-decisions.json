@@ -430,6 +430,13 @@
 				"close": "the modal's close control (its click handler writes a falsy value to the state the modal opens on): the sgs/modal frame draws the close and its look becomes the frame's close settings; the draft's button is never built as a second, dead close"
 			}
 		},
+		"ruleConflict": {
+			"minConfidence": 0.7,
+			"maxRuleShare": 0.2,
+			"confidence": 0.5,
+			"confirm": "Bean, 2026-10-29 (D1): rules keep winning by default, but a rule row whose DB evidence strongly prefers another block goes to the finaliser and the review instead of being final",
+			"reason": "a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two"
+		},
 		"drawerLogo": {
 			"part": "chromeLogo",
 			"idSetting": "chromeLogoId",

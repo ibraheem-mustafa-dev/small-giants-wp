@@ -12,7 +12,7 @@ export function makeRecorder( ctx ) {
 		const top = r.candidates?.[ 0 ];
 		const row = {
 			order: rows.length, key: e.key, tag: e.tag, depth: e.depth, words: m.words( e ), block: top?.block ?? null, action: r.action || null, reason: r.reason || null, source: r.source || null,
-			confidence: r.confidence, low: r.confidence < 0.7, stale: r.stale || null, rule: r.rule || null, ...( r.into ? { into: r.into } : {} ), ...( r.handover ? { handover: r.handover } : {} ), ...( r.missingFeature ? { missingFeature: r.missingFeature } : {} ), ...( r.siteOptions ? { siteOptions: r.siteOptions } : {} ),
+			confidence: r.confidence, low: r.confidence < 0.7, stale: r.stale || null, rule: r.rule || null, ...( r.into ? { into: r.into } : {} ), ...( r.handover ? { handover: r.handover } : {} ), ...( r.missingFeature ? { missingFeature: r.missingFeature } : {} ), ...( r.siteOptions ? { siteOptions: r.siteOptions } : {} ), ...( r.conflict ? { conflict: r.conflict } : {} ),
 			candidates: ( r.candidates || [] ).slice( 0, 5 ).map( ( c ) => ( { block: c.block, score: c.score, share: c.share, evidence: c.evidence.map( ( ev ) => ev.text ) } ) ),
 			parts: m.kids( e ).filter( m.isPart ).map( ( k ) => k.key ), screenshots: e.screenshots, snippet: e.snippet, attributes: {}, ...extra,
 		};
