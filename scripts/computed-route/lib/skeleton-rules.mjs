@@ -11,6 +11,7 @@ import path from 'path';
 import { narrowedLists, narrowsRenderedList } from './skeleton-narrowing.mjs';
 import { specHit } from './skeleton-facts.mjs';
 import { deliveredKind } from './decoration-layers.mjs';
+import { formElement } from './skeleton-form-element.mjs';
 import { templateKey } from './fact-key.mjs';
 import { recordView } from './skeleton-record.mjs';
 import { pxOf, everyWidth, someWidth } from './element-facts.mjs';
@@ -700,11 +701,20 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			return delivered || v( 'decorationLayer', { block: R.decorationLayer?.block || null } );
 		},
 		( { e, kidsB } ) => ( ! kidsB.length && specHit( R.typedDivider, m.words( e ) ) ? v( 'typedDivider', { action: 'remove' } ) : null ),
-		// A draft <form> element is the form block; its fields sit inside it. The root of a form surface is the saved form's root
-		// block whatever its tag (a wizard drawn in a <div>): the saved form's root must be the form block, which the linked embed renders.
-		// A form block stands only where there is something to fill in (holdsEntry): a <form> or a form surface's root holding only
-		// a button or a link is that control, never a form with nothing to fill in.
-		( { e } ) => ( R.formHost && ( view.realTag( e ) === R.formHost.tag || ( 'form' === surface.kind && 0 === e.depth ) ) && holdsEntry( e ) ? v( 'formHost', { block: R.formHost.block } ) : null ),
+		// A draft <form> element is the form block; its fields sit inside it. The form element of a form surface's root
+		// (lib/skeleton-form-element.mjs) is the saved form's root block whatever its tag (a wizard drawn in a <div>): the saved
+		// form's root must be the form block, which the linked embed renders. A root that is the page's layout around the form
+		// goes, and what it holds beside the form (an aside, a bar) is the page's, never the saved form's. A form block stands only where there
+		// is something to fill in (holdsEntry): a <form> or the form element holding only a button or a link is that control.
+		( { e } ) => {
+			const form = 'form' === surface.kind ? formElement( m, m.root ) : null;
+			if ( ! form || form === m.root || form === e ) {
+				return null;
+			}
+			const inside = ( a, x ) => x === a || ( !! x && inside( a, m.byKey[ x.parentKey ] ) );
+			return inside( e, form ) ? v( 'formHost', { action: 'unwrap', reason: R.formHost?.layoutReason } ) : inside( form, e ) ? null : v( 'formHost', { action: 'remove', reason: R.formHost?.besideReason } );
+		},
+		( { e } ) => ( R.formHost && ( view.realTag( e ) === R.formHost.tag || ( 'form' === surface.kind && e === formElement( m, m.root ) ) ) && holdsEntry( e ) ? v( 'formHost', { block: R.formHost.block } ) : null ),
 		// A form control is the field block for its type; the field's label, required marker and hint are that block's own
 		// settings, and a <label> wrapped around the control goes so the field takes its place. A radio or checkbox group in a
 		// form is one field: its group element is the radio or checkbox field, holding the options, absorbing its controls.

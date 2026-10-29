@@ -9,6 +9,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import { formElement } from './skeleton-form-element.mjs';
 
 // The linked forms of a client's manifest (sites/<client>/build/surfaces.json and the intake record it names): none when the
 // client has no manifest or no intake record yet.
@@ -44,12 +45,14 @@ function innermostRoot( roots, elements ) {
 }
 
 // A function over inventory elements: the verdict of the form-link rule for an element, or null.
-//   { block, attributes }  the element is the form (the <form> element a record is rooted on, else the first element under the
-//                          root), so it becomes the linked reference block;
-//   { remove: true }       another element under the same root: the form is one embed, so it goes.
+//   { block, attributes }  the element is the form (lib/skeleton-form-element.mjs::formElement), so it becomes the linked
+//                          reference block;
+//   { remove: true }       another element inside the form: the form is one embed, so it goes.
+// An element under the record's root outside the form (the grid around the form and the aside beside it) gets no verdict:
+// the page's own rules build it, and the saved form never holds it.
 // view: lib/skeleton-record.mjs::recordView; scope: the surface's record context (surfaceContext); els: the inventory's
 // elements in document order; rule: decisions `rules.formLink`; links: formLinksOf's result.
-export function linkedFormOf( { view, scope, links, refs, els, rule } ) {
+export function linkedFormOf( { view, scope, links, refs, els, rule, m = null } ) {
 	const none = () => null;
 	if ( ! scope || ! rule?.block ) {
 		return none;
@@ -75,12 +78,20 @@ export function linkedFormOf( { view, scope, links, refs, els, rule } ) {
 	for ( const [ root, list ] of under ) {
 		const { ref, slug, block } = byRoot.get( root );
 		const attributes = { [ ref.flag ]: true, [ ref.key ]: slug };
-		// A record whose root is the <form> element itself starts at that element (its inventory copy), never at its first child;
-		// every other element under the root goes.
+		// A record whose root is the <form> element itself starts at that element (its inventory copy); otherwise the form is the
+		// element the form block stands on (lib/skeleton-form-element.mjs::formElement). Every other element inside the form goes.
 		const own = els.find( ( e ) => 'form' === e.tag && view.entry( e ) === view.elements[ root ] ) ?? null;
-		const form = own ?? list[ 0 ];
+		const form = own ?? ( m ? formElement( m, list[ 0 ] ) : list[ 0 ] );
+		const inForm = ( e ) => {
+			for ( let x = e; x; x = m?.byKey[ x.parentKey ] ) {
+				if ( x === form ) {
+					return true;
+				}
+			}
+			return false;
+		};
 		verdicts.set( form.key, { block, attributes } );
-		list.filter( ( e ) => e !== form ).forEach( ( e ) => verdicts.set( e.key, { remove: true } ) );
+		list.filter( ( e ) => e !== form && ( ! m || inForm( e ) ) ).forEach( ( e ) => verdicts.set( e.key, { remove: true } ) );
 	}
 	return ( e ) => verdicts.get( e.key ) ?? null;
 }
