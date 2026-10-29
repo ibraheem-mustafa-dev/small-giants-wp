@@ -66,3 +66,5 @@ The pipeline column predates the 2026-10-29 merges, so each pipeline row below i
 - **D3 `sgs/mega-panel`:** stays as it is (the eyebrow is the `brands` variant's `brandsEyebrow` setting).
 - **D4 per-device connector:** Bean only acknowledged reading Claude Design's point; there is no such setting. The draft shows the timeline line only at desktop and the steps connector from 768 up, so this is a framework gap row.
 - **D5 handoff asks:** yes, for the next export: optional `data-part` ids, a structured `how_to_reach` beside the prose, typed `state_keys`, one threshold form, `METHOD.md` widths at 375/768/1440.
+- **Looped card sections (Bean, 2026-10-29):** a looped card set built as containers is acceptable; it is not a fault and no collection-block rule is built for it. Where a block is wanted, Indus's service cards match `sgs/feature-grid`, not `sgs/card-grid`.
+- **Photo credit:** removed as a brief-only line, as the pipeline already does (Bean: it should not exist).
