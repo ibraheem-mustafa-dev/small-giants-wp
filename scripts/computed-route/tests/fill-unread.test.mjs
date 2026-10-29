@@ -87,16 +87,17 @@ const listedOf = ( args ) => unreadOf( { db, block: 'sgs/container', cal: CONTAI
 
 test( 'MUST FAIL: the band the draft root is also read as is not listed unread; the children\'s settings still are', () => {
 	assert.ok( listedOf( { slots: [ '' ] } ).includes( 'gridAutoRows' ), 'without the band slot the layout settings are listed (the old accounting)' );
-	const listed = listedOf( { slots: [ '' ], band: BAND } );
-	for ( const attr of [ 'gridAutoRows', 'justifyItems', 'contentWidth' ] ) {
+	const listed = listedOf( { slots: [ '' ], band: { slot: BAND, attr: 'contentWidth' } } );
+	for ( const attr of [ 'gridAutoRows', 'justifyItems' ] ) {
 		assert.ok( ! listed.includes( attr ), `${ attr } is judged with the root` );
 	}
+	assert.ok( listed.includes( 'contentWidth' ), 'the band width keeps its own evidence rule (lib/fill-band.mjs), so it stays unread without it' );
 	assert.ok( listed.includes( 'gridItemPadding' ), 'a setting of the band\'s children is another element, still unread' );
 } );
 
 test( 'negative control: a node whose root no finder read keeps its band settings listed, and a block with no band lists as before', () => {
-	assert.ok( listedOf( { slots: [ ITEM ], band: BAND } ).includes( 'gridAutoRows' ), 'the band is the root\'s only when the root was read' );
-	assert.ok( listedOf( { slots: [], band: BAND } ).includes( 'gridAutoRows' ) );
+	assert.ok( listedOf( { slots: [ ITEM ], band: { slot: BAND, attr: 'contentWidth' } } ).includes( 'gridAutoRows' ), 'the band is the root\'s only when the root was read' );
+	assert.ok( listedOf( { slots: [], band: { slot: BAND, attr: 'contentWidth' } } ).includes( 'gridAutoRows' ) );
 	assert.ok( listedOf( { slots: [ '' ], band: null } ).includes( 'gridAutoRows' ), 'no band setting, no shared element' );
 } );
 
