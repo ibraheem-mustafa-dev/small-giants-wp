@@ -33,7 +33,21 @@
         "state_keys": { "type": "object", "description": "Logic state (or derived value) that defines this state.", "additionalProperties": true },
         "sc_if_tpl_ids": { "type": "array", "items": { "type": "string" }, "description": "sc-if elements whose value flips for this state." },
         "how_to_reach": { "type": "string", "description": "User action, plus the call that reaches it programmatically: a setState call on the live logic instance, and, where the state needs the draft's own store to hold something first (a signed-in account, a basket with a gift note), the draft's own store call written with literal arguments, such as MM.account.signIn() or MM.cart.setGift({ on: true }). Intake runs only such a call, on a plain-object global the draft defines." },
-        "animation_ids": { "type": "array", "items": { "type": "string" } }
+        "animation_ids": { "type": "array", "items": { "type": "string" } },
+        "how_to_reach_structured": {
+          "type": "object", "additionalProperties": false,
+          "description": "The same way in as how_to_reach, machine-readable. Cloning reads setState and storeCalls before the prose.",
+          "properties": {
+            "setState": { "type": "object", "description": "The object passed to setState on the live logic instance.", "additionalProperties": true },
+            "storeCalls": { "type": "array", "description": "The draft's own store calls, with literal arguments, run before the state is opened.", "items": { "type": "object", "required": ["path"], "additionalProperties": false, "properties": { "path": { "type": "string", "pattern": "^[A-Za-z_$][\\w$]*(\\.[A-Za-z_$][\\w$]*)+$", "description": "For example MM.account.signIn." }, "args": { "type": "array" } } } },
+            "event": { "type": "object", "description": "The user action that reaches the state.", "required": ["type", "target"], "additionalProperties": false, "properties": { "type": { "type": "string", "description": "A DOM event type such as click." }, "target": { "type": "string", "description": "A data-part id or a data-dc-tpl index." } } }
+          }
+        },
+        "state_key_sources": { "type": "object", "description": "Where each state_keys key lives: state (a key of the logic state), derived (computed by renderVals, not settable) or instance (a field on the logic instance).", "additionalProperties": { "enum": ["state", "derived", "instance"] } },
+        "breakpoint": {
+          "type": "object", "description": "The width threshold this state depends on, in one form.", "required": ["basis", "op", "value"], "additionalProperties": false,
+          "properties": { "basis": { "const": "state.w" }, "op": { "enum": [">=", "<", "<=", ">"] }, "value": { "type": "number" } }
+        }
       }
     },
     "surface": {

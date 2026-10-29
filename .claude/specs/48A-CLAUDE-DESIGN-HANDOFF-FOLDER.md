@@ -1,11 +1,11 @@
 ---
 doc_type: spec
 spec_id: 48A
-spec_version: "1.0"
+spec_version: "1.1"
 title: The Claude Design handoff folder
 project: small-giants-wp
 status: active
-last_verified: 2026-10-17
+last_verified: 2026-10-29
 authors: Bean + Claude
 parent_spec: Spec 48 (`.claude/specs/48-CLONING-SYSTEM.md`, the cloning system)
 ---
@@ -53,9 +53,9 @@ Status: checked by `handoff-check.mjs`; the prompt asks for it from 2026-10-11. 
 Status: checked by `handoff-check.mjs`; two builds recorded (`c60c4908…` from Indus, `8fe7df74…` from Eye Care and Mama's Munches).
 
 ### FR-48A-6 -- Schemas are ours
-The master schemas, method and templates live in `.claude/claude-design-handoff/handoff-schema/`, uploaded to every Claude Design project. The check validates `animations.json`, `surfaces.json` and `MANIFEST.json` against the master copies, never the folder's copy; a folder copy that differs from the master is a warning naming the file.
+The master schemas, method and templates live in `.claude/claude-design-handoff/handoff-schema/`, uploaded to every Claude Design project. The check validates `animations.json`, `surfaces.json` and `MANIFEST.json` against the master copies, never the folder's copy; a folder copy that differs from the master is a warning naming the file and the lines only the export or only the master holds. A folder may also carry the project's own `CLAUDE.md`; when it differs from the master `.claude/claude-design-handoff/CLAUDE.md` the check warns the same way, so an export made from older or edited instructions is named.
 
-Status: checked by `handoff-check.mjs`.
+Status: checked by `handoff-check.mjs` (`lib/handoff.mjs::checkHandoff`, `lib/handoff.mjs::lineDifferences`).
 
 ### FR-48A-7 -- Inventories are current
 `animations.json` and `surfaces.json` validate against the master schemas, and every draft hash and the `runtime_sha256` recorded in `animations.json` match the files, so an inventory written before a design change is refused. The target, set by Bean's decision (e) of 2026-10-11, is that intake re-derives the inventory from the code by `METHOD.md` and Claude Design's copy is only a cross-check; until Spec 48 step 14b (FR-48-25) lands, Claude Design's inventories are used, cross-checked by `scripts/computed-route/trace-check.mjs` on a single-file draft's entry page (every Web Animations call, CSS animation start and CSS transition run matched to a record, `--shift=7` negative control).
@@ -89,6 +89,16 @@ Status: specified; the Eye Care mirror is task 2 of `.claude/prompts/Track 2 Eye
 
 Status: done 2026-10-11.
 
+### FR-48A-13 -- Structured reach, typed keys, one threshold form, stable part ids
+All of these are optional, so an earlier export still validates. The handoff never names an SGS block: block choice is made at cloning.
+- `data-part="<id>"` on a meaningful element is a stable name for what the element is in the design (`hero-cta`, `filter-rail`). It is identity only and is kept unchanged between exports.
+- A `surfaces.json` state may carry `how_to_reach_structured` beside the `how_to_reach` prose: `{ setState: { ... }, storeCalls: [ { path, args } ], event: { type, target } }` (`handoff-schema/surfaces.schema.json::$defs.state`). `target` is a `data-part` id or a `data-dc-tpl` index.
+- A state may carry `state_key_sources`, mapping each `state_keys` key to `state`, `derived` or `instance`.
+- A state that depends on a width carries `breakpoint`: `{ basis: "state.w", op, value }`.
+- `handoff-schema/METHOD.md` reads the logic at 375, 768 and 1440.
+
+Status: schema, method, prompt and `CLAUDE.md` updated 2026-10-29. The route reads `setState` and `storeCalls` before the prose (`lib/intake-reach-calls.mjs::structuredReach`, used by `lib/state-openers.mjs::stateWays`, `lib/intake-store-calls.mjs::preconditionWays` and `lib/intake-pagemap-flow-openers.mjs::openingWrites`) and `breakpoint` before the prose threshold (`lib/skeleton-child-slots.mjs::collapsePoint`). `event`, `state_key_sources` and `data-part` are recorded for the reader and not yet consumed by the route. No export made after the update exists yet.
+
 ## 3. Readers
 
 Every kind of data in the folder has a named reader, and every stage takes a fact from the reader of the file that states it; the render confirms (Spec 48 R-47-4). The readers join into one fact record per draft element (Spec 48 FR-48-7). The full register, with each kind's values on the three exports, the stages that could use it and its use by agents, is `.claude/reports/2026-10-21-handoff-data-register.md`. "Built" means the reader exists today.
@@ -115,5 +125,5 @@ Every kind of data in the folder has a named reader, and every stage takes a fac
 3. No export follows `README.template.md`'s headings exactly (Indus has no Routes, Forms, Business details or Judgement calls headings; Mama's has no Forms, Judgement calls or Revision; Eye Care no Revision), all three cite `MANIFEST.md` for the folder's `MANIFEST.json`, and Mama's and Eye Care's READMEs map the design to SGS blocks ("Block mapping (SGS)", "Building it in SGS").
 4. README counts and values drift from the code: Indus states 183 animation and 60 surface records (217 and 61) and a header logo of `clamp(40px,3.8vw,52px)` where the code declares `clamp(54px,4.4vw,66px)`; Eye Care states 80 toggling `sc-if`s (97 listed).
 5. Indus READING-DC-FILES says no draft has `data-props` (TradeApplication and EnquiryForm do) and lists 11 refs (the template holds 12).
-6. `surfaces.json` `state_keys` mix real state keys with derived values and instance fields (`R.pin`, `item.current`, `_closing`), and thresholds are written three ways ("≥ N" prose in `how_to_reach`, `{"w": ">= 1060"}` in `state_keys`, `{"bp": "m|t"}`).
+6. The Indus, Eye Care and Mama's exports predate FR-48A-13: their `surfaces.json` `state_keys` mix real state keys with derived values and instance fields (`R.pin`, `item.current`, `_closing`), and thresholds are written three ways ("≥ N" prose in `how_to_reach`, `{"w": ">= 1060"}` in `state_keys`, `{"bp": "m|t"}`). The next export writes `state_key_sources` and `breakpoint`.
 7. Eye Care's `animations.json` `drafts` and `surfaces.json` S-38 and counts still name the removed `WP Build Gap Map.dc.html`.

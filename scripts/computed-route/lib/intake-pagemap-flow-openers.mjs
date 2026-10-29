@@ -15,7 +15,7 @@
 export const OPENS_KINDS = { sgs_choice_flow: 'flow', sgs_modal: 'modal' };
 import { parseExpression } from '@babel/parser';
 import { attrOf, readBinding, isFn, keyName, propName, resolveName, subtree } from './intake-ast.mjs';
-import { reachCalls } from './intake-reach-calls.mjs';
+import { reachCalls, structuredReach } from './intake-reach-calls.mjs';
 import { fnsNamed } from './intake-census-map.mjs';
 
 const MAX_DEPTH = 4;
@@ -145,7 +145,7 @@ export function openingWrites( record ) {
 	const per = open.map( ( st ) => {
 		const skip = new Set( Object.entries( st.state_keys || {} ).filter( ( [ , v ] ) => CONDITION.test( String( v ) ) ).map( ( [ k ] ) => k ) );
 		const out = new Set();
-		for ( const c of reachCalls( st.how_to_reach ) ) {
+		for ( const c of structuredReach( st )?.set ?? reachCalls( st.how_to_reach ) ) {
 			try {
 				parseExpression( `[${ c.args }]` ).elements.forEach( ( a ) => valueWrites( { idx: null, env: new Map() }, a, [], out ) );
 			} catch {

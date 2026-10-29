@@ -1,0 +1,8 @@
+[
+	{"file": "lib/state-openers.mjs", "find": "const calls = sr ? [ ...sr.store, ...sr.set ] :", "replace": "const calls = false ? [ ...sr.store, ...sr.set ] :", "why": "the prose call would win over the structured one"},
+	{"file": "lib/intake-reach-calls.mjs", "find": "return set.length || store.length ? { set, store } : null;", "replace": "return { set, store };", "why": "an event-only structured field would hide the prose way"},
+	{"file": "lib/intake-reach-calls.mjs", "find": "args: JSON.stringify( s.setState )", "replace": "args: '{}'", "why": "the structured state patch would be lost"},
+	{"file": "lib/intake-store-calls.mjs", "find": "structuredReach( st )?.store ??", "replace": "", "why": "a structured store precondition would be ignored"},
+	{"file": "lib/intake-pagemap-flow-openers.mjs", "find": "structuredReach( st )?.set ??", "replace": "", "why": "the structured opening write would be ignored"},
+	{"file": "lib/skeleton-child-slots.mjs", "find": "'state.w' === t.basis && '>=' === t.op ? Number( t.value ) :", "replace": "false ? Number( t.value ) :", "why": "the structured threshold would lose to the prose"}
+]

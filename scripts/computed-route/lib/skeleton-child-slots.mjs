@@ -57,8 +57,10 @@ export function collapsePoint( { e, states = [], thresholds = [] } ) {
 	const ids = new Set( scIfIds( e ) );
 	const found = new Set();
 	for ( const s of states.filter( ( x ) => ( x.sc_if_tpl_ids || [] ).some( ( id ) => ids.has( String( id ) ) ) ) ) {
-		const m = /(?:≥|>=)\s*(\d+)/.exec( s.how_to_reach || '' );
-		m && thresholds.includes( Number( m[ 1 ] ) ) && found.add( Number( m[ 1 ] ) );
+		// The structured threshold ({ basis: 'state.w', op: '>=', value }) is read before the prose.
+		const t = s.breakpoint;
+		const n = t && 'state.w' === t.basis && '>=' === t.op ? Number( t.value ) : Number( /(?:≥|>=)\s*(\d+)/.exec( s.how_to_reach || '' )?.[ 1 ] );
+		thresholds.includes( n ) && found.add( n );
 	}
 	return 1 === found.size ? { value: [ ...found ][ 0 ] } : { note: `${ found.size } width thresholds show this navigation, so no collapse point` };
 }

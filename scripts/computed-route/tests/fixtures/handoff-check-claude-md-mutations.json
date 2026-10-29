@@ -1,0 +1,5 @@
+[
+	{"file": "lib/handoff.mjs", "find": "|| 'CLAUDE.md' === f ) {", "replace": ") {", "why": "an export carrying its CLAUDE.md would fail as an unknown file"},
+	{"file": "lib/handoff.mjs", "find": "! read( 'CLAUDE.md' ).equals( fs.readFileSync( masterClaude ) ) ) {", "replace": "false ) {", "why": "an export made from older instructions would pass silently"},
+	{"file": "lib/handoff.mjs", "find": "list( e, m ) }. Only in the master:", "replace": "list( m, e ) }. Only in the master:", "why": "the lines only the export has would be named as the master's"}
+]

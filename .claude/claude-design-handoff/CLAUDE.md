@@ -15,6 +15,7 @@ handoff itself is run by a prompt the user pastes; these are the standing facts 
 - Don't change the drafts, their scripts or assets while preparing a handoff. List bugs under `unresolved` and ask
   before fixing. After any fix, the whole handoff prompt runs again, so `animations.json`, `surfaces.json` and
   `MANIFEST.json` always match the drafts.
+- Meaningful elements (a section, a drawer, a menu, a form, a call to action) may carry a stable `data-part="<id>"` that names what the element is in the design (`hero-cta`, `filter-rail`). Keep an id unchanged between exports. Never name a WordPress or SGS block in it, in a state or anywhere else in the handoff: block choice is made later by Claude Code.
 - `tokens/` holds the brand palette, type and spacing only. A colour used once or twice in a draft stays a hex value in
   the draft; never add a token for it.
 - Inventories follow `handoff-schema/METHOD.md` and validate against its schemas; fix the records, never the schema.

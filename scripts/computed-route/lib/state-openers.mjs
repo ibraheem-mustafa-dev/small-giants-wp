@@ -13,7 +13,7 @@
 //     how_to_reach gives, lib/intake-reach-calls.mjs, after the draft's own store calls it names, lib/intake-store-calls.mjs), the plain keys first when every key holds a value (a width
 //     bound is a description too; plainState), else the call first;
 //   - how a way is written in a log or a refusal (describeWay).
-import { reachCalls } from './intake-reach-calls.mjs';
+import { reachCalls, structuredReach } from './intake-reach-calls.mjs';
 import { storeCalls, describeStoreCall } from './intake-store-calls.mjs';
 import { widthBounds } from './state-reach.mjs';
 
@@ -82,7 +82,8 @@ export function stateWays( states, { own, live = null, extra = () => ( {} ) } ) 
 		const { keys, dropped, bounds } = judgeKeys( st, { own, live } );
 		const common = { state: st.name, bounds, dropped, ...extra( st ) };
 		const set = Object.keys( keys ).length ? [ { via: 'state', ...common, keys } ] : [];
-		const calls = [ ...storeCalls( st.how_to_reach ), ...reachCalls( st.how_to_reach ) ];
+		const sr = structuredReach( st );
+		const calls = sr ? [ ...sr.store, ...sr.set ] : [ ...storeCalls( st.how_to_reach ), ...reachCalls( st.how_to_reach ) ];
 		const reach = calls.length ? [ { via: 'reach', ...common, calls } ] : [];
 		const mine = plainState( st ) ? [ ...set, ...reach ] : [ ...reach, ...set ];
 		mine.length ? ways.push( ...mine ) : refused.push( { state: st.name, dropped } );
