@@ -1,0 +1,50 @@
+[
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "if ( logo ) {",
+		"replace": "if ( false ) {",
+		"why": "a typed brand name beside a logo image is built as a second logo block"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "logo: logoImageAmong( list ) }",
+		"replace": "logo: null }",
+		"why": "the unit never learns of the logo image beside it"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "els.forEach( ( e ) => record( e, { action: 'remove', reason, confidence: 1, candidates: [] }, { unit: 'brand' } ) );",
+		"replace": "[ first ].forEach( ( e ) => record( e, { action: 'remove', reason, confidence: 1, candidates: [] }, { unit: 'brand' } ) );",
+		"why": "only the first typed part is dropped; the rest build blocks"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "list.find( ( k ) => 'img' === k.tag &&",
+		"replace": "list.find( ( k ) => true &&",
+		"why": "any sibling carrying a logo word or the site name as alt text is the logo image"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "specHit( facts.decisions.logoImage, `${ k.attrs?.srcBasename || '' } ${ k.attrs?.alt || '' } ${ k.attrs?.class || '' }` ) ||",
+		"replace": "false ||",
+		"why": "the logo image is found by its alt text alone, never by its file name or class"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "( k.attrs?.alt || '' ).trim().toLowerCase() === facts.siteName.toLowerCase() ) ) ?? null;",
+		"replace": "false ) ) ?? null;",
+		"why": "the logo image is found by its file name or class alone, never by its alt text being the site name"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "const logoImageAmong = ( list ) => list.find( ( k ) => 'img' === k.tag &&",
+		"replace": "const logoImageAmong = ( list ) => list.find( ( k ) => 'img' === k.tag || true ||",
+		"why": "every image beside the typed name is a logo, whatever it is"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "'brand' === u.type ? buildBrand( u.els, u.logo )",
+		"replace": "'brand' === u.type ? buildBrand( u.els )",
+		"why": "the writer never passes the logo image to the brand builder"
+	}
+]
