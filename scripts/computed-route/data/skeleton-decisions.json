@@ -159,6 +159,15 @@
 			"roles": {
 				"cart": { "block": "core/post-content", "reason": "the cart page's content is WooCommerce's Cart block (site build keeps it, lib/site-build-plan.mjs::wooContentRole), which draws the order lines, the totals and the checkout button" },
 				"checkout": { "block": "core/post-content", "reason": "the checkout page's content is WooCommerce's Checkout block (kept by site build), which draws the payment form and the order summary" },
+				"product": {
+					"block": "sgs/container",
+					"attributes": { "tagName": "div" },
+					"inner": [
+						{ "name": "sgs/heading", "attributes": { "level": "h1", "metadata": { "bindings": { "content": { "source": "sgs-product/field", "args": { "key": "title", "source": "auto" } } } } } },
+						{ "name": "sgs/buybox", "attributes": {}, "reads": false }
+					],
+					"reason": "the single-product template is the whole draft page (FR-48-56); the area that varies per product is the working, bound pieces: the title is a heading bound to the product (sgs-product/field), and the hero (gallery, price, option pickers, stock line, add-to-basket) is sgs/buybox, the composite that draws them from the WooCommerce product, the stated fallback until the Spec 27 parts split exists (FR-48-60 step 1, Bean S13)"
+				},
 				"account": { "block": "sgs/account", "reason": "the account page is an ordinary page (Bean, 2026-10-26; the hand-built reference shop's account page is the theme's page with WooCommerce's account output in it): its sign-in and account forms region is sgs/account, WooCommerce's account piece, which draws the forms, the menu and the dashboard" },
 				"shop": {
 					"block": "woocommerce/product-collection",

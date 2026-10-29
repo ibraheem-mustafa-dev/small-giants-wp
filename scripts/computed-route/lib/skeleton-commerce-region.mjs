@@ -15,26 +15,31 @@
 //     folded into the account row by the page map) has as its region the shown branch of the condition that holds a link
 //     to that page: the account block draws the sign-in form there for a visitor, and the account itself once signed in;
 //   - shop: the element whose children are the items of the product loop (an `sc-for` of a mounted card that shows a
-//     currency amount); WooCommerce's product collection draws the products, each in the site's own product card.
+//     currency amount); WooCommerce's product collection draws the products, each in the site's own product card;
+//   - product: the single-product template's hero, lib/skeleton-product-region.mjs (the buy box composite and the bound title).
 // Only shown elements count, so a closed panel (the header's basket drawer) never holds evidence; two candidates for one
 // role leave the surface as it is, with a note naming them. Pure: the inventory model in, the region out.
 
 import { templateKey } from './fact-key.mjs';
 import { isAccountRow } from './site-build-map.mjs';
+import { productRegion } from './skeleton-product-region.mjs';
+import { shopPartStamps } from './skeleton-shop-locators.mjs';
 
 // The commerce role of a surface, by the template it builds (surfaces.json `target.template`) or, for the account page
 // (an ordinary page holding WooCommerce's account piece), the page row its post is; the checkout page's route (a cart's
 // region links to it); and, for the account page, `signIn`: the other draft page files holding the account row's own
 // WooCommerce forms (its `parts` owned by `woocommerce`, each naming `<file>:<line>:<column> <tag>`), where a signed-out
-// view sends its visitor. The shop's role also carries `filters`, what the draft catalogue (sites/<client>/build/catalogue.json,
+// view sends its visitor. The product's role carries `buybox`, the draft stamps of its add-to-basket control, and the shop's
+// `toolbar`, those of its sort control and result count, both read from the client's shop parts record (`shopParts`,
+// lib/skeleton-shop-locators.mjs). The shop's role also carries `filters`, what the draft catalogue (sites/<client>/build/catalogue.json,
 // FR-48-92) says its filter rail can filter: { facets, brands, categories } (lib/skeleton-filter-rail.mjs).
-export const COMMERCE_ROLES = { 'archive-product': 'shop', cart: 'cart', checkout: 'checkout' };
+export const COMMERCE_ROLES = { 'archive-product': 'shop', 'single-product': 'product', cart: 'cart', checkout: 'checkout' };
 const draftFile = ( s ) => /^([^:?#]+\.dc\.html)(?=[:?#]|$)/i.exec( String( s ?? '' ) )?.[ 1 ] ?? null;
 const filtersOf = ( catalogue ) => {
 	const kept = ( catalogue?.products || [] ).filter( ( p ) => ! ( catalogue.dropped || [] ).includes( p.draftId ) );
 	return { facets: catalogue?.facets || [], brands: [ ...new Set( kept.map( ( p ) => p.brand ).filter( Boolean ) ) ], categories: [ ...new Set( kept.flatMap( ( p ) => p.categories || [] ) ) ] };
 };
-export function commerceOf( entry, rows = [], catalogue = null ) {
+export function commerceOf( entry, rows = [], catalogue = null, shopParts = null ) {
 	const page = null != entry?.target?.postId ? rows.find( ( r ) => r.id === entry.target.postId ) : null;
 	const role = COMMERCE_ROLES[ entry?.target?.template ] ?? ( page && isAccountRow( page ) ? 'account' : undefined );
 	if ( ! role ) {
@@ -42,7 +47,15 @@ export function commerceOf( entry, rows = [], catalogue = null ) {
 	}
 	const checkout = rows.find( ( r ) => 'page' === r.postType && 'checkout' === r.template )?.route ?? null;
 	const signIn = 'account' === role ? [ ...new Set( ( page.parts || [] ).filter( ( p ) => 'woocommerce' === p.owner ).map( ( p ) => draftFile( p.draftId ) ).filter( ( f ) => f && f !== draftFile( page.route ) ) ) ] : [];
-	return { role, checkout, ...( signIn.length ? { signIn } : {} ), ...( 'shop' === role && catalogue ? { filters: filtersOf( catalogue ) } : {} ) };
+	const located = shopPartStamps( shopParts );
+	return {
+		role,
+		checkout,
+		...( signIn.length ? { signIn } : {} ),
+		...( 'shop' === role && catalogue ? { filters: filtersOf( catalogue ) } : {} ),
+		...( 'product' === role && located.add.length ? { buybox: { add: located.add } } : {} ),
+		...( 'shop' === role && ( located.sort.length || located.count.length ) ? { toolbar: { sort: located.sort, count: located.count } } : {} ),
+	};
 }
 
 // An attribute as the draft's code writes it: the element's own opening tag (the inventory's `attrs` keeps a few only). The
@@ -71,6 +84,9 @@ const pagePath = ( href ) => ( null == href ? href : String( href ).trim().start
 export function commerceRegion( { m, commerce, rule } ) {
 	if ( ! commerce?.role || ! rule ) {
 		return null;
+	}
+	if ( 'product' === commerce.role ) {
+		return productRegion( { m, commerce, rule } );
 	}
 	const money = new RegExp( rule.money );
 	const els = m.els.filter( shown );

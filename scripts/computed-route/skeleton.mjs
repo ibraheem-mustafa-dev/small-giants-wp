@@ -39,6 +39,7 @@ import { savedInventoryOf } from './lib/skeleton-saved-inventory.mjs';
 import { skeletonDir, readDecisions, readPicks, recordDecision, recordSiteName, finaliseRequest, applyPicks } from './lib/skeleton-finalise.mjs';
 import { commerceOf } from './lib/skeleton-commerce-region.mjs';
 import { loadCatalogue } from './lib/catalogue-read.mjs';
+import { loadShopParts } from './lib/fill-shop-parts.mjs';
 
 const FINALISER_PROMPT = 'scripts/computed-route/prompts/skeleton-finaliser.md';
 
@@ -132,7 +133,7 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	const formLinks = formLinksFor( { repo, client, refs } );
 	// A WooCommerce page's template surface places WooCommerce's piece at the draft's commerce region (lib/skeleton-commerce-region.mjs),
 	// and the shop's its filter rail from the draft catalogue's facets (lib/skeleton-filter-rail.mjs).
-	const commerce = commerceOf( readSurface( repo, client, surface ), readJson( path.join( repo, 'sites', client, 'build', 'page-map.json' ), [] ), loadCatalogue( repo, client ) );
+	const commerce = commerceOf( readSurface( repo, client, surface ), readJson( path.join( repo, 'sites', client, 'build', 'page-map.json' ), [] ), loadCatalogue( repo, client ), loadShopParts( path.join( repo, 'sites', client, 'build' ) ) );
 	const r = propose( { inventory, facts, formLinks, refs, draftLinks: draftLinksFor( { repo, client } ), surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, commerce, built: ctx.built, carried: carriedIds( { repo, client, site: readSurface( repo, client, surface ).site, rootComponent: served ? ctx.rootComponent : null } ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: readPicks( p.picks ), calKeys: calKeysFor( readSurface( repo, client, surface ).site ), calSettings: calSettingsFor( readSurface( repo, client, surface ).site ), states: ctx.states, thresholds: ctx.thresholds, pageMap: ctx.pageMap, surfaceId: ctx.id, db } );
 	json( p.skeleton, r.skeleton );
 	json( p.proposal, r.proposal );
