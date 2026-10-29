@@ -35,7 +35,7 @@ test( 'NEGATIVE: a run with no compared pair, the state pair alone, and a root w
 } );
 
 test( 'MUST FAIL: the walk step returns what the walker said for a found surface and throws for an absent one, naming the runs', () => {
-	assert.equal( walkVerdict( 'walked', write( { runs: [ run( 'default', 1440, FOUND ) ] } ) ), 'walked' );
+	assert.equal( walkVerdict( 'walked', write( { runs: [ run( 'default', 1440, FOUND ) ] } ) ), 'walked [0 open, 0 unreviewed, 0 live errors]' );
 	assert.throws( () => walkVerdict( 'walked', write( { runs: [ run( 'open', 1440, ABSENT ), run( 'open', 768, ABSENT ) ] } ) ), /does not show the surface: its root element is missing in open at 1440, open at 768/ );
 	assert.equal( walkVerdict( 'no report', path.join( os.tmpdir(), 'site-run-walk-none', 'report.json' ) ), 'no report', 'a missing file is the walker\'s own failure, not judged here' );
 } );

@@ -40,9 +40,15 @@ import { deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
 import { pointAfterBuild } from './lib/site-run-layout.mjs';
 import { walkVerdict } from './lib/site-run-walk.mjs';
+import { reviewedVerdict } from './lib/site-run-reviewed.mjs';
+import { calibrationVerdict } from './lib/site-run-blocks.mjs';
+import { certsPath } from './lib/site-run-certs.mjs';
+import { hashesFor } from './stage0.mjs';
 import { WHOLE_TREE, commonChain, contentUnder, copyFile, copyTree, readShell, splitShell, writeCopy } from './lib/template-copies.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
+const CACHE = path.join( REPO, 'scripts', 'computed-route', 'cache' );
+const calibrationFixtures = () => readJson( path.join( REPO, 'scripts', 'computed-route', 'calibration-fixtures.json' ) );
 const ALL_STAGES = [ 'inventory', 'propose', 'fill', 'build', 'walk' ];
 
 const readJson = ( f ) => JSON.parse( fs.readFileSync( f, 'utf8' ) );
@@ -194,7 +200,7 @@ export async function main( argv ) {
 		servers.has( id ) || servers.set( id, serveDraft( assertDraftPage( path.join( REPO, entry.draftDir ), entry.draftIndex ), { index: entry.draftIndex } ) );
 		return servers.get( id );
 	};
-	const certs = process.env.NODE_EXTRA_CA_CERTS || 'C:\\Users\\Bean\\AppData\\Roaming\\Python\\Python313\\site-packages\\certifi\\cacert.pem';
+	const certs = certsPath();
 
 	// The stage runner of one surface: a stage not asked for counts as passed; a WooCommerce page's own Fill and build are
 	// skipped and its walk then stops (a failed stage stops the surface).
@@ -283,7 +289,11 @@ export async function main( argv ) {
 			if ( r.problems.length ) {
 				throw new Error( r.problems.join( '; ' ).slice( 0, 500 ) );
 			}
-			return `${ r.proposal.counts.skeletonNodes } nodes, ${ r.proposal.counts.low } low`;
+			// Built equals reviewed: the new proposal against the rows intake saved for Bean's review.
+			const reviewed = reviewedVerdict( { surface: key, reviewed: skel.rows, proposed: r.proposal.rows } );
+			// Every block it places has a current slot map before Fill.
+			const calibrated = calibrationVerdict( { surface: key, rows: r.proposal.rows, client, site, cacheDir: CACHE, hashesOf: blockHashes, fixtures: calibrationFixtures() } );
+			return `${ r.proposal.counts.skeletonNodes } nodes, ${ r.proposal.counts.low } low; ${ reviewed }; ${ calibrated }`;
 		} ) ) {
 			return;
 		}
@@ -365,7 +375,7 @@ export async function main( argv ) {
 		const parity = path.join( build, 'qa', 'parity' );
 		await step( 'walk', async () => {
 			const said = await exec( 'walk', 'node', [ 'scripts/parity/draft-live-walk.mjs', path.join( parity, path.basename( entry.walkerFull ) ),
-				'--out', path.join( parity, 'out', key ), '--widths', widths, '--headless', '--no-review' ], { SGS_DRAFT_URL: ctx.walkUrl, NODE_EXTRA_CA_CERTS: certs } ).catch( ( e ) => {
+				'--out', path.join( parity, 'out', key ), '--widths', widths, '--headless', '--no-review' ], { SGS_DRAFT_URL: ctx.walkUrl, ...( certs ? { NODE_EXTRA_CA_CERTS: certs } : {} ) } ).catch( ( e ) => {
 				// The walker exits 1 for open differences; the report is what counts.
 				if ( fs.existsSync( path.join( parity, 'out', key, 'report.json' ) ) ) {
 					return `report written (${ String( e.message ).slice( 0, 200 ) })`;
@@ -382,6 +392,9 @@ export async function main( argv ) {
 	const targetsFile = path.join( REPO, 'scripts', 'computed-route', 'calibration-targets.json' );
 	const target = ( fs.existsSync( targetsFile ) ? readJson( targetsFile )[ site ] : null ) || {};
 	const runPhp = wpEvalRunner( target, site, REPO );
+	// Each block's deployed and local build hashes, read once per run (stage0.mjs::hashesFor).
+	const hashMemo = new Map();
+	const blockHashes = ( block ) => hashMemo.get( block ) ?? ( hashMemo.set( block, hashesFor( site, target, block ) ), hashMemo.get( block ) );
 	const wp = wpCommand( target, site, REPO );
 	const recordTemplate = ( slug, hash ) => runPhp( templateRecordPhp( slug, hash ) );
 

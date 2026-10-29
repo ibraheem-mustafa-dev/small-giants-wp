@@ -15,13 +15,20 @@ import { CONTENT_META, MENU_META, ROW_META, SECTION_META, TEMPLATE_CONTENT_OPTIO
 // admin page past it; a run stopped by a stall resumes from the posts already made.
 const EDITOR_TIMEOUT = 120000;
 
+// The secrets file and key of a site: its calibration-targets.json entry's `envFile` and `envKey` (as site-run.mjs reads
+// them), else the file and key named after the site itself (a site with no target entry).
+export const siteEnv = ( siteTarget, site ) => ( {
+	envFile: siteTarget?.envFile || path.join( '.claude', 'secrets', `${ site }.env` ),
+	envKey: siteTarget?.envKey || site.toUpperCase().replace( /[^A-Z0-9]/g, '' ),
+} );
+
 // A build runner over wp-build-page.js for one site's secrets file: ({ create, title, slug } | { postId }, tree) -> id.
-export function wpBuildPage( repo, site ) {
-	const envKey = site.toUpperCase().replace( /[^A-Z0-9]/g, '' );
+export function wpBuildPage( repo, site, siteTarget = {} ) {
+	const { envFile, envKey } = siteEnv( siteTarget, site );
 	return ( target, tree ) => {
 		const file = path.join( os.tmpdir(), `site-build-${ process.pid }-${ Date.now() }.tree.json` );
 		fs.writeFileSync( file, JSON.stringify( tree ) );
-		const args = [ path.join( repo, 'scripts', 'wp-build-page.js' ), '--env-file', path.join( repo, '.claude', 'secrets', `${ site }.env` ), '--env-key', envKey, '--tree', file,
+		const args = [ path.join( repo, 'scripts', 'wp-build-page.js' ), '--env-file', path.resolve( repo, envFile ), '--env-key', envKey, '--tree', file,
 			...( target.template ? [ '--template', target.template ] : target.postId ? [ '--post-id', String( target.postId ) ] : [ '--create', target.create, '--title', target.title, '--slug', target.slug ] ), '--status', 'publish', '--editor-timeout', String( EDITOR_TIMEOUT ) ];
 		let out = '';
 		try {

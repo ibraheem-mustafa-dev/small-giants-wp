@@ -2,12 +2,16 @@
 # Copies a local WSL mirror's database and uploads onto its Hostinger test site, so a clone built on the mirror lands on
 # the test site with identical post, menu and media ids. The reverse of refresh-from-remote.sh.
 # Usage (from Git Bash on Windows, which holds the SSH key):
-#   bash scripts/local-wp/push-to-remote.sh <local-site> <remote-target> [--dry-run]
+#   bash scripts/local-wp/push-to-remote.sh <local-site> <remote-target> [--dry-run] [--client <slug>]
 #   e.g. bash scripts/local-wp/push-to-remote.sh local-eye-care eye-care-clone-test --dry-run
 # <local-site> and <remote-target> name secrets files: .claude/secrets/<name>.env, each holding WP_URL_<KEY> (the key is
 # the name upper-cased with the hyphens removed). SECRETS_DIR overrides the secrets folder (a worktree has none).
 # --dry-run performs every read and check and prints each step, but writes nothing on the server and imports nothing;
 # it also has the server syntax-check the uploads copy script it would run.
+# Before anything is read from the database, the sgs-blocks build on the mirror is compared with the one on the test site
+# (scripts/computed-route/build-compare.mjs, --dry-run included); a mismatch refuses, with the build-deploy.py fix.
+# After the copy, `--client <slug>` runs scripts/computed-route/site-check.mjs against the test site; without it the exact
+# command is printed as the last step.
 # The remote database is backed up on the server before anything is written; a failed run prints the restore command.
 #
 # This is the one sanctioned mirror-to-test-site copy (root CLAUDE.md, Build and deploy). The sites it may write to,
@@ -22,14 +26,19 @@ SECRETS_DIR="${SECRETS_DIR:-$REPO/.claude/secrets}"
 LOCAL=""
 REMOTE=""
 DRY=0
+CLIENT=""
+NEXT_IS_CLIENT=0
 for arg in "$@"; do
+  if [ "$NEXT_IS_CLIENT" = 1 ]; then CLIENT="$arg"; NEXT_IS_CLIENT=0; continue; fi
   case "$arg" in
     --dry-run) DRY=1 ;;
+    --client) NEXT_IS_CLIENT=1 ;;
     -*) echo "Unknown option $arg" >&2; exit 2 ;;
     *) if [ -z "$LOCAL" ]; then LOCAL="$arg"; elif [ -z "$REMOTE" ]; then REMOTE="$arg"; else echo "Too many arguments" >&2; exit 2; fi ;;
   esac
 done
-[ -n "$LOCAL" ] && [ -n "$REMOTE" ] || { echo "Usage: $0 <local-site> <remote-target> [--dry-run]" >&2; exit 2; }
+[ "$NEXT_IS_CLIENT" = 0 ] || { echo "--client needs a value" >&2; exit 2; }
+[ -n "$LOCAL" ] && [ -n "$REMOTE" ] || { echo "Usage: $0 <local-site> <remote-target> [--dry-run] [--client <slug>]" >&2; exit 2; }
 
 # 1. Guard and URLs. push_target.py refuses anything that is not a test site in the deploy roster.
 TARGET_VARS="$( python "$REPO/scripts/local-wp/push_target.py" "$REMOTE" )" || exit 1
@@ -89,6 +98,8 @@ RPREFIX="$( rsh "wp config get table_prefix" )"
 [ -n "$LPREFIX" ] && [ -n "$RPREFIX" ] || { echo "Could not read a table prefix (mirror '$LPREFIX', remote '$RPREFIX')" >&2; exit 1; }
 [ "$LPREFIX" = "$RPREFIX" ] || { echo "Table prefixes differ: mirror '$LPREFIX', remote '$RPREFIX'. Refusing." >&2; exit 1; }
 echo "table prefix: $LPREFIX (both sides)"
+# The plugin build the clone was made with must be the build the test site runs.
+node "$REPO/scripts/computed-route/build-compare.mjs" --local "$LOCAL" --target "$REMOTE" || { echo "Refusing: the sgs-blocks build differs (see above); nothing was written" >&2; exit 1; }
 echo "remote siteurl now: $( rsh "wp option get siteurl" )"
 
 # 6. The search-replace pairs: the mirror's URL (and its other scheme) in plain, JSON-escaped and scheme-relative form.
@@ -282,3 +293,10 @@ done
 echo "posts by type, remote (after):"
 rsh "wp db query \"$POSTS_SQL\"" | sed 's/^/   /'
 echo "Done. Previous remote database: $BACKUP (on the server)."
+CHECK_CMD="node scripts/computed-route/site-check.mjs ${CLIENT:-<client>} --site $REMOTE"
+if [ -n "$CLIENT" ]; then
+  step "site check on the test site"
+  ( cd "$REPO" && node scripts/computed-route/site-check.mjs "$CLIENT" --site "$REMOTE" ) || { echo "The site check failed on $REMOTE; the copy itself completed. Re-run: $CHECK_CMD" >&2; exit 1; }
+else
+  echo "Last step, not run here (it needs the client): $CHECK_CMD"
+fi

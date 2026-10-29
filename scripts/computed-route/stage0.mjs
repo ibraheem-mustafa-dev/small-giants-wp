@@ -54,7 +54,7 @@ export function parseArgs( argv ) {
 }
 
 // The deployed build hash on the site and the local build's, as calibrate.mjs computes them.
-function hashesFor( site, target, block ) {
+export function hashesFor( site, target, block ) {
 	const short = block.replace( /^sgs\//, '' );
 	try {
 		const local = localBlockHash( path.join( REPO, 'plugins/sgs-blocks/build/blocks', short ) );
