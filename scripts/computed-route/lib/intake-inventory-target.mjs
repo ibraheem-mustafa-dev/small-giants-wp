@@ -19,6 +19,13 @@ function refFields( model, comp ) {
 		const name = key?.detail.value?.method ?? r.detail.expression;
 		const member = p?.members.get( name );
 		const fn = isFn( member ) ? member : isFn( member?.value ) ? member.value : null;
+		// A field holding a ref object (`heroRef = React.createRef()`) is bound by `ref="{{ key }}"` where the key hands the
+		// field itself to the template: the field is the element.
+		const made = member?.value?.callee ? ( prop( member.value.callee ) ?? member.value.callee.name ) : null;
+		if ( 'CallExpression' === member?.value?.type && /^(createRef|useRef)$/.test( made ?? '' ) ) {
+			out.set( name, [ ...( out.get( name ) || [] ), { comp, n: r.draftId.slice( r.draftId.lastIndexOf( ':' ) + 1 ), ref: r.detail.expression } ] );
+			continue;
+		}
 		const param = fn?.params[ 0 ]?.name;
 		if ( ! param ) {
 			continue;
@@ -79,6 +86,19 @@ export function targetOf( model, comp, expr, depth = 0, path = null ) {
 		const m = memberOf( p, expr );
 		const rows = ( model.rowsByComp.get( comp ) || [] ).filter( ( r ) => 'handler' === r.kind && 'template' === r.detail.wiring && m && r.detail.method === m.name );
 		return rows.length ? { tpl: rows.map( ( r ) => r.draftId.slice( r.draftId.lastIndexOf( ':' ) + 1 ) ), comp, selector: `${ textOf( p, expr ) } of ${ rows[ 0 ].detail.event }` } : none( `the event or observer entry target ${ textOf( p, expr ) }, resolved at runtime` );
+	}
+	// The two operands of `a || b` (or `a ?? b`) are the elements the code may reach: those that resolve are the target.
+	if ( 'LogicalExpression' === expr.type && /^(\|\||\?\?)$/.test( expr.operator ) ) {
+		const sides = [ expr.left, expr.right ].map( ( x ) => targetOf( model, comp, x, depth + 1, path ) );
+		const tpl = [ ...new Set( sides.flatMap( ( x ) => x.tpl ) ) ];
+		return tpl.length ? { tpl, comp, selector: textOf( p, expr ), rule: `the element of ${ sides.filter( ( x ) => x.tpl.length ).map( ( x ) => x.selector ).join( ' or ' ) }` } : none( `resolved at runtime: ${ textOf( p, expr ) }` );
+	}
+	// `.current` of a ref object is the element the ref is bound to.
+	if ( 'MemberExpression' === expr.type && 'current' === prop( expr ) ) {
+		const base = targetOf( model, comp, expr.object, depth + 1, path );
+		if ( base.tpl.length && /^ref /.test( base.selector ) ) {
+			return base;
+		}
 	}
 	if ( 'MemberExpression' === expr.type ) {
 		const base = targetOf( model, comp, expr.object, depth + 1, path );

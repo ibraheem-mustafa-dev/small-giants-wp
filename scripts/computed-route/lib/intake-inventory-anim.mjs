@@ -7,7 +7,9 @@ import { codeModel, offsetOf, nodeAt, lineOf, textOf, functionName, triggerOf, r
 import { targetOf, animatedTarget, waapiEffect, writerSites } from './intake-inventory-target.mjs';
 import { callPaths } from './intake-inventory-calls.mjs';
 import { templateRecords, animationRecord, applyReducedMotion, traceOf } from './intake-inventory-tpl.mjs';
-import { parseTransition } from './intake-inventory-css.mjs';
+import { parseTransition, parseAnimation } from './intake-inventory-css.mjs';
+import { holeValues, WIDTHS, WIDTH_NAMES } from './intake-inventory-holes.mjs';
+import { tweenOf } from './intake-inventory-tween.mjs';
 
 // The template elements that hold a renderVals value built in code: the tpl ids of the component's `{{ }}` bindings whose
 // expression starts with one of the value's renderVals key names.
@@ -160,12 +162,15 @@ export function animationRecords( census, { notDefects = [] } = {} ) {
 			const inside = codeMotion.filter( ( r ) => compOf( r ) === comp && ( ( o ) => w.node.start <= o && o < w.node.end )( offsetOf( p, r.draftId ) ) );
 			inside.forEach( ( r ) => folded.add( r.id ) );
 			const fn = functionName( p, w.node );
+			// A writer inside a tween states its own timing (duration, curve, per-item delay); a stylesheet transition of the same
+			// property does not time a value the code writes frame by frame.
+			const tween = tweenOf( p, w.node );
 			const recs = triggersOf( tr ).map( ( trg ) => add( 'J', {
 				name: `${ w.mechanism } in ${ fn } on ${ t.selector }`, mechanism: w.mechanism,
 				element: element( comp, owner, t, `written element: ${ t.selector }` ),
 				source: { file, function: fn, ref: /^ref /.test( t.selector ) ? t.selector.slice( 4 ) : null, line: lineOf( w.node ), code: textOf( p, w.node ) },
 				trigger: triggerField( trg ), properties: w.properties.map( ( x ) => ( { property: x.property, from: null, to: x.to ?? null, ...( x.formula ? { formula: x.formula } : {} ) } ) ),
-				duration_ms: smoothing( comp, w.properties, t.tpl )?.duration_ms ?? 0, delay_ms: 'number' === typeof trg.delay ? trg.delay : 0, stagger: null, easing: smoothing( comp, w.properties, t.tpl )?.easing ?? null, iterations: 'interval' === trg.type || 'loop' === trg.type ? 'infinite' : 1,
+				duration_ms: tween ? tween.duration_ms : smoothing( comp, w.properties, t.tpl )?.duration_ms ?? 0, delay_ms: tween?.delay_ms ?? ( 'number' === typeof trg.delay ? trg.delay : 0 ), stagger: tween?.stagger ?? null, easing: tween ? tween.easing ?? tween.easing_expr : smoothing( comp, w.properties, t.tpl )?.easing ?? null, iterations: 'interval' === trg.type || 'loop' === trg.type ? 'infinite' : 1,
 				direction: null, fill: null, reduced_motion: smoothed( reducedMotionOf( p, w.node ), comp, w.properties, t.tpl ), status: statusOf( trg ),
 				trace: { observed: 'not-instrumented', note: 'the census does not trace style writes; timer and frame writers are sampled (inventory.samples)' },
 			}, inside, { comp, tpl: t.tpl.map( ( n ) => `${ t.comp }:${ n }` ), via: trg.via.map( ( o ) => `${ comp }@${ o }` ), members: trg.members.map( ( m ) => `${ comp }:${ m }` ), trigger: trg } ) );
@@ -176,6 +181,32 @@ export function animationRecords( census, { notDefects = [] } = {} ) {
 
 	// Template and stylesheet records, then code-built transition and animation strings no writer holds.
 	const { rmRecords, defs } = templateRecords( census, add );
+	// An `animation: {{ key }}` hole carries the animation strings the code builds for that renderVals key: the template
+	// record that could only name the hole takes the first, and each further string is a record of its own, with the widths
+	// the code's conditions apply it at.
+	for ( const r of census.rows.filter( ( x ) => 'keyframes' === x.kind && /^-?(?:webkit-)?animation$/.test( x.detail?.property ?? '' ) && /^\s*\{\{\s*[\w.]+\s*\}\}\s*$/.test( String( x.detail.value ) ) ) ) {
+		const key = /\{\{\s*([\w.]+)\s*\}\}/.exec( r.detail.value )[ 1 ];
+		const built = holeValues( code( r.component ).p, key ).map( ( v ) => ( { ...v, a: parseAnimation( v.text )[ 0 ] } ) );
+		const values = built.filter( ( v ) => v.a?.name && 'none' !== v.a.name );
+		const holder = ( covers.get( r.id ) || [] ).find( ( k ) => 'K' === k._prefix );
+		if ( ! holder ) {
+			continue;
+		}
+		if ( built.length && ! values.length ) {
+			Object.assign( holder, { status: 'no-op', notes: `every string the code builds for {{ ${ key } }} is animation: none` } );
+		}
+		values.forEach( ( v, i ) => {
+			const rec = 0 === i ? holder : animationRecord( add, r, holder.element, holder.source, { tpl: metaOf.get( holder ).tpl } );
+			const bp = v.widths && v.widths.length && v.widths.length < WIDTHS.length ? v.widths.map( ( w ) => WIDTH_NAMES[ w ] ) : null;
+			Object.assign( rec, {
+				name: `CSS animation ${ v.a.name } on ${ holder.element.description }`, duration_ms: v.a.duration_ms, delay_ms: v.a.delay_ms, easing: v.a.easing, iterations: v.a.iterations,
+				direction: v.a.direction, fill: v.a.fill, status: 'active', ...( bp ? { breakpoints: bp } : {} ),
+				notes: `the value of {{ ${ key } }} is built in code as "${ v.text }"${ bp ? `, which applies at ${ bp.join( ', ' ) }` : '' }`,
+			} );
+			rec.properties = [ { property: 'animation-name', from: null, to: v.a.name } ];
+			metaOf.get( rec ).names = [ v.a.name ];
+		} );
+	}
 	for ( const raw of codeMotion.filter( ( x ) => ! folded.has( x.id ) ) ) {
 		const r = { ...raw, detail: { ...raw.detail, property: raw.detail.property?.replace( /[A-Z]/g, ( c ) => `-${ c.toLowerCase() }` ), value: String( raw.detail.value ?? '' ).replace( /^(['"`])([\s\S]*)$/, '$2' ) } };
 		const comp = compOf( r );
@@ -189,7 +220,11 @@ export function animationRecords( census, { notDefects = [] } = {} ) {
 		if ( 'keyframes' === r.kind && ! r.detail.property ) {
 			defs.push( { comp: owner, rows: [ r ], source: () => source, code: true } );
 		} else if ( 'keyframes' === r.kind ) {
-			animationRecord( add, r, element, source, { trigger: { type: tr.type, detail: tr.detail }, status: statusOf( tr ) } );
+			const k = animationRecord( add, r, element, source, { trigger: { type: tr.type, detail: tr.detail }, status: statusOf( tr ) } );
+			// A string the runtime pass saw executing at some tested widths only (Mama's trust bar builds its marquee below 768)
+			// runs only there.
+			const seen = WIDTHS.filter( ( w ) => ( r.widths || [] ).includes( w ) );
+			seen.length && seen.length < WIDTHS.length && ( k.breakpoints = seen.map( ( w ) => WIDTH_NAMES[ w ] ) );
 		} else {
 			const items = 'transition' === r.detail.property ? parseTransition( r.detail.value ) : [ { property: r.detail.property, duration_ms: null, delay_ms: null, easing: null, raw: r.detail.value } ];
 			add( 'TR', {
