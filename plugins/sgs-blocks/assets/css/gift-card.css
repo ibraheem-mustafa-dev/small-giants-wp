@@ -60,11 +60,6 @@
 	box-shadow: inset 0 0 0 2px currentcolor;
 }
 
-.sgs-gift-card-form__radio:focus-visible + .sgs-gift-card-form__amount-label {
-	outline: 2px solid currentcolor;
-	outline-offset: 2px;
-}
-
 .sgs-gift-card-form__radio:checked + .sgs-gift-card-form__amount-label::after {
 	content: "\2713";
 	margin-inline-start: 0.5em;
