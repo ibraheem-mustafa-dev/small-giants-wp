@@ -67,7 +67,6 @@ All colours are defined in `theme.json` and available everywhere in the block ed
 | Accent | `#F87A1F` | Orange highlight. Used for buttons, separators, and call-to-action emphasis. |
 | Accent Light | `#FEE8D4` | Pale orange for soft backgrounds on accent-adjacent elements. |
 | Success | `#2E7D4F` | Green for success messages and trust indicators. |
-| WhatsApp | `#25D366` | Reserved for the WhatsApp CTA block. |
 | Surface | `#FFFFFF` | Default page background (white). |
 | Surface Alt | `#F5F7F7` | Very light grey for alternating section backgrounds. |
 | Text | `#1E1E1E` | Main body text colour (near-black). |

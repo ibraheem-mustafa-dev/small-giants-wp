@@ -65,7 +65,10 @@ $label           = $attributes['label'] ?? '';
 $show_on_obj     = sgs_responsive_normalise_object( $attributes['showOn'] ?? null );
 $show_on_mobile  = $show_on_obj['mobile'] ?? true;
 $show_on_desktop = $show_on_obj['desktop'] ?? true;
-$bg_colour       = sgs_colour_value( $attributes['backgroundColour'] ?? 'whatsapp' );
+// The ground is WhatsApp's brand colour from the brand registry (not a theme palette slug); a colour set on the block wins.
+$wa_brand        = sgs_brand_by_slug( 'whatsapp' );
+$wa_brand_colour = sgs_colour_value( (string) ( $wa_brand['colour'] ?? '' ) );
+$bg_colour       = '' !== (string) ( $attributes['backgroundColour'] ?? '' ) ? sgs_colour_value( $attributes['backgroundColour'] ) : $wa_brand_colour;
 $bg_gradient     = sgs_css_gradient_value( $attributes['backgroundColourGradient'] ?? '' );
 // backgroundColourHover (2026-09-06, FILL closeout) — the button's :hover rule
 // previously only animated opacity/transform (style.css), no colour change
@@ -213,6 +216,10 @@ if ( '' !== (string) ( $attributes['iconSize'] ?? '' ) ) {
 }
 if ( $btn_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $btn_decls ) . ';}';
+}
+// The card variant's round icon badge is always WhatsApp's brand colour, whatever ground the card itself takes.
+if ( 'card' === $variant && '' !== $wa_brand_colour ) {
+	$scoped_css[] = $root_sel . ' .sgs-whatsapp-cta__icon-badge{background-color:' . $wa_brand_colour . ';}';
 }
 
 // --- Label (text) colour — separate rule, D636 gradient-capable. Scoped to

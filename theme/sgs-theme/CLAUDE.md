@@ -60,7 +60,7 @@ Nav is owned by Spec 36 (`sgs/nav-bar-menu`, `sgs/nav-drawer-menu`, `sgs/nav-dra
 ```
 --primary: #1F7A7A (teal)          --accent: #F59E0B (amber)
 --primary-dark: #0F4C4C            --accent-light: #FEF3C7
---success: #2E7D4F (green)         --whatsapp: #25D366
+--success: #2E7D4F (green)
 --surface: #FAF9F6                 --surface-alt: #F1F0EC
 --text: #1A202C                    --text-muted: #606D80
 --text-inverse: #F1F5F9            --border: #D4DBE5

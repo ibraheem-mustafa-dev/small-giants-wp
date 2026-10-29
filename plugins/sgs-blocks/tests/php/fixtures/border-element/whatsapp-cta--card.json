@@ -1,43 +1,61 @@
 {
     "a_baseline": {
         " || .sgs-wac-UID.wp-block-sgs-whatsapp-cta": [
-            "background-color:var(--wp--preset--color--whatsapp,currentColor)"
+            "background-color:#25D366"
+        ],
+        " || .sgs-wac-UID.wp-block-sgs-whatsapp-cta .sgs-whatsapp-cta__icon-badge": [
+            "background-color:#25D366"
         ]
     },
     "b_equal_sides": {
         " || .sgs-wac-UID.wp-block-sgs-whatsapp-cta": [
-            "background-color:var(--wp--preset--color--whatsapp,currentColor)",
+            "background-color:#25D366",
             "border-color:var(--wp--preset--color--primary,currentColor)",
             "border-style:solid",
             "border-width:2px 2px 2px 2px"
+        ],
+        " || .sgs-wac-UID.wp-block-sgs-whatsapp-cta .sgs-whatsapp-cta__icon-badge": [
+            "background-color:#25D366"
         ]
     },
     "c_unequal_dashed_raw": {
         " || .sgs-wac-UID.wp-block-sgs-whatsapp-cta": [
-            "background-color:var(--wp--preset--color--whatsapp,currentColor)",
+            "background-color:#25D366",
             "border-color:#ff0000",
             "border-style:dashed",
             "border-width:1px 0 0 4px"
+        ],
+        " || .sgs-wac-UID.wp-block-sgs-whatsapp-cta .sgs-whatsapp-cta__icon-badge": [
+            "background-color:#25D366"
         ]
     },
     "d_style_none": {
         " || .sgs-wac-UID.wp-block-sgs-whatsapp-cta": [
-            "background-color:var(--wp--preset--color--whatsapp,currentColor)",
+            "background-color:#25D366",
             "border-style:none",
             "border-width:0"
+        ],
+        " || .sgs-wac-UID.wp-block-sgs-whatsapp-cta .sgs-whatsapp-cta__icon-badge": [
+            "background-color:#25D366"
         ]
     },
     "e_widths_no_colour": {
         " || .sgs-wac-UID.wp-block-sgs-whatsapp-cta": [
-            "background-color:var(--wp--preset--color--whatsapp,currentColor)",
+            "background-color:#25D366",
             "border-style:solid",
             "border-width:2px 2px 2px 2px"
+        ],
+        " || .sgs-wac-UID.wp-block-sgs-whatsapp-cta .sgs-whatsapp-cta__icon-badge": [
+            "background-color:#25D366"
         ]
     },
     "f_colour_no_widths": {
         " || .sgs-wac-UID.wp-block-sgs-whatsapp-cta": [
-            "background-color:var(--wp--preset--color--whatsapp,currentColor)",
+            "background-color:#25D366",
             "border-color:var(--wp--preset--color--primary,currentColor)"
+        ],
+        " || .sgs-wac-UID.wp-block-sgs-whatsapp-cta .sgs-whatsapp-cta__icon-badge": [
+            "background-color:#25D366"
         ]
     }
 }
