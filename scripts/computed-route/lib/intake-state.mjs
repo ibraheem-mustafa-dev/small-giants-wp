@@ -41,7 +41,7 @@ export function logicState( { comp, op, patch, slot } ) {
 			const keep = patch.keep || [];
 			const was = Object.fromEntries( keep.map( ( k ) => [ k, logic.state[ k ] ] ) );
 			try {
-				patch.calls.forEach( ( c ) => new Function( c.ident, `${ c.ident }.setState(${ c.args });` )( logic ) );
+				patch.calls.filter( ( c ) => ! c.component || c.component === name ).forEach( ( c ) => new Function( c.ident, `${ c.ident }.setState(${ c.args });` )( logic ) );
 				keep.length && logic.setState( was );
 				count++;
 			} catch {
