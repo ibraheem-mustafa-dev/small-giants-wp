@@ -7,6 +7,14 @@
 import { canonicalSlotOf } from './resolve.mjs';
 import { longhands } from './calibrate-props.mjs';
 
+// The part keys the DB ties a setting to: its `canonical_slot` and its `css_element`. The two name one part: a state setting
+// the slot assigner left without a `canonical_slot` (itemBgCurrent, itemColourCurrent) still sits on the `item` element its resting
+// and hover siblings are declared on, so either key shared with a resting setting ties it to that part.
+const partKeys = ( db, block, attr ) => {
+	const row = db ? db.prepare( 'SELECT css_element, canonical_slot FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr ) : null;
+	return [ canonicalSlotOf( db, block, attr ) && `slot:${ canonicalSlotOf( db, block, attr ) }`, row?.css_element && `element:${ row.css_element }` ].filter( Boolean );
+};
+
 // A paint layer of an element (its ::before or ::after) is the element's own box: the path without the layer.
 const bare = ( path ) => String( path ?? '' ).replace( /::(?:before|after)$/, '' );
 const slotsOf = ( s ) => s.slots || [ s.slot ];
@@ -16,7 +24,7 @@ const slotsOf = ( s ) => s.slots || [ s.slot ];
 // the state settings of `prop` that belong to a part the block's resting settings of `prop` paint at `slot`.
 export function partStateSlots( { db, cal, block, prop, slot, state } ) {
 	const of = Object.entries( cal?.settings || {} ).filter( ( [ , s ] ) => s.property === prop || longhands( s.property ).includes( prop ) );
-	const parts = new Set( of.filter( ( [ , s ] ) => ! s.state && slotsOf( s ).some( ( p ) => bare( p ) === slot ) ).map( ( [ attr ] ) => canonicalSlotOf( db, block, attr ) ).filter( Boolean ) );
-	const mine = of.filter( ( [ attr, s ] ) => state === s.state && parts.has( canonicalSlotOf( db, block, attr ) ) );
+	const parts = new Set( of.filter( ( [ , s ] ) => ! s.state && slotsOf( s ).some( ( p ) => bare( p ) === slot ) ).flatMap( ( [ attr ] ) => partKeys( db, block, attr ) ) );
+	const mine = of.filter( ( [ attr, s ] ) => state === s.state && partKeys( db, block, attr ).some( ( k ) => parts.has( k ) ) );
 	return [ ...new Set( mine.flatMap( ( [ , s ] ) => slotsOf( s ) ) ) ].filter( ( p ) => bare( p ) !== slot );
 }

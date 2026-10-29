@@ -15,6 +15,7 @@ import { readExtras, missingExtras, unreadDeclared } from './fill-declared.mjs';
 import { readStates } from './fill-state-read.mjs';
 import { readLogicStates } from './fill-logic-state.mjs';
 import { readCurrentItems } from './fill-current-item.mjs';
+import { currentAttrJobs, readCurrentAttr } from './fill-current-attr.mjs';
 import { collectMany } from './fill-read-collect.mjs';
 import { openState } from './fill-open.mjs';
 import { PAINT_GROUPS, PAINT_ATTR, paintHoldersInPage, applyPaintHolders } from './fill-paint-holder.mjs';
@@ -189,7 +190,7 @@ async function openPage( browser, devices, { url, open, opener = null, width, or
 //                         so nothing about that target's declared values there is judged (lib/fill-report.mjs::readFailureRows).
 // nodes: lib/fill-skeleton.mjs::skeletonNodes. open: the regex source of the text to click first. external: allow the
 // draft to load anything beyond its own origin (off by default, so a read is the same offline).
-export async function readDraft( { url, nodes, open = null, headless = true, sweep = true, external = false, mirror = {}, states = [], logicRows = [], currentGroups = [], opener = null, scrolledIds = [], log = () => {} } ) {
+export async function readDraft( { url, nodes, open = null, headless = true, sweep = true, external = false, mirror = {}, states = [], logicRows = [], currentGroups = [], currentAttr = { keys: [], pages: [], rootComponent: null }, opener = null, scrolledIds = [], log = () => {} } ) {
 	const { chromium, devices } = await loadChromium();
 	const origin = new URL( url ).origin;
 	const jobs = jobsFor( nodes, { surface: !! opener?.state } );
@@ -288,6 +289,21 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 							( result.states[ width ].looks[ id ] ??= [] ).push( ...looks );
 						}
 						result.states[ width ].logicGaps = [ ...( result.states[ width ].logicGaps || [] ), ...current.gaps ];
+					}
+					// A list item whose current value the draft binds as an attribute (lib/fill-current-attr.mjs), read on the draft's other pages.
+					const attrJobs = currentAttr.keys.length ? currentAttrJobs( currentAttr.keys, jobs.filter( ( j ) => ! result.widths[ width ][ j.id ]?.missing ), currentAttr.rootComponent ) : [];
+					if ( attrJobs.length ) {
+						const attr = await readCurrentAttr( {
+							jobs: attrJobs, pages: currentAttr.pages.map( ( r ) => new URL( r, url ).href ).filter( ( u ) => u !== url ), resolveSrc: RESOLVE, log,
+							openSibling: async ( u ) => {
+								const s = await openPage( browser, devices, { url: u, open: null, opener, width, origin, external, mirror, aborted } );
+								return { page: s.page, cdp: await openDevtools( s.page ), close: () => s.ctx.close() };
+							},
+						} );
+						for ( const [ id, looks ] of Object.entries( attr.looks ) ) {
+							( result.states[ width ].looks[ id ] ??= [] ).push( ...looks );
+						}
+						result.states[ width ].logicGaps = [ ...( result.states[ width ].logicGaps || [] ), ...attr.gaps ];
 					}
 				}
 			}
