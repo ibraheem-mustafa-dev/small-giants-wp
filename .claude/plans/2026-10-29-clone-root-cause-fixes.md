@@ -2,7 +2,7 @@
 
 **Why (Bean, 2026-10-29):** the three live clones show missing content, dead links, the draft's look not carried, settings that are not plain CSS lost, broken hovers, mega menus unlike the hand-built reference, a split trade application form, static logos, a static vertical Our Story timeline, a missing About background SVG and missing images. The causes are in `.claude/reports/2026-10-29-clone-homepage-root-causes.md` (RC1 to RC16) with Bean's rulings. Every fix is universal (any client, any draft), proven on a real draft, and confirmed by the result matching its goal.
 
-**How:** subagents build in worktrees on `B:/sgs-wt/` (never linking `node_modules` or `cache/`); the main session checks each track's diff and result with `/qc-inline`, merges to `main`, and runs the route suite and gates there. At most three tracks at once; a track that shares files with a running one waits. Order: P, M and D first; then S (after P), T, N (after M) and F as slots free.
+**How:** subagents build in worktrees on `B:/sgs-wt/` (never linking `node_modules` or `cache/`); the main session checks each track's diff and result with `/qc-inline`, merges to `main`, and runs the route suite and gates there. At most three tracks at once; a track that shares files with a running one waits. Order: P, M and D first; then S (after P), T, N (after M), F and W as slots free.
 
 ## Track P: pairing (RC1, RC3, RC11)
 
@@ -36,6 +36,10 @@
 
 - A choice-flow question whose options are the terms of one attribute of the flow's product is written as that attribute's product-option step (`productAttribute`, Spec 43 FR-43-10): its options, prices, badges and stock come from the product, and the hand-over to the add-on price list (FR-43-17) is made only for prices the product does not hold. The flow's product is the catalogue product its basket call adds (`lib/site-build-flow-product.mjs`), read through the logic's syntax tree instead of the regex over the script.
 - The catalogue makes only the priced choice a variation axis; every other choice, the multi-choice included, is a product attribute that creates no variations and travels as an answer (Spec 43 FR-43-7); Spec 48 FR-48-92 says so. The draft's "pick up to 3" (a question taking several options) is a framework gap row for Bean.
+
+## Track W: brand colours stay in the block (RC17)
+
+- WhatsApp leaves the theme palette: `sgs/whatsapp-cta` paints its ground from the brand registry like the icon block's brands, with its colour settings as the way a client or a clone changes it; the extractor and intake never propose a brand registry colour, or a token the draft paints only on a brand's own control, as a palette colour, and a draft's brand tokens (`--wa-*`) map onto that block's colour settings as one-off values; every client snapshot's `whatsapp*` slugs go (`push-theme-snapshot.py` to each test site).
 
 ## Track S: structure (after Track P merges; shares skeleton files)
 
