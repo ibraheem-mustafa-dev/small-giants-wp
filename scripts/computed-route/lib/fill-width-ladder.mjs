@@ -16,7 +16,8 @@
 // Which blocks and settings take part comes from the framework DB and the block's calibration, never from a list.
 // A row naming several nodes (`nodes`) is judged and written on each. Returns { writes, unmapped (the rows left), answered
 // (lib/fill-regap.mjs::answer: each row written or settled, with the read widths it answers), notes, ledger }.
-import { ONE_VALUE_EVERY_WIDTH, LOOSE } from './resolve.mjs';
+import { ONE_VALUE_EVERY_WIDTH, LOOSE, splitProperty } from './resolve.mjs';
+import { isBoxRow, boxTierValue, calibratedPaint } from './box-tier.mjs';
 import { siblings, candidates } from './db.mjs';
 import { setAttr } from './tree.mjs';
 import { mediaRule, scopedCssPuts, snapThreshold, snapEntry, ownBreakpoint, collapseAttributes } from './fill-width-gate.mjs';
@@ -236,8 +237,8 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collap
 	if ( ! varies && ! ( tiered.length && widths.some( differs ) ) ) {
 		return false;
 	}
-	if ( tiered.length ) {
-		const r = tiered[ 0 ];
+	const { short, side, corner } = splitProperty( prop );
+	for ( const r of tiered ) {
 		const tiers = {};
 		let carried = null;
 		for ( const w of [ ...widths ].reverse() ) {
@@ -248,9 +249,19 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collap
 				carried = values[ w ];
 			}
 		}
+		// A box setting holds { top, right, bottom, left } per device (lib/box-tier.mjs), never a string: a per-side row writes
+		// its own side and the sides compose by deep merge. A shape no box can be built from (a corner of border-radius, a
+		// shorthand of several values) is no tier-shaped home for this row, and the setting is skipped.
+		const named = ( t ) => ( 'flat_sibling' === r.tier_shape ? siblings( db, rec.name, r.attr_name ).find( ( s ) => s.css_tier === t )?.attr_name : r.attr_name );
+		const boxOf = ( t, v ) => boxTierValue( { row: r, short, side, corner, value: v, existing: 'flat_sibling' === r.tier_shape ? node.attributes?.[ named( t ) ] : node.attributes?.[ r.attr_name ]?.[ t ], paint: calibratedPaint( { calibration: cal, slot, tier: t } ) } );
+		const box = isBoxRow( r );
+		const built = Object.fromEntries( Object.entries( tiers ).map( ( [ t, v ] ) => [ t, box ? boxOf( t, v ) : v ] ) );
+		if ( Object.values( built ).some( ( v ) => null === v ) ) {
+			continue;
+		}
 		const writes = 'flat_sibling' === r.tier_shape
-			? Object.entries( tiers ).map( ( [ t, value ] ) => ( { attr: siblings( db, rec.name, r.attr_name ).find( ( s ) => s.css_tier === t )?.attr_name, value, merge: 'replace' } ) )
-			: [ { attr: r.attr_name, value: tiers, merge: 'deep' } ];
+			? Object.entries( built ).map( ( [ t, value ] ) => ( { attr: named( t ), value, merge: box ? 'deep' : 'replace' } ) )
+			: [ { attr: r.attr_name, value: built, merge: 'deep' } ];
 		if ( writes.every( ( w ) => w.attr ) ) {
 			return took( { writes, included: Object.fromEntries( widths.map( ( w ) => [ w, true ] ) ) }, 'width-ladder', `${ r.attr_name } holds a value per device, so the draft's ${ widths.map( ( w ) => `${ values[ w ] } at ${ w }` ).join( ', ' ) } is written there` );
 		}

@@ -1,0 +1,7 @@
+[
+	{ "file": "lib/resolve.mjs", "find": "if ( selectsPresence( calibration, attr, slot, lp ) ) {", "replace": "if ( false ) {", "why": "a content selector answers a look row" },
+	{ "file": "lib/resolve.mjs", "find": "if ( selectsPresence( calibration, attr, slot, lp ) ) {", "replace": "if ( true ) {", "why": "every discovered setting is refused" },
+	{ "file": "lib/resolve.mjs", "find": "key.startsWith( `${ attr }=` ) && [ ...( p?.shows || [] ), ...( p?.hides || [] ) ]", "replace": "key.startsWith( `${ attr }=` ) && [ ...( p?.shows || [] ) ]", "why": "a hidden element is not counted as toggled" },
+	{ "file": "lib/resolve.mjs", "find": "key.startsWith( `${ attr }=` ) && [ ...( p?.shows || [] ), ...( p?.hides || [] ) ]", "replace": "[ ...( p?.shows || [] ), ...( p?.hides || [] ) ]", "why": "another setting's presence counts" },
+	{ "file": "lib/resolve.mjs", "find": ".some( ( path ) => lp( path ) === lp( slot ) ) );\n}", "replace": ".some( ( path ) => path === slot ) );\n}", "why": "the caller's path comparison is ignored" }
+]
