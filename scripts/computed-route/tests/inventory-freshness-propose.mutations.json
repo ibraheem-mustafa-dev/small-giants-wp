@@ -1,0 +1,14 @@
+[
+	{
+		"file": "skeleton.mjs",
+		"find": "const inventory = assertInventoryCurrent( JSON.parse( fs.readFileSync( p.inventory, 'utf8' ) ), handoffOf( repo, client ), path.relative( repo, p.inventory ) );",
+		"replace": "const inventory = JSON.parse( fs.readFileSync( p.inventory, 'utf8' ) );",
+		"why": "propose reads a saved inventory without checking it describes the export"
+	},
+	{
+		"file": "lib/freshness.mjs",
+		"find": "assertCurrent( inventory, handoffRoot, { label, requireSources: true, ...( current ? { current } : {} ) } );",
+		"replace": "assertCurrent( inventory, handoffRoot, { label, ...( current ? { current } : {} ) } );",
+		"why": "an inventory with no sources is proposed with a warning only"
+	}
+]

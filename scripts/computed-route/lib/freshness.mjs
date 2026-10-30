@@ -2,7 +2,8 @@
 // `sources` object into each record: the sha256 of every draft (`*.dc.html`), `support.js`, `surfaces.json`,
 // `animations.json`, `README.md`, `tokens/*.css`, every file under `assets/` and every `*.js` file anywhere under the handoff folder, and the commit of the route that built it. Every reader
 // of a record calls assertCurrent( record, handoffRoot ), which throws a StaleRecordError naming each changed file. A
-// record written before `sources` existed passes with one warning, never silently.
+// record written before `sources` existed passes with one warning, never silently, except where the reader requires them
+// (`requireSources`: a saved skeleton inventory a proposal is built from, assertInventoryCurrent), where it is refused.
 import fs from 'fs';
 import path from 'path';
 import { execFileSync } from 'child_process';
@@ -23,10 +24,11 @@ export function routeCommit() {
 	}
 }
 
-// { files: { <folder-relative path>: sha256 }, route: { commit } } for a handoff folder.
+// { files: { <folder-relative path>: sha256 }, route: { commit } } for a handoff folder; a folder that does not exist holds
+// no files, so a record read from files that are gone reads them as removed.
 export function sourcesOf( handoffRoot, { commit = routeCommit() } = {} ) {
 	const files = {};
-	for ( const rel of walkFolder( handoffRoot ).files.filter( isSourceFile ) ) {
+	for ( const rel of fs.existsSync( handoffRoot ) ? walkFolder( handoffRoot ).files.filter( isSourceFile ) : [] ) {
 		files[ rel ] = sha256( fs.readFileSync( path.join( handoffRoot, rel ) ) );
 	}
 	return { files, route: { commit } };
@@ -54,9 +56,15 @@ export function changedSources( recorded, handoffRoot, current = null ) {
 }
 
 // Throws StaleRecordError when the record's `sources` disagree with the folder. A record with no `sources` passes with
-// one warning through `warn` (default console.warn) and returns { checked: false }; a current one returns { checked: true }.
-// `current`: an optional sourcesOf result already taken for the folder.
-export function assertCurrent( record, handoffRoot, { label = 'the record', warn = ( line ) => console.warn( line ), current = null } = {} ) {
+// one warning through `warn` (default console.warn) and returns { checked: false }, or, with `requireSources`, throws a
+// StaleRecordError saying so; a current one returns { checked: true }. `current`: an optional sourcesOf result already taken
+// for the folder.
+export function assertCurrent( record, handoffRoot, { label = 'the record', warn = ( line ) => console.warn( line ), current = null, requireSources = false } = {} ) {
+	if ( ! record?.sources && requireSources ) {
+		const e = new StaleRecordError( label, [] );
+		e.message = `${ label } records no sources, so whether the export changed since it was written is unknown; run intake again`;
+		throw e;
+	}
 	if ( ! record?.sources ) {
 		warn( `freshness: ${ label } has no sources (written before the route recorded them); its currency is not checked` );
 		return { checked: false };
@@ -66,4 +74,15 @@ export function assertCurrent( record, handoffRoot, { label = 'the record', warn
 		throw new StaleRecordError( label, changed );
 	}
 	return { checked: true };
+}
+
+// The handoff folder a client's saved records depend on.
+export const handoffOf = ( repo, client ) => path.join( repo, 'sites', client, 'handoff' );
+
+// A saved skeleton inventory (`sites/<client>/build/skeleton/<surface>.inventory.json`, or the intake inventory it is taken
+// from) is read only while it describes the export on disk: one with no `sources`, or whose sources changed, is refused with
+// the changed files named. Returns the inventory.
+export function assertInventoryCurrent( inventory, handoffRoot, label, current = null ) {
+	assertCurrent( inventory, handoffRoot, { label, requireSources: true, ...( current ? { current } : {} ) } );
+	return inventory;
 }

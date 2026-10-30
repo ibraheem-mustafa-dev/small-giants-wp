@@ -10,7 +10,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { openDb } from '../lib/db.mjs';
 import { rerunSkeletons, refreshIntakeSkeletons } from '../lib/skeleton-rerun.mjs';
-import { StaleRecordError } from '../lib/freshness.mjs';
+import { StaleRecordError, sourcesOf } from '../lib/freshness.mjs';
 import { STAGES, STAGE_NEEDS } from '../lib/intake-run-stages.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
@@ -26,7 +26,9 @@ function fixture() {
 		'site-footer': { id: 'S-14', kind: 'footer', name: 'Footer', inventory: {} },
 		'other-footer': { id: 'S-15', kind: 'footer', name: 'Other footer', inventory: {} },
 	};
-	Object.keys( skeletons ).forEach( ( slug ) => fs.writeFileSync( path.join( build, 'intake', 'inventories', `${ slug }.json` ), JSON.stringify( footer ) ) );
+	// The saved inventories record the export they were read from: here none (the fixture has no handoff folder).
+	const handoff = path.join( repo, 'sites', CLIENT, 'handoff' );
+	Object.keys( skeletons ).forEach( ( slug ) => fs.writeFileSync( path.join( build, 'intake', 'inventories', `${ slug }.json` ), JSON.stringify( { ...footer, sources: sourcesOf( handoff, { commit: null } ) } ) ) );
 	return { repo, skeletons, done: () => fs.rmSync( repo, { recursive: true, force: true } ) };
 }
 const ok = { skeleton: [], proposal: { counts: {}, rows: [] }, problems: [] };
@@ -76,6 +78,24 @@ test( 'MUST FAIL: a surface whose proposal failed is proposed again from the inv
 	const readGap = { ...run.surfaces[ 'other-footer' ].entry, proposalGap: undefined, gap: 'the harness run failed', inventory: null };
 	const control = rerunSkeletons( { client: CLIENT, db, repo: f.repo, codeRepo: REPO, skeletons: { 'other-footer': readGap }, breakpoints: [], pageMap: [], propose: () => assert.fail( 'a read failure was proposed' ) } );
 	assert.deepEqual( control.missing, [ 'other-footer' ] );
+	f.done();
+} );
+
+test( 'MUST FAIL: a saved inventory read before the export changed, or recording no sources, is refused before a proposal; a current one is proposed', () => {
+	const f = fixture();
+	const file = path.join( f.repo, 'sites', CLIENT, 'build', 'intake', 'inventories', 'site-footer.json' );
+	const args = { client: CLIENT, db, repo: f.repo, codeRepo: REPO, skeletons: { 'site-footer': f.skeletons[ 'site-footer' ] }, breakpoints: [], pageMap: [] };
+	// Negative control: the export is unchanged, so the surface is proposed.
+	const seen = [];
+	rerunSkeletons( { ...args, propose: ( a ) => ( seen.push( a ), ok ) } );
+	assert.equal( seen.length, 1 );
+	fs.mkdirSync( path.join( f.repo, 'sites', CLIENT, 'handoff' ), { recursive: true } );
+	fs.writeFileSync( path.join( f.repo, 'sites', CLIENT, 'handoff', 'Home.dc.html' ), '<p>edited</p>' );
+	assert.throws( () => rerunSkeletons( { ...args, propose: () => assert.fail( 'a stale inventory was proposed' ) } ), /inventory site-footer is stale: .*Home\.dc\.html added/ );
+	const { sources, ...bare } = JSON.parse( fs.readFileSync( file, 'utf8' ) );
+	assert.ok( sources );
+	fs.writeFileSync( file, JSON.stringify( bare ) );
+	assert.throws( () => rerunSkeletons( { ...args, propose: () => assert.fail( 'an unsourced inventory was proposed' ) } ), /records no sources/ );
 	f.done();
 } );
 

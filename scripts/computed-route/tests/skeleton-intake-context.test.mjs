@@ -11,6 +11,7 @@ import { openDb } from '../lib/db.mjs';
 import { proposeSurface, reviewSurface, intakeContext, main } from '../skeleton.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
 import { servedKey, servedMotion, isServedInventory } from '../lib/key-space.mjs';
+import { sourcesOf } from '../lib/freshness.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const CLIENT = 'eye-care-ward-end';
@@ -37,7 +38,11 @@ function fixture( { entry = { site: 'x', intakeSurface: 'site-footer' }, decisio
 	fs.writeFileSync( path.join( build, 'surfaces.json' ), JSON.stringify( { footer: entry } ) );
 	const animations = { records: [ { iterations: 'infinite', element: { dc: ROOT, template_tpl_id: '847' }, properties: [ { property: 'transform', from: 'translateX(0)', to: 'translateX(-50%)' } ] }, ...extra ] };
 	fs.writeFileSync( path.join( build, 'intake', 'intake.json' ), JSON.stringify( { skeletons: { 'site-footer': { id: 'S-14', kind: 'footer', name: 'Footer', inventory: { checks: { rootName: ROOT } } } }, inventory: { animations } } ) );
-	fs.writeFileSync( path.join( build, 'skeleton', 'footer.inventory.json' ), JSON.stringify( footer ) );
+	// The saved inventory records the export it was read from (lib/freshness.mjs): here an export holding one draft.
+	const handoff = path.join( repo, 'sites', CLIENT, 'handoff' );
+	fs.mkdirSync( handoff, { recursive: true } );
+	fs.writeFileSync( path.join( handoff, 'Home.dc.html' ), '<p>draft</p>' );
+	fs.writeFileSync( path.join( build, 'skeleton', 'footer.inventory.json' ), JSON.stringify( { ...footer, sources: sourcesOf( handoff, { commit: null } ) } ) );
 	fs.writeFileSync( path.join( build, 'skeleton', 'decisions.json' ), JSON.stringify( decisions ) );
 	// The facts read the list block's block.json from the repo they are given.
 	const list = loadFacts( { db, client: CLIENT, repo: REPO } ).tagMap.ul.core_block_slug.replace( /^sgs\//, '' );
@@ -57,6 +62,24 @@ test( 'propose without an intakeSurface refuses and names the missing link', () 
 	assert.throws( () => proposeSurface( { client: CLIENT, surface: 'footer', repo: bad.repo, db, propose: spy( [] ) } ), /"gone", which is not in/ );
 	f.done();
 	bad.done();
+} );
+
+test( 'MUST FAIL (a proposal is built only from an inventory that describes the export): one read before the draft changed is refused naming the changed file, and one recording no sources is refused too', () => {
+	const f = fixture();
+	const inv = path.join( f.repo, 'sites', CLIENT, 'build', 'skeleton', 'footer.inventory.json' );
+	fs.writeFileSync( path.join( f.repo, 'sites', CLIENT, 'handoff', 'Home.dc.html' ), '<p>draft, edited</p>' );
+	assert.throws( () => proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, propose: spy( [] ) } ), /footer\.inventory\.json is stale: .*Home\.dc\.html changed/ );
+	const { sources, ...bare } = JSON.parse( fs.readFileSync( inv, 'utf8' ) );
+	assert.ok( sources );
+	fs.writeFileSync( inv, JSON.stringify( bare ) );
+	assert.throws( () => proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, propose: spy( [] ) } ), /records no sources/ );
+	f.done();
+	// Negative control: an inventory whose export is unchanged is proposed.
+	const g = fixture();
+	const seen = [];
+	proposeSurface( { client: CLIENT, surface: 'footer', repo: g.repo, db, propose: spy( seen ) } );
+	assert.equal( seen.length, 1 );
+	g.done();
 } );
 
 test( 'propose passes the intake skeleton kind, name and looping templates under the intake slug', () => {

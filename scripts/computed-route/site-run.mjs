@@ -33,6 +33,7 @@ import { skeletonPaths, inventoryStrips, proposeSurface } from './skeleton.mjs';
 import { routeHash, withRoute } from './lib/fill-open.mjs';
 import { isStatePage, stateRouteHash } from './lib/state-route.mjs';
 import { savedInventoryOf, servedInventoryOf } from './lib/skeleton-saved-inventory.mjs';
+import { assertInventoryCurrent, handoffOf, sourcesOf } from './lib/freshness.mjs';
 import { openRunSession, readEnv } from './lib/wp-run-session.mjs';
 import { isContentOnlySurface, isUnwalkedWooPage, wooContentRole } from './lib/site-build-plan.mjs';
 import { rowKey, treeHash } from './lib/site-build-map.mjs';
@@ -271,12 +272,15 @@ export async function main( argv ) {
 			if ( fromSaved ) {
 				const entryDraft = ( intake.inventory?.animations?.drafts || [] ).find( ( d ) => d.file === path.basename( entry.draftIndex ) ) || intake.inventory?.animations?.drafts?.[ 0 ];
 				const inv = stateOnly ? servedInventoryOf( readJson( saved ), entryDraft?.dc ?? null ) : savedInventoryOf( { repo: REPO, client, surface: key, surfaces, intake } );
+				// Intake's saved inventory is copied only while it describes the export; it keeps the sources it was read from.
+				assertInventoryCurrent( inv, handoffOf( REPO, client ), `intake's saved inventory for ${ key }` );
 				fs.mkdirSync( path.dirname( p.inventory ), { recursive: true } );
 				fs.writeFileSync( p.inventory, `${ JSON.stringify( inv, null, 2 ) }
 ` );
 				return `${ inv.elements.length } elements (intake's inventory${ stateOnly ? ' with the state open' : '' }, in the served key space)`;
 			}
-			const inv = await readInventory( { url: draftUrl, root, shotsDir: p.shots, strips: inventoryStrips( { client, surface: key } ) } );
+			const sources = sourcesOf( handoffOf( REPO, client ) );
+			const inv = { ...await readInventory( { url: draftUrl, root, shotsDir: p.shots, strips: inventoryStrips( { client, surface: key } ) } ), sources };
 			fs.mkdirSync( path.dirname( p.inventory ), { recursive: true } );
 			fs.writeFileSync( p.inventory, `${ JSON.stringify( inv, null, 2 ) }
 ` );

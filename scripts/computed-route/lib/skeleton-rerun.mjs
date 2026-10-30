@@ -77,9 +77,8 @@ export function rerunSkeletons( { client, db, repo = REPO, codeRepo = repo, skel
 	const missing = [];
 	const failed = [];
 	const handoffRoot = path.join( repo, 'sites', client, 'handoff' );
-	const unchecked = [];
 	// The export is hashed once per run, not once per surface.
-	const current = fs.existsSync( handoffRoot ) ? sourcesOf( handoffRoot ) : null;
+	const current = sourcesOf( handoffRoot );
 	// A header or footer surface is proposed first: the strips it reads beside itself (rules.headerSlots, rules.footerSlots) are its rows, so a global
 	// surface whose root is one of them is that header's, never a surface of its own.
 	const absorbedKeys = new Map();
@@ -91,7 +90,8 @@ export function rerunSkeletons( { client, db, repo = REPO, codeRepo = repo, skel
 			continue;
 		}
 		const inventory = JSON.parse( fs.readFileSync( file, 'utf8' ) );
-		assertCurrent( inventory, handoffRoot, { label: `${ client } inventory ${ s.slug }`, warn: () => unchecked.push( s.slug ), ...( current ? { current } : {} ) } );
+		// A proposal is built only from an inventory that still describes the export: one with no sources is refused too.
+		assertCurrent( inventory, handoffRoot, { label: `${ client } inventory ${ s.slug }`, requireSources: true, current } );
 		if ( 'global' === s.kind && absorbedKeys.has( inventory.checks?.rootKey ) ) {
 			absorbed[ s.slug ] = { into: absorbedKeys.get( inventory.checks.rootKey ), root: inventory.checks.rootKey };
 			continue;
@@ -111,7 +111,6 @@ export function rerunSkeletons( { client, db, repo = REPO, codeRepo = repo, skel
 	}
 	Object.entries( skeletons ).filter( ( [ , x ] ) => ! read( x ) ).forEach( ( [ slug ] ) => missing.push( slug ) );
 	const ordered = Object.fromEntries( Object.keys( skeletons ).filter( ( k ) => out[ k ] ).map( ( k ) => [ k, out[ k ] ] ) );
-	unchecked.length && console.warn( `freshness: ${ unchecked.length } saved inventor${ 1 === unchecked.length ? 'y has' : 'ies have' } no sources (written before the route recorded them); currency is not checked` );
 	return { surfaces: ordered, missing, failed, absorbed };
 }
 

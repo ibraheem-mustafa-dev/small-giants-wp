@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { sourcesOf } from '../lib/freshness.mjs';
 import { openDb } from '../lib/db.mjs';
 import { rerunSkeletons } from '../lib/skeleton-rerun.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
@@ -28,7 +29,7 @@ function fixture() {
 	fs.writeFileSync( path.join( repo, 'sites', CLIENT, 'handoff', 'surfaces.json' ), JSON.stringify( { records: [ { id: 'S-14', states: STATES }, { id: 'S-99', states: [ { name: 'other' } ] } ] } ) );
 	const skeletons = { 'site-footer': { id: 'S-14', kind: 'footer', name: 'Footer', inventory: {} } };
 	fs.writeFileSync( path.join( build, 'intake', 'intake.json' ), JSON.stringify( { skeletons, breakpoints: BREAKPOINTS } ) );
-	fs.writeFileSync( path.join( build, 'intake', 'inventories', 'site-footer.json' ), JSON.stringify( footer ) );
+	fs.writeFileSync( path.join( build, 'intake', 'inventories', 'site-footer.json' ), JSON.stringify( { ...footer, sources: sourcesOf( path.join( repo, 'sites', CLIENT, 'handoff' ), { commit: null } ) } ) );
 	const list = loadFacts( { db, client: CLIENT, repo: REPO } ).tagMap.ul.core_block_slug.replace( /^sgs\//, '' );
 	fs.mkdirSync( path.join( repo, 'plugins/sgs-blocks/src/blocks', list ), { recursive: true } );
 	fs.copyFileSync( path.join( REPO, 'plugins/sgs-blocks/src/blocks', list, 'block.json' ), path.join( repo, 'plugins/sgs-blocks/src/blocks', list, 'block.json' ) );

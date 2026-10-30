@@ -30,7 +30,7 @@ import { loopingKeys, carouselKeys } from './lib/skeleton-rerun.mjs';
 import { isServedInventory, servedDecisions, servedMotion } from './lib/key-space.mjs';
 import { reviewHtml } from './lib/skeleton-review.mjs';
 import { calKeysFor, calSettingsFor, calPaintFor, calTextFor, statesOfRecord, thresholdsOf } from './lib/skeleton-context.mjs';
-import { assertCurrent } from './lib/freshness.mjs';
+import { assertCurrent, assertInventoryCurrent, handoffOf, sourcesOf } from './lib/freshness.mjs';
 import { carriedIds } from './lib/skeleton-carried.mjs';
 import { formLinksFor } from './lib/skeleton-form-link.mjs';
 import { draftLinksFor } from './lib/draft-link.mjs';
@@ -123,7 +123,8 @@ export function reviewSurface( { client, surface, repo = REPO } ) {
 // to its root (lib/key-space.mjs).
 export function proposeSurface( { client, surface, repo = REPO, siteName = null, db = openDb(), propose = proposeSkeleton } ) {
 	const p = skeletonPaths( { client, surface, repo } );
-	const inventory = JSON.parse( fs.readFileSync( p.inventory, 'utf8' ) );
+	// A proposal is built only from an inventory that still describes the export (lib/freshness.mjs).
+	const inventory = assertInventoryCurrent( JSON.parse( fs.readFileSync( p.inventory, 'utf8' ) ), handoffOf( repo, client ), path.relative( repo, p.inventory ) );
 	const { ctx, saved, served, clientDecisions } = surfaceDecisions( { client, surface, repo, inventory, file: p.decisions } );
 	const facts = loadFacts( { db, client, repo, siteName: siteName || saved.siteName || null } );
 	const bad = decisionsProblems( facts );
@@ -157,7 +158,9 @@ export async function main( argv, { read = readInventory, repo = REPO } = {} ) {
 	const log = ( m ) => console.log( m );
 	if ( 'inventory' === cmd && argv.includes( '--saved' ) ) {
 		const surfaces = JSON.parse( fs.readFileSync( path.join( repo, 'sites', client, 'build', 'surfaces.json' ), 'utf8' ) );
+		// Intake's saved inventory carries the sources it was read from; a stale one is refused before it is copied.
 		const inv = savedInventoryOf( { repo, client, surface, surfaces, intake: readJson( path.join( repo, 'sites', client, 'build', 'intake', 'intake.json' ), null ) } );
+		assertInventoryCurrent( inv, handoffOf( repo, client ), `intake's saved inventory for ${ surface }` );
 		json( p.inventory, inv );
 		log( `inventory ${ surface }: ${ inv.elements.length } elements (intake's saved inventory, in the served key space)` );
 	} else if ( 'inventory' === cmd ) {
@@ -167,12 +170,15 @@ export async function main( argv, { read = readInventory, repo = REPO } = {} ) {
 		}
 		// A hand-set draftUrl wins; otherwise the handoff folder is served as Fill serves it, and closed afterwards.
 		const served = p.draftUrl ? null : await serveDraft( assertDraftPage( p.draftDir, p.draftIndex ), { index: p.draftIndex } );
+		// The export's hashes are taken before the draft is read, so an export edited during the read is refused later.
+		const sources = sourcesOf( handoffOf( repo, client ) );
 		let inv;
 		try {
 			inv = await read( { url: served ? served.url : p.draftUrl, root, shotsDir: p.shots, log, strips: inventoryStrips( { client, surface, repo } ) } );
 		} finally {
 			served && await served.close();
 		}
+		inv.sources = sources;
 		json( p.inventory, inv );
 		log( `inventory ${ surface }: ${ inv.elements.length } elements, ${ Object.keys( inv.elements.reduce( ( a, e ) => Object.assign( a, e.screenshots ), {} ) ).length ? 'screenshots in' : 'no screenshots in' } ${ p.shots }, ${ inv.checks.duplicateKeys } duplicate keys` );
 	} else if ( 'propose' === cmd ) {

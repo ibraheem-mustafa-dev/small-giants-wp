@@ -1,0 +1,8 @@
+[
+	{
+		"file": "skeleton.mjs",
+		"find": "\t\tinv.sources = sources;\n",
+		"replace": "",
+		"why": "the inventory writer records no sources"
+	}
+]
