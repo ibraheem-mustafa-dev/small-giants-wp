@@ -8,6 +8,7 @@ import { tplKeyOf } from '../../parity/lib/collect.mjs';
 import { tplLineOf } from './identity.mjs';
 import { loadChromium } from './fill-read.mjs';
 import { applyStateRoute } from './state-route.mjs';
+import { INLINE_PAINT } from './phrasing-content.mjs';
 
 export const INVENTORY_WIDTHS = [ 1440, 375, 768 ];
 // The attributes kept per element: what a block needs to know (link, name, label, image source) and the style attribute
@@ -38,12 +39,13 @@ export function holdsOtherRoot( s, strips, srcDoc ) {
 	} );
 }
 
-// In-page. in: [ rootSelector, tplKeyOfSource, attrs, tplLineOfSource, strips ]. `strips` is null, or { exclude: [ [ component,
+// In-page. in: [ rootSelector, tplKeyOfSource, attrs, tplLineOfSource, strips, holdsOtherRootSource, resolvedNames,
+// paintNames (the inline text paint recorded as `inlineDiff`, lib/phrasing-content.mjs::INLINE_PAINT) ]. `strips` is null, or { exclude: [ [ component,
 // tpl ] ] } (the roots of the other surfaces that are not global: a page, footer, drawer, panel, menu or form; a sibling that
 // is or holds one at any depth holds another surface's root): the root's siblings are then read too, as `beside`, and the
 // elements of those in the chain of strips next to the root are inventoried under `strip` roots (rules.headerSlots decides
 // which are rows: lib/skeleton-header-slots.mjs::besideStrips). Returns { records, beside } or { error }.
-function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, resolvedNames ] ) {
+function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, resolvedNames, paintNames = [] ] ) {
 	// eslint-disable-next-line no-new-func
 	const keyOf = new Function( `return (${ keySrc });` )();
 	const lineOf = new Function( `return (${ lineSrc });` )();
@@ -130,6 +132,36 @@ function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, 
 				lead = false;
 			}
 		}
+		// The element's content in order (`flow`), recorded only when it holds a child element and words: each text run as a
+		// string (an element the runtime did not stamp prints its text into the run), each line break as { br: true }, each
+		// stamped child element as { key }, so the words of an inline child read in their place (lib/skeleton-model.mjs::flowOf).
+		let flow = null;
+		if ( e.children.length && e.textContent.trim() ) {
+			flow = [];
+			const put = ( t ) => ( 'string' === typeof flow[ flow.length - 1 ] ? ( flow[ flow.length - 1 ] += t ) : flow.push( t ) );
+			for ( const c of e.childNodes ) {
+				if ( 3 === c.nodeType ) {
+					put( c.nodeValue.replace( /\s+/g, ' ' ) );
+				} else if ( 1 === c.nodeType && c.hasAttribute( 'data-dc-tpl' ) ) {
+					flow.push( { key: keyOf( c ) } );
+				} else if ( 1 === c.nodeType && 'BR' === c.tagName ) {
+					flow.push( { br: true } );
+				} else if ( 1 === c.nodeType ) {
+					put( c.textContent.replace( /\s+/g, ' ' ) );
+				}
+			}
+		}
+		// The text paint an element that renders inline differs from its parent by (`inlineDiff`: computed values), recorded
+		// only when it differs, so a word drawn bold, slanted, struck or coloured inside a sentence is known.
+		let inlineDiff = null;
+		if ( 'inline' === getComputedStyle( e ).display && e.parentElement ) {
+			const mine = getComputedStyle( e );
+			const theirs = getComputedStyle( e.parentElement );
+			for ( const prop of paintNames ) {
+				const v = mine.getPropertyValue( prop );
+				v !== theirs.getPropertyValue( prop ) && ( ( inlineDiff ||= {} )[ prop ] = v );
+			}
+		}
 		// The element's whole text with each line break as <br>, recorded only when it holds one.
 		let breaks = null;
 		if ( e.querySelector( 'br' ) ) {
@@ -185,7 +217,7 @@ function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, 
 		const box = e.getClientRects().length ? { x: +( r.left + scrollX ).toFixed( 1 ), y: +( r.top + scrollY ).toFixed( 1 ), w: +r.width.toFixed( 1 ), h: +r.height.toFixed( 1 ) } : null;
 		out.push( {
 			i: out.length, key: keyOf( e ), parentKey: p && ! stripRoots.has( e ) ? keyOf( p ) : null, ...( stripRoots.has( e ) ? { strip: stripRoots.get( e ) } : {} ), depth, tag: e.tagName.toLowerCase(), template: tname, tpl: Number( n ), attrs, words: ws( own ), allText: ws( e.textContent ).slice( 0, 120 ),
-			srcLine: lineOf( window.__dcAnnotatedTemplate( tname ) || '', n ), membership, srcTag, srcOwnText: srcOwn, snippet, ...( null !== breaks ? { textBreaks: breaks } : {} ), ...( own.trim() ? { textLeads: false !== lead } : {} ), resolved, box, visible: !! box && box.w > 0 && box.h > 0 && e.checkVisibility( { opacityProperty: true, visibilityProperty: true } ), display: getComputedStyle( e ).display, position: getComputedStyle( e ).position, flexDirection: getComputedStyle( e ).flexDirection,
+			srcLine: lineOf( window.__dcAnnotatedTemplate( tname ) || '', n ), membership, srcTag, srcOwnText: srcOwn, snippet, ...( null !== breaks ? { textBreaks: breaks } : {} ), ...( flow ? { flow } : {} ), ...( inlineDiff ? { inlineDiff } : {} ), ...( own.trim() ? { textLeads: false !== lead } : {} ), resolved, box, visible: !! box && box.w > 0 && box.h > 0 && e.checkVisibility( { opacityProperty: true, visibilityProperty: true } ), display: getComputedStyle( e ).display, position: getComputedStyle( e ).position, flexDirection: getComputedStyle( e ).flexDirection,
 		} );
 	} );
 	scrollTo( scrollWas[ 0 ], scrollWas[ 1 ] );
@@ -280,7 +312,7 @@ async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt, s
 		await page.setViewportSize( { width: w, height } );
 		await settleAt( page, w );
 		await page.evaluate( () => document.querySelectorAll( '[data-inv-i]' ).forEach( ( e ) => e.removeAttribute( 'data-inv-i' ) ) );
-		const res = await page.evaluate( collect, [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), RESOLVED ] );
+		const res = await page.evaluate( collect, [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), RESOLVED, INLINE_PAINT ] );
 		if ( res.error ) {
 			throw new Error( `${ res.error } at ${ w }px` );
 		}
@@ -346,7 +378,7 @@ export async function readInventory( { url, root, shotsDir, log = () => {}, page
 			await page.goto( url, { waitUntil: 'networkidle', timeout: 90000 } );
 			await applyStateRoute( page );
 			await settle( page, root );
-			const res = await page.evaluate( collect, [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), RESOLVED ] );
+			const res = await page.evaluate( collect, [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), RESOLVED, INLINE_PAINT ] );
 			if ( res.error ) {
 				throw new Error( `${ res.error } at ${ w }px` );
 			}
@@ -429,7 +461,7 @@ function summarise( { runs, shots, skipped, url, root } ) {
 	const at = ( w, key ) => runs[ w ].records.find( ( x ) => x.key === key );
 	const elements = withWidthOnly( runs ).map( ( r ) => {
 		const { i, ...rest } = r;
-		return { ...rest, box: { 375: at( 375, r.key )?.box ?? null, 768: at( 768, r.key )?.box ?? null, 1440: r.box }, visible: { 375: at( 375, r.key )?.visible ?? false, 768: at( 768, r.key )?.visible ?? false, 1440: r.visible }, position: { 375: at( 375, r.key )?.position ?? null, 768: at( 768, r.key )?.position ?? null, 1440: r.position ?? null }, resolved: { 375: at( 375, r.key )?.resolved ?? null, 768: at( 768, r.key )?.resolved ?? null, 1440: r.resolved ?? null }, ...injectedOf( ( w ) => ( 1440 === w ? r : at( w, r.key ) ) ), layoutChanged375: at( 375, r.key )?.layoutChanged ?? null, screenshots: shots[ r.key ] || {} };
+		return { ...rest, box: { 375: at( 375, r.key )?.box ?? null, 768: at( 768, r.key )?.box ?? null, 1440: r.box }, visible: { 375: at( 375, r.key )?.visible ?? false, 768: at( 768, r.key )?.visible ?? false, 1440: r.visible }, position: { 375: at( 375, r.key )?.position ?? null, 768: at( 768, r.key )?.position ?? null, 1440: r.position ?? null }, displayAt: { 375: at( 375, r.key )?.display ?? null, 768: at( 768, r.key )?.display ?? null, 1440: r.display ?? null }, resolved: { 375: at( 375, r.key )?.resolved ?? null, 768: at( 768, r.key )?.resolved ?? null, 1440: r.resolved ?? null }, ...injectedOf( ( w ) => ( 1440 === w ? r : at( w, r.key ) ) ), layoutChanged375: at( 375, r.key )?.layoutChanged ?? null, screenshots: shots[ r.key ] || {} };
 	} );
 	const tagOk = ( r ) => !! r.srcTag && r.srcTag.replace( /^sc-raw-/, '' ).toLowerCase() === r.tag;
 	const checks = {
