@@ -70,3 +70,5 @@ The signal between parallel sessions working the cloning tool plan (`.claude/pla
 - 2026-10-30 S reseed-end (exit 0; array_item_schema 154 fields, 1 blank (the recorded nested-list role gap), was 122 of 153 blank; seed history: no unexpected changes)
 - 2026-10-30 S reseed-start (block_identity_facts migration + sgs-update-v2.py from main: F1 A1 stage 14, the counter icon selector)
 - 2026-10-30 S reseed-end (exit 0; block_identity_facts created by its migration alone, the runner's eight older unrecorded migrations left untouched; stage 14 seeded 28966 rows over 97 blocks; identity drift check and schema drift clean)
+- 2026-10-30 S reseed-start (sgs-update-v2.py from main b32a00b6e: the fixed identity extractor, 11 role corrections in attr-classification-overrides.json, the counter icon selector)
+- 2026-10-30 S reseed-end (exit 0; block_identity_facts 30813 code + 7 live rows, 0 conflicts; emit_shape 386 -> 377 is the 9 settings whose role moved off text-content, checked against the pre-reseed snapshot)
