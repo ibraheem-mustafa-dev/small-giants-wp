@@ -57,6 +57,7 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
 // ---------------------------------------------------------------------------
 // 1. Security sanitiser (contract §D) — a CSS-length sanitiser for box/side
@@ -734,7 +735,8 @@ $sgs_tl_loop_i     = 0;
 				$date_raw    = isset( $entry['date'] ) ? (string) $entry['date'] : '';
 				$entry_title = isset( $entry['title'] ) ? (string) $entry['title'] : '';
 				$description = isset( $entry['description'] ) ? (string) $entry['description'] : '';
-				$icon        = isset( $entry['icon'] ) ? (string) $entry['icon'] : '';
+				// The entry icon is a Lucide slug (role icon-slug); an unknown slug draws no icon element.
+				$icon_svg    = isset( $entry['icon'] ) ? sgs_get_lucide_icon( preg_replace( '/[^a-z0-9-]/', '', strtolower( (string) $entry['icon'] ) ) ) : '';
 				$image_id    = isset( $entry['image'] ) ? absint( $entry['image'] ) : 0;
 
 				// Build a safe ISO 8601 datetime attribute from the raw date string.
@@ -865,8 +867,8 @@ $sgs_tl_loop_i     = 0;
 					endif;
 					?>
 					<div class="sgs-timeline__node" aria-hidden="true">
-						<?php if ( $icon ) : ?>
-							<span class="sgs-timeline__node-icon" data-icon="<?php echo esc_attr( $icon ); ?>" aria-hidden="true"></span>
+						<?php if ( '' !== $icon_svg ) : ?>
+							<span class="sgs-timeline__node-icon" aria-hidden="true"><?php echo $icon_svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_get_lucide_icon() returns a bundled SVG. ?></span>
 						<?php endif; ?>
 					</div>
 					<div class="sgs-timeline__content">

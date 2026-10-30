@@ -45,6 +45,12 @@
 	color: var(--wp--preset--color--primary);
 }
 
+.sgs-counter__icon svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
 /* Number — larger fluid default */
 .sgs-counter__number {
 	display: block;
