@@ -74,3 +74,5 @@ The signal between parallel sessions working the cloning tool plan (`.claude/pla
 - 2026-10-30 S reseed-end (exit 0; block_identity_facts 30813 code + 7 live rows, 0 conflicts; emit_shape 386 -> 377 is the 9 settings whose role moved off text-content, checked against the pre-reseed snapshot)
 - 2026-10-30 S reseed-start (sgs-update-v2.py from main: child-block facts in block_identity_facts)
 - 2026-10-30 S reseed-end (exit 0; child-block facts seeded, sgs/hero renders h1 = yes; no unexpected seed-history change)
+- 2026-10-30 S reseed-start (sgs-update-v2.py from main 338affb1c: the glyph role, the rich-text slice's role data)
+- 2026-10-30 S reseed-end (exit 0; separators carry the glyph role; identity facts 30813 code + 4 live rows; no unexpected seed-history change)
