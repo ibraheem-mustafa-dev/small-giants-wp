@@ -10,6 +10,30 @@ const CONTROLS = [ 'input', 'select', 'textarea' ];
 // tile), a radio, checkbox or option role, and a submit button.
 const answers = ( e ) => CONTROLS.includes( e.tag ) || undefined !== e.attrs?.[ 'aria-pressed' ] || [ 'radio', 'checkbox', 'option' ].includes( e.attrs?.role ) || ( 'button' === e.tag && 'submit' === e.attrs?.type );
 
+// What a visitor fills in: a text control (an input of a type that takes an entry, a select or a textarea), a pressed-state
+// option, or a radio, checkbox or option role; never a button or link that only submits or leads elsewhere.
+const NOT_ENTRY = new Set( [ 'hidden', 'submit', 'button', 'reset', 'image' ] );
+const isField = ( e ) => ( CONTROLS.includes( e.tag ) && ! NOT_ENTRY.has( String( e.attrs?.type ?? '' ).toLowerCase() ) ) || undefined !== e.attrs?.[ 'aria-pressed' ] || [ 'radio', 'checkbox', 'option' ].includes( e.attrs?.role );
+
+// Whether the element `el` is or holds a field (FR-48-57): a form block stands only on an element holding one, so a lone
+// button or link a form record names is that control, never a form with nothing to fill in.
+export function holdsField( m, el ) {
+	if ( ! el ) {
+		return false;
+	}
+	for ( const e of m.els ) {
+		for ( let x = e; x; x = m.byKey[ x.parentKey ] ) {
+			if ( x === el ) {
+				if ( isField( e ) ) {
+					return true;
+				}
+				break;
+			}
+		}
+	}
+	return false;
+}
+
 // m: the inventory model (lib/skeleton-model.mjs); root: the form record's root element. Returns the form's element.
 export function formElement( m, root ) {
 	const under = ( a, e ) => {

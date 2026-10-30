@@ -1,11 +1,17 @@
 // The role the page map gives a skeleton surface (Spec 48 FR-48-30; plan 2026-10-23-cloning-tool-completion S5): a choice
-// flow (an `sgs_choice_flow` row whose draftId names the surface's surfaces.json record, Spec 43) or a part another row's block
-// draws (a part with owner `block`, such as the cart page's bag drawer). surfaces.json has no choice-flow kind (a flow is a
-// `modal` or a `form` record there), so the page map is the only source; nothing is read from a name.
+// flow (an `sgs_choice_flow` row whose draftId names the surface's surfaces.json record, Spec 43), a part another row's block
+// draws (a part with owner `block`, such as the cart page's bag drawer), or a part another row holds with no row of its own
+// (`ownedPart`, FR-48-87): a part the page map names by the surface's record (owner `woocommerce`, `page` or `draft-notes`),
+// or a surface other than a page, header or footer on a WooCommerce row's page (lib/intake-pagemap-owners.mjs::isWooRow,
+// the page map's own rule: a form or modal there is WooCommerce's), its route the row's or one the row folds in (`folds`,
+// a signed-in view folded into the account row). Such a surface is drawn by its owner and never built as its own form or
+// blocks. surfaces.json has no choice-flow kind (a flow is a `modal` or a `form` record there), so the page map is the only
+// source; nothing is read from a name.
 //
 // A part names its surface by `surfaces.json <id>`, or by the draft tag the page map read (`<file>:<line>:<col> <tag
 // aria-label="…">`, lib/intake-pagemap-surfaces.mjs::tagId), matched to an element of the surface's inventory with the same
 // component, tag and aria-label. The line is not compared: the page map counts lines in the file, the template in its own text.
+import { isWooRow } from './intake-pagemap-owners.mjs';
 
 // The parts of a page-map tag id: { file stem, tag, ariaLabel } or null.
 export function parseTagId( draftId ) {
@@ -25,11 +31,26 @@ function names( draftId, { id, m, view } ) {
 	return !! t && !! m && m.els.some( ( e ) => ( view?.realTag( e ) ?? e.tag ) === t.tag && componentOf( e, view ) === t.component && ( null == t.ariaLabel || ( view?.attr( e, 'aria-label' ) ?? e.attrs?.[ 'aria-label' ] ) === t.ariaLabel ) );
 }
 
+// A route without its query string and fragment (`SignIn.dc.html?mode=register` is the SignIn page).
+export const routePath = ( route ) => ( null == route ? null : String( route ).split( /[?#]/ )[ 0 ] );
+
+// The page-map row whose page is `route`: the row's own route, or one it folds in (`folds`, the twin rule).
+export const rowOfRoute = ( rows, route ) => {
+	const at = routePath( route );
+	return at ? rows.find( ( r ) => ( r.route && routePath( r.route ) === at ) || ( r.folds || [] ).some( ( f ) => routePath( f ) === at ) ) || null : null;
+};
+
+// The surface kinds that are never another row's part here: a page is a row, and a page's own header or footer is that
+// page's layout, built on its own surface.
+const NOT_PARTS = new Set( [ 'page', 'header', 'footer' ] );
+const OWNERS = new Set( [ 'woocommerce', 'page', 'draft-notes' ] );
+
 // o: { pageMap (the page-map rows), id (the surface's surfaces.json id), kind (its surfaces.json kind: a part is a surface
-// of its own kind only, so a header whose markup holds the drawer is never the drawer), m (lib/skeleton-model.mjs), view
-// (lib/skeleton-record.mjs::recordView), postType (rules.choiceFlow.postType) }. Returns { role: 'choiceFlow', row } |
-// { role: 'blockPart', row, part } | null.
-export function surfaceRole( { pageMap = [], id = null, kind = null, m = null, view = null, postType = 'sgs_choice_flow' } ) {
+// of its own kind only, so a header whose markup holds the drawer is never the drawer), name (its surfaces.json name), route
+// (its surfaces.json route), m (lib/skeleton-model.mjs), view (lib/skeleton-record.mjs::recordView), postType
+// (rules.choiceFlow.postType) }. Returns { role: 'choiceFlow', row } | { role: 'blockPart', row, part } | { role: 'ownedPart',
+// row, part } | null.
+export function surfaceRole( { pageMap = [], id = null, kind = null, name = null, route = null, m = null, view = null, postType = 'sgs_choice_flow' } ) {
 	const rows = Array.isArray( pageMap ) ? pageMap : [];
 	const flow = id ? rows.find( ( r ) => r.postType === postType && r.draftId === `surfaces.json ${ id }` ) : null;
 	if ( flow ) {
@@ -41,7 +62,18 @@ export function surfaceRole( { pageMap = [], id = null, kind = null, m = null, v
 			return { role: 'blockPart', row, part };
 		}
 	}
-	return null;
+	// A surface with a row of its own (a saved form, a modal, a drawer) is built as that row, whatever page holds it.
+	if ( ! id || NOT_PARTS.has( kind ) || rows.some( ( r ) => r.draftId === `surfaces.json ${ id }` ) ) {
+		return null;
+	}
+	for ( const row of rows ) {
+		const part = ( row.parts || [] ).find( ( p ) => OWNERS.has( p.owner ) && p.draftId === `surfaces.json ${ id }` );
+		if ( part ) {
+			return { role: 'ownedPart', row, part };
+		}
+	}
+	const woo = rowOfRoute( rows, route );
+	return isWooRow( woo ) ? { role: 'ownedPart', row: woo, part: { kind, label: name ?? id, owner: 'woocommerce', draftId: `surfaces.json ${ id }` } } : null;
 }
 
 // The fact record's surfaces of `kind` that the page map hands to another row's block, seen from any surface (a header

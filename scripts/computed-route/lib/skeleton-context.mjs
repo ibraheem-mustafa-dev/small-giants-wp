@@ -12,6 +12,7 @@ import { detectReferences } from './references.mjs';
 import { draftLinksFor } from './draft-link.mjs';
 import { carriedIds } from './skeleton-carried.mjs';
 import { commerceOf, filtersOf } from './skeleton-commerce-region.mjs';
+import { routePath } from './skeleton-surface-role.mjs';
 import { loadCatalogue } from './catalogue-read.mjs';
 import { flowSale } from './flow-product.mjs';
 import { loadShopParts } from './fill-shop-parts.mjs';
@@ -48,6 +49,13 @@ export const manifestEntryOf = ( { repo, client, slug } ) => {
 	return named.find( ( s ) => s.target?.template ) || named[ 0 ] || null;
 };
 
+// The page-map row that folds `route` in (`folds`, the twin rule), from the first list holding one: the confirmed page map,
+// then the run's proposal.
+export const foldedRow = ( lists, route ) => {
+	const at = routePath( route );
+	return at ? lists.map( ( list ) => list.find( ( r ) => ( r.folds || [] ).some( ( f ) => routePath( f ) === at ) ) ).find( Boolean ) || null : null;
+};
+
 // The site that sites/<client>/build/surfaces.json records for the manifest entry naming intake skeleton `slug`, or null
 // when the client has no such entry.
 export const siteOf = ( o ) => manifestEntryOf( o )?.site || null;
@@ -56,17 +64,19 @@ export const siteOf = ( o ) => manifestEntryOf( o )?.site || null;
 // are the run's own (intake.json's `routing` and `pageMap`), which the draft-link context and the commerce region read
 // before a confirmed page map exists; `carousels` is lib/skeleton-rerun.mjs::carouselKeys of the motion inventory (the loops
 // that are working carousels); `rootComponent` is the surface's entry component, which the carried logo is read under.
-export function proposalContext( { repo, client, slug, id, breakpoints, site = siteOf( { repo, client, slug } ), routing = null, pageMap = null, carousels = new Set(), rootComponent = null } ) {
+export function proposalContext( { repo, client, slug, id, route = null, breakpoints, site = siteOf( { repo, client, slug } ), routing = null, pageMap = null, carousels = new Set(), rootComponent = null } ) {
 	const refs = detectReferences();
 	const build = path.join( repo, 'sites', client, 'build' );
 	const rows = readJson( path.join( build, 'page-map.json' ), null ) ?? pageMap ?? [];
 	const catalogue = loadCatalogue( repo, client );
+	const entry = manifestEntryOf( { repo, client, slug } );
 	return {
 		calKeys: calKeysFor( site ), calSettings: calSettingsFor( site ), calPaint: calPaintFor( site ), calText: calTextFor( site ), states: statesOfRecord( { repo, client, id } ), thresholds: thresholdsOf( breakpoints ),
 		formLinks: formLinksFor( { repo, client, refs } ), refs, draftLinks: draftLinksFor( { repo, client, routing, proposedRows: pageMap?.length ? pageMap : null } ),
 		carried: carriedIds( { repo, client, site, rootComponent } ), scriptOf: ( component ) => componentScript( path.join( repo, 'sites', client, 'handoff' ), component ),
 		// A WooCommerce page's template surface places WooCommerce's piece at the draft's commerce region, and a loop of products, brands or reviews is a working block.
-		commerce: commerceOf( manifestEntryOf( { repo, client, slug } ), rows, catalogue, loadShopParts( build ) ),
+		// A surface with no manifest entry whose route a row folds in (`folds`: the account's signed-in view) is that row's view.
+		commerce: commerceOf( entry, rows, catalogue, loadShopParts( build ), entry ? null : foldedRow( [ rows, pageMap || [] ], route ) ),
 		// The catalogue's filter data for a surface that is the shop filter's own drawer (lib/skeleton-filter-drawer.mjs).
 		filters: catalogue ? filtersOf( catalogue ) : null,
 		loops: { rows, brands: catalogue ? filtersOf( catalogue ).brands : [], carousels },

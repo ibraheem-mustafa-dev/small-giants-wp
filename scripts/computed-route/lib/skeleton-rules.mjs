@@ -11,13 +11,13 @@ import path from 'path';
 import { draftLogicOf, narrowedLists, narrowsRenderedList } from './skeleton-narrowing.mjs';
 import { accordionLoops } from './skeleton-accordion.mjs';
 import { specHit } from './skeleton-facts.mjs';
-import { formElement } from './skeleton-form-element.mjs';
+import { formElement, holdsField } from './skeleton-form-element.mjs';
 import { templateKey } from './fact-key.mjs';
 import { recordView } from './skeleton-record.mjs';
 import { acrossWidths, elementFacts, pxOf } from './element-facts.mjs';
 import { sameNavLook } from './nav-link-look.mjs';
 import { makePanelRules } from './skeleton-panel-rules.mjs';
-import { commerceRegion } from './skeleton-commerce-region.mjs';
+import { commerceRegion, ownerBlockOf } from './skeleton-commerce-region.mjs';
 import { loopBlocks } from './skeleton-loop-blocks.mjs';
 import { filterRail, placeableFacets } from './skeleton-filter-rail.mjs';
 import { filterDrawer } from './skeleton-filter-drawer.mjs';
@@ -464,13 +464,15 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// goes, and what it holds beside the form (an aside, a bar) is the page's, never the saved form's.
 		( { e } ) => {
 			const form = 'form' === surface.kind ? formElement( m, m.root ) : null;
-			if ( ! form || form === m.root || form === e ) {
+			if ( ! form || form === m.root || form === e || ! holdsField( m, form ) ) {
 				return null;
 			}
 			const inside = ( a, x ) => x === a || ( !! x && inside( a, m.byKey[ x.parentKey ] ) );
 			return inside( e, form ) ? v( 'formHost', { action: 'unwrap', reason: R.formHost?.layoutReason } ) : inside( form, e ) ? null : v( 'formHost', { action: 'remove', reason: R.formHost?.besideReason } );
 		},
-		( { e } ) => ( R.formHost && ( view.realTag( e ) === R.formHost.tag || ( 'form' === surface.kind && e === formElement( m, m.root ) ) ) ? v( 'formHost', { block: R.formHost.block, attributes: formAnchor ? { anchor: formAnchor } : {} } ) : null ),
+		// A form block stands only where there is something to fill in (holdsField): a <form> or a form surface's root holding
+		// only a button or a link is that control.
+		( { e } ) => ( R.formHost && ( view.realTag( e ) === R.formHost.tag || ( 'form' === surface.kind && e === formElement( m, m.root ) ) ) && holdsField( m, e ) ? v( 'formHost', { block: R.formHost.block, attributes: formAnchor ? { anchor: formAnchor } : {} } ) : null ),
 		// A form control is the field block for its type; the field's label, required marker and hint are that block's own
 		// settings, and a <label> wrapped around the control goes so the field takes its place. A radio or checkbox group in a
 		// form is one field: its group element is the radio or checkbox field, holding the options, absorbing its controls.
@@ -704,6 +706,18 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		( { e } ) => {
 			const own = e === m.root && 'blockPart' === role?.role ? R.blockOwnedPart?.byTemplate?.[ role.row.template ] : null;
 			return own ? v( 'blockOwnedPart', { block: own.block, absorb: true, attributes: { ...( own.attributes || {} ) }, reason: `${ own.reason }; the page map holds this surface as the ${ role.part.kind } part "${ role.part.label }" of the ${ role.row.slug } row` } ) : null;
+		},
+		// A surface the page map holds as a part of another row, with no row of its own (lib/skeleton-surface-role.mjs, FR-48-87),
+		// is never built as its own form or blocks: on a WooCommerce row it is that row's piece, which draws it (the checkout's
+		// form, the account's address form), so the piece is the root and everything in it is absorbed; any other part (a part of
+		// its page, a record the draft code shows nothing for) is built on its row's own surface, so this surface places nothing.
+		( { e } ) => {
+			if ( e !== m.root || 'ownedPart' !== role?.role || ! R.ownedPart ) {
+				return null;
+			}
+			const held = `the page map holds this surface as the ${ role.part.kind } part "${ role.part.label }" of the ${ role.row.slug } row (owner ${ role.part.owner })`;
+			const block = 'woocommerce' === role.part.owner ? ownerBlockOf( role.row, R.commerceRegion ) : null;
+			return block ? v( 'ownedPart', { block, absorb: true, reason: `${ R.ownedPart.pieceReason }; ${ held }` } ) : v( 'ownedPart', { action: 'remove', reason: `${ R.ownedPart.rowReason }; ${ held }` } );
 		},
 		// The control that opens such a drawer is that block too (the bag pill is the cart block's trigger): the block draws the
 		// drawer and its own trigger, so the control's label, count and icon are absorbed into the trigger settings. Before the

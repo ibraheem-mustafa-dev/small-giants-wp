@@ -72,7 +72,7 @@ export function rerunSkeletons( { client, db, repo = REPO, codeRepo = repo, skel
 	// A surface the run failed to read (a gap, no inventory) is never refilled from an older run's saved inventory: it keeps
 	// its failed entry and is listed as missing.
 	const read = ( x ) => ! x.gap && null != x.inventory;
-	const surfaces = Object.entries( skeletons ).filter( ( [ , x ] ) => read( x ) ).map( ( [ slug, x ] ) => ( { slug, id: x.id, kind: x.kind, name: x.name } ) );
+	const surfaces = Object.entries( skeletons ).filter( ( [ , x ] ) => read( x ) ).map( ( [ slug, x ] ) => ( { slug, id: x.id, kind: x.kind, name: x.name, route: x.route ?? null } ) );
 	const out = {};
 	const missing = [];
 	const failed = [];
@@ -98,8 +98,8 @@ export function rerunSkeletons( { client, db, repo = REPO, codeRepo = repo, skel
 		}
 		let r;
 		try {
-			const ctx = proposalContext( { repo, client, slug: s.slug, id: s.id, breakpoints, routing, pageMap, carousels, rootComponent: inventory.checks?.rootName || null } );
-			r = propose( { inventory, facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, motion, clientDecisions, picks: picks[ s.slug ] || {}, ...ctx, db, pageMap, surfaceId: s.id } );
+			const ctx = proposalContext( { repo, client, slug: s.slug, id: s.id, route: s.route, breakpoints, routing, pageMap, carousels, rootComponent: inventory.checks?.rootName || null } );
+			r = propose( { inventory, facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, motion, clientDecisions, picks: picks[ s.slug ] || {}, ...ctx, db, pageMap, surfaceId: s.id, surfaceRoute: s.route } );
 		} catch ( e ) {
 			const error = e.message.split( '\n' )[ 0 ];
 			failed.push( { slug: s.slug, error } );

@@ -61,7 +61,7 @@
 	},
 	{
 		"file": "lib/skeleton-context.mjs",
-		"find": "commerce: commerceOf( manifestEntryOf( { repo, client, slug } ), rows, catalogue, loadShopParts( build ) ),",
+		"find": "commerce: commerceOf( entry, rows, catalogue, loadShopParts( build ), entry ? null : foldedRow( [ rows, pageMap || [] ], route ) ),",
 		"replace": "",
 		"why": "no commerce region"
 	}
