@@ -62,59 +62,18 @@ import { sweepSteps } from './lib/fill-values.mjs';
 import { walkerConfigs, WALK_WIDTHS } from './lib/fill-config.mjs';
 import { walkerStates, walkRefusalRows } from './lib/walker-states.mjs';
 import { fillReport, unmappedList, readFailureRows, passSettled } from './lib/fill-report.mjs';
-import { calibrationFor } from './solve.mjs';
 import { motionSettled, motionRejudged, transitionListOutcomes } from './lib/fill-motion-settle.mjs';
 import { stateMap } from './lib/state-map.mjs';
 import { readMediaMap } from './lib/fill-media.mjs';
 import { injectedSvgWrites } from './lib/fill-injected-svg.mjs';
-import { assertCurrent } from './lib/freshness.mjs';
 import { liveReadSlots } from './lib/written-slot.mjs';
-import { renderScoped, otherRenderRows } from './lib/fill-render.mjs';
-import { renderSourceWrites, loadRenderParts, tagBlocksOf } from './lib/fill-render-source.mjs';
-import { inventoryModel } from './lib/skeleton-model.mjs';
-import { servedKey } from './lib/key-space.mjs';
+import { renderScoped } from './lib/fill-render.mjs';
+import { renderSourcePass } from './lib/fill-render-source.mjs';
+import { calibrationLoader, parseMirrors, stamp, animationInventory } from './lib/fill-inputs.mjs';
 
+export { calibrationLoader, parseMirrors };
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
-
-// The calibration loader for one site: the route's own cache (solve.mjs::calibrationFor), or the cache files in `dir` (a
-// run against another checkout's measured cache). Default paint comes from `site`'s own file only.
-export function calibrationLoader( site, dir = null ) {
-	return ( block ) => calibrationFor( block, site, dir ? path.resolve( dir ) : undefined );
-}
-
-// `--mirror <url> <file>` (repeatable) as { url: absolute file path }.
-export function parseMirrors( argv ) {
-	const out = {};
-	argv.forEach( ( a, i ) => {
-		if ( '--mirror' === a ) {
-			if ( ! argv[ i + 1 ] || ! argv[ i + 2 ] ) {
-				throw new Error( '--mirror takes a url and a file' );
-			}
-			out[ argv[ i + 1 ] ] = path.resolve( argv[ i + 2 ] );
-		}
-	} );
-	return out;
-}
-
-const stamp = () => new Date().toISOString().replace( /[:.]/g, '-' ).slice( 0, 19 );
-
-// The re-derived animation inventory (Spec 48 FR-48-25) from the client's intake: { records, rootComponent }, where
-// rootComponent is the served index draft's component (else the inventory's first, entry, draft); no records when
-// intake has not run.
-function animationInventory( buildDir, draftIndex, log ) {
-	const file = path.join( buildDir, 'intake', 'intake.json' );
-	if ( ! fs.existsSync( file ) ) {
-		log( `no ${ path.relative( REPO, file ) }: motion is not written` );
-		return { records: [], rootComponent: null, draftDefects: [], flags: [] };
-	}
-	const intake = JSON.parse( fs.readFileSync( file, 'utf8' ) );
-	assertCurrent( intake, path.join( buildDir, '..', 'handoff' ), { label: path.relative( REPO, file ) } );
-	const inv = intake.inventory?.animations || {};
-	const drafts = inv.drafts || [];
-	const entry = drafts.find( ( d ) => draftIndex && d.file === path.basename( draftIndex ) ) || drafts[ 0 ];
-	return { records: inv.records || [], rootComponent: entry?.dc ?? null, draftDefects: intake.draftDefects || [], flags: intake.flags || [] };
-}
 
 // Runs Fill and writes its outputs. o: { client, surface, skeleton (a file), draftUrl | draftDir (+ draftIndex), liveUrl,
 // out, open, cache, sweep (default true), headless (default true), external, mirror ({ url: local file } answered
@@ -235,24 +194,8 @@ export async function fillSurface( o ) {
 			ledgerStates: Object.entries( entry.states || {} ).filter( ( [ , v ] ) => null === v ).map( ( [ k ] ) => k ),
 		};
 		const result = fillTree( { tree, nodes, reads, calFor, ...fillOptions } );
-		// The settings each node's block draws only in another surface's render are read from that render's part, the draft
-		// element the same content occupies there (lib/fill-render-source.mjs); those no part answers are listed with their reason.
-		const second = await renderSourceWrites( {
-			tree, nodes, refOf, calFor, fullCalFor: calibrationLoader( entry.site, o.cache ), barM: inventory ? inventoryModel( inventory ) : null, tagBlocks: tagBlocksOf( db ),
-			parts: loadRenderParts( { intake: intakeData, inventoriesDir: path.join( buildDir, 'intake', 'inventories' ), records: fs.existsSync( handoffFile ) ? JSON.parse( fs.readFileSync( handoffFile, 'utf8' ) ).records || [] : [] } ),
-			finderOf: ( e ) => ( { tpl: servedKey( e.key, intakeParts.rootComponent ) } ),
-			read: async ( { nodes: list, part } ) => {
-				const partOpener = stateOpener( { entry: { states: {} }, skeleton: part.entry, record: part.record, facts, rootComponent: intakeParts.rootComponent, widthKeys } );
-				log( `render part ${ part.slug }: ${ partOpener?.state ? describeWays( partOpener ) : 'no opener' }` );
-				return readDraft( { url: readUrlOf( { url, opener: partOpener, record: part.entry, routing: intakeData?.routing } ), nodes: list, opener: partOpener, headless: o.headless ?? true, sweep: false, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, logicRows: [], log } );
-			},
-			fill: ( x ) => fillTree( { ...fillOptions, ...x } ),
-		} );
-		result.writes.push( ...second.writes );
-		result.unmapped.push( ...second.unmapped );
-		result.notes.push( ...second.sources.map( ( x ) => `${ x.node }: settings drawn only in another render read from ${ x.part } (${ Math.round( x.share * 100 ) }% of the node's words, ${ x.slots } slots paired)` ) );
-		const answered = new Set( second.writes.map( ( w ) => `${ w.node }|${ w.attr }` ) );
-		result.unread.push( ...otherRenderRows( nodes.filter( ( n ) => n.targets.length ).map( ( n ) => ( { name: n.name, ref: refOf( flat[ n.index ] ) } ) ), calFor ).filter( ( r ) => ! [ ...second.sources, ...second.unread ].some( ( x ) => x.node === r.node ) ).map( ( r ) => ( { node: r.node, block: r.block, kind: 'render', slot: '', settings: r.settings, reason: r.reason } ) ), ...second.unread.map( ( u ) => ( { ...u, settings: u.settings.filter( ( a ) => ! answered.has( `${ u.node }|${ a }` ) ) } ) ).filter( ( u ) => u.settings.length ) );
+		// The settings each node's block draws only in another surface's render, read from that render's part (lib/fill-render-source.mjs).
+		await renderSourcePass( { result, tree, nodes, flat, calFor, fullCalFor: calibrationLoader( entry.site, o.cache ), inventory, db, intake: intakeData, handoffFile, facts, rootComponent: intakeParts.rootComponent, widthKeys, url, state: opener?.keys ?? {}, draftFolder: path.join( repo, 'sites', o.client, 'handoff' ), read: { headless: o.headless ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows }, inventoriesDir: path.join( buildDir, 'intake', 'inventories' ), fill: ( x ) => fillTree( { ...fillOptions, ...x } ), log } );
 		// FR-48-81: each target's state looks, through the settings that hold their states.
 		const states = fillStates( { tree, nodes, reads, calFor, db, snapshot } );
 		result.writes.push( ...states.writes );

@@ -6,7 +6,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { surfaceRoots } from '../lib/intake-skeletons.mjs';
+import { surfaceRoots, markAt, markRoot, restFailsAt } from '../lib/intake-skeletons.mjs';
 
 const recordsOf = ( client ) => JSON.parse( readFileSync( new URL( `../../../sites/${ client }/handoff/surfaces.json`, import.meta.url ), 'utf8' ) ).records;
 // A census holding every record's template elements as divs.
@@ -32,4 +32,53 @@ test( 'MUST FAIL: the Indus drawer\'s accordion sections are render parts, opene
 test( 'negative controls: a page\'s accordions and the mega menus are no render parts', () => {
 	assert.deepEqual( roots( 'mamas-munches-redesign' ).renderParts.map( ( p ) => p.id ), [] );
 	assert.ok( ! roots( 'indus-foods' ).renderParts.some( ( p ) => 'menu' === p.kind ) );
+} );
+
+// A page whose evaluate answers the root mark (markRoot) and the draft-state calls (logicState), recording each.
+const fakePage = ( mark = { copies: 4, tag: 'div', viaCondition: false, viaMain: false } ) => {
+	const calls = [];
+	return { calls, evaluate: async ( fn, arg ) => {
+		calls.push( { fn: fn.name, arg } );
+		return 'markRoot' === fn.name ? mark : 1;
+	} };
+};
+const SECTION = { component: 'C', rootTpl: '134', slug: 'part-x', kind: 'accordion', part: true };
+
+test( 'MUST FAIL: a render part\'s own state is set even while its root is mounted, and its root is re-marked as the copy that state shows', async () => {
+	const page = fakePage();
+	await markAt( page, SECTION, async () => {}, { via: 'state', state: 'expanded', keys: { acc: 1 } } );
+	assert.deepEqual( page.calls.map( ( c ) => c.fn ), [ 'markRoot', 'logicState', 'markRoot' ] );
+	assert.deepEqual( page.calls[ 1 ].arg.patch, { acc: 1 } );
+	assert.equal( page.calls[ 2 ].arg[ 5 ], true, 'the mark looks for the shown copy' );
+	assert.equal( await restFailsAt( null, SECTION, null, [] ), true, 'a render part is always read through its ways' );
+} );
+
+test( 'negative control: a surface that renders at rest is marked once and its state is left alone', async () => {
+	const page = fakePage();
+	const surface = { ...SECTION, part: undefined, kind: 'drawer' };
+	await markAt( page, surface, async () => {}, { via: 'state', state: 'open', keys: { open: true } } );
+	assert.deepEqual( page.calls.map( ( c ) => c.fn ), [ 'markRoot' ] );
+	assert.equal( page.calls[ 0 ].arg[ 5 ], false );
+	assert.equal( await restFailsAt( null, surface, null, [] ), false, 'no width-bound way: read at rest' );
+} );
+
+test( 'markRoot: a render part marks the first shown copy of its root, a surface the first copy (negative control)', () => {
+	const copy = ( shown ) => {
+		const el = { tagName: 'DIV', marked: null, parentElement: { closest: () => ( { dataset: { scName: 'C' } } ) }, checkVisibility: () => shown, getBoundingClientRect: () => ( { height: shown ? 40 : 0 } ), setAttribute( a, v ) {
+			this.marked = v;
+		}, closest: () => null, querySelectorAll: () => [] };
+		return el;
+	};
+	const [ shut, open ] = [ copy( false ), copy( true ) ];
+	const saved = globalThis.document;
+	globalThis.document = { querySelectorAll: ( sel ) => ( sel.startsWith( '[data-dc-tpl' ) ? [ shut, open ] : [] ) };
+	try {
+		markRoot( [ 'C', '134', 'part-x', 'data-mark', false, true ] );
+		assert.deepEqual( [ shut.marked, open.marked ], [ null, 'part-x' ] );
+		open.marked = null;
+		markRoot( [ 'C', '134', 'surface-x', 'data-mark', false, false ] );
+		assert.deepEqual( [ shut.marked, open.marked ], [ 'surface-x', null ] );
+	} finally {
+		globalThis.document = saved;
+	}
 } );

@@ -206,7 +206,7 @@ export function surfaceRoots( { folder, census, records = null, files = exportFi
 // the named element holds (a page-file draft's record may name the file's outer wrapper, which also holds the site
 // header and footer imports; those are surfaces of their own, so the page's tree never repeats them). Returns
 // { copies, tag, viaCondition, viaMain } or { error }.
-function markRoot( [ component, tpl, mark, attr, isPage, shown = false ] ) {
+export function markRoot( [ component, tpl, mark, attr, isPage, shown = false ] ) {
 	const hostName = ( e ) => e.parentElement?.closest( '.sc-host' )?.dataset.scName;
 	const live = [ ...document.querySelectorAll( `[data-dc-tpl="${ tpl }"]` ) ].filter( ( e ) => hostName( e ) === component );
 	// A render part's root is the copy its state shows (the open section of a loop of sections mounted shut).
@@ -328,7 +328,7 @@ export { openers, describeWay };
 // settles, then marks again. An opener whose state bounds the width (`bounds`, lib/intake-openers.mjs) is applied at every
 // width `width` names, rendered or not, and its bound keys are then set to that width: the page is read at one width after
 // another, so the key holds the viewport's value at each, as a fresh page per width holds it in Fill.
-async function markAt( page, s, settle, opener = null, width = null ) {
+export async function markAt( page, s, settle, opener = null, width = null ) {
 	const args = [ s.component, s.rootTpl, s.slug, ROOT_MARK, 'page' === s.kind, !! s.part ];
 	const m = await page.evaluate( markRoot, args );
 	const bounded = !! opener?.bounds?.length && null != width;
