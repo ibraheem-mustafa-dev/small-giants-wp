@@ -60,6 +60,7 @@ OPEN_STATES = ("exactly-one", "none-or-one", "any", "none")
 MOVES = ("timer", "controls", "scroll", "none")
 CONTEXT_WORDS = ("header", "footer", "drawer", "form")
 
+CONTENT_EVIDENCE = "content a setting holds"
 _TRACK = re.compile(r"(?<!window)(?<!documentElement)\.(?:scrollTo|scrollBy)\s*\(|\.scrollLeft\s*[+\-]?=(?!=)|\.style\.transform\s*=|"
                     r"setProperty\(\s*'--[\w-]*(?:offset|translate|slide|index|track|shift)")
 _HANDLER = re.compile(r"addEventListener\(\s*'(?:click|keydown|pointerdown|pointerup)'")
@@ -105,12 +106,25 @@ class Rows:
             return "unknown"
         return "no"
 
+    def _own_state(self, slug: str, fact: str, value: str) -> str:
+        """The state the block's own structure gives, leaving aside what content a setting holds may carry."""
+        m = self.x.markup(slug)
+        if value in m.yes[fact] and CONTENT_EVIDENCE not in m.yes[fact][value]:
+            return "yes"
+        if value in m.possible[fact] or value in m.unknown_vals[fact]:
+            return "unknown"
+        if any("content printed through" not in r for r in m.unknown_all[fact]):
+            return "unknown"
+        return "no"
+
     # -- open-state ----------------------------------------------------------------------------------------------------
     def open_state(self, slug: str) -> None:
         m, bj = self.x.markup(slug), self.x.block_json[slug]
         js = m.js_code
-        tab = "tab" in m.yes["renders-role"] and "aria-selected" in m.yes["renders-aria"]
-        disclosure = {"details", "summary"} & set(m.yes["renders-tag"]) or "aria-expanded" in m.yes["renders-aria"]
+        # The block's own structure: a tag or attribute only content a setting holds may carry is not its disclosure.
+        own = {f: {v: e for v, e in m.yes[f].items() if CONTENT_EVIDENCE not in e} for f in MARKUP}
+        tab = "tab" in own["renders-role"] and "aria-selected" in own["renders-aria"]
+        disclosure = {"details", "summary"} & set(own["renders-tag"]) or "aria-expanded" in own["renders-aria"]
         out: dict = {}
         if tab:
             sel = _ONE_OF_MANY.search(js)
@@ -143,11 +157,15 @@ class Rows:
             else:
                 out["any"] = ("yes", f"a disclosure ({what}) with no script that closes the others")
         else:
-            states = [self._state_of(slug, "renders-tag", "details"), self._state_of(slug, "renders-tag", "summary"),
-                      self._state_of(slug, "renders-aria", "aria-expanded"), self._state_of(slug, "renders-role", "tab")]
+            probes = (("renders-tag", "details"), ("renders-tag", "summary"), ("renders-aria", "aria-expanded"), ("renders-role", "tab"))
+            states = [self._state_of(slug, f, v) for f, v in probes]
+            own_states = [self._own_state(slug, f, v) for f, v in probes]
             if all(s == "no" for s in states):
                 ev = "prints no <details>, <summary>, aria-expanded or role=tab (renders-tag / renders-aria / renders-role are no)"
                 out = {"none": ("yes", ev), "exactly-one": ("no", ev), "none-or-one": ("no", ev), "any": ("no", ev)}
+            elif all(s == "no" for s in own_states):
+                out = {"none": ("yes", "its own markup prints no <details>, <summary>, aria-expanded or role=tab; content a "
+                                       "setting holds may carry one, which opens on its own")}
         for value in OPEN_STATES:
             state, ev = out.get(value, ("unknown", "no reader settles it: the disclosure and selection facts above leave it open"))
             self.add(slug, "open-state", value, state, ev)

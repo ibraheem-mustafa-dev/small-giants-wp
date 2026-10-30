@@ -16,6 +16,7 @@ a fact cannot be closed (an untraced dynamic site, WooCommerce or core markup, a
 from __future__ import annotations
 
 import json
+from functools import lru_cache
 import re
 import sqlite3
 import sys
@@ -26,12 +27,13 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import identity_scan as S  # noqa: E402
 import identity_sources as I  # noqa: E402
+import identity_pinned as P  # noqa: E402
+from identity_values import MARKUP, ValueReader, _code_text, _js_code, _norm, _resolve_js, _valid_for  # noqa: E402,F401
 from block_source_files import render_files  # noqa: E402
 
 PLUGIN = HERE.parents[1]
 REPO = PLUGIN.parents[1]
 BLOCKS = PLUGIN / "src" / "blocks"
-MARKUP = ("renders-tag", "renders-role", "renders-aria")
 
 
 @dataclass
@@ -47,6 +49,8 @@ class Paths:
     brands: Path = PLUGIN / "includes" / "data" / "brand-registry.json"
     decisions: Path = REPO / "scripts" / "computed-route" / "data" / "skeleton-decisions.json"
     live: Path = REPO / "scripts" / "computed-route" / "data" / "block-live-facts.json"
+    core: Path = PLUGIN / "scripts" / "data" / "core-markup-facts.json"
+    plugin: Path = PLUGIN
 
 
 @dataclass
@@ -98,7 +102,7 @@ class Markup:
     render_lits: set = field(default_factory=set)
 
 
-class Extractor:
+class Extractor(ValueReader):
     def __init__(self, paths: Paths | None = None, db: DbInputs | None = None):
         self.p = paths or Paths()
         self.db = db
@@ -115,6 +119,12 @@ class Extractor:
         self.roster = (I.load_json(self.p.roster).get("extensions") or []) if self.p.roster.is_file() else []
         self._markup: dict[str, Markup] = {}
         self._scan_cache: dict[str, S.Scan] = {}
+        self.core = P.load_core(self.p.core)
+        self._js_callers = ""
+        self._core_version = (self.core.get("_meta") or {}).get("wordpress", "")
+
+    def _npm(self, spec: str):
+        return P.npm_file(spec, self.p.plugin)
 
     # -- applicability -------------------------------------------------------------------------------------------------
     def _holds_attr(self, slug: str, attr: str) -> bool:
@@ -173,7 +183,7 @@ class Extractor:
             sc = self._scan_unit(u)
             for fact, found in (("renders-tag", sc.tags), ("renders-role", sc.roles), ("renders-aria", sc.arias)):
                 for value, pos in found.items():
-                    target[fact].setdefault(value, f"{label}{u.key} \"{self._snippet(u.file, pos)}\"")
+                    _put(target[fact], value, f"{label}{u.key} \"{self._snippet(u.file, pos)}\"")
             for d in sc.dyn:
                 values = self.resolve(d, u, units, slug)
                 where = f"{label}{u.key} \"{self._snippet(u.file, d.pos)}\""
@@ -181,7 +191,9 @@ class Extractor:
                     m.unknown_all[d.fact].append(f"untraced dynamic {d.fact[8:]} ({d.note}{': ' + d.expr if d.expr else ''}) at {where}")
                 else:
                     for v in values:
-                        target[d.fact].setdefault(v, f"{where} (resolved: {', '.join(sorted(values))})")
+                        _put(target[d.fact], v, f"{where} (resolved: {', '.join(sorted(values))})")
+            for sink in sc.sinks:
+                self._content(m, sink, u, units, slug, target, label)
             if bucket == "yes":
                 for name, pos in sc.nested.items():
                     self._nested(m, slug, name, f"{u.key} \"{self._snippet(u.file, pos)}\"")
@@ -201,8 +213,15 @@ class Extractor:
                 m.unknown_vals["renders-aria"].setdefault("aria-label", f"WordPress core block supports (get_block_wrapper_attributes) at {ukey}; read live in A2b")
                 continue
             origin = "WooCommerce" if (I.WOO_CALL.match(name) or name.startswith(("->", "do_action"))) else "WordPress core"
+            rec = (self.core.get("functions") or {}).get(name) if origin == "WordPress core" else None
+            if rec and not rec.get("unknown"):
+                for fact, key in (("renders-tag", "tags"), ("renders-role", "roles"), ("renders-aria", "aria")):
+                    for v in rec.get(key, []):
+                        _put(target[fact], v, f"{label}{ukey} calls {name}: {rec['evidence']} (scripts/data/core-markup-facts.json)")
+                continue
+            why = f": {rec['unknown']}" if rec else ""
             for fact in MARKUP:
-                m.unknown_all[fact].append(f"{origin} markup ({name}) at {label}{ukey}; read live in A2b")
+                m.unknown_all[fact].append(f"{origin} markup ({name}{why}) at {label}{ukey}; read live in A2b")
 
     def _nested(self, m: Markup, slug: str, name: str, where: str) -> None:
         if name == slug:
@@ -244,12 +263,14 @@ class Extractor:
             self._absorb_scan(m, sc, f"{self.index.rel(save)}", save)
         files, outside = [], []
         for entry in I.view_entries(bdir, bj):
-            fs, out = I.js_closure(entry, self.index.modules, self.p.blocks.parent)
+            fs, out = I.js_closure(entry, self.index.modules, self.p.blocks.parent, self._npm)
             files += fs
             outside += out
         self._absorb_js(m, files, outside, "yes", "")
-        m.js_code += "\n".join(_code_text(S.js_tokens(f.read_text(encoding="utf-8", errors="replace"))) for f in files)
-        m.js_outside += outside
+        own = [f for f in files if "node_modules" not in f.parts]
+        m.js_code += "\n".join(_code_text(S.js_tokens(f.read_text(encoding="utf-8", errors="replace"))) for f in own)
+        # A package moves things its own way: the behaviour facts never read it as absence.
+        m.js_outside += outside + sorted({_package_of(f) for f in files if "node_modules" in f.parts})
         m.sources.append(f"view script ({len(files)} file(s))")
         for flt in self.index.filters:
             how = self.applies(flt, slug)
@@ -270,7 +291,7 @@ class Extractor:
                     for fact in MARKUP:
                         m.unknown_all[fact].append(f"motion effect {effect}: module @sgs/fx-{effect} is vendor code")
                 continue
-            fs, out = I.js_closure(mod, self.index.modules, self.p.blocks.parent)
+            fs, out = I.js_closure(mod, self.index.modules, self.p.blocks.parent, self._npm)
             self._absorb_js(m, fs, out, "yes", f"motion effect {effect}: ")
         m.sources.append(f"motion effects ({len(self.qualifying.get(slug, []))})")
         return m
@@ -280,191 +301,36 @@ class Extractor:
         text = f.read_text(encoding="utf-8", errors="replace")
         for fact, found in (("renders-tag", sc.tags), ("renders-role", sc.roles), ("renders-aria", sc.arias)):
             for value, pos in found.items():
-                target[fact].setdefault(value, f"{label} \"{_line(text, pos)}\"")
+                _put(target[fact], value, f"{label} \"{_line(text, pos)}\"")
         for d in sc.dyn:
+            if "node_modules" in f.parts and d.note.startswith("an attribute named by a variable"):
+                # A package writes the attribute names its caller hands it (GSAP's attr tweens): the repo callers' own
+                # literal keys, read as writes here.
+                keys = set(re.findall(r"'(aria-[a-z]+)'\s*:", self._js_callers))
+                for v in (keys & S.ARIA_ATTRS) if d.fact == "renders-aria" else set():
+                    _put(target[d.fact], v, f"{label} \"{_line(text, d.pos)}\" (a name a repo caller passes)")
+                if d.fact == "renders-role" and re.search(r"(?<![\w$.-])'?role'?\s*:", self._js_callers):
+                    m.unknown_all[d.fact].append(f"{label}: a repo caller passes a role to it")
+                continue
+            values = _resolve_js(d, text, self._js_callers) if f.suffix in (".js", ".mjs") else None
+            if values:
+                for v in values:
+                    _put(target[d.fact], v, f"{label} \"{_line(text, d.pos)}\" (resolved: {', '.join(sorted(values))})")
+                continue
             m.unknown_all[d.fact].append(f"untraced dynamic {d.fact[8:]} ({d.note}{': ' + d.expr if d.expr else ''}) at {label} \"{_line(text, d.pos)}\"")
         for name, pos in sc.nested.items():
             self._nested(m, "", name, f"{label} \"{_line(text, pos)}\"")
 
     def _absorb_js(self, m: Markup, files: list, outside: list, bucket: str, label: str) -> None:
+        # The repo files of this closure: where an option a package reads (`tag:`) is passed.
+        self._js_callers = "\n".join(_js_code(f.read_text(encoding="utf-8", errors="replace"))
+                                      for f in files if "node_modules" not in f.parts)
         for f in files:
-            sc = S.scan(S.js_tokens(f.read_text(encoding="utf-8", errors="replace")))
+            sc = _js_scan(f)
             self._absorb_scan(m, sc, f"{label}{self.index.rel(f)}", f, bucket)
         for spec in outside:
             for fact in MARKUP:
                 m.unknown_all[fact].append(f"{label}imports {spec} (outside the repo)")
-
-    # -- dynamic value resolution --------------------------------------------------------------------------------------
-    def resolve(self, d: S.Dyn, unit: I.Unit, closure: list, slug: str, depth: int = 0) -> set | None:
-        valid = _valid_for(d.fact)
-        if valid is None:
-            return None
-        var = re.search(r"\$([A-Za-z_]\w*)", d.expr or "")
-        if not var:
-            return None
-        return self._resolve_var(var.group(1), unit, closure, slug, valid, depth)
-
-    def _resolve_var(self, var: str, unit: I.Unit, closure: list, slug: str, valid, depth: int) -> set | None:
-        if depth > 4:
-            return None
-        toks = self.index.unit_tokens(unit)
-        values: set = set()
-        resolved = True
-        found = False
-        allow: set | None = None
-        for k, t in enumerate(toks):
-            if t.kind != "code":
-                continue
-            for am in re.finditer(r"in_array\s*\(\s*\$" + re.escape(var) + r"\s*,\s*(\$\w+|array\s*\(|\[)?", t.text):
-                allow = (allow or set()) | self._allowlist(toks, k, am, unit, valid)
-            for am in re.finditer(r"\$" + re.escape(var) + r"\s*(?:\?\?)?=(?![=>])", t.text):
-                found = True
-                rhs = _rhs(toks, k, am.end())
-                got = self._rhs_values(rhs, unit, closure, slug, valid, depth, var)
-                if got is None:
-                    resolved = False
-                else:
-                    values |= got
-        if not found and allow is None:
-            return None  # a parameter or a value set elsewhere: not settled here
-        if allow is not None:
-            return values & allow if resolved else allow
-        return values if resolved else None
-
-    def _allowlist(self, toks, k, am, unit, valid) -> set:
-        out: set = set()
-        if am.group(1) and am.group(1).startswith("$"):
-            name = am.group(1)[1:]
-            for j, t in enumerate(toks):
-                if t.kind == "code" and re.search(r"\$" + re.escape(name) + r"\s*=(?![=>])", t.text):
-                    for x in _rhs(toks, j, re.search(r"\$" + re.escape(name) + r"\s*=(?![=>])", t.text).end()):
-                        if x.kind == "lit" and valid(x.text):
-                            out.add(_norm(x.text))
-            return out
-        for x in _rhs(toks, k, am.end(), stop=")"):
-            if x.kind == "lit" and valid(x.text):
-                out.add(_norm(x.text))
-        return out
-
-    def _rhs_values(self, rhs: list, unit: I.Unit, closure: list, slug: str, valid, depth: int, var: str) -> set | None:
-        """The values an assignment's right-hand side can give, or None when any part of it is not settled: a call to
-        code outside the repo that is not a sanitiser, a property, an array read by a computed key, or a variable that
-        cannot be resolved. A sanitiser passes its argument through (`esc_attr( $tag )`); a repo function gives what it
-        returns; a ternary's condition gives nothing. A capture of a regular-expression match inside a rewriter
-        (`$m[1]` under preg_replace_callback) re-prints a tag the content already holds and adds no value."""
-        full = " ".join(t.text if t.kind == "code" else "'" + t.text.replace("'", "") + "'" for t in rhs)
-        code = " ".join(t.text if t.kind == "code" else "'" + t.text.replace("'", "") + "'" for t in _branches(rhs))
-        out: set = set()
-        for cm in list(re.finditer(r"(?<![\w$>:])([A-Za-z_]\w*)\s*\(", code)):
-            name = cm.group(1)
-            if name in I.PHP_KEYWORDS or name in _PASS:
-                continue
-            if name in self.index.functions:
-                got = self._returns(name, closure, slug, valid, depth)
-                if got is None:
-                    return None
-                out |= got
-            elif name not in _PURE:
-                return None
-        code = _drop_call_args(code)
-        if re.search(r"->\s*\w+", code):
-            return None
-        for lm in re.finditer(r"'([^']*)'(\s*\.)?", code):
-            if valid(lm.group(1)):
-                out.add(_norm(lm.group(1)))
-            elif lm.group(1) == "h" and lm.group(2):
-                out |= {f"h{n}" for n in range(1, 7)}
-        for am in re.finditer(r"\$attributes\s*\[\s*'([^']+)'", code):
-            enum = ((self.block_json[slug].get("attributes") or {}).get(am.group(1)) or {}).get("enum")
-            if enum and all(valid(str(e)) or e == "" for e in enum):
-                out |= {_norm(str(e)) for e in enum if e}
-            elif "in_array" not in full:
-                return None
-        rewriter = re.search(r"preg_replace_callback|preg_match", self.index.masked(unit.file)[unit.start:unit.end])
-        for am in re.finditer(r"\$(?!attributes\b|this\b)([A-Za-z_]\w*)\s*\[\s*([^\]]*)\]", code):
-            key = am.group(2).strip()
-            if re.fullmatch(r"\d+", key) and rewriter:
-                continue
-            if not re.fullmatch(r"'[^']+'", key):
-                return None
-            got = self._caller_key(key.strip("'"), closure, slug, valid, depth)
-            if got is None:
-                return None
-            out |= got
-        for am in re.finditer(r"\$([A-Za-z_]\w*)\b(?!\s*\[)", code):
-            name = am.group(1)
-            if name in (var, "attributes", "this", "block", "content"):
-                continue
-            got = self._resolve_var(name, unit, closure, slug, valid, depth + 1)
-            if got is None:
-                return None
-            out |= got
-        return out
-
-    def _returns(self, name: str, closure: list, slug: str, valid, depth: int) -> set | None:
-        """The values a repo function returns (each `return` read as an assignment's right-hand side)."""
-        if depth > 4:
-            return None
-        out: set = set()
-        for fu in self.index.functions[name]:
-            toks = self.index.unit_tokens(fu)
-            for k, t in enumerate(toks):
-                if t.kind != "code":
-                    continue
-                for rm in re.finditer(r"\breturn\b", t.text):
-                    got = self._rhs_values(_rhs(toks, k, rm.end()), fu, closure, slug, valid, depth + 1, "")
-                    if got is None:
-                        return None
-                    out |= got
-        return out or None
-
-    def _caller_key(self, key: str, closure: list, slug: str, valid, depth: int) -> set | None:
-        """Values the block's own code passes for an options key (`'tag' => 'details'`)."""
-        out: set = set()
-        hit = False
-        for u in closure:
-            toks = self.index.unit_tokens(u)
-            for k, t in enumerate(toks):
-                if t.kind == "lit" and t.text == key and k + 1 < len(toks) and toks[k + 1].kind == "code" \
-                        and re.match(r"\s*=>\s*$", toks[k + 1].text):
-                    hit = True
-                    nxt = toks[k + 2] if k + 2 < len(toks) else None
-                    if nxt is not None and nxt.kind == "lit" and valid(nxt.text):
-                        out.add(_norm(nxt.text))
-                    else:
-                        expr = re.match(r"\s*=>\s*(\$[A-Za-z_]\w*)", toks[k + 1].text + (nxt.text if nxt and nxt.kind == "code" else ""))
-                        got = self._resolve_var(expr.group(1)[1:], u, closure, slug, valid, depth + 1) if expr else None
-                        if got is None:
-                            return None
-                        out |= got
-        return out if hit else None
-
-
-# Calls whose argument is the value (a sanitiser or case change passes a tag through), and calls that give no tag or
-# role of their own (a test, a count, a number).
-_PASS = frozenset("esc_attr esc_html tag_escape sanitize_key sanitize_html_class sanitize_text_field strtolower trim "
-                  "strval".split())
-_PURE = frozenset("isset empty is_string is_array is_numeric in_array array_key_exists absint intval count strlen "
-                  "max min".split())
-
-
-def _drop_call_args(code: str) -> str:
-    """The code with the arguments of every call that is not a pass-through removed (`absint( $level )` -> `absint()`)."""
-    out, i = [], 0
-    for m in re.finditer(r"(?<![\w$>:])([A-Za-z_]\w*)\s*\(", code):
-        if m.start() < i or m.group(1) in _PASS or m.group(1) in I.PHP_KEYWORDS:
-            continue
-        depth, j = 0, m.end() - 1
-        while j < len(code):
-            depth += {"(": 1, ")": -1}.get(code[j], 0)
-            if depth == 0:
-                break
-            j += 1
-        out.append(code[i:m.end()])
-        i = j
-    out.append(code[i:])
-    return "".join(out)
-
 
 def _extension_applies(rule: dict, block_json: dict) -> bool:
     """The roster predicate of `sgs-update-v2.py::_extension_applies` (kept equal by `--self-test`)."""
@@ -484,70 +350,23 @@ def _extension_applies(rule: dict, block_json: dict) -> bool:
     return False
 
 
-def _valid_for(fact: str):
-    if fact == "renders-tag":
-        return lambda v: S._tag_name(v.strip()) is not None and v.strip() == v
-    if fact == "renders-role":
-        return lambda v: v in S.ARIA_ROLES
-    return None
-
-
-def _norm(v: str) -> str:
-    return S._tag_name(v) or v
-
-
-def _rhs(toks: list, k: int, offset: int, stop: str = ";") -> list:
-    """Tokens of an assignment's right-hand side: from `offset` in code token k to the statement's `;` (or the call's
-    closing `)` when `stop` is ')'), at bracket depth 0."""
-    out, depth = [], 0
-    first = toks[k].text[offset:]
-    seq = [S.Tok("code", first, toks[k].pos + offset)] + toks[k + 1:]
-    for t in seq:
-        if t.kind == "lit":
-            out.append(t)
-            continue
-        buf = []
-        for ch in t.text:
-            if ch in "([{":
-                depth += 1
-            elif ch in ")]}":
-                depth -= 1
-                if depth < 0 and stop == ")":
-                    out.append(S.Tok("code", "".join(buf), t.pos))
-                    return out
-            if ch == ";" and depth <= 0:
-                out.append(S.Tok("code", "".join(buf), t.pos))
-                return out
-            buf.append(ch)
-        out.append(S.Tok("code", "".join(buf), t.pos))
-    return out
-
-
-def _branches(rhs: list) -> list:
-    """A right-hand side without its leading ternary condition (`$a ? 'nav' : 'div'` -> `'nav' : 'div'`): the condition
-    selects a branch and gives no value. A condition holding an in_array() allowlist is kept (it names the values)."""
-    depth = 0
-    for i, t in enumerate(rhs):
-        if t.kind != "code":
-            continue
-        for j, ch in enumerate(t.text):
-            if ch in "([{":
-                depth += 1
-            elif ch in ")]}":
-                depth -= 1
-            elif ch == "?" and depth == 0 and t.text[j + 1:j + 2] not in ("?", "-", ">") and t.text[j - 1:j] != "?":
-                cond = " ".join(x.text for x in rhs[:i]) + t.text[:j]
-                if "in_array" in cond:
-                    return rhs
-                return [S.Tok("code", t.text[j + 1:], t.pos + j + 1)] + rhs[i + 1:]
-    return rhs
-
-
-def _code_text(toks: list) -> str:
-    return "".join(t.text if t.kind == "code" else "'" + t.text.replace(S.HOLE, "") + "'" for t in toks)
+def _put(bucket: dict, value: str, evidence: str) -> None:
+    """Record a write; the block's own markup replaces a record that only content a setting holds gave."""
+    if value not in bucket or bucket[value].startswith("content a setting holds"):
+        bucket[value] = evidence
 
 
 def _line(text: str, pos: int) -> str:
     a = text.rfind("\n", 0, pos) + 1
     b = text.find("\n", pos)
     return re.sub(r"\s+", " ", text[a: b if b != -1 else len(text)].strip())[:90]
+
+
+@lru_cache(maxsize=None)
+def _js_scan(f: Path) -> S.Scan:
+    return S.scan(S.js_tokens(f.read_text(encoding="utf-8", errors="replace")))
+
+
+def _package_of(f: Path) -> str:
+    parts = f.parts[f.parts.index("node_modules") + 1:]
+    return "/".join(parts[:2]) if parts and parts[0].startswith("@") else (parts[0] if parts else "")
