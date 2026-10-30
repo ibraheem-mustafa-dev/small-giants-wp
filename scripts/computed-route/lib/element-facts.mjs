@@ -53,6 +53,9 @@ export function elementFacts( view = EMPTY ) {
 		const hit = Object.keys( attrs ).find( ( k ) => k === name ) ?? Object.keys( attrs ).find( ( k ) => k.toLowerCase() === String( name ).toLowerCase() );
 		return undefined === hit ? null : String( attrs[ hit ] );
 	};
+	// The names of every attribute the element carries: the rendered ones the inventory kept and the record's template
+	// attributes (a binding as written, `aria-selected="{{ t.on }}"`), each once.
+	const attrNames = ( e ) => [ ...new Set( [ ...Object.keys( e?.attrs ?? {} ), ...Object.keys( entry( e )?.attrs ?? {} ) ] ) ];
 	// Every event binding of the element: [ { name ('onClick'), event ('click'), expr, handler (the handler name, '' for an
 	// inline expression) } ].
 	const events = ( e ) => ( entry( e )?.events ?? [] ).map( ( v ) => ( { name: v.name, event: eventOf( v.name ), expr: v.expr ?? '', handler: nameOf( v.expr ) } ) );
@@ -77,7 +80,7 @@ export function elementFacts( view = EMPTY ) {
 	// The draft's own placeholders on the element (its attribute and text holes, `{{ phone }}`), not its children's.
 	const placeholders = ( e ) => ( entry( e )?.holes ?? [] ).filter( ( h ) => 'text' === h.where || String( h.where ).startsWith( 'attr:' ) ).map( ( h ) => `{{ ${ String( h.expr ).trim() } }}` );
 	return Object.freeze( readers.set( view, {
-		view, attr, events, handler, declared: ( e ) => view.declared( e ), bound: ( e ) => view.holeProps( e ), widths, resolved, lengthAt, boxAt, textHoles, textBinding, placeholders,
+		view, attr, attrNames, events, handler, declared: ( e ) => view.declared( e ), bound: ( e ) => view.holeProps( e ), widths, resolved, lengthAt, boxAt, textHoles, textBinding, placeholders,
 		// The element's text as rendered, each line break as <br> (only an element whose text holds one carries `textBreaks`).
 		textWithBreaks: ( e ) => String( e?.textBreaks ?? e?.allText ?? e?.words ?? '' ).replace( /\s+/g, ' ' ).trim(),
 		// Whether the element's own words open its content, before its first child element (an element read before the

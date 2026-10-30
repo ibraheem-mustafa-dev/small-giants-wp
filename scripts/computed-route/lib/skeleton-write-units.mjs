@@ -1,7 +1,9 @@
 // The units of siblings that are ONE block and the nodes built from them (Spec 48 §3.4, split out of
 // lib/skeleton-propose.mjs::proposeSkeleton): a typed brand name is the logo block, icon-only Site Info links in a drawer's
-// top row are one social icons group, and two or more stacked text links are one list. `unitsOf` finds the units among an
-// element's children; `buildBrand`, `buildIcons` and `buildList` build each one's node and record its rows.
+// top row are one social icons group, two or more stacked text links are one list, and an accordion's items beside other
+// content in their holder are one accordion. `unitsOf` finds the units among an element's children; `buildBrand`,
+// `buildIcons`, `buildList` and `buildAccordion` build each one's node and record its rows; `buildItems` builds the block the
+// identity matcher places over a tab set.
 // The factory takes the writer's shared context (`ctx`) after the row book (lib/skeleton-write-record.mjs) is in `ctx.w`.
 import { brandOwnsAddress } from './brand-registry.mjs';
 import { linkWrite } from './draft-link.mjs';
@@ -60,6 +62,13 @@ export function makeUnits( ctx ) {
 	const unitsOf = ( e, list = m.blockKids( e ) ) => {
 		const out = [];
 		for ( let i = 0; i < list.length; ) {
+			// The items of an accordion whose holder also holds other content (lib/skeleton-accordion.mjs `runs`): one accordion.
+			const acc = cls.accordionRuns?.get( list[ i ].key );
+			if ( acc && acc.items.every( ( k, j ) => list[ i + j ]?.key === k ) ) {
+				out.push( { type: 'accordion', els: acc.items.map( ( k ) => m.byKey[ k ] ), run: acc } );
+				i += acc.items.length;
+				continue;
+			}
 			const brand = typedBrandRun( list, i );
 			const icons = brand ? [] : cls.iconRun( list, i, e );
 			const run = brand || icons.length ? [] : linkRun( list, i, e );
@@ -175,5 +184,52 @@ export function makeUnits( ctx ) {
 		} );
 		return node;
 	}
-	return { unitsOf, removedBy, buildBrand, buildIcons, buildList };
+	// The items of an accordion standing beside other content in their holder: one accordion node (no draft element of its
+	// own, so no draftRef) holding each item's node; the holder's row names it.
+	function buildAccordion( els, run, holder ) {
+		const block = R.accordion.block;
+		const node = { name: block, attributes: { ...run.attributes }, innerBlocks: els.flatMap( ( it ) => [].concat( w.buildNode( it, block ) || [] ) ) };
+		const row = ctx.rowOf[ holder.key ];
+		row && ( row.rowNote = [ row.rowNote, `its children ${ els[ 0 ].key } to ${ els.at( -1 ).key } are one ${ block } beside its other content: ${ run.reason }` ].filter( Boolean ).join( '; ' ) );
+		return node;
+	}
+	// A block holding one kind of item block over a tab set (the identity matcher's `items`): one item per control, labelled with
+	// the control's words; the rendered panel's content goes in the first item, the one open at rest; the tab list and its
+	// controls are the block's own (absorbed), and the panel element is unwrapped into the item.
+	function buildItems( e, r, top ) {
+		const { nodeOfKey, finder } = ctx;
+		const { items } = r;
+		const node = base( e, top.block, { ...( top.attributes || {} ) } );
+		nodeOfKey[ e.key ] = node;
+		record( e, r, { attributes: node.attributes } );
+		const controls = items.controls.map( ( k ) => m.byKey[ k ] ).filter( Boolean );
+		const panels = items.panels.map( ( k ) => m.byKey[ k ] ).filter( Boolean );
+		const within = ( x, top2 ) => {
+			for ( let p = x; p; p = m.byKey[ p.parentKey ] ) {
+				if ( p === top2 ) {
+					return true;
+				}
+			}
+			return false;
+		};
+		const walk = ( x ) => m.blockKids( x ).forEach( ( k ) => {
+			if ( panels.some( ( p ) => within( k, p ) ) ) {
+				return;
+			}
+			const i = controls.indexOf( k );
+			record( k, { action: 'absorbed', rule: 'identity', into: e.key, reason: i >= 0 ? `drawn by ${ top.block }: the label of its item ${ i + 1 } (${ items.block })` : `drawn by ${ top.block }: its own list of controls`, confidence: 1, candidates: [] } );
+			walk( k );
+		} );
+		walk( e );
+		node.innerBlocks = controls.map( ( c ) => ( { name: items.block, attributes: { [ items.labelAttr ]: m.words( c ).replace( /\s+/g, ' ' ).trim() }, draftRef: finder( c ), draftFingerprint: m.fingerprint( c ), innerBlocks: [] } ) );
+		panels.forEach( ( p ) => {
+			record( p, { action: 'unwrap', rule: 'identity', reason: `the panel ${ top.block } shows at rest: its content is item 1's`, confidence: 1, candidates: [] } );
+			node.innerBlocks[ 0 ] && node.innerBlocks[ 0 ].innerBlocks.push( ...w.buildChildren( p, items.block ) );
+		} );
+		const unread = controls.slice( 1 ).map( ( c ) => `"${ m.words( c ).trim() }"` );
+		unread.length && ( node.handover = [ { owner: 'content-page', kind: 'text', detail: `the panels of ${ unread.join( ', ' ) } are not rendered by the draft read, so their content is written in the editor from the draft` } ] );
+		return node;
+	}
+
+	return { unitsOf, removedBy, buildBrand, buildIcons, buildList, buildAccordion, buildItems };
 }

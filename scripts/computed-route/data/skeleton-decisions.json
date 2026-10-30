@@ -442,6 +442,15 @@
 				"close": "the modal's close control (its click handler writes a falsy value to the state the modal opens on): the sgs/modal frame draws the close and its look becomes the frame's close settings; the draft's button is never built as a second, dead close"
 			}
 		},
+		"identity": {
+			"maxShare": 0.5,
+			"reviewConfidence": 0.4,
+			"structural": [ "headerSlots", "footerSlots", "surfaceRoot", "formLink", "formHost", "formControl", "formSteps", "commerceRegion", "shopToolbar", "filterRail", "filterDrawer", "categoryChips", "ownedPart", "blockOwnedPart", "blockPartOpener", "choiceFlow", "modalFrame" ],
+			"confirm": "Bean, 2026-10-30 (plan F1): blocks are identified by elimination; only a proven absence rules a block out, a platform separates only a look-alike family, and Bean's marks, client decisions and the structural rules come first",
+			"reason": "identified by elimination over the framework DB's block_identity_facts: each fact the draft region shows rules out the blocks that never show it, and the facts few blocks share rank the survivors",
+			"ruleReason": "the element's facts rule out the standing rule's block, so the row keeps it at low confidence for the review",
+			"regionReason": "the block's own parts stand beside the element it was placed on, so it is placed over the smallest element holding them"
+		},
 		"ruleConflict": {
 			"minConfidence": 0.7,
 			"maxRuleShare": 0.2,

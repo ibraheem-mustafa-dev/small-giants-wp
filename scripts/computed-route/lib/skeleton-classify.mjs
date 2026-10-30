@@ -6,6 +6,9 @@
 import { brandOwnsAddress } from './brand-registry.mjs';
 import { specHit } from './skeleton-facts.mjs';
 import { makeRules } from './skeleton-rules.mjs';
+import { makeIdentity } from './skeleton-identity.mjs';
+import { draftLogicOf } from './skeleton-narrowing.mjs';
+import path from 'path';
 
 export const W = { tag: 0.5, composition: 0.35, capability: 0.25, structure: 0.4, siteInfo: 0.3, pattern: 0.5, decision: 1, logo: 0.5, rule: 1 };
 
@@ -274,5 +277,75 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 		return { ...finish( C ), stale };
 	}
 
-	return { classify: ( ...a ) => sgsOnly( classify( ...a ), facts.replacedBy, facts.decisions.rules?.coreExceptions || [] ), brandFor, siteInfoKinds, isColumnLabel, briefOnly, timedPopup: rules.timedPopup, drawsChildren: rules.drawsChildren, modalParts: rules.modalParts, iconRun: rules.iconRun, siteInfoBrand: rules.siteInfoBrand, commerceRegion: rules.commerceRegion, filterRail: rules.filterRail, filterDrawer: rules.filterDrawer, choiceFlow: rules.choiceFlow };
+	// Identification by elimination (lib/skeleton-identity.mjs) over what the scoring and the rules settled, in the authority
+	// order: a client decision, a finaliser pick and a standing decision stand; a structural rule (rules.identity.structural:
+	// the header and footer slots, the form link, the commerce region, owned parts) stands; another rule is checked against the
+	// element's facts; the scoring's pick is matched.
+	const logicOf = ( component ) => ( view && facts.repo && facts.client ? draftLogicOf( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component } ) : null );
+	const identity = makeIdentity( { m, facts, surface, logicOf, carousels: surface.loops?.carousels || new Set(), owned: rules.owned || new Set() } );
+	const structural = new Set( decisions.rules?.identity?.structural || [] );
+	let widened = null;
+	// A loop's block placed on its holder stands over its own parts beside it (R2): climbing from the holder, every block
+	// sibling met is a part when it shows a fact the block shows (its platform, a role or state few blocks share) and nothing
+	// the block cannot show; the block moves to the highest element whose other children were all its parts, and the parts and
+	// the wrappers on the way are drawn by it (absorbed) or, for a block holding its items, unwrapped into it.
+	const widening = () => {
+		if ( widened ) {
+			return widened;
+		}
+		widened = { at: new Map(), inner: new Map() };
+		const decided = ( e ) => 'client decision' === overrides( e, m.words( e ) )?.source;
+		for ( const x of identity ? rules.loopRegions || [] : [] ) {
+			const anchor = m.byKey[ x.key ];
+			if ( ! anchor || ! x.block || decided( anchor ) ) {
+				continue;
+			}
+			const isPart = ( s ) => ! identity.ruledOut( x.block, s ) && [ ...identity.region( s ).values() ].some( ( f ) => ( 'platform' === f.fact || identity.naming( f ) ) && 'yes' === identity.table.state( x.block, f.fact, f.value ) );
+			let top = null;
+			let parts = [];
+			const route = [];
+			for ( let at = anchor, p = m.byKey[ anchor.parentKey ]; p && p !== m.root; at = p, p = m.byKey[ p.parentKey ] ) {
+				const sibs = m.blockKids( p ).filter( ( k ) => k !== at );
+				route.push( at );
+				if ( sibs.length && ! sibs.every( isPart ) ) {
+					break;
+				}
+				if ( sibs.length ) {
+					top = p;
+					parts = [ ...parts, ...sibs ];
+				}
+			}
+			if ( ! top || decided( top ) || widened.at.has( top.key ) ) {
+				continue;
+			}
+			const verdict = rules.ruleFor( anchor, null );
+			if ( ! verdict?.block ) {
+				continue;
+			}
+			const shown = parts.flatMap( ( s ) => [ ...identity.region( s ).values() ].filter( ( f ) => 'yes' === identity.table.state( x.block, f.fact, f.value ) && ( 'platform' === f.fact || identity.naming( f ) ) ).map( ( f ) => `${ f.fact } ${ f.value } at ${ s.key }` ) );
+			const why = `${ decisions.rules.identity.regionReason }: ${ x.block } placed on ${ anchor.key } stands over its own parts beside it (${ [ ...new Set( shown ) ].slice( 0, 4 ).join( '; ' ) })`;
+			widened.at.set( top.key, { ...fromRule( { ...verdict, reason: `${ verdict.reason }; ${ why }` } ), identityRegion: { anchor: anchor.key, parts: parts.map( ( s ) => s.key ) } } );
+			if ( ! verdict.absorb ) {
+				const inside = route.filter( ( k ) => k !== top );
+				inside.forEach( ( k ) => widened.inner.set( k.key, { action: 'unwrap', rule: 'identity', source: 'identity matcher', reason: `${ why }: unwrapped into ${ top.key }`, confidence: 1, candidates: [] } ) );
+				parts.forEach( ( k ) => widened.inner.set( k.key, { action: 'absorbed', rule: 'identity', into: top.key, source: 'identity matcher', reason: `${ why }: drawn by ${ x.block }`, confidence: 1, candidates: [] } ) );
+			}
+		}
+		return widened;
+	};
+	const settle = ( e, r, ctx = {} ) => {
+		if ( ! identity || ctx.typedBrand || ctx.noRule || [ 'client decision', 'finaliser pick' ].includes( r.source ) || /^standing decision/.test( r.source || '' ) ) {
+			return r;
+		}
+		const w = widening();
+		const moved = w.at.get( e.key ) ?? w.inner.get( e.key );
+		if ( moved ) {
+			return sgsOnly( moved, facts.replacedBy, facts.decisions.rules?.coreExceptions || [] );
+		}
+		if ( structural.has( r.rule ) || r.action ) {
+			return r;
+		}
+		return r.rule ? identity.check( e, r ) : identity.match( e, r ) || r;
+	};
+	return { classify: ( e, parentBlock = null, ctx = {} ) => settle( e, sgsOnly( classify( e, parentBlock, ctx ), facts.replacedBy, facts.decisions.rules?.coreExceptions || [] ), ctx ), identity, accordionRuns: rules.accordionRuns || new Map(), brandFor, siteInfoKinds, isColumnLabel, briefOnly, timedPopup: rules.timedPopup, drawsChildren: rules.drawsChildren, modalParts: rules.modalParts, iconRun: rules.iconRun, siteInfoBrand: rules.siteInfoBrand, commerceRegion: rules.commerceRegion, filterRail: rules.filterRail, filterDrawer: rules.filterDrawer, choiceFlow: rules.choiceFlow };
 }

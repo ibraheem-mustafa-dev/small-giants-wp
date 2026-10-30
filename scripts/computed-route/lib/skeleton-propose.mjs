@@ -194,6 +194,10 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			return null;
 		}
 		const block = top.block;
+		// A block the identity matcher places over a tab set takes one item per control (lib/skeleton-identity.mjs).
+		if ( r.items ) {
+			return w.buildItems( e, r, top );
+		}
 		// A rule's attributes are the block's settings; a block that draws its children takes no words from them.
 		const drawn = m.blockKids( e ).length ? ( r.absorb ? `rule ${ r.rule }` : cls.drawsChildren( block ) ) : null;
 		// A rule that sets a display type (a business detail) carries the block's settings itself: no generic text attribute.
@@ -320,7 +324,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	// sibling it follows in the document, so Fill's width gate can hide each branch on the other's widths.
 	function buildChildren( e, parentBlock, list = undefined, withWide = ! list ) {
 		const units = unitsOf( e, list );
-		const build = ( u ) => ( 'brand' === u.type ? buildBrand( u.els, u.logo ) : 'icons' === u.type ? buildIcons( u.els, u.parent ) : 'list' === u.type ? buildList( u.els ) : buildNode( u.els[ 0 ], parentBlock ) );
+		const build = ( u ) => ( 'brand' === u.type ? buildBrand( u.els, u.logo ) : 'icons' === u.type ? buildIcons( u.els, u.parent ) : 'list' === u.type ? buildList( u.els ) : 'accordion' === u.type ? w.buildAccordion( u.els, u.run, e ) : buildNode( u.els[ 0 ], parentBlock ) );
 		const wide = withWide ? m.widthKids( e ) : [];
 		if ( ! wide.length ) {
 			return units.flatMap( build ).filter( Boolean );

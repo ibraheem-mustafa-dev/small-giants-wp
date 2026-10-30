@@ -906,5 +906,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// The missing-features entry for a popup surface that opens on a timer or on exit intent (rules.timedPopup), or null.
 	const timedPopup = () => ( 'modal' === surface.kind ? timedPopupMissing( { openedBy: scope?.openedBy, R } ) : null );
 
-	return { ruleFor, timedPopup, drawsChildren, declared, modalParts, iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, filterRail: rail, filterDrawer: drawer ? { key: m.root.key, block: R.filterDrawer.block, attributes: drawer.attributes, facets: drawer.facets, notes: drawer.notes, missing: drawerMissing } : null, choiceFlow: flow };
+	// The elements a structure owns (an accordion's holder and items, a loop's holder and cards): their facts are theirs, never an
+	// ancestor's (lib/skeleton-identity-draft.mjs), and the loops whose block may stand over its own parts beside them.
+	const owned = new Set( [ ...accordion.holders.keys(), ...accordion.items.keys(), ...loopRegions.keys(), ...carouselCardOf.keys() ] );
+	return { ruleFor, owned, loopRegions: loopResult.regions, accordionRuns: accordion.runs, timedPopup, drawsChildren, declared, modalParts, iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, filterRail: rail, filterDrawer: drawer ? { key: m.root.key, block: R.filterDrawer.block, attributes: drawer.attributes, facets: drawer.facets, notes: drawer.notes, missing: drawerMissing } : null, choiceFlow: flow };
 }
