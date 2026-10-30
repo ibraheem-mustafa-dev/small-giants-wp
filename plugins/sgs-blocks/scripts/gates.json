@@ -2005,5 +2005,24 @@
     "added_commit": "935f7cfcd",
     "budget_ms": 400,
     "order": 229
+  },
+  {
+    "id": "block-identity-facts-self-test",
+    "cmd": "python scripts/lib/block_identity_facts.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 230
+  },
+  {
+    "id": "block-identity-facts-check",
+    "cmd": "python scripts/lib/block_identity_facts.py --check",
+    "tier": "full",
+    "tier_reason": "re-derives every block's identification facts from code (about 35 s) and compares them with the framework DB",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 40000,
+    "order": 231
   }
 ]

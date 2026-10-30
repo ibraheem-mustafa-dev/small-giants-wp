@@ -1,5 +1,5 @@
 """
-sgs-update-v2.py — 13-stage holistic refresh of the SGS framework knowledge base.
+sgs-update-v2.py — 14-stage holistic refresh of the SGS framework knowledge base.
 
 Phase 4 of the architecture programme. Co-exists with the legacy 3-script setup
 (update-db.py + generate-block-reference.py + sgs-update-uimax-sync.py) until
@@ -48,6 +48,13 @@ Stages (per .claude/plans/phase-4-sgs-update-rebuild.md):
                               (db-consistency, consistency-gates,
                               box-family-guard, inspector-conformance, feature-parity).
                               Findings are informational; never fail the reseed.
+ 14. block_identity_facts   — derive each block's identification facts from code
+                              (scripts/lib/block_identity_facts.py: tags, ARIA roles and
+                              attributes it can print, open state, self-moving, platform,
+                              context, accepted icon kinds) into block_identity_facts
+                              (source='code' rows replaced; live rows kept). Runs after
+                              Stage 11 (it reads generated-fx-qualifying-blocks.json) and
+                              before Stage 13, so a full run exports it.
  13. export_db_to_csv       — export every live table to CSV in
                               ~/.agents/skills/sgs-wp-engine/db\\ data/ (the space is
                               literal). Idempotent + deterministic. Removes CSVs for
@@ -57,7 +64,8 @@ Usage:
     python sgs-update-v2.py [--stage N] [--dry-run] [--wp-version X.Y] [--prune-mode MODE] [--self-test]
                             [--allow-stale-tree]
 
-    --stage N               Run only stage N (1-13). Omit to run all.
+    --stage N               Run only stage N (1-14). Omit to run all (order 1-12, 14, 13).
+    --db PATH               Seed this framework DB instead of the shared one (a copy for a proof run).
     --dry-run               Compute row counts without writing to DB or files
     --wp-version X.Y        WP version tag for Stage 2 (default: 7.0)
     --prune-mode MODE       Stage 9 only: 'aggressive' (default) DELETEs stale support rows.
@@ -7187,6 +7195,23 @@ def stage_13_export_db_to_csv(dry_run: bool = False, self_test: bool = False) ->
 # Main dispatcher
 # ---------------------------------------------------------------------------
 
+def stage_14_block_identity_facts(conn: sqlite3.Connection, dry_run: bool = False) -> dict:
+    """Replace the source='code' rows of block_identity_facts with a fresh derivation from the block, helper, filter and
+    view-script code (scripts/lib/block_identity_facts.py::seed; live rows from step A2b are kept). Missing table: an
+    error naming the migration."""
+    if not conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='block_identity_facts'").fetchone():
+        return {"status": "ERROR", "error": "table block_identity_facts absent: apply migrations/2026-10-30-block-identity-facts-table.py (dbschema/migrate.py --apply)"}
+    lib = Path(__file__).resolve().parent / "lib"
+    if str(lib) not in sys.path:
+        sys.path.insert(0, str(lib))
+    from block_identity_facts import seed  # noqa: PLC0415
+    result = seed(conn, dry_run=dry_run)
+    print(f"Stage 14: {result['rows']} rows over {result['blocks']} blocks{' (dry run: nothing written)' if dry_run else ''}")
+    for key, n in result["by_fact_state"].items():
+        print(f"  {key:28} {n}")
+    return {"status": "dry-run" if dry_run else "seeded", "rows": result["rows"], "blocks": result["blocks"]}
+
+
 def _build_stage_dispatch(conn: sqlite3.Connection, args: argparse.Namespace) -> dict[int, Callable[[], dict]]:
     """Build {stage_num: lambda} mapping; each lambda runs the right stage function.
 
@@ -7201,6 +7226,7 @@ def _build_stage_dispatch(conn: sqlite3.Connection, args: argparse.Namespace) ->
     Stage 11 is the motion-fx artefact regeneration (D432 follow-up, 2026-08-01).
     Stage 12 is the audit scanners (DB/roster-keyed, report-only).
     Stage 13 is the database-to-CSV export (final stage, idempotent).
+    Stage 14 is the block identification facts (runs before 13 in a full run: FULL_RUN_ORDER).
     """
     prune_mode = getattr(args, "prune_mode", _PRUNE_MODE_AGGRESSIVE)
     return {
@@ -7219,7 +7245,13 @@ def _build_stage_dispatch(conn: sqlite3.Connection, args: argparse.Namespace) ->
         11: lambda: stage_11_motion_fx_artefact_regen(dry_run=args.dry_run),
         12: lambda: stage_12_run_audit_scanners(dry_run=args.dry_run, self_test=getattr(args, "self_test", False)),
         13: lambda: stage_13_export_db_to_csv(dry_run=args.dry_run, self_test=getattr(args, "self_test", False)),
+        14: lambda: stage_14_block_identity_facts(conn, dry_run=args.dry_run),
     }
+
+
+# A full run's order: the identification facts (14) read Stage 11's qualifying-blocks file and Stage 1's roles, and the
+# CSV export (13) stays last so it carries every table.
+FULL_RUN_ORDER = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 13]
 
 
 def _guard_children_for_db_override() -> None:
@@ -7273,15 +7305,15 @@ def main() -> None:
     global SGS_DB, _CSS_PROPERTY_CLASSIFICATIONS_JSON_PATH
     shared_dbs = (SGS_DB, _CLAUDE_DB)
     parser = argparse.ArgumentParser(
-        description="SGS framework knowledge base — 13-stage holistic refresh",
+        description="SGS framework knowledge base — 14-stage holistic refresh",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
         "--stage",
         type=int,
-        choices=range(1, 14),
+        choices=range(1, 15),
         metavar="N",
-        help="Run a single stage only (1-13). Omit to run all stages.",
+        help="Run a single stage only (1-14). Omit to run all stages (in FULL_RUN_ORDER: 14 before 13).",
     )
     parser.add_argument(
         "--self-test",
@@ -7384,14 +7416,14 @@ def main() -> None:
     conn = open_db()
     ensure_schema_metadata(conn)
 
-    stages_to_run = [args.stage] if args.stage else list(range(1, 14))
+    stages_to_run = [args.stage] if args.stage else list(FULL_RUN_ORDER)
     dispatch = _build_stage_dispatch(conn, args)
 
     results: dict[int, dict] = {}
     for stage_num in stages_to_run:
         print(f"\n{'=' * 50}\n=== Stage {stage_num} ===\n{'=' * 50}")
         if stage_num not in dispatch:
-            print(f"Unknown stage: {stage_num}. Valid: 1-13.")
+            print(f"Unknown stage: {stage_num}. Valid: 1-14.")
             continue
         results[stage_num] = dispatch[stage_num]()
         # Stage 1 reclassifies block_attributes.role from the auto-classifier, which overwrites the
