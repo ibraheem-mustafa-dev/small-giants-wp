@@ -12,7 +12,7 @@ const falsy = ( n ) => ( 'BooleanLiteral' === n?.type && false === n.value ) || 
 
 // The named properties of the object each `this.setState(…)` call inside `node` writes (an object literal, or a function
 // returning one).
-function patchProperties( d, node ) {
+export function patchProperties( d, node ) {
 	const out = [];
 	for ( const n of subtree( d.idx, node ) ) {
 		if ( 'CallExpression' !== n.type || ! isThisMember( n.callee, 'setState' ) ) {

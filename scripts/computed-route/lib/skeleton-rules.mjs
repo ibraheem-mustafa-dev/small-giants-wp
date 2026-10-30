@@ -8,7 +8,8 @@
 // Precedence (lib/skeleton-classify.mjs::makeClassifier): a client decision, then these rules, then a finaliser pick or a
 // standing element decision, then the database scoring.
 import path from 'path';
-import { narrowedLists, narrowsRenderedList } from './skeleton-narrowing.mjs';
+import { draftLogicOf, narrowedLists, narrowsRenderedList } from './skeleton-narrowing.mjs';
+import { accordionLoops } from './skeleton-accordion.mjs';
 import { specHit } from './skeleton-facts.mjs';
 import { formElement } from './skeleton-form-element.mjs';
 import { templateKey } from './fact-key.mjs';
@@ -821,6 +822,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const loopRegions = new Map( loopResult.regions.map( ( x ) => [ x.key, x ] ) );
 	// The cards of a review carousel are its testimonials (each draws its own quote, name and rating).
 	const carouselCardOf = new Map( loopResult.regions.filter( ( x ) => x.cards ).flatMap( ( x ) => x.cards.map( ( k ) => [ k, x ] ) ) );
+	// A loop of disclosures is the accordion, each item one of its items (lib/skeleton-accordion.mjs).
+	const accordion = accordionLoops( { m, read, rule: R.accordion, titleAttr: R.accordion && facts.firstAttrByRole( R.accordion.itemBlock, 'text-content' ), textAttr: R.accordion && facts.firstAttrByRole( R.accordion.panelBlock, 'text-content' ),
+		logicOf: ( component ) => ( facts.repo && facts.client ? draftLogicOf( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component } ) : null ) } );
 	// The shop's filter rail beside its product listing (lib/skeleton-filter-rail.mjs), from the draft catalogue's facets.
 	const rail = region?.key ? filterRail( { m, region, filters: surface.commerce.filters, rule: R.filterRail, money: R.commerceRegion.money } ) : null;
 	// A drawer whose root holds the catalogue's filter groups is the shop filter's own narrow-width open state (lib/skeleton-filter-drawer.mjs).
@@ -862,6 +866,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			}
 			return loop ? v( 'loopBlocks', { block: loop.block, absorb: false !== loop.absorb, attributes: loop.attributes, inner: loop.inner, item: loop.item?.key ?? null, kind: loop.kind, ...( loop.handover ? { handover: loop.handover } : {} ), reason: loop.reason } ) : null;
 		},
+		( { e } ) => ( accordion.holders.has( e.key ) ? v( 'accordion', { block: R.accordion.block, ...accordion.holders.get( e.key ) } ) : null ),
+		( { e } ) => ( accordion.items.has( e.key ) ? v( 'accordionItem', { block: R.accordion.itemBlock, absorb: true, ...accordion.items.get( e.key ) } ) : null ),
 		// The draft's sort control and result count (and the wrappers holding only them) are drawn by the toolbar row at the top of the
 		// shop's product collection (rules.shopToolbar): absorbed into the collection.
 		( { e } ) => ( region?.toolbar?.absorb.includes( e.key ) ? v( 'shopToolbar', { action: 'absorbed', into: region.key, reason: R.shopToolbar.reason } ) : null ),

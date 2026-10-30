@@ -122,6 +122,16 @@
 				"reason": "a WooCommerce page's template copy prints the page's own content, WooCommerce's working block, where the draft's commerce region is (rules.commerceRegion)"
 			}
 		],
+		"accordion": {
+			"block": "sgs/accordion",
+			"itemBlock": "sgs/accordion-item",
+			"panelBlock": "sgs/text",
+			"attributes": { "allowMultiple": "allowMultiple", "defaultOpen": "defaultOpen", "isOpen": "isOpen" },
+			"reason": "a loop whose items each hold a control that writes a state the item's own conditional panel reads is the accordion, read from the fact record and the logic's syntax tree with aria-expanded as the rendered confirmation, never from words or a surface kind (Spec 48 §3.4, RC6)"
+		},
+		"accordionItem": {
+			"reason": "one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)"
+		},
 		"loopBlocks": {
 			"reason": "a loop on any page is the working block its data and items say (Spec 48A FR-48A-8, Bean S5): products, brands or reviews, never decided by a section heading (FR-48-30)",
 			"products": { "reason": "a loop of items that show a price and link to a product page is the site's product collection, the block the shop region uses, with its own query (FR-48-83, Spec 27 FR-24-4)" },
