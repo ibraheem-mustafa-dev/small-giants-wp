@@ -4,6 +4,13 @@
 
 **How:** subagents build in worktrees on `B:/sgs-wt/` (never linking `node_modules` or `cache/`); the main session checks each track's diff and result with `/qc-inline`, merges to `main`, and runs the route suite and gates there. At most three tracks at once; a track that shares files with a running one waits. Order: P, M and D first; then S (after P), T, N (after M), F and W as slots free.
 
+## Progress (2026-10-30)
+
+- Merged to `main`: Track D (RC2, RC4, RC13, the finaliser; reseeded `84c600c4f`), Track W (RC17), Track M (RC14, `53570dad2`), Track F (RC15, RC16, product reconciliation and attribute labels, `f799d3c3c`), Track N's RC10 (`033926ccd`), Track P rounds 1 to 4 (RC1, RC3, RC11, content-identity pairing, Fill's list matcher, `840725928`). Suite on `main`: 8 failing (5 baseline, 3 waiting on the nav and header slot maps).
+- Calibration memory fault found and fixed (it crashed the PC): readings kept whole per instance and unbounded chunk pages; `lib/calibrate.mjs::diffReads` and `lib/calibrate-chunk.mjs::sizeForReading` (`0a065c670`, the budget commit after it). nav-bar-menu calibrating to completion on local-indus; site-header, site-header-row, nav-drawer, responsive-logo, container (Track D changed it) and the four blocks whose motion-part labels changed still to calibrate, one run at a time; every client's default paint after the snapshots are final.
+- Running: Track P2 (saved-inventory freshness guard, navigation items by kind, product-card content calibration and `derived_selector`), Track N (the motion lib's older code-text reads, the touch-strip carousel, then RC12), Track T (RC9 and the time-based text option). Track S (RC5, RC6, RC7) not started.
+- Open for Bean's review batch: Eye Care's "Pay now" and "£0" inside the pay button became labels (Track M); `pick up to 3` and the per-cookie price are framework gap rows (Track F).
+
 ## Track P: pairing (RC1, RC3, RC11)
 
 - Every part a block draws itself is paired with the draft element in that place, from `block_attributes.css_element` and the calibrated part slots (Bean: "the whole point of the block attributes table"); the per-rule pairing in `lib/skeleton-part-slots.mjs` becomes one universal mechanism. Covers the hero's picture frame, list items and their markers, slider slides (`slidesVisible`), icon shapes and the logo's picture.
