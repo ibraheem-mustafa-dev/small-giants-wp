@@ -85,8 +85,8 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "{ attr: 'autoplaySpeed', value: everyMs( r ) },",
-		"replace": "{ attr: 'autoplaySpeed', value: 5000 },",
+		"find": "{ attr: 'autoplay', value: true }, ...( null === every ? [] : [ { attr: 'autoplaySpeed', value: every } ] ),",
+		"replace": "{ attr: 'autoplay', value: true },",
 		"why": "the interval is not read"
 	},
 	{

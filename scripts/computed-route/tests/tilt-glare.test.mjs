@@ -74,7 +74,7 @@ test( 'MUST FAIL: Fill writes one glare layer and the follow-pointer state on th
 } );
 
 test( 'MUST FAIL: settings and close rows say what they are, never "the no SGS effect effect"', () => {
-	const slider = { id: 'A-1', name: 'Web Animation on a testimonial card', mechanism: 'waapi', status: 'active', element: { dc: 'Site', template_tpl_id: null, selector: '.x', description: 'testimonial card' }, trigger: { type: 'state', detail: 'every 5 s setInterval' }, properties: [ { property: 'opacity', from: 0, to: 1 } ], duration_ms: 400 };
+	const slider = { id: 'A-1', name: 'Web Animation on a testimonial card', mechanism: 'waapi', status: 'active', element: { dc: 'Site', template_tpl_id: null, selector: '.x', description: 'testimonial card' }, source: { code: 'this._iv = setInterval(() => this.next(), 5000)' }, trigger: { type: 'state', detail: 'every 5 s setInterval' }, properties: [ { property: 'opacity', from: 0, to: 1 } ], duration_ms: 400 };
 	const close = { id: 'A-2', name: 'Web Animation in closeMobile on ref setDrawerEl', mechanism: 'waapi', status: 'active', fill: 'forwards', element: { dc: 'Site', template_tpl_id: null, selector: 'ref setDrawerEl' }, trigger: { type: 'press', detail: '' }, source: { function: 'closeMobile' }, properties: [ { property: 'opacity', from: 1, to: 0 } ], duration_ms: 300 };
 	assert.equal( recogniseBehaviour( slider ).kind, 'settings' );
 	assert.equal( recogniseBehaviour( close ).kind, 'close' );

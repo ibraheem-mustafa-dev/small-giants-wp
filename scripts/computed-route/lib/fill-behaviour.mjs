@@ -98,6 +98,7 @@ export function applySettings( { items, n, out, where, flat, hasAttr = declaredA
 			out.writes.push( { node: where.node, block: n.name, slot: where.slot, prop: `${ r.id } ${ s.attr }`, attr: s.attr, before, after, widths: [], how: 'motion' } );
 		}
 		out.notes.push( { ...where, text: `${ r.id }: ${ b.notes.join( '; ' ) } (${ mine.map( ( s ) => s.attr ).join( ', ' ) })` } );
+		( b.unread || [] ).forEach( ( u ) => out.unmapped.push( { ...where, property: 'motion', value: r.id, reason: `${ n.name } ${ u.field } not written: ${ u.reason }` } ) );
 		if ( b.accepted ) {
 			out.notes.push( { ...where, text: `${ r.id }: accepted difference: ${ b.accepted }` } );
 		}

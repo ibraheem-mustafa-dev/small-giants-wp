@@ -125,3 +125,18 @@ export function cssCallOf( q ) {
 	const args = fn[ 2 ].split( ',' ).map( ( a ) => a.trim() ).map( ( text ) => ( { text, nodes: [ ...text.matchAll( /\u0001(\d+)\u0001/g ) ].map( ( m ) => exprs[ Number( m[ 1 ] ) ] ) } ) );
 	return { name: fn[ 1 ].toLowerCase(), args };
 }
+
+// The delay of a timer call in a record's own code: the second argument of a `setInterval` (or each name given) call, a
+// number literal or a constant the same code declares, read from the syntax tree; null when the code holds no such call.
+export function timerMs( r, names = [ 'setInterval' ] ) {
+	const tree = codeTree( r?.source?.code );
+	const constant = ( id ) => nodesOf( tree, ( n ) => 'VariableDeclarator' === n.type && id === n.id?.name && 'NumericLiteral' === n.init?.type )[ 0 ]?.init.value ?? null;
+	for ( const c of names.flatMap( ( name ) => callsOf( tree, name ) ) ) {
+		const v = c.arguments[ 1 ];
+		const ms = 'NumericLiteral' === v?.type ? v.value : 'Identifier' === v?.type ? constant( v.name ) : null;
+		if ( null !== ms ) {
+			return ms;
+		}
+	}
+	return null;
+}

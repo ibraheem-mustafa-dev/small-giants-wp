@@ -8,7 +8,7 @@
 import { colourHex } from './tokens.mjs';
 import { shadowParts } from './motion-shadow.mjs';
 import { templateKey, templateKeyOf } from './fact-key.mjs';
-import { props, nameOf, words, triggerOf, NUMBER, number, durationOf, codeTree, nodesOf, callsOf, negativeExpr, readsScrollY, optionKeys, optionValue, cssCallOf } from './motion-record-text.mjs';
+import { props, nameOf, words, triggerOf, NUMBER, number, durationOf, codeTree, nodesOf, callsOf, negativeExpr, readsScrollY, optionKeys, optionValue, cssCallOf, timerMs } from './motion-record-text.mjs';
 
 const px = ( n ) => `${ n }px`;
 
@@ -193,17 +193,16 @@ export function accordionScrollOf( r ) {
 	};
 }
 
-// A state-driven entrance whose trigger also names an interval timer: the element replayed on a timer, the testimonial
-// slider's autoplay (one card, the interval, the change duration).
+// A state-driven entrance whose own code runs it on an interval timer (a `setInterval` call with its delay, timerMs): the
+// element replayed on a timer, the testimonial slider's autoplay (one card, the interval, the change duration).
 export function autoplayOf( r ) {
-	const every = new RegExp( `${ NUMBER }\\s*s\\s+setInterval|setInterval[^.]*?${ NUMBER }\\s*s\\b`, 'i' ).exec( words( r.trigger?.detail ) );
-	const secs = number( every?.[ 1 ] ?? every?.[ 2 ] );
-	if ( null === secs || ! /^(?:waapi|css-animation)$/.test( r.mechanism ) || 'state' !== triggerOf( r ) ) {
+	const ms = timerMs( r );
+	if ( null === ms || ! /^(?:waapi|css-animation)$/.test( r.mechanism ) || 'state' !== triggerOf( r ) ) {
 		return null;
 	}
 	return {
 		blocks: { 'sgs/testimonial-slider': [
-			{ attr: 'autoplay', value: true }, { attr: 'autoplaySpeed', value: Math.round( secs * 1000 ) }, { attr: 'slidesVisible', value: 1 },
+			{ attr: 'autoplay', value: true }, { attr: 'autoplaySpeed', value: ms }, { attr: 'slidesVisible', value: 1 },
 			...( durationOf( r ) ? [ { attr: 'transitionDuration', value: String( durationOf( r ) ) } ] : [] ),
 		] },
 		accepted: 'the slide change (it slides rather than fades), the always-on hover and focus pause, the 44px arrows and the round active dot are the slider\'s own (Ruling 10)',
@@ -319,7 +318,8 @@ export function pinnedTimelineOf( r, ctx = {} ) {
 }
 
 // A scroll track the draft's script drives, which the testimonial slider is: a timer that steps the track sideways
-// (`setInterval every 6000ms via step`, a `scrollTo( { left: ... } )`) is the slider's autoplay and its interval; one writer
+// (an `interval` trigger, a `scrollTo( { left: ... } )`) is the slider's autoplay, its interval the delay of the timer call in
+// the record's own code (unwritten, a named row, when the code holds none); one writer
 // that suspends scroll snapping (`scroll-snap-type: none`) and moves `scrollLeft` directly is its drag to scroll; prev and next controls that step
 // the same function are its arrows; press controls of another function that scroll the same track to an offset derived from
 // an index (`scrollTo( { left: i * w } )` inside the object each dot returns) are its dots. The track's other script writes (the drag handlers, the arrows' steps) are the slider's
@@ -329,10 +329,9 @@ export function pinnedTimelineOf( r, ctx = {} ) {
 const steps = ( r ) => callsOf( codeTree( r.source?.code ), 'scrollTo' ).filter( ( c ) => optionKeys( c ).includes( 'left' ) );
 const isStep = ( r ) => 'js-scroll' === r.mechanism && 'active' === ( r.status ?? 'active' ) && steps( r ).length > 0;
 const isIndexed = ( r ) => steps( r ).some( ( c ) => 'BinaryExpression' === optionValue( c, 'left' )?.type && '*' === optionValue( c, 'left' ).operator );
-const everyMs = ( r ) => number( /setInterval\s+every\s+(\d*\.?\d+)\s*ms/i.exec( words( r.trigger?.detail ) )?.[ 1 ] );
 export function carouselOf( r, ctx = {} ) {
 	const all = ( ctx.records || [] ).filter( ( x ) => x.element?.dc === r.element?.dc && 'active' === ( x.status ?? 'active' ) );
-	const timer = all.find( ( x ) => isStep( x ) && 'interval' === triggerOf( x ) && everyMs( x ) );
+	const timer = all.find( ( x ) => isStep( x ) && 'interval' === triggerOf( x ) );
 	if ( ! timer ) {
 		return null;
 	}
@@ -353,14 +352,17 @@ export function carouselOf( r, ctx = {} ) {
 	if ( timer.id !== r.id ) {
 		return owns.has( r.id ) ? { kind: 'covered', by: 'testimonial-slider', reason: `a write of the scroll track ${ timer.id } drives (its timer, its pointer drag or its arrows): the testimonial slider's own autoplay, drag to scroll and arrows` } : null;
 	}
+	// The interval is the delay of the timer call in the record's own code; without that code it is not written.
+	const every = timerMs( r );
 	return {
 		kind: 'settings',
 		blocks: { 'sgs/testimonial-slider': [
-			{ attr: 'autoplay', value: true }, { attr: 'autoplaySpeed', value: everyMs( r ) },
+			{ attr: 'autoplay', value: true }, ...( null === every ? [] : [ { attr: 'autoplaySpeed', value: every } ] ),
 			...( dragging ? [ { attr: 'dragToScroll', value: true } ] : [] ), ...( arrows ? [ { attr: 'showArrows', value: true } ] : [] ),
 			...( dotted ? [ { attr: 'showDots', value: true } ] : [] ),
 		] },
 		accepted: "the hover, touch and focus holds that pause the timer and the slider's own arrow and dot styling are the slider's own",
-		notes: [ `a scroll track stepped by a ${ everyMs( r ) }ms timer${ dragging ? ', dragged by the pointer' : '' }${ arrows ? ' and stepped by arrow controls' : '' } is the testimonial slider's autoplay${ dragging ? ', drag to scroll' : '' }${ arrows ? ' and arrows' : '' }${ dotted ? ' and dots' : '' }`, ...( dotted ? [] : [ "the slider's dots are not read from an active record, so showDots is left to the slider's own setting" ] ) ],
+		...( null === every ? { unread: [ { field: 'autoplaySpeed', reason: "the timer's interval is not in the record's own code, so the slider's own speed stands (the handoff trigger holds no interval_ms)" } ] } : {} ),
+		notes: [ `a scroll track stepped by a ${ null === every ? '' : `${ every }ms ` }timer${ dragging ? ', dragged by the pointer' : '' }${ arrows ? ' and stepped by arrow controls' : '' } is the testimonial slider's autoplay${ dragging ? ', drag to scroll' : '' }${ arrows ? ' and arrows' : '' }${ dotted ? ' and dots' : '' }`, ...( dotted ? [] : [ "the slider's dots are not read from an active record, so showDots is left to the slider's own setting" ] ) ],
 	};
 }

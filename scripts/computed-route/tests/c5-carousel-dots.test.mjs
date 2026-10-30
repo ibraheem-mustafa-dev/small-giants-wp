@@ -72,7 +72,7 @@ const J = ( id, over ) => ( {
 	id, name: id, mechanism: 'js-scroll', status: 'active', element: { dc: 'Home', template_tpl_id: '222', selector: 'ref trackRef' },
 	source: { file: 'Home.dc.html', function: 'step', code: 't.scrollTo({ left: 0 })' }, trigger: { type: 'press', detail: 'onClick on Home:150 (step)' }, properties: [ { property: 'scroll-position' } ], duration_ms: 0, delay_ms: 0, stagger: null, easing: null, iterations: 1, ...over,
 } );
-const TIMER = J( 'J-08', { trigger: { type: 'interval', detail: 'setInterval every 6000ms via step' } } );
+const TIMER = J( 'J-08', { source: { file: 'Home.dc.html', function: 'step', code: 'this.auto = setInterval(() => t.scrollTo({ left: 0 }), 6000)' }, trigger: { type: 'interval', detail: 'setInterval every 6000ms via step' } } );
 const DOTS = J( 'J-12', { source: { file: 'Home.dc.html', function: 'renderVals', code: 'tr.scrollTo({ left: i * (tr.children[0].getBoundingClientRect().width + 22) })' }, trigger: { type: 'press', detail: 'onClick on Home:235 (go)' } } );
 const attrs = ( records ) => recogniseBehaviour( records[ 0 ], { records } )?.blocks?.[ 'sgs/testimonial-slider' ]?.map( ( s ) => s.attr );
 
