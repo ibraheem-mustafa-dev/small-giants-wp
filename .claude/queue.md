@@ -65,3 +65,4 @@ The signal between parallel sessions working the cloning tool plan (`.claude/pla
 - 2026-10-30 S intake-start indus-foods,mamas-munches-redesign,eye-care-ward-end (sequential full intakes --record on main 1ee920691 for the third re-clone: every root-cause track merged)
 - 2026-10-30 S intake-end indus-foods,mamas-munches-redesign,eye-care-ward-end (exit 0; Indus 56 min, Mama's 12 min, Eye Care 49 min; review rows 1264, 1614, 1613; census pass)
 - 2026-10-30 S deploy-start indus-test,mamas-test,eye-care-clone-test (third re-clone step 4: the plugin on the test sites predates the root-cause fix pass; main 4c5479726)
+- 2026-10-30 S deployed indus-test,mamas-test,eye-care-clone-test (199 fast + 13 full gates; code e382b3c9f, the product-card title text part fixed after the first attempt stopped at gate:full)
