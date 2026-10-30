@@ -13,6 +13,7 @@ import {
 } from '@wordpress/components';
 import { FlexWrapControl, ResponsiveControl, SgsLengthControl } from '../../../components';
 
+import SgsFreeTextField from '../../../components/SgsFreeTextField';
 /**
  * @param {Object}   props
  * @param {Object}   props.attributes    Block attributes.
@@ -54,9 +55,7 @@ export default function WishlistLayoutPanel( { attributes, setAttributes } ) {
 				] }
 				onChange={ ( value ) => setAttributes( { layout: value } ) }
 			/>
-			<TextControl
-				__next40pxDefaultSize
-				__nextHasNoMarginBottom
+			<SgsFreeTextField type="rich"
 				label={ __( 'Heading', 'sgs-blocks' ) }
 				value={ heading }
 				onChange={ ( value ) => setAttributes( { heading: value } ) }
@@ -104,16 +103,12 @@ export default function WishlistLayoutPanel( { attributes, setAttributes } ) {
 					/>
 				</>
 			) }
-			<TextControl
-				__next40pxDefaultSize
-				__nextHasNoMarginBottom
+			<SgsFreeTextField type="rich"
 				label={ __( 'Empty-wishlist text', 'sgs-blocks' ) }
 				value={ emptyText }
 				onChange={ ( value ) => setAttributes( { emptyText: value } ) }
 			/>
-			<TextControl
-				__next40pxDefaultSize
-				__nextHasNoMarginBottom
+			<SgsFreeTextField type="rich" noLink
 				label={ __( 'Empty-wishlist link label', 'sgs-blocks' ) }
 				value={ emptyLinkLabel }
 				onChange={ ( value ) =>

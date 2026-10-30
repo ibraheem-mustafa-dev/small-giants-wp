@@ -72,7 +72,12 @@
     "src/blocks/modal/edit.js": { "triggerText": "RICH_TEXT_FREE_TEXT_NO_LINK" },
     "src/blocks/store-selector/edit.js": { "triggerPrefix": "RICH_TEXT_FREE_TEXT_NO_LINK" },
     "src/blocks/wishlist-link/edit.js": { "label": "RICH_TEXT_FREE_TEXT_NO_LINK" },
-    "src/blocks/form-review/edit.js": { "heading": "RICH_TEXT_FREE_TEXT", "intro": "RICH_TEXT_FREE_TEXT" }
+    "src/blocks/form-review/edit.js": { "heading": "RICH_TEXT_FREE_TEXT", "intro": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/wishlist-panel/components/WishlistLayoutPanel.js": {
+      "emptyText": "RICH_TEXT_FREE_TEXT",
+      "heading": "RICH_TEXT_FREE_TEXT",
+      "emptyLinkLabel": "RICH_TEXT_FREE_TEXT_NO_LINK"
+    }
   },
   "undecided": {},
   "render": {

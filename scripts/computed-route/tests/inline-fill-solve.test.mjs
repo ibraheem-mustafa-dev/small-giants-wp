@@ -251,3 +251,25 @@ test( 'every plain-text setting is filed in exactly one group of data/plain-text
 // Settings this track re-roles (plugins/sgs-blocks/scripts/attr-classification-overrides.json): no page text, filed nowhere
 // once the framework DB is reseeded.
 const RE_ROLED = [ 'sgs/notice-message:label', 'sgs/business-info:openStatusOpenText', 'sgs/business-info:openStatusClosedText' ];
+
+test( 'MUST FAIL: Fill writes a block\'s SECONDARY text setting (google-reviews footnote) with the draft element\'s bold, through the one inline path', () => {
+	const inline = inlineByKey( { inventory: BOLD_INV() } );
+	const calibration = { text: { footnote: { path: '' } } };
+	const rich = ( p, attr ) => inline( 'Root/2#0', 'sgs/google-reviews', attr );
+	const r = textDecisions( { calibration, slots: { '': 'Vegan base: no eggs or dairy.' }, rich } );
+	assert.deepEqual( r.writes.map( ( w ) => w.value ), [ '<strong>Vegan base:</strong> no eggs or dairy.' ], 'the footnote holds core/bold, so the bold is written as <strong>' );
+	// Negative control: a setting no RichText or free-text control edits keeps the words and names the bold in a handover.
+	const plain = textDecisions( { calibration: { text: { panelHeading: { path: '' } } }, slots: { '': 'Vegan base: no eggs or dairy.' }, rich: ( p, attr ) => inline( 'Root/2#0', 'sgs/cart', attr ) } );
+	assert.deepEqual( plain.writes.map( ( w ) => w.value ), [ 'Vegan base: no eggs or dairy.' ] );
+} );
+
+test( 'MUST FAIL: Fill copies a glyph-role setting verbatim (breadcrumbs separator from a draft \u203a, a spaced slash keeps its spaces); a text setting is still read as words', () => {
+	const calibration = { text: { separator: { path: '.sgs-breadcrumbs__separator' } } };
+	const glyph = ( a ) => 'separator' === a;
+	const at = ( slots, g ) => textDecisions( { calibration, slots: { '.sgs-breadcrumbs__separator': slots }, glyph: g } ).writes;
+	assert.deepEqual( at( '\u203a', glyph ), [ { attr: 'separator', value: '\u203a', merge: 'replace' } ] );
+	assert.deepEqual( at( ' / ', glyph ).map( ( w ) => w.value ), [ ' / ' ], 'the glyph keeps the draft\'s characters, spaces included' );
+	assert.deepEqual( at( '&amp;', glyph ).map( ( w ) => w.value ), [ '&amp;' ], 'a glyph is never decoded' );
+	assert.deepEqual( at( ' / ' ).map( ( w ) => w.value ), [ '/' ], 'negative control: without the glyph role the text is read as words' );
+	assert.deepEqual( textDecisions( { calibration, attributes: { separator: '|' }, slots: { '.sgs-breadcrumbs__separator': '\u203a' }, glyph } ).writes, [], 'a glyph the block already holds is never overwritten' );
+} );

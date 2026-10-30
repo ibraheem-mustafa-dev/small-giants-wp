@@ -17,6 +17,7 @@ import LabelsPanel from './components/LabelsPanel';
 import AlertsSharingPanel from './components/AlertsSharingPanel';
 import SiteFeaturesPanel from './components/SiteFeaturesPanel';
 
+import AuthoredText from '../../components/AuthoredText';
 /**
  * @param {Object}   props               Block props.
  * @param {Object}   props.attributes    Block attributes.
@@ -149,7 +150,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			<div { ...blockProps }>
 				<div className="sgs-wishlist-panel__bar-top">
 					<h2 className="sgs-wishlist-panel__heading" style={ colourStyles.heading }>
-						{ heading }
+						<AuthoredText value={ heading } />
 						{ showCount && <span className="sgs-wishlist-panel__count">{ ` (${ sampleCount })` }</span> }
 					</h2>
 					{ showViewAll && (

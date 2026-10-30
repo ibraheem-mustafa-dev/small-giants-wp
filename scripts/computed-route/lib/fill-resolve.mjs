@@ -88,7 +88,8 @@ function fillContent( st, rec, ref, cal ) {
 		const tpl = rec.targets.find( ( t ) => LOOSE( t.slot ) === LOOSE( p ) )?.finder?.tpl;
 		return tpl && st.inline ? st.inline( tpl, rec.name, attr ) : null;
 	};
-	take( textDecisions( { calibration: cal, attributes: node.attributes || {}, slots: words, leaf: 0 === rec.children.length, rich: richAt } ) );
+	const glyphs = new Set( st.db ? st.db.prepare( "SELECT attr_name FROM block_attributes WHERE block_slug = ? AND role = 'glyph'" ).all( rec.name ).map( ( r ) => r.attr_name ) : [] );
+	take( textDecisions( { calibration: cal, attributes: node.attributes || {}, slots: words, leaf: 0 === rec.children.length, rich: richAt, glyph: ( a ) => glyphs.has( a ) } ) );
 	take( linkDecisions( { calibration: cal, attributes: node.attributes || {}, slots: hrefs, origin: st.origin, pages: st.pages } ) );
 	take( linkAttrDecisions( { calibration: cal, schema: blockSchema( rec.name ) || {}, anchor: blockSupportsAnchor( rec.name ), attributes: node.attributes || {}, slots: linkFacts, imageAlts: imageSlots( st.db, rec.name, blockSchema( rec.name ) ).map( ( s ) => s.alt ), pictureSlot: pictureSlotOf( atDesktop ) } ) );
 	// The fact record speaks for the element the image is drawn by: the target whose slot is the image's own (a nested image names its slot).
