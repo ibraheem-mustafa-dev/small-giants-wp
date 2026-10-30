@@ -164,8 +164,8 @@ $sgs_fs_output = SGS_Container_Wrapper::render(
 		'tag'           => 'div',
 		'extra_classes' => $sgs_fs_supports_classes,
 		'extra_attrs'   => array(
-			'data-step-label' => esc_attr( $label ),
-			'aria-label'      => esc_attr( $label ),
+			'data-step-label' => esc_attr( sgs_rich_text_kses( $label, false ) ), // Markup: review-cards.js inserts it as DOM nodes (src/utils/authored-text-dom.js).
+			'aria-label'      => esc_attr( sgs_authored_text_plain( $label ) ),
 		),
 	)
 );

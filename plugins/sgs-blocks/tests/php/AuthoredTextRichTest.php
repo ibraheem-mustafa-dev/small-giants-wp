@@ -92,4 +92,11 @@ final class AuthoredTextRichTest extends TestCase {
 		$this->assertStringContainsString( '<strong>now</strong>', $html );
 		$this->assertStringContainsString( 'aria-label="Open now"', $html, 'the accessible name is plain words' );
 	}
+
+	public function test_product_search_label_keeps_markup_in_the_text_and_plain_words_in_the_accessible_name(): void {
+		$html = $this->render_block( 'sgs/product-search', array( 'buttonLabel' => 'Find <strong>it</strong>' ) )['html'];
+		$this->assertStringContainsString( 'aria-label="Find it"', $html );
+		$this->assertStringContainsString( 'Find <strong>it</strong>', $html );
+		$this->assertStringNotContainsString( '&lt;strong&gt;', $html );
+	}
 }

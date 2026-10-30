@@ -47,7 +47,12 @@
     },
     "src/blocks/account/LoggedOutPanel.js": { "guestLineText": "RICH_TEXT_FREE_TEXT", "orderTrackingHeading": "RICH_TEXT_FREE_TEXT" },
     "src/blocks/choice-flow-question/IntroField.js": { "intro": "RICH_TEXT_FREE_TEXT" },
-    "src/blocks/google-reviews/components/ReviewTextPanel.js": { "footnote": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/google-reviews/components/ReviewTextPanel.js": {
+      "footnote": "RICH_TEXT_FREE_TEXT",
+      "seeAllLabel": "RICH_TEXT_FREE_TEXT_NO_LINK",
+      "writeReviewLabel": "RICH_TEXT_FREE_TEXT_NO_LINK",
+      "reviewLinkLabel": "RICH_TEXT_FREE_TEXT_NO_LINK"
+    },
     "src/blocks/trustpilot-reviews/edit.js": {
       "subtitleText": "RICH_TEXT_FREE_TEXT",
       "emptyStateMessage": "RICH_TEXT_FREE_TEXT",
@@ -77,7 +82,18 @@
       "emptyText": "RICH_TEXT_FREE_TEXT",
       "heading": "RICH_TEXT_FREE_TEXT",
       "emptyLinkLabel": "RICH_TEXT_FREE_TEXT_NO_LINK"
-    }
+    },
+    "src/blocks/form-step/edit.js": { "label": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/product-search/edit.js": { "buttonLabel": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/cart/TriggerSettingsControls.js": { "pillLabel": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/cart/PanelSettingsControls.js": {
+      "emptyCartMessage": "RICH_TEXT_FREE_TEXT",
+      "panelHeading": "RICH_TEXT_FREE_TEXT",
+      "checkoutLabel": "RICH_TEXT_FREE_TEXT_NO_LINK",
+      "emptyCartCtaLabel": "RICH_TEXT_FREE_TEXT_NO_LINK",
+      "viewCartLabel": "RICH_TEXT_FREE_TEXT_NO_LINK"
+    },
+    "src/blocks/cart/PanelContentControls.js": { "panelTaxNote": "RICH_TEXT_FREE_TEXT" }
   },
   "undecided": {},
   "render": {

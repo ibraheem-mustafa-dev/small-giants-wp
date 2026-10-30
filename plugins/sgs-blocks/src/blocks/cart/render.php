@@ -81,18 +81,18 @@ $hide_when_empty            = ! empty( $attributes['hideWhenEmpty'] );
 // icon+badge trigger; 'pill' swaps the icon for an editable word (pillLabel)
 // beside the live item count (same badge element, restyled — see style.css).
 $trigger_style     = ( 'pill' === ( $attributes['triggerStyle'] ?? 'icon' ) ) ? 'pill' : 'icon';
-$pill_label        = sanitize_text_field( $attributes['pillLabel'] ?? __( 'Cart', 'sgs-blocks' ) );
+$pill_label        = (string) ( $attributes['pillLabel'] ?? __( 'Cart', 'sgs-blocks' ) );
 $pill_bg_colour    = (string) ( $attributes['pillBgColour'] ?? '' );
 $pill_text_colour  = (string) ( $attributes['pillTextColour'] ?? '' );
 // Spec 38A FR-38A-53: the count pop is the Entrance layer on the badge part; with no layer the count does not pop.
 $count_pop_animation = sgs_cart_count_pop_mode( $attributes ) ?? 'off';
 
 // FR-36-19 panel attrs.
-$panel_heading      = sanitize_text_field( $attributes['panelHeading'] ?? __( 'Your cart', 'sgs-blocks' ) );
-$empty_cart_message = sanitize_text_field( $attributes['emptyCartMessage'] ?? __( 'Your cart is empty', 'sgs-blocks' ) );
-$empty_cart_cta     = sanitize_text_field( $attributes['emptyCartCtaLabel'] ?? __( 'Continue shopping', 'sgs-blocks' ) );
-$view_cart_label    = sanitize_text_field( $attributes['viewCartLabel'] ?? __( 'View cart', 'sgs-blocks' ) );
-$checkout_label     = sanitize_text_field( $attributes['checkoutLabel'] ?? __( 'Checkout', 'sgs-blocks' ) );
+$panel_heading      = (string) ( $attributes['panelHeading'] ?? __( 'Your cart', 'sgs-blocks' ) );
+$empty_cart_message = (string) ( $attributes['emptyCartMessage'] ?? __( 'Your cart is empty', 'sgs-blocks' ) );
+$empty_cart_cta     = (string) ( $attributes['emptyCartCtaLabel'] ?? __( 'Continue shopping', 'sgs-blocks' ) );
+$view_cart_label    = (string) ( $attributes['viewCartLabel'] ?? __( 'View cart', 'sgs-blocks' ) );
+$checkout_label     = (string) ( $attributes['checkoutLabel'] ?? __( 'Checkout', 'sgs-blocks' ) );
 $auto_open_on_add   = ! isset( $attributes['autoOpenOnAdd'] ) || ! empty( $attributes['autoOpenOnAdd'] );
 $hide_on_cart_pages = ! isset( $attributes['hideOnCartCheckoutPages'] ) || ! empty( $attributes['hideOnCartCheckoutPages'] );
 $panel_bg_slug      = isset( $attributes['panelBg'] ) ? (string) $attributes['panelBg'] : 'base';
@@ -339,7 +339,7 @@ $icon_and_badge_html = sprintf(
 // not two.
 $pill_and_badge_html = sprintf(
 	'<span class="sgs-cart__pill-label">%1$s</span><span class="sgs-cart__badge sgs-cart__badge--pill%2$s" role="status" aria-live="polite" aria-atomic="true" data-sgs-cart-count>%3$d</span>',
-	esc_html( $pill_label ),
+	sgs_rich_text_kses( $pill_label, false ),
 	( $ssr_count > 0 || $show_zero ) ? ' sgs-cart__badge--visible' : '',
 	absint( $ssr_count )
 );
@@ -382,7 +382,7 @@ $panel_args = array(
 	'checkout_label'     => $checkout_label,
 	'show_count'         => ! empty( $attributes['panelShowCount'] ),
 	'show_view_cart'     => ! isset( $attributes['panelShowViewCart'] ) || ! empty( $attributes['panelShowViewCart'] ),
-	'tax_note'           => sanitize_text_field( $attributes['panelTaxNote'] ?? __( 'Shipping and taxes calculated at checkout.', 'sgs-blocks' ) ),
+	'tax_note'           => (string) ( $attributes['panelTaxNote'] ?? __( 'Shipping and taxes calculated at checkout.', 'sgs-blocks' ) ),
 	'instalments_note'   => sanitize_text_field( $attributes['panelInstalmentsNote'] ?? '' ),
 	'instalments_count'  => absint( $attributes['panelInstalmentsCount'] ?? 3 ),
 	'close_html'         => 'drawer' === $effective_mode ? sgs_cart_close_button_html() : '',

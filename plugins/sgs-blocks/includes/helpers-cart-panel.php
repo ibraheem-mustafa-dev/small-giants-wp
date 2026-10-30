@@ -136,11 +136,11 @@ function sgs_cart_panel_body_html( array $args ): string {
 
 	$note_html = '';
 	if ( '' !== (string) ( $args['tax_note'] ?? '' ) ) {
-		$note_html = '<p class="sgs-cart__panel-tax-note" data-sgs-cart-tax-note>' . esc_html( $args['tax_note'] ) . '</p>';
+		$note_html = '<p class="sgs-cart__panel-tax-note" data-sgs-cart-tax-note>' . sgs_rich_text_kses( $args['tax_note'] ) . '</p>';
 	}
 
 	$view_html = ! isset( $args['show_view_cart'] ) || ! empty( $args['show_view_cart'] )
-		? sprintf( '<a class="sgs-cart__panel-view" href="%1$s">%2$s</a>', esc_url( $args['cart_url'] ), esc_html( $args['view_cart_label'] ) )
+		? sprintf( '<a class="sgs-cart__panel-view" href="%1$s">%2$s</a>', esc_url( $args['cart_url'] ), sgs_rich_text_kses( $args['view_cart_label'], false ) )
 		: '';
 
 	$instalments_html = '';
@@ -168,9 +168,9 @@ function sgs_cart_panel_body_html( array $args ): string {
 			'</div>' .
 		'</div>',
 		esc_attr( $args['panel_id'] ),
-		esc_html( $args['panel_heading'] ),
-		esc_attr( $args['empty_cart_message'] ),
-		esc_attr( $args['empty_cart_cta'] ),
+		sgs_rich_text_kses( $args['panel_heading'] ),
+		esc_attr( sgs_rich_text_kses( $args['empty_cart_message'] ) ), // Markup the view script inserts as DOM nodes.
+		esc_attr( sgs_rich_text_kses( $args['empty_cart_cta'], false ) ),
 		esc_url( $args['shop_url'] ),
 		esc_html__( 'Loading your cart…', 'sgs-blocks' ),
 		esc_html__( 'Subtotal', 'sgs-blocks' ),
@@ -178,7 +178,7 @@ function sgs_cart_panel_body_html( array $args ): string {
 		$view_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_url/esc_html above.
 		$instalments_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_attr above.
 		esc_url( $args['checkout_url'] ),
-		esc_html( $args['checkout_label'] ),
+		sgs_rich_text_kses( $args['checkout_label'], false ),
 		$count_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static markup.
 		(string) ( $args['close_html'] ?? '' ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built by sgs_cart_close_button_html().
 		'text' === ( $args['remove_style'] ?? 'icon' ) ? 'text' : 'icon',

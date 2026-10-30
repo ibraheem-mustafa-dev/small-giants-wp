@@ -8,10 +8,11 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { ToggleControl, RangeControl, TextControl } from '@wordpress/components';
+import { ToggleControl, RangeControl } from '@wordpress/components';
 import { Section, Row, typographyAttrs } from './panel-kit';
 import { TypographyRow, typoTarget } from './panel-fields';
 
+import SgsFreeTextField from '../../../components/SgsFreeTextField';
 import SgsFreeTextField from '../../../components/SgsFreeTextField';
 export const REVIEW_TEXT_TYPOGRAPHY_PREFIXES = [ 'text', 'reviewLink', 'footnote' ];
 
@@ -63,14 +64,27 @@ export default function ReviewTextPanel( { attributes, setAttributes } ) {
 					onChange={ ( value ) => setAttributes( { showReviewLink: value } ) }
 				/>
 				{ attributes.showReviewLink && (
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Link wording', 'sgs-blocks' ) }
 						value={ attributes.reviewLinkLabel }
 						onChange={ ( value ) => setAttributes( { reviewLinkLabel: value } ) }
 						help={ __( 'Leave empty to use the standard wording.', 'sgs-blocks' ) }
-						__next40pxDefaultSize
 					/>
 				) }
+			</Row>
+			<Row label={ __( 'Call-to-action wording', 'sgs-blocks' ) } attrs={ [ 'seeAllLabel', 'writeReviewLabel' ] } { ...shared }>
+				<SgsFreeTextField type="rich" noLink
+					label={ __( 'See all reviews link', 'sgs-blocks' ) }
+					value={ attributes.seeAllLabel }
+					onChange={ ( value ) => setAttributes( { seeAllLabel: value } ) }
+					help={ __( 'Leave empty to use the standard wording.', 'sgs-blocks' ) }
+				/>
+				<SgsFreeTextField type="rich" noLink
+					label={ __( 'Write a review link', 'sgs-blocks' ) }
+					value={ attributes.writeReviewLabel }
+					onChange={ ( value ) => setAttributes( { writeReviewLabel: value } ) }
+					help={ __( 'Leave empty to use the standard wording.', 'sgs-blocks' ) }
+				/>
 			</Row>
 			<Row label={ __( 'Footnote', 'sgs-blocks' ) } attrs={ [ 'footnote' ] } { ...shared }>
 				<SgsFreeTextField type="rich"

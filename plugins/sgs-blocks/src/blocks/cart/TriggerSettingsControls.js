@@ -1,13 +1,9 @@
 import { __ } from '@wordpress/i18n';
-import {
-	PanelBody,
-	RangeControl,
-	TextControl,
-	ToggleControl,
-} from '@wordpress/components';
+import { PanelBody, RangeControl, ToggleControl } from '@wordpress/components';
 import { IconPicker } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
  * SGS Cart — Trigger style + Icon + Badge inspector controls. Split out of
  * edit.js to keep the file under the project's 250-line JS budget.
@@ -53,12 +49,10 @@ export default function TriggerSettingsControls( {
 					<ToggleGroupControlOption value="pill" label={ __( 'Text pill', 'sgs-blocks' ) } />
 				</ToggleGroupControl>
 				{ isPill && (
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Pill label', 'sgs-blocks' ) }
 						value={ pillLabel }
 						onChange={ ( val ) => setAttributes( { pillLabel: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 				) }
 				{ isPill && (

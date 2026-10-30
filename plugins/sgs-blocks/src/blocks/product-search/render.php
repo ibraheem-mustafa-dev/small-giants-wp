@@ -83,6 +83,8 @@ $placeholder = ! empty( $attributes['placeholder'] )
 $button_label = ! empty( $attributes['buttonLabel'] )
 	? $attributes['buttonLabel']
 	: __( 'Search', 'sgs-blocks' );
+// The label is typed rich text: markup in the visible text, plain words wherever it is an accessible name.
+$button_label_plain = sgs_authored_text_plain( $button_label );
 
 // FR-36-20 MUST: ≤10 desktop / 4–8 mobile — both caps are clamped server-side
 // so a stored value can never widen past the spec ceiling regardless of what
@@ -457,7 +459,7 @@ ob_start();
 			<button
 				type="submit"
 				class="sgs-product-search__submit"
-				aria-label="<?php echo esc_attr( $button_label ); ?>"
+				aria-label="<?php echo esc_attr( $button_label_plain ); ?>"
 			>
 				<svg
 					aria-hidden="true"
@@ -474,7 +476,7 @@ ob_start();
 					<circle cx="11" cy="11" r="8"></circle>
 					<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
 				</svg>
-				<span class="screen-reader-text"><?php echo esc_html( $button_label ); ?></span>
+				<span class="screen-reader-text"><?php echo sgs_rich_text_kses( $button_label, false ); ?></span>
 			</button>
 		</div>
 
@@ -533,9 +535,9 @@ if ( $sgs_ps_is_dialog_mode ) {
 		? sprintf(
 			/* translators: %s: the button's accessible label, e.g. "Search". */
 			__( '%s (Ctrl+K)', 'sgs-blocks' ),
-			$button_label
+			$button_label_plain
 		)
-		: $button_label;
+		: $button_label_plain;
 
 	$overlay_trigger_html = sprintf(
 		'<div class="sgs-product-search__overlay-trigger-wrap" data-wp-interactive="sgs/nav" %1$s>' .
@@ -644,7 +646,7 @@ if ( $sgs_ps_is_dialog_mode ) {
 	<details class="sgs-product-search__disclosure">
 		<summary
 			class="sgs-product-search__icon-toggle"
-			aria-label="<?php echo esc_attr( $button_label ); ?>"
+			aria-label="<?php echo esc_attr( $button_label_plain ); ?>"
 		>
 			<?php /* Search icon — aria-hidden so the aria-label on <summary> is the sole accessible name. */ ?>
 			<svg
