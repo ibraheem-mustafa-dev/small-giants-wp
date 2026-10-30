@@ -257,11 +257,16 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 	surfaceTemplates( rows, { facts, links: route.links, pageOfTag: code.pageOfTag, fallbacks: routerFallbacks( exp, routeKeys, home ), home, gaps } );
 	const used = new Set();
 	const routeSlug = new Map();
-	// Two manifest pages naming one WordPress slug (a signed-out and a signed-in view) are one row.
+	// Two manifest pages naming one WordPress slug (a signed-out and a signed-in view) are one row, which records the route
+	// it folds in (`folds`), so the folded view's surface is read as that row's (its commerce role, its parts).
+	const fold = ( row, route ) => {
+		route && route !== row.route && ! ( row.folds || [] ).includes( route ) && ( row.folds = [ ...( row.folds || [] ), route ] );
+	};
 	for ( const r of [ ...rows ] ) {
 		const twin = r.explicit && rows.find( ( x ) => x !== r && x.explicit && x.slug === r.slug && routeSlug.has( x.route ) );
 		if ( twin ) {
 			routeSlug.set( r.route, twin.slug );
+			fold( twin, r.route );
 			rows.splice( rows.indexOf( r ), 1 );
 			continue;
 		}
@@ -273,6 +278,7 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 		const twin = rows.find( ( row ) => row.slug === kebab( r.key ) );
 		if ( twin ) {
 			routeSlug.set( r.key, twin.slug );
+			fold( twin, r.key );
 		}
 	}
 	orderConfirmations( rows, route, code.pageOfTag, home, routeSlug, used, facts );
