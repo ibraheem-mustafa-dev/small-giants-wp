@@ -10,6 +10,7 @@ import {
 	SelectControl,
 	RangeControl,
 	TextControl,
+	TextareaControl,
 	Button,
 	ToggleControl,
 	CheckboxControl,
@@ -897,6 +898,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 											updatePlan( planIndex, 'iconName', name )
 										}
 										sources={ [ 'lucide' ] }
+									/>
+									<TextareaControl
+										label={ __( 'Description (optional)', 'sgs-blocks' ) }
+										help={ __( 'A short line under the plan name. Plain text.', 'sgs-blocks' ) }
+										value={ plan.description || '' }
+										onChange={ ( val ) =>
+											updatePlan( planIndex, 'description', val )
+										}
+										rows={ 2 }
+										__nextHasNoMarginBottom
 									/>
 									<TextControl
 										label={ __( 'Ribbon text', 'sgs-blocks' ) }
