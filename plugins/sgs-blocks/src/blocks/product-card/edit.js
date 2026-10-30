@@ -1077,11 +1077,21 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 			.split( ',' )
 			.map( ( s ) => s.trim() )
 			.filter( Boolean );
+		// The default pill survives an edit to the list while its label is still present; otherwise the first is default.
+		const keptLabel = ( packSizes || [] ).find( ( p ) => p.selected )?.label;
+		const selectedIndex = Math.max( 0, labels.indexOf( keptLabel ) );
 		setAttributes( {
 			packSizes: labels.map( ( label, i ) => ( {
 				label,
-				selected: i === 0,
+				selected: i === selectedIndex,
 			} ) ),
+		} );
+	}
+
+	function onDefaultPackSizeChange( value ) {
+		const chosen = parseInt( value, 10 );
+		setAttributes( {
+			packSizes: ( packSizes || [] ).map( ( p, i ) => ( { ...p, selected: i === chosen } ) ),
 		} );
 	}
 
@@ -1793,6 +1803,17 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
+						{ ( packSizes || [] ).length > 1 && (
+							<SelectControl
+								label={ __( 'Default pack size', 'sgs-blocks' ) }
+								help={ __( 'The pill that is selected when the card loads.', 'sgs-blocks' ) }
+								value={ String( Math.max( 0, ( packSizes || [] ).findIndex( ( p ) => p.selected ) ) ) }
+								options={ ( packSizes || [] ).map( ( p, i ) => ( { label: p.label, value: String( i ) } ) ) }
+								onChange={ onDefaultPackSizeChange }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
 					</PanelBody>
 				) }
 

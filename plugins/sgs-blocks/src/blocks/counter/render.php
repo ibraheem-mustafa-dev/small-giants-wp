@@ -62,6 +62,7 @@ $sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_
 $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
 // ---------------------------------------------------------------------------
 // Sanitisers (contract §D) — a CSS-length / CSS-keyword allowlist so an
@@ -81,6 +82,8 @@ $number_colour_gradient = $attributes['numberColourGradient'] ?? '';
 $label_colour           = $attributes['labelColour'] ?? '';
 $label_colour_gradient  = $attributes['labelColourGradient'] ?? '';
 $icon                   = $attributes['icon'] ?? '';
+// The counter icon is a Lucide slug; an unknown slug draws no icon element.
+$icon_svg               = '' !== $icon ? sgs_get_lucide_icon( preg_replace( '/[^a-z0-9-]/', '', strtolower( (string) $icon ) ) ) : '';
 $accent_stroke          = ! empty( $attributes['accentStroke'] );
 
 // Content-hash uid (Pattern A) — stable across fragment-cached renders (same
@@ -367,8 +370,8 @@ $scoped_css = array_merge( $scoped_css, $border['rules'] );
 <style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style> ?></style>
 <?php endif; ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-	<?php if ( $icon ) : ?>
-		<span class="sgs-counter__icon-placeholder" data-icon="<?php echo esc_attr( $icon ); ?>" aria-hidden="true"></span>
+	<?php if ( '' !== $icon_svg ) : ?>
+		<span class="sgs-counter__icon" aria-hidden="true"><?php echo $icon_svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_get_lucide_icon() returns a bundled SVG. ?></span>
 	<?php endif; ?>
 	<span class="sgs-sr-only"><?php echo esc_html( $full_text ); ?></span>
 	<span class="sgs-counter__number" data-target="<?php echo esc_attr( (string) $number ); ?>" data-duration="<?php echo esc_attr( (string) $duration ); ?>" data-separator="<?php echo esc_attr( $separator ? 'true' : 'false' ); ?>"<?php echo $prefix ? ' data-prefix="' . esc_attr( $prefix ) . '"' : ''; ?><?php echo $suffix ? ' data-suffix="' . esc_attr( $suffix ) . '"' : ''; ?> aria-hidden="true">

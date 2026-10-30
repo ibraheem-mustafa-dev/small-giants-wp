@@ -69,6 +69,7 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
 // ---------------------------------------------------------------------------
 // 1. Security sanitisers (contract §D) — mirrors sgs/heading + sgs/quote.
@@ -536,14 +537,15 @@ if ( '' !== $description_colour_hover ) {
 	<?php
 	foreach ( $steps as $index => $step ) :
 		$step        = is_array( $step ) ? $step : array();
-		$icon        = isset( $step['icon'] ) ? (string) $step['icon'] : '';
+		// The step icon is a Lucide slug (role icon-slug); an unknown slug draws no icon element.
+		$icon_svg    = isset( $step['icon'] ) ? sgs_get_lucide_icon( preg_replace( '/[^a-z0-9-]/', '', strtolower( (string) $step['icon'] ) ) ) : '';
 		$number      = isset( $step['number'] ) ? (string) $step['number'] : (string) ( $index + 1 );
 		$step_title  = isset( $step['title'] ) ? (string) $step['title'] : '';
 		$description = isset( $step['description'] ) ? (string) $step['description'] : '';
 		?>
 		<div class="sgs-process-steps__step">
-			<?php if ( $icon ) : ?>
-				<span class="sgs-process-steps__icon" data-icon="<?php echo esc_attr( $icon ); ?>" aria-hidden="true"></span>
+			<?php if ( '' !== $icon_svg ) : ?>
+				<span class="sgs-process-steps__icon" aria-hidden="true"><?php echo $icon_svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_get_lucide_icon() returns a bundled SVG. ?></span>
 			<?php endif; ?>
 			<?php if ( 'none' !== $number_style ) : ?>
 				<span class="sgs-process-steps__number" aria-hidden="true"><?php echo esc_html( $number ); ?></span>

@@ -7,6 +7,7 @@ import {
 	PanelBody,
 	SelectControl,
 	TextControl,
+	TextareaControl,
 	ToggleControl,
 	Button,
 	RangeControl,
@@ -186,6 +187,15 @@ function IconCircleItemEditor( { item, onChange, onRemove } ) {
 				value={ { source: 'lucide', name: item.icon || 'check' } }
 				onChange={ ( { name } ) => update( 'icon', name ) }
 				sources={ [ 'lucide' ] }
+			/>
+			{ /* render.php draws iconSvg when the Lucide slug is empty (and sanitises it through the SVG allowlist). */ }
+			<TextareaControl
+				label={ __( 'Custom SVG (optional)', 'sgs-blocks' ) }
+				help={ __( 'Paste SVG markup. Drawn only when no library icon is set; scripts and inline styles are removed.', 'sgs-blocks' ) }
+				value={ item.iconSvg || '' }
+				onChange={ ( val ) => update( 'iconSvg', val ) }
+				rows={ 3 }
+				__nextHasNoMarginBottom
 			/>
 			<TextControl
 				label={ __( 'Label', 'sgs-blocks' ) }

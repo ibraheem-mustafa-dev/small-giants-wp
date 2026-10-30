@@ -148,6 +148,7 @@ export default function Edit({ attributes, setAttributes, name }) {
           <IconPicker
             label={__("Icon", "sgs-blocks")}
             value={ icon ? { source: "lucide", name: icon } : null }
+            sources={ [ "lucide" ] }
             onChange={ ( val ) => setAttributes({ icon: val ? val.name : "" }) }
           />
         </PanelBody>

@@ -10,6 +10,7 @@ import {
 	Button,
 } from '@wordpress/components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
+import MediaPicker from '../../components/MediaPicker';
 import { IconPicker, IconPreview, SgsColourPanel, fillRow, textRow,
 	SgsBorderControl,
 	TypographyControls,
@@ -409,6 +410,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									};
 									setAttributes( { tiles: newTiles } );
 								} }
+							/>
+							{ /* render.php prints tile.image as the tile's decorative <img>; the stored value is the image URL. */ }
+							<MediaPicker
+								value={ tile.image ? { url: tile.image, type: 'image', id: 0, alt: '', mime: 'image/jpeg' } : null }
+								allowedTypes={ [ 'image' ] }
+								onChange={ ( media ) => updateTile( index, 'image', media ? media.url : '' ) }
+								label={ __( 'Select image', 'sgs-blocks' ) }
+								instructionsImage={ __( 'Optional. Shown inside the tile.', 'sgs-blocks' ) }
 							/>
 							<Button
 								isDestructive

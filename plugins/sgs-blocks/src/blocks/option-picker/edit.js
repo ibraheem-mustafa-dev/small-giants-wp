@@ -14,6 +14,7 @@
  * object + tiers), root width/spacing/border, and typography controls.
  */
 import { __ } from '@wordpress/i18n';
+import MediaPicker from '../../components/MediaPicker';
 import {
 	useBlockProps,
 	InspectorControls,
@@ -670,6 +671,16 @@ export default function Edit( { attributes, setAttributes } ) {
 										}
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
+									/>
+									{ /* render.php draws optionItems.image as the option's swatch <img> ahead of the term-meta swatch; the stored value is the image URL. */ }
+									<MediaPicker
+										value={ item.image ? { url: item.image, type: 'image', id: 0, alt: '', mime: 'image/jpeg' } : null }
+										allowedTypes={ [ 'image' ] }
+										onChange={ ( media ) =>
+											updateOption( index, 'image', media ? media.url : '' )
+										}
+										label={ __( 'Select image', 'sgs-blocks' ) }
+										instructionsImage={ __( 'Optional. Shown as this option’s swatch.', 'sgs-blocks' ) }
 									/>
 								</FlexBlock>
 								<FlexItem>
