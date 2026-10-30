@@ -10,10 +10,14 @@
 //     no card fields (wallet buttons only), the smallest element holding the checkout's entry fields (rules.commerceRegion.
 //     checkoutEntry: enough shown fields, one of them an email, phone, name, address or card field) together with the
 //     money-showing block beside it (the order summary); the Checkout block draws the form and the order summary;
-//   - account: the smallest element holding every password field; the account block draws the sign-in and account forms.
-//     An account page that shows no password field (a signed-out view whose sign-in form sits on another draft page,
-//     folded into the account row by the page map) has as its region the shown branch of the condition that holds a link
-//     to that page: the account block draws the sign-in form there for a visitor, and the account itself once signed in;
+//   - account: the smallest element holding the forms of every password field (each field's own <form>, else the field),
+//     with the tabs that switch between them (a row of buttons beside the forms, leading nowhere); the account block draws
+//     the sign-in and account forms. An account page that shows no password field (a signed-out
+//     view whose sign-in form sits on another draft page, folded into the account row by the page map) has as its region
+//     the shown branch of the condition that holds a link to that page: the account block draws the sign-in form there for
+//     a visitor, and the account itself once signed in. A signed-in view with neither (the account's tabs and the panel
+//     they switch: orders, addresses, details) has as its region the holder of the page's one navigation (a <nav> or a
+//     tablist outside an overlay) and the panel beside it: the account block draws its menu and the endpoint it shows;
 //   - shop: the element whose children are the items of the product loop (an `sc-for` of a mounted card that shows a
 //     currency amount); WooCommerce's product collection draws the products, each in the site's own product card;
 //     the shop's sort control and result count become WooCommerce's sorting and count in a toolbar row at the top of that
@@ -40,14 +44,21 @@ import { shopPartStamps } from './skeleton-shop-locators.mjs';
 // lib/skeleton-shop-locators.mjs). The shop's role also carries `filters`, what the draft catalogue (sites/<client>/build/catalogue.json,
 // FR-48-92) says its filter rail can filter: { facets, brands, categories } (lib/skeleton-filter-rail.mjs).
 export const COMMERCE_ROLES = { 'archive-product': 'shop', 'single-product': 'product', cart: 'cart', checkout: 'checkout', 'order-confirmation': 'confirmation' };
+// The commerce role of a page-map row: its template's, or `account` for the account page.
+export const roleOfRow = ( row ) => ( row ? COMMERCE_ROLES[ row.template ] ?? ( isAccountRow( row ) ? 'account' : null ) : null );
+// The block that draws a part the page map gives a WooCommerce row (FR-48-87): the row's role's piece
+// (rules.commerceRegion.roles.<role>.owner, else its block), or null for a row with no commerce role.
+export const ownerBlockOf = ( row, rule ) => ( ( spec ) => ( spec ? spec.owner ?? spec.block : null ) )( rule?.roles?.[ roleOfRow( row ) ] );
 const draftFile = ( s ) => /^([^:?#]+\.dc\.html)(?=[:?#]|$)/i.exec( String( s ?? '' ) )?.[ 1 ] ?? null;
 export const filtersOf = ( catalogue ) => {
 	const kept = ( catalogue?.products || [] ).filter( ( p ) => ! ( catalogue.dropped || [] ).includes( p.draftId ) );
 	return { facets: catalogue?.facets || [], brands: [ ...new Set( kept.map( ( p ) => p.brand ).filter( Boolean ) ) ], categories: [ ...new Set( kept.flatMap( ( p ) => p.categories || [] ) ) ] };
 };
-export function commerceOf( entry, rows = [], catalogue = null, shopParts = null ) {
-	const page = null != entry?.target?.postId ? rows.find( ( r ) => r.id === entry.target.postId ) : null;
-	const role = COMMERCE_ROLES[ entry?.target?.template ] ?? ( page && isAccountRow( page ) ? 'account' : undefined );
+// `folded` is the page-map row a surface with no manifest entry of its own is a view of: the row that folds its route in
+// (`folds`, the twin rule: the account's signed-in view), whose role the surface takes.
+export function commerceOf( entry, rows = [], catalogue = null, shopParts = null, folded = null ) {
+	const page = folded ?? ( null != entry?.target?.postId ? rows.find( ( r ) => r.id === entry.target.postId ) : null );
+	const role = ( folded ? roleOfRow( folded ) : null ) ?? COMMERCE_ROLES[ entry?.target?.template ] ?? ( page && isAccountRow( page ) ? 'account' : undefined );
 	if ( ! role ) {
 		return null;
 	}
@@ -175,7 +186,20 @@ export function commerceRegion( { m, commerce, rule, toolbarRule = null } ) {
 			summary && found.push( { region: summary, evidence: [ `the order lines loop (${ list.length } elements)`, 'the amount paid beside it' ] } );
 		}
 	} else if ( 'account' === commerce.role && passwords.length ) {
-		found.push( { region: common( passwords ), evidence: [ `${ passwords.length } password field(s)` ] } );
+		// Each password field's own form: one shown sign-in form is the region, never its lone field.
+		const formOf = ( e ) => ancestors( e ).find( ( a ) => 'form' === ( m.read.view?.realTag?.( a ) ?? a.tag ) ) || e;
+		let region = common( [ ...new Set( passwords.map( formOf ) ) ] );
+		// The tabs that switch between the sign-in and register forms (a row of two or more buttons beside the forms, leading
+		// nowhere) are the account block's too: the region takes the parent while everything beside it is such a row.
+		const switchRow = ( x ) => ( ( kids ) => kids.length > 1 && kids.every( ( k ) => 'button' === k.tag && ! k.attrs?.href ) )( m.blockKids( x ) );
+		for ( let parent = m.byKey[ region?.parentKey ]; parent && parent !== m.root; parent = m.byKey[ parent.parentKey ] ) {
+			const beside = m.blockKids( parent ).filter( ( k ) => k !== region );
+			if ( ! beside.length || ! beside.every( switchRow ) ) {
+				break;
+			}
+			region = parent;
+		}
+		found.push( { region, evidence: [ `${ passwords.length } password field(s)` ] } );
 	} else if ( 'account' === commerce.role ) {
 		// The signed-out view: each condition (sc-if / sc-else, per component) holding a shown link to a sign-in page; its
 		// branch is the topmost shown element under that condition.
@@ -186,6 +210,10 @@ export function commerceRegion( { m, commerce, rule, toolbarRule = null } ) {
 			const branch = els.filter( ( e ) => under( e, c ) && ! ( m.byKey[ e.parentKey ] && under( m.byKey[ e.parentKey ], c ) ) );
 			1 === branch.length && found.push( { region: branch[ 0 ], evidence: [ `the signed-out view linking to ${ commerce.signIn.join( ', ' ) }` ] } );
 		}
+		// The signed-in view: the page's one navigation with the panel beside it.
+		const navs = found.length ? [] : els.filter( ( e ) => ( 'nav' === e.tag || 'tablist' === attr( m.read, e, 'role' ).toLowerCase() ) && ! overlay( e ) );
+		const holder = 1 === navs.length ? m.byKey[ navs[ 0 ].parentKey ] : null;
+		holder && m.blockKids( holder ).length > 1 && found.push( { region: holder, evidence: [ `the account navigation ${ navs[ 0 ].key } and the panel beside it` ] } );
 	} else if ( 'shop' === commerce.role ) {
 		for ( const [ , list ] of moneyLoops ) {
 			// The loop's items are the shown members whose parent is not itself in the loop; their parent is the listing.

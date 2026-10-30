@@ -325,6 +325,36 @@ export function unitsOf( region, { file, dc = null, L = null, sources = {}, list
 	return out;
 }
 
+// The shop's result count wherever the shop page draws it (FR-48-61): every text run bound to a count of a collection
+// (lib/shop-parts-logic.mjs::countBinding) on the page holding the product listing (the listing's <main>, else the draft)
+// outside the filter region, the drawers, the imported components and the listing's own items, one unit each, so a count
+// above the listing or beside the cards is the shop's count as one inside the filter is; a count on another page of the
+// draft (a basket or wishlist count) is not the shop's.
+export function countUnits( root, regions, { file, dc = null, L = null } ) {
+	const drawers = drawerRegions( root, L );
+	const loop = listing( root, L )?.loop ?? null;
+	let page = loop;
+	while ( page && 'main' !== page.tag ) {
+		page = page.parent;
+	}
+	const outside = ( e ) => ( ! page || within( e, ( p ) => p === page ) ) && ! regions.some( ( r ) => within( e, ( p ) => p === r ) ) && ! drawers.some( ( d ) => within( e, ( p ) => p === d ) ) && ! inImport( e ) && ! ( loop && within( e, ( p ) => p === loop ) ) && ! within( e, ( p ) => SKIPPED.has( p.tag ) );
+	const out = [];
+	for ( const el of elements( root ).filter( outside ) ) {
+		for ( const c of el.children.filter( ( x ) => ! x.tag ) ) {
+			const text = squash( c.text );
+			const b = bindingsOf( text );
+			if ( 1 === b.length && countBinding( L, b[ 0 ] ) ) {
+				const conds = [];
+				for ( let p = el; p; p = p.parent ) {
+					'sc-if' === p.tag && conds.unshift( stripExpr( p.attrs.value || '' ) );
+				}
+				out.push( { conds, file, dc, tpl: stampOf( el ), rowN: rowOf( el ).n, kind: 'text', tag: '#text', parent: el.tag, text, facts: { loop: null, heading: 0, stepper: false, bar: false, empty: false, disclosed: false, money: false, count: true } } );
+			}
+		}
+	}
+	return out;
+}
+
 const dcFile = ( dc ) => `${ dc }.dc.html`;
 const NAMES = {
 	buybox: [ /buy ?box/i, /^product$/i ],
@@ -357,6 +387,7 @@ export function readShopSurfaces( { records, sources } ) {
 		const listingKeys = 'filter' === kind ? listing( root, L )?.keys || new Set() : new Set();
 		const addKeys = basketKeys( root, L );
 		const openKeys = openKeysOf( rec );
-		return { kind, record: rec.name, file, units: regions.flatMap( ( r ) => unitsOf( r, { file, dc: rec.dc, L, sources, listingKeys, addKeys, openKeys } ) ), problem: null };
+		const units = regions.flatMap( ( r ) => unitsOf( r, { file, dc: rec.dc, L, sources, listingKeys, addKeys, openKeys } ) );
+		return { kind, record: rec.name, file, units: 'filter' === kind ? [ ...units, ...countUnits( root, regions, { file, dc: rec.dc, L } ) ] : units, problem: null };
 	} );
 }

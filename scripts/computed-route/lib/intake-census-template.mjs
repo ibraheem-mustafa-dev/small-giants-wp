@@ -259,7 +259,7 @@ export function templateRows( source, { handlerOf = () => null } = {} ) {
 	source.stamped.topTexts.forEach( ( t ) => holes( t ).forEach( ( expression ) => add( 'binding', 'top', { where: 'text', expression } ) ) );
 	for ( const e of source.stamped.elements ) {
 		const tag = realTag( e.tag );
-		add( 'template-element', e.n, { tag, inFor: e.inFor } );
+		add( 'template-element', e.n, { tag, inFor: e.inFor, parent: e.parent ?? null } );
 		if ( e.tag.startsWith( 'sc-' ) && ! KNOWN_SC_TAGS.has( e.tag ) ) {
 			add( 'unknown', e.n, { why: `unknown sc-* element <${ e.tag }>` } );
 		}

@@ -93,7 +93,10 @@ export function wooPages( rows, surfaces, used ) {
 	}
 }
 
-const WOO_ROW = ( r ) => r && ( [ 'shop', 'product', 'product_cat' ].includes( r.postType ) || [ 'cart', 'checkout', CONFIRMATION ].includes( r.template ) || isAccount( r ) );
+// A row WooCommerce's own pieces draw (shop, product, cart, checkout, its order confirmation, my account): a form or modal
+// inside its page is WooCommerce's (ownedSurfaces), and the skeleton absorbs such a surface into the piece (lib/skeleton-surface-role.mjs).
+export const isWooRow = ( r ) => !! r && ( [ 'shop', 'product', 'product_cat' ].includes( r.postType ) || [ 'cart', 'checkout', CONFIRMATION ].includes( r.template ) || isAccount( r ) );
+const WOO_ROW = isWooRow;
 const LAYOUT_KIND = new Set( [ 'header', 'footer', 'drawer' ] );
 
 // Which surfaces become rows (FR-48-30, by what each is): a site-wide header, footer and nav drawer are the layout

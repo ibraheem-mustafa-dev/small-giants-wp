@@ -135,6 +135,7 @@ const RECORD = ( surfaces = {} ) => ( {
 		'Site/3': entry( 'div', 'Site/1', [ 'Site/1' ] ),
 		'Site/4': entry( 'sc-if', 'Site/3', [ 'Site/3', 'Site/1' ] ),
 		'Site/6': entry( 'form', 'Site/4', [ 'Site/4', 'Site/3', 'Site/1' ] ),
+		'Site/7': entry( 'input', 'Site/6', [ 'Site/6', 'Site/4', 'Site/3', 'Site/1' ] ),
 	},
 } );
 const LINKS = [ { recordId: 'S-2', slug: 'careers', block: 'sgs/form' } ];
@@ -184,7 +185,7 @@ test( 'NEGATIVE: a handler that scrolls elsewhere, a page with no linked form, a
 } );
 
 test( 'MUST FAIL: the saved form\'s root carries the anchor its page links to, from the slug the page\'s linked block references', () => {
-	const formInventory = { generated: 'x', source: 'planted', root: 'form', keyFormat: 'x', checks: { duplicateKeys: 0 }, elements: [ el( 6, 0, null, 'form', '', { depth: 0 } ) ] };
+	const formInventory = { generated: 'x', source: 'planted', root: 'form', keyFormat: 'x', checks: { duplicateKeys: 0 }, elements: [ el( 6, 0, null, 'form', '', { depth: 0 } ), el( 7, 0, [ 6, 0 ], 'input', '', { attrs: { type: 'text' } } ) ] };
 	const d = draft();
 	const f = loadFacts( { db, client: 'eye-care-ward-end', repo: REPO, siteName: 'Planted' } );
 	const record = { ...RECORD(), sources: d.record.sources };

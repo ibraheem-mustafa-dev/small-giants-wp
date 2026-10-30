@@ -6,6 +6,6 @@
 	{ "file": "lib/skeleton-form-link.mjs", "find": "const recordId = entry.intakeSurface ? intake?.skeletons?.[ entry.intakeSurface ]?.id : null;", "replace": "const recordId = entry.intakeSurface || null;", "why": "the record id is the intake slug" },
 	{ "file": "lib/skeleton-propose.mjs", "find": "if ( 'formLink' === r.rule ) {", "replace": "if ( false ) {", "why": "the linked embed keeps its draft link, so Fill writes into it" },
 	{ "file": "lib/skeleton-propose.mjs", "find": "component: 'form' === surfaceKind ? view.recordOf( scope?.id )?.dc ?? null : null", "replace": "component: null", "why": "a form takes the first schema the record holds" },
-	{ "file": "lib/skeleton-rules.mjs", "find": "|| ( 'form' === surface.kind && e === formElement( m, m.root ) ) ) ? v( 'formHost'", "replace": ") ? v( 'formHost'", "why": "a form surface drawn in a div has no form root" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "|| ( 'form' === surface.kind && e === formElement( m, m.root ) ) ) && holdsField( m, e ) ? v( 'formHost'", "replace": ") && holdsField( m, e ) ? v( 'formHost'", "why": "a form surface drawn in a div has no form root" },
 	{ "file": "lib/skeleton-rules.mjs", "find": "return link.remove ? v( 'formLink', { action: 'remove', reason: R.formLink?.droppedReason } ) :", "replace": "return link.remove ? null :", "why": "the second element under the root is kept" }
 ]

@@ -104,10 +104,10 @@ export function decisionsProblems( facts ) {
 	if ( r.footerSlots && ( ! r.footerSlots.slotAttribute || ! facts.attr( r.footerSlots.rowBlock, r.footerSlots.slotAttribute ) || ! Array.isArray( r.footerSlots.slots ) || 3 !== r.footerSlots.slots.length ) ) {
 		problems.push( `rules.footerSlots must name three slots and a slot attribute that ${ r.footerSlots.rowBlock } has` );
 	}
-	// A commerce region's block: a core block only as a listed exception, WooCommerce's own block (outside the framework
+	// A commerce region's block (and the owner block that draws its row's parts): a core block only as a listed exception, WooCommerce's own block (outside the framework
 	// database), or a known SGS block; its money pattern compiles.
 	for ( const [ role, spec ] of Object.entries( r.commerceRegion?.roles || {} ) ) {
-		const all = [ spec.block, ...JSON.stringify( spec.inner || [] ).match( /"name":"[^"]+"/g )?.map( ( x ) => x.slice( 8, -1 ) ) || [] ];
+		const all = [ spec.block, ...( spec.owner ? [ spec.owner ] : [] ), ...JSON.stringify( spec.inner || [] ).match( /"name":"[^"]+"/g )?.map( ( x ) => x.slice( 8, -1 ) ) || [] ];
 		for ( const slug of all ) {
 			if ( slug?.startsWith( 'core/' ) ? ! ( r.coreExceptions || [] ).some( ( x ) => x.block === slug ) : ! slug?.startsWith( 'woocommerce/' ) ) {
 				slug?.startsWith( 'core/' ) ? problems.push( `rules.commerceRegion.${ role } names ${ slug }, a core block not listed in rules.coreExceptions` ) : known( slug, `rules.commerceRegion.${ role }` );

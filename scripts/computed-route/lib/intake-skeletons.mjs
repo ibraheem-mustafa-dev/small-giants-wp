@@ -64,6 +64,8 @@ const slug = ( s ) => String( s ).toLowerCase().replace( /[^a-z0-9]+/g, '-' ).re
 // shared panel condition).
 // The states of a record that open something: a state key set to a value other than null or false.
 const openingStates = ( r ) => ( r.states || [] ).filter( ( st ) => Object.values( st.state_keys || {} ).some( ( v ) => null != v && false !== v ) );
+// The tags of a lone control: the element a form is sent or opened with, or one field.
+const LONE_CONTROLS = new Set( [ 'button', 'a', 'input', 'select', 'textarea' ] );
 const tplsOf = ( r ) => ( null == r.template_tpl_id ? [] : [].concat( r.template_tpl_id ).map( String ) );
 
 // The tab panels of a menu record that holds several panels as states of one record: every state that opens it (not
@@ -120,10 +122,26 @@ export function surfaceRoots( { folder, census, records = null, files = exportFi
 		}
 		return out;
 	};
+	// A form record naming a lone control (a button, a link or one field: the control the form is sent or opened with) names
+	// less than the form: the surface is the control's holder, the nearest element above it that renders (the runtime's
+	// sc-if, sc-else and sc-for render none), so it reads what the visitor fills in beside the control (FR-48-57). A census
+	// with no parent recorded leaves the record's root.
+	const rootOf = ( r, tpls ) => {
+		const at = tpls.at( -1 );
+		if ( 'form' !== r.kind || ! LONE_CONTROLS.has( elements.get( `${ r.dc }:${ at }` )?.detail?.tag ) ) {
+			return tpls;
+		}
+		let up = elements.get( `${ r.dc }:${ at }` ).detail.parent;
+		while ( null != up && elements.get( `${ r.dc }:${ up }` )?.detail?.tag?.startsWith( 'sc-' ) ) {
+			up = elements.get( `${ r.dc }:${ up }` ).detail.parent;
+		}
+		const holder = null != up ? elements.get( `${ r.dc }:${ up }` ) : null;
+		return holder && ! [ 'helmet', 'body', 'html', 'main' ].includes( holder.detail?.tag ) ? [ ...tpls.slice( 0, -1 ), String( up ) ] : tpls;
+	};
 	for ( const r of recs ) {
-		const tpls = tplsOf( r );
+		const named = tplsOf( r );
 		const where = `${ r.id ?? '?' } ${ r.kind } "${ r.name }"`;
-		if ( ! tpls.length ) {
+		if ( ! named.length ) {
 			gaps.push( gap( 'surface-root', `${ r.dc }:${ r.id }`, `${ where } has no template_tpl_id` ) );
 			continue;
 		}
@@ -132,14 +150,15 @@ export function surfaceRoots( { folder, census, records = null, files = exportFi
 			continue;
 		}
 		if ( ! components.has( r.dc ) ) {
-			gaps.push( gap( 'surface-root', `${ r.dc }:${ tpls.at( -1 ) }`, `${ where } names component "${ r.dc }", which the census does not hold` ) );
+			gaps.push( gap( 'surface-root', `${ r.dc }:${ named.at( -1 ) }`, `${ where } names component "${ r.dc }", which the census does not hold` ) );
 			continue;
 		}
-		const missing = tpls.filter( ( n ) => ! elements.has( `${ r.dc }:${ n }` ) );
+		const missing = named.filter( ( n ) => ! elements.has( `${ r.dc }:${ n }` ) );
 		if ( missing.length ) {
 			gaps.push( gap( 'surface-root', `${ r.dc }:${ missing[ 0 ] }`, `${ where } names template id(s) ${ missing.join( ', ' ) }, which the census does not hold` ) );
 			continue;
 		}
+		const tpls = rootOf( r, named );
 		if ( 'helmet' === elements.get( `${ r.dc }:${ tpls.at( -1 ) }` ).detail?.tag ) {
 			parts.push( { id: r.id, name: r.name, kind: r.kind, parent: r.parent ?? null, why: `its root ${ r.dc }:${ tpls.at( -1 ) } is the draft's <helmet> (the document head's styles and scripts), which renders nothing on the page` } );
 			continue;

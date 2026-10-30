@@ -112,9 +112,10 @@ const count = ( list ) => list.reduce( ( a, n ) => a + 1 + count( n.innerBlocks 
 // formLinks (lib/skeleton-form-link.mjs::formLinksOf: the saved forms a page may link), refs (lib/references.mjs::detectReferences),
 // draftLinks (lib/draft-link.mjs::draftLinksFor: the client's page map and routing that turn a draft link into a site address;
 // null resolves every draft route to no address), pageMap (the page-map rows: which surface is a choice flow or a block-owned
-// part, lib/skeleton-surface-role.mjs), surfaceId (the surface's surfaces.json id; the record's matching surface when omitted) and saleOf
+// part, lib/skeleton-surface-role.mjs), surfaceId (the surface's surfaces.json id; the record's matching surface when omitted), surfaceRoute
+// (its surfaces.json route: the page whose page-map row may hold it as a part) and saleOf
 // (component -> lib/flow-product.mjs::flowSale's answer for a choice flow drawn by that component; null sells nothing) }.
-export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, filters = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), calPaint = () => ( {} ), calText = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null, pageMap = [], surfaceId = null, loops = null, scriptOf = () => null, saleOf = null } ) {
+export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, filters = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), calPaint = () => ( {} ), calText = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null, pageMap = [], surfaceId = null, surfaceRoute = null, loops = null, scriptOf = () => null, saleOf = null } ) {
 	// The fact record's reading of the template (lib/skeleton-record.mjs), and the surface it places this proposal in: its
 	// parent, kind and opener from `surfaces.json`, and the records whose parent is this surface (`surfaceParts`). Every
 	// skeleton rule reads an element's facts through the one reader over this view (lib/element-facts.mjs), `m.read`.
@@ -129,8 +130,9 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	const formLinkOf = linkedFormOf( { view, scope, links: formLinks, refs, els: m.els, m, rule: facts.decisions.rules?.formLink } );
 	// A draft link's destination as a site address (lib/draft-link.mjs), for every writer of a link setting.
 	const siteLink = siteLinkResolver( draftLinks, rootComponent, m.read );
-	// The page map's role for the surface: a choice flow, or a part another row's block draws (lib/skeleton-surface-role.mjs).
-	const role = surfaceRole( { pageMap, id: surfaceId ?? scope?.id ?? null, kind: surfaceKind, m, view, postType: facts.decisions.rules?.choiceFlow?.postType } );
+	// The page map's role for the surface: a choice flow, a part another row's block draws, or a part another row holds
+	// (lib/skeleton-surface-role.mjs).
+	const role = surfaceRole( { pageMap, id: surfaceId ?? scope?.id ?? null, kind: surfaceKind, name: surfaceName, route: surfaceRoute, m, view, postType: facts.decisions.rules?.choiceFlow?.postType } );
 	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, filters, kind: surfaceKind, name: surfaceName, commerce, role, pageMap, loops, formLinks, saleOf }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
 	const R = facts.decisions.rules || {};
 	const rows = [];

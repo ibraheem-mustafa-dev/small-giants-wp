@@ -133,6 +133,8 @@ test( 'MUST FAIL: an embedded data-sgs-manifest is the proposal; the rules fill 
 	assert.deepEqual( routes, [ 'home:home:page', 'shop:shop:shop', 'signin:my-account:page', 'faq:faq:page' ], 'wp slugs and types come from the manifest' );
 	assert.equal( bySlug( m, 'shop' ).template, 'archive-product', 'the WooCommerce shop page keeps slug shop whatever slug the manifest names' );
 	assert.ok( m.linkMap.some( ( l ) => 'my-account' === l.slug ), 'the signed-in view shares the one my-account row' );
+	assert.deepEqual( bySlug( m, 'my-account' ).folds, [ 'account' ], 'MUST FAIL: the row records the signed-in view it folds in, so that view takes its role (FR-48-87)' );
+	assert.equal( bySlug( m, 'faq' ).folds, undefined, 'a row folding nothing in records none' );
 	assert.ok( m.gaps.some( ( g ) => 'page-map' === g.construct && g.error.includes( '"help"' ) ), 'a manifest parent naming no row is a gap row' );
 	assert.equal( bySlug( m, 'faq' ).parent, null );
 	assert.deepEqual( pageMapProblems( m.rows, ajv ), [] );

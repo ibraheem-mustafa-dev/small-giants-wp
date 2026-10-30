@@ -160,7 +160,7 @@ test( 'no account region without a sign-in page to link to, without a condition,
 	const second = [ ...SIGNED_OUT, cond( el( 'Root/40#0', 'Root/8#0', 'div', '', { depth: 1 } ), 39 ), cond( el( 'Root/41#0', 'Root/40#0', 'a', 'Sign in', { depth: 2, attrs: { href: 'SignIn.dc.html' }, keep: true } ), 39 ) ];
 	assert.match( of( second, { role: 'account', checkout: null, signIn: [ 'SignIn.dc.html' ] } ).note, /2 elements read as the account region/ );
 	const fields = [ ...SIGNED_OUT, el( 'Root/50#0', 'Root/8#0', 'form', '', { depth: 1 } ), el( 'Root/51#0', 'Root/50#0', 'input', '', { depth: 2, attrs: { type: 'password' }, keep: true } ) ];
-	assert.equal( of( fields, { role: 'account', checkout: null, signIn: [ 'SignIn.dc.html' ] } ).key, 'Root/51#0', 'a shown password field decides first' );
+	assert.equal( of( fields, { role: 'account', checkout: null, signIn: [ 'SignIn.dc.html' ] } ).key, 'Root/50#0', 'a shown password field decides first: its own form is the region' );
 } );
 
 // A shop: a heading and the grid of mounted product cards, four to a row.
