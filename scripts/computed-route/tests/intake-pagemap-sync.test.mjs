@@ -1,7 +1,7 @@
 // Spec 48 FR-48-30: `intake.mjs --page-map` and `--apply-review` never diverge. A regeneration puts its proposal into
 // intake.json's pageMap and renders review.md again, so applying the review afterwards confirms the regenerated map
 // instead of writing the stale proposal back over page-map.json. Run on a scratch repo: the shop export fixture as the
-// handoff, the wholesale food client's committed intake record and review (their palette, skeleton and other rows)
+// handoff, the wholesale food client's committed intake record and review with every section accepted (their palette, skeleton and other rows)
 // with a stale page-map proposal in place of the export's.
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -12,8 +12,8 @@ import { fileURLToPath } from 'url';
 import { applyIntakeReview, pathsFor, REPO } from '../lib/intake-run.mjs';
 import { runPageMap } from '../lib/intake-pagemap-regen.mjs';
 import { proposePageMap } from '../lib/intake-pagemap.mjs';
-import { renderReview } from '../lib/intake-review.mjs';
-import { carryOver, withUnappliedMarks } from '../lib/intake-review-carry.mjs';
+import { applyReview, renderReview } from '../lib/intake-review.mjs';
+import { carryOver } from '../lib/intake-review-carry.mjs';
 import { rowKey } from '../lib/site-build-map.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -30,7 +30,11 @@ function scratch() {
 	const proposal = proposePageMap( { folder: at.folder } ).rows;
 	// The stale proposal: the export's map less its last row, as an earlier intake proposed it.
 	const stale = proposal.slice( 0, -1 );
-	const committed = withUnappliedMarks( JSON.parse( fs.readFileSync( src.intake, 'utf8' ) ), fs.readFileSync( src.review, 'utf8' ) ).intake;
+	// Every row marked: the review's marks with each section's Accept all ticked (a fresh intake leaves rows unmarked until
+	// Bean reviews them, and those marks are not what this test is about).
+	const ticked = applyReview( JSON.parse( fs.readFileSync( src.intake, 'utf8' ) ), fs.readFileSync( src.review, 'utf8' ).replace( /^Accept all:\s*\[\s*\]\s*$/gim, 'Accept all: [x]' ), { today: quiet.today } );
+	assert.deepEqual( [ ...ticked.problems, ...ticked.missing.map( ( r ) => r.rowId ) ], [], 'fixture: the ticked review marks every row' );
+	const committed = ticked.intake;
 	const record = { ...committed, pageMap: stale };
 	record.review = carryOver( committed, record ).review.map( ( r ) => ( 'page-map' === r.rowType ? { ...r, mark: 'accept', markedOn: '2026-10-25' } : r ) );
 	fs.writeFileSync( at.intake, `${ JSON.stringify( record, null, 1 ) }\n` );
