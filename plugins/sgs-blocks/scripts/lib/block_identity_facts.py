@@ -29,6 +29,10 @@ proves it, or for a `no` every source that was searched. The facts (the A0 vocab
   `icon-<kind>` roles; a field whose role is `icon-<kind>` holds that kind; an `icon` / `icon-slug` field holds the kinds
   of the block's `enum-mode` source setting (icon-list `defaultIconSource`), and is unknown for the rest.
 
+Live rows (`source` 'live', step A2b): the renders-tag / renders-role / renders-aria values the code read leaves unknown and
+the live read saw on a mirror page, from `scripts/computed-route/data/block-live-facts.json` (`live_rows`; only `yes`, and
+only where the code row is `unknown`). `seed()` replaces both sources on every run.
+
     python plugins/sgs-blocks/scripts/lib/block_identity_facts.py --report [--db P]  # derive, print counts, write nothing
     python plugins/sgs-blocks/scripts/lib/block_identity_facts.py --check [--db P]   # drift gate: re-derive, compare
     python plugins/sgs-blocks/scripts/lib/block_identity_facts.py --self-test        # planted fixtures
@@ -294,24 +298,90 @@ def _brand_names(b: dict) -> set:
     return {str(x).lower() for x in own + label + list(b.get("aliases") or [])}
 
 
-def derive_rows(conn: sqlite3.Connection, paths: Paths | None = None) -> list[tuple]:
+def _derive(conn: sqlite3.Connection, paths: Paths | None = None) -> tuple[list[tuple], Extractor]:
     db = load_db_inputs(conn)
-    return Rows(Extractor(paths, db), db).build()
+    x = Extractor(paths, db)
+    return Rows(x, db).build(), x
+
+
+def derive_rows(conn: sqlite3.Connection, paths: Paths | None = None) -> list[tuple]:
+    return _derive(conn, paths)[0]
 
 
 def open_ro(db: Path) -> sqlite3.Connection:
     return sqlite3.connect(f"file:{db.as_posix()}?mode=ro", uri=True, timeout=10)
 
 
-def seed(conn: sqlite3.Connection, dry_run: bool = False) -> dict:
-    """Replace every source='code' row with a fresh derivation (the seeder's stage 14). Live rows are kept."""
-    rows = derive_rows(conn)
+# The causes a live read settles (plan A2b), matched on the code read's unknown reasons.
+LIVE_CAUSES = (
+    ("woocommerce", re.compile(r"WooCommerce|nested woocommerce/")),
+    ("core-image", re.compile(r"wp_get_attachment_image|get_the_post_thumbnail")),
+    ("wrapper-aria-label", re.compile(r"get_block_wrapper_attributes")),
+    ("gsap-modules", re.compile(r"gsap|vendor code", re.I)),
+)
+
+
+def unknown_causes(x: Extractor, slug: str, fact: str, value: str) -> list[str]:
+    """The A2b causes behind a code `unknown` for (slug, fact, value); `other` when none of them is."""
+    m = x.markup(slug)
+    reasons = list(m.unknown_all[fact]) + [d[value] for d in (m.unknown_vals[fact], m.possible[fact]) if value in d]
+    found = [name for name, rx in LIVE_CAUSES if any(rx.search(r) for r in reasons)]
+    return found or ["other"]
+
+
+def live_rows(code_rows: list[tuple], path: Path) -> tuple[list[tuple], dict]:
+    """The source='live' rows of `scripts/computed-route/data/block-live-facts.json` (written by
+    `scripts/computed-route/tools/block-live-facts.mjs`): a value seen live becomes a `yes` row only where the code row
+    for the same block, fact and value is `unknown`. A live `yes` beside a code `no` is a conflict for gate A, counted and
+    never imported; beside a code `yes` it adds nothing. `read_conflict` lists the file's own `conflicts` (a code `no` the
+    read saw, recorded by the reader against the DB it read). No file: no live rows."""
+    stats = {"file": path.is_file(), "imported": 0, "conflict": [], "read_conflict": [], "already_yes": 0, "no_code_row": 0}
+    if not path.is_file():
+        return [], stats
+    data = json.loads(path.read_text(encoding="utf-8"))
+    stats["read_conflict"] = [f"{slug} {k}" for slug, c in sorted((data.get("conflicts") or {}).items()) for k in sorted(c)]
+    code = {r[:3]: r[3] for r in code_rows}
+    out = []
+    for slug, entry in sorted((data.get("blocks") or {}).items()):
+        for fact, values in sorted((entry.get("facts") or {}).items()):
+            for value, v in sorted(values.items()):
+                if v.get("state") != "yes":
+                    continue
+                state = code.get((slug, fact, value))
+                if state == "unknown":
+                    ev = "seen live (block-live-facts.json, read " + str(data.get("readOn", "")) + "): " + "; ".join(v.get("evidence") or [])
+                    out.append((slug, fact, value, "yes", "live", ev[:600]))
+                elif state == "no":
+                    stats["conflict"].append(f"{slug} {fact}={value}")
+                elif state == "yes":
+                    stats["already_yes"] += 1
+                else:
+                    stats["no_code_row"] += 1
+    stats["imported"] = len(out)
+    return out, stats
+
+
+def seed(conn: sqlite3.Connection, dry_run: bool = False, paths: Paths | None = None) -> dict:
+    """Replace every row with a fresh derivation (the seeder's stage 14): the source='code' rows from the code read, the
+    source='live' rows from the live read's file (`live_rows`)."""
+    rows, x = _derive(conn, paths)
+    live, stats = live_rows(rows, x.p.live)
     counts = Counter((r[1], r[3]) for r in rows)
+    unknown_by_cause, settled_by_cause = Counter(), Counter()
+    for r in rows:
+        if r[3] == "unknown" and r[1] in MARKUP:
+            for c in unknown_causes(x, r[0], r[1], r[2]):
+                unknown_by_cause[c] += 1
+    for r in live:
+        for c in unknown_causes(x, r[0], r[1], r[2]):
+            settled_by_cause[c] += 1
     if not dry_run:
-        conn.execute("DELETE FROM block_identity_facts WHERE source = 'code'")
-        conn.executemany("INSERT INTO block_identity_facts (block_slug, fact, value, state, source, evidence) VALUES (?,?,?,?,?,?)", rows)
+        conn.execute("DELETE FROM block_identity_facts WHERE source IN ('code', 'live')")
+        conn.executemany("INSERT INTO block_identity_facts (block_slug, fact, value, state, source, evidence) VALUES (?,?,?,?,?,?)", rows + live)
         conn.commit()
-    return {"rows": len(rows), "blocks": len({r[0] for r in rows}), "by_fact_state": {f"{f}:{s}": n for (f, s), n in sorted(counts.items())}}
+    return {"rows": len(rows), "blocks": len({r[0] for r in rows}), "by_fact_state": {f"{f}:{s}": n for (f, s), n in sorted(counts.items())},
+            "live": {**stats, "blocks": len({r[0] for r in live}),
+                     "settled_by_cause": {c: f"{settled_by_cause[c]} of {unknown_by_cause[c]}" for c in [n for n, _ in LIVE_CAUSES] + ["other"]}}}
 
 
 def report(rows: list[tuple]) -> str:
@@ -341,14 +411,25 @@ def check(db: Path) -> int:
                   "2026-10-30-block-identity-facts-table.py and reseed (sgs-update-v2.py --stage 14)")
             return 1
         stored = {r[:4]: r[4] for r in conn.execute("SELECT block_slug, fact, value, state, evidence FROM block_identity_facts WHERE source = 'code'")}
-        fresh = {r[:4]: r[5] for r in derive_rows(conn)}
+        stored_live = {r[:4] for r in conn.execute("SELECT block_slug, fact, value, state FROM block_identity_facts WHERE source = 'live'")}
+        rows, x = _derive(conn)
+        fresh = {r[:4]: r[5] for r in rows}
+        fresh_live = {r[:4] for r in live_rows(rows, x.p.live)[0]}
     finally:
         conn.close()
     gone, new = sorted(set(stored) - set(fresh)), sorted(set(fresh) - set(stored))
     moved = sum(1 for k in set(stored) & set(fresh) if stored[k] != fresh[k])
-    if not gone and not new:
-        print(f"[block-identity-facts] OK: {len(fresh)} rows match the code ({moved} evidence citations moved, not a drift)")
+    live_gone, live_new = sorted(stored_live - fresh_live), sorted(fresh_live - stored_live)
+    if not gone and not new and not live_gone and not live_new:
+        print(f"[block-identity-facts] OK: {len(fresh)} rows match the code and {len(fresh_live)} live rows match block-live-facts.json ({moved} evidence citations moved, not a drift)")
         return 0
+    if not gone and not new:
+        print(f"[block-identity-facts] DRIFT: the live rows differ from scripts/computed-route/data/block-live-facts.json ({len(live_new)} to add, {len(live_gone)} to remove). Reseed: python plugins/sgs-blocks/scripts/sgs-update-v2.py --stage 14")
+        for k in live_new[:15]:
+            print("  + live " + " | ".join(k))
+        for k in live_gone[:15]:
+            print("  - live " + " | ".join(k))
+        return 1
     print(f"[block-identity-facts] DRIFT: {len(new)} rows the code now gives are not in the DB, {len(gone)} DB rows the code no longer gives. Reseed: python plugins/sgs-blocks/scripts/sgs-update-v2.py --stage 14")
     for k in new[:15]:
         print("  + " + " | ".join(k))

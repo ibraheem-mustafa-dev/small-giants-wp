@@ -1,0 +1,2039 @@
+{
+	"about": "Spec 48 F1 step A2b: renders-tag / renders-role / renders-aria values the code read left unknown, seen on the local mirrors (scripts/computed-route/tools/block-live-facts.mjs). Imported by sgs-update-v2.py stage 14 as source=live rows; a value never seen stays unknown (no `no` is written).",
+	"readOn": "2026-10-30",
+	"widths": [
+		375,
+		768,
+		1440
+	],
+	"sites": {
+		"local-indus": {
+			"origin": "http://localhost:8083/",
+			"pages": [
+				{
+					"path": "/",
+					"why": "home"
+				},
+				{
+					"path": "/about/",
+					"why": "post 92 (page)"
+				},
+				{
+					"path": "/about/careers/",
+					"why": "post 103 (page)"
+				},
+				{
+					"path": "/about/certifications/",
+					"why": "post 97 (page)"
+				},
+				{
+					"path": "/about/community/",
+					"why": "post 99 (page)"
+				},
+				{
+					"path": "/about/our-story/",
+					"why": "post 95 (page)"
+				},
+				{
+					"path": "/about/sustainability/",
+					"why": "post 101 (page)"
+				},
+				{
+					"path": "/apply/",
+					"why": "post 123 (page)"
+				},
+				{
+					"path": "/blog/",
+					"why": "posts page"
+				},
+				{
+					"path": "/brands/",
+					"why": "post 113 (page)"
+				},
+				{
+					"path": "/brands/green-leaf/",
+					"why": "post 119 (page)"
+				},
+				{
+					"path": "/brands/lemon-tree/",
+					"why": "post 121 (page)"
+				},
+				{
+					"path": "/brands/sanam/",
+					"why": "post 115 (page)"
+				},
+				{
+					"path": "/brands/shan/",
+					"why": "post 117 (page)"
+				},
+				{
+					"path": "/catalogue/",
+					"why": "post 125 (page)"
+				},
+				{
+					"path": "/contact/",
+					"why": "post 133 (page)"
+				},
+				{
+					"path": "/delivery/",
+					"why": "post 127 (page)"
+				},
+				{
+					"path": "/falak-rice-exclusive-uk-distribution/",
+					"why": "post 139 (post)"
+				},
+				{
+					"path": "/faqs/",
+					"why": "post 135 (page)"
+				},
+				{
+					"path": "/food-service/",
+					"why": "post 105 (page)"
+				},
+				{
+					"path": "/inside-our-birmingham-packing-line/",
+					"why": "post 141 (post)"
+				},
+				{
+					"path": "/manufacturing/",
+					"why": "post 107 (page)"
+				},
+				{
+					"path": "/motion-writer-proof/",
+					"why": "post 60 (page)"
+				},
+				{
+					"path": "/ordering-ahead-for-eid/",
+					"why": "post 145 (post)"
+				},
+				{
+					"path": "/retail/",
+					"why": "post 109 (page)"
+				},
+				{
+					"path": "/sixty-years-in-the-balti-triangle/",
+					"why": "post 143 (post)"
+				},
+				{
+					"path": "/supporting-the-trade-through-ramadan/",
+					"why": "post 137 (post)"
+				},
+				{
+					"path": "/terms/",
+					"why": "post 129 (page)"
+				},
+				{
+					"path": "/wholesale/",
+					"why": "post 111 (page)"
+				},
+				{
+					"path": "/why-independents-still-matter/",
+					"why": "post 147 (post)"
+				}
+			]
+		},
+		"local-mamas": {
+			"origin": "http://localhost:8084/",
+			"pages": [
+				{
+					"path": "/",
+					"why": "home"
+				},
+				{
+					"path": "/cart/",
+					"why": "woocommerce cart"
+				},
+				{
+					"path": "/checkout/",
+					"why": "woocommerce checkout"
+				},
+				{
+					"path": "/contact/",
+					"why": "post 148 (page)"
+				},
+				{
+					"path": "/gifts/",
+					"why": "post 150 (page)"
+				},
+				{
+					"path": "/help/",
+					"why": "post 152 (page)"
+				},
+				{
+					"path": "/my-account/",
+					"why": "woocommerce myaccount"
+				},
+				{
+					"path": "/product-category/bundles/",
+					"why": "product category"
+				},
+				{
+					"path": "/product/cr-calibration-product/",
+					"why": "product 129"
+				},
+				{
+					"path": "/product/fixture-simple-product/",
+					"why": "product 107"
+				},
+				{
+					"path": "/product/fixture-variable-product/",
+					"why": "product 108"
+				},
+				{
+					"path": "/saved-items/",
+					"why": "post 105 (page)"
+				},
+				{
+					"path": "/shop/",
+					"why": "woocommerce shop"
+				}
+			]
+		},
+		"local-eye-care": {
+			"origin": "http://localhost:8081/",
+			"pages": [
+				{
+					"path": "/",
+					"why": "home"
+				},
+				{
+					"path": "/about/",
+					"why": "post 109 (page)"
+				},
+				{
+					"path": "/cart/",
+					"why": "woocommerce cart"
+				},
+				{
+					"path": "/checkout/",
+					"why": "woocommerce checkout"
+				},
+				{
+					"path": "/contact/",
+					"why": "post 113 (page)"
+				},
+				{
+					"path": "/frames/cr-calibration-product/",
+					"why": "product 39"
+				},
+				{
+					"path": "/frames/fixture-simple-product/",
+					"why": "product 82"
+				},
+				{
+					"path": "/frames/fixture-variable-product/",
+					"why": "product 83"
+				},
+				{
+					"path": "/help/",
+					"why": "post 111 (page)"
+				},
+				{
+					"path": "/my-account/",
+					"why": "woocommerce myaccount"
+				},
+				{
+					"path": "/prescription-lenses/",
+					"why": "post 107 (page)"
+				},
+				{
+					"path": "/product-category/uncategorized/",
+					"why": "product category"
+				},
+				{
+					"path": "/shop/",
+					"why": "woocommerce shop"
+				}
+			]
+		}
+	},
+	"blocks": {
+		"sgs/account": {
+			"instances": {
+				"local-eye-care /my-account/": 1,
+				"local-mamas /my-account/": 1
+			},
+			"facts": {
+				"renders-tag": {
+					"a": {
+						"state": "yes",
+						"evidence": [
+							"local-mamas /my-account/ @1440 .wp-block-sgs-account[0] form > p > a",
+							"local-mamas /my-account/ @375 .wp-block-sgs-account[0] form > p > a",
+							"local-mamas /my-account/ @768 .wp-block-sgs-account[0] form > p > a"
+						]
+					},
+					"form": {
+						"state": "yes",
+						"evidence": [
+							"local-mamas /my-account/ @1440 .wp-block-sgs-account[0] div.sgs-account__wc > form",
+							"local-mamas /my-account/ @375 .wp-block-sgs-account[0] div.sgs-account__wc > form",
+							"local-mamas /my-account/ @768 .wp-block-sgs-account[0] div.sgs-account__wc > form"
+						]
+					},
+					"input": {
+						"state": "yes",
+						"evidence": [
+							"local-mamas /my-account/ @1440 .wp-block-sgs-account[0] form > p > input",
+							"local-mamas /my-account/ @375 .wp-block-sgs-account[0] form > p > input",
+							"local-mamas /my-account/ @768 .wp-block-sgs-account[0] form > p > input"
+						]
+					},
+					"label": {
+						"state": "yes",
+						"evidence": [
+							"local-mamas /my-account/ @1440 .wp-block-sgs-account[0] form > p > label",
+							"local-mamas /my-account/ @375 .wp-block-sgs-account[0] form > p > label",
+							"local-mamas /my-account/ @768 .wp-block-sgs-account[0] form > p > label"
+						]
+					},
+					"span": {
+						"state": "yes",
+						"evidence": [
+							"local-mamas /my-account/ @1440 .wp-block-sgs-account[0] p > label > span",
+							"local-mamas /my-account/ @375 .wp-block-sgs-account[0] p > label > span",
+							"local-mamas /my-account/ @768 .wp-block-sgs-account[0] p > label > span"
+						]
+					}
+				},
+				"renders-aria": {
+					"aria-required": {
+						"state": "yes",
+						"evidence": [
+							"local-mamas /my-account/ @1440 .wp-block-sgs-account[0] form > p > input",
+							"local-mamas /my-account/ @375 .wp-block-sgs-account[0] form > p > input",
+							"local-mamas /my-account/ @768 .wp-block-sgs-account[0] form > p > input"
+						]
+					}
+				}
+			}
+		},
+		"sgs/brand-strip": {
+			"instances": {
+				"local-indus /": 1,
+				"local-indus /motion-writer-proof/": 1
+			},
+			"facts": {}
+		},
+		"sgs/breadcrumbs": {
+			"instances": {
+				"local-indus /about/": 1,
+				"local-indus /about/careers/": 1,
+				"local-indus /about/certifications/": 1,
+				"local-indus /about/community/": 1,
+				"local-indus /about/our-story/": 1,
+				"local-indus /about/sustainability/": 1,
+				"local-indus /apply/": 1,
+				"local-indus /blog/": 1,
+				"local-indus /brands/": 1,
+				"local-indus /brands/green-leaf/": 1,
+				"local-indus /brands/lemon-tree/": 1,
+				"local-indus /brands/sanam/": 1,
+				"local-indus /brands/shan/": 1,
+				"local-indus /catalogue/": 1,
+				"local-indus /contact/": 1,
+				"local-indus /delivery/": 1,
+				"local-indus /falak-rice-exclusive-uk-distribution/": 1,
+				"local-indus /faqs/": 1,
+				"local-indus /food-service/": 1,
+				"local-indus /inside-our-birmingham-packing-line/": 1,
+				"local-indus /manufacturing/": 1,
+				"local-indus /ordering-ahead-for-eid/": 1,
+				"local-indus /retail/": 1,
+				"local-indus /sixty-years-in-the-balti-triangle/": 1,
+				"local-indus /supporting-the-trade-through-ramadan/": 1,
+				"local-indus /terms/": 1,
+				"local-indus /wholesale/": 1,
+				"local-indus /why-independents-still-matter/": 1
+			},
+			"facts": {}
+		},
+		"sgs/button": {
+			"instances": {
+				"local-eye-care /": 87,
+				"local-eye-care /about/": 9,
+				"local-eye-care /cart/": 8,
+				"local-eye-care /checkout/": 8,
+				"local-eye-care /contact/": 13,
+				"local-eye-care /frames/cr-calibration-product/": 46,
+				"local-eye-care /frames/fixture-simple-product/": 46,
+				"local-eye-care /frames/fixture-variable-product/": 46,
+				"local-eye-care /help/": 12,
+				"local-eye-care /my-account/": 8,
+				"local-eye-care /prescription-lenses/": 9,
+				"local-eye-care /product-category/uncategorized/": 9,
+				"local-eye-care /shop/": 9,
+				"local-indus /": 32,
+				"local-indus /about/": 36,
+				"local-indus /about/careers/": 28,
+				"local-indus /about/certifications/": 26,
+				"local-indus /about/community/": 26,
+				"local-indus /about/our-story/": 27,
+				"local-indus /about/sustainability/": 26,
+				"local-indus /apply/": 27,
+				"local-indus /blog/": 24,
+				"local-indus /brands/": 27,
+				"local-indus /brands/green-leaf/": 28,
+				"local-indus /brands/lemon-tree/": 28,
+				"local-indus /brands/sanam/": 28,
+				"local-indus /brands/shan/": 28,
+				"local-indus /catalogue/": 25,
+				"local-indus /contact/": 29,
+				"local-indus /delivery/": 26,
+				"local-indus /falak-rice-exclusive-uk-distribution/": 24,
+				"local-indus /faqs/": 26,
+				"local-indus /food-service/": 31,
+				"local-indus /inside-our-birmingham-packing-line/": 24,
+				"local-indus /manufacturing/": 31,
+				"local-indus /motion-writer-proof/": 25,
+				"local-indus /ordering-ahead-for-eid/": 24,
+				"local-indus /retail/": 32,
+				"local-indus /sixty-years-in-the-balti-triangle/": 24,
+				"local-indus /supporting-the-trade-through-ramadan/": 24,
+				"local-indus /terms/": 24,
+				"local-indus /wholesale/": 31,
+				"local-indus /why-independents-still-matter/": 24,
+				"local-mamas /": 33,
+				"local-mamas /cart/": 6,
+				"local-mamas /checkout/": 6,
+				"local-mamas /contact/": 7,
+				"local-mamas /gifts/": 20,
+				"local-mamas /help/": 7,
+				"local-mamas /my-account/": 6,
+				"local-mamas /product-category/bundles/": 7,
+				"local-mamas /product/cr-calibration-product/": 23,
+				"local-mamas /product/fixture-simple-product/": 23,
+				"local-mamas /product/fixture-variable-product/": 23,
+				"local-mamas /saved-items/": 6,
+				"local-mamas /shop/": 7
+			},
+			"facts": {}
+		},
+		"sgs/card-grid": {
+			"instances": {
+				"local-eye-care /": 12,
+				"local-eye-care /about/": 12,
+				"local-eye-care /cart/": 12,
+				"local-eye-care /checkout/": 12,
+				"local-eye-care /contact/": 12,
+				"local-eye-care /frames/cr-calibration-product/": 12,
+				"local-eye-care /frames/fixture-simple-product/": 12,
+				"local-eye-care /frames/fixture-variable-product/": 12,
+				"local-eye-care /help/": 12,
+				"local-eye-care /my-account/": 12,
+				"local-eye-care /prescription-lenses/": 12,
+				"local-eye-care /product-category/uncategorized/": 12,
+				"local-eye-care /shop/": 12
+			},
+			"facts": {}
+		},
+		"sgs/choice-flow": {
+			"instances": {
+				"local-mamas /": 1
+			},
+			"facts": {}
+		},
+		"sgs/choice-flow-question": {
+			"instances": {
+				"local-mamas /": 6
+			},
+			"facts": {
+				"renders-aria": {
+					"aria-pressed": {
+						"state": "yes",
+						"evidence": [
+							"local-mamas / @1440 .wp-block-sgs-choice-flow-question[4] ul.sgs-choice-flow-question__options > li.sgs-choice-flow-question__option > button.sgs-choice-flow-question__option-button",
+							"local-mamas / @375 .wp-block-sgs-choice-flow-question[4] ul.sgs-choice-flow-question__options > li.sgs-choice-flow-question__option > button.sgs-choice-flow-question__option-button",
+							"local-mamas / @768 .wp-block-sgs-choice-flow-question[4] ul.sgs-choice-flow-question__options > li.sgs-choice-flow-question__option > button.sgs-choice-flow-question__option-button"
+						]
+					}
+				}
+			}
+		},
+		"sgs/choice-flow-result": {
+			"instances": {
+				"local-mamas /": 1
+			},
+			"facts": {}
+		},
+		"sgs/container": {
+			"instances": {
+				"local-eye-care /": 201,
+				"local-eye-care /about/": 14,
+				"local-eye-care /cart/": 13,
+				"local-eye-care /checkout/": 13,
+				"local-eye-care /contact/": 20,
+				"local-eye-care /frames/cr-calibration-product/": 106,
+				"local-eye-care /frames/fixture-simple-product/": 106,
+				"local-eye-care /frames/fixture-variable-product/": 106,
+				"local-eye-care /help/": 37,
+				"local-eye-care /my-account/": 12,
+				"local-eye-care /prescription-lenses/": 28,
+				"local-eye-care /product-category/uncategorized/": 16,
+				"local-eye-care /shop/": 16,
+				"local-indus /": 138,
+				"local-indus /about/": 150,
+				"local-indus /about/careers/": 166,
+				"local-indus /about/certifications/": 145,
+				"local-indus /about/community/": 135,
+				"local-indus /about/our-story/": 138,
+				"local-indus /about/sustainability/": 134,
+				"local-indus /apply/": 123,
+				"local-indus /blog/": 118,
+				"local-indus /brands/": 143,
+				"local-indus /brands/green-leaf/": 135,
+				"local-indus /brands/lemon-tree/": 135,
+				"local-indus /brands/sanam/": 143,
+				"local-indus /brands/shan/": 135,
+				"local-indus /catalogue/": 148,
+				"local-indus /contact/": 131,
+				"local-indus /delivery/": 150,
+				"local-indus /falak-rice-exclusive-uk-distribution/": 106,
+				"local-indus /faqs/": 137,
+				"local-indus /food-service/": 169,
+				"local-indus /inside-our-birmingham-packing-line/": 106,
+				"local-indus /manufacturing/": 166,
+				"local-indus /motion-writer-proof/": 110,
+				"local-indus /ordering-ahead-for-eid/": 106,
+				"local-indus /retail/": 152,
+				"local-indus /sixty-years-in-the-balti-triangle/": 106,
+				"local-indus /supporting-the-trade-through-ramadan/": 106,
+				"local-indus /terms/": 129,
+				"local-indus /wholesale/": 147,
+				"local-indus /why-independents-still-matter/": 106,
+				"local-mamas /": 122,
+				"local-mamas /cart/": 27,
+				"local-mamas /checkout/": 27,
+				"local-mamas /contact/": 37,
+				"local-mamas /gifts/": 66,
+				"local-mamas /help/": 84,
+				"local-mamas /my-account/": 28,
+				"local-mamas /product-category/bundles/": 35,
+				"local-mamas /product/cr-calibration-product/": 62,
+				"local-mamas /product/fixture-simple-product/": 62,
+				"local-mamas /product/fixture-variable-product/": 62,
+				"local-mamas /saved-items/": 27,
+				"local-mamas /shop/": 35
+			},
+			"facts": {}
+		},
+		"sgs/counter": {
+			"instances": {
+				"local-indus /about/": 1
+			},
+			"facts": {}
+		},
+		"sgs/decorative-image": {
+			"instances": {
+				"local-indus /": 2,
+				"local-indus /about/": 4,
+				"local-indus /about/careers/": 4,
+				"local-indus /about/certifications/": 5,
+				"local-indus /about/community/": 5,
+				"local-indus /about/our-story/": 5,
+				"local-indus /about/sustainability/": 5,
+				"local-indus /apply/": 3,
+				"local-indus /blog/": 2,
+				"local-indus /brands/": 5,
+				"local-indus /brands/green-leaf/": 5,
+				"local-indus /brands/lemon-tree/": 5,
+				"local-indus /brands/sanam/": 5,
+				"local-indus /brands/shan/": 5,
+				"local-indus /catalogue/": 4,
+				"local-indus /contact/": 3,
+				"local-indus /delivery/": 5,
+				"local-indus /falak-rice-exclusive-uk-distribution/": 2,
+				"local-indus /faqs/": 5,
+				"local-indus /food-service/": 8,
+				"local-indus /inside-our-birmingham-packing-line/": 2,
+				"local-indus /manufacturing/": 8,
+				"local-indus /motion-writer-proof/": 2,
+				"local-indus /ordering-ahead-for-eid/": 2,
+				"local-indus /retail/": 8,
+				"local-indus /sixty-years-in-the-balti-triangle/": 2,
+				"local-indus /supporting-the-trade-through-ramadan/": 2,
+				"local-indus /terms/": 3,
+				"local-indus /wholesale/": 8,
+				"local-indus /why-independents-still-matter/": 2
+			},
+			"facts": {
+				"renders-role": {
+					"presentation": {
+						"state": "yes",
+						"evidence": [
+							"local-indus / @375 .wp-block-sgs-decorative-image[0]",
+							"local-indus / @375 .wp-block-sgs-decorative-image[1]",
+							"local-indus / @768 .wp-block-sgs-decorative-image[0]"
+						]
+					}
+				}
+			}
+		},
+		"sgs/form": {
+			"instances": {
+				"local-eye-care /contact/": 1,
+				"local-indus /about/careers/": 1,
+				"local-indus /apply/": 1,
+				"local-indus /catalogue/": 1,
+				"local-indus /contact/": 1,
+				"local-mamas /contact/": 1
+			},
+			"facts": {}
+		},
+		"sgs/form-field-checkbox": {
+			"instances": {
+				"local-indus /apply/": 2,
+				"local-mamas /product/cr-calibration-product/": 1,
+				"local-mamas /product/fixture-simple-product/": 1,
+				"local-mamas /product/fixture-variable-product/": 1
+			},
+			"facts": {}
+		},
+		"sgs/form-field-consent": {
+			"instances": {
+				"local-indus /about/careers/": 1,
+				"local-indus /catalogue/": 1
+			},
+			"facts": {}
+		},
+		"sgs/form-field-email": {
+			"instances": {
+				"local-eye-care /contact/": 1,
+				"local-indus /about/careers/": 1,
+				"local-indus /apply/": 1,
+				"local-indus /catalogue/": 1,
+				"local-indus /contact/": 1,
+				"local-mamas /contact/": 1
+			},
+			"facts": {}
+		},
+		"sgs/form-field-file": {
+			"instances": {
+				"local-indus /about/careers/": 1,
+				"local-indus /apply/": 1
+			},
+			"facts": {}
+		},
+		"sgs/form-field-phone": {
+			"instances": {
+				"local-indus /about/careers/": 1,
+				"local-indus /apply/": 1,
+				"local-indus /catalogue/": 1,
+				"local-indus /contact/": 1
+			},
+			"facts": {}
+		},
+		"sgs/form-field-select": {
+			"instances": {
+				"local-eye-care /contact/": 1,
+				"local-eye-care /product-category/uncategorized/": 1,
+				"local-eye-care /shop/": 1,
+				"local-indus /about/careers/": 2,
+				"local-indus /apply/": 6,
+				"local-indus /catalogue/": 2,
+				"local-mamas /product-category/bundles/": 1,
+				"local-mamas /shop/": 1
+			},
+			"facts": {}
+		},
+		"sgs/form-field-text": {
+			"instances": {
+				"local-eye-care /contact/": 2,
+				"local-indus /about/careers/": 1,
+				"local-indus /apply/": 15,
+				"local-indus /catalogue/": 2,
+				"local-indus /contact/": 2,
+				"local-mamas /contact/": 2,
+				"local-mamas /gifts/": 2,
+				"local-mamas /help/": 1
+			},
+			"facts": {}
+		},
+		"sgs/form-field-textarea": {
+			"instances": {
+				"local-eye-care /contact/": 1,
+				"local-indus /about/careers/": 1,
+				"local-indus /apply/": 1,
+				"local-indus /catalogue/": 1,
+				"local-indus /contact/": 1,
+				"local-mamas /contact/": 1,
+				"local-mamas /gifts/": 1
+			},
+			"facts": {}
+		},
+		"sgs/form-field-tiles": {
+			"instances": {
+				"local-indus /apply/": 14,
+				"local-indus /contact/": 2,
+				"local-mamas /contact/": 2
+			},
+			"facts": {}
+		},
+		"sgs/form-review": {
+			"instances": {
+				"local-indus /apply/": 1
+			},
+			"facts": {}
+		},
+		"sgs/form-step": {
+			"instances": {
+				"local-indus /apply/": 4,
+				"local-mamas /": 7
+			},
+			"facts": {}
+		},
+		"sgs/gallery": {
+			"instances": {
+				"local-eye-care /": 1,
+				"local-eye-care /about/": 1,
+				"local-eye-care /cart/": 1,
+				"local-eye-care /checkout/": 1,
+				"local-eye-care /contact/": 1,
+				"local-eye-care /frames/cr-calibration-product/": 1,
+				"local-eye-care /frames/fixture-simple-product/": 1,
+				"local-eye-care /frames/fixture-variable-product/": 1,
+				"local-eye-care /help/": 1,
+				"local-eye-care /my-account/": 1,
+				"local-eye-care /prescription-lenses/": 1,
+				"local-eye-care /product-category/uncategorized/": 1,
+				"local-eye-care /shop/": 1,
+				"local-indus /": 2,
+				"local-indus /about/": 2,
+				"local-indus /about/careers/": 2,
+				"local-indus /about/certifications/": 2,
+				"local-indus /about/community/": 2,
+				"local-indus /about/our-story/": 2,
+				"local-indus /about/sustainability/": 2,
+				"local-indus /apply/": 2,
+				"local-indus /blog/": 2,
+				"local-indus /brands/": 2,
+				"local-indus /brands/green-leaf/": 2,
+				"local-indus /brands/lemon-tree/": 2,
+				"local-indus /brands/sanam/": 2,
+				"local-indus /brands/shan/": 2,
+				"local-indus /catalogue/": 2,
+				"local-indus /contact/": 2,
+				"local-indus /delivery/": 2,
+				"local-indus /falak-rice-exclusive-uk-distribution/": 2,
+				"local-indus /faqs/": 2,
+				"local-indus /food-service/": 2,
+				"local-indus /inside-our-birmingham-packing-line/": 2,
+				"local-indus /manufacturing/": 2,
+				"local-indus /motion-writer-proof/": 2,
+				"local-indus /ordering-ahead-for-eid/": 2,
+				"local-indus /retail/": 2,
+				"local-indus /sixty-years-in-the-balti-triangle/": 2,
+				"local-indus /supporting-the-trade-through-ramadan/": 2,
+				"local-indus /terms/": 2,
+				"local-indus /wholesale/": 2,
+				"local-indus /why-independents-still-matter/": 2,
+				"local-mamas /": 1,
+				"local-mamas /cart/": 1,
+				"local-mamas /checkout/": 1,
+				"local-mamas /contact/": 1,
+				"local-mamas /gifts/": 1,
+				"local-mamas /help/": 1,
+				"local-mamas /my-account/": 1,
+				"local-mamas /product-category/bundles/": 1,
+				"local-mamas /product/cr-calibration-product/": 1,
+				"local-mamas /product/fixture-simple-product/": 1,
+				"local-mamas /product/fixture-variable-product/": 1,
+				"local-mamas /saved-items/": 1,
+				"local-mamas /shop/": 1
+			},
+			"facts": {}
+		},
+		"sgs/heading": {
+			"instances": {
+				"local-eye-care /": 14,
+				"local-eye-care /about/": 4,
+				"local-eye-care /cart/": 5,
+				"local-eye-care /checkout/": 5,
+				"local-eye-care /contact/": 5,
+				"local-eye-care /frames/cr-calibration-product/": 7,
+				"local-eye-care /frames/fixture-simple-product/": 7,
+				"local-eye-care /frames/fixture-variable-product/": 7,
+				"local-eye-care /help/": 5,
+				"local-eye-care /my-account/": 4,
+				"local-eye-care /prescription-lenses/": 6,
+				"local-eye-care /product-category/uncategorized/": 14,
+				"local-eye-care /shop/": 14,
+				"local-indus /": 48,
+				"local-indus /about/": 37,
+				"local-indus /about/careers/": 49,
+				"local-indus /about/certifications/": 40,
+				"local-indus /about/community/": 40,
+				"local-indus /about/our-story/": 37,
+				"local-indus /about/sustainability/": 40,
+				"local-indus /apply/": 41,
+				"local-indus /blog/": 33,
+				"local-indus /brands/": 46,
+				"local-indus /brands/green-leaf/": 39,
+				"local-indus /brands/lemon-tree/": 39,
+				"local-indus /brands/sanam/": 41,
+				"local-indus /brands/shan/": 39,
+				"local-indus /catalogue/": 46,
+				"local-indus /contact/": 36,
+				"local-indus /delivery/": 42,
+				"local-indus /falak-rice-exclusive-uk-distribution/": 33,
+				"local-indus /faqs/": 37,
+				"local-indus /food-service/": 50,
+				"local-indus /inside-our-birmingham-packing-line/": 33,
+				"local-indus /manufacturing/": 49,
+				"local-indus /motion-writer-proof/": 34,
+				"local-indus /ordering-ahead-for-eid/": 33,
+				"local-indus /retail/": 44,
+				"local-indus /sixty-years-in-the-balti-triangle/": 33,
+				"local-indus /supporting-the-trade-through-ramadan/": 33,
+				"local-indus /terms/": 34,
+				"local-indus /wholesale/": 43,
+				"local-indus /why-independents-still-matter/": 33,
+				"local-mamas /": 23,
+				"local-mamas /cart/": 7,
+				"local-mamas /checkout/": 7,
+				"local-mamas /contact/": 12,
+				"local-mamas /gifts/": 12,
+				"local-mamas /help/": 11,
+				"local-mamas /my-account/": 8,
+				"local-mamas /product-category/bundles/": 10,
+				"local-mamas /product/cr-calibration-product/": 13,
+				"local-mamas /product/fixture-simple-product/": 13,
+				"local-mamas /product/fixture-variable-product/": 13,
+				"local-mamas /saved-items/": 7,
+				"local-mamas /shop/": 10
+			},
+			"facts": {}
+		},
+		"sgs/hero": {
+			"instances": {
+				"local-eye-care /": 1,
+				"local-eye-care /about/": 1,
+				"local-eye-care /contact/": 1,
+				"local-eye-care /frames/cr-calibration-product/": 1,
+				"local-eye-care /frames/fixture-simple-product/": 1,
+				"local-eye-care /frames/fixture-variable-product/": 1,
+				"local-eye-care /my-account/": 1,
+				"local-eye-care /product-category/uncategorized/": 1,
+				"local-eye-care /shop/": 1,
+				"local-indus /": 1,
+				"local-indus /about/": 1,
+				"local-indus /about/careers/": 1,
+				"local-indus /about/certifications/": 1,
+				"local-indus /about/community/": 1,
+				"local-indus /about/our-story/": 1,
+				"local-indus /about/sustainability/": 1,
+				"local-indus /apply/": 1,
+				"local-indus /brands/": 1,
+				"local-indus /brands/green-leaf/": 1,
+				"local-indus /brands/lemon-tree/": 1,
+				"local-indus /brands/sanam/": 1,
+				"local-indus /brands/shan/": 1,
+				"local-indus /catalogue/": 1,
+				"local-indus /contact/": 1,
+				"local-indus /delivery/": 1,
+				"local-indus /faqs/": 1,
+				"local-indus /food-service/": 1,
+				"local-indus /manufacturing/": 1,
+				"local-indus /retail/": 1,
+				"local-indus /terms/": 1,
+				"local-indus /wholesale/": 1,
+				"local-mamas /": 1,
+				"local-mamas /cart/": 1,
+				"local-mamas /checkout/": 1,
+				"local-mamas /contact/": 1,
+				"local-mamas /gifts/": 1,
+				"local-mamas /help/": 1,
+				"local-mamas /my-account/": 1,
+				"local-mamas /product-category/bundles/": 1,
+				"local-mamas /product/cr-calibration-product/": 1,
+				"local-mamas /product/fixture-simple-product/": 1,
+				"local-mamas /product/fixture-variable-product/": 1,
+				"local-mamas /shop/": 1
+			},
+			"facts": {}
+		},
+		"sgs/icon": {
+			"instances": {
+				"local-eye-care /": 13,
+				"local-eye-care /about/": 3,
+				"local-eye-care /cart/": 3,
+				"local-eye-care /checkout/": 3,
+				"local-eye-care /contact/": 3,
+				"local-eye-care /frames/cr-calibration-product/": 9,
+				"local-eye-care /frames/fixture-simple-product/": 9,
+				"local-eye-care /frames/fixture-variable-product/": 9,
+				"local-eye-care /help/": 3,
+				"local-eye-care /my-account/": 3,
+				"local-eye-care /prescription-lenses/": 3,
+				"local-eye-care /product-category/uncategorized/": 3,
+				"local-eye-care /shop/": 3,
+				"local-indus /": 21,
+				"local-indus /about/": 17,
+				"local-indus /about/careers/": 21,
+				"local-indus /about/certifications/": 17,
+				"local-indus /about/community/": 17,
+				"local-indus /about/our-story/": 17,
+				"local-indus /about/sustainability/": 17,
+				"local-indus /apply/": 24,
+				"local-indus /blog/": 17,
+				"local-indus /brands/": 17,
+				"local-indus /brands/green-leaf/": 17,
+				"local-indus /brands/lemon-tree/": 17,
+				"local-indus /brands/sanam/": 17,
+				"local-indus /brands/shan/": 17,
+				"local-indus /catalogue/": 17,
+				"local-indus /contact/": 20,
+				"local-indus /delivery/": 20,
+				"local-indus /falak-rice-exclusive-uk-distribution/": 17,
+				"local-indus /faqs/": 26,
+				"local-indus /food-service/": 17,
+				"local-indus /inside-our-birmingham-packing-line/": 17,
+				"local-indus /manufacturing/": 17,
+				"local-indus /motion-writer-proof/": 17,
+				"local-indus /ordering-ahead-for-eid/": 17,
+				"local-indus /retail/": 17,
+				"local-indus /sixty-years-in-the-balti-triangle/": 17,
+				"local-indus /supporting-the-trade-through-ramadan/": 17,
+				"local-indus /terms/": 17,
+				"local-indus /wholesale/": 17,
+				"local-indus /why-independents-still-matter/": 17,
+				"local-mamas /": 3,
+				"local-mamas /cart/": 3,
+				"local-mamas /checkout/": 3,
+				"local-mamas /contact/": 6,
+				"local-mamas /gifts/": 3,
+				"local-mamas /help/": 4,
+				"local-mamas /my-account/": 3,
+				"local-mamas /product-category/bundles/": 3,
+				"local-mamas /product/cr-calibration-product/": 3,
+				"local-mamas /product/fixture-simple-product/": 3,
+				"local-mamas /product/fixture-variable-product/": 3,
+				"local-mamas /saved-items/": 3,
+				"local-mamas /shop/": 3
+			},
+			"facts": {
+				"renders-role": {
+					"listitem": {
+						"state": "yes",
+						"evidence": [
+							"local-indus / @375 .wp-block-sgs-icon[0]",
+							"local-indus / @375 .wp-block-sgs-icon[1]",
+							"local-indus / @375 .wp-block-sgs-icon[2]"
+						]
+					}
+				}
+			}
+		},
+		"sgs/icon-list": {
+			"instances": {
+				"local-eye-care /": 3,
+				"local-eye-care /about/": 3,
+				"local-eye-care /cart/": 3,
+				"local-eye-care /checkout/": 3,
+				"local-eye-care /contact/": 3,
+				"local-eye-care /frames/cr-calibration-product/": 3,
+				"local-eye-care /frames/fixture-simple-product/": 3,
+				"local-eye-care /frames/fixture-variable-product/": 3,
+				"local-eye-care /help/": 3,
+				"local-eye-care /my-account/": 3,
+				"local-eye-care /prescription-lenses/": 3,
+				"local-eye-care /product-category/uncategorized/": 3,
+				"local-eye-care /shop/": 3,
+				"local-indus /": 2,
+				"local-indus /about/": 1,
+				"local-indus /about/careers/": 2,
+				"local-indus /about/certifications/": 1,
+				"local-indus /about/community/": 1,
+				"local-indus /about/our-story/": 1,
+				"local-indus /about/sustainability/": 1,
+				"local-indus /apply/": 1,
+				"local-indus /blog/": 1,
+				"local-indus /brands/": 1,
+				"local-indus /brands/green-leaf/": 1,
+				"local-indus /brands/lemon-tree/": 1,
+				"local-indus /brands/sanam/": 1,
+				"local-indus /brands/shan/": 1,
+				"local-indus /catalogue/": 2,
+				"local-indus /contact/": 1,
+				"local-indus /delivery/": 1,
+				"local-indus /falak-rice-exclusive-uk-distribution/": 1,
+				"local-indus /faqs/": 1,
+				"local-indus /food-service/": 1,
+				"local-indus /inside-our-birmingham-packing-line/": 1,
+				"local-indus /manufacturing/": 1,
+				"local-indus /motion-writer-proof/": 1,
+				"local-indus /ordering-ahead-for-eid/": 1,
+				"local-indus /retail/": 1,
+				"local-indus /sixty-years-in-the-balti-triangle/": 1,
+				"local-indus /supporting-the-trade-through-ramadan/": 1,
+				"local-indus /terms/": 1,
+				"local-indus /wholesale/": 1,
+				"local-indus /why-independents-still-matter/": 1,
+				"local-mamas /": 5,
+				"local-mamas /cart/": 5,
+				"local-mamas /checkout/": 5,
+				"local-mamas /contact/": 6,
+				"local-mamas /gifts/": 5,
+				"local-mamas /help/": 5,
+				"local-mamas /my-account/": 5,
+				"local-mamas /product-category/bundles/": 5,
+				"local-mamas /product/cr-calibration-product/": 5,
+				"local-mamas /product/fixture-simple-product/": 5,
+				"local-mamas /product/fixture-variable-product/": 5,
+				"local-mamas /saved-items/": 5,
+				"local-mamas /shop/": 5
+			},
+			"facts": {}
+		},
+		"sgs/label": {
+			"instances": {
+				"local-eye-care /": 53,
+				"local-eye-care /about/": 2,
+				"local-eye-care /cart/": 1,
+				"local-eye-care /checkout/": 1,
+				"local-eye-care /contact/": 6,
+				"local-eye-care /frames/cr-calibration-product/": 29,
+				"local-eye-care /frames/fixture-simple-product/": 29,
+				"local-eye-care /frames/fixture-variable-product/": 29,
+				"local-eye-care /help/": 5,
+				"local-eye-care /my-account/": 2,
+				"local-eye-care /prescription-lenses/": 6,
+				"local-eye-care /product-category/uncategorized/": 17,
+				"local-eye-care /shop/": 17,
+				"local-indus /": 22,
+				"local-indus /about/": 25,
+				"local-indus /about/careers/": 27,
+				"local-indus /about/certifications/": 21,
+				"local-indus /about/community/": 16,
+				"local-indus /about/our-story/": 18,
+				"local-indus /about/sustainability/": 17,
+				"local-indus /apply/": 15,
+				"local-indus /blog/": 13,
+				"local-indus /brands/": 17,
+				"local-indus /brands/green-leaf/": 17,
+				"local-indus /brands/lemon-tree/": 17,
+				"local-indus /brands/sanam/": 17,
+				"local-indus /brands/shan/": 17,
+				"local-indus /catalogue/": 16,
+				"local-indus /contact/": 18,
+				"local-indus /delivery/": 17,
+				"local-indus /falak-rice-exclusive-uk-distribution/": 13,
+				"local-indus /faqs/": 15,
+				"local-indus /food-service/": 19,
+				"local-indus /inside-our-birmingham-packing-line/": 13,
+				"local-indus /manufacturing/": 19,
+				"local-indus /motion-writer-proof/": 13,
+				"local-indus /ordering-ahead-for-eid/": 13,
+				"local-indus /retail/": 19,
+				"local-indus /sixty-years-in-the-balti-triangle/": 13,
+				"local-indus /supporting-the-trade-through-ramadan/": 13,
+				"local-indus /terms/": 13,
+				"local-indus /wholesale/": 17,
+				"local-indus /why-independents-still-matter/": 13,
+				"local-mamas /": 13,
+				"local-mamas /cart/": 1,
+				"local-mamas /checkout/": 1,
+				"local-mamas /contact/": 1,
+				"local-mamas /gifts/": 3,
+				"local-mamas /help/": 17,
+				"local-mamas /my-account/": 1,
+				"local-mamas /product-category/bundles/": 2,
+				"local-mamas /product/cr-calibration-product/": 9,
+				"local-mamas /product/fixture-simple-product/": 9,
+				"local-mamas /product/fixture-variable-product/": 9,
+				"local-mamas /saved-items/": 1,
+				"local-mamas /shop/": 5
+			},
+			"facts": {}
+		},
+		"sgs/media": {
+			"instances": {
+				"local-eye-care /": 17,
+				"local-eye-care /about/": 1,
+				"local-eye-care /cart/": 1,
+				"local-eye-care /checkout/": 1,
+				"local-eye-care /contact/": 1,
+				"local-eye-care /frames/cr-calibration-product/": 1,
+				"local-eye-care /frames/fixture-simple-product/": 1,
+				"local-eye-care /frames/fixture-variable-product/": 1,
+				"local-eye-care /help/": 1,
+				"local-eye-care /my-account/": 1,
+				"local-eye-care /prescription-lenses/": 1,
+				"local-eye-care /product-category/uncategorized/": 1,
+				"local-eye-care /shop/": 1,
+				"local-indus /": 17,
+				"local-indus /about/": 12,
+				"local-indus /about/careers/": 12,
+				"local-indus /about/certifications/": 16,
+				"local-indus /about/community/": 17,
+				"local-indus /about/our-story/": 14,
+				"local-indus /about/sustainability/": 13,
+				"local-indus /apply/": 12,
+				"local-indus /blog/": 12,
+				"local-indus /brands/": 13,
+				"local-indus /brands/green-leaf/": 16,
+				"local-indus /brands/lemon-tree/": 16,
+				"local-indus /brands/sanam/": 18,
+				"local-indus /brands/shan/": 16,
+				"local-indus /catalogue/": 12,
+				"local-indus /contact/": 12,
+				"local-indus /delivery/": 13,
+				"local-indus /falak-rice-exclusive-uk-distribution/": 12,
+				"local-indus /faqs/": 12,
+				"local-indus /food-service/": 16,
+				"local-indus /inside-our-birmingham-packing-line/": 12,
+				"local-indus /manufacturing/": 16,
+				"local-indus /motion-writer-proof/": 12,
+				"local-indus /ordering-ahead-for-eid/": 12,
+				"local-indus /retail/": 17,
+				"local-indus /sixty-years-in-the-balti-triangle/": 12,
+				"local-indus /supporting-the-trade-through-ramadan/": 12,
+				"local-indus /terms/": 12,
+				"local-indus /wholesale/": 16,
+				"local-indus /why-independents-still-matter/": 12,
+				"local-mamas /": 5,
+				"local-mamas /cart/": 2,
+				"local-mamas /checkout/": 2,
+				"local-mamas /contact/": 2,
+				"local-mamas /gifts/": 2,
+				"local-mamas /help/": 2,
+				"local-mamas /my-account/": 2,
+				"local-mamas /product-category/bundles/": 2,
+				"local-mamas /product/cr-calibration-product/": 2,
+				"local-mamas /product/fixture-simple-product/": 2,
+				"local-mamas /product/fixture-variable-product/": 2,
+				"local-mamas /saved-items/": 2,
+				"local-mamas /shop/": 2
+			},
+			"facts": {}
+		},
+		"sgs/mega-aside": {
+			"instances": {
+				"local-indus /": 6,
+				"local-indus /about/": 6,
+				"local-indus /about/careers/": 6,
+				"local-indus /about/certifications/": 6,
+				"local-indus /about/community/": 6,
+				"local-indus /about/our-story/": 6,
+				"local-indus /about/sustainability/": 6,
+				"local-indus /apply/": 6,
+				"local-indus /blog/": 6,
+				"local-indus /brands/": 6,
+				"local-indus /brands/green-leaf/": 6,
+				"local-indus /brands/lemon-tree/": 6,
+				"local-indus /brands/sanam/": 6,
+				"local-indus /brands/shan/": 6,
+				"local-indus /catalogue/": 6,
+				"local-indus /contact/": 6,
+				"local-indus /delivery/": 6,
+				"local-indus /falak-rice-exclusive-uk-distribution/": 6,
+				"local-indus /faqs/": 6,
+				"local-indus /food-service/": 6,
+				"local-indus /inside-our-birmingham-packing-line/": 6,
+				"local-indus /manufacturing/": 6,
+				"local-indus /motion-writer-proof/": 6,
+				"local-indus /ordering-ahead-for-eid/": 6,
+				"local-indus /retail/": 6,
+				"local-indus /sixty-years-in-the-balti-triangle/": 6,
+				"local-indus /supporting-the-trade-through-ramadan/": 6,
+				"local-indus /terms/": 6,
+				"local-indus /wholesale/": 6,
+				"local-indus /why-independents-still-matter/": 6
+			},
+			"facts": {}
+		},
+		"sgs/mega-group": {
+			"instances": {
+				"local-indus /": 4,
+				"local-indus /about/": 4,
+				"local-indus /about/careers/": 4,
+				"local-indus /about/certifications/": 4,
+				"local-indus /about/community/": 4,
+				"local-indus /about/our-story/": 4,
+				"local-indus /about/sustainability/": 4,
+				"local-indus /apply/": 4,
+				"local-indus /blog/": 4,
+				"local-indus /brands/": 4,
+				"local-indus /brands/green-leaf/": 4,
+				"local-indus /brands/lemon-tree/": 4,
+				"local-indus /brands/sanam/": 4,
+				"local-indus /brands/shan/": 4,
+				"local-indus /catalogue/": 4,
+				"local-indus /contact/": 4,
+				"local-indus /delivery/": 4,
+				"local-indus /falak-rice-exclusive-uk-distribution/": 4,
+				"local-indus /faqs/": 4,
+				"local-indus /food-service/": 4,
+				"local-indus /inside-our-birmingham-packing-line/": 4,
+				"local-indus /manufacturing/": 4,
+				"local-indus /motion-writer-proof/": 4,
+				"local-indus /ordering-ahead-for-eid/": 4,
+				"local-indus /retail/": 4,
+				"local-indus /sixty-years-in-the-balti-triangle/": 4,
+				"local-indus /supporting-the-trade-through-ramadan/": 4,
+				"local-indus /terms/": 4,
+				"local-indus /wholesale/": 4,
+				"local-indus /why-independents-still-matter/": 4
+			},
+			"facts": {}
+		},
+		"sgs/mega-panel": {
+			"instances": {
+				"local-eye-care /": 12,
+				"local-eye-care /about/": 12,
+				"local-eye-care /cart/": 12,
+				"local-eye-care /checkout/": 12,
+				"local-eye-care /contact/": 12,
+				"local-eye-care /frames/cr-calibration-product/": 12,
+				"local-eye-care /frames/fixture-simple-product/": 12,
+				"local-eye-care /frames/fixture-variable-product/": 12,
+				"local-eye-care /help/": 12,
+				"local-eye-care /my-account/": 12,
+				"local-eye-care /prescription-lenses/": 12,
+				"local-eye-care /product-category/uncategorized/": 12,
+				"local-eye-care /shop/": 12,
+				"local-indus /": 6,
+				"local-indus /about/": 6,
+				"local-indus /about/careers/": 6,
+				"local-indus /about/certifications/": 6,
+				"local-indus /about/community/": 6,
+				"local-indus /about/our-story/": 6,
+				"local-indus /about/sustainability/": 6,
+				"local-indus /apply/": 6,
+				"local-indus /blog/": 6,
+				"local-indus /brands/": 6,
+				"local-indus /brands/green-leaf/": 6,
+				"local-indus /brands/lemon-tree/": 6,
+				"local-indus /brands/sanam/": 6,
+				"local-indus /brands/shan/": 6,
+				"local-indus /catalogue/": 6,
+				"local-indus /contact/": 6,
+				"local-indus /delivery/": 6,
+				"local-indus /falak-rice-exclusive-uk-distribution/": 6,
+				"local-indus /faqs/": 6,
+				"local-indus /food-service/": 6,
+				"local-indus /inside-our-birmingham-packing-line/": 6,
+				"local-indus /manufacturing/": 6,
+				"local-indus /motion-writer-proof/": 6,
+				"local-indus /ordering-ahead-for-eid/": 6,
+				"local-indus /retail/": 6,
+				"local-indus /sixty-years-in-the-balti-triangle/": 6,
+				"local-indus /supporting-the-trade-through-ramadan/": 6,
+				"local-indus /terms/": 6,
+				"local-indus /wholesale/": 6,
+				"local-indus /why-independents-still-matter/": 6
+			},
+			"facts": {}
+		},
+		"sgs/multi-button": {
+			"instances": {
+				"local-eye-care /": 12,
+				"local-eye-care /about/": 1,
+				"local-eye-care /cart/": 1,
+				"local-eye-care /checkout/": 1,
+				"local-eye-care /contact/": 2,
+				"local-eye-care /frames/cr-calibration-product/": 9,
+				"local-eye-care /frames/fixture-simple-product/": 9,
+				"local-eye-care /frames/fixture-variable-product/": 9,
+				"local-eye-care /help/": 3,
+				"local-eye-care /my-account/": 1,
+				"local-eye-care /prescription-lenses/": 1,
+				"local-eye-care /product-category/uncategorized/": 1,
+				"local-eye-care /shop/": 1,
+				"local-indus /": 2,
+				"local-indus /about/": 3,
+				"local-indus /about/careers/": 1,
+				"local-indus /about/certifications/": 2,
+				"local-indus /about/community/": 2,
+				"local-indus /about/our-story/": 2,
+				"local-indus /about/sustainability/": 2,
+				"local-indus /apply/": 1,
+				"local-indus /blog/": 1,
+				"local-indus /brands/": 2,
+				"local-indus /brands/green-leaf/": 3,
+				"local-indus /brands/lemon-tree/": 3,
+				"local-indus /brands/sanam/": 3,
+				"local-indus /brands/shan/": 3,
+				"local-indus /catalogue/": 1,
+				"local-indus /contact/": 1,
+				"local-indus /delivery/": 2,
+				"local-indus /falak-rice-exclusive-uk-distribution/": 1,
+				"local-indus /faqs/": 2,
+				"local-indus /food-service/": 3,
+				"local-indus /inside-our-birmingham-packing-line/": 1,
+				"local-indus /manufacturing/": 3,
+				"local-indus /motion-writer-proof/": 2,
+				"local-indus /ordering-ahead-for-eid/": 1,
+				"local-indus /retail/": 3,
+				"local-indus /sixty-years-in-the-balti-triangle/": 1,
+				"local-indus /supporting-the-trade-through-ramadan/": 1,
+				"local-indus /terms/": 1,
+				"local-indus /wholesale/": 3,
+				"local-indus /why-independents-still-matter/": 1,
+				"local-mamas /": 7,
+				"local-mamas /cart/": 1,
+				"local-mamas /checkout/": 1,
+				"local-mamas /contact/": 1,
+				"local-mamas /gifts/": 1,
+				"local-mamas /help/": 1,
+				"local-mamas /my-account/": 1,
+				"local-mamas /product-category/bundles/": 1,
+				"local-mamas /product/cr-calibration-product/": 2,
+				"local-mamas /product/fixture-simple-product/": 2,
+				"local-mamas /product/fixture-variable-product/": 2,
+				"local-mamas /saved-items/": 1,
+				"local-mamas /shop/": 1
+			},
+			"facts": {}
+		},
+		"sgs/nav-bar-menu": {
+			"instances": {
+				"local-eye-care /": 1,
+				"local-eye-care /about/": 1,
+				"local-eye-care /cart/": 1,
+				"local-eye-care /checkout/": 1,
+				"local-eye-care /contact/": 1,
+				"local-eye-care /frames/cr-calibration-product/": 1,
+				"local-eye-care /frames/fixture-simple-product/": 1,
+				"local-eye-care /frames/fixture-variable-product/": 1,
+				"local-eye-care /help/": 1,
+				"local-eye-care /my-account/": 1,
+				"local-eye-care /prescription-lenses/": 1,
+				"local-eye-care /product-category/uncategorized/": 1,
+				"local-eye-care /shop/": 1,
+				"local-indus /": 1,
+				"local-indus /about/": 1,
+				"local-indus /about/careers/": 1,
+				"local-indus /about/certifications/": 1,
+				"local-indus /about/community/": 1,
+				"local-indus /about/our-story/": 1,
+				"local-indus /about/sustainability/": 1,
+				"local-indus /apply/": 1,
+				"local-indus /blog/": 1,
+				"local-indus /brands/": 1,
+				"local-indus /brands/green-leaf/": 1,
+				"local-indus /brands/lemon-tree/": 1,
+				"local-indus /brands/sanam/": 1,
+				"local-indus /brands/shan/": 1,
+				"local-indus /catalogue/": 1,
+				"local-indus /contact/": 1,
+				"local-indus /delivery/": 1,
+				"local-indus /falak-rice-exclusive-uk-distribution/": 1,
+				"local-indus /faqs/": 1,
+				"local-indus /food-service/": 1,
+				"local-indus /inside-our-birmingham-packing-line/": 1,
+				"local-indus /manufacturing/": 1,
+				"local-indus /motion-writer-proof/": 1,
+				"local-indus /ordering-ahead-for-eid/": 1,
+				"local-indus /retail/": 1,
+				"local-indus /sixty-years-in-the-balti-triangle/": 1,
+				"local-indus /supporting-the-trade-through-ramadan/": 1,
+				"local-indus /terms/": 1,
+				"local-indus /wholesale/": 1,
+				"local-indus /why-independents-still-matter/": 1,
+				"local-mamas /": 1,
+				"local-mamas /cart/": 1,
+				"local-mamas /checkout/": 1,
+				"local-mamas /contact/": 1,
+				"local-mamas /gifts/": 1,
+				"local-mamas /help/": 1,
+				"local-mamas /my-account/": 1,
+				"local-mamas /product-category/bundles/": 1,
+				"local-mamas /product/cr-calibration-product/": 1,
+				"local-mamas /product/fixture-simple-product/": 1,
+				"local-mamas /product/fixture-variable-product/": 1,
+				"local-mamas /saved-items/": 1,
+				"local-mamas /shop/": 1
+			},
+			"facts": {}
+		},
+		"sgs/nav-drawer": {
+			"instances": {
+				"local-eye-care /": 1,
+				"local-eye-care /about/": 1,
+				"local-eye-care /cart/": 1,
+				"local-eye-care /checkout/": 1,
+				"local-eye-care /contact/": 1,
+				"local-eye-care /frames/cr-calibration-product/": 1,
+				"local-eye-care /frames/fixture-simple-product/": 1,
+				"local-eye-care /frames/fixture-variable-product/": 1,
+				"local-eye-care /help/": 1,
+				"local-eye-care /my-account/": 1,
+				"local-eye-care /prescription-lenses/": 1,
+				"local-eye-care /product-category/uncategorized/": 1,
+				"local-eye-care /shop/": 1,
+				"local-indus /": 1,
+				"local-indus /about/": 1,
+				"local-indus /about/careers/": 1,
+				"local-indus /about/certifications/": 1,
+				"local-indus /about/community/": 1,
+				"local-indus /about/our-story/": 1,
+				"local-indus /about/sustainability/": 1,
+				"local-indus /apply/": 1,
+				"local-indus /blog/": 1,
+				"local-indus /brands/": 1,
+				"local-indus /brands/green-leaf/": 1,
+				"local-indus /brands/lemon-tree/": 1,
+				"local-indus /brands/sanam/": 1,
+				"local-indus /brands/shan/": 1,
+				"local-indus /catalogue/": 1,
+				"local-indus /contact/": 1,
+				"local-indus /delivery/": 1,
+				"local-indus /falak-rice-exclusive-uk-distribution/": 1,
+				"local-indus /faqs/": 1,
+				"local-indus /food-service/": 1,
+				"local-indus /inside-our-birmingham-packing-line/": 1,
+				"local-indus /manufacturing/": 1,
+				"local-indus /motion-writer-proof/": 1,
+				"local-indus /ordering-ahead-for-eid/": 1,
+				"local-indus /retail/": 1,
+				"local-indus /sixty-years-in-the-balti-triangle/": 1,
+				"local-indus /supporting-the-trade-through-ramadan/": 1,
+				"local-indus /terms/": 1,
+				"local-indus /wholesale/": 1,
+				"local-indus /why-independents-still-matter/": 1,
+				"local-mamas /": 1,
+				"local-mamas /cart/": 1,
+				"local-mamas /checkout/": 1,
+				"local-mamas /contact/": 1,
+				"local-mamas /gifts/": 1,
+				"local-mamas /help/": 1,
+				"local-mamas /my-account/": 1,
+				"local-mamas /product-category/bundles/": 1,
+				"local-mamas /product/cr-calibration-product/": 1,
+				"local-mamas /product/fixture-simple-product/": 1,
+				"local-mamas /product/fixture-variable-product/": 1,
+				"local-mamas /saved-items/": 1,
+				"local-mamas /shop/": 1
+			},
+			"facts": {}
+		},
+		"sgs/nav-drawer-menu": {
+			"instances": {
+				"local-eye-care /": 2,
+				"local-eye-care /about/": 2,
+				"local-eye-care /cart/": 2,
+				"local-eye-care /checkout/": 2,
+				"local-eye-care /contact/": 2,
+				"local-eye-care /frames/cr-calibration-product/": 2,
+				"local-eye-care /frames/fixture-simple-product/": 2,
+				"local-eye-care /frames/fixture-variable-product/": 2,
+				"local-eye-care /help/": 2,
+				"local-eye-care /my-account/": 2,
+				"local-eye-care /prescription-lenses/": 2,
+				"local-eye-care /product-category/uncategorized/": 2,
+				"local-eye-care /shop/": 2,
+				"local-indus /": 1,
+				"local-indus /about/": 1,
+				"local-indus /about/careers/": 1,
+				"local-indus /about/certifications/": 1,
+				"local-indus /about/community/": 1,
+				"local-indus /about/our-story/": 1,
+				"local-indus /about/sustainability/": 1,
+				"local-indus /apply/": 1,
+				"local-indus /blog/": 1,
+				"local-indus /brands/": 1,
+				"local-indus /brands/green-leaf/": 1,
+				"local-indus /brands/lemon-tree/": 1,
+				"local-indus /brands/sanam/": 1,
+				"local-indus /brands/shan/": 1,
+				"local-indus /catalogue/": 1,
+				"local-indus /contact/": 1,
+				"local-indus /delivery/": 1,
+				"local-indus /falak-rice-exclusive-uk-distribution/": 1,
+				"local-indus /faqs/": 1,
+				"local-indus /food-service/": 1,
+				"local-indus /inside-our-birmingham-packing-line/": 1,
+				"local-indus /manufacturing/": 1,
+				"local-indus /motion-writer-proof/": 1,
+				"local-indus /ordering-ahead-for-eid/": 1,
+				"local-indus /retail/": 1,
+				"local-indus /sixty-years-in-the-balti-triangle/": 1,
+				"local-indus /supporting-the-trade-through-ramadan/": 1,
+				"local-indus /terms/": 1,
+				"local-indus /wholesale/": 1,
+				"local-indus /why-independents-still-matter/": 1
+			},
+			"facts": {}
+		},
+		"sgs/option-picker": {
+			"instances": {
+				"local-eye-care /product-category/uncategorized/": 16,
+				"local-eye-care /shop/": 16,
+				"local-mamas /shop/": 6
+			},
+			"facts": {}
+		},
+		"sgs/process-steps": {
+			"instances": {
+				"local-indus /": 1
+			},
+			"facts": {}
+		},
+		"sgs/product-card": {
+			"instances": {
+				"local-eye-care /product-category/uncategorized/": 16,
+				"local-eye-care /shop/": 16,
+				"local-mamas /product-category/bundles/": 1,
+				"local-mamas /shop/": 7
+			},
+			"facts": {
+				"renders-tag": {
+					"fieldset": {
+						"state": "yes",
+						"evidence": [
+							"local-eye-care /product-category/uncategorized/ @375 .wp-block-sgs-product-card[0] div.sgs-product-card__body > fieldset.sgs-option-picker",
+							"local-eye-care /product-category/uncategorized/ @375 .wp-block-sgs-product-card[1] div.sgs-product-card__body > fieldset.sgs-option-picker",
+							"local-eye-care /product-category/uncategorized/ @375 .wp-block-sgs-product-card[2] div.sgs-product-card__body > fieldset.sgs-option-picker"
+						]
+					}
+				}
+			}
+		},
+		"sgs/quote": {
+			"instances": {
+				"local-eye-care /": 13
+			},
+			"facts": {
+				"renders-tag": {
+					"blockquote": {
+						"state": "yes",
+						"evidence": [
+							"local-eye-care / @375 .wp-block-sgs-quote[0]",
+							"local-eye-care / @375 .wp-block-sgs-quote[1]",
+							"local-eye-care / @375 .wp-block-sgs-quote[2]"
+						]
+					}
+				}
+			}
+		},
+		"sgs/responsive-logo": {
+			"instances": {
+				"local-eye-care /": 1,
+				"local-eye-care /about/": 1,
+				"local-eye-care /cart/": 1,
+				"local-eye-care /checkout/": 1,
+				"local-eye-care /contact/": 1,
+				"local-eye-care /frames/cr-calibration-product/": 1,
+				"local-eye-care /frames/fixture-simple-product/": 1,
+				"local-eye-care /frames/fixture-variable-product/": 1,
+				"local-eye-care /help/": 1,
+				"local-eye-care /my-account/": 1,
+				"local-eye-care /prescription-lenses/": 1,
+				"local-eye-care /product-category/uncategorized/": 1,
+				"local-eye-care /shop/": 1,
+				"local-indus /": 3,
+				"local-indus /about/": 3,
+				"local-indus /about/careers/": 3,
+				"local-indus /about/certifications/": 3,
+				"local-indus /about/community/": 3,
+				"local-indus /about/our-story/": 3,
+				"local-indus /about/sustainability/": 3,
+				"local-indus /apply/": 3,
+				"local-indus /blog/": 3,
+				"local-indus /brands/": 3,
+				"local-indus /brands/green-leaf/": 3,
+				"local-indus /brands/lemon-tree/": 3,
+				"local-indus /brands/sanam/": 3,
+				"local-indus /brands/shan/": 3,
+				"local-indus /catalogue/": 3,
+				"local-indus /contact/": 3,
+				"local-indus /delivery/": 3,
+				"local-indus /falak-rice-exclusive-uk-distribution/": 3,
+				"local-indus /faqs/": 3,
+				"local-indus /food-service/": 3,
+				"local-indus /inside-our-birmingham-packing-line/": 3,
+				"local-indus /manufacturing/": 3,
+				"local-indus /motion-writer-proof/": 3,
+				"local-indus /ordering-ahead-for-eid/": 3,
+				"local-indus /retail/": 3,
+				"local-indus /sixty-years-in-the-balti-triangle/": 3,
+				"local-indus /supporting-the-trade-through-ramadan/": 3,
+				"local-indus /terms/": 3,
+				"local-indus /wholesale/": 3,
+				"local-indus /why-independents-still-matter/": 3,
+				"local-mamas /": 5,
+				"local-mamas /cart/": 4,
+				"local-mamas /checkout/": 4,
+				"local-mamas /contact/": 4,
+				"local-mamas /gifts/": 6,
+				"local-mamas /help/": 4,
+				"local-mamas /my-account/": 4,
+				"local-mamas /product-category/bundles/": 4,
+				"local-mamas /product/cr-calibration-product/": 4,
+				"local-mamas /product/fixture-simple-product/": 4,
+				"local-mamas /product/fixture-variable-product/": 4,
+				"local-mamas /saved-items/": 4,
+				"local-mamas /shop/": 4
+			},
+			"facts": {}
+		},
+		"sgs/separator": {
+			"instances": {
+				"local-eye-care /cart/": 1,
+				"local-eye-care /checkout/": 1
+			},
+			"facts": {}
+		},
+		"sgs/site-footer": {
+			"instances": {
+				"local-eye-care /": 1,
+				"local-eye-care /about/": 1,
+				"local-eye-care /cart/": 1,
+				"local-eye-care /checkout/": 1,
+				"local-eye-care /contact/": 1,
+				"local-eye-care /frames/cr-calibration-product/": 1,
+				"local-eye-care /frames/fixture-simple-product/": 1,
+				"local-eye-care /frames/fixture-variable-product/": 1,
+				"local-eye-care /help/": 1,
+				"local-eye-care /my-account/": 1,
+				"local-eye-care /prescription-lenses/": 1,
+				"local-eye-care /product-category/uncategorized/": 1,
+				"local-eye-care /shop/": 1,
+				"local-indus /": 1,
+				"local-indus /about/": 1,
+				"local-indus /about/careers/": 1,
+				"local-indus /about/certifications/": 1,
+				"local-indus /about/community/": 1,
+				"local-indus /about/our-story/": 1,
+				"local-indus /about/sustainability/": 1,
+				"local-indus /apply/": 1,
+				"local-indus /blog/": 1,
+				"local-indus /brands/": 1,
+				"local-indus /brands/green-leaf/": 1,
+				"local-indus /brands/lemon-tree/": 1,
+				"local-indus /brands/sanam/": 1,
+				"local-indus /brands/shan/": 1,
+				"local-indus /catalogue/": 1,
+				"local-indus /contact/": 1,
+				"local-indus /delivery/": 1,
+				"local-indus /falak-rice-exclusive-uk-distribution/": 1,
+				"local-indus /faqs/": 1,
+				"local-indus /food-service/": 1,
+				"local-indus /inside-our-birmingham-packing-line/": 1,
+				"local-indus /manufacturing/": 1,
+				"local-indus /motion-writer-proof/": 1,
+				"local-indus /ordering-ahead-for-eid/": 1,
+				"local-indus /retail/": 1,
+				"local-indus /sixty-years-in-the-balti-triangle/": 1,
+				"local-indus /supporting-the-trade-through-ramadan/": 1,
+				"local-indus /terms/": 1,
+				"local-indus /wholesale/": 1,
+				"local-indus /why-independents-still-matter/": 1,
+				"local-mamas /": 1,
+				"local-mamas /cart/": 1,
+				"local-mamas /checkout/": 1,
+				"local-mamas /contact/": 1,
+				"local-mamas /gifts/": 1,
+				"local-mamas /help/": 1,
+				"local-mamas /my-account/": 1,
+				"local-mamas /product-category/bundles/": 1,
+				"local-mamas /product/cr-calibration-product/": 1,
+				"local-mamas /product/fixture-simple-product/": 1,
+				"local-mamas /product/fixture-variable-product/": 1,
+				"local-mamas /saved-items/": 1,
+				"local-mamas /shop/": 1
+			},
+			"facts": {}
+		},
+		"sgs/site-footer-row": {
+			"instances": {
+				"local-eye-care /": 2,
+				"local-eye-care /about/": 2,
+				"local-eye-care /cart/": 2,
+				"local-eye-care /checkout/": 2,
+				"local-eye-care /contact/": 2,
+				"local-eye-care /frames/cr-calibration-product/": 2,
+				"local-eye-care /frames/fixture-simple-product/": 2,
+				"local-eye-care /frames/fixture-variable-product/": 2,
+				"local-eye-care /help/": 2,
+				"local-eye-care /my-account/": 2,
+				"local-eye-care /prescription-lenses/": 2,
+				"local-eye-care /product-category/uncategorized/": 2,
+				"local-eye-care /shop/": 2,
+				"local-indus /": 3,
+				"local-indus /about/": 3,
+				"local-indus /about/careers/": 3,
+				"local-indus /about/certifications/": 3,
+				"local-indus /about/community/": 3,
+				"local-indus /about/our-story/": 3,
+				"local-indus /about/sustainability/": 3,
+				"local-indus /apply/": 3,
+				"local-indus /blog/": 3,
+				"local-indus /brands/": 3,
+				"local-indus /brands/green-leaf/": 3,
+				"local-indus /brands/lemon-tree/": 3,
+				"local-indus /brands/sanam/": 3,
+				"local-indus /brands/shan/": 3,
+				"local-indus /catalogue/": 3,
+				"local-indus /contact/": 3,
+				"local-indus /delivery/": 3,
+				"local-indus /falak-rice-exclusive-uk-distribution/": 3,
+				"local-indus /faqs/": 3,
+				"local-indus /food-service/": 3,
+				"local-indus /inside-our-birmingham-packing-line/": 3,
+				"local-indus /manufacturing/": 3,
+				"local-indus /motion-writer-proof/": 3,
+				"local-indus /ordering-ahead-for-eid/": 3,
+				"local-indus /retail/": 3,
+				"local-indus /sixty-years-in-the-balti-triangle/": 3,
+				"local-indus /supporting-the-trade-through-ramadan/": 3,
+				"local-indus /terms/": 3,
+				"local-indus /wholesale/": 3,
+				"local-indus /why-independents-still-matter/": 3,
+				"local-mamas /": 1,
+				"local-mamas /cart/": 1,
+				"local-mamas /checkout/": 1,
+				"local-mamas /contact/": 1,
+				"local-mamas /gifts/": 1,
+				"local-mamas /help/": 1,
+				"local-mamas /my-account/": 1,
+				"local-mamas /product-category/bundles/": 1,
+				"local-mamas /product/cr-calibration-product/": 1,
+				"local-mamas /product/fixture-simple-product/": 1,
+				"local-mamas /product/fixture-variable-product/": 1,
+				"local-mamas /saved-items/": 1,
+				"local-mamas /shop/": 1
+			},
+			"facts": {}
+		},
+		"sgs/site-header": {
+			"instances": {
+				"local-eye-care /": 1,
+				"local-eye-care /about/": 1,
+				"local-eye-care /cart/": 1,
+				"local-eye-care /checkout/": 1,
+				"local-eye-care /contact/": 1,
+				"local-eye-care /frames/cr-calibration-product/": 1,
+				"local-eye-care /frames/fixture-simple-product/": 1,
+				"local-eye-care /frames/fixture-variable-product/": 1,
+				"local-eye-care /help/": 1,
+				"local-eye-care /my-account/": 1,
+				"local-eye-care /prescription-lenses/": 1,
+				"local-eye-care /product-category/uncategorized/": 1,
+				"local-eye-care /shop/": 1,
+				"local-indus /": 1,
+				"local-indus /about/": 1,
+				"local-indus /about/careers/": 1,
+				"local-indus /about/certifications/": 1,
+				"local-indus /about/community/": 1,
+				"local-indus /about/our-story/": 1,
+				"local-indus /about/sustainability/": 1,
+				"local-indus /apply/": 1,
+				"local-indus /blog/": 1,
+				"local-indus /brands/": 1,
+				"local-indus /brands/green-leaf/": 1,
+				"local-indus /brands/lemon-tree/": 1,
+				"local-indus /brands/sanam/": 1,
+				"local-indus /brands/shan/": 1,
+				"local-indus /catalogue/": 1,
+				"local-indus /contact/": 1,
+				"local-indus /delivery/": 1,
+				"local-indus /falak-rice-exclusive-uk-distribution/": 1,
+				"local-indus /faqs/": 1,
+				"local-indus /food-service/": 1,
+				"local-indus /inside-our-birmingham-packing-line/": 1,
+				"local-indus /manufacturing/": 1,
+				"local-indus /motion-writer-proof/": 1,
+				"local-indus /ordering-ahead-for-eid/": 1,
+				"local-indus /retail/": 1,
+				"local-indus /sixty-years-in-the-balti-triangle/": 1,
+				"local-indus /supporting-the-trade-through-ramadan/": 1,
+				"local-indus /terms/": 1,
+				"local-indus /wholesale/": 1,
+				"local-indus /why-independents-still-matter/": 1,
+				"local-mamas /": 1,
+				"local-mamas /cart/": 1,
+				"local-mamas /checkout/": 1,
+				"local-mamas /contact/": 1,
+				"local-mamas /gifts/": 1,
+				"local-mamas /help/": 1,
+				"local-mamas /my-account/": 1,
+				"local-mamas /product-category/bundles/": 1,
+				"local-mamas /product/cr-calibration-product/": 1,
+				"local-mamas /product/fixture-simple-product/": 1,
+				"local-mamas /product/fixture-variable-product/": 1,
+				"local-mamas /saved-items/": 1,
+				"local-mamas /shop/": 1
+			},
+			"facts": {}
+		},
+		"sgs/site-header-row": {
+			"instances": {
+				"local-eye-care /": 2,
+				"local-eye-care /about/": 2,
+				"local-eye-care /cart/": 2,
+				"local-eye-care /checkout/": 2,
+				"local-eye-care /contact/": 2,
+				"local-eye-care /frames/cr-calibration-product/": 2,
+				"local-eye-care /frames/fixture-simple-product/": 2,
+				"local-eye-care /frames/fixture-variable-product/": 2,
+				"local-eye-care /help/": 2,
+				"local-eye-care /my-account/": 2,
+				"local-eye-care /prescription-lenses/": 2,
+				"local-eye-care /product-category/uncategorized/": 2,
+				"local-eye-care /shop/": 2,
+				"local-indus /": 2,
+				"local-indus /about/": 2,
+				"local-indus /about/careers/": 2,
+				"local-indus /about/certifications/": 2,
+				"local-indus /about/community/": 2,
+				"local-indus /about/our-story/": 2,
+				"local-indus /about/sustainability/": 2,
+				"local-indus /apply/": 2,
+				"local-indus /blog/": 2,
+				"local-indus /brands/": 2,
+				"local-indus /brands/green-leaf/": 2,
+				"local-indus /brands/lemon-tree/": 2,
+				"local-indus /brands/sanam/": 2,
+				"local-indus /brands/shan/": 2,
+				"local-indus /catalogue/": 2,
+				"local-indus /contact/": 2,
+				"local-indus /delivery/": 2,
+				"local-indus /falak-rice-exclusive-uk-distribution/": 2,
+				"local-indus /faqs/": 2,
+				"local-indus /food-service/": 2,
+				"local-indus /inside-our-birmingham-packing-line/": 2,
+				"local-indus /manufacturing/": 2,
+				"local-indus /motion-writer-proof/": 2,
+				"local-indus /ordering-ahead-for-eid/": 2,
+				"local-indus /retail/": 2,
+				"local-indus /sixty-years-in-the-balti-triangle/": 2,
+				"local-indus /supporting-the-trade-through-ramadan/": 2,
+				"local-indus /terms/": 2,
+				"local-indus /wholesale/": 2,
+				"local-indus /why-independents-still-matter/": 2,
+				"local-mamas /": 2,
+				"local-mamas /cart/": 2,
+				"local-mamas /checkout/": 2,
+				"local-mamas /contact/": 2,
+				"local-mamas /gifts/": 2,
+				"local-mamas /help/": 2,
+				"local-mamas /my-account/": 2,
+				"local-mamas /product-category/bundles/": 2,
+				"local-mamas /product/cr-calibration-product/": 2,
+				"local-mamas /product/fixture-simple-product/": 2,
+				"local-mamas /product/fixture-variable-product/": 2,
+				"local-mamas /saved-items/": 2,
+				"local-mamas /shop/": 2
+			},
+			"facts": {}
+		},
+		"sgs/social-icons": {
+			"instances": {
+				"local-eye-care /": 1,
+				"local-indus /": 4,
+				"local-indus /about/": 4,
+				"local-indus /about/careers/": 4,
+				"local-indus /about/certifications/": 4,
+				"local-indus /about/community/": 4,
+				"local-indus /about/our-story/": 4,
+				"local-indus /about/sustainability/": 4,
+				"local-indus /apply/": 4,
+				"local-indus /blog/": 4,
+				"local-indus /brands/": 4,
+				"local-indus /brands/green-leaf/": 4,
+				"local-indus /brands/lemon-tree/": 4,
+				"local-indus /brands/sanam/": 4,
+				"local-indus /brands/shan/": 4,
+				"local-indus /catalogue/": 4,
+				"local-indus /contact/": 4,
+				"local-indus /delivery/": 4,
+				"local-indus /falak-rice-exclusive-uk-distribution/": 4,
+				"local-indus /faqs/": 4,
+				"local-indus /food-service/": 4,
+				"local-indus /inside-our-birmingham-packing-line/": 4,
+				"local-indus /manufacturing/": 4,
+				"local-indus /motion-writer-proof/": 4,
+				"local-indus /ordering-ahead-for-eid/": 4,
+				"local-indus /retail/": 4,
+				"local-indus /sixty-years-in-the-balti-triangle/": 4,
+				"local-indus /supporting-the-trade-through-ramadan/": 4,
+				"local-indus /terms/": 4,
+				"local-indus /wholesale/": 4,
+				"local-indus /why-independents-still-matter/": 4,
+				"local-mamas /": 1,
+				"local-mamas /cart/": 1,
+				"local-mamas /checkout/": 1,
+				"local-mamas /contact/": 1,
+				"local-mamas /gifts/": 1,
+				"local-mamas /help/": 1,
+				"local-mamas /my-account/": 1,
+				"local-mamas /product-category/bundles/": 1,
+				"local-mamas /product/cr-calibration-product/": 1,
+				"local-mamas /product/fixture-simple-product/": 1,
+				"local-mamas /product/fixture-variable-product/": 1,
+				"local-mamas /saved-items/": 1,
+				"local-mamas /shop/": 1
+			},
+			"facts": {}
+		},
+		"sgs/testimonial": {
+			"instances": {
+				"local-indus /": 10
+			},
+			"facts": {}
+		},
+		"sgs/testimonial-slider": {
+			"instances": {
+				"local-indus /": 1
+			},
+			"facts": {}
+		},
+		"sgs/text": {
+			"instances": {
+				"local-eye-care /": 123,
+				"local-eye-care /about/": 21,
+				"local-eye-care /cart/": 9,
+				"local-eye-care /checkout/": 9,
+				"local-eye-care /contact/": 12,
+				"local-eye-care /frames/cr-calibration-product/": 70,
+				"local-eye-care /frames/fixture-simple-product/": 70,
+				"local-eye-care /frames/fixture-variable-product/": 70,
+				"local-eye-care /help/": 30,
+				"local-eye-care /my-account/": 10,
+				"local-eye-care /prescription-lenses/": 32,
+				"local-eye-care /product-category/uncategorized/": 10,
+				"local-eye-care /shop/": 10,
+				"local-indus /": 76,
+				"local-indus /about/": 97,
+				"local-indus /about/careers/": 88,
+				"local-indus /about/certifications/": 88,
+				"local-indus /about/community/": 76,
+				"local-indus /about/our-story/": 79,
+				"local-indus /about/sustainability/": 76,
+				"local-indus /apply/": 74,
+				"local-indus /blog/": 65,
+				"local-indus /brands/": 79,
+				"local-indus /brands/green-leaf/": 74,
+				"local-indus /brands/lemon-tree/": 74,
+				"local-indus /brands/sanam/": 79,
+				"local-indus /brands/shan/": 74,
+				"local-indus /catalogue/": 87,
+				"local-indus /contact/": 74,
+				"local-indus /delivery/": 77,
+				"local-indus /falak-rice-exclusive-uk-distribution/": 65,
+				"local-indus /faqs/": 70,
+				"local-indus /food-service/": 92,
+				"local-indus /inside-our-birmingham-packing-line/": 65,
+				"local-indus /manufacturing/": 90,
+				"local-indus /motion-writer-proof/": 79,
+				"local-indus /ordering-ahead-for-eid/": 65,
+				"local-indus /retail/": 81,
+				"local-indus /sixty-years-in-the-balti-triangle/": 65,
+				"local-indus /supporting-the-trade-through-ramadan/": 65,
+				"local-indus /terms/": 86,
+				"local-indus /wholesale/": 81,
+				"local-indus /why-independents-still-matter/": 65,
+				"local-mamas /": 91,
+				"local-mamas /cart/": 12,
+				"local-mamas /checkout/": 12,
+				"local-mamas /contact/": 16,
+				"local-mamas /gifts/": 47,
+				"local-mamas /help/": 57,
+				"local-mamas /my-account/": 11,
+				"local-mamas /product-category/bundles/": 22,
+				"local-mamas /product/cr-calibration-product/": 42,
+				"local-mamas /product/fixture-simple-product/": 42,
+				"local-mamas /product/fixture-variable-product/": 42,
+				"local-mamas /saved-items/": 10,
+				"local-mamas /shop/": 22
+			},
+			"facts": {
+				"renders-tag": {
+					"br": {
+						"state": "yes",
+						"evidence": [
+							"local-eye-care /frames/cr-calibration-product/ @1440 .wp-block-sgs-text[8] br",
+							"local-eye-care /frames/cr-calibration-product/ @375 .wp-block-sgs-text[8] br",
+							"local-eye-care /frames/cr-calibration-product/ @768 .wp-block-sgs-text[8] br"
+						]
+					}
+				}
+			}
+		},
+		"sgs/timeline": {
+			"instances": {
+				"local-indus /": 1,
+				"local-indus /about/": 1,
+				"local-indus /about/our-story/": 1
+			},
+			"facts": {}
+		},
+		"sgs/trust-bar": {
+			"instances": {
+				"local-mamas /": 2,
+				"local-mamas /cart/": 1,
+				"local-mamas /checkout/": 1,
+				"local-mamas /contact/": 1,
+				"local-mamas /gifts/": 1,
+				"local-mamas /help/": 1,
+				"local-mamas /my-account/": 1,
+				"local-mamas /product-category/bundles/": 1,
+				"local-mamas /product/cr-calibration-product/": 1,
+				"local-mamas /product/fixture-simple-product/": 1,
+				"local-mamas /product/fixture-variable-product/": 1,
+				"local-mamas /saved-items/": 1,
+				"local-mamas /shop/": 1
+			},
+			"facts": {}
+		},
+		"sgs/wishlist-panel": {
+			"instances": {
+				"local-eye-care /cart/": 1,
+				"local-eye-care /checkout/": 1,
+				"local-mamas /saved-items/": 1
+			},
+			"facts": {}
+		}
+	},
+	"notSeen": [
+		"sgs/accordion",
+		"sgs/accordion-item",
+		"sgs/before-after",
+		"sgs/buybox",
+		"sgs/collapsible-text",
+		"sgs/countdown-timer",
+		"sgs/diagram-dimension",
+		"sgs/feature-grid",
+		"sgs/filter-search",
+		"sgs/form-field-address",
+		"sgs/form-field-date",
+		"sgs/form-field-hidden",
+		"sgs/form-field-number",
+		"sgs/form-field-radio",
+		"sgs/google-reviews",
+		"sgs/image-sequence",
+		"sgs/info-box",
+		"sgs/language-switch",
+		"sgs/local-time",
+		"sgs/measured-diagram",
+		"sgs/modal",
+		"sgs/notice-message",
+		"sgs/physics-canvas",
+		"sgs/post-grid",
+		"sgs/pricing-table",
+		"sgs/product-faq",
+		"sgs/product-faq-item",
+		"sgs/store-selector",
+		"sgs/tab",
+		"sgs/table-of-contents",
+		"sgs/tabs",
+		"sgs/team-member",
+		"sgs/trustpilot-reviews",
+		"sgs/whatsapp-cta"
+	],
+	"conflicts": {
+		"sgs/icon-list": {
+			"renders-tag=br": "local-eye-care / @375 .wp-block-sgs-icon-list[2] span.sgs-icon-list__text > a.sgs-icon-list__item-link > br"
+		},
+		"sgs/nav-drawer": {
+			"renders-role=dialog": "local-indus / @375 .wp-block-sgs-nav-drawer[0]",
+			"renders-aria=aria-modal": "local-indus / @375 .wp-block-sgs-nav-drawer[0]"
+		},
+		"sgs/option-picker": {
+			"renders-tag=fieldset": "local-mamas /shop/ @375 .wp-block-sgs-option-picker[0]"
+		}
+	},
+	"outsideVocabulary": {}
+}
