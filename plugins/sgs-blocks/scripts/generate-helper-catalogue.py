@@ -221,6 +221,45 @@ def _php_functions(path: Path) -> list[dict]:
     return out
 
 
+def _helper_prints() -> dict[str, str]:
+    """What each PHP helper can print: the tags, ARIA roles and ARIA attributes read by the identification-facts
+    extractor (scripts/lib/identity_sources.py + identity_scan.py, the reader `block_identity_facts.py` uses) from the
+    helper's body and every repo function it calls. A tag or role taken from a variable is named as such (a block's
+    own call settles it there); a call into WooCommerce or WordPress core markup is named too."""
+    lib = Path(__file__).resolve().parent / "lib"
+    if str(lib) not in sys.path:
+        sys.path.insert(0, str(lib))
+    import identity_scan as scan_mod  # noqa: PLC0415
+    import identity_sources as src_mod  # noqa: PLC0415
+    index = src_mod.RepoIndex(REPO, [HELPERS_DIR], BLOCKS / "src" / "blocks", BLOCKS / "src")
+    out: dict[str, str] = {}
+    for name, units in index.functions.items():
+        own = [u for u in units if u.file.parent == HELPERS_DIR and u.file.name.startswith("helpers-")]
+        if not own:
+            continue
+        reached, ext = index.closure(own[:1])
+        tags, roles, arias, dyn = set(), set(), set(), set()
+        for u in reached:
+            sc = scan_mod.scan(index.unit_tokens(u))
+            tags |= set(sc.tags)
+            roles |= set(sc.roles)
+            arias |= set(sc.arias)
+            dyn |= {d.fact[len("renders-"):] for d in sc.dyn}
+        parts = []
+        if tags:
+            parts.append("tags " + ", ".join(sorted(tags)))
+        if roles:
+            parts.append("roles " + ", ".join(sorted(roles)))
+        if arias:
+            parts.append("aria " + ", ".join(sorted(arias)))
+        if dyn:
+            parts.append("from a variable: " + ", ".join(sorted(dyn)))
+        if ext:
+            parts.append("calls " + ", ".join(sorted(ext)))
+        out[name] = "; ".join(parts) or "no markup"
+    return out
+
+
 def build_php_section() -> list[str]:
     out: list[str] = []
     out.append("### PHP helper functions — `includes/helpers-*.php`")
@@ -230,9 +269,13 @@ def build_php_section() -> list[str]:
         "grouped by file, with the one-line purpose from its own docblock (or the "
         "adjacent `//` comment when it has no docblock). **UNDOCUMENTED** means "
         "neither exists in source — that is a real gap in the code, not a gap in "
-        "this catalogue; add a docblock rather than inferring a purpose here."
+        "this catalogue; add a docblock rather than inferring a purpose here. "
+        "**Prints** is what calling the helper can put on the page (tags, ARIA roles, ARIA attributes), read by the "
+        "identification-facts extractor (`scripts/lib/block_identity_facts.py`) from the helper and every repo "
+        "function it calls."
     )
     out.append("")
+    prints = _helper_prints()
     files = sorted(HELPERS_DIR.glob(HELPERS_GLOB))
     total_fns = 0
     for f in files:
@@ -244,12 +287,13 @@ def build_php_section() -> list[str]:
             out.append("_No top-level `sgs_*` functions found._")
             out.append("")
             continue
-        out.append("| Function | Signature | Purpose |")
-        out.append("|---|---|---|")
+        out.append("| Function | Signature | Purpose | Prints |")
+        out.append("|---|---|---|---|")
         for fn in fns:
             sig = _clip(fn["signature"].replace("|", chr(92) + "|"), 110)
             purpose = _clip(fn["purpose"].replace("|", chr(92) + "|"), 140)
-            out.append(f"| `{fn['name']}` | `{sig}` | {purpose} |")
+            printed = _clip(prints.get(fn["name"], "no markup").replace("|", chr(92) + "|"), 160)
+            out.append(f"| `{fn['name']}` | `{sig}` | {purpose} | {printed} |")
         out.append("")
     out.append(
         f"**{len(files)} files, {total_fns} functions.** Regenerate with "
