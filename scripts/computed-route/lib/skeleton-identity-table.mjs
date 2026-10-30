@@ -2,9 +2,10 @@
 // the framework database, read once per connection, read-only. Sources, all DB rows (FP-1):
 //   - `block_identity_facts` (fact, value, state, source): a block's state for a fact and value is `yes` when any row says
 //     yes, `no` only when every row says no, and `unknown` with no row at all, so a missing row never rules a block out;
-//   - `block_composition`: what a block can hold. With no `accepts_allowed_blocks` list, a wrapper shell, a section root or a
-//     block whose children are free content or a section (`container_kind` `content` or `section`) holds any block (Bean
-//     2026-10-30: an unrestricted container); a block listing `accepts_allowed_blocks` holds those, followed through every
+//   - `block_composition`: what a block can hold. With no `accepts_allowed_blocks` list, a wrapper shell, a section root, a
+//     block whose children are free content or a section (`container_kind` `content` or `section`), or any block that prints
+//     its inner blocks (`printsInner`, whatever its container kind) holds any block, as WordPress lets any block in where no
+//     allowed list is set (Bean 2026-10-30: an unrestricted container); a block listing `accepts_allowed_blocks` holds those, followed through every
 //     block they hold; any other block holds none and draws everything it shows;
 //   - `block_attributes`: the values a block's text settings hold (`enum_values` of a `text-content` setting, such as the
 //     breadcrumbs' separator glyphs), read as the `accepts-value` fact;
@@ -14,6 +15,8 @@
 // yes, no only when every row present says no, unknown with none.
 // `yesShare( fact, value )` is the share of the blocks with rows for the fact that show the value: a fact most blocks show
 // (an `aria-label` every shared helper prints) names no block.
+import fs from 'fs';
+import path from 'path';
 import { roleTags } from './skeleton-identity-roles.mjs';
 
 const cache = new WeakMap();
@@ -21,7 +24,24 @@ const K = ( fact, value ) => `${ fact }\u0000${ value }`;
 
 // `query( sql )` → rows: the read-only connection's query (lib/skeleton-facts.mjs::loadFacts `q`). A database without the
 // identity table (an older copy) gives an empty table, so every fact is unknown and nothing is ruled out.
-export function identityTable( query ) {
+// Whether a block prints its inner blocks, read from its own folder the way the identity extractor reads it
+// (plugins/sgs-blocks/scripts/lib/identity_markup.py::inner_blocks): its editor offers InnerBlocks (or its save keeps them) and
+// its render reads `$content` or `$block->inner_blocks`, comments set aside. A block outside the repository reads false.
+function printsInner( codeRepo, block ) {
+	const dir = codeRepo && /^sgs\//.test( block ) ? path.join( codeRepo, 'plugins/sgs-blocks/src/blocks', block.slice( 4 ) ) : null;
+	if ( ! dir || ! fs.existsSync( dir ) ) {
+		return false;
+	}
+	const files = fs.readdirSync( dir );
+	const read = ( list ) => list.map( ( f ) => fs.readFileSync( path.join( dir, f ), 'utf8' ) ).join( '\n' );
+	const code = read( files.filter( ( f ) => f.endsWith( '.php' ) ) ).replace( /\/\*[\s\S]*?\*\//g, '' ).replace( /(^|[^:'"])(\/\/|#)[^\n]*/g, '$1' );
+	const save = files.includes( 'save.js' ) ? read( [ 'save.js' ] ) : '';
+	const edit = read( files.filter( ( f ) => /\.jsx?$/.test( f ) && ! /^(save|view)/.test( f ) ) );
+	const offers = /InnerBlocks\.Content|useInnerBlocksProps\.save/.test( save ) || /\bInnerBlocks\b|useInnerBlocksProps/.test( edit );
+	return offers && /\$content\b|->\s*inner_blocks\b/.test( code );
+}
+
+export function identityTable( query, codeRepo = null ) {
 	if ( cache.has( query ) ) {
 		return cache.get( query );
 	}
@@ -92,7 +112,7 @@ export function identityTable( query ) {
 		heldCache.set( block, new Set() );
 		const c = composition.get( block );
 		let out = new Set();
-		if ( ! c?.accepts_allowed_blocks && ( 'wrapper-shell' === c?.composition_role || 'section-root' === c?.composition_role || [ 'content', 'section' ].includes( c?.container_kind ) ) ) {
+		if ( ! c?.accepts_allowed_blocks && ( 'wrapper-shell' === c?.composition_role || 'section-root' === c?.composition_role || [ 'content', 'section' ].includes( c?.container_kind ) || printsInner( codeRepo, block ) ) ) {
 			out = 'any';
 		} else if ( c?.accepts_allowed_blocks ) {
 			let list = [];

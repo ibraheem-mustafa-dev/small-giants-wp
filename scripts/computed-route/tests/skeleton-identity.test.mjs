@@ -212,3 +212,16 @@ test( 'facts are meanings, never literal tags: a heading tag is heading, an href
 	assert.deepEqual( roleOf( { tag: 'li' }, at( {}, 'ul' ) ), { role: 'listitem', explicit: false } );
 	assert.ok( [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6' ].every( ( t ) => tagRoles.get( t )?.has( 'heading' ) ), 'a block that can print any heading tag can show heading' );
 } );
+
+test( 'MUST FAIL: a block that prints its inner blocks with no allowed list accepts any block whatever its container kind, so a missing fact never rules it out; a restricted block still is', async () => {
+	const { makeIdentity } = await import( '../lib/skeleton-identity.mjs' );
+	const { fixtureModel } = await import( './fixtures/fixture-facts.mjs' );
+	const facts = planted( [ ...ctxAll( 'sgs/form-step' ), [ 'sgs/form-step', 'renders-role', 'tablist', 'no' ], [ 'sgs/multi-button', 'renders-role', 'tablist', 'no' ], [ 'sgs/button', 'renders-role', 'tablist', 'no' ] ] );
+	const composition = facts.composition[ 'sgs/form-step' ];
+	assert.deepEqual( [ composition.accepts, composition.container_kind ], [ null, 'layout' ], 'the case: no allowed list, a layout container kind' );
+	const m = fixtureModel( inv( TABLIST ) );
+	const id = makeIdentity( { m, facts, surface: { kind: 'page' } } );
+	assert.equal( id.table.holds( 'sgs/form-step' ), 'any', 'its editor offers InnerBlocks and its render prints $content' );
+	assert.equal( id.ruledOut( 'sgs/form-step', m.byKey[ 'Root/2#0' ] ), null, 'an accept-any block is never ruled out by a missing fact' );
+	assert.match( id.ruledOut( 'sgs/multi-button', m.byKey[ 'Root/2#0' ] )?.why ?? '', /never shows renders-role tablist/, 'a restricted block (its allowed list) still is' );
+} );

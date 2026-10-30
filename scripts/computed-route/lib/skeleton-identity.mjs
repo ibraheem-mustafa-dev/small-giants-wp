@@ -41,7 +41,7 @@ export function contextOf( surface = {} ) {
 // { region, ruledOut( block, e ), match( e, result ) → null | result, check( e, result ) → result, table }.
 export function makeIdentity( { m, facts, surface = {}, logicOf = () => null, carousels = new Set(), owned = new Set() } ) {
 	const R = facts.decisions.rules?.identity;
-	const table = identityTable( facts.q );
+	const table = identityTable( facts.q, facts.codeRepo );
 	if ( ! R || ! table.blocks.length ) {
 		return null;
 	}
