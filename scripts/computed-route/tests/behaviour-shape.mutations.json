@@ -43,14 +43,14 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "return computed ? negativeExpr( exprs[ Number( computed[ 1 ] ) ] ) : /^-\\s*\\S/.test( args[ 0 ] );",
+		"find": "return x.nodes.length ? negativeExpr( x.nodes[ 0 ] ) : /^-\\s*\\S/.test( x.text );",
 		"replace": "return true;",
 		"why": "a track moving right is the pinned track"
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "args.slice( 1 ).every( ( a ) => /^0(?:px)?$/.test( a ) )",
-		"replace": "true",
+		"find": "3 === c.args.length && c.args.slice( 1 ).every( zero )",
+		"replace": "3 === c.args.length",
 		"why": "a track moving down is the pinned track"
 	},
 	{
@@ -145,8 +145,8 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "c.arguments[ 0 ].properties.some( ( q ) => 'top' === ( q.key?.name ?? q.key?.value ) )",
-		"replace": "true",
+		"find": "callsOf( codeTree( r.source?.code ), 'scrollTo' ).some( ( c ) => optionKeys( c ).includes( 'top' ) );",
+		"replace": "callsOf( codeTree( r.source?.code ), 'scrollTo' ).length > 0;",
 		"why": "a scrollTo with only a left offset scrolls to a row"
 	},
 	{
@@ -166,5 +166,71 @@
 		"find": "return negativeExpr( n.left ) !== negativeExpr( n.right );",
 		"replace": "return false;",
 		"why": "a negative product is not read"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "const strip = touchStripBeside( pinnedSectionOf( r, ctx ), ctx );",
+		"replace": "const strip = true;",
+		"why": "every pinned track is a carousel below the pin"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "&& /^(?:x|both)\\b/.test( String( staticStyle( e, 'scroll-snap-type' ) ?? '' ).trim() ) );",
+		"replace": ");",
+		"why": "a track that does not snap is the touch strip"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "&& /^(?:auto|scroll)$/.test( String( staticStyle( e, 'overflow-x' ) ?? '' ).trim() )",
+		"replace": "",
+		"why": "a clipped track is the touch strip"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "const hit = nodesOf( codeTree( text ), ( n ) => 'BinaryExpression' === n.type && /^>=?$/.test( n.operator ) && readsScrollY( n.left ) && 'NumericLiteral' === n.right.type )[ 0 ];",
+		"replace": "const hit = nodesOf( codeTree( text ), ( n ) => 'BinaryExpression' === n.type && /^>=?$/.test( n.operator ) && 'NumericLiteral' === n.right.type )[ 0 ];",
+		"why": "any comparison is the scroll threshold"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "for ( const text of [ r.source?.code, ...props( r ).map( ( q ) => q.formula ) ] ) {\n\t\tconst hit = nodesOf( codeTree( text ), ( n ) => 'BinaryExpression' === n.type && /^>=?$/",
+		"replace": "for ( const text of [ r.source?.code, r.trigger?.detail, ...props( r ).map( ( q ) => q.formula ) ] ) {\n\t\tconst hit = nodesOf( codeTree( String( text ).replace( /^.*:\\s*/, '' ) ), ( n ) => 'BinaryExpression' === n.type && /^>=?$/",
+		"why": "the trigger's words are read as code"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "const isIndexed = ( r ) => steps( r ).some( ( c ) => 'BinaryExpression' === optionValue( c, 'left' )?.type && '*' === optionValue( c, 'left' ).operator );",
+		"replace": "const isIndexed = ( r ) => steps( r ).length > 0;",
+		"why": "a fixed-offset step is an indexed dot"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "const steps = ( r ) => callsOf( codeTree( r.source?.code ), 'scrollTo' ).filter( ( c ) => optionKeys( c ).includes( 'left' ) );",
+		"replace": "const steps = ( r ) => [ ...callsOf( codeTree( r.source?.code ), 'scrollTo' ), ...callsOf( codeTree( r.source?.code ), 'scrollBy' ) ].filter( ( c ) => optionKeys( c ).includes( 'left' ) );",
+		"why": "a scrollBy is a step"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "&& ( pin || scrollFraction( q ) ) );",
+		"replace": "&& true );",
+		"why": "a scale not read from the scroll is a progress bar"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "( 'BinaryExpression' === n.type && '/' === n.operator && readsScrollY( n.left ) ) ||",
+		"replace": "",
+		"why": "the scroll over a distance is not a fraction"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "const axis = 'scaley' === cssCallOf( bar ).name ? 'bar-y' : 'bar-x';",
+		"replace": "const axis = 'bar-x';",
+		"why": "a vertical bar is written horizontal"
+	},
+	{
+		"file": "lib/motion-record-text.mjs",
+		"find": "export const readsScrollY = ( n ) => ( 'Identifier' === n?.type && /^(?:scrollY|pageYOffset)$/.test( n.name ) ) ||",
+		"replace": "export const readsScrollY = ( n ) => ( 'Identifier' === n?.type ) ||",
+		"why": "any name is the scroll position"
 	}
 ]

@@ -97,3 +97,31 @@ export function stringPieces( n ) {
 	}
 	return [ n ];
 }
+
+// Whether an expression reads the page's vertical scroll position (`scrollY`, `pageYOffset`, as a name or a member).
+export const readsScrollY = ( n ) => ( 'Identifier' === n?.type && /^(?:scrollY|pageYOffset)$/.test( n.name ) ) || ( 'MemberExpression' === n?.type && ! n.computed && /^(?:scrollY|pageYOffset)$/.test( n.property?.name ?? '' ) );
+
+// The keys of a call's options object argument (`el.scrollTo( { top, behavior } )`), or [].
+export const optionKeys = ( call, i = 0 ) => ( 'ObjectExpression' === call?.arguments[ i ]?.type ? call.arguments[ i ].properties.map( ( q ) => q.key?.name ?? q.key?.value ) : [] );
+// The value node of one key of a call's options object argument, or null.
+export const optionValue = ( call, key, i = 0 ) => ( 'ObjectExpression' === call?.arguments[ i ]?.type ? call.arguments[ i ].properties.find( ( q ) => key === ( q.key?.name ?? q.key?.value ) )?.value ?? null : null );
+
+// The CSS function a property write produces, read from its formula's syntax tree: { name (lower case), args: [ { text,
+// nodes } ] } where `nodes` are the computed expressions inside an argument (a formula written as the function itself,
+// `scaleX( p )`, gives each argument as a node). Without a formula that parses, the stated end value is read as the CSS
+// value it is. null when the value is not one CSS function.
+export function cssCallOf( q ) {
+	const expr = expressionOf( codeTree( q?.formula ) );
+	if ( 'CallExpression' === expr?.type && 'Identifier' === expr.callee.type ) {
+		return { name: expr.callee.name.toLowerCase(), args: expr.arguments.map( ( a ) => ( { text: null, nodes: [ a ] } ) ) };
+	}
+	const pieces = expr ? stringPieces( expr ) : 'string' === typeof q?.to ? [ q.to ] : [];
+	const exprs = pieces.filter( ( x ) => 'string' !== typeof x );
+	const value = pieces.map( ( x ) => ( 'string' === typeof x ? x : `\u0001${ exprs.indexOf( x ) }\u0001` ) ).join( '' );
+	const fn = /^\s*([a-z][\w-]*)\(([^()]*)\)\s*$/i.exec( value );
+	if ( ! fn ) {
+		return null;
+	}
+	const args = fn[ 2 ].split( ',' ).map( ( a ) => a.trim() ).map( ( text ) => ( { text, nodes: [ ...text.matchAll( /\u0001(\d+)\u0001/g ) ].map( ( m ) => exprs[ Number( m[ 1 ] ) ] ) } ) );
+	return { name: fn[ 1 ].toLowerCase(), args };
+}

@@ -47,7 +47,7 @@ const PIN_TEMPLATE = { elements: {
 	'Site/10': { realParent: 'Site/31', srcLine: 32, ...style( [ 'display', 'flex' ] ), parentChain: [ 'Site/31', 'Site/30', 'Site/1' ] },
 } };
 
-const HEADER = rec( 'S-1', { mechanism: 'js-style-write', element: { dc: 'Site', template_tpl_id: '10', selector: 'ref setHeaderEl', description: 'Header bar' }, trigger: { type: 'scroll-position', detail: 'window scroll: scrollY > 8' }, source: { code: 'this._headerEl.style.boxShadow = window.scrollY > 8 ?' },
+const HEADER = rec( 'S-1', { mechanism: 'js-style-write', element: { dc: 'Site', template_tpl_id: '10', selector: 'ref setHeaderEl', description: 'Header bar' }, trigger: { type: 'scroll-position', detail: 'window scroll: scrollY > 8' }, source: { code: "this._headerEl.style.boxShadow = window.scrollY > 8 ? '0 10px 30px -18px rgba(20,40,60,.35)' : 'none'" },
 	properties: [ { property: 'box-shadow', from: 'none', to: '0 10px 30px -18px rgba(20,40,60,.35)' } ], duration_ms: 300 } );
 const TEMPLATE = { elements: {
 	'Site/5': { realParent: 'Site/1', srcLine: 5, ...style( [ 'display', 'flex' ] ), parentChain: [ 'Site/1' ] },
