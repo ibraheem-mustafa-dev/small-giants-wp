@@ -70,6 +70,9 @@ import { injectedSvgWrites } from './lib/fill-injected-svg.mjs';
 import { assertCurrent } from './lib/freshness.mjs';
 import { liveReadSlots } from './lib/written-slot.mjs';
 import { renderScoped, otherRenderRows } from './lib/fill-render.mjs';
+import { renderSourceWrites, loadRenderParts, tagBlocksOf } from './lib/fill-render-source.mjs';
+import { inventoryModel } from './lib/skeleton-model.mjs';
+import { servedKey } from './lib/key-space.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -220,8 +223,8 @@ export async function fillSurface( o ) {
 		const defectLooks = addDefectLooks( { reads, jobs: nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( { id: t.id, finder: t.finder } ) ) ), facts, draftDefects: intakeParts.draftDefects, rootComponent: intakeParts.rootComponent } );
 		const ledgerFile = path.join( buildDir, 'qa', 'divergences.json' );
 		const draftFolder = draftFolderOf( { draftDir: o.draftDir, entry, repo, client: o.client } );
-		const result = fillTree( {
-			tree, nodes, reads, db, calFor, origin: reads.origin, draftFolder,
+		const fillOptions = {
+			db, origin: reads.origin, draftFolder,
 			// FR-48-30: the confirmed page map (a draft's #/route link is written as that page's permalink); null before intake.
 			pages: fs.existsSync( path.join( buildDir, 'page-map.json' ) ) ? JSON.parse( fs.readFileSync( path.join( buildDir, 'page-map.json' ), 'utf8' ) ) : null,
 			// FR-48-39: the uploaded images of the surface's site (a null map when media-upload has not run).
@@ -230,9 +233,26 @@ export async function fillSurface( o ) {
 			fixtures,
 			ledger: loadLedger( ledgerFile ),
 			ledgerStates: Object.entries( entry.states || {} ).filter( ( [ , v ] ) => null === v ).map( ( [ k ] ) => k ),
+		};
+		const result = fillTree( { tree, nodes, reads, calFor, ...fillOptions } );
+		// The settings each node's block draws only in another surface's render are read from that render's part, the draft
+		// element the same content occupies there (lib/fill-render-source.mjs); those no part answers are listed with their reason.
+		const second = await renderSourceWrites( {
+			tree, nodes, refOf, calFor, fullCalFor: calibrationLoader( entry.site, o.cache ), barM: inventory ? inventoryModel( inventory ) : null, tagBlocks: tagBlocksOf( db ),
+			parts: loadRenderParts( { intake: intakeData, inventoriesDir: path.join( buildDir, 'intake', 'inventories' ), records: fs.existsSync( handoffFile ) ? JSON.parse( fs.readFileSync( handoffFile, 'utf8' ) ).records || [] : [] } ),
+			finderOf: ( e ) => ( { tpl: servedKey( e.key, intakeParts.rootComponent ) } ),
+			read: async ( { nodes: list, part } ) => {
+				const partOpener = stateOpener( { entry: { states: {} }, skeleton: part.entry, record: part.record, facts, rootComponent: intakeParts.rootComponent, widthKeys } );
+				log( `render part ${ part.slug }: ${ partOpener?.state ? describeWays( partOpener ) : 'no opener' }` );
+				return readDraft( { url: readUrlOf( { url, opener: partOpener, record: part.entry, routing: intakeData?.routing } ), nodes: list, opener: partOpener, headless: o.headless ?? true, sweep: false, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, logicRows: [], log } );
+			},
+			fill: ( x ) => fillTree( { ...fillOptions, ...x } ),
 		} );
-		// The settings each node's block draws only in another surface's render, listed so none is dropped silently.
-		result.unread.push( ...otherRenderRows( nodes.filter( ( n ) => n.targets.length ).map( ( n ) => ( { name: n.name, ref: refOf( flat[ n.index ] ) } ) ), calFor ).map( ( r ) => ( { node: r.node, block: r.block, kind: 'render', slot: '', settings: r.settings, reason: r.reason } ) ) );
+		result.writes.push( ...second.writes );
+		result.unmapped.push( ...second.unmapped );
+		result.notes.push( ...second.sources.map( ( x ) => `${ x.node }: settings drawn only in another render read from ${ x.part } (${ Math.round( x.share * 100 ) }% of the node's words, ${ x.slots } slots paired)` ) );
+		const answered = new Set( second.writes.map( ( w ) => `${ w.node }|${ w.attr }` ) );
+		result.unread.push( ...otherRenderRows( nodes.filter( ( n ) => n.targets.length ).map( ( n ) => ( { name: n.name, ref: refOf( flat[ n.index ] ) } ) ), calFor ).filter( ( r ) => ! [ ...second.sources, ...second.unread ].some( ( x ) => x.node === r.node ) ).map( ( r ) => ( { node: r.node, block: r.block, kind: 'render', slot: '', settings: r.settings, reason: r.reason } ) ), ...second.unread.map( ( u ) => ( { ...u, settings: u.settings.filter( ( a ) => ! answered.has( `${ u.node }|${ a }` ) ) } ) ).filter( ( u ) => u.settings.length ) );
 		// FR-48-81: each target's state looks, through the settings that hold their states.
 		const states = fillStates( { tree, nodes, reads, calFor, db, snapshot } );
 		result.writes.push( ...states.writes );

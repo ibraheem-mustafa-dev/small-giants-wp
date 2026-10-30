@@ -1,0 +1,9 @@
+[
+	{ "file": "lib/fill-render-source.mjs", "find": "for ( const kind of [ ...new Set( Object.values( other ) ) ] ) {", "replace": "for ( const kind of [] ) {", "why": "the old behaviour: the drawer-only settings are never read from the drawer" },
+	{ "file": "lib/fill-render-source.mjs", "find": "best.share < 0.5", "replace": "best.share < 0", "why": "a part showing none of the node's words would be its copy" },
+	{ "file": "lib/fill-render-source.mjs", "find": "parts.filter( ( p ) => p.context === kind )", "replace": "parts.filter( ( p ) => true )", "why": "a part of another render kind would answer for the drawer" },
+	{ "file": "lib/fill-render-source.mjs", "find": "if ( part ) {", "replace": "if ( true ) {", "why": "every slot would name the node itself" },
+	{ "file": "lib/fill-render-source.mjs", "find": "first.find( ( a ) => els.every( ( e ) => chain( e ).includes( a ) ) )", "replace": "first.find( ( a ) => els.some( ( e ) => chain( e ).includes( a ) ) )", "why": "a container would pair with one of its words' elements, not the element holding them all" },
+	{ "file": "lib/fill-render-source.mjs", "find": "draftRef: finderOf( self.el ?? partM.root )", "replace": "draftRef: finderOf( partM.root )", "why": "the panel would be the section's outer frame, not the element holding its links and card" },
+	{ "file": "lib/fill-render-source.mjs", "find": "state_keys: { ...keys, ...( st.state_keys || {} ) }", "replace": "state_keys: { ...( st.state_keys || {} ) }", "why": "a drawer section would be opened with the drawer shut" }
+]

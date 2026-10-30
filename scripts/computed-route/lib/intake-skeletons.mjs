@@ -48,17 +48,22 @@ import { carriedIds } from './skeleton-carried.mjs';
 import { siteOf } from './skeleton-context.mjs';
 import { componentScript } from './fill-form-success.mjs';
 import { pageLandmark } from './intake-page-landmark.mjs';
+import { RENDER_CONTEXTS } from './fill-render.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const SURFACE_KINDS = [ 'header', 'footer', 'drawer', 'menu', 'form', 'modal', 'global', 'page' ];
 // The census tags that are a CPT surface on their own, and the record kinds that may claim each.
 const CENSUS_CPT = { header: [ 'header' ], footer: [ 'footer' ], form: [ 'form' ], dialog: [ 'modal', 'drawer' ] };
 const ROOT_MARK = 'data-sgs-skeleton-root';
+// The surface kinds a block can be drawn in under its own render context (data/render-contexts.json).
+const CONTEXT_KINDS = new Set( Object.values( RENDER_CONTEXTS.byInstanceName || {} ) );
 const gap = ( construct, draftId, error ) => ( { construct, draftId, error } );
 const slug = ( s ) => String( s ).toLowerCase().replace( /[^a-z0-9]+/g, '-' ).replace( /^-+|-+$/g, '' ) || 'surface';
 
 // The record's template ids as strings; the root is the last (the most specific: a mega panel's own branch inside the
 // shared panel condition).
+// The states of a record that open something: a state key set to a value other than null or false.
+const openingStates = ( r ) => ( r.states || [] ).filter( ( st ) => Object.values( st.state_keys || {} ).some( ( v ) => null != v && false !== v ) );
 const tplsOf = ( r ) => ( null == r.template_tpl_id ? [] : [].concat( r.template_tpl_id ).map( String ) );
 
 // The tab panels of a menu record that holds several panels as states of one record: every state that opens it (not
@@ -91,7 +96,7 @@ export function surfaceRoots( { folder, census, records = null, files = exportFi
 	if ( ! recs ) {
 		const file = path.join( folder, 'surfaces.json' );
 		if ( ! fs.existsSync( file ) ) {
-			return { surfaces: [], parts: [], gaps: [ gap( 'surface-root', 'surfaces.json', 'the export has no surfaces.json, so no surface root is known' ) ] };
+			return { surfaces: [], parts: [], renderParts: [], gaps: [ gap( 'surface-root', 'surfaces.json', 'the export has no surfaces.json, so no surface root is known' ) ] };
 		}
 		recs = JSON.parse( fs.readFileSync( file, 'utf8' ) ).records || [];
 	}
@@ -99,7 +104,9 @@ export function surfaceRoots( { folder, census, records = null, files = exportFi
 	const components = new Set( census.rows.map( ( r ) => r.component ) );
 	const surfaces = [];
 	const parts = [];
+	const renderParts = [];
 	const slugs = new Set();
+	const partSlugs = new Set();
 	const byId = new Map( recs.map( ( r ) => [ r.id, r ] ) );
 	// The records a surface shows inside, root-most first (its `parent` chain): each one's root renders before the surface's
 	// own can (a signed-in account page before its tabs' panels). A record with no root the census holds, or whose root is
@@ -139,6 +146,20 @@ export function surfaceRoots( { folder, census, records = null, files = exportFi
 		}
 		if ( ! SURFACE_KINDS.includes( r.kind ) ) {
 			parts.push( { id: r.id, name: r.name, kind: r.kind, parent: r.parent ?? null, why: `a ${ r.kind } is a state or part of ${ r.parent ? `surface ${ r.parent }` : 'the page it shows on' }, read with it` } );
+			// A part shown inside a surface whose kind is a render context (a drawer section drawing another surface's block in
+			// its drawer look: data/render-contexts.json) is read on its own as well, its state opened, so Fill can read that
+			// block's settings drawn only in this render from it (lib/fill-render.mjs).
+			const ancestors = ancestorsOf( r );
+			const context = ancestors.find( ( a ) => CONTEXT_KINDS.has( a.kind ) );
+			if ( context && openingStates( r ).length ) {
+				let ps = `part-${ slug( r.name ) }`;
+				for ( let i = 2; partSlugs.has( ps ); i++ ) {
+					ps = `${ ps.replace( /-\d+$/, '' ) }-${ i }`;
+				}
+				partSlugs.add( ps );
+				const rootTpl = tpls.at( -1 );
+				renderParts.push( { id: r.id, name: r.name, kind: r.kind, component: r.dc, rootTpl, tpls, route: r.route ?? null, slug: ps, rootTag: elements.get( `${ r.dc }:${ rootTpl }` ).detail.tag, selector: `[${ ROOT_MARK }="${ ps }"]`, states: openingStates( r ), openedBy: r.opened_by ?? null, ancestors, part: true, context: context.kind, parent: r.parent ?? null } );
+			}
 			continue;
 		}
 		// A menu record holding several tab panels is one surface per panel, each opened by its own tab's state.
@@ -175,7 +196,7 @@ export function surfaceRoots( { folder, census, records = null, files = exportFi
 			gaps.push( gap( 'surface-root', e.draftId, `the census holds a <${ e.detail.tag }> in ${ e.component } and surfaces.json has no ${ kinds.join( ' or ' ) } record for that component` ) );
 		}
 	}
-	return { surfaces, parts, gaps };
+	return { surfaces, parts, renderParts, gaps };
 }
 
 // In-page: finds a surface's root element and marks it with ROOT_MARK. A rendered template element is its own root (the
@@ -185,10 +206,12 @@ export function surfaceRoots( { folder, census, records = null, files = exportFi
 // the named element holds (a page-file draft's record may name the file's outer wrapper, which also holds the site
 // header and footer imports; those are surfaces of their own, so the page's tree never repeats them). Returns
 // { copies, tag, viaCondition, viaMain } or { error }.
-function markRoot( [ component, tpl, mark, attr, isPage ] ) {
+function markRoot( [ component, tpl, mark, attr, isPage, shown = false ] ) {
 	const hostName = ( e ) => e.parentElement?.closest( '.sc-host' )?.dataset.scName;
 	const live = [ ...document.querySelectorAll( `[data-dc-tpl="${ tpl }"]` ) ].filter( ( e ) => hostName( e ) === component );
-	let root = live[ 0 ];
+	// A render part's root is the copy its state shows (the open section of a loop of sections mounted shut).
+	const visible = ( e ) => e.checkVisibility( { visibilityProperty: true, opacityProperty: true } ) && e.getBoundingClientRect().height > 0;
+	let root = ( shown && live.find( visible ) ) || live[ 0 ];
 	if ( ! root ) {
 		const t = document.createElement( 'template' );
 		t.innerHTML = window.__dcAnnotatedTemplate( component ) || '';
@@ -306,10 +329,11 @@ export { openers, describeWay };
 // width `width` names, rendered or not, and its bound keys are then set to that width: the page is read at one width after
 // another, so the key holds the viewport's value at each, as a fresh page per width holds it in Fill.
 async function markAt( page, s, settle, opener = null, width = null ) {
-	const args = [ s.component, s.rootTpl, s.slug, ROOT_MARK, 'page' === s.kind ];
+	const args = [ s.component, s.rootTpl, s.slug, ROOT_MARK, 'page' === s.kind, !! s.part ];
 	const m = await page.evaluate( markRoot, args );
 	const bounded = !! opener?.bounds?.length && null != width;
-	if ( ( ! m.error && ! bounded ) || ! opener ) {
+	// A render part's root may be mounted while its section is shut (hidden until its state opens it): its state is always set.
+	if ( ( ! m.error && ! bounded && ! s.part ) || ! opener ) {
 		return m;
 	}
 	// The draft's store calls the way needs first (a signed-in account behind the surface's condition, preconditionWays).
@@ -355,8 +379,13 @@ export function landmarkBox( [ selector, tag ] ) {
 
 // Whether a surface that renders at rest at 1440 stops rendering at a narrower inventory width where one of its width-bound
 // ways (lib/intake-openers.mjs) holds: a rail beside a listing that is a drawer on a phone. Such a surface is read through
-// its ways (openSurface), a width at a time, as a surface that never renders at rest is. The draft's state is put back.
+// its ways (openSurface), a width at a time, as a surface that never renders at rest is, and so is every render part. The
+// draft's state is put back.
 export async function restFailsAt( page, s, settle, list ) {
+	// A render part is always read through its ways: its section may be mounted shut at rest.
+	if ( s.part ) {
+		return true;
+	}
 	const bound = list.filter( ( o ) => o.bounds?.length );
 	if ( ! bound.length ) {
 		return false;

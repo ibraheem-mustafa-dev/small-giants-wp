@@ -465,6 +465,13 @@
         }
       }
     },
+    "renderParts": {
+      "description": "The parts a render-context surface (a drawer) draws another surface's block in, each read with its state open and its inventory saved beside the surfaces' (lib/intake-skeletons.mjs renderParts, lib/fill-render.mjs): slug to { id, kind, name, context, parent, root, opened, inventory }.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
     "skeletons": {
       "type": "object",
       "additionalProperties": {
