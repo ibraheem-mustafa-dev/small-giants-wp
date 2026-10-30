@@ -7400,6 +7400,10 @@ def main() -> None:
     )
     args = parser.parse_args()
 
+    # $SGS_FRAMEWORK_DB names a DB copy the same way --db does (the migrations and the identity extractor read it), so a
+    # proof run that sets only the variable never writes the shared DB.
+    if not args.db and os.environ.get("SGS_FRAMEWORK_DB"):
+        args.db = Path(os.environ["SGS_FRAMEWORK_DB"])
     if args.db:
         SGS_DB = args.db.resolve()
         os.environ["SGS_FRAMEWORK_DB"] = str(SGS_DB)
