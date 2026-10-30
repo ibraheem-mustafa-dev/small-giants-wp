@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "const hit = files.find( ( f ) => f.shape === shape( svg ) && f.viewBox === svg.getAttribute( 'viewBox' ) );",
+		"replace": "const hit = files.find( ( f ) => f.viewBox === svg.getAttribute( 'viewBox' ) );",
+		"why": "an SVG with other elements matches a fetched file"
+	},
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "const hit = files.find( ( f ) => f.shape === shape( svg ) && f.viewBox === svg.getAttribute( 'viewBox' ) );",
+		"replace": "const hit = files.find( ( f ) => f.shape === shape( svg ) );",
+		"why": "another width's file matches"
+	},
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "const shape = ( svg ) => [ ...svg.querySelectorAll( '*' ) ].filter( ( x ) => ! x.closest( 'metadata' ) ).map( ( x ) => x.localName ).join( ',' );",
+		"replace": "const shape = ( svg ) => [ ...svg.querySelectorAll( '*' ) ].map( ( x ) => x.localName ).join( ',' );",
+		"why": "the metadata the code strips breaks the match"
+	},
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "hit && ( out[ e.getAttribute( 'data-inv-i' ) ] =",
+		"replace": "( out[ e.getAttribute( 'data-inv-i' ) ] =",
+		"why": "an icon no file matches is injected content"
+	},
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "source: decodeURI( hit.url.startsWith( base ) ? hit.url.slice( base.length ) : hit.url ) } );",
+		"replace": "source: hit.url } );",
+		"why": "the source is not relative to the page"
+	}
+]

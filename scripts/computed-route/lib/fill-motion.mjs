@@ -24,6 +24,7 @@ import { positionsByTemplate } from './motion-behaviour-settings.mjs';
 import { applyHeaderBehaviour } from './fill-header-behaviour.mjs';
 import { normaliseReveals } from './motion-reveal.mjs';
 import { exactHome } from './fill-part-pairing.mjs';
+import { splitPartRecords, writePartMotion, rehomeParts } from './fill-motion-parts.mjs';
 
 export { elementMotion, elementEffects, renderRefutes } from './fill-motion-element.mjs';
 
@@ -259,7 +260,9 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 	// Every settings write is checked against the framework DB's attributes: the handle given, else the framework DB itself.
 	const hasAttr = givenHasAttr ?? ( db ? hasAttrOf( db ) : undefined );
 	const records = normaliseReveals( sameTriggerResolved( given ) );
-	const byElement = recordsByElement( records );
+	// A part of content the draft's code injects is written on its holder's block as a custom target, never as the holder's own motion.
+	const split = splitPartRecords( records, template );
+	const byElement = recordsByElement( split.rest );
 	// One classification context everywhere: an empty CSS list is no CSS given (a draft served from a URL), not CSS with no consumer.
 	const cls = { css: draftCss, template };
 	const unplaced = ( records || [] ).filter( ( r ) => null === ( r.element?.template_tpl_id ?? null ) );
@@ -270,6 +273,7 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 	// The draft's computed position per template element and width, so a header pinned only at some widths is sticky only there.
 	const idx = behaviourIndex( { records, template, css: draftCss, positions: reads ? positionsByTemplate( { reads, nodes, rootComponent } ) : undefined } );
 	const targetKeys = new Set( nodes.flatMap( ( n ) => n.targets.map( ( t ) => elementKey( t.finder, rootComponent ) ) ).filter( Boolean ) );
+	rehomeParts( split.parts, { targetKeys, template } );
 	adoptDrawnBehaviours( byElement, { targetKeys, template, isBehaviour: ( r ) => idx.found.some( ( x ) => x.r === r ) } );
 	// A list entrance with a per-item delay is the stagger of the block holding the items, so the items do not also take it.
 	const staggers = staggerPlans( { records, template, nodes, keyOf: ( finder ) => elementKey( finder, rootComponent ) } );
@@ -295,6 +299,13 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 			const key = elementKey( t.finder, rootComponent );
 			let own = [ ...( byElement.get( key ) || [] ), ...idx.hostedFor( key ).map( ( x ) => x.r ), ...sets.flatMap( ( s ) => ( s.record ? [ s.record ] : [] ) ) ];
 			const where = { node: ref, block: n.name, slot: t.slot };
+			const partList = split.parts.get( key ) || [];
+			if ( partList.length ) {
+				const partWrites = writePartMotion( { n, list: partList, doc, pending, out, where, holder: key, mdb, ctx } );
+				used.push( ...partWrites.used );
+				boxes.push( ...partWrites.css );
+				split.parts.delete( key );
+			}
 			applyStrip( { n, target: t, key, idx, out, where, flat, hasAttr, reads } );
 			applyHeaderBehaviour( { n, t, reads, flat, out, where, hasAttr } );
 			// Settings behaviours (the header's scrolled shadow, the timeline's pinned track, ...) write block settings, not motion layers.

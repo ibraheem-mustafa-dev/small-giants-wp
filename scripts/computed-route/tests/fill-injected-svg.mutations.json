@@ -1,0 +1,50 @@
+[
+	{
+		"file": "lib/fill-injected-svg.mjs",
+		"find": "AND role = 'svg' AND attr_type = 'string' ORDER BY attr_name",
+		"replace": "AND attr_type = 'string' ORDER BY attr_name",
+		"why": "any string setting holds the SVG"
+	},
+	{
+		"file": "lib/fill-injected-svg.mjs",
+		"find": "AND attr_type = 'boolean' AND lower( attr_name ) LIKE '%svg%' ORDER BY attr_name",
+		"replace": "AND attr_type = 'boolean' ORDER BY attr_name",
+		"why": "any boolean turns the SVG inline"
+	},
+	{
+		"file": "lib/fill-injected-svg.mjs",
+		"find": "const widest = WIDTHS.find( ( w ) => by[ w ] );",
+		"replace": "const widest = [ ...WIDTHS ].reverse().find( ( w ) => by[ w ] );",
+		"why": "the narrowest width's file is written"
+	},
+	{
+		"file": "lib/fill-injected-svg.mjs",
+		"find": "for ( let at = e; at && ! n; at = byKey.get( key( at.parentKey ) ) ) {",
+		"replace": "for ( let at = e; at && ! n; at = null ) {",
+		"why": "an ancestor's block is not reached"
+	},
+	{
+		"file": "lib/fill-injected-svg.mjs",
+		"find": "others.length && out.unmapped.push(",
+		"replace": "false && out.unmapped.push(",
+		"why": "the narrower widths' own files are silent"
+	},
+	{
+		"file": "lib/fill-injected-svg.mjs",
+		"find": "return String( text ).replace( /<\\?xml[^>]*>/g, '' ).replace( /<!--[\\s\\S]*?-->/g, '' ).replace( /<metadata[\\s\\S]*?<\\/metadata>/g, '' ).trim();",
+		"replace": "return String( text ).trim();",
+		"why": "the prolog and editor metadata are written"
+	},
+	{
+		"file": "lib/fill-injected-svg.mjs",
+		"find": "const { before, after } = setAttr( flat[ n.index ], { attr: inline, value: true } );",
+		"replace": "const { before, after } = setAttr( flat[ n.index ], { attr: inline, value: false } );",
+		"why": "the inline SVG stays off"
+	},
+	{
+		"file": "lib/element-facts.mjs",
+		"find": "injected: ( e, w ) => e?.injected?.[ w ] ?? null,",
+		"replace": "injected: ( e, w ) => null,",
+		"why": "the injected SVG is never read"
+	}
+]
