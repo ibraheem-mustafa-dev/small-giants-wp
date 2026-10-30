@@ -40,7 +40,13 @@ export const statesOfRecord = ( { repo, client, id } ) => ( readJson( path.join(
 export const thresholdsOf = ( breakpoints ) => [ ...new Set( ( breakpoints || [] ).flatMap( ( b ) => ( b.thresholds || [] ).map( ( t ) => Number( t.value ) ) ) ) ];
 
 // The manifest entry (sites/<client>/build/surfaces.json) naming intake skeleton `slug`, or null when the client has none.
-export const manifestEntryOf = ( { repo, client, slug } ) => Object.values( readJson( path.join( repo, 'sites', client, 'build', 'surfaces.json' ), {} ) ).find( ( s ) => s && s.intakeSurface === slug ) || null;
+// A WooCommerce page surface is named by two entries, its page post and the template that copies the page's fill
+// (`template-cart` beside `cart`); the template entry is the one that says what the surface builds (its commerce role), so
+// an entry with a target template comes first.
+export const manifestEntryOf = ( { repo, client, slug } ) => {
+	const named = Object.values( readJson( path.join( repo, 'sites', client, 'build', 'surfaces.json' ), {} ) ).filter( ( s ) => s && s.intakeSurface === slug );
+	return named.find( ( s ) => s.target?.template ) || named[ 0 ] || null;
+};
 
 // The site that sites/<client>/build/surfaces.json records for the manifest entry naming intake skeleton `slug`, or null
 // when the client has no such entry.
