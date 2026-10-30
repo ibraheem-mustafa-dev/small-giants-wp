@@ -61,6 +61,11 @@ MOVES = ("timer", "controls", "scroll", "none")
 CONTEXT_WORDS = ("header", "footer", "drawer", "form")
 
 CONTENT_EVIDENCE = "content a setting holds"
+
+
+def _own(evidence: str) -> bool:
+    """Whether a fact comes from the block's own structure: not content a setting holds, not an inner block's."""
+    return CONTENT_EVIDENCE not in evidence and not evidence.startswith("inner block")
 _TRACK = re.compile(r"(?<!window)(?<!documentElement)\.(?:scrollTo|scrollBy)\s*\(|\.scrollLeft\s*[+\-]?=(?!=)|\.style\.transform\s*=|"
                     r"setProperty\(\s*'--[\w-]*(?:offset|translate|slide|index|track|shift)")
 _HANDLER = re.compile(r"addEventListener\(\s*'(?:click|keydown|pointerdown|pointerup)'")
@@ -109,11 +114,11 @@ class Rows:
     def _own_state(self, slug: str, fact: str, value: str) -> str:
         """The state the block's own structure gives, leaving aside what content a setting holds may carry."""
         m = self.x.markup(slug)
-        if value in m.yes[fact] and CONTENT_EVIDENCE not in m.yes[fact][value]:
+        if value in m.yes[fact] and _own(m.yes[fact][value]):
             return "yes"
-        if value in m.possible[fact] or value in m.unknown_vals[fact]:
+        if any(_own(e) for d in (m.possible[fact], m.unknown_vals[fact]) for v2, e in d.items() if v2 == value):
             return "unknown"
-        if any("content printed through" not in r for r in m.unknown_all[fact]):
+        if any("content printed through" not in r and not r.startswith("inner block") for r in m.unknown_all[fact]):
             return "unknown"
         return "no"
 
@@ -122,7 +127,7 @@ class Rows:
         m, bj = self.x.markup(slug), self.x.block_json[slug]
         js = m.js_code
         # The block's own structure: a tag or attribute only content a setting holds may carry is not its disclosure.
-        own = {f: {v: e for v, e in m.yes[f].items() if CONTENT_EVIDENCE not in e} for f in MARKUP}
+        own = {f: {v: e for v, e in m.yes[f].items() if _own(e)} for f in MARKUP}
         tab = "tab" in own["renders-role"] and "aria-selected" in own["renders-aria"]
         disclosure = {"details", "summary"} & set(own["renders-tag"]) or "aria-expanded" in own["renders-aria"]
         out: dict = {}
@@ -286,6 +291,7 @@ class Rows:
     # -- all -----------------------------------------------------------------------------------------------------------
     def build(self) -> list[tuple]:
         slugs = sorted(self.x.block_json)
+        self.x.fold_children()
         universe = {
             "renders-tag": sorted(S.HTML_ELEMENTS | {v for s in slugs for v in self.x.markup(s).yes["renders-tag"]}
                                   | {v for s in slugs for v in self.x.markup(s).possible["renders-tag"]}),
