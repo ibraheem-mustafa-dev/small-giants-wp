@@ -58,5 +58,6 @@ Nothing. Mama's configurator is RC15 and RC16 (and F2 and A4 above); Mama's time
 
 ## Incidents in this investigation
 
+- Calibration ran out of memory on `sgs/nav-bar-menu` (8 GB heap, about 100 minutes; the likely cause of the PC crash on 2026-10-29): every instance's whole reading (422 elements x 142 properties x 3 widths, about 9 MB) was kept until the block finished, and a 150-instance page read at once passed 7 GB. Fixed at both points: a marked instance keeps only its difference from its default (`lib/calibrate.mjs::diffReads`, `0a065c670`) and pages are sized to an element budget once the first reading shows the instance size (`lib/calibrate-chunk.mjs::sizeForReading`). The full run then finished in 2 hours at a 5.7 GB peak, 151 settings reached (2026-10-30).
 - The calibration cache and the route `node_modules` were emptied when I removed three merged worktrees whose agents had linked them (memory `worktree-gotchas`). `npm ci` restored the modules; every block is being recalibrated on the Indus mirror (the homepage's blocks first, on the canary mirror). A fresh Fill run of the homepage waits for it.
 - Fixed on the way: the built-equals-reviewed check compared different key spaces (`b75f3a9ae`); three effect settings lacked `sgs.meaning`, failing the plugin build (`a5deb2aa8`).
