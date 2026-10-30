@@ -29,7 +29,7 @@ import identity_scan as S  # noqa: E402
 import identity_sources as I  # noqa: E402
 import identity_pinned as P  # noqa: E402
 from identity_values import MARKUP, ValueReader, _code_text, _js_code, _norm, _resolve_js, _valid_for  # noqa: E402,F401
-from block_source_files import render_files  # noqa: E402
+from block_source_files import edit_files, render_files  # noqa: E402
 
 PLUGIN = HERE.parents[1]
 REPO = PLUGIN.parents[1]
@@ -60,6 +60,7 @@ class DbInputs:
     icon_fields: dict           # slug -> [(field label, role)]
     source_enums: dict          # slug -> [(attr, [values])]: enum-mode attributes
     fx: dict                    # effect -> {requires, triggers, plugin_set}
+    allowed: dict = field(default_factory=dict)  # slug -> [allowed inner block names] (block_composition), None = any
 
 
 def load_db_inputs(conn: sqlite3.Connection) -> DbInputs:
@@ -83,7 +84,13 @@ def load_db_inputs(conn: sqlite3.Connection) -> DbInputs:
     for effect, requires, triggers, plugin_set in conn.execute("SELECT effect, requires, triggers, plugin_set FROM fx_effects"):
         fx[effect] = {"requires": requires or "", "triggers": [t for t in (triggers or "").split(",") if t],
                       "plugin_set": json.loads(plugin_set or "[]")}
-    return DbInputs(kinds, fields, enums, fx)
+    allowed = {}
+    for slug, raw in conn.execute("SELECT block_slug, accepts_allowed_blocks FROM block_composition"):
+        try:
+            allowed[slug] = json.loads(raw) if raw else None
+        except ValueError:
+            allowed[slug] = None
+    return DbInputs(kinds, fields, enums, fx, allowed)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -222,6 +229,100 @@ class Extractor(ValueReader):
             why = f": {rec['unknown']}" if rec else ""
             for fact in MARKUP:
                 m.unknown_all[fact].append(f"{origin} markup ({name}{why}) at {label}{ukey}; read live in A2b")
+
+    # -- inner blocks -------------------------------------------------------------------------------------------------
+    def inner_blocks(self, slug: str) -> tuple[bool, list | None, list]:
+        """Whether the block prints its inner blocks (its editor offers InnerBlocks or its save keeps them, and its render
+        reads `$content` or `$block->inner_blocks`), the blocks it allows inside (block_composition.accepts_allowed_blocks, else block.json
+        `allowedBlocks`; None = any block), and the blocks its editor template inserts."""
+        bdir, bj = self.block_dir[slug], self.block_json[slug]
+        code = "".join(t.text for f in render_files(bdir) for t in self.index.tokens(f) if t.kind == "code")
+        save = bdir / "save.js"
+        saved = save.is_file() and re.search(r"InnerBlocks\.Content|useInnerBlocksProps\.save", save.read_text(encoding="utf-8", errors="replace"))
+        edit_text = "\n".join(f.read_text(encoding="utf-8", errors="replace") for f in edit_files(bdir))
+        # Inner blocks exist only where the editor offers them; the render prints them when it reads them.
+        offers = bool(saved) or bool(re.search(r"\bInnerBlocks\b|useInnerBlocksProps", edit_text))
+        prints = offers and bool(re.search(r"\$content\b|->\s*inner_blocks\b", code))
+        allowed = (self.db.allowed if self.db else {}).get(slug, None) if self.db and slug in self.db.allowed else bj.get("allowedBlocks")
+        if allowed is None and isinstance(bj.get("allowedBlocks"), list):
+            allowed = bj["allowedBlocks"]
+        template = []
+        for m in re.finditer(r"\btemplate\s*(?::|=\s*\{)\s*([A-Z_][A-Z0-9_]*|\[)", edit_text):
+            start = m.end() - 1 if m.group(1) == "[" else None
+            if start is None:
+                d = re.search(r"\b" + re.escape(m.group(1)) + r"\s*=\s*\[", edit_text)
+                start = d.end() - 1 if d else None
+            if start is None:
+                continue
+            depth, j = 0, start
+            while j < len(edit_text):
+                depth += {"[": 1, "]": -1}.get(edit_text[j], 0)
+                if depth == 0:
+                    break
+                j += 1
+            template += re.findall(r"['\"]([a-z][a-z0-9-]*/[a-z][a-z0-9-]*)['\"]", edit_text[start:j])
+        return prints, allowed, sorted(set(template))
+
+    def fold_children(self) -> None:
+        """Credit each block with what the blocks it may hold can print, followed through every level until nothing
+        changes: a block that prints its inner blocks can show every fact its allowed children (or, when it accepts any
+        block, its template's children) show, with the child named in the evidence; one that accepts any block leaves
+        every value its own markup and children do not settle `unknown`."""
+        if getattr(self, "_folded", False):
+            return
+        self._folded = True
+        kids: dict = {}
+        for slug in sorted(self.block_json):
+            self.markup(slug)
+            prints, allowed, template = self.inner_blocks(slug)
+            if prints:
+                kids[slug] = (allowed, template)
+        for slug, (allowed, template) in kids.items():
+            m = self._markup[slug]
+            if allowed is None:
+                why = f"inner blocks: {slug} prints its inner blocks and accepts any block"
+                for fact in MARKUP:
+                    m.unknown_all[fact].append(why)
+            m.sources.append("inner blocks " + ("any block" if allowed is None else ", ".join(allowed) or "none")
+                             + (f" (template {', '.join(template)})" if template else ""))
+        changed = True
+        while changed:
+            changed = False
+            for slug, (allowed, template) in kids.items():
+                m = self._markup[slug]
+                for child in (allowed if allowed is not None else template):
+                    if child == slug:
+                        continue
+                    if child not in self.block_json:
+                        why = f"inner block {child} (outside the repo); read live in A2b"
+                        for fact in MARKUP:
+                            if why not in m.unknown_all[fact]:
+                                m.unknown_all[fact].append(why)
+                                changed = True
+                        continue
+                    cm = self._markup[child]
+                    for fact in MARKUP:
+                        for v, ev in cm.yes[fact].items():
+                            cur = m.yes[fact].get(v)
+                            # A child's own structure is better evidence than content another child may carry.
+                            if cur is None or ("content a setting holds" in cur and "content a setting holds" not in ev
+                                               and cur.startswith("inner block")):
+                                m.yes[fact][v] = f"inner block {child}: {_strip_inner(ev)}"[:600]
+                                changed = True
+                        for v, ev in cm.possible[fact].items():
+                            if v not in m.possible[fact] and v not in m.yes[fact]:
+                                m.possible[fact][v] = f"inner block {child}: {_strip_inner(ev)}"[:600]
+                                changed = True
+                        for v, ev in cm.unknown_vals[fact].items():
+                            if v not in m.unknown_vals[fact]:
+                                m.unknown_vals[fact][v] = f"inner block {child}: {_strip_inner(ev)}"[:600]
+                                changed = True
+                        have = {_strip_inner(r) for r in m.unknown_all[fact]}
+                        for r in cm.unknown_all[fact]:
+                            if _strip_inner(r) not in have:
+                                m.unknown_all[fact].append(f"inner block {child}: {_strip_inner(r)}"[:600])
+                                have.add(_strip_inner(r))
+                                changed = True
 
     def _nested(self, m: Markup, slug: str, name: str, where: str) -> None:
         if name == slug:
@@ -365,6 +466,11 @@ def _line(text: str, pos: int) -> str:
 @lru_cache(maxsize=None)
 def _js_scan(f: Path) -> S.Scan:
     return S.scan(S.js_tokens(f.read_text(encoding="utf-8", errors="replace")))
+
+
+def _strip_inner(text: str) -> str:
+    """Evidence without its `inner block <name>: ` prefixes (a chain through several levels names the nearest child)."""
+    return re.sub(r"^(?:inner block [a-z0-9-]+/[a-z0-9-]+: )+", "", text)
 
 
 def _package_of(f: Path) -> str:

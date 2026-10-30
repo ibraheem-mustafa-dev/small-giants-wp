@@ -28,6 +28,10 @@ A throwaway repo tree is written to a temp folder and read by the real extractor
   sgs/fx-shapes builds `'<' . 'section'` by concatenation (section yes), writes `toggleAttribute( 'aria-pressed' )`
   (yes) and a constant-named attribute that is not ARIA (aria-busy no), and its `_doing_it_wrong` message `<code>` is
   no page markup (code no); sgs/fx-varattr writes an attribute named by an uploaded document (aria-pressed unknown);
+- inner blocks (MUST FAIL before the fold): sgs/fx-hero prints its InnerBlocks and accepts any block; its editor
+  template inserts sgs/fx-head, whose <h1> it can show (yes, evidence naming the child), and every value no child
+  settles is unknown (table); sgs/fx-list allows only sgs/fx-item (block_composition), so its <li> is yes and a
+  value neither prints stays no (table); sgs/fx-box accepts any block with no template (table unknown, its own div yes);
 - the roster predicate equals `sgs-update-v2.py::_extension_applies` on every real block.json and roster rule.
 """
 from __future__ import annotations
@@ -137,6 +141,15 @@ ob_start();
 $wc_output = ob_get_clean();
 echo '<div class="x">' . $wc_output . '</div>';
 """, None),
+    "fx-hero": ({"supports": {}, "_edit": """const TEMPLATE = [ [ 'sgs/fx-head', { level: 1 } ] ];
+export default function Edit() { return <div { ...useInnerBlocksProps( {}, { template: TEMPLATE } ) } />; }
+"""}, "<?php\necho '<section class=\"x\">' . $content . '</section>';\n", None),
+    "fx-head": ({"supports": {}}, "<?php\necho '<h1>' . esc_html( $attributes['text'] ) . '</h1>';\n", None),
+    "fx-list": ({"supports": {}, "_edit": """export default function Edit() { return <ul><InnerBlocks allowedBlocks={ [ 'sgs/fx-item' ] } /></ul>; }
+"""}, "<?php\necho '<ul>' . $content . '</ul>';\n", None),
+    "fx-item": ({"supports": {}}, "<?php\necho '<li>' . esc_html( $attributes['text'] ) . '</li>';\n", None),
+    "fx-box": ({"supports": {}, "_edit": """export default function Edit() { return <div><InnerBlocks /></div>; }
+"""}, "<?php\necho '<div class=\"box\">' . $content . '</div>';\n", None),
     "fx-varattr": ({"supports": {}}, """<?php
 foreach ( $node->attributes as $attr ) {
 	$local = $attr->localName;
@@ -174,7 +187,10 @@ def _build(root: Path) -> Paths:
     for name, (meta, render, view) in BLOCKS.items():
         d = plugin / "src" / "blocks" / name
         d.mkdir(parents=True, exist_ok=True)
-        bj = {"name": f"sgs/{name}", "attributes": {}, **meta}
+        edit = meta.get("_edit")
+        bj = {"name": f"sgs/{name}", "attributes": {}, **{k: v for k, v in meta.items() if k != "_edit"}}
+        if edit:
+            (d / "edit.js").write_text(edit, encoding="utf-8")
         if view:
             bj["viewScriptModule"] = "file:./view.js"
             (d / "view.js").write_text(view, encoding="utf-8")
@@ -218,7 +234,9 @@ def run() -> int:
     try:
         paths = _build(tmp)
         db = DbInputs(icon_kinds=["emoji", "lucide"], icon_fields={"sgs/fx-plain": [("items.icon", "icon")]},
-                      source_enums={"sgs/fx-plain": [("iconSource", ["lucide"])]}, fx={})
+                      source_enums={"sgs/fx-plain": [("iconSource", ["lucide"])]}, fx={},
+                      **({"allowed": {"sgs/fx-list": ["sgs/fx-item"], "sgs/fx-hero": None, "sgs/fx-box": None}}
+                         if "allowed" in DbInputs.__dataclass_fields__ else {}))
         rows = Rows(Extractor(paths, db), db).build()
         state = {(r[0], r[1], r[2]): r[3] for r in rows}
         expect = [
@@ -266,6 +284,12 @@ def run() -> int:
             ("sgs/fx-shapes", "renders-aria", "aria-busy", "no", "a constant-named attribute that is not ARIA"),
             ("sgs/fx-shapes", "renders-tag", "code", "no", "a _doing_it_wrong message is no page markup"),
             ("sgs/fx-varattr", "renders-aria", "aria-pressed", "unknown", "an attribute named by a parsed document"),
+            ("sgs/fx-hero", "renders-tag", "h1", "yes", "an h1 its template's child block prints (the hero/h1 live finding)"),
+            ("sgs/fx-hero", "renders-tag", "table", "unknown", "a block that accepts any inner block rules nothing out"),
+            ("sgs/fx-list", "renders-tag", "li", "yes", "its one allowed child's li"),
+            ("sgs/fx-list", "renders-tag", "table", "no", "a restricted parent whose only child cannot print it"),
+            ("sgs/fx-box", "renders-tag", "table", "unknown", "an accept-any container with no template"),
+            ("sgs/fx-box", "renders-tag", "div", "yes", "its own markup"),
             ("sgs/fx-woo", "renders-tag", "form", "unknown", "a WooCommerce class's own output (a static ::output call) stays unknown"),
         ]
         fails = [f"{slug} {fact}={value}: expected {want}, got {state.get((slug, fact, value), 'no row')} ({why})"
