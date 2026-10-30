@@ -272,7 +272,12 @@ export function proposePalette( { tokens = [], usage = [], slugs = loadPaletteSl
 	// another value (the loser tries SECOND, else keeps no slug).
 	const roles = new Map();
 	const weak = [];
-	const read = usageRoles( groups.filter( ( g ) => g.summary.total ), uses );
+	// A value every token of which is named for a registry brand is that brand's colour (FR-48-31), so its uses never
+	// enter a usage contest: a brand icon's ground cannot take primary, accent or section, and the role goes to the
+	// next value that earns it.
+	const brandOnly = new Set( groups.filter( ( g ) => g.members.every( ( m ) => brandOfToken( m, brands ) ) ) );
+	const brandHexes = new Set( [ ...brandOnly ].flatMap( ( g ) => [ ...g.hexes ] ) );
+	const read = usageRoles( groups.filter( ( g ) => g.summary.total && ! brandOnly.has( g ) ), uses.filter( ( u ) => ! brandHexes.has( u.hex ) ) );
 	for ( const [ g, list ] of read.roles ) {
 		roles.set( g, list.filter( ( r ) => ! r.weak ).map( ( r ) => ( { ...r, by: 'usage', confidence: 0.85 } ) ) );
 		weak.push( ...list.filter( ( r ) => r.weak ).map( ( r ) => [ g, r ] ) );

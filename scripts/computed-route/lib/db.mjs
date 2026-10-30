@@ -10,9 +10,10 @@ export const DB_PATH = path.join( os.homedir(), '.claude', 'skills', 'sgs-wp-eng
 
 const COLS = 'block_slug, attr_name, attr_type, default_value, enum_values, is_responsive, css_property, css_element, css_state, css_tier, tier_shape, box_family, source, role';
 
-// Opens the database read-only. `file` overrides the path (tests).
+// Opens the database read-only. `file` overrides the path (tests). A reader waits up to 10 seconds for a lock another
+// process holds (several route processes opening the WAL database at once briefly lock it) instead of failing at once.
 export function openDb( file = DB_PATH ) {
-	return new DatabaseSync( file, { readOnly: true } );
+	return new DatabaseSync( file, { readOnly: true, timeout: 10000 } );
 }
 
 const plain = ( r ) => ( { ...r } );
