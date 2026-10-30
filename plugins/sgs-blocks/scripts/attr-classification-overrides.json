@@ -412,6 +412,15 @@
 		},
 		{
 			"slug": "sgs/product-card",
+			"attr": "productName",
+			"fields": {
+				"role": "text-content",
+				"derived_selector": ".sgs-product-card__title"
+			},
+			"_reason": "2026-10-30: the name suffix classifies productName as an identity (the role of an icon's name, never printed), so calibration planned it no text reading and the slot map held no text path for it; the product name is printed text in the card's title (render.php and includes/product-card-builtin-render.php print it in .sgs-product-card__title), and the derived .sgs-product-card__heading is an element the block does not render."
+		},
+		{
+			"slug": "sgs/product-card",
 			"attr": "priceNote",
 			"fields": {
 				"canonical_slot": null,

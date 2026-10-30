@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/skeleton-rerun.mjs",
+		"find": "requireSources: true, current } );",
+		"replace": "current } );",
+		"why": "the intake refresh proposes from a saved inventory that records no sources"
+	},
+	{
+		"file": "lib/skeleton-rerun.mjs",
+		"find": "assertCurrent( inventory, handoffRoot, { label: `${ client } inventory ${ s.slug }`, requireSources: true, current } );",
+		"replace": "",
+		"why": "the intake refresh proposes from a stale saved inventory"
+	},
+	{
+		"file": "lib/freshness.mjs",
+		"find": "if ( ! record?.sources && requireSources ) {",
+		"replace": "if ( false ) {",
+		"why": "a record with no sources passes where the reader requires them"
+	},
+	{
+		"file": "lib/freshness.mjs",
+		"find": "for ( const rel of fs.existsSync( handoffRoot ) ? walkFolder( handoffRoot ).files.filter( isSourceFile ) : [] ) {",
+		"replace": "for ( const rel of walkFolder( handoffRoot ).files.filter( isSourceFile ) ) {",
+		"why": "a missing handoff folder throws instead of reading as holding no files"
+	}
+]

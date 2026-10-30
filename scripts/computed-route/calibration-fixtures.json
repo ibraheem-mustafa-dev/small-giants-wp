@@ -2245,7 +2245,8 @@
       "ratingValue": 4.6,
       "reviewCount": 12,
       "overrideElements": [
-        "description"
+        "description",
+        "name"
       ],
       "description": "A short description with a <a href=\"https://example.com/\">link</a>.",
       "attributeTagTaxonomy": "pa_cr-feature"

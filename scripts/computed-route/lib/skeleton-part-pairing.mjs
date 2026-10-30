@@ -114,7 +114,12 @@ export function partTree( { db, block, cal, paint = [], inner = false } ) {
 	const self = ( p ) => ( 'svg' === BARE.exec( lastOf( p ) )?.[ 1 ] ? 'svg' : media.has( p ) || MEDIA_TAGS.includes( BARE.exec( lastOf( p ) )?.[ 1 ] ) ? 'media' : null );
 	// The inner block a path stands in: the inner root step it passes through, or null.
 	const innerRoot = ( p ) => stepsOf( p ).map( ( _, i, s ) => s.slice( 0, i + 1 ).join( ' > ' ) ).find( isInner ) ?? null;
-	return { targets, band: band?.slot ?? null, has: ( p ) => all.includes( p ), blockOf, kids, kinds, self, innerRoot, painted: ( p ) => painted.includes( p ), anyPaint: painted.length > 0, boxRoot: ! rootBox };
+	// Whether the block draws a panel below part p: a part the calibration read with the disclosure it belongs to open (a
+	// setting in the `open` state, at any copy), a repeated part of the block's own (a submenu's items) or another block's root
+	// (a mega panel). A bare tag's position (`span:nth-of-type(2)`) is no repeated part.
+	const opens = new Set( Object.values( cal?.settings || {} ).filter( ( s ) => 'open' === s?.state && 'string' === typeof s.slot && s.slot ).map( ( s ) => LOOSE( s.slot.replace( LAYER, '' ) ) ) );
+	const panelBelow = ( p ) => painted.some( ( q ) => q.startsWith( `${ p } > ` ) && ( opens.has( LOOSE( q ) ) || stepsOf( q ).slice( stepsOf( p ).length ).some( ( s ) => ( s.startsWith( '.' ) && NTH.test( s ) ) || otherBlock( s ) ) ) );
+	return { targets, band: band?.slot ?? null, has: ( p ) => all.includes( p ), blockOf, kids, kinds, self, innerRoot, panelBelow, painted: ( p ) => painted.includes( p ), anyPaint: painted.length > 0, boxRoot: ! rootBox };
 }
 
 // The draft side: own children, the content kinds an element holds, and the copies of a repeated template under it.
@@ -172,7 +177,18 @@ function draftSide( { m, own, isMedia, items } ) {
 		return null;
 	};
 	const depth = ( e ) => ( e.virtual ? -1 : e.depth ?? 0 );
-	return { kids, kinds, below, loop, depth, tplOf };
+	// Whether a draft copy holds a panel: an own element below it, hidden at every width it was read, that holds elements (a
+	// submenu the visitor opens).
+	const hiddenAll = ( e ) => Object.keys( e.visible || {} ).length > 0 && ! Object.values( e.visible ).some( Boolean );
+	const panel = ( y ) => {
+		for ( let level = m.kids( y ).filter( own ); level.length; level = level.flatMap( ( k ) => m.kids( k ).filter( own ) ) ) {
+			if ( level.some( ( e ) => hiddenAll( e ) && m.kids( e ).length > 0 ) ) {
+				return true;
+			}
+		}
+		return false;
+	};
+	return { kids, kinds, below, loop, depth, tplOf, panel };
 }
 
 // The draft children `kids` read in order against the parts `parts`, with some children read as their own children
@@ -261,7 +277,34 @@ export function pairParts( { db, block, cal, paint = [], m, el, items = null, ow
 		// copy's verdict at the same template element of its own copy (mirror): paired where the first is, unpaired where it is not;
 		// only the parts the first copy lacks (another render of the item in the block's calibration) are paired on their own.
 		const mirror = [];
+		// A menu whose calibrated copies differ in the kinds they can draw (an item that only opens a submenu panel, an item that is
+		// only a plain link, an item drawn either way by the block's renders): each draft copy, in order, pairs with the first
+		// calibrated copy left that can draw its kind, and a later copy mirrors the first copy of its kind. The kind is what a
+		// copy holds, a panel or none (B.panelBelow, D.panel), never its place or its words. When every copy can draw the same
+		// kinds, or the block has no default paint, the copies pair by place.
+		const canDraw = ( c ) => ( { true: B.panelBelow( c ), false: B.kids( c ).some( ( k ) => B.painted( k ) && ! B.panelBelow( k ) ) } );
+		const kindsOf = ( copies ) => {
+			const can = new Map( copies.map( ( c ) => [ c, canDraw( c ) ] ) );
+			// A copy the default paint draws nothing in says nothing about kinds.
+			return B.anyPaint && new Set( [ ...can.values() ].filter( ( v ) => v.true || v.false ).map( ( v ) => JSON.stringify( v ) ) ).size > 1 ? can : null;
+		};
 		const copiesOf = ( copies, L, only ) => {
+			const can = L ? kindsOf( copies ) : null;
+			if ( can ) {
+				const order = [ ...copies ].sort( ( a, b ) => Number( NTH.exec( lastOf( a ) )[ 1 ] ) - Number( NTH.exec( lastOf( b ) )[ 1 ] ) );
+				const firstOf = new Map();
+				for ( const y of L ) {
+					const kind = D.panel( y );
+					const c = order.find( ( o ) => ! at.has( o ) && can.get( o )[ kind ] );
+					if ( ! c ) {
+						continue;
+					}
+					pair( c, y );
+					firstOf.has( kind ) ? mirror.push( [ ...firstOf.get( kind ), c, y ] ) : firstOf.set( kind, [ c, y ] );
+				}
+				order.filter( ( c ) => ! at.has( c ) ).forEach( ( c ) => why.set( c, 'no draft copy is left of a kind this copy draws (holding a panel or none)' ) );
+				return;
+			}
 			const first = copies.find( ( c ) => 1 === Number( NTH.exec( lastOf( c ) )[ 1 ] ) );
 			copies.forEach( ( c ) => {
 				const k = Number( NTH.exec( lastOf( c ) )[ 1 ] );
@@ -280,7 +323,10 @@ export function pairParts( { db, block, cal, paint = [], m, el, items = null, ow
 		// The render the default paint draws is the block's part tree: when it is the wrapped one (a reviews slider) and the bare
 		// part is not painted (the grid layout's list), the bare part is the other render's.
 		const twins = ( c ) => pending.filter( ( s ) => s !== c && B.kids( c ).some( ( k ) => lastOf( s ) === lastOf( k ) ) );
-		const variant = ( c ) => twins( c ).length > 0 && ! ( B.painted( c ) && twins( c ).every( ( s ) => ! B.painted( s ) ) );
+		// Between a render that draws a panel and one that draws none, the draft element's own kind chooses: a draft copy holding a
+		// panel is the render holding one (a drawer item's accordion row around its link).
+		const chosen = ( c ) => B.anyPaint && ! x.virtual && D.panel( x ) && B.panelBelow( c ) && ! twins( c ).some( B.panelBelow );
+		const variant = ( c ) => twins( c ).length > 0 && ! ( B.painted( c ) && twins( c ).every( ( s ) => ! B.painted( s ) ) ) && ! chosen( c );
 		const bare = pending.filter( ( c ) => twins( c ).length && ! variant( c ) ).flatMap( twins );
 		pending.filter( variant ).forEach( ( c ) => why.set( c, 'a wrapper another render of the block adds around a part, which this draft does not draw' ) );
 		bare.forEach( ( c ) => why.set( c, 'a part another render of the block draws: the default render draws it inside a wrapper' ) );

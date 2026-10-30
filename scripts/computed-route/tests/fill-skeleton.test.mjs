@@ -148,6 +148,9 @@ test( 'skeleton inventory serves a surface with only a draftDir, hands the reade
 	await skeletonMain( argv, { read: reader, repo } );
 	assert.match( seen[ 0 ], /^http:\/\/127\.0\.0\.1:\d+\/$/ );
 	await assert.rejects( fetch( seen[ 0 ] ), 'the server is closed afterwards' );
+	// The saved inventory records the export it was read from, so a proposal can refuse it once the draft changes (lib/freshness.mjs).
+	const saved = JSON.parse( fs.readFileSync( path.join( build, 'skeleton', 'header.inventory.json' ), 'utf8' ) );
+	assert.deepEqual( Object.keys( saved.sources.files ), [ 'Home.dc.html' ] );
 	await assert.rejects( skeletonMain( argv, { read: async () => { throw new Error( 'reader failed' ); }, repo } ), /reader failed/ );
 	write( { draftUrl: 'https://hand.test/', draftDir: 'sites/acme/handoff' } );
 	await skeletonMain( argv, { read: reader, repo } );

@@ -111,3 +111,37 @@ test( 'MUST FAIL (2026-10-09: business-info addressLink had no presence reading)
 	assert.equal( address( instanceCtx( variant, null, fixture ) ), 'address' );
 	assert.deepEqual( instanceCtx( variant, null, fixture ).settingPreconditions, fixture.preconditions );
 } );
+
+test( 'MUST FAIL (2026-10-30: the product card\'s typed price had no text path): a text setting is read under every fixture variant too, and the first variant printing it gives its path', async () => {
+	const { instanceCtx } = await import( '../lib/calibrate.mjs' );
+	const { variantInfo } = await import( '../lib/db.mjs' );
+	const { blockSchema } = await import( '../lib/resolve.mjs' );
+	const { collectContent } = await import( '../lib/calibrate-content.mjs' );
+	const { default: fixtures } = await import( '../calibration-fixtures.json', { with: { type: 'json' } } );
+	const block = 'sgs/product-card';
+	const fixture = fixtures[ block ];
+	// The frozen DB holds no product card; the framework DB is opened read-only.
+	const live = openDb();
+	const variant = variantInfo( live, block );
+	const { instances } = planContentInstances( block, { contentRows: contentRowsFor( live, block ), variant, schema: blockSchema( block ), fixture, ctx: instanceCtx( variant, null, fixture ) } );
+	const price = instances.filter( ( i ) => 'priceLarge' === i.content?.attr && 'text' === i.content.kind );
+	// The default variant binds a live product, which prints the product's own price; the typed variant prints the setting.
+	assert.equal( price[ 0 ].attrs.sourceMode, 'wc-product' );
+	const typed = price.find( ( i ) => 'typed' === i.attrs.sourceMode );
+	assert.ok( typed, 'the price is read under the typed variant' );
+	assert.equal( typed.attrs.priceLarge, MARKER_TEXT );
+	assert.equal( typed.variant, fixture.variants.findIndex( ( v ) => 'typed' === v.sourceMode ) );
+	// Presence is read under the default variant only.
+	assert.ok( ! instances.some( ( i ) => 'presence' === i.content?.kind && i.variant > 0 ) );
+	// The default variant's find wins over a later one's; a later variant's stands when the default prints nothing.
+	const read = ( p ) => ( { 375: { [ p ]: { t: [ MARKER_TEXT ] } }, 768: {}, 1440: {} } );
+	const out = collectContent( [
+		{ content: { attr: 'productName', kind: 'text', needle: MARKER_TEXT }, variant: 1, contentRead: read( '.typed-title' ) },
+		{ content: { attr: 'productName', kind: 'text', needle: MARKER_TEXT }, variant: 0, contentRead: read( '.live-title' ) },
+		{ content: { attr: 'productName', kind: 'text', needle: MARKER_TEXT }, variant: 2, contentRead: read( '.featured-title' ) },
+		{ content: { attr: 'priceLarge', kind: 'text', needle: MARKER_TEXT }, contentRead: { 375: {}, 768: {}, 1440: {} } },
+		{ content: { attr: 'priceLarge', kind: 'text', needle: MARKER_TEXT }, contentRead: read( '.price' ) },
+	] );
+	assert.equal( out.text.productName.path, '.live-title' );
+	assert.equal( out.text.priceLarge.path, '.price' );
+} );
