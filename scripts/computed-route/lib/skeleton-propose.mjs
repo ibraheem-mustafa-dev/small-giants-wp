@@ -219,7 +219,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			delete node.draftRef;
 			delete node.draftFingerprint;
 		}
-		if ( ( 'commerceRegion' === r.rule || loopProducts ) && r.inner ) {
+		if ( ( 'commerceRegion' === r.rule || loopProducts || 'accordionItem' === r.rule ) && r.inner ) {
 			const item = r.item ? m.byKey[ r.item ] : null;
 			const copy = ( n ) => ( { name: n.name, attributes: { ...( n.attributes || {} ) }, innerBlocks: ( n.innerBlocks || [] ).map( copy ), ...( false === n.reads ? { reads: false } : {} ), ...( n.itemKey ? { itemKey: n.itemKey } : {} ) } );
 			// An SGS block in the region reads the draft's item (the shop's product card its first card, the product page's

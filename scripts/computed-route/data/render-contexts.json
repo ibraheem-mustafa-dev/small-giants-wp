@@ -1,0 +1,6 @@
+{
+	"doc": "The surface a calibration fixture variant renders its block in (Spec 48 §3.4 Fill, RC5). A variant whose instance carries the metadata name listed here is measured as that surface draws the block: scripts/local-wp/mu-plugins/sgs-calibration-context.php pushes the framework's own render context (includes/helpers-mega-render.php::sgs_mega_render_panel's 'drawer' entry) around it. A setting the calibration reached only under such variants is drawn in that surface's render, so Fill reads it from that surface and never from another (lib/fill-render.mjs). Keys are calibration metadata names, values surfaces.json kinds.",
+	"byInstanceName": {
+		"sgs-cal-mega-drawer": "drawer"
+	}
+}

@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/fill-render.mjs",
+		"find": "const scoped = cal && Object.keys( other ).length ? { ...cal, settings: Object.fromEntries( Object.entries( cal.settings ).filter( ( [ attr ] ) => ! other[ attr ] ) ), otherRender: other } : cal;",
+		"replace": "const scoped = cal;",
+		"why": "the old behaviour: the bar surface reads the drawer settings too, so the panel root's ground is ambiguous and never written"
+	},
+	{
+		"file": "lib/fill-render.mjs",
+		"find": "kind && kind !== surfaceKind && ( out[ attr ] = kind );",
+		"replace": "kind && ( out[ attr ] = kind );",
+		"why": "the drawer surface itself would lose the drawer settings"
+	},
+	{
+		"file": "lib/fill-render.mjs",
+		"find": "kinds.every( ( k ) => k && k === kinds[ 0 ] ) ? kinds[ 0 ] : null;",
+		"replace": "kinds.some( ( k ) => k ) ? kinds.find( Boolean ) : null;",
+		"why": "a setting reached in both renders would be taken from the bar surface"
+	},
+	{
+		"file": "lib/fill-render.mjs",
+		"find": "const kind = contexts.byInstanceName?.[ v?.metadata?.name ];",
+		"replace": "const kind = 'drawer';",
+		"why": "every fixture variant would count as a drawer render, whatever its instance names"
+	},
+	{
+		"file": "lib/fill-render.mjs",
+		"find": "Object.keys( other ).length ? {",
+		"replace": "true ? {",
+		"why": "a block with no drawer-context variant would get a rewritten slot map"
+	}
+]

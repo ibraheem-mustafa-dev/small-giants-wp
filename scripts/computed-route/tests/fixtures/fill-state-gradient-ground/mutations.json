@@ -1,0 +1,38 @@
+[
+	{
+		"file": "lib/fill-state.mjs",
+		"find": "const prop = 'background-color' === changed ? ground : changed;",
+		"replace": "const prop = changed;",
+		"why": "the old behaviour: a change of the ground colour holds only the background colour, so a gradient ground is never held"
+	},
+	{
+		"file": "lib/fill-state.mjs",
+		"find": "const PAIR = [ 'color', ground ];",
+		"replace": "const PAIR = [ 'color', 'background-color' ];",
+		"why": "a glyph colour would be held alone when its gradient ground cannot be"
+	},
+	{
+		"file": "lib/fill-state.mjs",
+		"find": "images.length && images.every(",
+		"replace": "images.every(",
+		"why": "an element with no background image read would count as resting on a gradient"
+	},
+	{
+		"file": "lib/fill-state.mjs",
+		"find": "images.every( ( v ) =>",
+		"replace": "images.some( ( v ) =>",
+		"why": "a gradient at one width only would make the image the ground at every width"
+	},
+	{
+		"file": "lib/fill-state.mjs",
+		"find": "/gradient\\(/.test( v )",
+		"replace": "'none' !== v",
+		"why": "a picture ground would be held through a gradient setting"
+	},
+	{
+		"file": "lib/fill-state.mjs",
+		"find": "look[ LOOSE( p ) ]?.has( changed )",
+		"replace": "look[ LOOSE( p ) ]?.has( prop )",
+		"why": "the ground would be held only where the block's look lists the gradient itself, which calibration never records"
+	}
+]

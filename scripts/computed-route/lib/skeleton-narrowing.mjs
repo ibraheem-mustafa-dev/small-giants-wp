@@ -87,7 +87,7 @@ function build( draft ) {
 }
 
 // The state keys read anywhere inside `node`.
-function reads( d, node ) {
+export function stateReads( d, node ) {
 	const out = new Set();
 	for ( const n of subtree( d.idx, node ) ) {
 		if ( 'MemberExpression' === n.type && ! n.computed && ( ( 'Identifier' === n.object.type && d.whole.has( n.object.name ) ) || isThisMember( n.object, 'state' ) ) ) {
@@ -124,7 +124,7 @@ function filteredBy( d, expr, depth = 0, seen = new Set() ) {
 		}
 	} else if ( 'CallExpression' === expr.type && 'MemberExpression' === expr.callee.type ) {
 		if ( ! expr.callee.computed && 'filter' === expr.callee.property.name && isFn( expr.arguments[ 0 ] ) ) {
-			add( reads( d, expr.arguments[ 0 ] ) );
+			add( stateReads( d, expr.arguments[ 0 ] ) );
 		}
 		add( filteredBy( d, expr.callee.object, depth + 1, seen ) );
 	} else if ( 'ArrayExpression' === expr.type ) {

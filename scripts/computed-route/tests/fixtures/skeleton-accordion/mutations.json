@@ -1,0 +1,62 @@
+[
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "( { e } ) => ( accordion.holders.has( e.key ) ? v( 'accordion', { block: R.accordion.block, ...accordion.holders.get( e.key ) } ) : null ),",
+		"replace": "",
+		"why": "the old behaviour: no rule makes sgs/accordion, so the FAQ loop stays static containers"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": " || 'accordionItem' === r.rule ) && r.inner ) {",
+		"replace": " ) && r.inner ) {",
+		"why": "an item would hold no answer"
+	},
+	{
+		"file": "lib/skeleton-accordion.mjs",
+		"find": "const key = [ ...stateReads( d, shows ) ].find( ( k ) => written.has( k ) );",
+		"replace": "const key = [ ...written ][ 0 ];",
+		"why": "any control writing any state (a drawer opener) would make an accordion"
+	},
+	{
+		"file": "lib/skeleton-accordion.mjs",
+		"find": "if ( ! items.every( ( it ) => controlOf( it ) && null != read.attr( controlOf( it ), 'aria-expanded' ) ) ) {",
+		"replace": "if ( false ) {",
+		"why": "the render would not have to confirm a disclosure"
+	},
+	{
+		"file": "lib/skeleton-accordion.mjs",
+		"find": "export const singleOpen = ( d, expr ) =>",
+		"replace": "export const singleOpen = ( d, expr ) => true ||",
+		"why": "a panel reading a list of open items would be one open at a time"
+	},
+	{
+		"file": "lib/skeleton-accordion.mjs",
+		"find": "values.length === a.n ? values[ copy ] :",
+		"replace": "values.length === a.n ? values[ 0 ] :",
+		"why": "every copy would take the first copy's answer"
+	},
+	{
+		"file": "lib/skeleton-accordion.mjs",
+		"find": "return 'ArrayExpression' === p.value?.type ? p.value.elements.map( num ).filter( ( x ) => undefined !== x ) : num( p.value );",
+		"replace": "return undefined;",
+		"why": "the item open at rest would come from the render instead of the code's initial state"
+	},
+	{
+		"file": "lib/skeleton-accordion.mjs",
+		"find": "return 'var' === decl?.kind && decl.init ? decl.init : value;",
+		"replace": "return value;",
+		"why": "a shorthand field (`open`) would not resolve to the state comparison it names"
+	},
+	{
+		"file": "lib/skeleton-accordion.mjs",
+		"find": " || m.blockKids( holder ).some( ( k ) => ! items.includes( k ) )",
+		"replace": "",
+		"why": "a holder with content beside its items would become an accordion holding that content"
+	},
+	{
+		"file": "lib/skeleton-accordion.mjs",
+		"find": "const controls = own.filter( ( rec ) => ! inPanel( rec ) )",
+		"replace": "const controls = own.filter( ( rec ) => false )",
+		"why": "a loop with a toggle would never be found"
+	}
+]

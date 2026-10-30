@@ -69,6 +69,7 @@ import { readMediaMap } from './lib/fill-media.mjs';
 import { injectedSvgWrites } from './lib/fill-injected-svg.mjs';
 import { assertCurrent } from './lib/freshness.mjs';
 import { liveReadSlots } from './lib/written-slot.mjs';
+import { renderScoped, otherRenderRows } from './lib/fill-render.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -203,7 +204,10 @@ export async function fillSurface( o ) {
 		const readUrl = readUrlOf( { url, opener, record: skeletonRecord, routing: intakeData?.routing } );
 		opener && log( opener.state ? `state opener: ${ describeWays( opener ) } on ${ opener.component }${ opener.route && '*' !== opener.route ? ` at ${ opener.route }` : '' }${ opener.dropped.length ? ` (not offered: ${ opener.dropped.map( ( d ) => d.key ).join( ', ' ) })` : '' }` : `state opener refused: ${ opener.refused.map( ( r ) => r.reason ).join( '; ' ) }` );
 		// FR-48-60 to FR-48-62: the draft elements of the shop parts (build/shop-parts.json locators) are measured at their parts' slots.
-		const calFor = calibrationLoader( entry.site, o.cache );
+		// A block drawn in two surfaces' renders reads on this surface only the settings this surface's render draws
+		// (lib/fill-render.mjs): the settings drawn only in another surface kind's render are left out of its slot map.
+		const fixtures = JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-fixtures.json' ), 'utf8' ) );
+		const calFor = renderScoped( calibrationLoader( entry.site, o.cache ), { fixtures, surfaceKind: handoffRecord?.kind ?? null } );
 		const shopRecord = loadShopParts( buildDir );
 		const shopTargets = shopPartTargets( { record: shopRecord, nodes, facts, rootComponent: intakeParts.rootComponent, db, calFor } );
 		// The skeleton inventory beside the skeleton: the draft rendered on this surface (the list pass reads a loop's copies
@@ -223,10 +227,12 @@ export async function fillSurface( o ) {
 			// FR-48-39: the uploaded images of the surface's site (a null map when media-upload has not run).
 			media: { map: readMediaMap( path.join( buildDir, 'media-map.json' ) ), site: entry.site },
 			snapshot, rawSnapshot, facts, rootComponent: intakeParts.rootComponent,
-			fixtures: JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-fixtures.json' ), 'utf8' ) ),
+			fixtures,
 			ledger: loadLedger( ledgerFile ),
 			ledgerStates: Object.entries( entry.states || {} ).filter( ( [ , v ] ) => null === v ).map( ( [ k ] ) => k ),
 		} );
+		// The settings each node's block draws only in another surface's render, listed so none is dropped silently.
+		result.unread.push( ...otherRenderRows( nodes.filter( ( n ) => n.targets.length ).map( ( n ) => ( { name: n.name, ref: refOf( flat[ n.index ] ) } ) ), calFor ).map( ( r ) => ( { node: r.node, block: r.block, kind: 'render', slot: '', settings: r.settings, reason: r.reason } ) ) );
 		// FR-48-81: each target's state looks, through the settings that hold their states.
 		const states = fillStates( { tree, nodes, reads, calFor, db, snapshot } );
 		result.writes.push( ...states.writes );
