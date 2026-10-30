@@ -194,8 +194,8 @@ export function makeUnits( ctx ) {
 		return node;
 	}
 	// A block holding one kind of item block over a tab set (the identity matcher's `items`): one item per control, labelled with
-	// the control's words; the rendered panel's content goes in the first item, the one open at rest; the tab list and its
-	// controls are the block's own (absorbed), and the panel element is unwrapped into the item.
+	// the control's words; the rendered panel goes in the first item, the one open at rest, built by its own rules; the tab list
+	// and its controls are the block's own (absorbed).
 	function buildItems( e, r, top ) {
 		const { nodeOfKey, finder } = ctx;
 		const { items } = r;
@@ -222,10 +222,8 @@ export function makeUnits( ctx ) {
 		} );
 		walk( e );
 		node.innerBlocks = controls.map( ( c ) => ( { name: items.block, attributes: { [ items.labelAttr ]: m.words( c ).replace( /\s+/g, ' ' ).trim() }, draftRef: finder( c ), draftFingerprint: m.fingerprint( c ), innerBlocks: [] } ) );
-		panels.forEach( ( p ) => {
-			record( p, { action: 'unwrap', rule: 'identity', reason: `the panel ${ top.block } shows at rest: its content is item 1's`, confidence: 1, candidates: [] } );
-			node.innerBlocks[ 0 ] && node.innerBlocks[ 0 ].innerBlocks.push( ...w.buildChildren( p, items.block ) );
-		} );
+		// The panel is built as itself (its own rules still apply: a sign-in form stays the form) inside item 1.
+		panels.forEach( ( p ) => node.innerBlocks[ 0 ] && node.innerBlocks[ 0 ].innerBlocks.push( ...[].concat( w.buildNode( p, items.block ) || [] ) ) );
 		const unread = controls.slice( 1 ).map( ( c ) => `"${ m.words( c ).trim() }"` );
 		unread.length && ( node.handover = [ { owner: 'content-page', kind: 'text', detail: `the panels of ${ unread.join( ', ' ) } are not rendered by the draft read, so their content is written in the editor from the draft` } ] );
 		return node;

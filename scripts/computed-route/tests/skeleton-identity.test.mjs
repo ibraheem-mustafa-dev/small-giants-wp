@@ -50,9 +50,9 @@ test( 'MUST FAIL: Eye Care\'s product tab list is sgs/tabs over its tabs and pan
 	assert.match( tabs.reason, /has-part panel/, 'the panel the tabs switch is read from the logic, the part only sgs/tabs draws among the tab-list blocks' );
 	const node = nodeOf( r, 'sgs/tabs' );
 	assert.deepEqual( node.innerBlocks.map( ( n ) => [ n.name, n.attributes.label ] ), [ [ 'sgs/tab', 'Description' ], [ 'sgs/tab', 'Details' ], [ 'sgs/tab', 'Sizing' ] ] );
-	assert.ok( node.innerBlocks[ 0 ].innerBlocks.length >= 2, 'the panel shown at rest is the first tab\'s content' );
+	assert.ok( flat( node.innerBlocks[ 0 ].innerBlocks ).length >= 2, 'the panel shown at rest is the first tab\'s content' );
 	assert.deepEqual( [ `${ EC }/416#0`, `${ EC }/418#0` ].map( ( k ) => rowOf( r, k ).action ), [ 'absorbed', 'absorbed' ] );
-	assert.equal( rowOf( r, `${ EC }/420#0` ).action, 'unwrap' );
+	assert.deepEqual( [ rowOf( r, `${ EC }/420#0` ).action, node.innerBlocks[ 0 ].innerBlocks.length ], [ null, 1 ], 'the panel is built as itself, its own rules applying, inside tab 1' );
 	assert.equal( rowOf( r, `${ EC }/414#0` ).block, 'sgs/container', 'the section holding the tabs is not the tabs (not the smallest holder)' );
 	const trail = rowOf( r, `${ EC }/334#0` );
 	assert.deepEqual( [ trail.block, trail.rule ], [ 'sgs/breadcrumbs', 'identity' ] );
@@ -198,4 +198,17 @@ test( 'a platform named outside a look-alike family changes nothing', () => {
 		return f;
 	} )() );
 	assert.deepEqual( [ rowOf( r, 'Root/2#0' ).block, rowOf( r, 'Root/2#0' ).confidence ], [ rowOf( before, 'Root/2#0' ).block, rowOf( before, 'Root/2#0' ).confidence ] );
+} );
+
+test( 'facts are meanings, never literal tags: a heading tag is heading, an href link is link, a generic element or inline formatting carries none', async () => {
+	const { roleOf, tagRoles } = await import( '../lib/skeleton-identity-roles.mjs' );
+	const at = ( attrs, parent = 'div', up = [] ) => ( { attr: ( e, n ) => attrs[ n ] ?? null, parentTag: () => parent, ancestorTags: () => up } );
+	assert.deepEqual( roleOf( { tag: 'h3' }, at( {} ) ), { role: 'heading', explicit: false } );
+	assert.deepEqual( roleOf( { tag: 'a' }, at( { href: '#' } ) ), { role: 'link', explicit: false } );
+	assert.equal( roleOf( { tag: 'a' }, at( {} ) ), null, 'an anchor with no href is generic' );
+	[ 'b', 'strong', 'em', 'i', 'span', 'div', 'p' ].forEach( ( tag ) => assert.equal( roleOf( { tag }, at( {} ) ), null, `${ tag } carries no meaning` ) );
+	assert.deepEqual( roleOf( { tag: 'div' }, at( { role: 'tablist' } ) ), { role: 'tablist', explicit: true } );
+	assert.equal( roleOf( { tag: 'img' }, at( { alt: '' } ) ), null, 'a decorative image is presentation' );
+	assert.deepEqual( roleOf( { tag: 'li' }, at( {}, 'ul' ) ), { role: 'listitem', explicit: false } );
+	assert.ok( [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6' ].every( ( t ) => tagRoles.get( t )?.has( 'heading' ) ), 'a block that can print any heading tag can show heading' );
 } );

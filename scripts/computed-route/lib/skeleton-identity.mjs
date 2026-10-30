@@ -3,8 +3,10 @@
 // fact names a block; each fact rules blocks out, and only a proven absence does:
 //   1. the candidates are every block whose `context` fits the surface (header, footer, drawer, form, a commerce role, or
 //      any), and the blocks the database scoring already proposes;
-//   2. a candidate is ruled out when the element's region shows a fact and the block, and every block it can hold, says
-//      `no` for it (no row is unknown, and an unknown never rules a block out). A platform never rules out on its own;
+//   2. a candidate is ruled out when the element's region shows a meaning (a role, written or implied by its tag, through
+//      lib/skeleton-identity-roles.mjs) or an aria state the block, and every block it can hold, says `no` for (no row is
+//      unknown, and an unknown never rules a block out). A block holding any block (a wrapper shell, a free content holder)
+//      is never ruled out: it stays with fewer matched facts. Open state, motion, held values, parts and platform only rank;
 //   3. the survivors are ranked by the facts both the region and the block show as yes (a role, an aria state, a tab set's
 //      open state and panel, a held value, a timer), counting only facts that name few blocks (shown by at most
 //      `rules.identity.maxShare` of the blocks with rows), and only when the element is the smallest one holding all of
@@ -21,6 +23,9 @@ import { identityTable } from './skeleton-identity-table.mjs';
 import { makeDraftFacts, RANKING_FACTS } from './skeleton-identity-draft.mjs';
 import { paletteBrands } from './brand-registry.mjs';
 
+// The facts that rule a block out: a meaning (a role, written or implied by the tag) or an aria state or property the block
+// can never show (Bean 2026-10-30). Open state, motion, held values, parts and platform only rank.
+const MEANING = new Set( [ 'renders-role', 'implied-role', 'renders-aria' ] );
 const fmt = ( f ) => `${ f.fact } ${ f.value }`;
 const at = ( f, n = 3 ) => [ ...f.at ].slice( 0, n ).join( ', ' ) + ( f.at.size > n ? ` (+${ f.at.size - n })` : '' );
 
@@ -63,15 +68,21 @@ export function makeIdentity( { m, facts, surface = {}, logicOf = () => null, ca
 	// What rules a block out at an element: the first fact its region shows that the block cannot show, or null.
 	const ruledOut = ( block, e ) => {
 		for ( const f of listOf( e ) ) {
-			if ( 'platform' !== f.fact && ( pool.has( block ) ? cannotShow( f ).has( block ) : ! table.canShow( block, f.fact, f.value ) ) ) {
+			if ( MEANING.has( f.fact ) && ( pool.has( block ) ? cannotShow( f ).has( block ) : ! table.canShow( block, f.fact, f.value ) ) ) {
 				return { block, fact: f.fact, value: f.value, at: [ ...f.at ], why: `${ block } never shows ${ fmt( f ) } (shown at ${ at( f ) })` };
 			}
 		}
 		return null;
 	};
 	// The ranking facts a block shows as yes at an element, when the element is the smallest one holding them all.
+	const shownBy = ( block, f ) => ( pool.has( block ) ? yesTo( f ).has( block ) : 'yes' === table.state( block, f.fact, f.value ) );
 	const matched = ( block, e ) => {
-		const list = listOf( e ).filter( ( f ) => naming( f ) && ( pool.has( block ) ? yesTo( f ).has( block ) : 'yes' === table.state( block, f.fact, f.value ) ) );
+		let list = listOf( e ).filter( ( f ) => naming( f ) && shownBy( block, f ) );
+		// A value a setting may hold (a separator glyph) says what a block can show, never what it is: it counts only beside the
+		// element's own meaning (its role, written or implied by its tag) shown by the same block.
+		if ( list.some( ( f ) => 'accepts-value' === f.fact ) && ! listOf( e ).some( ( f ) => [ 'renders-role', 'implied-role' ].includes( f.fact ) && f.at.has( e.key ) && 'yes' === table.state( block, f.fact, f.value ) ) ) {
+			list = list.filter( ( f ) => 'accepts-value' !== f.fact );
+		}
 		if ( ! list.length ) {
 			return [];
 		}
