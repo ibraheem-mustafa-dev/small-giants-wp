@@ -14,7 +14,8 @@ proves it, or for a `no` every source that was searched. The facts (the A0 vocab
   any when a boolean setting the render hands to the script (`data-allow-multiple`) lifts that; a block with neither is
   none. What no reader settles stays unknown.
 - self-moving (timer, controls, scroll, none): the view scripts (the block's and every block it renders) moving a track
-  (`scrollTo`, `scrollBy`, `scrollLeft =`, a transform or an offset custom property) from `setInterval` (timer), from a
+  (`scrollTo` / `scrollBy` not naming only `top`, `scrollLeft =`, a transform, or an offset custom property a declaration
+  consumes along the inline axis, `identity_editor.StyleIndex`) from `setInterval` (timer), from a
   click or key handler (controls) or from a page scroll listener (scroll); and every motion effect the block qualifies
   for whose `fx_effects.requires` is a track (its triggers: scroll is scroll, load or visible is timer, an Inertia drag
   is controls). none is yes only when all three are no.
@@ -27,7 +28,8 @@ proves it, or for a `no` every source that was searched. The facts (the A0 vocab
   `skeleton-decisions.json` `rules.commerceRegion.roles`, whose `block` / `owner` is that role's piece.
 - accepts-kind (`<attr or array.field>=icon:<kind>`, and `*=icon:<kind>` for the block as a whole): the icon kinds are the
   `icon-<kind>` roles; a field whose role is `icon-<kind>` holds that kind; an `icon` / `icon-slug` field holds the kinds
-  of the block's `enum-mode` source setting (icon-list `defaultIconSource`), and is unknown for the rest.
+  of the block's `enum-mode` source setting (icon-list `defaultIconSource`), and is unknown for the rest; a setting an
+  `<IconPicker>` in the block's editor code writes holds every kind that picker offers (`identity_editor.icon_pickers`).
 
 Live rows (`source` 'live', step A2b): the renders-tag / renders-role / renders-aria values the code read leaves unknown and
 the live read saw on a mirror page, from `scripts/computed-route/data/block-live-facts.json` (`live_rows`; only `yes`, and
@@ -52,6 +54,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import identity_scan as S  # noqa: E402
+from identity_editor import StyleIndex, icon_pickers  # noqa: E402
 from identity_markup import MARKUP, DbInputs, Extractor, Paths, load_db_inputs  # noqa: E402
 
 DEFAULT_DB = Path(os.environ.get("SGS_FRAMEWORK_DB") or Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db")
@@ -67,7 +70,7 @@ def _own(evidence: str) -> bool:
     """Whether a fact comes from the block's own structure: not content a setting holds, not an inner block's."""
     return CONTENT_EVIDENCE not in evidence and not evidence.startswith("inner block")
 _TRACK = re.compile(r"(?<!window)(?<!documentElement)\.(?:scrollTo|scrollBy)\s*\(|\.scrollLeft\s*[+\-]?=(?!=)|\.style\.transform\s*=|"
-                    r"setProperty\(\s*'--[\w-]*(?:offset|translate|slide|index|track|shift)")
+                    r"setProperty\(\s*'(--[\w-]*(?:offset|translate|slide|index|track|shift)[\w-]*)'")
 _HANDLER = re.compile(r"addEventListener\(\s*'(?:click|keydown|pointerdown|pointerup)'")
 _PAGE_SCROLL = re.compile(r"(?:window|document)\.addEventListener\(\s*'scroll'")
 _ONE_OF_MANY = re.compile(r"setAttribute\(\s*'aria-selected'\s*,\s*[^,;)]*\?\s*'true'\s*:\s*'false'")
@@ -82,6 +85,7 @@ class Rows:
     def __init__(self, x: Extractor, db: DbInputs):
         self.x, self.db = x, db
         self.rows: list[tuple] = []
+        self._styles: StyleIndex | None = None
 
     def add(self, slug, fact, value, state, evidence):
         self.rows.append((slug, fact, value, state, "code", evidence[:600]))
@@ -176,10 +180,27 @@ class Rows:
             self.add(slug, "open-state", value, state, ev)
 
     # -- self-moving ---------------------------------------------------------------------------------------------------
+    def _track(self, js: str):
+        """The first write in the view code that moves a track. A `scrollTo` / `scrollBy` whose options name only `top`
+        scrolls a panel, not a track; a custom property moves one only when a declaration consumes it along the inline
+        axis (`identity_editor.StyleIndex.moves`; a property with no consumer found keeps counting)."""
+        for t in _TRACK.finditer(js):
+            if t.group(1):
+                if self._styles is None:
+                    self._styles = StyleIndex([self.x.p.blocks.parent, *self.x.p.php_roots])
+                if self._styles.moves(t.group(1)) is False:
+                    continue
+            elif "scroll" in t.group(0):
+                arg = js[t.end():t.end() + 200].lstrip()
+                if arg.startswith("{") and re.match(r"\{[^{}]*(?<![\w-])top(?![\w-])", arg) and not re.match(r"\{[^{}]*(?<![\w-])left(?![\w-])", arg):
+                    continue
+            return t
+        return None
+
     def self_moving(self, slug: str) -> None:
         m = self.x.markup(slug)
         js = m.js_code
-        track = _TRACK.search(js)
+        track = self._track(js)
         got: dict = {}
         if track and re.search(r"setInterval\s*\(", js):
             got["timer"] = f"the view script moves a track (\"{track.group(0)}\") from setInterval"
@@ -266,13 +287,27 @@ class Rows:
 
     # -- accepts-kind --------------------------------------------------------------------------------------------------
     def accepts(self, slug: str) -> None:
+        """Each icon kind a setting can hold: from its role (`icon-<kind>` holds that kind; `icon` / `icon-slug` the kinds
+        of the block's enum-mode source setting) and from every IconPicker the editor mounts on it (it holds each kind the
+        picker offers, `identity_editor.icon_pickers`). A role-proven `no` stands only where no picker offers the kind;
+        a picker on a setting with no icon role leaves the kinds it does not offer unknown."""
         kinds = self.db.icon_kinds
-        fields = self.db.icon_fields.get(slug, [])
+        fields = list(self.db.icon_fields.get(slug, []))
         enums = [(a, v) for a, v in self.db.source_enums.get(slug, []) if set(v) & set(kinds)]
-        summary = {k: ("no", f"no setting or item field of {slug} holds an icon role (block_attributes / array_item_schema)") for k in kinds}
+        pickers: dict = {}
+        bdir = self.x.block_dir.get(slug)
+        for key, sources, ev in (icon_pickers(self.x.p.blocks.parent, bdir) if bdir else []):
+            label = next((lb for lb, _ in fields if key and (lb == key or lb.endswith("." + key))), key or "IconPicker")
+            pickers.setdefault(label, []).append((sources, ev))
+            if label not in [lb for lb, _ in fields]:
+                fields.append((label, None))
+        searched = f"no setting or item field of {slug} holds an icon role (block_attributes / array_item_schema) and its editor code mounts no IconPicker"
+        summary = {k: ("no", searched) for k in kinds}
         for label, role in fields:
             for k in kinds:
-                if role == f"icon-{k}":
+                if role is None:
+                    st, ev = "unknown", f"{label} has no icon role; another path is not traced"
+                elif role == f"icon-{k}":
                     st, ev = "yes", f"{label} has the role {role}"
                 elif role.startswith("icon-") and role != "icon-slug":
                     st, ev = "no", f"{label} has the role {role}: it holds one kind"
@@ -281,9 +316,17 @@ class Rows:
                     st, ev = ("yes", f"{label} ({role}) takes its kind from {src}") if any(k in v for _, v in enums) else ("unknown", f"{label} ({role}): {k} is not in {src}; another path is not traced")
                 else:
                     st, ev = "unknown", f"{label} ({role}) has no enum-mode source setting that names its kinds"
+                for sources, pev in pickers.get(label, []):
+                    if sources is None:
+                        st, ev = (st, ev) if st == "yes" else ("unknown", pev)
+                    elif k in sources:
+                        st, ev = "yes", pev
+                        break
+                    elif st == "no" and role is None:
+                        st, ev = "unknown", pev
                 self.add(slug, "accepts-kind", f"{label}=icon:{k}", st, ev)
                 cur = summary[k][0]
-                if st == "yes" or (st == "unknown" and cur == "no"):
+                if st == "yes" or (st == "unknown" and cur == "no") or (st == "no" and cur == "no" and summary[k][1] == searched):
                     summary[k] = (st, f"{label}=icon:{k}: {ev}")
         for k in kinds:
             self.add(slug, "accepts-kind", f"*=icon:{k}", *summary[k])

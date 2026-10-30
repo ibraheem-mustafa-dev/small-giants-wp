@@ -32,6 +32,11 @@ A throwaway repo tree is written to a temp folder and read by the real extractor
   template inserts sgs/fx-head, whose <h1> it can show (yes, evidence naming the child), and every value no child
   settles is unknown (table); sgs/fx-list allows only sgs/fx-item (block_composition), so its <li> is yes and a
   value neither prints stays no (table); sgs/fx-box accepts any block with no template (table unknown, its own div yes);
+- editor-side audit shapes (each MUST FAIL before the fix): sgs/fx-drawer sets a custom property only `top` consumes
+  from a click and a page scroll listener (no track: none yes), sgs/fx-slide one a transform consumes (timer yes, the
+  positive control), sgs/fx-vscroll a `scrollTo( { top } )` (no track); sgs/fx-pick mounts an IconPicker with no
+  `sources` prop on a setting with no icon role (every non-opt-in kind yes), sgs/fx-pick-lucide one restricted to lucide
+  on an icon-slug item field (lucide yes, emoji unknown), sgs/fx-pick-role one on an icon-lucide field (emoji yes);
 - the roster predicate equals `sgs-update-v2.py::_extension_applies` on every real block.json and roster rule.
 """
 from __future__ import annotations
@@ -150,6 +155,30 @@ export default function Edit() { return <div { ...useInnerBlocksProps( {}, { tem
     "fx-item": ({"supports": {}}, "<?php\necho '<li>' . esc_html( $attributes['text'] ) . '</li>';\n", None),
     "fx-box": ({"supports": {}, "_edit": """export default function Edit() { return <div><InnerBlocks /></div>; }
 """}, "<?php\necho '<div class=\"box\">' . $content . '</div>';\n", None),
+    # Audit 2026-10-30 (editor side): a header offset, a stagger index and a vertical panel scroll move no track; a
+    # custom property consumed by a transform does. An IconPicker on a setting holds every kind it offers.
+    "fx-drawer": ({"supports": {}, "_css": ".d{top:var(--fx-drawer-header-offset, 0px);}"}, "<?php echo '<div class=\"d\"></div>';",
+                  """document.addEventListener( 'scroll', () => {} );
+btn.addEventListener( 'click', () => { drawer.style.setProperty( '--fx-drawer-header-offset', h + 'px' ); } );
+"""),
+    "fx-slide": ({"supports": {}, "_css": ".t{transform: translateX(var(--fx-slide-offset, 0));}"}, "<?php echo '<div class=\"t\"></div>';",
+                 """setInterval( () => { list.style.setProperty( '--fx-slide-offset', x + 'px' ); }, 3000 );
+"""),
+    "fx-vscroll": ({"supports": {}}, "<?php echo '<div class=\"s\"></div>';",
+                   """btn.addEventListener( 'click', () => { scroller.scrollTo( { top, behavior: 'smooth' } ); } );
+"""),
+    "fx-pick": ({"supports": {}, "_edit": """export default function Edit() {
+	return <IconPicker value={ v } onChange={ ( { source, name } ) => setAttributes( { iconSource: source, iconName: name } ) } />;
+}
+"""}, "<?php echo '<span></span>';", None),
+    "fx-pick-lucide": ({"supports": {}, "_edit": """export default function Edit() {
+	return <IconPicker value={ { source: 'lucide', name: item.glyph } } onChange={ ( { name } ) => update( 'glyph', name ) } sources={ [ 'lucide' ] } />;
+}
+"""}, "<?php echo '<span></span>';", None),
+    "fx-pick-role": ({"supports": {}, "_edit": """export default function Edit() {
+	return <IconPicker value={ v } onChange={ ( { source, name } ) => setAttributes( { handleIconSource: source, handleIconName: name } ) } />;
+}
+"""}, "<?php echo '<span></span>';", None),
     "fx-varattr": ({"supports": {}}, """<?php
 foreach ( $node->attributes as $attr ) {
 	$local = $attr->localName;
@@ -170,6 +199,14 @@ const _create = function _create( type ) {
 };
 """
 
+ICON_DATA = """export const ICON_SOURCES = [
+	{ key: 'lucide', label: 'Lucide' },
+	// An opt-in source shows only when the caller lists it.
+	{ key: 'brand', label: 'Brands', optIn: true },
+	{ key: 'emoji', label: 'Emoji' },
+];
+"""
+
 CORE_SNAPSHOT = {
     "_meta": {"wordpress": "fixture"},
     "functions": {"wp_get_attachment_image": {"evidence": "WordPress fixture wp-includes/media.php::wp_get_attachment_image",
@@ -188,7 +225,9 @@ def _build(root: Path) -> Paths:
         d = plugin / "src" / "blocks" / name
         d.mkdir(parents=True, exist_ok=True)
         edit = meta.get("_edit")
-        bj = {"name": f"sgs/{name}", "attributes": {}, **{k: v for k, v in meta.items() if k != "_edit"}}
+        bj = {"name": f"sgs/{name}", "attributes": {}, **{k: v for k, v in meta.items() if not k.startswith("_")}}
+        if meta.get("_css"):
+            (d / "style.css").write_text(meta["_css"], encoding="utf-8")
         if edit:
             (d / "edit.js").write_text(edit, encoding="utf-8")
         if view:
@@ -196,6 +235,9 @@ def _build(root: Path) -> Paths:
             (d / "view.js").write_text(view, encoding="utf-8")
         (d / "block.json").write_text(json.dumps(bj), encoding="utf-8")
         (d / "render.php").write_text(render, encoding="utf-8")
+    picker = plugin / "src" / "components" / "IconPicker"
+    picker.mkdir(parents=True, exist_ok=True)
+    (picker / "icon-data.js").write_text(ICON_DATA, encoding="utf-8")
     brands = root / "brand-registry.json"
     brands.write_text(json.dumps({"brands": [{"slug": "acme", "label": "Acme", "colour": "#123456"},
                                              {"slug": "phone", "label": "Phone", "colour": ""}]}), encoding="utf-8")
@@ -233,7 +275,9 @@ def run() -> int:
     tmp = Path(tempfile.mkdtemp(prefix="sgs-idfacts-"))
     try:
         paths = _build(tmp)
-        db = DbInputs(icon_kinds=["emoji", "lucide"], icon_fields={"sgs/fx-plain": [("items.icon", "icon")]},
+        db = DbInputs(icon_kinds=["emoji", "lucide"], icon_fields={"sgs/fx-plain": [("items.icon", "icon")],
+                                                                  "sgs/fx-pick-lucide": [("items.glyph", "icon-slug")],
+                                                                  "sgs/fx-pick-role": [("handleIconName", "icon-lucide")]},
                       source_enums={"sgs/fx-plain": [("iconSource", ["lucide"])]}, fx={},
                       **({"allowed": {"sgs/fx-list": ["sgs/fx-item"], "sgs/fx-hero": None, "sgs/fx-box": None}}
                          if "allowed" in DbInputs.__dataclass_fields__ else {}))
@@ -290,6 +334,16 @@ def run() -> int:
             ("sgs/fx-list", "renders-tag", "table", "no", "a restricted parent whose only child cannot print it"),
             ("sgs/fx-box", "renders-tag", "table", "unknown", "an accept-any container with no template"),
             ("sgs/fx-box", "renders-tag", "div", "yes", "its own markup"),
+            ("sgs/fx-drawer", "self-moving", "none", "yes", "a custom property consumed only by top is no track (nav-drawer header offset)"),
+            ("sgs/fx-drawer", "self-moving", "scroll", "no", "a page scroll listener setting a header offset moves no track"),
+            ("sgs/fx-drawer", "self-moving", "controls", "no", "a click setting a header offset moves no track"),
+            ("sgs/fx-slide", "self-moving", "timer", "yes", "a custom property consumed by transform moves a track (testimonial slider)"),
+            ("sgs/fx-vscroll", "self-moving", "none", "yes", "a scrollTo naming only top scrolls a panel, not a track (nav-drawer-menu)"),
+            ("sgs/fx-pick", "accepts-kind", "*=icon:emoji", "yes", "an IconPicker with no sources prop offers every source that is not opt-in"),
+            ("sgs/fx-pick", "accepts-kind", "iconName=icon:lucide", "yes", "the setting the IconPicker writes holds its kinds"),
+            ("sgs/fx-pick-lucide", "accepts-kind", "items.glyph=icon:lucide", "yes", "an IconPicker restricted to lucide on an icon-slug item field"),
+            ("sgs/fx-pick-lucide", "accepts-kind", "items.glyph=icon:emoji", "unknown", "a kind the picker does not offer is not traced"),
+            ("sgs/fx-pick-role", "accepts-kind", "handleIconName=icon:emoji", "yes", "a picker offering emoji beats an icon-lucide role (before-after)"),
             ("sgs/fx-woo", "renders-tag", "form", "unknown", "a WooCommerce class's own output (a static ::output call) stays unknown"),
         ]
         fails = [f"{slug} {fact}={value}: expected {want}, got {state.get((slug, fact, value), 'no row')} ({why})"
