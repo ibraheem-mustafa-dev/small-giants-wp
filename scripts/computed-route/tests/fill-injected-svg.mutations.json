@@ -19,7 +19,7 @@
 	},
 	{
 		"file": "lib/fill-injected-svg.mjs",
-		"find": "for ( let at = e; at && ! n; at = byKey.get( at.parentKey ) ) {",
+		"find": "for ( let at = e; at && ! n; at = byKey.get( key( at.parentKey ) ) ) {",
 		"replace": "for ( let at = e; at && ! n; at = null ) {",
 		"why": "an ancestor's block is not reached"
 	},
