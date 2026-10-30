@@ -6,6 +6,7 @@
 import { brandOwnsAddress } from './brand-registry.mjs';
 import { linkWrite } from './draft-link.mjs';
 import { isMarker } from './skeleton-rules.mjs';
+import { inlineText } from './inline-text.mjs';
 import { finish, W } from './skeleton-classify.mjs';
 import { specHit } from './skeleton-facts.mjs';
 
@@ -144,7 +145,10 @@ export function makeUnits( ctx ) {
 				handover.push( { owner: 'behaviour', kind: 'link', detail: `draft link "${ m.words( l ) }" is "#": its destination is not in the draft, url left empty` } );
 			}
 			out.handover && handover.push( out.handover );
-			return { [ li.text ]: m.words( l ) || String( l.allText ?? '' ).replace( /\s+/g, ' ' ).trim(), ...( null !== out.value ? { [ li.url ]: out.value } : {} ) };
+			// An item holding inline parts writes them as the markup the item's text holds (lib/inline-text.mjs).
+			const rich = inlineText( { m, e: l, block: slug, attr: `items.${ li.text }`, codeRepo: facts.codeRepo, siteLink } );
+			rich && handover.push( ...rich.handover );
+			return { [ li.text ]: rich ? rich.value : m.words( l ) || String( l.allText ?? '' ).replace( /\s+/g, ' ' ).trim(), ...( null !== out.value ? { [ li.url ]: out.value } : {} ) };
 		} );
 		const C = {};
 		const ev = ( b, kind, w, text ) => ( C[ b ] ||= { block: b, evidence: [] } ).evidence.push( { kind, w, text } );

@@ -22,6 +22,6 @@
 	{ "file": "lib/skeleton-rules.mjs", "find": "if ( ! openLine( e ) || desc( e ).length > 2 ) {", "replace": "if ( true ) {", "why": "the open line is the open-status display" },
 	{ "file": "lib/skeleton-write-content.mjs", "find": "const c = T?.attribute && attrExists( block, T.attribute ) ? clock( e ) : null;", "replace": "const c = T?.attribute ? clock( e ) : null;", "why": "a block the framework DB gives no time-based text setting takes none" },
 	{ "file": "lib/skeleton-write-content.mjs", "find": "...( c.zone && T.zoneAttribute", "replace": "...( false && T.zoneAttribute", "why": "the zone the code names is written" },
-	{ "file": "lib/skeleton-write-content.mjs", "find": "attributes: { [ textAttr ]: words, ...timeTextAttrs( textBlock, e ) }", "replace": "attributes: { [ textAttr ]: words }", "why": "a container's own clock-picked words take the option on their text child" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": "attributes: { [ textAttr ]: rich ? rich.value : words, ...timeTextAttrs( textBlock, e ) }", "replace": "attributes: { [ textAttr ]: rich ? rich.value : words }", "why": "a container's own clock-picked words take the option on their text child" },
 	{ "file": "lib/skeleton-write-content.mjs", "find": "textAttr && t && ! quoteBody && Object.assign( a, timeTextAttrs( block, e ) );", "replace": "", "why": "a text element's clock-picked words take the option on its own block" }
 ]
