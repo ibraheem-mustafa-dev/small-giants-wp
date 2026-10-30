@@ -156,3 +156,15 @@ test( 'MUST FAIL: a brand\'s ground, even the most used one, does not take the s
 	const slot = holder( run( loud ), 'section' );
 	assert.ok( slot.length > 0 && ! slot.includes( '#25D366' ), JSON.stringify( slot ) );
 } );
+
+test( 'MUST FAIL: a colour that paints other grounds as well as a brand link\'s keeps the role its grounds earn', () => {
+	const tokens = [ ...TOKENS, { name: '--own-blue', type: 'colour', hex: '#0A7EA8' } ];
+	const usage = [ ...USAGE, use( '#0A7EA8', 'background-color', 'button', 8 ), use( '#0A7EA8', 'background-color', 'a', 2, { channel: 'google' } ) ];
+	assert.deepEqual( holder( proposePalette( { tokens, usage, slugs: SLUGS } ), 'primary' ), [ '#0A7EA8' ], 'the most used button ground with one review link is still primary' );
+} );
+
+test( 'negative control: a colour painted only on brand links\' grounds never takes primary, however loud', () => {
+	const tokens = [ ...TOKENS, { name: '--own-blue', type: 'colour', hex: '#0A7EA8' } ];
+	const usage = [ ...USAGE, use( '#0A7EA8', 'background-color', 'a', 10, { channel: 'google' } ), use( '#0A7EA8', 'color', 'span', 4, { ground: '#FAF8F5', text: true, chars: 40 } ) ];
+	assert.ok( ! holder( proposePalette( { tokens, usage, slugs: SLUGS } ), 'primary' ).includes( '#0A7EA8' ) );
+} );

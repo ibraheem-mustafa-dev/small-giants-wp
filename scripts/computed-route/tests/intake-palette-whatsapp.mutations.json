@@ -1,9 +1,15 @@
 [
 	{
 		"file": "lib/intake-palette-usage.mjs",
-		"find": "const channel = new Set( [ ...tally( ( u ) => !! u.channel && isBackground( u.property ) ).keys() ].filter( ( g ) => opaque( g.hex ) && chroma( g.hex ) > SATURATED_C ) );",
-		"replace": "const channel = new Set( [ ...tally( ( u ) => false && isBackground( u.property ) ).keys() ].filter( ( g ) => opaque( g.hex ) && chroma( g.hex ) > SATURATED_C ) );",
+		"find": "const channelGrounds = tally( ( u ) => !! u.channel && isBackground( u.property ) );",
+		"replace": "const channelGrounds = tally( ( u ) => false && isBackground( u.property ) );",
 		"why": "the ground of a brand's own links is known as that brand's colour"
+	},
+	{
+		"file": "lib/intake-palette-usage.mjs",
+		"find": "&& channelGrounds.get( g ) === allGrounds.get( g ) )",
+		"replace": ")",
+		"why": "a colour that also paints other grounds keeps its place in the contest"
 	},
 	{
 		"file": "lib/intake-palette-usage.mjs",
