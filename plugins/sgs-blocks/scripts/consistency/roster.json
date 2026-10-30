@@ -1957,7 +1957,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 8,
+        "paintDeclarations": 6,
         "replacedCoreSupports": []
       }
     },
