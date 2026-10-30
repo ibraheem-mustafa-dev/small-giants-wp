@@ -416,7 +416,8 @@ def _paren_close(text: str, paren: int) -> int:
 # View scripts
 # ---------------------------------------------------------------------------------------------------------------------
 
-_JS_IMPORT = re.compile(r"""(?:\bimport\s*(?:[\w$*{}\s,]*?\s*from\s*)?|\bimport\s*\(\s*|\bexport\s+(?:\*|\{[^}]*\})\s+from\s+)['"]([^'"]+)['"]""", re.S)
+# A dynamic import may carry bundler comments before its specifier (`import( /* webpackIgnore: true */ '@sgs/x' )`).
+_JS_IMPORT = re.compile(r"""(?:\bimport\s*(?:[\w$*{}\s,]*?\s*from\s*)?|\bimport\s*\(\s*(?:/\*.*?\*/\s*|//[^\n]*\n\s*)*|\bexport\s+(?:\*|\{[^}]*\})\s+from\s+)['"]([^'"]+)['"]""", re.S)
 
 
 def js_closure(entry: Path, modules: dict, src_dir: Path, npm=None) -> tuple[list[Path], list[str]]:

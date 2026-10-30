@@ -37,6 +37,10 @@ A throwaway repo tree is written to a temp folder and read by the real extractor
   positive control), sgs/fx-vscroll a `scrollTo( { top } )` (no track); sgs/fx-pick mounts an IconPicker with no
   `sources` prop on a setting with no icon role (every non-opt-in kind yes), sgs/fx-pick-lucide one restricted to lucide
   on an icon-slug item field (lucide yes, emoji unknown), sgs/fx-pick-role one on an icon-lucide field (emoji yes);
+- comment-annotated dynamic imports (MUST FAIL before the import reader skips bundler comments; the lottie player
+  behind `lottie-adapter.js`'s `import( /* webpackChunkName */ '@sgs/lottie-web' )` was never read): sgs/fx-lazy's view
+  script loads `import( /* webpackIgnore: true */ '@sgs/fx-lazy-mod' )`, whose module writes aria-labelledby (yes), and
+  `import( // a line comment` of a relative file that builds an <aside> (yes); a value neither prints stays no (table);
 - the roster predicate equals `sgs-update-v2.py::_extension_applies` on every real block.json and roster rule.
 """
 from __future__ import annotations
@@ -179,6 +183,13 @@ btn.addEventListener( 'click', () => { drawer.style.setProperty( '--fx-drawer-he
 	return <IconPicker value={ v } onChange={ ( { source, name } ) => setAttributes( { handleIconSource: source, handleIconName: name } ) } />;
 }
 """}, "<?php echo '<span></span>';", None),
+    "fx-lazy": ({"supports": {}}, "<?php\necho '<div class=\"x\"></div>';\n", """const load = () => import( /* webpackIgnore: true */ '@sgs/fx-lazy-mod' );
+const side = () => import( // the side panel, fetched on first open
+	'./side.js'
+);
+load().then( ( m ) => m.boot( root ) );
+side();
+"""),
     "fx-varattr": ({"supports": {}}, """<?php
 foreach ( $node->attributes as $attr ) {
 	$local = $attr->localName;
@@ -186,6 +197,13 @@ foreach ( $node->attributes as $attr ) {
 }
 echo '<span></span>';
 """, None),
+}
+
+FIXTURE_JS = {
+    "src/shared/fx-lazy-mod.js": """export function boot( el ) {
+	el.setAttribute( 'aria-labelledby', el.id + '-title' );
+}
+""",
 }
 
 FAKE_PKG = """export function make() {
@@ -221,6 +239,11 @@ def _build(root: Path) -> Paths:
     for rel, text in FIXTURE_PHP.items():
         (plugin / rel).parent.mkdir(parents=True, exist_ok=True)
         (plugin / rel).write_text(text, encoding="utf-8")
+    for rel, text in FIXTURE_JS.items():
+        (plugin / rel).parent.mkdir(parents=True, exist_ok=True)
+        (plugin / rel).write_text(text, encoding="utf-8")
+    (plugin / "src" / "blocks" / "fx-lazy").mkdir(parents=True, exist_ok=True)
+    (plugin / "src" / "blocks" / "fx-lazy" / "side.js").write_text("export const panel = document.createElement( 'aside' );\n", encoding="utf-8")
     for name, (meta, render, view) in BLOCKS.items():
         d = plugin / "src" / "blocks" / name
         d.mkdir(parents=True, exist_ok=True)
@@ -344,6 +367,9 @@ def run() -> int:
             ("sgs/fx-pick-lucide", "accepts-kind", "items.glyph=icon:lucide", "yes", "an IconPicker restricted to lucide on an icon-slug item field"),
             ("sgs/fx-pick-lucide", "accepts-kind", "items.glyph=icon:emoji", "unknown", "a kind the picker does not offer is not traced"),
             ("sgs/fx-pick-role", "accepts-kind", "handleIconName=icon:emoji", "yes", "a picker offering emoji beats an icon-lucide role (before-after)"),
+            ("sgs/fx-lazy", "renders-aria", "aria-labelledby", "yes", "a module loaded by import( /* bundler comment */ '@sgs/x' )"),
+            ("sgs/fx-lazy", "renders-tag", "aside", "yes", "a relative module loaded by import( // line comment )"),
+            ("sgs/fx-lazy", "renders-tag", "table", "no", "negative control: neither lazy module prints it"),
             ("sgs/fx-woo", "renders-tag", "form", "unknown", "a WooCommerce class's own output (a static ::output call) stays unknown"),
         ]
         fails = [f"{slug} {fact}={value}: expected {want}, got {state.get((slug, fact, value), 'no row')} ({why})"
