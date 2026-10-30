@@ -1,0 +1,5 @@
+{
+	"_meta": "Which plain-text settings lib/inline-text.mjs::plainTextSettings reports for Bean's review, read from the words of each setting's name (camelCase split, lower case). A setting whose words include a label word is a clickable element's label (a button, tab, chip, cart or buybox control), never reported; one whose words include a sentence word is prose a draft could partly format (an intro, a success message, a note, a footnote), reported. Settings whose text lives in a child block (emit_shape child) and settings of the form and form-field blocks are never reported.",
+	"labelWords": [ "label", "more", "cta", "button", "trigger", "link", "toggle", "badge", "tag", "prefix", "suffix", "separator" ],
+	"sentenceWords": [ "message", "intro", "note", "footnote", "prompt", "subtitle", "caption", "description", "text" ]
+}

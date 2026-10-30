@@ -189,3 +189,42 @@ test( 'MUST FAIL: a card\'s call to action keeps its bold in the button label; n
 	assert.equal( labelOf( skeletonOf( card( S( 'div', { words: 'Food Service', flow: [ 0, ' Food Service' ] }, [ S( 'b', { words: 'Explore', display: 'inline' } ) ] ) ) ) ), '<strong>Explore</strong> Food Service' );
 	assert.equal( labelOf( skeletonOf( card( S( 'div', { words: 'Explore Food Service' } ) ) ) ), 'Explore Food Service' );
 } );
+
+// Bean 2026-10-30: formatting or a link covering a text's whole words is the block's own typography or link, never markup
+// inside the text and never a handover; partial formatting a setting cannot hold keeps its words and is the named row.
+import { inlineText, plainTextSettings } from '../lib/inline-text.mjs';
+import { inventoryModel } from '../lib/skeleton-model.mjs';
+const textModel = ( kids, flow ) => inventoryModel( inventory( [ el( 'Root/1#0', null, 'section' ), el( 'Root/2#0', 'Root/1#0', 'p', { words: flow.filter( ( x ) => 'string' === typeof x ).join( '' ).trim(), flow } ), ...kids.map( ( [ tag, words, attrs = {} ], i ) => el( `Root/${ 3 + i }#0`, 'Root/2#0', tag, { words, display: 'inline', attrs } ) ) ] ) );
+const rebuilt = ( m, block, attr, clickable = false ) => inlineText( { m, e: m.byKey[ 'Root/2#0' ], block, attr, codeRepo: REPO, siteLink: () => ( { kind: 'site', value: 'https://example.org/shop' } ), clickable } );
+const k = ( i ) => ( { key: `Root/${ 3 + i }#0` } );
+
+test( 'MUST FAIL: bold covering every word is the block\'s own weight: no <strong> in the text and no handover; negative control: a partial bold stays <strong>', () => {
+	const whole = rebuilt( textModel( [ [ 'b', 'Fresh' ], [ 'b', 'bakes' ] ], [ k( 0 ), ' ', k( 1 ) ] ), 'sgs/text', 'text' );
+	assert.deepEqual( whole, { value: 'Fresh bakes', handover: [] } );
+	const coloured = rebuilt( textModel( [ [ 'span', 'Fresh', { style: 'color:#c00' } ], [ 'span', 'bakes', { style: 'color:#c00' } ] ], [ k( 0 ), ' ', k( 1 ) ] ), 'sgs/text', 'text' );
+	assert.deepEqual( coloured.handover, [], 'a colour over the whole text is the block\'s text colour, no handover' );
+	assert.equal( rebuilt( textModel( [ [ 'b', 'Fresh' ] ], [ k( 0 ), ' bakes' ] ), 'sgs/text', 'text' ).value, '<strong>Fresh</strong> bakes' );
+} );
+
+test( 'MUST FAIL: a link covering a whole label is the block\'s own link: no link in the label and no handover; negative control: a paragraph whose setting holds links keeps it', () => {
+	const m = () => textModel( [ [ 'a', 'Shop', { href: '/shop' } ], [ 'a', 'now', { href: '/shop' } ] ], [ k( 0 ), ' ', k( 1 ) ] );
+	assert.deepEqual( rebuilt( m(), 'sgs/button', 'label', true ), { value: 'Shop now', handover: [] } );
+	assert.deepEqual( rebuilt( m(), 'sgs/tab', 'label' ), { value: 'Shop now', handover: [] }, 'a setting holding no link format takes no handover for a whole link either' );
+	assert.match( rebuilt( m(), 'sgs/text', 'text' ).value, /<a href="https:\/\/example\.org\/shop">Shop<\/a>/ );
+} );
+
+test( 'partial formatting inside a label keeps its words and raises the named handover row', () => {
+	const r = rebuilt( textModel( [ [ 'a', 'today', { href: '/shop' } ] ], [ 'Shop ', k( 0 ) ] ), 'sgs/button', 'label', true );
+	assert.equal( r.value, 'Shop today' );
+	assert.match( r.handover[ 0 ].detail, /sgs\/button label holds only core\/bold, core\/italic, so the link "today"/ );
+} );
+
+test( 'MUST FAIL: the plain-text review lists sentence settings only: no child-block text, no form or form-field setting, no clickable label', () => {
+	const plain = plainTextSettings( { db, codeRepo: REPO } );
+	const has = ( b, a ) => plain.some( ( p ) => b === p.block && a === p.attr );
+	assert.ok( ! has( 'sgs/info-box', 'heading' ) && ! has( 'sgs/info-box', 'description' ), 'emit_shape child' );
+	assert.ok( ! has( 'sgs/form', 'successMessage' ) && ! has( 'sgs/form-field-text', 'label' ), 'form and form-field blocks' );
+	assert.ok( ! has( 'sgs/tab', 'label' ) && ! has( 'sgs/cart', 'checkoutLabel' ) && ! has( 'sgs/product-card', 'cta2Text' ), 'clickable labels' );
+	assert.ok( has( 'sgs/cart', 'emptyCartMessage' ) && has( 'sgs/google-reviews', 'footnote' ) && has( 'sgs/choice-flow-question', 'intro' ), 'negative control: sentence settings stay' );
+	assert.ok( plain.length < 60, 'a short list' );
+} );

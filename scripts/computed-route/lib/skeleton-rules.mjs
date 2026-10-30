@@ -414,7 +414,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		return { attributes: null !== out.value ? { [ attr ]: out.value } : {}, ...( out.handover ? { handover: out.handover } : {} ) };
 	};
 	// An element's words as the markup a block setting holds (lib/inline-text.mjs::inlineText), or null with no inline parts.
-	const richOf = ( e, block, attr ) => inlineText( { m, e, block, attr, codeRepo: facts.codeRepo, siteLink: hooks.siteLink || siteLinkResolver( null, null, read ) } );
+	const richOf = ( e, block, attr, clickable = false ) => inlineText( { m, e, block, attr, codeRepo: facts.codeRepo, siteLink: hooks.siteLink || siteLinkResolver( null, null, read ), clickable } );
 	const linkAttrs = ( e, lk ) => {
 		if ( lk ) {
 			return { attributes: { sgsBlockLinkSource: lk.source } };
@@ -606,7 +606,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const lk = linkKindOf( card );
 			const link = lk ? { attributes: { linkSource: lk.source } } : realHref( card ) ? siteLinkOf( 'url', card ) : { attributes: {} };
 			// The label keeps the action's inline markup as the button's label holds it; contentAttrs names what it cannot hold.
-			return v( 'cardAction', { block: R.cardAction?.block, ...link, attributes: { label: richOf( e, R.cardAction?.block, 'label' )?.value ?? m.words( e ), ...link.attributes } } );
+			return v( 'cardAction', { block: R.cardAction?.block, ...link, attributes: { label: richOf( e, R.cardAction?.block, 'label', true )?.value ?? m.words( e ), ...link.attributes } } );
 		},
 		// A short run of words: the first in a header or footer row's column heads it; set in capitals, wide tracking or a
 		// pill it is a kicker. A control the visitor operates and a bare number are neither.

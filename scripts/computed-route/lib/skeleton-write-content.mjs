@@ -160,7 +160,7 @@ export function makeContent( ctx ) {
 		const quoteBody = 'blockquote' === e.tag;
 		const cite = quoteBody ? citeOf( e ) : null;
 		// A text element holding inline parts writes them as the markup the receiving setting holds (lib/inline-text.mjs).
-		const rich = textAttr && t && ! quoteBody ? inlineText( { m, e, block, attr: textAttr, codeRepo: facts.codeRepo, siteLink } ) : null;
+		const rich = textAttr && t && ! quoteBody ? inlineText( { m, e, block, attr: textAttr, codeRepo: facts.codeRepo, siteLink, clickable: !! linkAttr } ) : null;
 		rich && handover.push( ...rich.handover );
 		const plain = m.textWithBreaks( e ).includes( '<br>' ) ? m.textWithBreaks( e ) : t;
 		textAttr && t && ! quoteBody && ( a[ textAttr ] = rich ? rich.value : plain );

@@ -11,6 +11,7 @@
 // <em>, core/strikethrough <s>, core/link <a>) and the HTML elements that draw the same (<b>, <i>, <del>).
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { parse } from '@babel/parser';
 import { INLINE_PAINT } from './phrasing-content.mjs';
 import { linkWrite } from './draft-link.mjs';
@@ -104,13 +105,37 @@ export function inlineAllowance( codeRepo, block, attr ) {
 // decoded, white space collapsed. A value holding no markup reads as itself.
 export const plainOf = ( v ) => String( v ?? '' ).replace( /<br\s*\/?>/gi, ' ' ).replace( /<[^>]*>/g, '' ).replace( /&lt;/g, '<' ).replace( /&gt;/g, '>' ).replace( /&quot;/g, '"' ).replace( /&#0*39;/g, '\'' ).replace( /&amp;/g, '&' ).replace( /\s+/g, ' ' ).trim();
 
-// The text settings the framework DB lists (role text-content, string) that hold plain text only, as findings
-// [ { block, attr, why } ], for the review: a draft's bold, link or line break written there is flattened.
-export function plainTextSettings( { db, codeRepo } ) {
+// The words a review reads setting names by (data/plain-text-review.json): { labelWords, sentenceWords }. Throws on a file that
+// lists no words in either.
+export const PLAIN_REVIEW_FILE = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'data', 'plain-text-review.json' );
+export function loadPlainReview( file = PLAIN_REVIEW_FILE ) {
+	const data = JSON.parse( fs.readFileSync( file, 'utf8' ) );
+	for ( const k of [ 'labelWords', 'sentenceWords' ] ) {
+		if ( ! Array.isArray( data[ k ] ) || ! data[ k ].length || ! data[ k ].every( ( w ) => 'string' === typeof w && w === w.toLowerCase() ) ) {
+			throw new Error( `${ file }: ${ k } must be a list of lower-case words` );
+		}
+	}
+	return { labelWords: new Set( data.labelWords ), sentenceWords: new Set( data.sentenceWords ) };
+}
+const nameWords = ( name ) => String( name ).replace( /([a-z0-9])([A-Z])/g, '$1 $2' ).split( /[\s_-]+/ ).map( ( w ) => w.toLowerCase().replace( /\d+$/, '' ) ).filter( Boolean );
+
+// The sentence settings that hold plain text only, for Bean's review: the framework DB's string text-content settings no
+// RichText format reaches whose text is prose a draft could partly format (data/plain-text-review.json's sentence words in
+// the name), as [ { block, attr, why } ]. Never reported: a setting whose text lives in a child block (emit_shape `child`, an
+// info box's heading), a setting of a form or form-field block (its labels belong to the form's controls), a clickable
+// element's label (a label word in the name: a button, tab, chip, cart or buybox control, whose own link or control
+// setting makes the whole element clickable), and a setting that never reaches the front end (emit_shape `editor-only`).
+export function plainTextSettings( { db, codeRepo, review = loadPlainReview() } ) {
 	const { formats } = richTextSettings( codeRepo );
-	return db.prepare( "SELECT block_slug, attr_name FROM block_attributes WHERE role = 'text-content' AND attr_type = 'string' AND block_slug LIKE 'sgs/%' ORDER BY block_slug, attr_name" ).all()
+	const form = ( b ) => /^sgs\/form(?:-|$)/.test( b );
+	return db.prepare( "SELECT block_slug, attr_name, emit_shape FROM block_attributes WHERE role = 'text-content' AND attr_type = 'string' AND block_slug LIKE 'sgs/%' ORDER BY block_slug, attr_name" ).all()
 		.filter( ( r ) => ! formats.get( `${ r.block_slug }:${ r.attr_name }` )?.length )
-		.map( ( r ) => ( { block: r.block_slug, attr: r.attr_name, why: formats.has( `${ r.block_slug }:${ r.attr_name }` ) ? 'its RichText takes no format (RICH_TEXT_PLAIN: printed through esc_html)' : 'no RichText edits it (rich-text-format-roles.json lists none), so it holds plain text' } ) );
+		.filter( ( r ) => ! [ 'child', 'editor-only' ].includes( r.emit_shape ) && ! form( r.block_slug ) )
+		.filter( ( r ) => {
+			const w = nameWords( r.attr_name );
+			return ! w.some( ( x ) => review.labelWords.has( x ) ) && w.some( ( x ) => review.sentenceWords.has( x ) );
+		} )
+		.map( ( r ) => ( { block: r.block_slug, attr: r.attr_name, why: `${ formats.has( `${ r.block_slug }:${ r.attr_name }` ) ? 'its RichText takes no format (RICH_TEXT_PLAIN: printed through esc_html)' : 'no RichText edits it (rich-text-format-roles.json lists none)' }; a sentence${ 'script-rendered' === r.emit_shape ? ' its script writes as text' : '' }, so a draft's bold or link inside it keeps only its words` } ) );
 }
 
 
@@ -133,7 +158,8 @@ function inlinePaint( m, el ) {
 }
 
 // The one path every writer of a draft text element into a block setting takes. o: { m (lib/skeleton-model.mjs), e (the
-// draft element), block, attr (the setting receiving its words), codeRepo, siteLink (the draft-link resolver) }. When the
+// draft element), block, attr (the setting receiving its words), codeRepo, siteLink (the draft-link resolver), clickable (the
+// block's own link or control setting makes the whole element clickable) }. When the
 // element holds inline parts (lib/skeleton-model.mjs::inlineParts), its content is rebuilt as the markup the setting holds
 // (inlineAllowance): text runs escaped; a line break as <br>; a bold, slanted or struck tag or span (its weight against
 // the words around it, its slant, its strike) as the format's own tag (<strong>, <em>, <s>); a link as <a href> to its site
@@ -141,7 +167,7 @@ function inlinePaint( m, el ) {
 // button label, a <code>, a line break in a plain setting) and any other paint difference (a coloured word, a size: no
 // format holds it, and no inline style is ever written, Spec 32) keeps its words and is a handover naming it.
 // Returns { value, handover }, or null when the element holds no inline parts.
-export function inlineText( { m, e, block, attr, codeRepo, siteLink } ) {
+export function inlineText( { m, e, block, attr, codeRepo, siteLink, clickable = false } ) {
 	if ( ! m.inlineParts( e ).length ) {
 		return null;
 	}
@@ -149,6 +175,23 @@ export function inlineText( { m, e, block, attr, codeRepo, siteLink } ) {
 	const handover = [];
 	const lost = [];
 	const where = `${ block } ${ attr }`;
+	// An element never shown prints nothing, and the parent's own children are its inline parts alone.
+	const prints = ( x, el ) => Object.values( el.visible || {} ).some( Boolean ) && ( x !== e || m.inlineParts( e ).includes( el ) );
+	// The inline elements holding every word of the text between them (Bean 2026-10-30): one <b> around it all, two <b>s with
+	// only white space between them. Their weight, slant or other paint is the block's own typography (Fill reads it from the element painting
+	// the first text, parity/lib/paint.mjs::textCarrier), never inline markup and never a handover; a link around the whole
+	// text is the block's own link (`clickable`: the block has a link or control setting making the whole element clickable),
+	// or one its setting holds no link format for, never a link inside the text and never a handover.
+	const runs = [];
+	const walk = ( x, chain ) => m.flowOf( x ).forEach( ( r ) => {
+		null != r.text ? String( r.text ).trim() && runs.push( chain ) : r.el && ! r.br && 'br' !== r.el.tag && prints( x, r.el ) && walk( r.el, [ ...chain, r.el ] );
+	} );
+	walk( e, [] );
+	// An element's look: the format its tag draws (else its tag), a link's address and the paint it differs by. Two <b>s holding
+	// every word between them share one look, so each is whole.
+	const lookOf = ( el ) => `${ formatOfTag( el.tag ) ?? el.tag }|${ 'a' === el.tag ? el.attrs?.href ?? '' : '' }|${ JSON.stringify( inlinePaint( m, el ) ) }`;
+	const looks = runs.map( ( c ) => new Set( c.map( lookOf ) ) );
+	const whole = new Set( runs.flat().filter( ( el ) => looks.every( ( l ) => l.has( lookOf( el ) ) ) ) );
 	const html = ( x ) => m.flowOf( x ).map( ( r ) => {
 		if ( null != r.text ) {
 			return escText( r.text );
@@ -158,11 +201,13 @@ export function inlineText( { m, e, block, attr, codeRepo, siteLink } ) {
 			return allow.br ? '<br>' : ' ';
 		}
 		const el = r.el;
-		// An element never shown prints nothing, and the parent's own children are its inline parts alone.
-		if ( ! Object.values( el.visible || {} ).some( Boolean ) || ( x === e && ! m.inlineParts( e ).includes( el ) ) ) {
+		if ( ! prints( x, el ) ) {
 			return '';
 		}
 		let inner = html( el );
+		if ( whole.has( el ) && ( 'a' !== el.tag || clickable || ! allow.formats.includes( 'core/link' ) ) ) {
+			return inner;
+		}
 		const paint = inlinePaint( m, el );
 		const own = TAG_PAINT[ el.tag ] || [];
 		// Bold is a weight of 600 or more inside words drawn lighter: the browser's resolved weights of the element and the
