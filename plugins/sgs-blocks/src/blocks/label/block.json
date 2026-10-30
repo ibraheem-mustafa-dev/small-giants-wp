@@ -29,6 +29,10 @@
 		},
 		"sgs": {
 			"motion": true,
+			"enabledExtensions": [
+				"timeText"
+			],
+			"timeTextWords": "text",
 			"boxFamilies": {
 				"padding": [
 					"padding"

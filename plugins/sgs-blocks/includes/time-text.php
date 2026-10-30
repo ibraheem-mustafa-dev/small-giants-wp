@@ -33,7 +33,7 @@ add_filter( 'render_block', __NAMESPACE__ . '\\time_text_mark_words', 10, 2 );
  * server-rendered words.
  */
 function time_text_register_module(): void {
-	if ( ! \function_exists( 'wp_register_script_module' ) || ! \file_exists( SGS_BLOCKS_PATH . TIME_TEXT_MODULE_PATH ) ) {
+	if ( ! \file_exists( SGS_BLOCKS_PATH . TIME_TEXT_MODULE_PATH ) ) {
 		return;
 	}
 	$version = \defined( 'SGS_BLOCKS_VERSION' ) ? (string) SGS_BLOCKS_VERSION : false;
@@ -123,7 +123,7 @@ function time_text_ranges( $stored ): array {
 function time_text_zone( $zone ): string {
 	$zone = \is_string( $zone ) ? \trim( $zone ) : '';
 	if ( 'site' === $zone ) {
-		return \function_exists( 'wp_timezone_string' ) ? (string) \wp_timezone_string() : '';
+		return (string) \wp_timezone_string();
 	}
 	if ( '' === $zone ) {
 		return '';
@@ -184,8 +184,6 @@ function time_text_mark_words( $block_content, $block ) {
 	if ( '' !== $zone ) {
 		$tags->set_attribute( 'data-sgs-time-zone', $zone );
 	}
-	if ( \function_exists( 'wp_enqueue_script_module' ) ) {
-		\wp_enqueue_script_module( TIME_TEXT_MODULE );
-	}
+	\wp_enqueue_script_module( TIME_TEXT_MODULE );
 	return $tags->get_updated_html();
 }

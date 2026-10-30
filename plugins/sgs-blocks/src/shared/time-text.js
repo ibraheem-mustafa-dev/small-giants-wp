@@ -56,7 +56,7 @@ function run() {
 	document.querySelectorAll( SELECTOR ).forEach( ( el ) => apply( el, now ) );
 	const next = new Date( now.getTime() );
 	next.setMinutes( 60, 1, 0 );
-	window.setTimeout( run, next.getTime() - now.getTime() );
+	setTimeout( run, next.getTime() - now.getTime() );
 }
 
 if ( 'loading' === document.readyState ) {

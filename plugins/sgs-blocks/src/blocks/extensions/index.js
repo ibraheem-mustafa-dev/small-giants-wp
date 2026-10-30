@@ -11,6 +11,8 @@
  * - Block link: the whole-block link panel for sgs/* blocks that opt in (hover-effects/).
  * - Child sizing: fit / fill / fixed width inside a flex row, per device, for
  *   blocks that opt in with supports.sgs.enabledExtensions ["childSizing"].
+ * - Text by time of day: hour ranges with their own words, swapped in the
+ *   visitor's browser, for blocks that opt in with ["timeText"] (time-text.js).
  * - Custom CSS: per-block scoped CSS textarea in Advanced panel (also
  *   disables WP core's native `customCSS` support so only one CSS control
  *   shows — see custom-css.js).
@@ -42,6 +44,7 @@
 import './responsive-device-toggle';
 import './hover-effects';
 import './child-sizing';
+import './time-text';
 import './custom-css';
 import './focus-rests';
 import './block-defaults';
