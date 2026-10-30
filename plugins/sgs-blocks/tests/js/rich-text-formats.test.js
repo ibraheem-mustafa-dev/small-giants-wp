@@ -91,7 +91,7 @@ describe( 'shared format lists', () => {
 
 	it( 'every constant lists only registered names, and is frozen', () => {
 		const known = new Set( [ ...CORE_FORMATS, ...registered() ] );
-		const names = [ 'RICH_TEXT_BODY', 'RICH_TEXT_BODY_NO_LINK', 'RICH_TEXT_EMPHASIS', 'RICH_TEXT_LINK_ONLY', 'RICH_TEXT_PLAIN' ];
+		const names = [ 'RICH_TEXT_BODY', 'RICH_TEXT_BODY_NO_LINK', 'RICH_TEXT_EMPHASIS', 'RICH_TEXT_FREE_TEXT', 'RICH_TEXT_FREE_TEXT_NO_LINK', 'RICH_TEXT_LINK_ONLY', 'RICH_TEXT_PLAIN' ];
 		expect( Object.keys( formats ).sort() ).toEqual( [ ...names ].sort() );
 		for ( const name of names ) {
 			expect( Object.isFrozen( formats[ name ] ) ).toBe( true );

@@ -13,7 +13,6 @@ import { Section, Row, typographyAttrs } from './panel-kit';
 import { TypographyRow, typoTarget } from './panel-fields';
 
 import SgsFreeTextField from '../../../components/SgsFreeTextField';
-import SgsFreeTextField from '../../../components/SgsFreeTextField';
 export const REVIEW_TEXT_TYPOGRAPHY_PREFIXES = [ 'text', 'reviewLink', 'footnote' ];
 
 /** Every attribute this section owns (drives "Reset all"). */
