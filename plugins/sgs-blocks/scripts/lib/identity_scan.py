@@ -69,6 +69,7 @@ class Tok:
     kind: str  # 'lit' (a string or raw HTML) or 'code'
     text: str
     pos: int
+    src: str = "str"  # 'html' for raw HTML outside <?php ?>, 'str' for a quoted string, 'code'
 
 
 @dataclass
@@ -80,6 +81,16 @@ class Dyn:
 
 
 @dataclass
+class Sink:
+    """A call that prints content: `wp_kses_post( X )`, `wp_kses( X, A )`, `wp_kses_data( X )`, `nl2br( X )`,
+    `wpautop( X )`. `arg` is X's code, `allow` A's (kses only), `kind` the function."""
+    kind: str
+    arg: str
+    allow: str
+    pos: int
+
+
+@dataclass
 class Scan:
     tags: dict = field(default_factory=dict)   # value -> char offset of the first write
     roles: dict = field(default_factory=dict)
@@ -87,6 +98,7 @@ class Scan:
     dyn: list = field(default_factory=list)    # [Dyn]
     nested: dict = field(default_factory=dict)  # block name -> offset ('blockName' => 'ns/x', <!-- wp:ns/x)
     nested_dyn: list = field(default_factory=list)  # offsets of render_block( <non-literal> )
+    sinks: list = field(default_factory=list)  # [Sink]: calls that print content a setting holds
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -118,10 +130,10 @@ def php_tokens(text: str) -> list[Tok]:
         if html_mode:
             j = text.find("<?", i)
             if j == -1:
-                out.append(Tok("lit", text[i:], i))
+                out.append(Tok("lit", text[i:], i, "html"))
                 break
             if j > i:
-                out.append(Tok("lit", text[i:j], i))
+                out.append(Tok("lit", text[i:j], i, "html"))
             if text.startswith("<?php", j):
                 i = j + 5
             elif text.startswith("<?=", j):
@@ -290,8 +302,14 @@ _ROLE_ATTR = re.compile(r"(?<![\[\w-])role\s*=\s*\\?[\"']?([a-z" + HOLE + r"%][a
 _ARIA_ATTR = re.compile(r"(?<![\[\w-])(aria-[a-z]+|aria-(?=" + HOLE + r"|%))\s*=")
 _BIND = re.compile(r"data-wp-bind--(aria-[a-z]+|role)\b")
 _READ_CALL = re.compile(r"(?:get_attribute|getAttribute|hasAttribute|has_attribute|removeAttribute|remove_attribute|"
-                        r"closest|matches|querySelector(?:All)?|toggleAttribute)\s*\(\s*$")
-_SET_CALL = re.compile(r"(?:set_attribute|setAttribute)\s*\(\s*$")
+                        r"closest|matches|querySelector(?:All)?)\s*\(\s*$")
+_SET_CALL = re.compile(r"(?:set_attribute|setAttribute|toggleAttribute)\s*\(\s*$")
+# A write whose attribute name is a variable: the name is not settled here.
+_SET_VAR_NAME = re.compile(r"(?:set_attribute|setAttribute|toggleAttribute)\s*\(\s*([$A-Za-z_][\w$]*(?:\[[^\]]*\])?)\s*,")
+# Calls whose arguments are a diagnostic message, never page markup.
+_DIAGNOSTIC = re.compile(r"(?:_doing_it_wrong|_deprecated_\w+|wp_trigger_error|trigger_error|error_log|add_settings_error|wp_die|console\.\w+)\s*\(")
+_SINK = re.compile(r"(?<![\w$>:])(wp_kses_post|wp_kses_data|wp_kses|nl2br|wpautop)\s*\(")
+_JS_ROLE_KEY = re.compile(r"(?<![\w.$-])role\s*:\s*$")
 _CREATE_EL = re.compile(r"createElement(?:NS)?\s*\(\s*(?:[^,()]*,\s*)?$")
 # A literal in a search position is a needle or a pattern, never output: the first argument of a pattern or replace
 # call (`preg_*`, `str_replace`, a selector), the second of a haystack search (`strpos( $html, '<img' )`).
@@ -379,14 +397,39 @@ def scan(toks: list[Tok], jsx: bool = False) -> Scan:
     """Every tag, role and ARIA write in a token stream, and every dynamic site. `jsx` also reads markup written in
     code (a save.js return)."""
     s = Scan()
+    toks = _merge_concat(toks)
+    _find_sinks(toks, s)
 
     def add(bucket: dict, value: str, pos: int) -> None:
         bucket.setdefault(value, pos)
 
+    joined = "".join(x.text if x.kind == "code" else "'" + x.text.replace("'", "") + "'" for x in toks)
+    diag = 0  # open parentheses of a diagnostic call (_doing_it_wrong, console.warn) still to close
     for k, t in enumerate(toks):
         prev_code = toks[k - 1].text if k > 0 and toks[k - 1].kind == "code" else ""
         nxt = toks[k + 1] if k + 1 < len(toks) else None
         if t.kind == "code":
+            diag = _diagnostic_depth(t.text, diag)
+        elif diag > 0:
+            continue
+        if t.kind == "code":
+            for m in _SET_VAR_NAME.finditer(t.text):
+                verdict = _var_name_source(m.group(1), joined)
+                if verdict is None:
+                    continue
+                if verdict.startswith("lit:"):
+                    name = verdict[4:]
+                    if name in ARIA_ATTRS:
+                        add(s.arias, name, t.pos + m.start())
+                    continue
+                s.dyn.append(Dyn("renders-aria", "", t.pos + m.start(), f"an attribute named by a variable ({m.group(1)}: {verdict})"))
+                s.dyn.append(Dyn("renders-role", "", t.pos + m.start(), f"an attribute named by a variable ({m.group(1)}: {verdict})"))
+            if _JS_ROLE_KEY.search(t.text):
+                if nxt is not None and nxt.kind == "lit" and HOLE not in nxt.text:
+                    if nxt.text in ARIA_ROLES:
+                        add(s.roles, nxt.text, nxt.pos)
+                elif nxt is None or nxt.kind != "lit":
+                    pass  # `role: someVar` in an options object: an object key, not an attribute write
             for m in _JS_PROP_ARIA.finditer(t.text):
                 name = "aria-" + re.sub(r"(?<!^)([A-Z])", r"-\1", m.group(1)).lower()
                 if name in ARIA_ATTRS:
@@ -409,16 +452,16 @@ def scan(toks: list[Tok], jsx: bool = False) -> Scan:
         # A bare attribute-name literal: 'aria-x' / 'role' as a set_attribute argument or an array key.
         stripped = lit.strip()
         if re.fullmatch(r"aria-[a-z]+", stripped) and stripped in ARIA_ATTRS and not _READ_CALL.search(prev_code):
-            if _SET_CALL.search(prev_code) or (nxt is not None and nxt.kind == "code" and re.match(r"\s*(=>|:)", nxt.text)):
+            if _SET_CALL.search(prev_code) or (nxt is not None and nxt.kind == "code" and re.match(r"\s*(=>|:|\]\s*=(?!=))", nxt.text)):
                 add(s.arias, stripped, t.pos)
         if stripped == "role" and not _READ_CALL.search(prev_code) and nxt is not None and nxt.kind == "code":
-            if _SET_CALL.search(prev_code) and re.match(r"\s*,\s*$", nxt.text) or re.match(r"\s*=>\s*$", nxt.text):
+            if _SET_CALL.search(prev_code) and re.match(r"\s*,\s*$", nxt.text) or re.match(r"\s*(=>|\]\s*=(?!=))\s*$", nxt.text):
                 val = toks[k + 2] if k + 2 < len(toks) else None
                 if val is not None and val.kind == "lit" and HOLE not in val.text:
                     if val.text in ARIA_ROLES:
                         add(s.roles, val.text, val.pos)
-                elif _SET_CALL.search(prev_code) or re.match(r"\s*=>\s*$", nxt.text):
-                    expr = re.match(r"\s*(?:,|=>)\s*(.*)", nxt.text, re.S).group(1).strip()
+                elif _SET_CALL.search(prev_code) or re.match(r"\s*(=>|\]\s*=(?!=))\s*$", nxt.text):
+                    expr = re.match(r"\s*(?:,|=>|\]\s*=)\s*(.*)", nxt.text, re.S).group(1).strip()
                     if expr and not re.match(r"^[)\]]", expr):
                         s.dyn.append(Dyn("renders-role", expr, nxt.pos, "role set from a variable"))
         if _CREATE_EL.search(prev_code) and re.search(r"\bin\s+document\s*\.\s*createElement\w*\s*\(\s*$", prev_code):
@@ -436,10 +479,96 @@ def scan(toks: list[Tok], jsx: bool = False) -> Scan:
             add(s.nested, name, t.pos + m.start())
         if _SEARCH_CALL.search(prev_code) or _REGEX_LITERAL.match(stripped):
             continue  # a needle or a regular expression ('#<style ...>(.*?)</style>#s'), not output
-        if re.fullmatch(r"<[A-Za-z][\w-]*", stripped) and not (nxt is not None and nxt.kind == "code" and re.match(r"\s*\.", nxt.text)):
-            continue  # a bare '<img' in a list of needles prints nothing
+        if t.src == "str" and re.fullmatch(r"<[A-Za-z][\w-]*", stripped) and not (
+                nxt is not None and nxt.kind == "code" and re.match(r"\s*(\.|echo\b|print\b)", nxt.text)):
+            continue  # a bare quoted '<img' in a list of needles prints nothing (raw HTML `<fieldset <?php` is markup)
         _scan_markup(lit, t.pos, s, toks, k, add, literal=True)
     return s
+
+
+def _var_name_source(var: str, code: str) -> str | None:
+    """Where a variable attribute name comes from. 'lit:<name>' for a constant (`const HIDDEN_ATTR = 'hidden'`); None
+    for the key of an array the code builds (`foreach ( $plan['attrs'] as $name => $v )`, `attrs.forEach( ( [ name ] )`):
+    its literal keys are read where the array is built; otherwise the reason it is not settled. A parsed document's
+    own attributes (`$node->attributes`, `el.attributes`, `getAttributeNames()`) are content, never settled here."""
+    bare = var.lstrip("$")
+    cm = re.search(r"(?:const|let|var|define\(\s*'|const\s+)?\b" + re.escape(bare) + r"\b\s*=\s*'([^']*)'", code)
+    if cm and re.fullmatch(r"[A-Z][A-Z0-9_]*", bare):
+        return "lit:" + cm.group(1)
+    for src in (re.findall(r"foreach\s*\(\s*(.+?)\s+as\s+\$" + re.escape(bare) + r"\s*=>", code, re.S)
+                + re.findall(r"([\w$.\[\]'()]+)\s*\)?\s*\.forEach\s*\(\s*\(\s*\[\s*" + re.escape(bare) + r"\s*,", code)
+                + re.findall(r"for\s*\(\s*(?:const|let|var)\s*\[\s*" + re.escape(bare) + r"\s*,[^\]]*\]\s*of\s*([^)]+)\)", code)):
+        if re.search(r"->\s*attributes\b|\.attributes\b|getAttributeNames", src):
+            return "the attributes of a parsed document"
+        return None
+    return "not settled here"
+
+
+def _merge_concat(toks: list[Tok]) -> list[Tok]:
+    """Adjacent quoted literals joined only by a concatenation (`'<' . 'section'`, `'<sp' + 'an>'`) read as one."""
+    out: list[Tok] = []
+    i = 0
+    while i < len(toks):
+        t = toks[i]
+        if t.kind == "lit" and t.src == "str":
+            text = t.text
+            while i + 2 < len(toks) and toks[i + 1].kind == "code" and re.fullmatch(r"\s*[.+]\s*", toks[i + 1].text) \
+                    and toks[i + 2].kind == "lit" and toks[i + 2].src == "str":
+                text += toks[i + 2].text
+                i += 2
+            out.append(Tok("lit", text, t.pos, "str"))
+        else:
+            out.append(t)
+        i += 1
+    return out
+
+
+def _diagnostic_depth(code: str, depth: int) -> int:
+    """The parenthesis depth inside a diagnostic call after this code token (0 when outside one)."""
+    i = 0
+    if depth == 0:
+        m = _DIAGNOSTIC.search(code)
+        if not m:
+            return 0
+        i, depth = m.end(), 1
+    for ch in code[i:]:
+        if ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth -= 1
+            if depth == 0:
+                return 0
+    return depth
+
+
+def _find_sinks(toks: list[Tok], s: Scan) -> None:
+    """Each content-printing call with its argument expressions (literals quoted back in)."""
+    for k, t in enumerate(toks):
+        if t.kind != "code":
+            continue
+        for m in _SINK.finditer(t.text):
+            text, depth, args, buf = t.text[m.end():], 1, [], []
+            seq = [S_Tok for S_Tok in toks[k + 1:k + 40]]
+            pieces = [text] + [("'" + x.text + "'") if x.kind == "lit" else x.text for x in seq]
+            done = False
+            for piece in pieces:
+                for ch in piece:
+                    if ch == "(":
+                        depth += 1
+                    elif ch == ")":
+                        depth -= 1
+                        if depth == 0:
+                            done = True
+                            break
+                    if ch == "," and depth == 1:
+                        args.append("".join(buf).strip())
+                        buf = []
+                        continue
+                    buf.append(ch)
+                if done:
+                    break
+            args.append("".join(buf).strip())
+            s.sinks.append(Sink(m.group(1), args[0] if args else "", args[1] if len(args) > 1 else "", t.pos + m.start()))
 
 
 def _scan_markup(lit: str, base: int, s: Scan, toks: list[Tok], k: int, add, literal: bool = False) -> None:
