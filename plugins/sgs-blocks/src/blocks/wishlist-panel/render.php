@@ -42,9 +42,9 @@ require_once __DIR__ . '/render-urls.php';
 require_once __DIR__ . '/render-labels.php';
 require_once __DIR__ . '/render-colours.php';
 
-$heading          = sanitize_text_field( (string) ( $attributes['heading'] ?? __( 'Saved for later', 'sgs-blocks' ) ) );
-$empty_text       = sanitize_text_field( (string) ( $attributes['emptyText'] ?? __( 'Your wishlist is empty.', 'sgs-blocks' ) ) );
-$empty_link_label = sanitize_text_field( (string) ( $attributes['emptyLinkLabel'] ?? __( 'Continue shopping', 'sgs-blocks' ) ) );
+$heading          = (string) ( $attributes['heading'] ?? __( 'Saved for later', 'sgs-blocks' ) );
+$empty_text       = (string) ( $attributes['emptyText'] ?? __( 'Your wishlist is empty.', 'sgs-blocks' ) );
+$empty_link_label = (string) ( $attributes['emptyLinkLabel'] ?? __( 'Continue shopping', 'sgs-blocks' ) );
 $show_when_empty  = ! empty( $attributes['showWhenEmpty'] );
 $show_price       = ! empty( $attributes['showPrice'] );
 $show_stock       = ! empty( $attributes['showStock'] );
@@ -197,8 +197,8 @@ $data_attrs = array(
 	'data-show-date-saved'    => $show_date_saved ? '1' : '0',
 	'data-show-price-drop'    => $show_price_drop ? '1' : '0',
 	'data-show-guest-prompt'  => $show_guest_promo ? '1' : '0',
-	'data-empty-text'         => $empty_text,
-	'data-empty-link-label'   => $empty_link_label,
+	'data-empty-text'         => sgs_rich_text_kses( $empty_text ), // Markup the view script inserts as DOM nodes (src/utils/authored-text-dom.js).
+	'data-empty-link-label'   => sgs_rich_text_kses( $empty_link_label, false ),
 	'data-shop-url'           => $shop_url,
 	'data-view-all-url'       => $view_all_url,
 	'data-sign-in-url'        => $sign_in_url,
@@ -222,7 +222,7 @@ foreach ( $data_attrs as $name => $value ) {
 <?php endif; ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-sanitised. ?><?php echo $attrs_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every value above is esc_attr()'d in the loop. ?> hidden>
 	<div class="sgs-wishlist-panel__bar-top">
-		<h2 class="sgs-wishlist-panel__heading"<?php echo '' === $heading ? ' hidden' : ''; ?>><?php echo esc_html( $heading ); ?><span class="sgs-wishlist-panel__count" data-sgs-wishlist-count hidden></span></h2>
+		<h2 class="sgs-wishlist-panel__heading"<?php echo '' === $heading ? ' hidden' : ''; ?>><?php echo sgs_rich_text_kses( $heading ); ?><span class="sgs-wishlist-panel__count" data-sgs-wishlist-count hidden></span></h2>
 		<a class="sgs-wishlist-panel__view-all" href="<?php echo esc_url( $view_all_url ); ?>" data-sgs-wishlist-view-all hidden><?php echo esc_html( (string) ( $label_data['view-all-label'] ?? __( 'View all saved items', 'sgs-blocks' ) ) ); ?></a>
 	</div>
 	<p class="sgs-wishlist-panel__status" role="status" aria-live="polite" aria-atomic="true" data-sgs-wishlist-status></p>

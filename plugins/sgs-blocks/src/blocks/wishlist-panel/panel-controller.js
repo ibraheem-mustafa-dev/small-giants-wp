@@ -10,7 +10,7 @@
  */
 import { ensureWishlistReady, onWishlistChange, toggleWishlistId, addWishlistId } from '../../shared/wishlist-store';
 import { addCartItem } from './api';
-import { escapeHtml } from './render-rows';
+import { appendAuthoredText } from '../../utils/authored-text-dom';
 import { mountNotifyForm } from './notify-form';
 import { readPanelData } from './labels';
 import { renderNormalView } from './normal-view';
@@ -65,11 +65,16 @@ export function initPanel( panel ) {
 				panel.hidden = ! labels.showWhenEmpty;
 				itemsEl.removeAttribute( 'aria-busy' );
 				barsEl.innerHTML = '';
-				itemsEl.innerHTML =
-					`<p class="sgs-wishlist-panel__empty-message">${ escapeHtml( labels.emptyText ) }</p>` +
-					`<a class="sgs-wishlist-panel__empty-cta wp-element-button" href="${ escapeHtml(
-						labels.shopUrl
-					) }">${ escapeHtml( labels.emptyLinkLabel ) }</a>`;
+				// The typed labels are markup (bold, italic, a link, a line break): inserted as DOM nodes through the one
+				// sanitised path, never as an HTML string.
+				const message = document.createElement( 'p' );
+				message.className = 'sgs-wishlist-panel__empty-message';
+				appendAuthoredText( message, labels.emptyText );
+				const cta = document.createElement( 'a' );
+				cta.className = 'sgs-wishlist-panel__empty-cta wp-element-button';
+				cta.setAttribute( 'href', labels.shopUrl );
+				appendAuthoredText( cta, labels.emptyLinkLabel, { links: false } );
+				itemsEl.replaceChildren( message, cta );
 				return;
 			}
 
