@@ -29,6 +29,28 @@ function testedKeys( p, n, stop ) {
 	return [ ...keys ];
 }
 
+// The interval timer that changes a state key: the first `setInterval( callback, delay )` call of the program whose callback
+// calls `setState` with an object (or a function returning one) that sets one of `keys`, or null. A record that runs when
+// those keys change is scheduled by it.
+export function schedulingTimer( p, keys ) {
+	if ( ! keys.length ) {
+		return null;
+	}
+	const sets = ( fn ) => {
+		let hit = false;
+		walkAst( fn, ( x ) => {
+			if ( hit || 'CallExpression' !== x.type || 'setState' !== prop( x.callee ) ) {
+				return;
+			}
+			const arg = x.arguments[ 0 ];
+			const obj = 'ObjectExpression' === arg?.type ? arg : isFn( arg ) && 'ObjectExpression' === arg.body?.type ? arg.body : null;
+			hit = !! obj && obj.properties.some( ( q ) => keys.includes( q.key?.name ?? q.key?.value ) );
+		} );
+		return hit;
+	};
+	return p.nodes.find( ( n ) => 'CallExpression' === n.type && 'setInterval' === globalName( n.callee ) && isFn( n.arguments[ 0 ] ) && sets( n.arguments[ 0 ] ) ) ?? null;
+}
+
 // The trigger a code path runs on: { type, detail, state_keys?, delay?, via: [node starts of the timers, observers and
 // listeners passed], members: [member names passed], called: bool }. `called` is false when the code sits in a member
 // nothing calls, wires or references (METHOD.md §5.6 dead code).
@@ -136,7 +158,8 @@ function triggerWalk( model, comp, node, seen ) {
 		const keys = testedKeys( p, node, m.node );
 		// A key that only a hashchange or popstate listener writes is the route: the change is a navigation.
 		const routed = keys.length && [ ...routeKeys( p ) ].length && keys.every( ( k ) => routeKeys( p ).has( k ) );
-		return done( { type: routed ? 'route' : 'state', detail: `componentDidUpdate${ keys.length ? ` when ${ keys.join( ', ' ) } changes` : '' }${ routed ? ' (set by a hash-route listener)' : '' }`, state_keys: keys } );
+		const timer = routed ? null : schedulingTimer( p, keys );
+		return done( { type: routed ? 'route' : 'state', detail: `componentDidUpdate${ keys.length ? ` when ${ keys.join( ', ' ) } changes` : '' }${ routed ? ' (set by a hash-route listener)' : '' }`, state_keys: keys, ...( timer ? { timer } : {} ) } );
 	}
 	const rows = model.rowsByComp.get( comp ) || [];
 	const tpl = rows.find( ( r ) => 'handler' === r.kind && 'template' === r.detail.wiring && r.detail.method === m.name );

@@ -7,7 +7,7 @@
 import { colourHex } from './tokens.mjs';
 import { shadowParts } from './motion-shadow.mjs';
 import { templateKey, templateKeyOf } from './fact-key.mjs';
-import { props, nameOf, words, blob, triggerOf, MINUS, NUMBER, number, durationOf, easingOf } from './motion-record-text.mjs';
+import { props, nameOf, words, blob, triggerOf, MINUS, NUMBER, number, durationOf, easingOf, timerMs } from './motion-record-text.mjs';
 
 const px = ( n ) => `${ n }px`;
 
@@ -315,17 +315,22 @@ export function accordionScrollOf( r ) {
 	};
 }
 
-// A state-driven entrance whose trigger also names an interval timer: the testimonial slider's autoplay (one card, the
+// A state-driven entrance whose interval timer is in the record's own code (lib/intake-inventory-trigger.mjs::schedulingTimer,
+// the delay read from the syntax tree) or else named in its trigger: the testimonial slider's autoplay (one card, the
 // interval, the change duration).
 export function autoplayOf( r ) {
 	const every = new RegExp( `${ NUMBER }\\s*s\\s+setInterval|setInterval[^.]*?${ NUMBER }\\s*s\\b`, 'i' ).exec( words( r.trigger?.detail ) );
 	const secs = number( every?.[ 1 ] ?? every?.[ 2 ] );
-	if ( null === secs || ! /^(?:waapi|css-animation)$/.test( r.mechanism ) || 'state' !== triggerOf( r ) || ! /\bcard\b|testimonial|slide/i.test( words( r.element?.description, r.name ) ) ) {
+	// A timer in the record's own code is proof enough (the code ties the timer to the state the record runs on); a timer only the
+	// trigger's words name also needs the element to read as a card or slide.
+	const coded = timerMs( r );
+	const ms = coded ?? ( null === secs ? null : secs * 1000 );
+	if ( null === ms || ! /^(?:waapi|css-animation)$/.test( r.mechanism ) || 'state' !== triggerOf( r ) || ( null === coded && ! /\bcard\b|testimonial|slide/i.test( words( r.element?.description, r.name ) ) ) ) {
 		return null;
 	}
 	return {
 		blocks: { 'sgs/testimonial-slider': [
-			{ attr: 'autoplay', value: true }, { attr: 'autoplaySpeed', value: Math.round( secs * 1000 ) }, { attr: 'slidesVisible', value: 1 },
+			{ attr: 'autoplay', value: true }, { attr: 'autoplaySpeed', value: Math.round( ms ) }, { attr: 'slidesVisible', value: 1 },
 			...( durationOf( r ) ? [ { attr: 'transitionDuration', value: String( durationOf( r ) ) } ] : [] ),
 		] },
 		accepted: 'the slide change (it slides rather than fades), the always-on hover and focus pause, the 44px arrows and the round active dot are the slider\'s own (Ruling 10)',

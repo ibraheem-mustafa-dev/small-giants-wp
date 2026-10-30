@@ -1,0 +1,74 @@
+[
+	{
+		"file": "lib/intake-inventory-anim.mjs",
+		"find": "const part = partTarget( model, comp, call.callee.object );",
+		"replace": "const part = null;",
+		"why": "a part of injected content is recorded with no element"
+	},
+	{
+		"file": "lib/intake-inventory-anim.mjs",
+		"find": "p.file && ! part ? { ...t, near: owners } : t",
+		"replace": "p.file ? { ...t, near: owners } : t",
+		"why": "a custom element's part names only a nearest ancestor"
+	},
+	{
+		"file": "lib/intake-inventory-part.mjs",
+		"find": "return hash?.[ 1 ] ?? attr?.[ 2 ] ?? null;",
+		"replace": "return s.trim();",
+		"why": "any selector is an id"
+	},
+	{
+		"file": "lib/intake-inventory-part.mjs",
+		"find": "return 'string' === typeof head && /^\\s*(?:#|\\[\\s*id\\b)/.test( head );",
+		"replace": "return true;",
+		"why": "a query by class built from a parameter is an id query"
+	},
+	{
+		"file": "lib/intake-inventory-part.mjs",
+		"find": "return uses ? { call: body } : null;",
+		"replace": "return { call: body };",
+		"why": "a query that ignores its parameter names the part"
+	},
+	{
+		"file": "lib/intake-inventory-part.mjs",
+		"find": "return 'CallExpression' === up?.type && /^(forEach|map)$/.test( prop( up.callee ) ?? '' ) ? partsOf( p, up.callee.object, depth + 1 ) : null;",
+		"replace": "return null;",
+		"why": "an array of parts is not followed"
+	},
+	{
+		"file": "lib/intake-inventory-part.mjs",
+		"find": "return of ? of.map( ( x ) => ( { ...x, children: true } ) ) : null;",
+		"replace": "return of;",
+		"why": "the children of a part are the part itself"
+	},
+	{
+		"file": "lib/intake-inventory-part.mjs",
+		"find": "&& name === x.arguments[ 1 ]?.name ) : null;",
+		"replace": ") : null;",
+		"why": "any registered element is the class's"
+	},
+	{
+		"file": "lib/intake-inventory-part.mjs",
+		"find": "const tag = definedTagOf( p, n );",
+		"replace": "const tag = 'brand-mark';",
+		"why": "an unregistered class names a holder"
+	},
+	{
+		"file": "lib/intake-inventory-part.mjs",
+		"find": "if ( 'Identifier' === n.type && ! p.file ) {\n\t\tconst t = targetOf( model, comp, n );",
+		"replace": "if ( false ) {\n\t\tconst t = targetOf( model, comp, n );",
+		"why": "a ref callback's parameter is not followed to its stamped element"
+	},
+	{
+		"file": "lib/intake-inventory-part.mjs",
+		"find": "if ( ! holders.every( Boolean ) ||",
+		"replace": "if ( ! holders.some( Boolean ) ||",
+		"why": "a part with no holder is recorded"
+	},
+	{
+		"file": "lib/intake-inventory-part.mjs",
+		"find": "const one = ( x ) => `${ /^[A-Za-z_][\\w-]*$/.test( x.id ) ? `#${ x.id }` : `[id=\"${ x.id }\"]` }${ x.children ? ' > *' : '' }`;",
+		"replace": "const one = ( x ) => `#${ x.id }`;",
+		"why": "an id with a space is written as a broken id selector, and children are lost"
+	}
+]
