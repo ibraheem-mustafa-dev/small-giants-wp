@@ -311,7 +311,7 @@
 				"properties": {
 					"icon": {
 						"type": "string",
-						"role": "icon"
+						"role": "icon-slug"
 					},
 					"number": {
 						"type": "string",

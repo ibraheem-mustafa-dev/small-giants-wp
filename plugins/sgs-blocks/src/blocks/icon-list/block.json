@@ -342,7 +342,7 @@
 					},
 					"iconName": {
 						"type": "string",
-						"role": "icon-slug"
+						"role": "icon"
 					},
 					"iconColour": {
 						"type": "string",

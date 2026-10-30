@@ -384,7 +384,7 @@
 				"properties": {
 					"icon": {
 						"type": "string",
-						"role": "icon"
+						"role": "icon-slug"
 					},
 					"iconSvg": {
 						"type": "string",
