@@ -29,6 +29,28 @@ function testedKeys( p, n, stop ) {
 	return [ ...keys ];
 }
 
+// The interval timer that changes a state key: the first `setInterval( callback, delay )` call of the program whose callback
+// calls `setState` with an object (or a function returning one) that sets one of `keys`, or null. A record that runs when
+// those keys change is scheduled by it.
+export function schedulingTimer( p, keys ) {
+	if ( ! keys.length ) {
+		return null;
+	}
+	const sets = ( fn ) => {
+		let hit = false;
+		walkAst( fn, ( x ) => {
+			if ( hit || 'CallExpression' !== x.type || 'setState' !== prop( x.callee ) ) {
+				return;
+			}
+			const arg = x.arguments[ 0 ];
+			const obj = 'ObjectExpression' === arg?.type ? arg : isFn( arg ) && 'ObjectExpression' === arg.body?.type ? arg.body : null;
+			hit = !! obj && obj.properties.some( ( q ) => keys.includes( q.key?.name ?? q.key?.value ) );
+		} );
+		return hit;
+	};
+	return p.nodes.find( ( n ) => 'CallExpression' === n.type && 'setInterval' === globalName( n.callee ) && isFn( n.arguments[ 0 ] ) && sets( n.arguments[ 0 ] ) ) ?? null;
+}
+
 // The template handler row a function bound through a renderVals property is wired to, or null: { row, key }. `a` is the
 // function and `up` its parent. A property of an object a loop item returns (`d.go`) is the handler of the element inside the
 // `sc-for` whose list is the renderVals key that holds the object (the nearest earlier `sc-for` of the component declaring the
@@ -172,7 +194,8 @@ function triggerWalk( model, comp, node, seen ) {
 		const keys = testedKeys( p, node, m.node );
 		// A key that only a hashchange or popstate listener writes is the route: the change is a navigation.
 		const routed = keys.length && [ ...routeKeys( p ) ].length && keys.every( ( k ) => routeKeys( p ).has( k ) );
-		return done( { type: routed ? 'route' : 'state', detail: `componentDidUpdate${ keys.length ? ` when ${ keys.join( ', ' ) } changes` : '' }${ routed ? ' (set by a hash-route listener)' : '' }`, state_keys: keys } );
+		const timer = routed ? null : schedulingTimer( p, keys );
+		return done( { type: routed ? 'route' : 'state', detail: `componentDidUpdate${ keys.length ? ` when ${ keys.join( ', ' ) } changes` : '' }${ routed ? ' (set by a hash-route listener)' : '' }`, state_keys: keys, ...( timer ? { timer } : {} ) } );
 	}
 	const rows = model.rowsByComp.get( comp ) || [];
 	// A method a template handler wires runs on that event, and also as whatever else calls it (the timer that steps a track the

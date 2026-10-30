@@ -1,0 +1,92 @@
+[
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "const byElement = recordsByElement( split.rest );",
+		"replace": "const byElement = recordsByElement( records );",
+		"why": "a part's motion is written on the holder itself"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "boxes.push( ...partWrites.css );",
+		"replace": "",
+		"why": "a part's endless animation is dropped"
+	},
+	{
+		"file": "lib/fill-motion-parts.mjs",
+		"find": "return holders.some( ( e ) => parts.some( ( x ) => String( e.attrs?.id ?? '' ) === x.id ) ) ? null : parts;",
+		"replace": "return parts;",
+		"why": "the holder's own id is a part"
+	},
+	{
+		"file": "lib/fill-motion-parts.mjs",
+		"find": "if ( ! parts.length || parts.some( ( x ) => ! x ) ) {",
+		"replace": "if ( ! parts.length || parts.every( ( x ) => ! x ) ) {",
+		"why": "a query that is not an id query is a part"
+	},
+	{
+		"file": "lib/fill-motion-parts.mjs",
+		"find": "if ( ! tpls.length || holders.some( ( e ) => ! e ) ) {",
+		"replace": "if ( ! tpls.length ) {",
+		"why": "a holder the template does not hold is read"
+	},
+	{
+		"file": "lib/fill-motion-parts.mjs",
+		"find": "return id ? { id, children: Boolean( m[ 2 ] ) } : null;",
+		"replace": "return id ? { id, children: false } : null;",
+		"why": "each child of a part is the part"
+	},
+	{
+		"file": "lib/fill-motion-parts.mjs",
+		"find": "css.push( { record: r, css: box.css.replace( '& {', `& ${ selector } {` ) } );",
+		"replace": "css.push( { record: r, css: box.css } );",
+		"why": "a part's spin turns the whole block"
+	},
+	{
+		"file": "lib/fill-motion-parts.mjs",
+		"find": "group.filter( replays ).forEach(",
+		"replace": "[].forEach(",
+		"why": "a hover replay is silently dropped"
+	},
+	{
+		"file": "lib/fill-motion-parts.mjs",
+		"find": "const layered = group.filter( ( r ) => ! loops.includes( r ) && ! replays( r ) );",
+		"replace": "const layered = group.filter( ( r ) => ! loops.includes( r ) );",
+		"why": "a hover replay is written as a hover pose"
+	},
+	{
+		"file": "lib/fill-motion-parts.mjs",
+		"find": "list.forEach( ( r ) => String( r.element.selector ).split( /\\s*,\\s*/ ).forEach(",
+		"replace": "list.forEach( ( r ) => [ String( r.element.selector ) ].forEach(",
+		"why": "several parts share one comma-list selector the writer refuses"
+	},
+	{
+		"file": "lib/fill-motion-parts.mjs",
+		"find": "doc.elements[ target ] = { selector, review:",
+		"replace": "doc.elements[ target ] = { selector: '', review:",
+		"why": "the custom target has no selector"
+	},
+	{
+		"file": "lib/fill-motion-parts.mjs",
+		"find": "const asLoop = ( r ) => ( { ...r, properties: ( r.properties || [] ).map( ( p ) => ( Array.isArray( p.keyframes ) ? p : { ...p, keyframes: [ { offset: 0, value: p.from }, { offset: 1, value: p.to } ] } ) ) } );",
+		"replace": "const asLoop = ( r ) => r;",
+		"why": "a two-stop endless animation has no keyframes for the box"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "&& 'hover' === triggerOf( r ) && p && Number( p.to ) > 1 ? Number( p.to ) : null;",
+		"replace": "&& p && Number( p.to ) > 1 ? Number( p.to ) : null;",
+		"why": "a press that speeds an animation is the hover gap"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "&& 'hover' === triggerOf( r ) && p && Number( p.to ) > 1 ? Number( p.to ) : null;",
+		"replace": "&& 'hover' === triggerOf( r ) && p ? Number( p.to ) : null;",
+		"why": "the rate set back to 1 is the gap"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "\tconst rate = hoverRateOf( r );\n\tif ( rate ) {",
+		"replace": "\tconst rate = null;\n\tif ( rate ) {",
+		"why": "the hover speed-up is silent"
+	}
+]

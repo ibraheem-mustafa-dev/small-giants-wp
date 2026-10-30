@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/intake-inventory-trigger.mjs",
+		"find": "const timer = routed ? null : schedulingTimer( p, keys );",
+		"replace": "const timer = null;",
+		"why": "the timer that changes the key is never found"
+	},
+	{
+		"file": "lib/intake-inventory-trigger.mjs",
+		"find": "hit = !! obj && obj.properties.some( ( q ) => keys.includes( q.key?.name ?? q.key?.value ) );",
+		"replace": "hit = !! obj;",
+		"why": "a timer that changes another key schedules the record"
+	},
+	{
+		"file": "lib/intake-inventory-anim.mjs",
+		"find": "...( trg.timer ? [ `${ p.text.slice( trg.timer.start, trg.timer.end ) };` ] : [] ),",
+		"replace": "",
+		"why": "the record does not carry its timer"
+	},
+	{
+		"file": "lib/motion-record-text.mjs",
+		"find": "for ( let at = String( text ?? '' ).lastIndexOf( ';' ); ! tree && at > 0;",
+		"replace": "for ( let at = String( text ?? '' ).lastIndexOf( ';' ); false;",
+		"why": "a clipped code's leading statements are not read"
+	}
+]

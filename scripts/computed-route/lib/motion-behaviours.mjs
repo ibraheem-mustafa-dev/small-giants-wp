@@ -213,6 +213,14 @@ function controlOf( r ) {
 	return 'waapi-control' === r.mechanism && p && of && Number.isFinite( Number( p.to ) ) && Number( p.to ) >= 0 && Number( p.to ) <= 1 ? { of, rate: Number( p.to ) } : null;
 }
 
+// A hover that raises the playback rate of a running animation (a Web Animations control setting a rate above 1 on hover):
+// the rate, or null. No SGS motion field holds it (the marquee's hover rate is the one playback-rate field, and it slows a
+// marquee), so it is a named framework gap.
+function hoverRateOf( r ) {
+	const p = props( r ).find( ( q ) => /^playback-?rate$/.test( nameOf( q ) ) );
+	return 'waapi-control' === r.mechanism && 'hover' === triggerOf( r ) && p && Number( p.to ) > 1 ? Number( p.to ) : null;
+}
+
 // The page component's single content root: the one element with no parent, outside and not the helmet, of a component
 // no `<dc-import>` imports (an imported component's root is that component's). Its component: `component`, else the key's.
 function isPageRoot( key, e, elements ) {
@@ -299,6 +307,10 @@ export function recogniseBehaviour( record, ctx = {} ) {
 	const control = controlOf( r );
 	if ( control ) {
 		return done( r, { kind: 'control', of: control.of, effect: 'marquee', values: { hoverRate: control.rate } } );
+	}
+	const rate = hoverRateOf( r );
+	if ( rate ) {
+		return done( r, { kind: 'unmapped', reason: `framework gap: a hover that speeds up a running animation ${ rate } times (a playback-rate control); the marquee's hover rate is the only SGS playback-rate field` } );
 	}
 	if ( scrollResetOf( r ) ) {
 		return done( r, { kind: 'native', reason: 'the draft scrolls to the top when its route changes; each SGS page is its own page load, which starts at the top' } );

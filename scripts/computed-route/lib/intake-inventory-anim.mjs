@@ -5,6 +5,7 @@
 // counted occurrence maps to record IDs (`occurrences`), and the five METHOD.md §4 counts are taken from the census.
 import { codeModel, offsetOf, nodeAt, lineOf, textOf, functionName, triggerOf, reducedMotionOf } from './intake-inventory-code.mjs';
 import { targetOf, animatedTarget, waapiEffect, writerSites } from './intake-inventory-target.mjs';
+import { partTarget } from './intake-inventory-part.mjs';
 import { callPaths } from './intake-inventory-calls.mjs';
 import { templateRecords, animationRecord, applyReducedMotion, traceOf } from './intake-inventory-tpl.mjs';
 import { parseTransition, parseAnimation } from './intake-inventory-css.mjs';
@@ -16,6 +17,10 @@ import { tweenOf } from './intake-inventory-tween.mjs';
 const holeHosts = ( rows, names ) => [ ...new Set( rows.filter( ( x ) => 'binding' === x.kind && names.includes( String( x.detail.expression ).split( '.' )[ 0 ] ) ).map( ( x ) => x.draftId.split( ':' ).pop() ).filter( ( n ) => /^\d+$/.test( n ) ) ) ];
 
 const isCode = ( r ) => r.draftId.includes( ':js:' );
+
+// A record's code: its own call, after the whole interval timer call that schedules it when its trigger names one (a state
+// a timer changes, lib/intake-inventory-trigger.mjs::schedulingTimer), so the record holds the timer's delay as code.
+const codeWithTimer = ( p, call, trg ) => [ ...( trg.timer ? [ `${ p.text.slice( trg.timer.start, trg.timer.end ) };` ] : [] ), textOf( p, call ) ].join( ' ' );
 const compOf = ( r ) => ( isCode( r ) ? r.draftId.split( ':js:' )[ 0 ] : r.component );
 const pad = ( prefix, i ) => `${ prefix }-${ String( i ).padStart( /^(TR|PS)$/.test( prefix ) ? 3 : 2, '0' ) }`;
 
@@ -131,7 +136,10 @@ export function animationRecords( census, { notDefects = [] } = {} ) {
 		const calls = [ ...path.values() ];
 		const outer = calls[ calls.length - 1 ] ?? call;
 		const tr = triggerOf( model, comp, outer );
-		const t = p.file ? { tpl: [], selector: textOf( p, call.callee.object ), rule: `inside ${ comp }: ${ textOf( p, call.callee.object ) }` } : animatedTarget( model, comp, call, path );
+		// A part of content the code injects (an id inside a fetched SVG or a custom element's own content) is the stamped
+		// holder plus the part's id (lib/intake-inventory-part.mjs::partTarget).
+		const part = partTarget( model, comp, call.callee.object );
+		const t = part ?? ( p.file ? { tpl: [], selector: textOf( p, call.callee.object ), rule: `inside ${ comp }: ${ textOf( p, call.callee.object ) }` } : animatedTarget( model, comp, call, path ) );
 		const chain = calls.map( ( c ) => `${ functionName( p, c ) } (line ${ lineOf( c ) }): ${ textOf( p, c ) }` );
 		// The guard nearest the path's own trigger names it: the outermost call first, the effect's own call last.
 		const rm = [ ...calls.slice().reverse(), call ].map( ( c ) => reducedMotionOf( p, c ) );
@@ -139,8 +147,8 @@ export function animationRecords( census, { notDefects = [] } = {} ) {
 		const notes = [ chain.length ? `called from ${ chain.join( '; from ' ) }` : null, null != trg.delay ? `started after setTimeout ${ trg.delay }` : null ].filter( Boolean ).join( '; ' );
 		add( p.file ? 'L' : 'A', {
 			name: `Web Animation in ${ fn }${ calls.length ? ` from ${ functionName( p, outer ) }` : '' } on ${ t.selector }`, mechanism: 'waapi',
-			element: element( comp, owner, p.file ? { ...t, near: owners } : t, `animated element: ${ t.selector }` ),
-			source: { file, function: fn, ref: /^ref /.test( t.selector ) ? t.selector.slice( 4 ) : null, line: lineOf( call ), code: textOf( p, call ) },
+			element: element( comp, owner, p.file && ! part ? { ...t, near: owners } : t, `animated element: ${ t.selector }` ),
+			source: { file, function: fn, ref: /^ref /.test( t.selector ) ? t.selector.slice( 4 ) : null, line: lineOf( call ), code: codeWithTimer( p, call, trg ) },
 			trigger: triggerField( trg ), properties: fx.properties, duration_ms: fx.timing.duration, delay_ms: fx.timing.delay ?? 0, stagger: null,
 			easing: fx.timing.easing, iterations: fx.timing.iterations, direction: fx.timing.direction, fill: fx.timing.fill,
 			reduced_motion: rm.find( ( x ) => 'skip' === x.behaviour ) ?? rm[ 0 ], status: statusOf( trg ), trace: traceOf( [ r ] ),

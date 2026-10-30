@@ -34,20 +34,31 @@ export const compact =( o ) => Object.fromEntries( Object.entries( o ).filter( (
 // The syntax tree of a record's code or formula text (a statement or an expression), read once per text, or null when it
 // does not parse (a clipped `…` snippet, a prose formula).
 const trees = new Map();
+const parsed = ( text ) => {
+	try {
+		return parseLogic( text, { sourceType: 'script' } ).program;
+	} catch {
+		return null;
+	}
+};
 export function codeTree( text ) {
 	if ( 'string' !== typeof text || ! text.trim() ) {
 		return null;
 	}
 	if ( ! trees.has( text ) ) {
-		let tree = null;
-		try {
-			tree = parseLogic( text, { sourceType: 'script' } ).program;
-		} catch {
-			tree = null;
-		}
-		trees.set( text, tree );
+		trees.set( text, parsed( text ) );
 	}
 	return trees.get( text );
+}
+
+// The tree of a code text's longest leading run of whole statements that parses: a snippet clipped with `…` after the
+// statements it opens with (the timer call a record carries before its own clipped call) still gives those statements.
+export function leadingTree( text ) {
+	let tree = codeTree( text );
+	for ( let at = String( text ?? '' ).lastIndexOf( ';' ); ! tree && at > 0; at = text.lastIndexOf( ';', at - 1 ) ) {
+		tree = codeTree( text.slice( 0, at + 1 ) );
+	}
+	return tree;
 }
 
 // The nodes of a tree that pass a test, depth first.
@@ -129,7 +140,7 @@ export function cssCallOf( q ) {
 // The delay of a timer call in a record's own code: the second argument of a `setInterval` (or each name given) call, a
 // number literal or a constant the same code declares, read from the syntax tree; null when the code holds no such call.
 export function timerMs( r, names = [ 'setInterval' ] ) {
-	const tree = codeTree( r?.source?.code );
+	const tree = leadingTree( r?.source?.code );
 	const constant = ( id ) => nodesOf( tree, ( n ) => 'VariableDeclarator' === n.type && id === n.id?.name && 'NumericLiteral' === n.init?.type )[ 0 ]?.init.value ?? null;
 	for ( const c of names.flatMap( ( name ) => callsOf( tree, name ) ) ) {
 		const v = c.arguments[ 1 ];
