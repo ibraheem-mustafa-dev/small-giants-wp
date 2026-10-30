@@ -171,7 +171,7 @@ export function makeContent( ctx ) {
 		const defaultText = textAttr && ! t && ! Object.keys( top.attributes || {} ).length ? JSON.parse( facts.attr( block, textAttr )?.default_value ?? 'null' ) : null;
 		if ( 'string' === typeof defaultText && '' !== defaultText ) {
 			a[ textAttr ] = '';
-			const aria = facts.firstAttrByRole( block, 'a11y-text' );
+			const aria = facts.ownNameAttr( block );
 			aria && e.attrs?.[ 'aria-label' ] && ( a[ aria ] = e.attrs[ 'aria-label' ] );
 		}
 		const levelAttr = textAttr ? levelSetting( facts, block ) : null;

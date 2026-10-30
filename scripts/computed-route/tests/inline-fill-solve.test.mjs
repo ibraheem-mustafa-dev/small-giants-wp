@@ -192,7 +192,7 @@ test( 'MUST FAIL: a card\'s call to action keeps its bold in the button label; n
 
 // Bean 2026-10-30: formatting or a link covering a text's whole words is the block's own typography or link, never markup
 // inside the text and never a handover; partial formatting a setting cannot hold keeps its words and is the named row.
-import { inlineText, plainTextSettings, plainSettings, loadPlainReview } from '../lib/inline-text.mjs';
+import { inlineText, plainTextSettings, plainSettings, loadPlainReview, richTextSettings } from '../lib/inline-text.mjs';
 import { inventoryModel } from '../lib/skeleton-model.mjs';
 const textModel = ( kids, flow ) => inventoryModel( inventory( [ el( 'Root/1#0', null, 'section' ), el( 'Root/2#0', 'Root/1#0', 'p', { words: flow.filter( ( x ) => 'string' === typeof x ).join( '' ).trim(), flow } ), ...kids.map( ( [ tag, words, attrs = {} ], i ) => el( `Root/${ 3 + i }#0`, 'Root/2#0', tag, { words, display: 'inline', attrs } ) ) ] ) );
 const rebuilt = ( m, block, attr, clickable = false ) => inlineText( { m, e: m.byKey[ 'Root/2#0' ], block, attr, codeRepo: REPO, siteLink: () => ( { kind: 'site', value: 'https://example.org/shop' } ), clickable } );
@@ -230,7 +230,12 @@ test( 'MUST FAIL: the plain-text review lists sentence settings only: no child-b
 	assert.ok( ! has( 'sgs/countdown-timer', 'expiredMessage' ) && ! has( 'sgs/wishlist-panel', 'errorText' ), 'computed or live text' );
 	assert.ok( ! has( 'sgs/buybox', 'gallerySavingBadgeFormat' ) && ! has( 'sgs/cart', 'freeDeliveryMessage' ) && ! has( 'sgs/business-info', 'copyrightPrefix' ), 'format templates' );
 	assert.ok( ! has( 'sgs/before-after', 'handleIconName' ) && ! has( 'sgs/countdown-timer', 'targetDate' ), 'mis-tagged values' );
-	assert.ok( has( 'sgs/account', 'guestLineText' ) && has( 'sgs/google-reviews', 'footnote' ) && has( 'sgs/choice-flow-question', 'intro' ), 'negative control: sentence settings stay' );
+	// Negative control: a sentence setting is never dropped silently. It is still listed as plain text, or it now holds
+	// formats (converted to rich text by check-authored-text-rich.py's migration).
+	const { formats } = richTextSettings( REPO );
+	const sentences = loadPlainReview().sentences;
+	assert.ok( sentences.length > 0, 'the review holds sentence settings' );
+	sentences.forEach( ( x ) => assert.ok( has( x.block, x.attr ) || ( formats.get( `${ x.block }:${ x.attr }` ) || [] ).length > 0, `negative control: ${ x.block }.${ x.attr } is listed as plain or holds formats` ) );
 	assert.ok( plain.every( ( p ) => /::/.test( p.reader ) ), 'each names the reader that prints it' );
 } );
 

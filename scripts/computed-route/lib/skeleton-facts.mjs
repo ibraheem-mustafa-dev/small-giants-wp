@@ -32,6 +32,9 @@ export function loadFacts( { db, client, repo = REPO, codeRepo = repo, siteName 
 	const attrsByRole = ( slug, role ) => q( 'SELECT attr_name, attr_type FROM block_attributes WHERE block_slug = ? AND role = ? AND css_property IS NULL', slug, role );
 	// The first (by declaration order) content setting of a role: a block's primary text and link settings.
 	const firstAttrByRole = ( slug, role ) => q( 'SELECT attr_name FROM block_attributes WHERE block_slug = ? AND role = ? AND css_property IS NULL ORDER BY rowid LIMIT 1', slug, role )[ 0 ]?.attr_name || null;
+	// The block's own accessible name: an a11y-text setting not tied to one of its parts (its canonical slot is empty or
+	// names the setting itself), before one that names a part (a button's iconTitle names its icon, slot `icon`).
+	const ownNameAttr = ( slug ) => q( "SELECT attr_name FROM block_attributes WHERE block_slug = ? AND role = 'a11y-text' AND css_property IS NULL ORDER BY ( canonical_slot IS NOT NULL AND canonical_slot <> '' AND canonical_slot <> attr_name ), rowid LIMIT 1", slug )[ 0 ]?.attr_name || null;
 	const blocksWithDisplayType = ( kind ) => q( "SELECT block_slug FROM block_attributes WHERE attr_name = 'displayType' AND enum_values LIKE ?", `%"${ kind }"%` ).map( ( r ) => r.block_slug );
 	const enumOf = ( slug, name ) => {
 		const a = attr( slug, name );
@@ -48,7 +51,7 @@ export function loadFacts( { db, client, repo = REPO, codeRepo = repo, siteName 
 		listItem = { text: props.text ? 'text' : null, url: Object.keys( props ).find( ( k ) => 'url-href' === props[ k ].role ) || null, siteInfoSource: props.siteInfoSource ? 'siteInfoSource' : null, siteInfoLink: props.siteInfoLink ? 'siteInfoLink' : null, kinds };
 	}
 	return {
-		client, repo, codeRepo, decisions, placeholderMap, composition, tagMap, capsOf, blocksWithCap, attr, attrsByRole, firstAttrByRole, blocksWithDisplayType, enumOf, q,
+		client, repo, codeRepo, decisions, placeholderMap, composition, tagMap, capsOf, blocksWithCap, attr, attrsByRole, firstAttrByRole, ownNameAttr, blocksWithDisplayType, enumOf, q,
 		// SGS bans core blocks: each core block's SGS replacement, from blocks.replaces (a comma list per SGS block).
 		replacedBy: Object.fromEntries( q( "SELECT slug, replaces FROM blocks WHERE replaces IS NOT NULL AND replaces <> ''" ).flatMap( ( r ) => r.replaces.split( ',' ).map( ( c ) => [ c.trim(), r.slug ] ) ).filter( ( [ c ] ) => c ) ),
 		brands: brandRegistry(),
