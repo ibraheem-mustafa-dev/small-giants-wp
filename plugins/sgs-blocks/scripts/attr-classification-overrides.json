@@ -7627,6 +7627,9 @@
 		{"slug": "sgs/form-field-date", "attr": "maxDate", "fields": {"role": "technical"}, "_reason": "2026-10-30 (inline-text plain-settings review): the date input's latest allowed date, printed as the input's max attribute (render.php $max_date), never page text."},
 		{"slug": "sgs/local-time", "attr": "timeZone", "fields": {"role": "technical"}, "_reason": "2026-10-30 (inline-text plain-settings review): an IANA time-zone name the clock reads (render.php $time_zone_raw, view.js options), never page text."},
 		{"slug": "sgs/nav-drawer", "attr": "chromeLogoAlt", "fields": {"role": "a11y-text"}, "_reason": "2026-10-30 (inline-text plain-settings review): the drawer logo image's alt text (includes/nav-drawer-chrome.php::sgs_nav_drawer_chrome_logo_html), a screen-reader string, not page text."},
-		{"slug": "sgs/button", "attr": "iconTitle", "fields": {"role": "a11y-text"}, "_reason": "2026-10-30 (inline-text plain-settings review): the button icon's accessible title (render.php $icon_title, printed inside the icon's svg), a screen-reader string, not page text."}
+		{"slug": "sgs/button", "attr": "iconTitle", "fields": {"role": "a11y-text"}, "_reason": "2026-10-30 (inline-text plain-settings review): the button icon's accessible title (render.php $icon_title, printed inside the icon's svg), a screen-reader string, not page text."},
+		{"slug": "sgs/breadcrumbs", "attr": "separator", "fields": {"role": "glyph"}, "_reason": "2026-10-30 (rich-text migration): the glyph printed between crumbs, a symbol the clone copies exactly, not words (role glyph, data/roles.json)."},
+		{"slug": "sgs/language-switch", "attr": "separator", "fields": {"role": "glyph"}, "_reason": "2026-10-30 (rich-text migration): the glyph printed between the language items, a symbol the clone copies exactly, not words (role glyph, data/roles.json)."},
+		{"slug": "sgs/local-time", "attr": "separator", "fields": {"role": "glyph"}, "_reason": "2026-10-30 (rich-text migration): the glyph printed between the label and the time, a symbol the clone copies exactly, not words (role glyph, data/roles.json)."}
 	]
 }
