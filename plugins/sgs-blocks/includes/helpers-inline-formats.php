@@ -6,6 +6,8 @@
  *   sgs_rich_text_kses()              — the sanitiser every SGS render prints RichText through: the post allowlist
  *                                         with `style` removed from every tag, so pasted or imported inline style
  *                                         never reaches the page, and `img` limited to the inline photo's attributes
+ *   sgs_authored_text_plain()          — the same typed value as plain text, for the places markup cannot go: an HTML
+ *                                         attribute (aria-label, title, alt, data-*) or a JS string
  *   sgs_inline_format_palette_css()    — one `.sgs-highlight--{slug}` rule per palette colour, so a highlight picked
  *                                         from the palette is coloured by class
  *   sgs_inline_formats_maybe_enqueue() — a `render_block` filter: loads the `sgs-inline-formats` stylesheet
@@ -26,10 +28,14 @@ if ( ! function_exists( 'sgs_rich_text_kses' ) ) {
 	/**
 	 * Sanitise RichText markup for output: the post allowlist without inline style.
 	 *
-	 * @param mixed $html RichText markup; anything that is not a scalar sanitises to ''.
+	 * Pass `$links = false` for text printed inside an `<a>`, `<button>` or `<summary>`: a nested link is invalid HTML,
+	 * so `<a>` is dropped and its words stay.
+	 *
+	 * @param mixed $html  RichText markup; anything that is not a scalar sanitises to ''.
+	 * @param bool  $links Whether a link may stay (default true).
 	 * @return string Sanitised markup.
 	 */
-	function sgs_rich_text_kses( $html ): string {
+	function sgs_rich_text_kses( $html, bool $links = true ): string {
 		static $allowed = null;
 		$html           = is_scalar( $html ) ? (string) $html : '';
 		if ( null === $allowed ) {
@@ -51,7 +57,26 @@ if ( ! function_exists( 'sgs_rich_text_kses' ) ) {
 				'decoding' => true,
 			);
 		}
+		if ( ! $links ) {
+			$html = preg_replace( '#</?a(?:\s[^>]*)?>#i', '', $html ) ?? '';
+		}
 		return wp_kses( $html, $allowed );
+	}
+}
+
+if ( ! function_exists( 'sgs_authored_text_plain' ) ) {
+	/**
+	 * A typed rich value as plain text: line breaks become a space, tags are stripped, entities decoded, white space
+	 * collapsed. The caller escapes it for where it lands (`esc_attr()`, `wp_json_encode()`).
+	 *
+	 * @param mixed $value RichText markup or plain text; anything that is not a scalar reads as ''.
+	 * @return string Plain text.
+	 */
+	function sgs_authored_text_plain( $value ): string {
+		$text = is_scalar( $value ) ? (string) $value : '';
+		$text = preg_replace( '#<br\s*/?>#i', ' ', $text ) ?? '';
+		$text = html_entity_decode( wp_strip_all_tags( $text ), ENT_QUOTES, 'UTF-8' );
+		return trim( (string) preg_replace( '/\s+/u', ' ', $text ) );
 	}
 }
 

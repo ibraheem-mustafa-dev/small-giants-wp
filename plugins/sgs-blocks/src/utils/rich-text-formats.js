@@ -33,5 +33,21 @@ export const RICH_TEXT_EMPHASIS = Object.freeze( [
 /** Small tag text that may carry a link and nothing else. */
 export const RICH_TEXT_LINK_ONLY = Object.freeze( [ 'core/link' ] );
 
+/**
+ * An inspector free-text setting the author types (a label, a note, an empty message): bold, italic, strikethrough and
+ * a link. `SgsFreeTextField type="rich"` takes this list; the line break is RichText's own, not a format.
+ */
+export const RICH_TEXT_FREE_TEXT = Object.freeze( [
+	'core/bold',
+	'core/italic',
+	'core/link',
+	'core/strikethrough',
+] );
+
+/** The same setting printed inside an `<a>`, `<button>` or `<summary>`, where a nested link is invalid HTML. */
+export const RICH_TEXT_FREE_TEXT_NO_LINK = Object.freeze(
+	RICH_TEXT_FREE_TEXT.filter( ( name ) => 'core/link' !== name )
+);
+
 /** Fields printed as plain text (`esc_html`), so no format would survive. */
 export const RICH_TEXT_PLAIN = Object.freeze( [] );
