@@ -51,6 +51,33 @@ Prerequisites: F3, F4 and F5 merged (F4's item roles feed what a block can hold;
 
 **Checked every time.** Accuracy on both sides (each fact cites its code symbol, DB row or render; each draft fact its element and width); no false elimination (a block ruled out only by a proven absence, with shared extensions, helpers and allowed blocks read); no hard-coded block list (FP-1); universal (any client, any draft); blast radius (rows changed per surface, each explained); intake time not worse.
 
+**A0 contract (main session, 2026-10-30).** A1 adds the table through a migration (`plugins/sgs-blocks/scripts/dbschema/migrate.py`, `migration-manifest.json`), seeds it in `sgs-update-v2.py`, and regenerates `schema.sql` with `check_schema_drift.py --regenerate` (the file is generated from the live DB, never hand-edited).
+
+```sql
+CREATE TABLE block_identity_facts (
+  block_slug TEXT NOT NULL,
+  fact       TEXT NOT NULL,
+  value      TEXT NOT NULL,
+  state      TEXT NOT NULL CHECK( state IN ( 'yes', 'no', 'unknown' ) ),
+  source     TEXT NOT NULL CHECK( source IN ( 'code', 'live' ) ),
+  evidence   TEXT NOT NULL,
+  PRIMARY KEY ( block_slug, fact, value, source )
+);
+```
+
+| `fact` | `value` | The draft's counterpart (read from intake's element record) |
+|---|---|---|
+| `renders-tag` | each HTML tag the block can print (own render, helpers, nested blocks, injectors) | the tags in the draft region |
+| `renders-role` | each ARIA role it can print (`tablist`, `tab`, `tabpanel`, `navigation`, `list`, `dialog`, `region`, `group`, `img` …) | the region's `role` attributes |
+| `renders-aria` | each ARIA state or property it can print (`aria-current`, `aria-selected`, `aria-expanded`, `aria-controls`, `aria-roledescription` …) | the region's `aria-*` attributes |
+| `open-state` | `exactly-one`, `none-or-one`, `any` or `none` (from its settings, such as `allowMultiple` and `defaultOpen`, and its view script) | how the draft's handlers open its panels (the state readers `lib/skeleton-accordion.mjs` and FR-48-80 already hold); `unknown` when no reader settles it |
+| `self-moving` | `timer`, `controls`, `scroll` or `none` (autoplay settings, arrows and dots it draws, its view script) | a timer or arrow handler that moves a track (`lib/motion-behaviours.mjs`) |
+| `platform` | a brand slug from the brand registry or an `sgs/<brand>-reviews` block | the platform's name in the region's words, a link to its host, or an image labelled with it (`lib/brand-registry.mjs`) |
+| `context` | `header`, `footer`, `drawer`, `form`, `commerce:<role>` or `any` (its parent block, the blocks that may hold it, its commerce role) | the surface's kind and the page's commerce role |
+| `accepts-kind` | each kind of value a field accepts beyond its one role (icon-list `iconName`: `icon:lucide`, `icon:emoji`, `icon:wp-icon`, `icon:dashicon`), as `<attr or array.field>=<kind>` | the kinds of value the draft region shows (an emoji marker, an svg) |
+
+What a block can hold beyond that (its settings' roles, its item fields' roles, the blocks it can hold, followed through every nested block) is a query over `block_attributes`, `array_item_schema` and `block_composition`, never a second copy. The matcher rules a block out only where the draft shows a fact (proven by its reader) and every row of that block for that fact and value says `no`; a missing row is `unknown`.
+
 **Settled before the build (cold-review pass, 2026-10-30).**
 
 - *A0's output.* One long table, `block_identity_facts( block_slug, fact, value, state, source, evidence )`: `state` is `yes`, `no` or `unknown`; `source` is `code` or `render`; `evidence` cites the code symbol or the rendered selector and width. Defined in `plugins/sgs-blocks/scripts/dbschema/schema.sql`, written only by `sgs-update-v2.py`. The live read (A2b) writes `scripts/computed-route/data/block-live-facts.json`, keyed block and page, with each fact's evidence; the seeder imports it.
