@@ -1,7 +1,7 @@
 {
 	"_meta": {
 		"purpose": "WordPress core's markup output read from pinned source by identity_pinned.py --refresh-core; read by the identification facts (block_identity_facts.py). Core as shipped: third-party filters are not part of it.",
-		"wordpress": "7.1.2",
+		"wordpress": "7.1.3",
 		"files": {
 			"wp-includes/author-template.php": "66f27ee8be733b1c0fb94fc6293a9bc130fd02db55eb40612a052471bfd33e10",
 			"wp-includes/block-template-utils.php": "931a19ae4ae61cfbd07b34da9ebf6298706dfde28584886623c4578a02888211",
@@ -19,12 +19,12 @@
 			"wp-includes/post-template.php": "9cb15c0f7fc9bb52bd6d0211e544f84dd3b05e150b2a046c7cbdb3350e1eec70",
 			"wp-includes/post-thumbnail-template.php": "5c9a3d21c1ed0989afae3ae75c8135b082e95dd6a67911e5ce64c8e1a8934266",
 			"wp-includes/shortcodes.php": "8b41aed4d1f2dd9a0b517bf85b941bacf4616ae148bff0a7cdf48286df6e7854",
-			"wp-includes/version.php": "c822935799e6f3b83129882554ccff48596cf98b4a5eb82b83d82fe15455894e"
+			"wp-includes/version.php": "7513dacf90ade66347561ffc2e79d27e74b6a3f05d869bd455144ed7cd378a04"
 		}
 	},
 	"functions": {
 		"block_template_part": {
-			"evidence": "WordPress 7.1.2 wp-includes/block-template-utils.php::block_template_part",
+			"evidence": "WordPress 7.1.3 wp-includes/block-template-utils.php::block_template_part",
 			"tags": [
 				"a"
 			],
@@ -33,7 +33,7 @@
 			"unknown": "block_template_part prints content registered at run time"
 		},
 		"comment_form": {
-			"evidence": "WordPress 7.1.2 wp-includes/comment-template.php::comment_form",
+			"evidence": "WordPress 7.1.3 wp-includes/comment-template.php::comment_form",
 			"tags": [
 				"a",
 				"div",
@@ -52,7 +52,7 @@
 			]
 		},
 		"do_shortcode": {
-			"evidence": "WordPress 7.1.2 wp-includes/shortcodes.php::do_shortcode",
+			"evidence": "WordPress 7.1.3 wp-includes/shortcodes.php::do_shortcode",
 			"tags": [
 				"a"
 			],
@@ -61,7 +61,7 @@
 			"unknown": "do_shortcode prints content registered at run time"
 		},
 		"get_avatar": {
-			"evidence": "WordPress 7.1.2 wp-includes/pluggable.php::get_avatar",
+			"evidence": "WordPress 7.1.3 wp-includes/pluggable.php::get_avatar",
 			"tags": [
 				"a",
 				"img"
@@ -70,7 +70,7 @@
 			"aria": []
 		},
 		"get_block_wrapper_attributes": {
-			"evidence": "WordPress 7.1.2 wp-includes/class-wp-block-supports.php::get_block_wrapper_attributes",
+			"evidence": "WordPress 7.1.3 wp-includes/class-wp-block-supports.php::get_block_wrapper_attributes",
 			"tags": [
 				"a"
 			],
@@ -80,7 +80,7 @@
 			]
 		},
 		"get_comment_reply_link": {
-			"evidence": "WordPress 7.1.2 wp-includes/comment-template.php::get_comment_reply_link",
+			"evidence": "WordPress 7.1.3 wp-includes/comment-template.php::get_comment_reply_link",
 			"tags": [
 				"a"
 			],
@@ -90,7 +90,7 @@
 			]
 		},
 		"get_custom_logo": {
-			"evidence": "WordPress 7.1.2 wp-includes/general-template.php::get_custom_logo",
+			"evidence": "WordPress 7.1.3 wp-includes/general-template.php::get_custom_logo",
 			"tags": [
 				"a",
 				"img",
@@ -102,7 +102,7 @@
 			]
 		},
 		"get_image_tag": {
-			"evidence": "WordPress 7.1.2 wp-includes/media.php::get_image_tag",
+			"evidence": "WordPress 7.1.3 wp-includes/media.php::get_image_tag",
 			"tags": [
 				"a",
 				"img"
@@ -111,7 +111,7 @@
 			"aria": []
 		},
 		"get_search_form": {
-			"evidence": "WordPress 7.1.2 wp-includes/general-template.php::get_search_form",
+			"evidence": "WordPress 7.1.3 wp-includes/general-template.php::get_search_form",
 			"tags": [
 				"a",
 				"div",
@@ -128,7 +128,7 @@
 			]
 		},
 		"get_the_author_link": {
-			"evidence": "WordPress 7.1.2 wp-includes/author-template.php::get_the_author_link",
+			"evidence": "WordPress 7.1.3 wp-includes/author-template.php::get_the_author_link",
 			"tags": [
 				"a"
 			],
@@ -136,7 +136,7 @@
 			"aria": []
 		},
 		"get_the_block_template_html": {
-			"evidence": "WordPress 7.1.2 wp-includes/block-template.php::get_the_block_template_html",
+			"evidence": "WordPress 7.1.3 wp-includes/block-template.php::get_the_block_template_html",
 			"tags": [
 				"a",
 				"div",
@@ -150,7 +150,7 @@
 			"unknown": "get_the_block_template_html prints content registered at run time"
 		},
 		"get_the_category_list": {
-			"evidence": "WordPress 7.1.2 wp-includes/category-template.php::get_the_category_list",
+			"evidence": "WordPress 7.1.3 wp-includes/category-template.php::get_the_category_list",
 			"tags": [
 				"a",
 				"li",
@@ -160,7 +160,7 @@
 			"aria": []
 		},
 		"get_the_password_form": {
-			"evidence": "WordPress 7.1.2 wp-includes/post-template.php::get_the_password_form",
+			"evidence": "WordPress 7.1.3 wp-includes/post-template.php::get_the_password_form",
 			"tags": [
 				"a",
 				"code",
@@ -179,7 +179,7 @@
 			]
 		},
 		"get_the_post_thumbnail": {
-			"evidence": "WordPress 7.1.2 wp-includes/post-thumbnail-template.php::get_the_post_thumbnail",
+			"evidence": "WordPress 7.1.3 wp-includes/post-thumbnail-template.php::get_the_post_thumbnail",
 			"tags": [
 				"a",
 				"img"
@@ -188,7 +188,7 @@
 			"aria": []
 		},
 		"get_the_posts_pagination": {
-			"evidence": "WordPress 7.1.2 wp-includes/link-template.php::get_the_posts_pagination",
+			"evidence": "WordPress 7.1.3 wp-includes/link-template.php::get_the_posts_pagination",
 			"tags": [
 				"a",
 				"div",
@@ -205,7 +205,7 @@
 			]
 		},
 		"get_the_privacy_policy_link": {
-			"evidence": "WordPress 7.1.2 wp-includes/link-template.php::get_the_privacy_policy_link",
+			"evidence": "WordPress 7.1.3 wp-includes/link-template.php::get_the_privacy_policy_link",
 			"tags": [
 				"a"
 			],
@@ -213,7 +213,7 @@
 			"aria": []
 		},
 		"get_the_tag_list": {
-			"evidence": "WordPress 7.1.2 wp-includes/category-template.php::get_the_tag_list",
+			"evidence": "WordPress 7.1.3 wp-includes/category-template.php::get_the_tag_list",
 			"tags": [
 				"a"
 			],
@@ -221,7 +221,7 @@
 			"aria": []
 		},
 		"get_the_term_list": {
-			"evidence": "WordPress 7.1.2 wp-includes/category-template.php::get_the_term_list",
+			"evidence": "WordPress 7.1.3 wp-includes/category-template.php::get_the_term_list",
 			"tags": [
 				"a"
 			],
@@ -229,7 +229,7 @@
 			"aria": []
 		},
 		"paginate_links": {
-			"evidence": "WordPress 7.1.2 wp-includes/general-template.php::paginate_links",
+			"evidence": "WordPress 7.1.3 wp-includes/general-template.php::paginate_links",
 			"tags": [
 				"a",
 				"li",
@@ -242,7 +242,7 @@
 			]
 		},
 		"the_custom_logo": {
-			"evidence": "WordPress 7.1.2 wp-includes/general-template.php::the_custom_logo",
+			"evidence": "WordPress 7.1.3 wp-includes/general-template.php::the_custom_logo",
 			"tags": [
 				"a",
 				"img",
@@ -254,7 +254,7 @@
 			]
 		},
 		"the_post_thumbnail": {
-			"evidence": "WordPress 7.1.2 wp-includes/post-thumbnail-template.php::the_post_thumbnail",
+			"evidence": "WordPress 7.1.3 wp-includes/post-thumbnail-template.php::the_post_thumbnail",
 			"tags": [
 				"a",
 				"img"
@@ -263,7 +263,7 @@
 			"aria": []
 		},
 		"the_posts_pagination": {
-			"evidence": "WordPress 7.1.2 wp-includes/link-template.php::the_posts_pagination",
+			"evidence": "WordPress 7.1.3 wp-includes/link-template.php::the_posts_pagination",
 			"tags": [
 				"a",
 				"div",
@@ -280,7 +280,7 @@
 			]
 		},
 		"wp_audio_shortcode": {
-			"evidence": "WordPress 7.1.2 wp-includes/media.php::wp_audio_shortcode",
+			"evidence": "WordPress 7.1.3 wp-includes/media.php::wp_audio_shortcode",
 			"tags": [
 				"a",
 				"audio",
@@ -291,7 +291,7 @@
 			"aria": []
 		},
 		"wp_dropdown_categories": {
-			"evidence": "WordPress 7.1.2 wp-includes/category-template.php::wp_dropdown_categories",
+			"evidence": "WordPress 7.1.3 wp-includes/category-template.php::wp_dropdown_categories",
 			"tags": [
 				"a",
 				"option",
@@ -303,7 +303,7 @@
 			]
 		},
 		"wp_dropdown_pages": {
-			"evidence": "WordPress 7.1.2 wp-includes/post-template.php::wp_dropdown_pages",
+			"evidence": "WordPress 7.1.3 wp-includes/post-template.php::wp_dropdown_pages",
 			"tags": [
 				"a",
 				"option",
@@ -313,7 +313,7 @@
 			"aria": []
 		},
 		"wp_get_archives": {
-			"evidence": "WordPress 7.1.2 wp-includes/general-template.php::wp_get_archives",
+			"evidence": "WordPress 7.1.3 wp-includes/general-template.php::wp_get_archives",
 			"tags": [
 				"a",
 				"li",
@@ -326,7 +326,7 @@
 			]
 		},
 		"wp_get_attachment_image": {
-			"evidence": "WordPress 7.1.2 wp-includes/media.php::wp_get_attachment_image",
+			"evidence": "WordPress 7.1.3 wp-includes/media.php::wp_get_attachment_image",
 			"tags": [
 				"a",
 				"img"
@@ -335,7 +335,7 @@
 			"aria": []
 		},
 		"wp_get_attachment_link": {
-			"evidence": "WordPress 7.1.2 wp-includes/post-template.php::wp_get_attachment_link",
+			"evidence": "WordPress 7.1.3 wp-includes/post-template.php::wp_get_attachment_link",
 			"tags": [
 				"a",
 				"img"
@@ -344,7 +344,7 @@
 			"aria": []
 		},
 		"wp_get_loading_attr_default": {
-			"evidence": "WordPress 7.1.2 wp-includes/deprecated.php::wp_get_loading_attr_default",
+			"evidence": "WordPress 7.1.3 wp-includes/deprecated.php::wp_get_loading_attr_default",
 			"tags": [
 				"a"
 			],
@@ -352,7 +352,7 @@
 			"aria": []
 		},
 		"wp_list_categories": {
-			"evidence": "WordPress 7.1.2 wp-includes/category-template.php::wp_list_categories",
+			"evidence": "WordPress 7.1.3 wp-includes/category-template.php::wp_list_categories",
 			"tags": [
 				"a",
 				"br",
@@ -363,7 +363,7 @@
 			"aria": []
 		},
 		"wp_list_pages": {
-			"evidence": "WordPress 7.1.2 wp-includes/post-template.php::wp_list_pages",
+			"evidence": "WordPress 7.1.3 wp-includes/post-template.php::wp_list_pages",
 			"tags": [
 				"a",
 				"li",
@@ -373,7 +373,7 @@
 			"aria": []
 		},
 		"wp_login_form": {
-			"evidence": "WordPress 7.1.2 wp-includes/general-template.php::wp_login_form",
+			"evidence": "WordPress 7.1.3 wp-includes/general-template.php::wp_login_form",
 			"tags": [
 				"a",
 				"form",
@@ -385,7 +385,7 @@
 			"aria": []
 		},
 		"wp_loginout": {
-			"evidence": "WordPress 7.1.2 wp-includes/general-template.php::wp_loginout",
+			"evidence": "WordPress 7.1.3 wp-includes/general-template.php::wp_loginout",
 			"tags": [
 				"a"
 			],
@@ -393,7 +393,7 @@
 			"aria": []
 		},
 		"wp_nav_menu": {
-			"evidence": "WordPress 7.1.2 wp-includes/nav-menu-template.php::wp_nav_menu",
+			"evidence": "WordPress 7.1.3 wp-includes/nav-menu-template.php::wp_nav_menu",
 			"tags": [
 				"a",
 				"ul"
@@ -405,7 +405,7 @@
 			"unknown": "renders-tag from $args->container . $id . $class . $aria_label at wp-includes/nav-menu-template.php::wp_nav_menu"
 		},
 		"wp_video_shortcode": {
-			"evidence": "WordPress 7.1.2 wp-includes/media.php::wp_video_shortcode",
+			"evidence": "WordPress 7.1.3 wp-includes/media.php::wp_video_shortcode",
 			"tags": [
 				"a",
 				"code",
