@@ -1,7 +1,7 @@
 {
  "schemaVersion": "1",
  "client": "mamas-munches-redesign",
- "takenOn": "2026-10-29T07:45:32.636Z",
+ "takenOn": "2026-10-30T06:39:36.514Z",
  "sources": {
   "files": {
    "Account.dc.html": "569c41da66b4296faa81347c53f0d5d922d7bca67aed70fdb23df5efee8d01b5",
@@ -36,7 +36,7 @@
    "tokens/typography.css": "805e2a943a3484599ae1f0e4bd379d207e688ec48237113ea135eb03250e97df"
   },
   "route": {
-   "commit": "0b34f3c87e908a4deeccb641c7a91151638edc02"
+   "commit": "fbd97384f8488f665f85776df59fe12e148afaa7"
   }
  },
  "manifest": {
@@ -36553,7 +36553,7 @@
   "animations": {
    "schema_version": "1.0",
    "project": "Mama's Munches ecommerce",
-   "generated": "2026-10-29",
+   "generated": "2026-10-30",
    "runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe",
    "drafts": [
     {
@@ -46941,7 +46941,7 @@
   "surfaces": {
    "schema_version": "1.0",
    "project": "Mama's Munches ecommerce",
-   "generated": "2026-10-29",
+   "generated": "2026-10-30",
    "runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe",
    "records": [
     {
@@ -60761,7 +60761,13 @@
    "postType": "page",
    "collection": "static",
    "flags": [],
-   "id": null
+   "id": null,
+   "opens": [
+    {
+     "kind": "flow",
+     "slug": "choice-flow-build-your-zookie"
+    }
+   ]
   },
   {
    "route": "Product.dc.html",
@@ -60802,6 +60808,12 @@
      "label": "Product gift note",
      "owner": "draft-notes",
      "draftId": "surfaces.json S-16"
+    }
+   ],
+   "opens": [
+    {
+     "kind": "flow",
+     "slug": "choice-flow-build-your-zookie"
     }
    ]
   },
@@ -72897,7 +72909,7 @@
      "block": "sgs/container",
      "confidence": 1,
      "low": false,
-     "reason": null,
+     "reason": "Home>SiteHeader@7#0/16#0 held only the Home>SiteHeader@7#0/17#0 part, which sgs/nav-bar-menu draws where it stands (Home>SiteHeader@7#0/16#0 is hidden at 1440, where Home>SiteHeader@7#0/38#0 renders, and a block shown at a width never stands in one the draft hides there), so it is not a block",
      "rule": null,
      "candidates": [
       {
@@ -72906,7 +72918,7 @@
        "share": 1
       }
      ],
-     "action": null,
+     "action": "remove",
      "snippet": "<div style=\"display:flex;align-items:center\" data-dc-tpl=\"16\"> <button sc-camel-on-click=\"{{ openNav }}\" aria-label=\"Open menu\" style=\"width:48px;height:48px;bo",
      "parent": {
       "draftId": "SiteHeader:15",
@@ -73457,15 +73469,27 @@
      "tag": "button",
      "words": "",
      "block": "sgs/cart",
-     "confidence": 1,
-     "low": false,
-     "reason": "the control that opens a drawer the page map hands to a block is that block, which draws both the drawer and its own trigger: the control's label, count and icon become the block's trigger settings (byTemplate.<template>.trigger) and are absorbed, never a container in the header (the bag pill is sgs/cart in drawer mode with a pill trigger; Bean S5, 2026-10-23); it opens S-04 (Basket drawer (right)), which the page map holds as the drawer part \"Basket\" of the cart row",
+     "confidence": 0.5,
+     "low": true,
+     "reason": "the control that opens a drawer the page map hands to a block is that block, which draws both the drawer and its own trigger: the control's label, count and icon become the block's trigger settings (byTemplate.<template>.trigger) and are absorbed, never a container in the header (the bag pill is sgs/cart in drawer mode with a pill trigger; Bean S5, 2026-10-23); it opens S-04 (Basket drawer (right)), which the page map holds as the drawer part \"Basket\" of the cart row; the framework DB prefers sgs/button (confidence 0.75: html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\"); block_composition: sgs/button is a leaf; the element holds words and no block children); a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two",
      "rule": "blockPartOpener",
+     "conflict": {
+      "rule": "blockPartOpener",
+      "ruleBlock": "sgs/cart",
+      "dbBlock": "sgs/button",
+      "dbConfidence": 0.75,
+      "why": "a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two"
+     },
      "candidates": [
       {
        "block": "sgs/cart",
        "score": 1,
-       "share": 1
+       "share": 0.5
+      },
+      {
+       "block": "sgs/button",
+       "score": 0.75,
+       "share": 0.5
       }
      ],
      "action": null,
@@ -74337,10 +74361,10 @@
     "inventoryElements": 45,
     "parts": 12,
     "rows": 33,
-    "skeletonNodes": 19,
-    "expandedNodes": 19,
-    "low": 8,
-    "removed": 14,
+    "skeletonNodes": 18,
+    "expandedNodes": 18,
+    "low": 9,
+    "removed": 15,
     "unresolved": 0,
     "byRule": {
      "headerSlots": 1,
@@ -78775,15 +78799,15 @@
      },
      "tag": "section",
      "words": "",
-     "block": "sgs/site-footer-row",
-     "confidence": 1,
+     "block": "sgs/container",
+     "confidence": 0.75,
      "low": false,
      "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/site-footer-row",
-       "score": 1,
+       "block": "sgs/container",
+       "score": 0.75,
        "share": 1
       }
      ],
@@ -78848,18 +78872,24 @@
      },
      "tag": "div",
      "words": "",
-     "block": null,
-     "confidence": 1,
+     "block": "sgs/container",
+     "confidence": 0.75,
      "low": false,
-     "reason": "a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there",
-     "rule": "widthWrapper",
-     "candidates": [],
-     "action": "unwrap",
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/container",
+       "score": 0.75,
+       "share": 1
+      }
+     ],
+     "action": null,
      "snippet": "<div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"4\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px",
      "parent": {
       "draftId": "SiteFooter:3",
       "tag": "section",
-      "block": "sgs/site-footer-row"
+      "block": "sgs/container"
      },
      "siblings": [],
      "siblingCount": 0,
@@ -78922,7 +78952,7 @@
      "parent": {
       "draftId": "SiteFooter:4",
       "tag": "div",
-      "block": null
+      "block": "sgs/container"
      },
      "siblings": [
       {
@@ -79273,7 +79303,7 @@
      "parent": {
       "draftId": "SiteFooter:4",
       "tag": "div",
-      "block": null
+      "block": "sgs/container"
      },
      "siblings": [
       {
@@ -79516,7 +79546,7 @@
       {
        "draftId": "SiteFooter:3",
        "tag": "section",
-       "block": "sgs/site-footer-row"
+       "block": "sgs/container"
       },
       {
        "draftId": "SiteFooter:19",
@@ -79568,8 +79598,8 @@
      "block": "sgs/site-footer-row",
      "confidence": 1,
      "low": false,
-     "reason": null,
-     "rule": null,
+     "reason": "the columns row of the footer",
+     "rule": "footerSlots",
      "candidates": [
       {
        "block": "sgs/site-footer-row",
@@ -79588,7 +79618,7 @@
       {
        "draftId": "SiteFooter:3",
        "tag": "section",
-       "block": "sgs/site-footer-row"
+       "block": "sgs/container"
       },
       {
        "draftId": "SiteFooter:18",
@@ -82329,15 +82359,16 @@
     "inventoryElements": 68,
     "parts": 11,
     "rows": 57,
-    "skeletonNodes": 34,
-    "expandedNodes": 36,
+    "skeletonNodes": 36,
+    "expandedNodes": 38,
     "low": 5,
-    "removed": 17,
+    "removed": 16,
     "unresolved": 0,
     "byRule": {
-     "widthWrapper": 2,
      "logoGrid": 13,
      "marqueeCodeItems": 1,
+     "footerSlots": 1,
+     "widthWrapper": 1,
      "pillButton": 2,
      "siteInfoLink": 1,
      "drawsChildren": 2
@@ -99180,7 +99211,7 @@
       {
        "draftId": "Home:243",
        "tag": "div",
-       "block": "sgs/container"
+       "block": "sgs/accordion"
       }
      ],
      "siblingCount": 1,
@@ -99516,14 +99547,14 @@
      },
      "tag": "div",
      "words": "",
-     "block": "sgs/container",
+     "block": "sgs/accordion",
      "confidence": 1,
      "low": false,
-     "reason": null,
-     "rule": null,
+     "reason": "a loop whose items each hold a control that writes a state the item's own conditional panel reads is the accordion, read from the fact record and the logic's syntax tree with aria-expanded as the rendered confirmation, never from words or a surface kind (Spec 48 §3.4, RC6) (a loop of 4 items whose control writes \"faq\", which the item's own panel reads; one item open at a time)",
+     "rule": "accordion",
      "candidates": [
       {
-       "block": "sgs/container",
+       "block": "sgs/accordion",
        "score": 1,
        "share": 1
       }
@@ -99586,15 +99617,15 @@
      },
      "tag": "div",
      "words": "",
-     "block": "sgs/container",
-     "confidence": 0.75,
+     "block": "sgs/accordion-item",
+     "confidence": 1,
      "low": false,
-     "reason": "4 copies of one template element",
-     "rule": null,
+     "reason": "4 copies of one template element; one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)",
+     "rule": "accordionItem",
      "candidates": [
       {
-       "block": "sgs/container",
-       "score": 0.75,
+       "block": "sgs/accordion-item",
+       "score": 1,
        "share": 1
       }
      ],
@@ -99603,23 +99634,23 @@
      "parent": {
       "draftId": "Home:243",
       "tag": "div",
-      "block": "sgs/container"
+      "block": "sgs/accordion"
      },
      "siblings": [
       {
        "draftId": "Home:245",
        "tag": "div",
-       "block": "sgs/container"
+       "block": "sgs/accordion-item"
       },
       {
        "draftId": "Home:245",
        "tag": "div",
-       "block": "sgs/container"
+       "block": "sgs/accordion-item"
       },
       {
        "draftId": "Home:245",
        "tag": "div",
-       "block": "sgs/container"
+       "block": "sgs/accordion-item"
       }
      ],
      "siblingCount": 3,
@@ -99654,7 +99685,7 @@
       "Home/245#2",
       "Home/245#3"
      ],
-     "proposalReason": null
+     "proposalReason": "one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/246",
@@ -99675,30 +99706,25 @@
      },
      "tag": "button",
      "words": "When will my order arrive?",
-     "block": "sgs/container",
+     "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "4 copies of one template element",
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/container",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "4 copies of one template element; drawn by sgs/accordion-item: rule accordionItem",
+     "rule": "accordionItem",
+     "into": "Home/245#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;disp",
      "parent": {
       "draftId": "Home:245",
       "tag": "div",
-      "block": "sgs/container"
+      "block": "sgs/accordion-item"
      },
      "siblings": [
       {
        "draftId": "Home:249",
        "tag": "p",
-       "block": "sgs/text"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -99733,7 +99759,7 @@
       "Home/246#2",
       "Home/246#3"
      ],
-     "proposalReason": null,
+     "proposalReason": "drawn by sgs/accordion-item: rule accordionItem",
      "otherWords": [
       "Are they OK to eat while breastfeeding?",
       "How does Subscribe & save work?",
@@ -99761,24 +99787,19 @@
      },
      "tag": "span",
      "words": "+",
-     "block": "sgs/text",
-     "confidence": 0.25,
-     "low": true,
-     "reason": "4 copies of one template element",
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/text",
-       "score": 0.25,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "4 copies of one template element; drawn by sgs/accordion-item: rule accordionItem",
+     "rule": "accordionItem",
+     "into": "Home/245#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center",
      "parent": {
       "draftId": "Home:246",
       "tag": "button",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [],
      "siblingCount": 0,
@@ -99813,7 +99834,7 @@
       "Home/247#2",
       "Home/247#3"
      ],
-     "proposalReason": null
+     "proposalReason": "drawn by sgs/accordion-item: rule accordionItem"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/249#0",
@@ -99834,30 +99855,25 @@
      },
      "tag": "p",
      "words": "Zainab bakes every order fresh when it comes in, then posts it with Royal Mail Tracked. Most orders are with you in 3–5 days.",
-     "block": "sgs/text",
-     "confidence": 0.75,
+     "block": null,
+     "confidence": 1,
      "low": false,
-     "reason": null,
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/text",
-       "score": 0.75,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "drawn by sgs/accordion-item: rule accordionItem",
+     "rule": "accordionItem",
+     "into": "Home/245#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<p style=\"margin:0;padding:0 20px 20px;font-size:16px;line-height:1.6;color:#3A2A22;max-width:640px\" data-dc-tpl=\"249\">{{ f.a }}</p>",
      "parent": {
       "draftId": "Home:245",
       "tag": "div",
-      "block": "sgs/container"
+      "block": "sgs/accordion-item"
      },
      "siblings": [
       {
        "draftId": "Home:246",
        "tag": "button",
-       "block": "sgs/container"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -99891,10 +99907,10 @@
     "inventoryElements": 372,
     "parts": 0,
     "rows": 372,
-    "skeletonNodes": 172,
-    "expandedNodes": 172,
-    "low": 47,
-    "removed": 214,
+    "skeletonNodes": 163,
+    "expandedNodes": 163,
+    "low": 43,
+    "removed": 223,
     "unresolved": 0,
     "byRule": {
      "hero": 1,
@@ -99908,7 +99924,9 @@
      "cardTitle": 4,
      "cardAction": 2,
      "formLink": 105,
-     "loopBlocks": 96
+     "loopBlocks": 96,
+     "accordion": 1,
+     "accordionItem": 13
     }
    },
    "problems": []
@@ -101810,7 +101828,7 @@
      "key": "Shop>ProductCard@31/0",
      "fingerprint": {
       "tag": "div",
-      "cls": "scpi",
+      "cls": "scpb",
       "styleHash": "84143dc9",
       "parentTags": [
        "main",
@@ -111606,15 +111624,27 @@
      "tag": "button",
      "words": "Add to basket · £21.50",
      "block": "sgs/form",
-     "confidence": 1,
-     "low": false,
-     "reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part",
+     "confidence": 0.5,
+     "low": true,
+     "reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part; the framework DB prefers sgs/button (confidence 0.75: html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\"); block_composition: sgs/button is a leaf; the element holds words and no block children); a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two",
      "rule": "formHost",
+     "conflict": {
+      "rule": "formHost",
+      "ruleBlock": "sgs/form",
+      "dbBlock": "sgs/button",
+      "dbConfidence": 0.75,
+      "why": "a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two"
+     },
      "candidates": [
       {
        "block": "sgs/form",
        "score": 1,
-       "share": 1
+       "share": 0.5
+      },
+      {
+       "block": "sgs/button",
+       "score": 0.75,
+       "share": 0.5
       }
      ],
      "action": null,
@@ -111654,7 +111684,7 @@
     "rows": 1,
     "skeletonNodes": 1,
     "expandedNodes": 1,
-    "low": 0,
+    "low": 1,
     "removed": 0,
     "unresolved": 0,
     "byRule": {
@@ -117609,15 +117639,27 @@
      "tag": "a",
      "words": "Show 4 gifts ↓",
      "block": "sgs/form",
-     "confidence": 1,
-     "low": false,
-     "reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part",
+     "confidence": 0.5,
+     "low": true,
+     "reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part; the framework DB prefers sgs/button (confidence 0.75: html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\"); block_composition: sgs/button is a leaf; the element holds words and no block children); a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two",
      "rule": "formHost",
+     "conflict": {
+      "rule": "formHost",
+      "ruleBlock": "sgs/form",
+      "dbBlock": "sgs/button",
+      "dbConfidence": 0.75,
+      "why": "a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two"
+     },
      "candidates": [
       {
        "block": "sgs/form",
        "score": 1,
-       "share": 1
+       "share": 0.5
+      },
+      {
+       "block": "sgs/button",
+       "score": 0.75,
+       "share": 0.5
       }
      ],
      "action": null,
@@ -117657,7 +117699,7 @@
     "rows": 1,
     "skeletonNodes": 1,
     "expandedNodes": 1,
-    "low": 0,
+    "low": 1,
     "removed": 0,
     "unresolved": 0,
     "byRule": {
@@ -121417,11 +121459,132 @@
    "kind": "form",
    "name": "Basket gift note + upsell",
    "route": "Basket.dc.html",
-   "inventory": null,
-   "rows": [],
-   "counts": null,
-   "problems": [],
-   "gap": "<sc-if> Basket:47 renders nothing at this route and state; still not rendered after state \"upsell shown\" {\"showUpsell\":true} (1440px: <sc-if> Basket:47 renders nothing at this route and state; 375px: <sc-if> Basket:47 renders nothing at this route and state; 768px: <sc-if> Basket:47 renders nothing at this route and state)"
+   "root": {
+    "tpl": "47",
+    "copies": 0,
+    "tag": "textarea",
+    "viaCondition": true,
+    "viaMain": false,
+    "viaState": true
+   },
+   "opened": {
+    "via": "reach",
+    "state": "gift note open",
+    "calls": [
+     {
+      "ident": "MM",
+      "store": true,
+      "path": [
+       "cart",
+       "setGift"
+      ],
+      "args": [
+       {
+        "on": true
+       }
+      ]
+     }
+    ],
+    "at": [
+     1440,
+     375,
+     768
+    ],
+    "readAt": {},
+    "tried": []
+   },
+   "inventory": {
+    "elements": 1,
+    "checks": {
+     "rootName": "Basket",
+     "rootKey": "Basket/48#0",
+     "duplicateKeys": 0,
+     "perWidthCounts": {
+      "375": 1,
+      "768": 1,
+      "1440": 1
+     },
+     "tagDisagree": 0,
+     "unstamped": 0,
+     "keysMissingAt": {
+      "375": 0,
+      "768": 0,
+      "1440": 0
+     },
+     "screenshotSkips": 0
+    }
+   },
+   "rows": [
+    {
+     "rowId": "skeleton:basket-gift-note-upsell:Basket/48#0",
+     "key": "Basket/48#0",
+     "fingerprint": {
+      "tag": "textarea",
+      "cls": "",
+      "styleHash": "8da0dc2",
+      "parentTags": [],
+      "textHash": "1505",
+      "line": 60
+     },
+     "tag": "textarea",
+     "words": "",
+     "block": "sgs/form",
+     "confidence": 1,
+     "low": false,
+     "reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part",
+     "rule": "formHost",
+     "candidates": [
+      {
+       "block": "sgs/form",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<textarea value=\"{{ gift.message }}\" sc-camel-on-change=\"{{ onMsg }}\" rows=\"3\" placeholder=\"Congratulations, mama!\" style=\"width:100%;margin:6px 0 4px;border:2p",
+     "parent": null,
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 122,
+       "y": 762,
+       "w": 676,
+       "h": 114.4
+      },
+      {
+       "width": 768,
+       "x": 54,
+       "y": 708.8,
+       "w": 660,
+       "h": 114.4
+      },
+      {
+       "width": 375,
+       "x": 42,
+       "y": 828.2,
+       "w": 291,
+       "h": 114.4
+      }
+     ],
+     "draftId": "Basket:48"
+    }
+   ],
+   "counts": {
+    "inventoryElements": 1,
+    "parts": 0,
+    "rows": 1,
+    "skeletonNodes": 1,
+    "expandedNodes": 1,
+    "low": 0,
+    "removed": 0,
+    "unresolved": 0,
+    "byRule": {
+     "formHost": 1
+    }
+   },
+   "problems": []
   },
   "page-checkout-dc-html": {
    "id": "S-25",
@@ -132874,22 +133037,22 @@
       {
        "draftId": "Contact:77",
        "tag": "a",
-       "block": "sgs/icon-list"
+       "block": "sgs/button"
       },
       {
        "draftId": "Contact:77",
        "tag": "a",
-       "block": "sgs/icon-list"
+       "block": "sgs/button"
       },
       {
        "draftId": "Contact:77",
        "tag": "a",
-       "block": "sgs/icon-list"
+       "block": "sgs/button"
       },
       {
        "draftId": "Contact:77",
        "tag": "a",
-       "block": "sgs/icon-list"
+       "block": "sgs/button"
       },
       {
        "draftId": "Contact:79",
@@ -132942,21 +133105,16 @@
      },
      "tag": "a",
      "words": "When will my order arrive?",
-     "block": "sgs/icon-list",
-     "confidence": 0.7,
+     "block": "sgs/button",
+     "confidence": 1,
      "low": false,
-     "reason": "4 copies of one template element",
-     "rule": null,
+     "reason": "4 copies of one template element; a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link",
+     "rule": "pillButton",
      "candidates": [
       {
-       "block": "sgs/icon-list",
-       "score": 1.15,
-       "share": 0.697
-      },
-      {
        "block": "sgs/button",
-       "score": 0.5,
-       "share": 0.303
+       "score": 1,
+       "share": 1
       }
      ],
      "action": null,
@@ -132975,17 +133133,17 @@
       {
        "draftId": "Contact:77",
        "tag": "a",
-       "block": "sgs/icon-list"
+       "block": "sgs/button"
       },
       {
        "draftId": "Contact:77",
        "tag": "a",
-       "block": "sgs/icon-list"
+       "block": "sgs/button"
       },
       {
        "draftId": "Contact:77",
        "tag": "a",
-       "block": "sgs/icon-list"
+       "block": "sgs/button"
       },
       {
        "draftId": "Contact:79",
@@ -133025,7 +133183,7 @@
       "Contact/77#2",
       "Contact/77#3"
      ],
-     "proposalReason": null,
+     "proposalReason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link",
      "otherWords": [
       "What allergens are in them?",
       "How does Subscribe & save work?",
@@ -133056,8 +133214,8 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "4 copies of one template element; drawn by sgs/icon-list: the list item's marker",
-     "rule": "drawsChildren",
+     "reason": "4 copies of one template element; drawn by sgs/button: rule pillButton",
+     "rule": "pillButton",
      "into": "Contact/77#0",
      "candidates": [],
      "action": "absorbed",
@@ -133065,7 +133223,7 @@
      "parent": {
       "draftId": "Contact:77",
       "tag": "a",
-      "block": "sgs/icon-list"
+      "block": "sgs/button"
      },
      "siblings": [],
      "siblingCount": 0,
@@ -133100,7 +133258,7 @@
       "Contact/78#2",
       "Contact/78#3"
      ],
-     "proposalReason": "drawn by sgs/icon-list: the list item's marker"
+     "proposalReason": "drawn by sgs/button: rule pillButton"
     },
     {
      "rowId": "skeleton:page-contact-dc-html:Contact/79#0",
@@ -133149,22 +133307,22 @@
       {
        "draftId": "Contact:77",
        "tag": "a",
-       "block": "sgs/icon-list"
+       "block": "sgs/button"
       },
       {
        "draftId": "Contact:77",
        "tag": "a",
-       "block": "sgs/icon-list"
+       "block": "sgs/button"
       },
       {
        "draftId": "Contact:77",
        "tag": "a",
-       "block": "sgs/icon-list"
+       "block": "sgs/button"
       },
       {
        "draftId": "Contact:77",
        "tag": "a",
-       "block": "sgs/icon-list"
+       "block": "sgs/button"
       }
      ],
      "siblingCount": 5,
@@ -133198,8 +133356,8 @@
     "inventoryElements": 66,
     "parts": 10,
     "rows": 56,
-    "skeletonNodes": 26,
-    "expandedNodes": 26,
+    "skeletonNodes": 31,
+    "expandedNodes": 31,
     "low": 5,
     "removed": 27,
     "unresolved": 0,
@@ -133211,7 +133369,7 @@
      "solitaryIcon": 3,
      "cardTitle": 3,
      "formLink": 20,
-     "drawsChildren": 4
+     "pillButton": 8
     }
    },
    "problems": []
@@ -134269,8 +134427,8 @@
     "inventoryElements": 20,
     "parts": 0,
     "rows": 20,
-    "skeletonNodes": 10,
-    "expandedNodes": 10,
+    "skeletonNodes": 12,
+    "expandedNodes": 12,
     "low": 0,
     "removed": 10,
     "unresolved": 0,
@@ -144354,35 +144512,3960 @@
    "kind": "modal",
    "name": "Cancel subscription confirm",
    "route": "Account.dc.html?tab=subs",
-   "inventory": null,
-   "rows": [],
-   "counts": null,
-   "problems": [],
-   "gap": "<sc-if> Account:129 renders nothing at this route and state; no opener: no surfaces.json state gives a settable state key or a setState call, and opened_by names no template handler of the component"
+   "root": {
+    "tpl": "129",
+    "copies": 0,
+    "tag": "div",
+    "viaCondition": true,
+    "viaMain": false,
+    "viaState": true
+   },
+   "opened": {
+    "via": "reach",
+    "state": "confirming",
+    "calls": [
+     {
+      "ident": "dcLogic",
+      "args": "{ tab: \"subs\", confirm: \"s1\" }",
+      "component": "Account"
+     }
+    ],
+    "before": {
+     "via": "reach",
+     "state": "signed (S-01: account link: signed in → Account.dc.html (\"My account\"))",
+     "calls": [
+      {
+       "ident": "MM",
+       "store": true,
+       "path": [
+        "account",
+        "signIn"
+       ],
+       "args": []
+      }
+     ],
+     "bounds": []
+    },
+    "at": [
+     1440,
+     375,
+     768
+    ],
+    "readAt": {},
+    "tried": [
+     "reach \"confirming\" dcLogic('Account').setState({ tab: \"subs\", confirm: \"s1\" }) (1440px: <sc-if> Account:129 renders nothing at this route and state; 375px: <sc-if> Account:129 renders nothing at this route and state; 768px: <sc-if> Account:129 renders nothing at this route and state)"
+    ]
+   },
+   "inventory": {
+    "elements": 6,
+    "checks": {
+     "rootName": "Account",
+     "rootKey": "Account/130#0",
+     "duplicateKeys": 0,
+     "perWidthCounts": {
+      "375": 6,
+      "768": 6,
+      "1440": 6
+     },
+     "tagDisagree": 0,
+     "unstamped": 0,
+     "keysMissingAt": {
+      "375": 0,
+      "768": 0,
+      "1440": 0
+     },
+     "screenshotSkips": 0
+    }
+   },
+   "rows": [
+    {
+     "rowId": "skeleton:cancel-subscription-confirm:Account/130#0",
+     "key": "Account/130#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "59e7a85",
+      "parentTags": [],
+      "textHash": "1505",
+      "line": 136
+     },
+     "tag": "div",
+     "words": "",
+     "block": "sgs/container",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/container",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<div role=\"alertdialog\" aria-label=\"Cancel this subscription?\" style=\"background:#F9D5D3;border:2px solid #3A2A22;border-radius:20px;padding:16px 18px;display:f",
+     "parent": null,
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 818.2,
+       "w": 880,
+       "h": 158.5
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 828.5,
+       "w": 652,
+       "h": 158.5
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 891.1,
+       "w": 295,
+       "h": 203.5
+      }
+     ],
+     "draftId": "Account:130"
+    },
+    {
+     "rowId": "skeleton:cancel-subscription-confirm:Account/131#0",
+     "key": "Account/131#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "fe6e953a",
+      "parentTags": [
+       "div"
+      ],
+      "textHash": "f9f0cd39",
+      "line": 137
+     },
+     "tag": "div",
+     "words": "Cancel this subscription?",
+     "block": "sgs/text",
+     "confidence": 0.25,
+     "low": true,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/text",
+       "score": 0.25,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<div style=\"font-family:'Young Serif',serif;font-size:20px\" data-dc-tpl=\"131\">Cancel this subscription?</div>",
+     "parent": {
+      "draftId": "Account:130",
+      "tag": "div",
+      "block": "sgs/container"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:132",
+       "tag": "div",
+       "block": "sgs/text"
+      },
+      {
+       "draftId": "Account:133",
+       "tag": "div",
+       "block": "sgs/multi-button"
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 450,
+       "y": 836.2,
+       "w": 840,
+       "h": 28
+      },
+      {
+       "width": 768,
+       "x": 78,
+       "y": 846.5,
+       "w": 612,
+       "h": 28
+      },
+      {
+       "width": 375,
+       "x": 60,
+       "y": 909.1,
+       "w": 255,
+       "h": 28
+      }
+     ],
+     "draftId": "Account:131"
+    },
+    {
+     "rowId": "skeleton:cancel-subscription-confirm:Account/132#0",
+     "key": "Account/132#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "da77c464",
+      "parentTags": [
+       "div"
+      ],
+      "textHash": "5b9e5d98",
+      "line": 138
+     },
+     "tag": "div",
+     "words": "You’ll lose 10% off and your guaranteed slot in every bake. Pausing keeps both.",
+     "block": "sgs/text",
+     "confidence": 0.25,
+     "low": true,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/text",
+       "score": 0.25,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<div style=\"font-size:15px;line-height:1.5\" data-dc-tpl=\"132\">You’ll lose 10% off and your guaranteed slot in every bake. Pausing keeps both.</div>",
+     "parent": {
+      "draftId": "Account:130",
+      "tag": "div",
+      "block": "sgs/container"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:131",
+       "tag": "div",
+       "block": "sgs/text"
+      },
+      {
+       "draftId": "Account:133",
+       "tag": "div",
+       "block": "sgs/multi-button"
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 450,
+       "y": 876.2,
+       "w": 840,
+       "h": 22.5
+      },
+      {
+       "width": 768,
+       "x": 78,
+       "y": 886.5,
+       "w": 612,
+       "h": 22.5
+      },
+      {
+       "width": 375,
+       "x": 60,
+       "y": 949.1,
+       "w": 255,
+       "h": 67.5
+      }
+     ],
+     "draftId": "Account:132"
+    },
+    {
+     "rowId": "skeleton:cancel-subscription-confirm:Account/133#0",
+     "key": "Account/133#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "706c044c",
+      "parentTags": [
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 139
+     },
+     "tag": "div",
+     "words": "",
+     "block": "sgs/multi-button",
+     "confidence": 0.51,
+     "low": true,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/multi-button",
+       "score": 0.75,
+       "share": 0.682
+      },
+      {
+       "block": "sgs/container",
+       "score": 0.35,
+       "share": 0.318
+      }
+     ],
+     "action": null,
+     "snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:10px\" data-dc-tpl=\"133\"> <button sc-camel-on-click=\"{{ s.keep }}\" style=\"height:48px;padding:0 20px;border-radius:99",
+     "parent": {
+      "draftId": "Account:130",
+      "tag": "div",
+      "block": "sgs/container"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:131",
+       "tag": "div",
+       "block": "sgs/text"
+      },
+      {
+       "draftId": "Account:132",
+       "tag": "div",
+       "block": "sgs/text"
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 450,
+       "y": 910.7,
+       "w": 840,
+       "h": 48
+      },
+      {
+       "width": 768,
+       "x": 78,
+       "y": 921,
+       "w": 612,
+       "h": 48
+      },
+      {
+       "width": 375,
+       "x": 60,
+       "y": 1028.6,
+       "w": 255,
+       "h": 48
+      }
+     ],
+     "draftId": "Account:133"
+    },
+    {
+     "rowId": "skeleton:cancel-subscription-confirm:Account/134#0",
+     "key": "Account/134#0",
+     "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "df35c81d",
+      "parentTags": [
+       "div",
+       "div"
+      ],
+      "textHash": "3d76c1e3",
+      "line": 140
+     },
+     "tag": "button",
+     "words": "Keep it",
+     "block": "sgs/button",
+     "confidence": 0.75,
+     "low": false,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/button",
+       "score": 0.75,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<button sc-camel-on-click=\"{{ s.keep }}\" style=\"height:48px;padding:0 20px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;font-weight:700;font-",
+     "parent": {
+      "draftId": "Account:133",
+      "tag": "div",
+      "block": "sgs/multi-button"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:135",
+       "tag": "button",
+       "block": "sgs/button"
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 450,
+       "y": 910.7,
+       "w": 93.5,
+       "h": 48
+      },
+      {
+       "width": 768,
+       "x": 78,
+       "y": 921,
+       "w": 93.5,
+       "h": 48
+      },
+      {
+       "width": 375,
+       "x": 60,
+       "y": 1028.6,
+       "w": 93.5,
+       "h": 48
+      }
+     ],
+     "draftId": "Account:134"
+    },
+    {
+     "rowId": "skeleton:cancel-subscription-confirm:Account/135#0",
+     "key": "Account/135#0",
+     "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "bc5c6686",
+      "parentTags": [
+       "div",
+       "div"
+      ],
+      "textHash": "8623b440",
+      "line": 141
+     },
+     "tag": "button",
+     "words": "Yes, cancel",
+     "block": "sgs/button",
+     "confidence": 0.75,
+     "low": false,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/button",
+       "score": 0.75,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<button sc-camel-on-click=\"{{ s.confirmCancel }}\" style=\"height:48px;padding:0 20px;border-radius:999px;border:2px solid #3A2A22;background:#3A2A22;color:#FFFAF",
+     "parent": {
+      "draftId": "Account:133",
+      "tag": "div",
+      "block": "sgs/multi-button"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:134",
+       "tag": "button",
+       "block": "sgs/button"
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 553.5,
+       "y": 910.7,
+       "w": 121.6,
+       "h": 48
+      },
+      {
+       "width": 768,
+       "x": 181.5,
+       "y": 921,
+       "w": 121.6,
+       "h": 48
+      },
+      {
+       "width": 375,
+       "x": 163.5,
+       "y": 1028.6,
+       "w": 121.6,
+       "h": 48
+      }
+     ],
+     "draftId": "Account:135"
+    }
+   ],
+   "counts": {
+    "inventoryElements": 6,
+    "parts": 0,
+    "rows": 6,
+    "skeletonNodes": 6,
+    "expandedNodes": 6,
+    "low": 3,
+    "removed": 0,
+    "unresolved": 0,
+    "byRule": {}
+   },
+   "problems": []
   },
   "address-form-add-edit": {
    "id": "S-57",
    "kind": "form",
    "name": "Address form (add / edit)",
    "route": "Account.dc.html?tab=addresses",
-   "inventory": null,
-   "rows": [],
-   "counts": null,
-   "problems": [],
-   "gap": "<sc-if> Account:160 renders nothing at this route and state; no opener: no surfaces.json state gives a settable state key or a setState call, and opened_by names no template handler of the component"
+   "root": {
+    "tpl": "160",
+    "copies": 0,
+    "tag": "form",
+    "viaCondition": true,
+    "viaMain": false,
+    "viaState": true
+   },
+   "opened": {
+    "via": "reach",
+    "state": "editing",
+    "calls": [
+     {
+      "ident": "dcLogic",
+      "args": "{ tab: \"addresses\", editing: \"new\", form: {} }",
+      "component": "Account"
+     }
+    ],
+    "before": {
+     "via": "reach",
+     "state": "signed (S-01: account link: signed in → Account.dc.html (\"My account\"))",
+     "calls": [
+      {
+       "ident": "MM",
+       "store": true,
+       "path": [
+        "account",
+        "signIn"
+       ],
+       "args": []
+      }
+     ],
+     "bounds": []
+    },
+    "at": [
+     1440,
+     375,
+     768
+    ],
+    "readAt": {},
+    "tried": [
+     "reach \"editing\" dcLogic('Account').setState({ tab: \"addresses\", editing: \"new\", form: {} }) (1440px: <sc-if> Account:160 renders nothing at this route and state; 375px: <sc-if> Account:160 renders nothing at this route and state; 768px: <sc-if> Account:160 renders nothing at this route and state)"
+    ]
+   },
+   "inventory": {
+    "elements": 16,
+    "checks": {
+     "rootName": "Account",
+     "rootKey": "Account/161#0",
+     "duplicateKeys": 0,
+     "perWidthCounts": {
+      "375": 16,
+      "768": 16,
+      "1440": 16
+     },
+     "tagDisagree": 0,
+     "unstamped": 1,
+     "keysMissingAt": {
+      "375": 0,
+      "768": 0,
+      "1440": 0
+     },
+     "screenshotSkips": 0
+    }
+   },
+   "rows": [
+    {
+     "rowId": "skeleton:address-form-add-edit:Account/161#0",
+     "key": "Account/161#0",
+     "fingerprint": {
+      "tag": "form",
+      "cls": "",
+      "styleHash": "bb1d61b4",
+      "parentTags": [],
+      "textHash": "1505",
+      "line": 175
+     },
+     "tag": "form",
+     "words": "",
+     "block": "sgs/form",
+     "confidence": 1,
+     "low": false,
+     "reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part",
+     "rule": "formHost",
+     "candidates": [
+      {
+       "block": "sgs/form",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<form sc-camel-no-validate=\"{{ true }}\" sc-camel-on-submit=\"{{ saveAddress }}\" style=\"background:#F9D5D3;border:2px solid #3A2A22;border-radius:28px;padding:{{ ",
+     "parent": null,
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 400,
+       "y": 494.4,
+       "w": 940,
+       "h": 524
+      },
+      {
+       "width": 768,
+       "x": 32,
+       "y": 506.7,
+       "w": 704,
+       "h": 520
+      },
+      {
+       "width": 375,
+       "x": 20,
+       "y": 440.8,
+       "w": 335,
+       "h": 604
+      }
+     ],
+     "draftId": "Account:161"
+    },
+    {
+     "rowId": "skeleton:address-form-add-edit:Account/162#0",
+     "key": "Account/162#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "fe70c6be",
+      "parentTags": [
+       "form"
+      ],
+      "textHash": "354da39d",
+      "line": 176
+     },
+     "tag": "div",
+     "words": "Add an address",
+     "block": "sgs/text",
+     "confidence": 0.25,
+     "low": true,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/text",
+       "score": 0.25,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<div style=\"font-family:'Young Serif',serif;font-size:24px\" data-dc-tpl=\"162\">{{ formTitle }}</div>",
+     "parent": {
+      "draftId": "Account:161",
+      "tag": "form",
+      "block": "sgs/form"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:163",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Account:165",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Account:167",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Account:169",
+       "tag": "div",
+       "block": "sgs/container"
+      },
+      {
+       "draftId": "Account:176",
+       "tag": "div",
+       "block": "sgs/multi-button"
+      }
+     ],
+     "siblingCount": 5,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 520.4,
+       "w": 880,
+       "h": 34
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 530.7,
+       "w": 652,
+       "h": 34
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 460.8,
+       "w": 295,
+       "h": 34
+      }
+     ],
+     "draftId": "Account:162"
+    },
+    {
+     "rowId": "skeleton:address-form-add-edit:Account/163#0",
+     "key": "Account/163#0",
+     "fingerprint": {
+      "tag": "label",
+      "cls": "",
+      "styleHash": "cd0df356",
+      "parentTags": [
+       "form"
+      ],
+      "textHash": "28f1a9b1",
+      "line": 177
+     },
+     "tag": "label",
+     "words": "Full name",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
+     "rule": "formControl",
+     "candidates": [],
+     "action": "unwrap",
+     "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"163\">Full name<input autocomplete=\"name\" value=\"{{ form.na",
+     "parent": {
+      "draftId": "Account:161",
+      "tag": "form",
+      "block": "sgs/form"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:162",
+       "tag": "div",
+       "block": "sgs/text"
+      },
+      {
+       "draftId": "Account:165",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Account:167",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Account:169",
+       "tag": "div",
+       "block": "sgs/container"
+      },
+      {
+       "draftId": "Account:176",
+       "tag": "div",
+       "block": "sgs/multi-button"
+      }
+     ],
+     "siblingCount": 5,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 568.4,
+       "w": 880,
+       "h": 78
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 578.7,
+       "w": 652,
+       "h": 78
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 508.8,
+       "w": 295,
+       "h": 78
+      }
+     ],
+     "draftId": "Account:163"
+    },
+    {
+     "rowId": "skeleton:address-form-add-edit:Account/164#0",
+     "key": "Account/164#0",
+     "fingerprint": {
+      "tag": "input",
+      "cls": "",
+      "styleHash": "13953aa4",
+      "parentTags": [
+       "form",
+       "label"
+      ],
+      "textHash": "1505",
+      "line": 177
+     },
+     "tag": "input",
+     "words": "",
+     "block": "sgs/form-field-text",
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
+     "rule": "formControl",
+     "candidates": [
+      {
+       "block": "sgs/form-field-text",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<input autocomplete=\"name\" value=\"{{ form.name }}\" sc-camel-on-change=\"{{ onForm.name }}\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14px;padding",
+     "parent": {
+      "draftId": "Account:163",
+      "tag": "label",
+      "block": null
+     },
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 592.4,
+       "w": 880,
+       "h": 54
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 602.7,
+       "w": 652,
+       "h": 54
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 532.8,
+       "w": 295,
+       "h": 54
+      }
+     ],
+     "draftId": "Account:164"
+    },
+    {
+     "rowId": "skeleton:address-form-add-edit:Account/165#0",
+     "key": "Account/165#0",
+     "fingerprint": {
+      "tag": "label",
+      "cls": "",
+      "styleHash": "cd0df356",
+      "parentTags": [
+       "form"
+      ],
+      "textHash": "52449d0c",
+      "line": 178
+     },
+     "tag": "label",
+     "words": "Address line 1",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
+     "rule": "formControl",
+     "candidates": [],
+     "action": "unwrap",
+     "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"165\">Address line 1<input autocomplete=\"address-line1\" val",
+     "parent": {
+      "draftId": "Account:161",
+      "tag": "form",
+      "block": "sgs/form"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:162",
+       "tag": "div",
+       "block": "sgs/text"
+      },
+      {
+       "draftId": "Account:163",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Account:167",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Account:169",
+       "tag": "div",
+       "block": "sgs/container"
+      },
+      {
+       "draftId": "Account:176",
+       "tag": "div",
+       "block": "sgs/multi-button"
+      }
+     ],
+     "siblingCount": 5,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 660.4,
+       "w": 880,
+       "h": 78
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 670.7,
+       "w": 652,
+       "h": 78
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 600.8,
+       "w": 295,
+       "h": 78
+      }
+     ],
+     "draftId": "Account:165"
+    },
+    {
+     "rowId": "skeleton:address-form-add-edit:Account/166#0",
+     "key": "Account/166#0",
+     "fingerprint": {
+      "tag": "input",
+      "cls": "",
+      "styleHash": "13953aa4",
+      "parentTags": [
+       "form",
+       "label"
+      ],
+      "textHash": "1505",
+      "line": 178
+     },
+     "tag": "input",
+     "words": "",
+     "block": "sgs/form-field-text",
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
+     "rule": "formControl",
+     "candidates": [
+      {
+       "block": "sgs/form-field-text",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<input autocomplete=\"address-line1\" value=\"{{ form.line1 }}\" sc-camel-on-change=\"{{ onForm.line1 }}\" style=\"height:54px;border:2px solid #3A2A22;border-radius:1",
+     "parent": {
+      "draftId": "Account:165",
+      "tag": "label",
+      "block": null
+     },
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 684.4,
+       "w": 880,
+       "h": 54
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 694.7,
+       "w": 652,
+       "h": 54
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 624.8,
+       "w": 295,
+       "h": 54
+      }
+     ],
+     "draftId": "Account:166"
+    },
+    {
+     "rowId": "skeleton:address-form-add-edit:Account/167#0",
+     "key": "Account/167#0",
+     "fingerprint": {
+      "tag": "label",
+      "cls": "",
+      "styleHash": "cd0df356",
+      "parentTags": [
+       "form"
+      ],
+      "textHash": "30e7b760",
+      "line": 179
+     },
+     "tag": "label",
+     "words": "Address line 2 (optional)",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
+     "rule": "formControl",
+     "candidates": [],
+     "action": "unwrap",
+     "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"167\">Address line 2 (optional)<input autocomplete=\"address",
+     "parent": {
+      "draftId": "Account:161",
+      "tag": "form",
+      "block": "sgs/form"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:162",
+       "tag": "div",
+       "block": "sgs/text"
+      },
+      {
+       "draftId": "Account:163",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Account:165",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Account:169",
+       "tag": "div",
+       "block": "sgs/container"
+      },
+      {
+       "draftId": "Account:176",
+       "tag": "div",
+       "block": "sgs/multi-button"
+      }
+     ],
+     "siblingCount": 5,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 752.4,
+       "w": 880,
+       "h": 78
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 762.7,
+       "w": 652,
+       "h": 78
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 692.8,
+       "w": 295,
+       "h": 78
+      }
+     ],
+     "draftId": "Account:167"
+    },
+    {
+     "rowId": "skeleton:address-form-add-edit:Account/168#0",
+     "key": "Account/168#0",
+     "fingerprint": {
+      "tag": "input",
+      "cls": "",
+      "styleHash": "13953aa4",
+      "parentTags": [
+       "form",
+       "label"
+      ],
+      "textHash": "1505",
+      "line": 179
+     },
+     "tag": "input",
+     "words": "",
+     "block": "sgs/form-field-text",
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
+     "rule": "formControl",
+     "candidates": [
+      {
+       "block": "sgs/form-field-text",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<input autocomplete=\"address-line2\" value=\"{{ form.line2 }}\" sc-camel-on-change=\"{{ onForm.line2 }}\" style=\"height:54px;border:2px solid #3A2A22;border-radius:1",
+     "parent": {
+      "draftId": "Account:167",
+      "tag": "label",
+      "block": null
+     },
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 776.4,
+       "w": 880,
+       "h": 54
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 786.7,
+       "w": 652,
+       "h": 54
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 716.8,
+       "w": 295,
+       "h": 54
+      }
+     ],
+     "draftId": "Account:168"
+    },
+    {
+     "rowId": "skeleton:address-form-add-edit:Account/169#0",
+     "key": "Account/169#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "89270990",
+      "parentTags": [
+       "form"
+      ],
+      "textHash": "1505",
+      "line": 180
+     },
+     "tag": "div",
+     "words": "",
+     "block": "sgs/container",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/container",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<div style=\"display:grid;grid-template-columns:{{ L.two }};gap:14px\" data-dc-tpl=\"169\"> <label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700",
+     "parent": {
+      "draftId": "Account:161",
+      "tag": "form",
+      "block": "sgs/form"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:162",
+       "tag": "div",
+       "block": "sgs/text"
+      },
+      {
+       "draftId": "Account:163",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Account:165",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Account:167",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Account:176",
+       "tag": "div",
+       "block": "sgs/multi-button"
+      }
+     ],
+     "siblingCount": 5,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 844.4,
+       "w": 880,
+       "h": 78
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 854.7,
+       "w": 652,
+       "h": 78
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 784.8,
+       "w": 295,
+       "h": 170
+      }
+     ],
+     "draftId": "Account:169"
+    },
+    {
+     "rowId": "skeleton:address-form-add-edit:Account/170#0",
+     "key": "Account/170#0",
+     "fingerprint": {
+      "tag": "label",
+      "cls": "",
+      "styleHash": "cd0df356",
+      "parentTags": [
+       "form",
+       "div"
+      ],
+      "textHash": "7f7e107d",
+      "line": 181
+     },
+     "tag": "label",
+     "words": "Town or city",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
+     "rule": "formControl",
+     "candidates": [],
+     "action": "unwrap",
+     "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"170\">Town or city<input autocomplete=\"address-level2\" valu",
+     "parent": {
+      "draftId": "Account:169",
+      "tag": "div",
+      "block": "sgs/container"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:172",
+       "tag": "label",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 844.4,
+       "w": 433,
+       "h": 78
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 854.7,
+       "w": 319,
+       "h": 78
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 784.8,
+       "w": 295,
+       "h": 78
+      }
+     ],
+     "draftId": "Account:170"
+    },
+    {
+     "rowId": "skeleton:address-form-add-edit:Account/171#0",
+     "key": "Account/171#0",
+     "fingerprint": {
+      "tag": "input",
+      "cls": "",
+      "styleHash": "13953aa4",
+      "parentTags": [
+       "form",
+       "div",
+       "label"
+      ],
+      "textHash": "1505",
+      "line": 181
+     },
+     "tag": "input",
+     "words": "",
+     "block": "sgs/form-field-text",
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
+     "rule": "formControl",
+     "candidates": [
+      {
+       "block": "sgs/form-field-text",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<input autocomplete=\"address-level2\" value=\"{{ form.town }}\" sc-camel-on-change=\"{{ onForm.town }}\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14",
+     "parent": {
+      "draftId": "Account:170",
+      "tag": "label",
+      "block": null
+     },
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 868.4,
+       "w": 433,
+       "h": 54
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 878.7,
+       "w": 319,
+       "h": 54
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 808.8,
+       "w": 295,
+       "h": 54
+      }
+     ],
+     "draftId": "Account:171"
+    },
+    {
+     "rowId": "skeleton:address-form-add-edit:Account/172#0",
+     "key": "Account/172#0",
+     "fingerprint": {
+      "tag": "label",
+      "cls": "",
+      "styleHash": "cd0df356",
+      "parentTags": [
+       "form",
+       "div"
+      ],
+      "textHash": "ccb16a70",
+      "line": 182
+     },
+     "tag": "label",
+     "words": "Postcode",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
+     "rule": "formControl",
+     "candidates": [],
+     "action": "unwrap",
+     "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"172\">Postcode<input autocomplete=\"postal-code\" value=\"{{ f",
+     "parent": {
+      "draftId": "Account:169",
+      "tag": "div",
+      "block": "sgs/container"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:170",
+       "tag": "label",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 877,
+       "y": 844.4,
+       "w": 433,
+       "h": 78
+      },
+      {
+       "width": 768,
+       "x": 391,
+       "y": 854.7,
+       "w": 319,
+       "h": 78
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 876.8,
+       "w": 295,
+       "h": 78
+      }
+     ],
+     "draftId": "Account:172"
+    },
+    {
+     "rowId": "skeleton:address-form-add-edit:Account/173#0",
+     "key": "Account/173#0",
+     "fingerprint": {
+      "tag": "input",
+      "cls": "",
+      "styleHash": "1f0e14f",
+      "parentTags": [
+       "form",
+       "div",
+       "label"
+      ],
+      "textHash": "1505",
+      "line": 182
+     },
+     "tag": "input",
+     "words": "",
+     "block": "sgs/form-field-text",
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
+     "rule": "formControl",
+     "candidates": [
+      {
+       "block": "sgs/form-field-text",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<input autocomplete=\"postal-code\" value=\"{{ form.postcode }}\" sc-camel-on-change=\"{{ onForm.postcode }}\" style=\"height:54px;border:2px solid #3A2A22;border-radi",
+     "parent": {
+      "draftId": "Account:172",
+      "tag": "label",
+      "block": null
+     },
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 877,
+       "y": 868.4,
+       "w": 433,
+       "h": 54
+      },
+      {
+       "width": 768,
+       "x": 391,
+       "y": 878.7,
+       "w": 319,
+       "h": 54
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 900.8,
+       "w": 295,
+       "h": 54
+      }
+     ],
+     "draftId": "Account:173"
+    },
+    {
+     "rowId": "skeleton:address-form-add-edit:Account/176#0",
+     "key": "Account/176#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "706d0c0e",
+      "parentTags": [
+       "form"
+      ],
+      "textHash": "1505",
+      "line": 185
+     },
+     "tag": "div",
+     "words": "",
+     "block": "sgs/multi-button",
+     "confidence": 0.51,
+     "low": true,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/multi-button",
+       "score": 0.75,
+       "share": 0.682
+      },
+      {
+       "block": "sgs/container",
+       "score": 0.35,
+       "share": 0.318
+      }
+     ],
+     "action": null,
+     "snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:12px\" data-dc-tpl=\"176\"> <button type=\"submit\" style=\"height:56px;padding:0 28px;border-radius:999px;border:2px soli",
+     "parent": {
+      "draftId": "Account:161",
+      "tag": "form",
+      "block": "sgs/form"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:162",
+       "tag": "div",
+       "block": "sgs/text"
+      },
+      {
+       "draftId": "Account:163",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Account:165",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Account:167",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Account:169",
+       "tag": "div",
+       "block": "sgs/container"
+      }
+     ],
+     "siblingCount": 5,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 936.4,
+       "w": 880,
+       "h": 56
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 946.7,
+       "w": 652,
+       "h": 56
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 968.8,
+       "w": 295,
+       "h": 56
+      }
+     ],
+     "draftId": "Account:176"
+    },
+    {
+     "rowId": "skeleton:address-form-add-edit:Account/177#0",
+     "key": "Account/177#0",
+     "fingerprint": {
+      "tag": "button",
+      "cls": "scp0 scp5",
+      "styleHash": "fbec85fe",
+      "parentTags": [
+       "form",
+       "div"
+      ],
+      "textHash": "6b62d632",
+      "line": 186
+     },
+     "tag": "button",
+     "words": "Save address",
+     "block": "sgs/button",
+     "confidence": 0.75,
+     "low": false,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/button",
+       "score": 0.75,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<button type=\"submit\" style=\"height:56px;padding:0 28px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;font-weight:700;font-size:16px;cursor:po",
+     "parent": {
+      "draftId": "Account:176",
+      "tag": "div",
+      "block": "sgs/multi-button"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:178",
+       "tag": "button",
+       "block": "sgs/button"
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 936.4,
+       "w": 161,
+       "h": 56
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 946.7,
+       "w": 161,
+       "h": 56
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 968.8,
+       "w": 161,
+       "h": 56
+      }
+     ],
+     "draftId": "Account:177"
+    },
+    {
+     "rowId": "skeleton:address-form-add-edit:Account/178#0",
+     "key": "Account/178#0",
+     "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "b927c237",
+      "parentTags": [
+       "form",
+       "div"
+      ],
+      "textHash": "a1e48be3",
+      "line": 187
+     },
+     "tag": "button",
+     "words": "Cancel",
+     "block": "sgs/button",
+     "confidence": 0.75,
+     "low": false,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/button",
+       "score": 0.75,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<button type=\"button\" sc-camel-on-click=\"{{ cancelEdit }}\" style=\"border:0;background:none;font-weight:700;font-size:15px;text-decoration:underline;cursor:point",
+     "parent": {
+      "draftId": "Account:176",
+      "tag": "div",
+      "block": "sgs/multi-button"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:177",
+       "tag": "button",
+       "block": "sgs/button"
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 603,
+       "y": 936.4,
+       "w": 68.1,
+       "h": 56
+      },
+      {
+       "width": 768,
+       "x": 231,
+       "y": 946.7,
+       "w": 68.1,
+       "h": 56
+      },
+      {
+       "width": 375,
+       "x": 213,
+       "y": 968.8,
+       "w": 68.1,
+       "h": 56
+      }
+     ],
+     "draftId": "Account:178"
+    }
+   ],
+   "counts": {
+    "inventoryElements": 16,
+    "parts": 0,
+    "rows": 16,
+    "skeletonNodes": 11,
+    "expandedNodes": 11,
+    "low": 2,
+    "removed": 5,
+    "unresolved": 0,
+    "byRule": {
+     "formHost": 1,
+     "formControl": 10
+    }
+   },
+   "problems": []
   },
   "account-details-change-password": {
    "id": "S-58",
    "kind": "form",
    "name": "Account details + change password",
    "route": "Account.dc.html?tab=details",
-   "inventory": null,
-   "rows": [],
-   "counts": null,
-   "problems": [],
-   "gap": "<sc-if> Account:179 renders nothing at this route and state; still not rendered after state \"details form\" {\"tab\":\"details\"} (1440px: <sc-if> Account:179 renders nothing at this route and state; 375px: <sc-if> Account:179 renders nothing at this route and state; 768px: <sc-if> Account:179 renders nothing at this route and state); then state \"details error / saved ✓ (2.4s)\" {\"saved\":true} (1440px: <sc-if> Account:179 renders nothing at this route and state; 375px: <sc-if> Account:179 renders nothing at this route and state; 768px: <sc-if> Account:179 renders nothing at this route and state); then state \"password error / updated ✓ (2.4s)\" {\"pwSaved\":true} (1440px: <sc-if> Account:179 renders nothing at this route and state; 375px: <sc-if> Account:179 renders nothing at this route and state; 768px: <sc-if> Account:179 renders nothing at this route and state)"
+   "root": {
+    "tpl": "179",
+    "copies": 0,
+    "tag": "div",
+    "viaCondition": true,
+    "viaMain": false,
+    "viaState": true
+   },
+   "opened": {
+    "via": "state",
+    "state": "details form",
+    "keys": {
+     "tab": "details"
+    },
+    "before": {
+     "via": "reach",
+     "state": "signed (S-01: account link: signed in → Account.dc.html (\"My account\"))",
+     "calls": [
+      {
+       "ident": "MM",
+       "store": true,
+       "path": [
+        "account",
+        "signIn"
+       ],
+       "args": []
+      }
+     ],
+     "bounds": []
+    },
+    "at": [
+     1440,
+     375,
+     768
+    ],
+    "readAt": {},
+    "tried": [
+     "state \"details form\" {\"tab\":\"details\"} (1440px: <sc-if> Account:179 renders nothing at this route and state; 375px: <sc-if> Account:179 renders nothing at this route and state; 768px: <sc-if> Account:179 renders nothing at this route and state)",
+     "state \"details error / saved ✓ (2.4s)\" {\"saved\":true} (1440px: <sc-if> Account:179 renders nothing at this route and state; 375px: <sc-if> Account:179 renders nothing at this route and state; 768px: <sc-if> Account:179 renders nothing at this route and state)",
+     "state \"password error / updated ✓ (2.4s)\" {\"pwSaved\":true} (1440px: <sc-if> Account:179 renders nothing at this route and state; 375px: <sc-if> Account:179 renders nothing at this route and state; 768px: <sc-if> Account:179 renders nothing at this route and state)"
+    ]
+   },
+   "inventory": {
+    "elements": 25,
+    "checks": {
+     "rootName": "Account",
+     "rootKey": "Account/32#0",
+     "duplicateKeys": 0,
+     "perWidthCounts": {
+      "375": 25,
+      "768": 25,
+      "1440": 25
+     },
+     "tagDisagree": 0,
+     "unstamped": 0,
+     "keysMissingAt": {
+      "375": 0,
+      "768": 0,
+      "1440": 0
+     },
+     "screenshotSkips": 0
+    }
+   },
+   "rows": [
+    {
+     "rowId": "skeleton:account-details-change-password:Account/32#0",
+     "key": "Account/32#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "363df7cf",
+      "parentTags": [],
+      "textHash": "1505",
+      "line": 43
+     },
+     "tag": "div",
+     "words": "",
+     "block": "sgs/form",
+     "confidence": 1,
+     "low": false,
+     "reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part",
+     "rule": "formHost",
+     "candidates": [
+      {
+       "block": "sgs/form",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<div style=\"min-width:0;display:flex;flex-direction:column;gap:18px\" data-dc-tpl=\"32\"> <sc-if value=\"{{ showOrders }}\" hint-placeholder-val=\"{{ true }}\" data-dc",
+     "parent": null,
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 400,
+       "y": 434.4,
+       "w": 940,
+       "h": 677
+      },
+      {
+       "width": 768,
+       "x": 32,
+       "y": 450.9,
+       "w": 704,
+       "h": 664.8
+      },
+      {
+       "width": 375,
+       "x": 20,
+       "y": 391.3,
+       "w": 335,
+       "h": 918.5
+      }
+     ],
+     "draftId": "Account:32"
+    },
+    {
+     "rowId": "skeleton:account-details-change-password:Account/180#0",
+     "key": "Account/180#0",
+     "fingerprint": {
+      "tag": "h2",
+      "cls": "",
+      "styleHash": "7a9c23eb",
+      "parentTags": [
+       "div"
+      ],
+      "textHash": "ed27f526",
+      "line": 194
+     },
+     "tag": "h2",
+     "words": "Account details",
+     "block": "sgs/heading",
+     "confidence": 0.75,
+     "low": false,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/heading",
+       "score": 0.75,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05\" data-dc-tpl=\"180\">Account details</h2>",
+     "parent": {
+      "draftId": "Account:32",
+      "tag": "div",
+      "block": "sgs/form"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:181",
+       "tag": "form",
+       "block": "sgs/form"
+      },
+      {
+       "draftId": "Account:199",
+       "tag": "form",
+       "block": "sgs/form"
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 400,
+       "y": 434.4,
+       "w": 940,
+       "h": 42
+      },
+      {
+       "width": 768,
+       "x": 32,
+       "y": 450.9,
+       "w": 704,
+       "h": 37.8
+      },
+      {
+       "width": 375,
+       "x": 20,
+       "y": 391.3,
+       "w": 335,
+       "h": 31.5
+      }
+     ],
+     "draftId": "Account:180"
+    },
+    {
+     "rowId": "skeleton:account-details-change-password:Account/181#0",
+     "key": "Account/181#0",
+     "fingerprint": {
+      "tag": "form",
+      "cls": "",
+      "styleHash": "b3fca147",
+      "parentTags": [
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 195
+     },
+     "tag": "form",
+     "words": "",
+     "block": "sgs/form",
+     "confidence": 1,
+     "low": false,
+     "reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part",
+     "rule": "formHost",
+     "candidates": [
+      {
+       "block": "sgs/form",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<form sc-camel-no-validate=\"{{ true }}\" sc-camel-on-submit=\"{{ saveDetails }}\" style=\"background:#FFFAF0;border:2px solid #3A2A22;border-radius:28px;padding:{{ ",
+     "parent": {
+      "draftId": "Account:32",
+      "tag": "div",
+      "block": "sgs/form"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:180",
+       "tag": "h2",
+       "block": "sgs/heading"
+      },
+      {
+       "draftId": "Account:199",
+       "tag": "form",
+       "block": "sgs/form"
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 400,
+       "y": 494.4,
+       "w": 940,
+       "h": 354
+      },
+      {
+       "width": 768,
+       "x": 32,
+       "y": 506.7,
+       "w": 704,
+       "h": 350
+      },
+      {
+       "width": 375,
+       "x": 20,
+       "y": 440.8,
+       "w": 335,
+       "h": 526
+      }
+     ],
+     "draftId": "Account:181"
+    },
+    {
+     "rowId": "skeleton:account-details-change-password:Account/182#0",
+     "key": "Account/182#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "89270990",
+      "parentTags": [
+       "div",
+       "form"
+      ],
+      "textHash": "1505",
+      "line": 196
+     },
+     "tag": "div",
+     "words": "",
+     "block": "sgs/container",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/container",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<div style=\"display:grid;grid-template-columns:{{ L.two }};gap:14px\" data-dc-tpl=\"182\"> <label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700",
+     "parent": {
+      "draftId": "Account:181",
+      "tag": "form",
+      "block": "sgs/form"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:191",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Account:195",
+       "tag": "div",
+       "block": "sgs/container"
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 520.4,
+       "w": 880,
+       "h": 170
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 530.7,
+       "w": 652,
+       "h": 170
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 460.8,
+       "w": 295,
+       "h": 354
+      }
+     ],
+     "draftId": "Account:182"
+    },
+    {
+     "rowId": "skeleton:account-details-change-password:Account/183#0",
+     "key": "Account/183#0",
+     "fingerprint": {
+      "tag": "label",
+      "cls": "",
+      "styleHash": "cd0df356",
+      "parentTags": [
+       "div",
+       "form",
+       "div"
+      ],
+      "textHash": "fe9527d8",
+      "line": 197
+     },
+     "tag": "label",
+     "words": "First name",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
+     "rule": "formControl",
+     "candidates": [],
+     "action": "unwrap",
+     "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"183\">First name<input autocomplete=\"given-name\" value=\"{{ ",
+     "parent": {
+      "draftId": "Account:182",
+      "tag": "div",
+      "block": "sgs/container"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:185",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Account:187",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Account:189",
+       "tag": "label",
+       "block": null
+      }
+     ],
+     "siblingCount": 3,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 520.4,
+       "w": 433,
+       "h": 78
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 530.7,
+       "w": 319,
+       "h": 78
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 460.8,
+       "w": 295,
+       "h": 78
+      }
+     ],
+     "draftId": "Account:183"
+    },
+    {
+     "rowId": "skeleton:account-details-change-password:Account/184#0",
+     "key": "Account/184#0",
+     "fingerprint": {
+      "tag": "input",
+      "cls": "",
+      "styleHash": "7d4cb8c5",
+      "parentTags": [
+       "div",
+       "form",
+       "div",
+       "label"
+      ],
+      "textHash": "1505",
+      "line": 197
+     },
+     "tag": "input",
+     "words": "",
+     "block": "sgs/form-field-text",
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
+     "rule": "formControl",
+     "candidates": [
+      {
+       "block": "sgs/form-field-text",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<input autocomplete=\"given-name\" value=\"{{ det.first }}\" sc-camel-on-change=\"{{ onDet.first }}\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14px;p",
+     "parent": {
+      "draftId": "Account:183",
+      "tag": "label",
+      "block": null
+     },
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 544.4,
+       "w": 433,
+       "h": 54
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 554.7,
+       "w": 319,
+       "h": 54
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 484.8,
+       "w": 295,
+       "h": 54
+      }
+     ],
+     "draftId": "Account:184"
+    },
+    {
+     "rowId": "skeleton:account-details-change-password:Account/185#0",
+     "key": "Account/185#0",
+     "fingerprint": {
+      "tag": "label",
+      "cls": "",
+      "styleHash": "cd0df356",
+      "parentTags": [
+       "div",
+       "form",
+       "div"
+      ],
+      "textHash": "6a2c64e8",
+      "line": 198
+     },
+     "tag": "label",
+     "words": "Last name",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
+     "rule": "formControl",
+     "candidates": [],
+     "action": "unwrap",
+     "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"185\">Last name<input autocomplete=\"family-name\" value=\"{{ ",
+     "parent": {
+      "draftId": "Account:182",
+      "tag": "div",
+      "block": "sgs/container"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:183",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Account:187",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Account:189",
+       "tag": "label",
+       "block": null
+      }
+     ],
+     "siblingCount": 3,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 877,
+       "y": 520.4,
+       "w": 433,
+       "h": 78
+      },
+      {
+       "width": 768,
+       "x": 391,
+       "y": 530.7,
+       "w": 319,
+       "h": 78
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 552.8,
+       "w": 295,
+       "h": 78
+      }
+     ],
+     "draftId": "Account:185"
+    },
+    {
+     "rowId": "skeleton:account-details-change-password:Account/186#0",
+     "key": "Account/186#0",
+     "fingerprint": {
+      "tag": "input",
+      "cls": "",
+      "styleHash": "7d4cb8c5",
+      "parentTags": [
+       "div",
+       "form",
+       "div",
+       "label"
+      ],
+      "textHash": "1505",
+      "line": 198
+     },
+     "tag": "input",
+     "words": "",
+     "block": "sgs/form-field-text",
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
+     "rule": "formControl",
+     "candidates": [
+      {
+       "block": "sgs/form-field-text",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<input autocomplete=\"family-name\" value=\"{{ det.last }}\" sc-camel-on-change=\"{{ onDet.last }}\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14px;pa",
+     "parent": {
+      "draftId": "Account:185",
+      "tag": "label",
+      "block": null
+     },
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 877,
+       "y": 544.4,
+       "w": 433,
+       "h": 54
+      },
+      {
+       "width": 768,
+       "x": 391,
+       "y": 554.7,
+       "w": 319,
+       "h": 54
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 576.8,
+       "w": 295,
+       "h": 54
+      }
+     ],
+     "draftId": "Account:186"
+    },
+    {
+     "rowId": "skeleton:account-details-change-password:Account/187#0",
+     "key": "Account/187#0",
+     "fingerprint": {
+      "tag": "label",
+      "cls": "",
+      "styleHash": "cd0df356",
+      "parentTags": [
+       "div",
+       "form",
+       "div"
+      ],
+      "textHash": "bfda129",
+      "line": 199
+     },
+     "tag": "label",
+     "words": "Email",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
+     "rule": "formControl",
+     "candidates": [],
+     "action": "unwrap",
+     "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"187\">Email<input type=\"email\" autocomplete=\"email\" value=\"",
+     "parent": {
+      "draftId": "Account:182",
+      "tag": "div",
+      "block": "sgs/container"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:183",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Account:185",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Account:189",
+       "tag": "label",
+       "block": null
+      }
+     ],
+     "siblingCount": 3,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 612.4,
+       "w": 433,
+       "h": 78
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 622.7,
+       "w": 319,
+       "h": 78
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 644.8,
+       "w": 295,
+       "h": 78
+      }
+     ],
+     "draftId": "Account:187"
+    },
+    {
+     "rowId": "skeleton:account-details-change-password:Account/188#0",
+     "key": "Account/188#0",
+     "fingerprint": {
+      "tag": "input",
+      "cls": "",
+      "styleHash": "7d4cb8c5",
+      "parentTags": [
+       "div",
+       "form",
+       "div",
+       "label"
+      ],
+      "textHash": "1505",
+      "line": 199
+     },
+     "tag": "input",
+     "words": "",
+     "block": "sgs/form-field-email",
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
+     "rule": "formControl",
+     "candidates": [
+      {
+       "block": "sgs/form-field-email",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<input type=\"email\" autocomplete=\"email\" value=\"{{ det.email }}\" sc-camel-on-change=\"{{ onDet.email }}\" style=\"height:54px;border:2px solid #3A2A22;border-radiu",
+     "parent": {
+      "draftId": "Account:187",
+      "tag": "label",
+      "block": null
+     },
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 636.4,
+       "w": 433,
+       "h": 54
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 646.7,
+       "w": 319,
+       "h": 54
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 668.8,
+       "w": 295,
+       "h": 54
+      }
+     ],
+     "draftId": "Account:188"
+    },
+    {
+     "rowId": "skeleton:account-details-change-password:Account/189#0",
+     "key": "Account/189#0",
+     "fingerprint": {
+      "tag": "label",
+      "cls": "",
+      "styleHash": "cd0df356",
+      "parentTags": [
+       "div",
+       "form",
+       "div"
+      ],
+      "textHash": "1005086a",
+      "line": 200
+     },
+     "tag": "label",
+     "words": "Mobile (optional)",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
+     "rule": "formControl",
+     "candidates": [],
+     "action": "unwrap",
+     "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"189\">Mobile (optional)<input type=\"tel\" autocomplete=\"tel\"",
+     "parent": {
+      "draftId": "Account:182",
+      "tag": "div",
+      "block": "sgs/container"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:183",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Account:185",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Account:187",
+       "tag": "label",
+       "block": null
+      }
+     ],
+     "siblingCount": 3,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 877,
+       "y": 612.4,
+       "w": 433,
+       "h": 78
+      },
+      {
+       "width": 768,
+       "x": 391,
+       "y": 622.7,
+       "w": 319,
+       "h": 78
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 736.8,
+       "w": 295,
+       "h": 78
+      }
+     ],
+     "draftId": "Account:189"
+    },
+    {
+     "rowId": "skeleton:account-details-change-password:Account/190#0",
+     "key": "Account/190#0",
+     "fingerprint": {
+      "tag": "input",
+      "cls": "",
+      "styleHash": "7d4cb8c5",
+      "parentTags": [
+       "div",
+       "form",
+       "div",
+       "label"
+      ],
+      "textHash": "1505",
+      "line": 200
+     },
+     "tag": "input",
+     "words": "",
+     "block": "sgs/form-field-phone",
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
+     "rule": "formControl",
+     "candidates": [
+      {
+       "block": "sgs/form-field-phone",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<input type=\"tel\" autocomplete=\"tel\" value=\"{{ det.phone }}\" sc-camel-on-change=\"{{ onDet.phone }}\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14",
+     "parent": {
+      "draftId": "Account:189",
+      "tag": "label",
+      "block": null
+     },
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 877,
+       "y": 636.4,
+       "w": 433,
+       "h": 54
+      },
+      {
+       "width": 768,
+       "x": 391,
+       "y": 646.7,
+       "w": 319,
+       "h": 54
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 760.8,
+       "w": 295,
+       "h": 54
+      }
+     ],
+     "draftId": "Account:190"
+    },
+    {
+     "rowId": "skeleton:account-details-change-password:Account/191#0",
+     "key": "Account/191#0",
+     "fingerprint": {
+      "tag": "label",
+      "cls": "",
+      "styleHash": "5de6a9a2",
+      "parentTags": [
+       "div",
+       "form"
+      ],
+      "textHash": "1a81c71f",
+      "line": 202
+     },
+     "tag": "label",
+     "words": "Email me about new flavours and bake days",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
+     "rule": "formControl",
+     "candidates": [],
+     "action": "unwrap",
+     "snippet": "<label style=\"display:flex;align-items:center;gap:12px;cursor:pointer;min-height:48px;font-size:15px\" data-dc-tpl=\"191\"><input type=\"checkbox\" checked=\"{{ det.m",
+     "parent": {
+      "draftId": "Account:181",
+      "tag": "form",
+      "block": "sgs/form"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:182",
+       "tag": "div",
+       "block": "sgs/container"
+      },
+      {
+       "draftId": "Account:195",
+       "tag": "div",
+       "block": "sgs/container"
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 704.4,
+       "w": 880,
+       "h": 48
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 714.7,
+       "w": 652,
+       "h": 48
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 828.8,
+       "w": 295,
+       "h": 48
+      }
+     ],
+     "draftId": "Account:191"
+    },
+    {
+     "rowId": "skeleton:account-details-change-password:Account/192#0",
+     "key": "Account/192#0",
+     "fingerprint": {
+      "tag": "input",
+      "cls": "",
+      "styleHash": "8ff7552a",
+      "parentTags": [
+       "div",
+       "form",
+       "label"
+      ],
+      "textHash": "1505",
+      "line": 202
+     },
+     "tag": "input",
+     "words": "",
+     "block": "sgs/form-field-checkbox",
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
+     "rule": "formControl",
+     "candidates": [
+      {
+       "block": "sgs/form-field-checkbox",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<input type=\"checkbox\" checked=\"{{ det.marketing }}\" sc-camel-on-change=\"{{ onMarketing }}\" style=\"width:24px;height:24px;accent-color:#EE8088;flex:none\" data-d",
+     "parent": {
+      "draftId": "Account:191",
+      "tag": "label",
+      "block": null
+     },
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 434,
+       "y": 716.4,
+       "w": 24,
+       "h": 24
+      },
+      {
+       "width": 768,
+       "x": 62,
+       "y": 726.7,
+       "w": 24,
+       "h": 24
+      },
+      {
+       "width": 375,
+       "x": 44,
+       "y": 840.8,
+       "w": 24,
+       "h": 24
+      }
+     ],
+     "draftId": "Account:192"
+    },
+    {
+     "rowId": "skeleton:account-details-change-password:Account/195#0",
+     "key": "Account/195#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "42fbf764",
+      "parentTags": [
+       "div",
+       "form"
+      ],
+      "textHash": "1505",
+      "line": 204
+     },
+     "tag": "div",
+     "words": "",
+     "block": "sgs/container",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/container",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:center;gap:14px\" data-dc-tpl=\"195\"> <button type=\"submit\" style=\"height:56px;padding:0 28px;border-radius:99",
+     "parent": {
+      "draftId": "Account:181",
+      "tag": "form",
+      "block": "sgs/form"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:182",
+       "tag": "div",
+       "block": "sgs/container"
+      },
+      {
+       "draftId": "Account:191",
+       "tag": "label",
+       "block": null
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 766.4,
+       "w": 880,
+       "h": 56
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 776.7,
+       "w": 652,
+       "h": 56
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 890.8,
+       "w": 295,
+       "h": 56
+      }
+     ],
+     "draftId": "Account:195"
+    },
+    {
+     "rowId": "skeleton:account-details-change-password:Account/196#0",
+     "key": "Account/196#0",
+     "fingerprint": {
+      "tag": "button",
+      "cls": "scp0 scp5",
+      "styleHash": "fbec85fe",
+      "parentTags": [
+       "div",
+       "form",
+       "div"
+      ],
+      "textHash": "4be6f631",
+      "line": 205
+     },
+     "tag": "button",
+     "words": "Save changes",
+     "block": "sgs/button",
+     "confidence": 0.75,
+     "low": false,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/button",
+       "score": 0.75,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<button type=\"submit\" style=\"height:56px;padding:0 28px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;font-weight:700;font-size:16px;cursor:po",
+     "parent": {
+      "draftId": "Account:195",
+      "tag": "div",
+      "block": "sgs/container"
+     },
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 766.4,
+       "w": 164.4,
+       "h": 56
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 776.7,
+       "w": 164.4,
+       "h": 56
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 890.8,
+       "w": 164.4,
+       "h": 56
+      }
+     ],
+     "draftId": "Account:196"
+    },
+    {
+     "rowId": "skeleton:account-details-change-password:Account/199#0",
+     "key": "Account/199#0",
+     "fingerprint": {
+      "tag": "form",
+      "cls": "",
+      "styleHash": "b3fca147",
+      "parentTags": [
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 209
+     },
+     "tag": "form",
+     "words": "",
+     "block": "sgs/form",
+     "confidence": 1,
+     "low": false,
+     "reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part",
+     "rule": "formHost",
+     "candidates": [
+      {
+       "block": "sgs/form",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<form sc-camel-no-validate=\"{{ true }}\" sc-camel-on-submit=\"{{ savePw }}\" style=\"background:#FFFAF0;border:2px solid #3A2A22;border-radius:28px;padding:{{ L.car",
+     "parent": {
+      "draftId": "Account:32",
+      "tag": "div",
+      "block": "sgs/form"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:180",
+       "tag": "h2",
+       "block": "sgs/heading"
+      },
+      {
+       "draftId": "Account:181",
+       "tag": "form",
+       "block": "sgs/form"
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 400,
+       "y": 866.4,
+       "w": 940,
+       "h": 245
+      },
+      {
+       "width": 768,
+       "x": 32,
+       "y": 874.7,
+       "w": 704,
+       "h": 241
+      },
+      {
+       "width": 375,
+       "x": 20,
+       "y": 984.8,
+       "w": 335,
+       "h": 325
+      }
+     ],
+     "draftId": "Account:199"
+    },
+    {
+     "rowId": "skeleton:account-details-change-password:Account/200#0",
+     "key": "Account/200#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "fe6d8d78",
+      "parentTags": [
+       "div",
+       "form"
+      ],
+      "textHash": "c6200c5c",
+      "line": 210
+     },
+     "tag": "div",
+     "words": "Change password",
+     "block": "sgs/text",
+     "confidence": 0.25,
+     "low": true,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/text",
+       "score": 0.25,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<div style=\"font-family:'Young Serif',serif;font-size:22px\" data-dc-tpl=\"200\">Change password</div>",
+     "parent": {
+      "draftId": "Account:199",
+      "tag": "form",
+      "block": "sgs/form"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:201",
+       "tag": "div",
+       "block": "sgs/container"
+      },
+      {
+       "draftId": "Account:208",
+       "tag": "div",
+       "block": "sgs/container"
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 892.4,
+       "w": 880,
+       "h": 31
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 898.7,
+       "w": 652,
+       "h": 31
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 1004.8,
+       "w": 295,
+       "h": 31
+      }
+     ],
+     "draftId": "Account:200"
+    },
+    {
+     "rowId": "skeleton:account-details-change-password:Account/201#0",
+     "key": "Account/201#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "89270990",
+      "parentTags": [
+       "div",
+       "form"
+      ],
+      "textHash": "1505",
+      "line": 211
+     },
+     "tag": "div",
+     "words": "",
+     "block": "sgs/container",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/container",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<div style=\"display:grid;grid-template-columns:{{ L.two }};gap:14px\" data-dc-tpl=\"201\"> <label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700",
+     "parent": {
+      "draftId": "Account:199",
+      "tag": "form",
+      "block": "sgs/form"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:200",
+       "tag": "div",
+       "block": "sgs/text"
+      },
+      {
+       "draftId": "Account:208",
+       "tag": "div",
+       "block": "sgs/container"
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 937.4,
+       "w": 880,
+       "h": 78
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 943.7,
+       "w": 652,
+       "h": 78
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 1049.8,
+       "w": 295,
+       "h": 170
+      }
+     ],
+     "draftId": "Account:201"
+    },
+    {
+     "rowId": "skeleton:account-details-change-password:Account/202#0",
+     "key": "Account/202#0",
+     "fingerprint": {
+      "tag": "label",
+      "cls": "",
+      "styleHash": "cd0df356",
+      "parentTags": [
+       "div",
+       "form",
+       "div"
+      ],
+      "textHash": "26c52173",
+      "line": 212
+     },
+     "tag": "label",
+     "words": "Current password",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
+     "rule": "formControl",
+     "candidates": [],
+     "action": "unwrap",
+     "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"202\">Current password<input type=\"password\" autocomplete=\"",
+     "parent": {
+      "draftId": "Account:201",
+      "tag": "div",
+      "block": "sgs/container"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:204",
+       "tag": "label",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 937.4,
+       "w": 433,
+       "h": 78
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 943.7,
+       "w": 319,
+       "h": 78
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 1049.8,
+       "w": 295,
+       "h": 78
+      }
+     ],
+     "draftId": "Account:202"
+    },
+    {
+     "rowId": "skeleton:account-details-change-password:Account/203#0",
+     "key": "Account/203#0",
+     "fingerprint": {
+      "tag": "input",
+      "cls": "",
+      "styleHash": "7d4cb8c5",
+      "parentTags": [
+       "div",
+       "form",
+       "div",
+       "label"
+      ],
+      "textHash": "1505",
+      "line": 212
+     },
+     "tag": "input",
+     "words": "",
+     "block": "sgs/form-field-text",
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
+     "rule": "formControl",
+     "candidates": [
+      {
+       "block": "sgs/form-field-text",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<input type=\"password\" autocomplete=\"current-password\" value=\"{{ pwCur }}\" sc-camel-on-change=\"{{ onPwCur }}\" style=\"height:54px;border:2px solid #3A2A22;border",
+     "parent": {
+      "draftId": "Account:202",
+      "tag": "label",
+      "block": null
+     },
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 961.4,
+       "w": 433,
+       "h": 54
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 967.7,
+       "w": 319,
+       "h": 54
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 1073.8,
+       "w": 295,
+       "h": 54
+      }
+     ],
+     "draftId": "Account:203"
+    },
+    {
+     "rowId": "skeleton:account-details-change-password:Account/204#0",
+     "key": "Account/204#0",
+     "fingerprint": {
+      "tag": "label",
+      "cls": "",
+      "styleHash": "cd0df356",
+      "parentTags": [
+       "div",
+       "form",
+       "div"
+      ],
+      "textHash": "5aae8706",
+      "line": 213
+     },
+     "tag": "label",
+     "words": "New password",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
+     "rule": "formControl",
+     "candidates": [],
+     "action": "unwrap",
+     "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"204\">New password<input type=\"password\" autocomplete=\"new-",
+     "parent": {
+      "draftId": "Account:201",
+      "tag": "div",
+      "block": "sgs/container"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:202",
+       "tag": "label",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 877,
+       "y": 937.4,
+       "w": 433,
+       "h": 78
+      },
+      {
+       "width": 768,
+       "x": 391,
+       "y": 943.7,
+       "w": 319,
+       "h": 78
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 1141.8,
+       "w": 295,
+       "h": 78
+      }
+     ],
+     "draftId": "Account:204"
+    },
+    {
+     "rowId": "skeleton:account-details-change-password:Account/205#0",
+     "key": "Account/205#0",
+     "fingerprint": {
+      "tag": "input",
+      "cls": "",
+      "styleHash": "7d4cb8c5",
+      "parentTags": [
+       "div",
+       "form",
+       "div",
+       "label"
+      ],
+      "textHash": "1505",
+      "line": 213
+     },
+     "tag": "input",
+     "words": "",
+     "block": "sgs/form-field-text",
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
+     "rule": "formControl",
+     "candidates": [
+      {
+       "block": "sgs/form-field-text",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<input type=\"password\" autocomplete=\"new-password\" placeholder=\"At least 8 characters\" value=\"{{ pwNew }}\" sc-camel-on-change=\"{{ onPwNew }}\" style=\"height:54px",
+     "parent": {
+      "draftId": "Account:204",
+      "tag": "label",
+      "block": null
+     },
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 877,
+       "y": 961.4,
+       "w": 433,
+       "h": 54
+      },
+      {
+       "width": 768,
+       "x": 391,
+       "y": 967.7,
+       "w": 319,
+       "h": 54
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 1165.8,
+       "w": 295,
+       "h": 54
+      }
+     ],
+     "draftId": "Account:205"
+    },
+    {
+     "rowId": "skeleton:account-details-change-password:Account/208#0",
+     "key": "Account/208#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "42fbf764",
+      "parentTags": [
+       "div",
+       "form"
+      ],
+      "textHash": "1505",
+      "line": 216
+     },
+     "tag": "div",
+     "words": "",
+     "block": "sgs/container",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/container",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:center;gap:14px\" data-dc-tpl=\"208\"> <button type=\"submit\" style=\"height:56px;padding:0 28px;border-radius:99",
+     "parent": {
+      "draftId": "Account:199",
+      "tag": "form",
+      "block": "sgs/form"
+     },
+     "siblings": [
+      {
+       "draftId": "Account:200",
+       "tag": "div",
+       "block": "sgs/text"
+      },
+      {
+       "draftId": "Account:201",
+       "tag": "div",
+       "block": "sgs/container"
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 1029.4,
+       "w": 880,
+       "h": 56
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 1035.7,
+       "w": 652,
+       "h": 56
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 1233.8,
+       "w": 295,
+       "h": 56
+      }
+     ],
+     "draftId": "Account:208"
+    },
+    {
+     "rowId": "skeleton:account-details-change-password:Account/209#0",
+     "key": "Account/209#0",
+     "fingerprint": {
+      "tag": "button",
+      "cls": "scp1",
+      "styleHash": "77cbd397",
+      "parentTags": [
+       "div",
+       "form",
+       "div"
+      ],
+      "textHash": "a460002b",
+      "line": 217
+     },
+     "tag": "button",
+     "words": "Update password",
+     "block": "sgs/button",
+     "confidence": 0.75,
+     "low": false,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/button",
+       "score": 0.75,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<button type=\"submit\" style=\"height:56px;padding:0 28px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;font-weight:700;font-size:16px;cursor:po",
+     "parent": {
+      "draftId": "Account:208",
+      "tag": "div",
+      "block": "sgs/container"
+     },
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 430,
+       "y": 1029.4,
+       "w": 192.1,
+       "h": 56
+      },
+      {
+       "width": 768,
+       "x": 58,
+       "y": 1035.7,
+       "w": 192.1,
+       "h": 56
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 1233.8,
+       "w": 192.1,
+       "h": 56
+      }
+     ],
+     "draftId": "Account:209"
+    }
+   ],
+   "counts": {
+    "inventoryElements": 25,
+    "parts": 0,
+    "rows": 25,
+    "skeletonNodes": 18,
+    "expandedNodes": 18,
+    "low": 1,
+    "removed": 7,
+    "unresolved": 0,
+    "byRule": {
+     "formHost": 3,
+     "formControl": 14
+    }
+   },
+   "problems": []
+  },
+  "checkout-header": {
+   "id": "S-25:header",
+   "kind": "header",
+   "name": "Checkout: its own header",
+   "route": "Checkout.dc.html",
+   "root": {
+    "tpl": "7",
+    "copies": 1,
+    "tag": "header",
+    "viaCondition": false,
+    "viaMain": false
+   },
+   "inventory": {
+    "elements": 9,
+    "checks": {
+     "rootName": "Checkout",
+     "rootKey": "Checkout/7#0",
+     "duplicateKeys": 0,
+     "perWidthCounts": {
+      "375": 9,
+      "768": 9,
+      "1440": 9
+     },
+     "tagDisagree": 0,
+     "unstamped": 1,
+     "keysMissingAt": {
+      "375": 0,
+      "768": 0,
+      "1440": 0
+     },
+     "screenshotSkips": 0
+    }
+   },
+   "rows": [
+    {
+     "rowId": "skeleton:checkout-header:Checkout/7#0",
+     "key": "Checkout/7#0",
+     "fingerprint": {
+      "tag": "header",
+      "cls": "",
+      "styleHash": "3a84cc93",
+      "parentTags": [],
+      "textHash": "1505",
+      "line": 10
+     },
+     "tag": "header",
+     "words": "",
+     "block": "sgs/site-header",
+     "confidence": 0.58,
+     "low": true,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/site-header",
+       "score": 1.4,
+       "share": 0.583
+      },
+      {
+       "block": "sgs/hero",
+       "score": 1,
+       "share": 0.417
+      }
+     ],
+     "action": null,
+     "snippet": "<header style=\"background:#F5C2C8;border-bottom:2px solid #3A2A22\" data-dc-tpl=\"7\"> <div style=\"max-width:1160px;margin:0 auto;padding:0 20px;height:72px;displa",
+     "parent": null,
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 0,
+       "y": 0,
+       "w": 1440,
+       "h": 74
+      },
+      {
+       "width": 768,
+       "x": 0,
+       "y": 0,
+       "w": 768,
+       "h": 74
+      },
+      {
+       "width": 375,
+       "x": 0,
+       "y": 0,
+       "w": 375,
+       "h": 74
+      }
+     ],
+     "draftId": "Checkout:7"
+    },
+    {
+     "rowId": "skeleton:checkout-header:Checkout/8#0",
+     "key": "Checkout/8#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "f2a35d20",
+      "parentTags": [
+       "header"
+      ],
+      "textHash": "1505",
+      "line": 11
+     },
+     "tag": "div",
+     "words": "",
+     "block": "sgs/site-header-row",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/site-header-row",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<div style=\"max-width:1160px;margin:0 auto;padding:0 20px;height:72px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center\" data-dc-tpl=\"8\"> <a hr",
+     "parent": {
+      "draftId": "Checkout:7",
+      "tag": "header",
+      "block": "sgs/site-header"
+     },
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 140,
+       "y": 0,
+       "w": 1160,
+       "h": 72
+      },
+      {
+       "width": 768,
+       "x": 0,
+       "y": 0,
+       "w": 768,
+       "h": 72
+      },
+      {
+       "width": 375,
+       "x": 0,
+       "y": 0,
+       "w": 375,
+       "h": 72
+      }
+     ],
+     "draftId": "Checkout:8"
+    },
+    {
+     "rowId": "skeleton:checkout-header:Checkout/9#0",
+     "key": "Checkout/9#0",
+     "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "6fb1f72c",
+      "parentTags": [
+       "header",
+       "div"
+      ],
+      "textHash": "de0f445f",
+      "line": 12
+     },
+     "tag": "a",
+     "words": "← Basket",
+     "block": "sgs/button",
+     "confidence": 0.75,
+     "low": false,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/button",
+       "score": 0.75,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<a href=\"Basket.dc.html\" style=\"font-weight:700;color:#3A2A22;font-size:15px;min-height:44px;display:flex;align-items:center\" data-dc-tpl=\"9\">← Basket</a>",
+     "parent": {
+      "draftId": "Checkout:8",
+      "tag": "div",
+      "block": "sgs/site-header-row"
+     },
+     "siblings": [
+      {
+       "draftId": "Checkout:10",
+       "tag": "a",
+       "block": "sgs/container"
+      },
+      {
+       "draftId": "Checkout:12",
+       "tag": "span",
+       "block": "sgs/text"
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 160,
+       "y": 14,
+       "w": 485,
+       "h": 44
+      },
+      {
+       "width": 768,
+       "x": 20,
+       "y": 14,
+       "w": 289,
+       "h": 44
+      },
+      {
+       "width": 375,
+       "x": 20,
+       "y": 14,
+       "w": 107.5,
+       "h": 44
+      }
+     ],
+     "draftId": "Checkout:9"
+    },
+    {
+     "rowId": "skeleton:checkout-header:Checkout/10#0",
+     "key": "Checkout/10#0",
+     "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+       "header",
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 13
+     },
+     "tag": "a",
+     "words": "",
+     "block": "sgs/container",
+     "confidence": 0.75,
+     "low": false,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/container",
+       "score": 0.75,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<a href=\"Home.dc.html\" aria-label=\"Mama's Munches home\" data-dc-tpl=\"10\"><img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:{{ logoH }};wi",
+     "parent": {
+      "draftId": "Checkout:8",
+      "tag": "div",
+      "block": "sgs/site-header-row"
+     },
+     "siblings": [
+      {
+       "draftId": "Checkout:9",
+       "tag": "a",
+       "block": "sgs/button"
+      },
+      {
+       "draftId": "Checkout:12",
+       "tag": "span",
+       "block": "sgs/text"
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 645,
+       "y": 11,
+       "w": 150,
+       "h": 50
+      },
+      {
+       "width": 768,
+       "x": 309,
+       "y": 11,
+       "w": 150,
+       "h": 50
+      },
+      {
+       "width": 375,
+       "x": 127.5,
+       "y": 16,
+       "w": 120,
+       "h": 40
+      }
+     ],
+     "draftId": "Checkout:10"
+    },
+    {
+     "rowId": "skeleton:checkout-header:Checkout/11#0",
+     "key": "Checkout/11#0",
+     "fingerprint": {
+      "tag": "img",
+      "cls": "",
+      "styleHash": "9b41e79e",
+      "parentTags": [
+       "header",
+       "div",
+       "a"
+      ],
+      "textHash": "1505",
+      "line": 13
+     },
+     "tag": "img",
+     "words": "",
+     "block": "sgs/responsive-logo",
+     "confidence": 0.66,
+     "low": true,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/responsive-logo",
+       "score": 0.85,
+       "share": 0.773
+      },
+      {
+       "block": "sgs/media",
+       "score": 0.25,
+       "share": 0.227
+      }
+     ],
+     "action": null,
+     "snippet": "<img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:{{ logoH }};width:auto\" data-dc-tpl=\"11\">",
+     "parent": {
+      "draftId": "Checkout:10",
+      "tag": "a",
+      "block": "sgs/container"
+     },
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 645,
+       "y": 11,
+       "w": 150,
+       "h": 50
+      },
+      {
+       "width": 768,
+       "x": 309,
+       "y": 11,
+       "w": 150,
+       "h": 50
+      },
+      {
+       "width": 375,
+       "x": 127.5,
+       "y": 16,
+       "w": 120,
+       "h": 40
+      }
+     ],
+     "draftId": "Checkout:11"
+    },
+    {
+     "rowId": "skeleton:checkout-header:Checkout/12#0",
+     "key": "Checkout/12#0",
+     "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "f51d6702",
+      "parentTags": [
+       "header",
+       "div"
+      ],
+      "textHash": "65f725da",
+      "line": 14
+     },
+     "tag": "span",
+     "words": "Secure checkout",
+     "block": "sgs/text",
+     "confidence": 0.25,
+     "low": true,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/text",
+       "score": 0.25,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<span style=\"justify-self:end;font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px\" data-dc-tpl=\"12\"><svg width=\"16\" height=\"16\" sc-camel-view",
+     "parent": {
+      "draftId": "Checkout:8",
+      "tag": "div",
+      "block": "sgs/site-header-row"
+     },
+     "siblings": [
+      {
+       "draftId": "Checkout:9",
+       "tag": "a",
+       "block": "sgs/button"
+      },
+      {
+       "draftId": "Checkout:10",
+       "tag": "a",
+       "block": "sgs/container"
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 1147.5,
+       "y": 27.5,
+       "w": 132.5,
+       "h": 17
+      },
+      {
+       "width": 768,
+       "x": 615.5,
+       "y": 27.5,
+       "w": 132.5,
+       "h": 17
+      },
+      {
+       "width": 375,
+       "x": 287.5,
+       "y": 27.5,
+       "w": 67.5,
+       "h": 17
+      }
+     ],
+     "draftId": "Checkout:12"
+    }
+   ],
+   "counts": {
+    "inventoryElements": 9,
+    "parts": 3,
+    "rows": 6,
+    "skeletonNodes": 8,
+    "expandedNodes": 8,
+    "low": 3,
+    "removed": 0,
+    "unresolved": 0,
+    "byRule": {}
+   },
+   "problems": []
   }
  },
+ "renderParts": {},
  "notices": {
   "prose": [],
   "blockedHosts": []
@@ -145931,36 +150014,6 @@
    "stage": "inventory"
   },
   {
-   "construct": "surface-root",
-   "draftId": "Checkout:7",
-   "error": "the census holds a <header> in Checkout and surfaces.json has no header record for that component",
-   "stage": "skeletons"
-  },
-  {
-   "construct": "skeleton",
-   "draftId": "Basket:47",
-   "error": "basket-gift-note-upsell: <sc-if> Basket:47 renders nothing at this route and state; still not rendered after state \"upsell shown\" {\"showUpsell\":true} (1440px: <sc-if> Basket:47 renders nothing at this route and state; 375px: <sc-if> Basket:47 renders nothing at this route and state; 768px: <sc-if> Basket:47 renders nothing at this route and state)",
-   "stage": "skeletons"
-  },
-  {
-   "construct": "skeleton",
-   "draftId": "Account:129",
-   "error": "cancel-subscription-confirm: <sc-if> Account:129 renders nothing at this route and state; no opener: no surfaces.json state gives a settable state key or a setState call, and opened_by names no template handler of the component",
-   "stage": "skeletons"
-  },
-  {
-   "construct": "skeleton",
-   "draftId": "Account:160",
-   "error": "address-form-add-edit: <sc-if> Account:160 renders nothing at this route and state; no opener: no surfaces.json state gives a settable state key or a setState call, and opened_by names no template handler of the component",
-   "stage": "skeletons"
-  },
-  {
-   "construct": "skeleton",
-   "draftId": "Account:179",
-   "error": "account-details-change-password: <sc-if> Account:179 renders nothing at this route and state; still not rendered after state \"details form\" {\"tab\":\"details\"} (1440px: <sc-if> Account:179 renders nothing at this route and state; 375px: <sc-if> Account:179 renders nothing at this route and state; 768px: <sc-if> Account:179 renders nothing at this route and state); then state \"details error / saved ✓ (2.4s)\" {\"saved\":true} (1440px: <sc-if> Account:179 renders nothing at this route and state; 375px: <sc-if> Account:179 renders nothing at this route and state; 768px: <sc-if> Account:179 renders nothing at this route and state); then state \"password error / updated ✓ (2.4s)\" {\"pwSaved\":true} (1440px: <sc-if> Account:179 renders nothing at this route and state; 375px: <sc-if> Account:179 renders nothing at this route and state; 768px: <sc-if> Account:179 renders nothing at this route and state)",
-   "stage": "skeletons"
-  },
-  {
    "construct": "state-values",
    "draftId": "S-06:added (\"Added ✓\" for 1600ms), S-12:mobile (<768px), S-12:tablet (768–1023px), S-12:desktop (≥1024px), S-13:filter, S-13:sort, S-14:mobile (<768px), S-14:tablet (768–1023px), S-14:desktop (≥1024px), S-14:gift toggle available, S-15:one-off, S-15:subscribe: frequency row, S-15:added, S-16:note open, S-17:row i open, S-18:hidden, S-18:shown, S-19:mobile (<768px), S-19:tablet (768–1023px), S-19:desktop (≥1024px), S-20:moment × budget, S-21:matches, S-21:no matches, S-23:mobile (<768px), S-23:tablet (768–1023px), S-23:desktop (≥1024px), S-23:empty, S-23:has items, S-24:upsell shown, S-25:mobile (<768px), S-25:tablet (768–1023px), S-25:desktop (≥1024px), S-27:guest: \"Have an account? Sign in\" + unticked \"Create an account (optional)\", S-27:guest, create account ticked: first name + password (8+), S-27:subscription hint under the checkbox, S-27:signed in: \"Signed in as …\", email and default address prefilled, S-28:for me, S-28:gift: her name (saved as gift.to), note, prices-off line, S-29:Tracked 48, S-29:Tracked 24, S-31:collapsed, S-31:expanded, S-31:sticky side summary, S-32:with gift note, S-32:gift note addressed to her name, S-32:no note: Taster Trio prompt, S-32:account order: \"Follow this order in your account\" → Account.dc.html?order=…, S-32:guest order: \"Create an account\" prompt, S-33:mobile (<768px), S-33:tablet (768–1023px), S-33:desktop (≥1024px), S-34:topic: My order, S-34:topic: Baby shower or event, S-34:other topics, S-34:editing, S-35:sent, S-36:mobile (<768px), S-36:tablet (768–1023px), S-36:desktop (≥1024px), S-37:query/category, S-38:item i open, S-39:no answers, S-40:mobile (<768px), S-40:tablet (768–1023px), S-40:desktop (≥1024px), S-41:signed in, S-42:tabs shown (sign in / create account), S-42:editing, S-43:editing, S-44:flow, S-45:enter email, S-46:sent, S-47:reset, S-48:done, S-49:mobile (<768px), S-49:tablet (768–1023px), S-49:desktop (≥1024px), S-49:next bake line in hero, S-50:signed out, S-51:signed in, tab selected, S-51:mobile/tablet: horizontal chip row (static); desktop: sticky vertical list at top 108px, S-52:list (order no, status chip, placed date, bake date, thumbs, total), S-52:no orders, S-54:no subscriptions, S-56:list with default badge, Edit / Make default / Remove, Add an address, S-57:validation, S-58:details form, S-58:details error / saved ✓ (2.4s)",
    "error": "the state keys could not be set (the component has no live instance on the entry page, or its setState refused them), so no per-state value was read",
@@ -146103,10 +150156,11 @@
   {
    "rowId": "catalogue:zookies",
    "rowType": "catalogue",
-   "contentHash": "c171f1099c6d9e6a655ef8e99eff97279e070093a3193ccb430cb7b9188f4f0c",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:34:36.289Z"
+   "contentHash": "2d1d2f75a83367a99d346f600af5eaba8b8ea8a2ee66e67ca76a57ca51809ce3",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "catalogue:trial",
@@ -146146,37 +150200,28 @@
    "contentHash": "ac0265a0db9a61d46aa079dade82b56ae65a2bdf0fe5ac0f9741e0a79ebd79a5",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
-   "rowId": "catalogue-gap:zookies:multi-choice:2",
-   "rowType": "catalogue",
-   "contentHash": "23767bb1b0a3cb0d5b0a76a6bac996a0cf4dcf33d15d71bc17f90c4938b51985",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:34:36.289Z"
-  },
-  {
-   "rowId": "catalogue-gap:zookies:switch:3",
+   "rowId": "catalogue-gap:zookies:switch:2",
    "rowType": "catalogue",
    "contentHash": "3bfd68576f42f94c41a7c25bfd665ea987eed8385a5a47778daef46b8a4d85fd",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:34:36.289Z"
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
-   "rowId": "catalogue-gap:giftcard:open-amount:4",
+   "rowId": "catalogue-gap:giftcard:open-amount:3",
    "rowType": "catalogue",
    "contentHash": "5c7e01ad948deb9f16becb1f1f88fbf5b7a571b818a02c3ddf639d7aa1a9d081",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:34:36.289Z"
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
-   "rowId": "catalogue-gap:giftcard:no-variesby:5",
+   "rowId": "catalogue-gap:giftcard:no-variesby:4",
    "rowType": "catalogue",
-   "contentHash": "556ebdd869feaea8ea5e376334fafd68761d2cb82e9966f0cf60815c3c9bbee5",
+   "contentHash": "2a60a60cc4e0ef829f8fbfa0e3bbc68256461ee16c146cfce84e06c9cdeed4c5",
    "mark": null,
    "markedOn": null,
    "carriedFrom": null
@@ -146579,8 +150624,7 @@
    "contentHash": "7e6f076795cd8df0fb1709385abfd165d9f0b78995dbef56e184a19ad8d95939",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "missing:coverage:construct:ref",
@@ -146785,7 +150829,16 @@
   {
    "rowId": "effect:J-08",
    "rowType": "effect",
-   "contentHash": "b6555015764950e8f2764d51790e1d882215358095e36252aae6908069246f0d",
+   "contentHash": "cd9cb9131defb7d09d42fadc14f91c76aa62fb192e84e6c02b8b4602e5bc0c96",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
+  },
+  {
+   "rowId": "effect:J-08:autoplaySpeed",
+   "rowType": "effect",
+   "contentHash": "e16ddea26dfdb1827defaa77048f92ffd810f43945548183838fac4e8b82930d",
    "mark": null,
    "markedOn": null,
    "carriedFrom": null
@@ -146865,10 +150918,11 @@
   {
    "rowId": "skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/16#0",
    "rowType": "skeleton-block",
-   "contentHash": "18197ef12ce8401ec9739f20fd80bb513d265d39f1fdd36d199c86112cad2b28",
-   "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-26T22:25:10.523Z"
+   "contentHash": "d4db7cf917d3bbd8444fc6955a5cc2873fb9305659cfc943ff5996f96464c1ef",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/17#0",
@@ -147087,8 +151141,7 @@
    "contentHash": "a0198c991276d69c1b2304327c19c64e798fc8667d599c0bde75c4a2bed58510",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:nav-drawer-left:Home>SiteHeader@7#0/60#0",
@@ -147541,18 +151594,20 @@
   {
    "rowId": "skeleton:site-footer:Home>SiteFooter@250#0/3#0",
    "rowType": "skeleton-block",
-   "contentHash": "9683f7b38b0a2eaa2d0ce8fd97143c56d8dedbb36cc68bb6f582be204a517f28",
-   "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "contentHash": "bab673df4ded5ddacd6b9cc45daa598ff52c4110041bbb0426a66c05a85d6290",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:site-footer:Home>SiteFooter@250#0/4#0",
    "rowType": "skeleton-block",
-   "contentHash": "12b389eab5cd5e3485d2f57097055f18db20d822752f05eb8abe1cbba33dc37d",
-   "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "contentHash": "63004457595f23f5b6e10087105c7e8d361bf2d0e75e207735336b7e76600b48",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:site-footer:Home>SiteFooter@250#0/5#0",
@@ -148840,8 +152895,7 @@
    "contentHash": "0f41f7059de7d6589931f770af8fecdd3710d438b09785077b05b88f1d1a21db",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/134",
@@ -148849,8 +152903,7 @@
    "contentHash": "f5ae0f4854747968af912e1803154e96ba1b6aad323757efee56c04c825ab429",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/135",
@@ -148858,8 +152911,7 @@
    "contentHash": "5a385e49a0114ad5bfac3d614449478ee4c6024258e8857f2449cd09b3ec7cd8",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/136",
@@ -148867,8 +152919,7 @@
    "contentHash": "c0f372edf0ce7231802737e34aad60143c5fd3d8410641830b616fa13f15196e",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/137",
@@ -148876,8 +152927,7 @@
    "contentHash": "a721ae35c8a7f0f541689c70ddc84f562f8282dad395f9246221f6e0e9f3406e",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/138",
@@ -148885,8 +152935,7 @@
    "contentHash": "e1519ce198e808c52e80abd00af434149a2d768f07267092d5837d4369b4e833",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/139",
@@ -148894,8 +152943,7 @@
    "contentHash": "aedcad288d144ef320ff39eedb66caf03ecd694936136831dc040b358a8d9657",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/140",
@@ -148903,8 +152951,7 @@
    "contentHash": "e7a602d9092c11cf64bbea8e9a4b60e53c1114c4e883f44f2169ec42d2d8ed13",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/141",
@@ -148912,8 +152959,7 @@
    "contentHash": "c22f8818eb102731e586d0041d17db50a59122bb2dc59624eb211764c954b6f4",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/142",
@@ -148921,8 +152967,7 @@
    "contentHash": "ae946df39e8a882354f17ef0b27d62f024b28c7f8ddc3177728f92ba99907ccf",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/143",
@@ -148930,8 +152975,7 @@
    "contentHash": "b7fa8b787a822a0278f772826901013d6f9813f190e796b82f72f759968da052",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/145#0",
@@ -149547,8 +153591,7 @@
    "contentHash": "600599f34ea1c04962315ef0f460cc1145600d4e270553190c22c210d360b92e",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/224",
@@ -149556,8 +153599,7 @@
    "contentHash": "b8a916baad913b5a9e12892f0a2d539cd27573993ee0b0d819195f373a6d675f",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/225",
@@ -149565,8 +153607,7 @@
    "contentHash": "af6d6f0ba69125c005bfc78b1fec3260893f8d983bcd7cb7b072dff3a4a5e3ac",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/226",
@@ -149574,8 +153615,7 @@
    "contentHash": "d4fe3118f0befcd40d61d14d082e8ffdd84e12d33ae965632ae65571b3725fb7",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/227",
@@ -149583,8 +153623,7 @@
    "contentHash": "ce3ba5361957f1c9ed7108b7999b0fb88b477fb4d7a9a1a40cd086e19f2969c1",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/228",
@@ -149592,8 +153631,7 @@
    "contentHash": "262b7cce0813046accd14b6a93af15dd59f5b0ee9e209a5c7a3bba595975476d",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/229",
@@ -149601,8 +153639,7 @@
    "contentHash": "bf0a874c278e63a8b66044c3b98bf4aa4ef9937bf7b63c6e637d250077d2bf09",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/230",
@@ -149610,8 +153647,7 @@
    "contentHash": "295bfee75b101b30be24140053bcd570629d89df57ab8ac9547cca8cf0b44492",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/231",
@@ -149619,8 +153655,7 @@
    "contentHash": "9238e4ad442b72289ecf4383a3f9e729ac3107dadae17beb1652eed24e8cb8ea",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/232",
@@ -149628,8 +153663,7 @@
    "contentHash": "9b8b8910f1628c82108f2828ad0924039dade0cc7b077c303aa35bb492c1f33f",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/233#0",
@@ -149706,42 +153740,47 @@
   {
    "rowId": "skeleton:page-home-dc-html:Home/243#0",
    "rowType": "skeleton-block",
-   "contentHash": "a8ac5a89ec9c00e5297c89385accf8b031ca26bd8128ab2196d6a6a80e6267f0",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:34:36.289Z"
+   "contentHash": "8cf013fee3ab2079888a43cc0134c07e6b12ac4d23d0326007af85b1e0e711dd",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/245",
    "rowType": "skeleton-block",
-   "contentHash": "59d5d2af56f7a3b28ef4626aababc90631acbef90514b17a61bd70823e4f12a8",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:34:36.289Z"
+   "contentHash": "eacd204d9ae73378882fc4868b6df696d559e69e4a09a88b0d922e13f4e3cd51",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/246",
    "rowType": "skeleton-block",
-   "contentHash": "469d63670b1d83b6605e35b5fc67576072dd9d6196a8c7751370e1b5926b8f69",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:34:36.289Z"
+   "contentHash": "a1650155c3b7746f01bbf48a60bc7585b3b333db0320fc87630a97363361d50b",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/247",
    "rowType": "skeleton-block",
-   "contentHash": "e72c32c74c18606187769b96171ea524c6f8852ac74ee6b71c8259324c57d917",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:34:36.289Z"
+   "contentHash": "dda0aace2980f448dbdbd2de5414114db9da05f9d35a20d9717fa845415294c9",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/249#0",
    "rowType": "skeleton-block",
-   "contentHash": "efdd8d0bea29e7bb83bb84a6a1d2659ddaa12bc196365827a33a2da7c8e66a57",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:34:36.289Z"
+   "contentHash": "9753b20769caeebec33094a31f40e9761ab86b6c8760b5d5df600c29cff472f4",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:build-your-zookie:Home/63#0",
@@ -149853,8 +153892,7 @@
    "contentHash": "8588e99c08d7a26cb7981f8e3f84be6f00befb79641f092d06f874ac06663acd",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-shop-dc-html:Shop/16#0",
@@ -149862,8 +153900,7 @@
    "contentHash": "26d61a163c2386a68e2ec016cbac1dc41dbb8b73dde8baa93561947f22ad1a03",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-shop-dc-html:Shop/17#0",
@@ -149871,8 +153908,7 @@
    "contentHash": "8a8689db1b4affce6544568cdf87f7e4c6a8ee8907d83c2fe6dda3e4e62e7ec3",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-shop-dc-html:Shop/21#0",
@@ -149880,8 +153916,7 @@
    "contentHash": "af789e955b60bd9bec3811b08838629ae26db7c26b5a097a7af83e5971df2d10",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-shop-dc-html:Shop/23",
@@ -149929,8 +153964,7 @@
    "contentHash": "0d79b368b4dd062e34f683b325a9c79b0ae7e4c9889521c72c1d299dcb09266c",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-shop-dc-html:Shop/30",
@@ -149938,8 +153972,7 @@
    "contentHash": "1944bc03caf93d15a701f5a4cde8170a977c4c430dd4e23914482b661e6f7243",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-shop-dc-html:Shop/31",
@@ -149947,8 +153980,7 @@
    "contentHash": "82f8e3416285d4ca6faecf6f0aa7f933000fc79eeac2b8ae3a851953415b2a53",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-shop-dc-html:Shop>ProductCard@31/0",
@@ -149964,8 +153996,7 @@
    "contentHash": "dc60029a1400f96b288f5eeee94de1f7fced7830b9d86f7cfd8119995393eead",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-shop-dc-html:Shop>ProductCard@31/3",
@@ -149981,8 +154012,7 @@
    "contentHash": "3c19d88cde30287f2861a827fdf09d1d67d3f443163bec0fc898b5ca2393fe10",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-shop-dc-html:Shop>ProductCard@31/5",
@@ -149990,8 +154020,7 @@
    "contentHash": "6333fb0d58ac2be0452590d5da9212e0fcf156f5e049325afe5cd1c6ff81b5fd",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-shop-dc-html:Shop>ProductCard@31/7",
@@ -149999,8 +154028,7 @@
    "contentHash": "fdb20f86fb8ed0f5e0b07f46fd39a16b9a67ebd9f337286d745a798dfa4e1d26",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-shop-dc-html:Shop>ProductCard@31/8",
@@ -150008,8 +154036,7 @@
    "contentHash": "a2fe7b1c5e0e46af6fbd5e602034629dcc569ed944202dd5fe47a847a7f235b9",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-shop-dc-html:Shop>ProductCard@31/9",
@@ -150017,8 +154044,7 @@
    "contentHash": "a5603e00b006247b845b7106543da4fc3d47a9d4f0dc0e166a82e489bfdc7498",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-shop-dc-html:Shop>ProductCard@31/10",
@@ -150026,8 +154052,7 @@
    "contentHash": "4036dc9e986a9c8ebfa2f93b32c7dee7b652424f33a86f10e9c2d6c8e983d083",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-shop-dc-html:Shop>ProductCard@31/11",
@@ -150035,8 +154060,7 @@
    "contentHash": "edab8553de9df5b9747c5547754ec505411cc3391b04a18724914c26837a233e",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-shop-dc-html:Shop/32#0",
@@ -150324,8 +154348,7 @@
    "contentHash": "c835df1c43e953fcf639c377d4d58ada7d8885e6089c640e03fe7dc96c44a7c0",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/25#0",
@@ -150333,8 +154356,7 @@
    "contentHash": "b729fa89670bb6909d38f852a98c26ced4744273a68466771861bf709c8979c5",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/26#0",
@@ -150342,8 +154364,7 @@
    "contentHash": "3b30c58d1edc04d963aaf0230b3dbd3aa58c9abface076f35db2b4739ce4da4d",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/27#0",
@@ -150351,8 +154372,7 @@
    "contentHash": "64913df06b271acfd2fe23f8d2276bb3db8b321b592b65e8c32df6883946893d",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/28#0",
@@ -150360,8 +154380,7 @@
    "contentHash": "95cc241b1fbc37f5b8d53e0ac949753e920901d0ee4e7cb09487e2b9f1560a2f",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/29#0",
@@ -150377,8 +154396,7 @@
    "contentHash": "76af5dcd5ad34ffefddaa4b8d1f100e6337255d630b5b26769fa017499584b4f",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/32#0",
@@ -150386,8 +154404,7 @@
    "contentHash": "c6f0823d1a5e346f41f270c7752c4e58d83844274184c0e19d9b0d52285cac11",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/33#0",
@@ -150395,8 +154412,7 @@
    "contentHash": "ac6175edc40a882198209158fc96d7745b23481417690239aba0973ddeba5036",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/34#0",
@@ -150404,8 +154420,7 @@
    "contentHash": "cc59ff86d968ce19482890f6c5e17a07d1f98b794f35804f40019191cf8a707e",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/35#0",
@@ -150413,8 +154428,7 @@
    "contentHash": "350bc475cb029dfcad5e0b6993067b23a560c20b5c8e62761b9ba332577eea19",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/37",
@@ -150462,8 +154476,7 @@
    "contentHash": "a0c95aba39e03df684d7359051a960836b9b30c7f1ccd50015bfed50078af847",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/44#0",
@@ -150471,8 +154484,7 @@
    "contentHash": "bf1a6909403a8f07fd3e10adfcd058046f36c9785949517fa55d7c3966bac76a",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/45#0",
@@ -150480,8 +154492,7 @@
    "contentHash": "764436d0a3682a433a43f03e1f5b5ce11ccdd2c414f4401ff252250ca0c3730a",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/47",
@@ -150505,8 +154516,7 @@
    "contentHash": "eb07c9ba8eccee6b751066b751dac709384ec031ed8caf3cc2e9f63f9eea42fb",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/50#0",
@@ -150514,8 +154524,7 @@
    "contentHash": "3b5f18fa3c6709cc1691d51bd4d92e69b13be23dc1c2e1778fb608ed210ef4ba",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/51#0",
@@ -150523,8 +154532,7 @@
    "contentHash": "7b327b6909126e8ab91c707786a57c402f606dbc20b5edc395bff29e56c23a0b",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/53",
@@ -150540,8 +154548,7 @@
    "contentHash": "40e100d8f33d10d0b488b122feb6a23c49dc48125b7ea7681a3a675d12e39a5e",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/55#0",
@@ -150549,8 +154556,7 @@
    "contentHash": "748d27a056f0b41379062bcad00243123420b181c75cd5233100037dbfdf5f45",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/56#0",
@@ -150558,8 +154564,7 @@
    "contentHash": "d937e330e8575b1d7ce021df5a8f7a6ef28e292498476385a55dcf0c2d5ff87b",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/57#0",
@@ -150567,8 +154572,7 @@
    "contentHash": "8cbfadc5a02bebd5759f77d089a0935a5e4da67c25f87ae75b674bd3207f3404",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/58#0",
@@ -150576,8 +154580,7 @@
    "contentHash": "b4f21e6b1aa6384e502cc2626af7a5eb7ede4335b15e242edf718268e79e20f7",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/60",
@@ -150601,8 +154604,7 @@
    "contentHash": "25cee41968e225da999b2c370b6bb4c7147f6bc5d59eaaf516f34e8d52be6dab",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/63#0",
@@ -150610,8 +154612,7 @@
    "contentHash": "9bd945a094d9a7405dfc6d8addb64c1a5290604db86de483b655653310f05144",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/64#0",
@@ -150699,8 +154700,7 @@
    "contentHash": "61955aa37f92ece2f7d6ef6c40e47e40ec39a959e22d2fe2c682b38c2b13ff6f",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/94#0",
@@ -150708,8 +154708,7 @@
    "contentHash": "d0e70b0d5ee6314062871f73c0575ace6a644e11d9873c796efc20731c0575d5",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/95#0",
@@ -150717,8 +154716,7 @@
    "contentHash": "f9e4fb72d716b93edb04d3c89b9e495f5ba2d1436a90db6c0c6d5494a7fe252e",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/96#0",
@@ -150726,8 +154724,7 @@
    "contentHash": "4a3d2ce024e0f89dc5299fd098404cd68c01664a9db2def2734a673356b3901e",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/97#0",
@@ -150735,8 +154732,7 @@
    "contentHash": "7e92928cbdc891d6651ac753d045649236414d0568725763e8653b940273e99a",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/98#0",
@@ -150744,8 +154740,7 @@
    "contentHash": "3c923ba1cf91a893b833e9125ce64b13eee7836cd8405c67502e02b90237d270",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/102#0",
@@ -150753,8 +154748,7 @@
    "contentHash": "e8302e2a6efccd7c7c1754248a00705d4b51e8ba9836ef602f0df7d88626cbd2",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/108#0",
@@ -150762,8 +154756,7 @@
    "contentHash": "edbeaaad1ab732bbad6ce1db5f8bc8dba72cb78235130d55699678e0b0c7ea69",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/109#0",
@@ -150771,8 +154764,7 @@
    "contentHash": "05e4d4a9ee14b6f5f8fcc9f1a1710dc8831aac3efb3c300bbc90fcc47b99789f",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/110#0",
@@ -150780,8 +154772,7 @@
    "contentHash": "6981b36a6b33e5e56760976594f68b38126a5cc8989f83c2e690603537401f6f",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/111#0",
@@ -150789,8 +154780,7 @@
    "contentHash": "58745f503a38423cea6492dc7e29bb63ad1136fd5f3feb803077783fb2114cd3",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/112#0",
@@ -150798,8 +154788,7 @@
    "contentHash": "d3b3c4c4d422bfbc3f5f2542ba5df91c03b413204bcabd4eb9b08eaba2cf7d8c",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/113#0",
@@ -150807,8 +154796,7 @@
    "contentHash": "38667d5c76e2320f2bbf974b70654c83e5b511fecf4780e72a4a4f027e02b0cc",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/114#0",
@@ -150816,8 +154804,7 @@
    "contentHash": "5198710d0b098c9325eed0bb215a207cc63c5a02919deec9f2862f2196901b5e",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/115#0",
@@ -150825,8 +154812,7 @@
    "contentHash": "2d70b1bdcd5272e4c648a0d09361289d48e92810c14b4b696e545c1282b764ef",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/116#0",
@@ -150834,8 +154820,7 @@
    "contentHash": "ac113cad961886dcadd4bb01b27c657ad23af9372c6638cac32114ad695a2b23",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/118",
@@ -150843,8 +154828,7 @@
    "contentHash": "a69da2e7de51357301de4917253e3d28b86b76f72051ade6a4a9f3610af08346",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/119",
@@ -150852,8 +154836,7 @@
    "contentHash": "3f7e0c9bb21748cf229742b5506b7bf8069d506c33e827dbe189901b46b4ebad",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/120",
@@ -150861,8 +154844,7 @@
    "contentHash": "e39dcdc88bf3d8939908224a33e106d5903b8c1882ee9534c36934cbe995adf8",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/122#0",
@@ -150870,8 +154852,7 @@
    "contentHash": "027e6ea7592d3fa5c76083eddec84275c7e057feb2df2667b542cb4cab50c482",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/123#0",
@@ -150975,8 +154956,7 @@
    "contentHash": "210d64d4417fa2c18cbcf5d9770db133a3bb76be89b0657337c107282cd21b0c",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/138",
@@ -150984,8 +154964,7 @@
    "contentHash": "484f6f45ac25d5caf6a100e147c3605f3771a716eddb30238bb00e5fc28d554f",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/139",
@@ -150993,8 +154972,7 @@
    "contentHash": "425ad76ef223d888879a9b254f994140a5f68f91ab932a0b1b55e8bc33f9effa",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:product-buy-box:Product/108#0",
@@ -151066,8 +155044,7 @@
    "contentHash": "1925f7e8a06ff9cf0d4f4634999553b4f0253874b96729c5887907384bf0ff6d",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-gifts-dc-html:Gifts/8#0",
@@ -151291,8 +155268,7 @@
    "contentHash": "a30c04a4e1f90c7b013452a20666f77e4147d243dce4979518ab9ffbb1888f64",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-gifts-dc-html:Gifts/39",
@@ -151300,8 +155276,7 @@
    "contentHash": "851ff951bde5714d1e4aa2507f941ad25042ab872258b28d8d423357f2e05f32",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-gifts-dc-html:Gifts/40",
@@ -151309,8 +155284,7 @@
    "contentHash": "3a50fa95de1cac16bc229d17d65dba1fbf54b6acbe544e2b17e75229006427ff",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-gifts-dc-html:Gifts/44#0",
@@ -151622,8 +155596,7 @@
    "contentHash": "766643e9e947ce81807a083940bffc506b52a2542e0fc3dc5f090f94fbe18dc9",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:gift-note-preview:Gifts/61#0",
@@ -152002,6 +155975,14 @@
    "carriedFrom": "2026-10-27T15:34:36.289Z"
   },
   {
+   "rowId": "skeleton:basket-gift-note-upsell:Basket/48#0",
+   "rowType": "skeleton-block",
+   "contentHash": "4c504b752ff604cff4333dcec04f1dd74eaa2982bfaa799391975a66bb7c7524",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
    "rowId": "skeleton:page-checkout-dc-html:Checkout/16#0",
    "rowType": "skeleton-block",
    "contentHash": "5eb7a00bd1a5c45d43355c7470462e4300f6ba8d5ba76cd55ce15554d734ec12",
@@ -152255,8 +156236,7 @@
    "contentHash": "1b740e4265a9a761cf2256aefd7e89fdd1dfb6b65eaa55d318ce3127ad648d3b",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-checkout-dc-html:Checkout/73#0",
@@ -153173,10 +157153,11 @@
   {
    "rowId": "skeleton:page-contact-dc-html:Contact/77",
    "rowType": "skeleton-block",
-   "contentHash": "9c2382e49ba91d1afda2e62b57bb26c26a6b7b68e50333103acd0daf1cfb37ce",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:34:36.289Z"
+   "contentHash": "03d4d1288842a6fd06155c9d3cc1288520e2d11cb4529e425fb4a409b89b11aa",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-contact-dc-html:Contact/78",
@@ -153216,8 +157197,7 @@
    "contentHash": "5f5aba683b2a2cc74a7a7832c7df91980123734d5114b2d4e070ce4fef1700cb",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:contact-form:Contact/48#0",
@@ -154313,8 +158293,7 @@
    "contentHash": "7e0080a9ca9f332e7fa9df1addc809277fc7c735e11a876261ccdabde2a9079b",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-account-dc-html:Account/20#0",
@@ -154322,8 +158301,7 @@
    "contentHash": "1269f23f18e6c019e2d422f3730be80dea54af9efb7e2e082d6dbca32b282ef2",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-account-dc-html:Account/21#0",
@@ -154331,8 +158309,7 @@
    "contentHash": "bd08d4d0a852faf89ae862f012d835954b37d330f09fb20e69ae2800b1075db0",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-account-dc-html:Account/22#0",
@@ -154340,8 +158317,7 @@
    "contentHash": "5785611d5d5764e62ae46e81c07b3faa280480414c4f81a64b1becf6df5af249",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-account-dc-html:Account/23#0",
@@ -154349,8 +158325,7 @@
    "contentHash": "f2a08fe7803158d9d7fd8a6699c3e4319a6d9e81620dc9a81615781a5fee2564",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-account-dc-html:Account/24#0",
@@ -154358,8 +158333,431 @@
    "contentHash": "dec3195b18d16895c5cf66c9490885a1faed38f50f61ae32c0ea4b9dbaf19082",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:cancel-subscription-confirm:Account/130#0",
+   "rowType": "skeleton-block",
+   "contentHash": "260b4910f5c8010279bf46075922d8943045989508d6156a3c4e1935df0bb252",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:cancel-subscription-confirm:Account/131#0",
+   "rowType": "skeleton-block",
+   "contentHash": "52e897cd1b82141888d64248b531f429157dfafbbfc9b559cfd59da5962da8f5",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:cancel-subscription-confirm:Account/132#0",
+   "rowType": "skeleton-block",
+   "contentHash": "afb470f3d34f0fa926456fa3d149739ef75b011a0bb68c3e95829a5994137ebc",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:cancel-subscription-confirm:Account/133#0",
+   "rowType": "skeleton-block",
+   "contentHash": "b59fa8d5b10c885f94caa5f61607ea654ded1369dd9cb4bbeaf957e5040b56cd",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:cancel-subscription-confirm:Account/134#0",
+   "rowType": "skeleton-block",
+   "contentHash": "2a811226404cc4ed90a7a9de2630c91b6c9c8fd830c7ab05e7342b3af240c608",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:cancel-subscription-confirm:Account/135#0",
+   "rowType": "skeleton-block",
+   "contentHash": "bb2a55007e8a61cabd190a3db1e40d37163569cb300238bd32e71dac2d87030c",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:address-form-add-edit:Account/161#0",
+   "rowType": "skeleton-block",
+   "contentHash": "cee28da28df61a6deba5771683385d8b264d2bd95714955f9340f4501b15a214",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:address-form-add-edit:Account/162#0",
+   "rowType": "skeleton-block",
+   "contentHash": "51cdee70422acc598f2c5668503c0e1301757a43bc62f8cad528eec698d84905",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:address-form-add-edit:Account/163#0",
+   "rowType": "skeleton-block",
+   "contentHash": "e0a8cdad31e090c8afca29489e2f16eff63552c6f780b6d87f471507bf3c5586",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:address-form-add-edit:Account/164#0",
+   "rowType": "skeleton-block",
+   "contentHash": "e44b20f0d470f91224c2676857198f9feea212f029af2bd4baf6cc3a845b5577",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:address-form-add-edit:Account/165#0",
+   "rowType": "skeleton-block",
+   "contentHash": "192a0c356131d1524bd49a962f1583a268d5e98e6b2cd6bf1d9cbf1c9dd9f418",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:address-form-add-edit:Account/166#0",
+   "rowType": "skeleton-block",
+   "contentHash": "c7f83bbe3b4ebf6c80d8c0a61a5733a83637ab8db4ebad608a39f337ad5aedac",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:address-form-add-edit:Account/167#0",
+   "rowType": "skeleton-block",
+   "contentHash": "5a04f10ad74ad913ec349eb2133fa729927b4b8a9efaa91f53f9a940e2450549",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:address-form-add-edit:Account/168#0",
+   "rowType": "skeleton-block",
+   "contentHash": "2e057e691d9737f00273ac99d0c0df667a01e450016d8073fbe475024484a6f4",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:address-form-add-edit:Account/169#0",
+   "rowType": "skeleton-block",
+   "contentHash": "c206038ed0c178b529a83ab9021a97cdea875052023f05e340ca60246f13919e",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:address-form-add-edit:Account/170#0",
+   "rowType": "skeleton-block",
+   "contentHash": "4cf7d25c51ab9ccaf53bc45dde90d5d80563755173eb6c41f40afb503a3a6e29",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:address-form-add-edit:Account/171#0",
+   "rowType": "skeleton-block",
+   "contentHash": "06ba790a8521cfc91887340e1df37e09093a691049d7145a49e5c41226d374d7",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:address-form-add-edit:Account/172#0",
+   "rowType": "skeleton-block",
+   "contentHash": "decc87dec0828e2b83fcd85643cb0ebb6c72d30613f3e139980e802885505afd",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:address-form-add-edit:Account/173#0",
+   "rowType": "skeleton-block",
+   "contentHash": "379b4b7745170aac16cdcc8bb3fcb98efd03e45bfd26fd809e957c48019dfa8e",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:address-form-add-edit:Account/176#0",
+   "rowType": "skeleton-block",
+   "contentHash": "9afd6e3a96501c74779cbfb9e090ebc42305dc08bbbcbebde7b46f9e5a1e1c47",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:address-form-add-edit:Account/177#0",
+   "rowType": "skeleton-block",
+   "contentHash": "89f4cb6a39e353f072afe13f8327b25d4ba7eadac430563356d73a8f37d5f977",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:address-form-add-edit:Account/178#0",
+   "rowType": "skeleton-block",
+   "contentHash": "6051275ad64ee26fb1f5bbb3073e46c0d56d8432d41f75cbcd4137112b04d283",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/32#0",
+   "rowType": "skeleton-block",
+   "contentHash": "3ac49600e45ceab7977634de34b06083e2078aa57099a9a669f4d76b69f52d2f",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/180#0",
+   "rowType": "skeleton-block",
+   "contentHash": "b50b2fc44ab8254ac8720c499e21e0ac3997203b403ec0a17d552a49cf74d594",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/181#0",
+   "rowType": "skeleton-block",
+   "contentHash": "13eb8980237061d7c8ddf310eac589f2f6a47ab106caecb9cc9803225da0085a",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/182#0",
+   "rowType": "skeleton-block",
+   "contentHash": "4707dac5cf9d3244afb46c021aad4fdec15a1711344ebf635f082cc200be2df4",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/183#0",
+   "rowType": "skeleton-block",
+   "contentHash": "695d14e24f460a4d371df82b8fa1c9ceb1eb7f3ae4879ebed2bda5469f155e38",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/184#0",
+   "rowType": "skeleton-block",
+   "contentHash": "644966d96e370ac6ae401cfb4011a5d461b9745fc01041334d0065773d186832",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/185#0",
+   "rowType": "skeleton-block",
+   "contentHash": "462c9672d6faecd55924f4903d1efda3b33bc6bd6b34fa3fa6274ea10c093c68",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/186#0",
+   "rowType": "skeleton-block",
+   "contentHash": "1e1e210992a670284cddf4bbd0c0cf215d68e733181ec004bd4d6d3bd4ac6dbc",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/187#0",
+   "rowType": "skeleton-block",
+   "contentHash": "3cef7d829fb4635119a90ff76257dedaf4c940b2f1c0f26a4e6e7fb3bacde6f4",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/188#0",
+   "rowType": "skeleton-block",
+   "contentHash": "73de941c460e83b14c3fdd6e677b338e2a76e27c8cb4a4b9efafd1afd99700c2",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/189#0",
+   "rowType": "skeleton-block",
+   "contentHash": "a8a72c686d67ae8c8e8a52606134ce8c764e6b3c57090e4fd44a94d3d77620ef",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/190#0",
+   "rowType": "skeleton-block",
+   "contentHash": "22392d9ff1fb3bcf9622c1b2eb58cd50c735375849d536ce4a2490b762059844",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/191#0",
+   "rowType": "skeleton-block",
+   "contentHash": "8f01ec03a6652de7286b7a1364ea88a49f6ca1621e94b5d9c2df3b235785886d",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/192#0",
+   "rowType": "skeleton-block",
+   "contentHash": "4f0571da89e239ac0685731490a30e3ed54be25c28ee317560da56f962b1c88f",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/195#0",
+   "rowType": "skeleton-block",
+   "contentHash": "46da8dd527c9ab34dea16f7ae0f8f41a0c6c5145c436e5a203660608a60c13ab",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/196#0",
+   "rowType": "skeleton-block",
+   "contentHash": "034be0166d65ed66d2a870725fc4418f1a1b6a91562fb4368721bdcc544c0732",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/199#0",
+   "rowType": "skeleton-block",
+   "contentHash": "f46ab3babb0ec5a43252f7f40e8ef456b483deaa1fc4245fa1f9a02b6dd92bbc",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/200#0",
+   "rowType": "skeleton-block",
+   "contentHash": "63246e68d8af2d2d849192ab022a73993249b252d37e9a104788ccf0e0cb8cde",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/201#0",
+   "rowType": "skeleton-block",
+   "contentHash": "b79362a6f0ef0b8aee3ef48533b74533b8dcb0fbead1cf847b4e9418c8e51ecc",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/202#0",
+   "rowType": "skeleton-block",
+   "contentHash": "dee0432e88018f6675cb0aeb86d668edee27f45b933513fe96b7acd15bc2ecd5",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/203#0",
+   "rowType": "skeleton-block",
+   "contentHash": "cc6558b9ac3a3da08c10893e49dc1e63cbec67b0263002131074e1cf4aa39b94",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/204#0",
+   "rowType": "skeleton-block",
+   "contentHash": "598e6c06c9b416292e72b237d8265f21dc9ed4553506b4e0e36a77c428e5edca",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/205#0",
+   "rowType": "skeleton-block",
+   "contentHash": "39e28d8ee7095a961498cf6c6c4d304a9185514dd150f8e0d40cfe223ba04fca",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/208#0",
+   "rowType": "skeleton-block",
+   "contentHash": "c10027b1a27e7e19cd19c00698bd87dec4f1928935e2284c466f1ee54e34c63a",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:account-details-change-password:Account/209#0",
+   "rowType": "skeleton-block",
+   "contentHash": "2fe04fcbf44aecfd899ec3c32dbae2847b15d5c51781afff36c475f0061d6de3",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:checkout-header:Checkout/7#0",
+   "rowType": "skeleton-block",
+   "contentHash": "bcf45aeebfcba8af238ab73ccc62d9224251b80d0b18f85ec5e34007d38c7547",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:checkout-header:Checkout/8#0",
+   "rowType": "skeleton-block",
+   "contentHash": "513a4df14fc420094e9d1ed910aee48e4e8aa8f2208cefa1f4bc84c44910ec4f",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:checkout-header:Checkout/9#0",
+   "rowType": "skeleton-block",
+   "contentHash": "bcf055c57989086e9ae10949b9fd859b325f42337549e49e30ceeac333a8d719",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:checkout-header:Checkout/10#0",
+   "rowType": "skeleton-block",
+   "contentHash": "857632b5ab568c66ab46544032d1a626e570f078ba381eb31a845dfd70ba97f1",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:checkout-header:Checkout/11#0",
+   "rowType": "skeleton-block",
+   "contentHash": "91d0ec96808ec485dc067b38bb298acbe533f25833a1ad0d153b14cfc39b662a",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:checkout-header:Checkout/12#0",
+   "rowType": "skeleton-block",
+   "contentHash": "95dc86f8a1f42abecf05fbc42fe62a471fcdbfa84cf7813ba77a20cc8630d32a",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "inventory:anim:Home%7Ctpl%7C21%7Ccss:duration_ms",
@@ -158569,7 +162967,7 @@
     "name": "Zookies",
     "type": "variable",
     "price": 9.5,
-    "variations": 24,
+    "variations": 3,
     "address": "/product/zookies/",
     "image": true
    },
@@ -158618,11 +163016,6 @@
    },
    {
     "draftId": "zookies",
-    "kind": "multi-choice",
-    "detail": "choice \"flav\" lets the shopper pick several of Vanilla, Chocolate, Strawberry, Mango, Banana, Coffee, Mint, Caramel, Coconut, Pistachio, Honey: a WooCommerce variation holds one value per attribute, so it needs a product add-ons field; recorded, not built"
-   },
-   {
-    "draftId": "zookies",
     "kind": "switch",
     "detail": "choice \"sub\" is an on/off switch that multiplies the price by 0.9; when on, the shopper also picks \"freq\" (2, 4): WooCommerce core holds no recurring or price-changing switch (a recurring order needs WooCommerce Subscriptions or an equivalent plugin); recorded, not built"
    },
@@ -158634,7 +163027,7 @@
    {
     "draftId": "giftcard",
     "kind": "no-variesby",
-    "detail": "no choice (\"amount\") is one of Google's variesBy axes (color, size, material, pattern, suggestedAge, suggestedGender), and SGS's product preflight publishes a variable product only when one of its variation terms maps to one (no_variesby); the product is made and kept a draft"
+    "detail": "no choice that creates variations (\"amount\") is one of Google's variesBy axes (color, size, material, pattern, suggestedAge, suggestedGender), and SGS's product preflight publishes a variable product only when one of its variation terms maps to one (no_variesby); the product is made and kept a draft"
    }
   ],
   "notes": []
