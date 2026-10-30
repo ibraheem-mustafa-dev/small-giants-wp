@@ -771,9 +771,9 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_svg_css_problem` | `function sgs_svg_css_problem( string $css ): string` | \/` are caught. | no markup |
 | `sgs_svg_script_url_problem` | `function sgs_svg_script_url_problem( string $value ): string` | Why a decoded value holds a script URL, or ''. Whitespace and control characters are removed first, so `java\tscript:` and `JaVaScRiPt :`… | no markup |
 | `sgs_svg_attribute_problem` | `function sgs_svg_attribute_problem( string $element, DOMAttr $attr ): string` | Why one attribute makes the file unsafe, or ''. | no markup |
-| `sgs_svg_document_copy` | `function sgs_svg_document_copy( DOMNode $source, DOMElement $target, DOMDocument $out, array $allowed )…` | Copy `$source`'s children into `$target` (in `$out`) through the allowlist. | tags foreignObject, style; from a variable: tag |
+| `sgs_svg_document_copy` | `function sgs_svg_document_copy( DOMNode $source, DOMElement $target, DOMDocument $out, array $allowed )…` | Copy `$source`'s children into `$target` (in `$out`) through the allowlist. | tags foreignObject, style; from a variable: aria, role, tag |
 | `sgs_svg_parse_problem` | `function sgs_svg_parse_problem( string $markup ): string` | Why a file cannot be used as an SVG at all, or '': it is not UTF-8 (a UTF-16 or UTF-32 file, a declared other encoding), holds any DOCTYPE… | tags svg |
-| `sgs_svg_sanitise_document` | `function sgs_svg_sanitise_document( string $markup ): array` | Make a whole SVG file safe, or say why it cannot be. | tags foreignObject, style, svg; aria aria-hidden, aria-label; from a variable: tag |
+| `sgs_svg_sanitise_document` | `function sgs_svg_sanitise_document( string $markup ): array` | Make a whole SVG file safe, or say why it cannot be. | tags foreignObject, style, svg; aria aria-hidden, aria-label; from a variable: aria, role, tag |
 
 #### `includes/helpers-svg-gradient.php` — 4 function(s)
 
@@ -788,7 +788,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
-| `sgs_svg_inline_attachment` | `function sgs_svg_inline_attachment( int $attachment_id ): string` | The attachment's sanitised SVG markup, or '' when it is not an SVG file or the file is refused. | tags foreignObject, style, svg; aria aria-hidden, aria-label; from a variable: tag |
+| `sgs_svg_inline_attachment` | `function sgs_svg_inline_attachment( int $attachment_id ): string` | The attachment's sanitised SVG markup, or '' when it is not an SVG file or the file is refused. | tags foreignObject, style, svg; aria aria-hidden, aria-label; from a variable: aria, role, tag |
 | `sgs_svg_inline_root_attributes` | `function sgs_svg_inline_root_attributes( string $svg, array $attrs ): string` | Put attributes on the root <svg> of sanitised markup, ahead of the file's own (the first of a repeated attribute wins in HTML, so these… | tags svg |
 
 #### `includes/helpers-svg-instance-scope.php` — 9 function(s)

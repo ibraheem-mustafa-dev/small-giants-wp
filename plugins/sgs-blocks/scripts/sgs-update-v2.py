@@ -7216,8 +7216,8 @@ def stage_14_block_identity_facts(conn: sqlite3.Connection, dry_run: bool = Fals
     else:
         print(f"  live rows: {live['imported']} over {live['blocks']} blocks; settled per cause (live yes of code unknown): "
               + ", ".join(f"{c} {v}" for c, v in live["settled_by_cause"].items()))
-        gate_a = live["conflict"] + live["read_conflict"]
-        print(f"  live yes beside code no (gate A conflicts, never imported): {len(gate_a)}" + (": " + "; ".join(gate_a[:12]) if gate_a else ""))
+        gate_a = live["conflict"]
+        print(f"  live yes beside code no (gate A conflicts, computed this seed, never imported): {len(gate_a)}" + (": " + "; ".join(gate_a[:12]) if gate_a else ""))
     return {"status": "dry-run" if dry_run else "seeded", "rows": result["rows"], "blocks": result["blocks"], "live_rows": live["imported"]}
 
 

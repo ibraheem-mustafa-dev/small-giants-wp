@@ -32,9 +32,9 @@ PHP_KEYWORDS = frozenset(
     "default break continue goto int float string bool object callable iterable void mixed never null true false".split()
 )
 
-# WordPress core functions whose return or output is markup of their own (WordPress reference). A call to one makes the
-# caller's tags, roles and ARIA attributes `unknown` beyond what the repo itself proves: core output is read live
-# (plan F1 step A2b), never claimed from here.
+# WordPress core functions whose return or output is markup of their own (WordPress reference). What each prints is read
+# from pinned core source into scripts/data/core-markup-facts.json (identity_pinned.py --refresh-core); a call to one
+# missing from that snapshot, or recorded there as unknown, makes the caller's tags, roles and ARIA attributes `unknown`.
 CORE_MARKUP_CALLS = frozenset(
     "wp_get_attachment_image get_the_post_thumbnail the_post_thumbnail get_avatar get_search_form wp_nav_menu "
     "paginate_links the_posts_pagination get_the_posts_pagination get_the_password_form wp_login_form comment_form "
@@ -54,9 +54,13 @@ CORE_SUPPORT_CALLS = {"WP_Duotone::render_duotone_support": ("filter", "duotone"
 # WooCommerce's markup: its template functions (`woocommerce_*`, `wc_get_template*`, `wc_print_*`, `wc_display_*`), any
 # `wc_*_html` / `wc_price`, a product's `get_*_html()` / `get_image()`, and a `do_action( 'woocommerce_*' )` hook. Its
 # data calls (`wc_get_product`, `WC()->cart`) print nothing.
-WOO_CALL = re.compile(r"^(?:woocommerce_\w+|wc_get_template\w*|wc_print_\w+|wc_display_\w+|wc_\w+_html|wc_price)$")
+WOO_CALL = re.compile(r"^(?:WC_\w+::\w+|woocommerce_\w+|wc_get_template\w*|wc_print_\w+|wc_display_\w+|wc_\w+_html|wc_price)$")
 WOO_METHOD = re.compile(r"->\s*(get_price_html|get_rating_html|get_image|get_stock_html|get_categories|get_tags)\s*\(")
 
+# Functions that report a developer or settings error (a notice, an error page), never block output: not followed.
+DIAGNOSTIC_FUNCS = re.compile(r"^(?:_doing_it_wrong|_deprecated_\w+|wp_trigger_error|add_settings_error|wp_die|_default_wp_die_handler)$")
+# A static method of a class outside the repo whose name says it prints or returns markup.
+OUTSIDE_MARKUP_METHOD = re.compile(r"^(?:output|render\w*|display\w*|\w*_html)$")
 _FUNC_DEF = re.compile(r"\bfunction\s+&?\s*([A-Za-z_]\w*)\s*\(")
 _CLASS_DEF = re.compile(r"\b(?:class|trait|interface|enum)\s+([A-Za-z_]\w*)")
 _CALL = re.compile(r"(?<![\w$>:\\])\\?(?:[A-Za-z_]\w*\\)*([A-Za-z_]\w*)\s*\(")
@@ -105,6 +109,7 @@ class RepoIndex:
                 if parts & {"vendor", "node_modules", "build", "tests", "scripts", "languages"}:
                     continue
                 self._index_file(f)
+        self._classes = {c for c, _ in self.methods}
         self.filters = self._find_filters()
         self.modules = self._module_registry()
 
@@ -147,7 +152,11 @@ class RepoIndex:
         return out
 
     def rel(self, f: Path) -> str:
-        return f.relative_to(self.repo).as_posix()
+        try:
+            return f.relative_to(self.repo).as_posix()
+        except ValueError:  # a pinned package read from another checkout's node_modules
+            parts = f.parts
+            return "/".join(parts[parts.index("node_modules"):]) if "node_modules" in parts else f.as_posix()
 
     # -- definitions ---------------------------------------------------------------------------------------------------
     def _index_file(self, f: Path) -> None:
@@ -196,6 +205,9 @@ class RepoIndex:
                 out.append(self.methods[(cls, m.group(2))])
             elif f"{cls}::{m.group(2)}" in CORE_SUPPORT_CALLS:
                 ext.setdefault(f"{cls}::{m.group(2)}", u.start + m.start())
+            elif cls not in self._classes and OUTSIDE_MARKUP_METHOD.match(m.group(2)):
+                # A class outside the repo printing its own output (WC_Shortcode_My_Account::output).
+                ext.setdefault(f"{cls}::{m.group(2)}", u.start + m.start())
         for m in _THIS_CALL.finditer(masked):
             if (u.cls, m.group(1)) in self.methods:
                 out.append(self.methods[(u.cls, m.group(1))])
@@ -204,7 +216,7 @@ class RepoIndex:
             before = masked[max(0, m.start() - 2):m.start()]
             if name in PHP_KEYWORDS or before.endswith("::") or before.endswith("->") or re.search(r"\bfunction\s*$", masked[:m.start()][-20:]):
                 continue
-            if name in self.functions:
+            if name in self.functions and not DIAGNOSTIC_FUNCS.match(name):
                 out.extend(self.functions[name])
             elif name in CORE_MARKUP_CALLS or WOO_CALL.match(name):
                 ext.setdefault(name, u.start + m.start())
@@ -407,10 +419,11 @@ def _paren_close(text: str, paren: int) -> int:
 _JS_IMPORT = re.compile(r"""(?:\bimport\s*(?:[\w$*{}\s,]*?\s*from\s*)?|\bimport\s*\(\s*|\bexport\s+(?:\*|\{[^}]*\})\s+from\s+)['"]([^'"]+)['"]""", re.S)
 
 
-def js_closure(entry: Path, modules: dict, src_dir: Path) -> tuple[list[Path], list[str]]:
-    """A view script and every repo file it imports (relative paths and `@sgs/*` modules), and the imports that lead
-    outside the repo (npm packages and vendor modules). `@wordpress/*` packages print no markup of their own and are
-    not listed."""
+def js_closure(entry: Path, modules: dict, src_dir: Path, npm=None) -> tuple[list[Path], list[str]]:
+    """A view script and every file it imports: relative paths, `@sgs/*` modules, and the npm packages `npm( spec )`
+    resolves to a pinned file (`identity_pinned.npm_file`, which returns (path, label) or (None, reason)); and the
+    imports that stay outside (an npm package that is absent or unpinned, a vendor module), each with its reason.
+    `@wordpress/*` packages print no markup of their own and are not listed."""
     files, outside, seen, stack = [], [], set(), [entry]
     while stack:
         f = stack.pop()
@@ -437,7 +450,11 @@ def js_closure(entry: Path, modules: dict, src_dir: Path) -> tuple[list[Path], l
                 else:
                     outside.append(spec)
             elif not spec.startswith("@wordpress/"):
-                outside.append(spec)
+                target, why = npm(spec) if npm is not None else (None, "outside the repo")
+                if target is not None:
+                    stack.append(target)
+                else:
+                    outside.append(f"{spec} ({why})")
     return files, sorted(set(outside))
 
 

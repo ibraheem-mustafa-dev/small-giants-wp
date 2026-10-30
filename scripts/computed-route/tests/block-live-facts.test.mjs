@@ -57,7 +57,7 @@ const code = {
 function readHero() {
 	const targets = targetsFor( [ 'sgs/hero' ], inventory );
 	const read = withDocument( page, () => readInstances( targets ) );
-	const acc = absorb( { blocks: {}, conflicts: {}, outside: {} }, read, { site: 'local-x', path: '/', width: 375 }, code, inventory );
+	const acc = absorb( { blocks: {}, outside: {} }, read, { site: 'local-x', path: '/', width: 375 }, code, inventory );
 	return liveFile( acc, { sites: { 'local-x': { pages: [ { path: '/' } ] } }, toRead: blocksToRead( code ), readOn: '2026-10-30' } );
 }
 
@@ -79,7 +79,8 @@ test( 'only blocks with an unknown markup value are read', () => {
 test( 'the instance holds its own core image markup and wrapper aria-label, with evidence', () => {
 	const f = readHero();
 	const tags = f.blocks[ 'sgs/hero' ].facts[ 'renders-tag' ];
-	assert.deepEqual( Object.keys( tags ), [ 'figure', 'img' ] );
+	// Every value seen is recorded, whatever its code state (`section` is a code yes, `table` a code no).
+	assert.deepEqual( Object.keys( tags ), [ 'figure', 'img', 'section', 'table' ] );
 	assert.match( tags.img.evidence[ 0 ], /^local-x \/ @375 \.wp-block-sgs-hero\[0\] figure\.sgs-hero__media > img$/ );
 	assert.deepEqual( Object.keys( f.blocks[ 'sgs/hero' ].facts[ 'renders-aria' ] ), [ 'aria-hidden', 'aria-label' ] );
 } );
@@ -97,11 +98,11 @@ test( 'MUST FAIL: a classless saved paragraph\'s tags are never the container\'s
 	assert.ok( ! tags.p && ! tags.strong );
 } );
 
-test( 'MUST FAIL: a code no seen live is a conflict, never a yes; a code yes adds nothing', () => {
+test( 'MUST FAIL: every value seen in the vocabulary is recorded whatever its code state; the file stores no conflicts', () => {
 	const f = readHero();
-	assert.ok( ! f.blocks[ 'sgs/hero' ].facts[ 'renders-tag' ].table );
-	assert.ok( ! f.blocks[ 'sgs/hero' ].facts[ 'renders-tag' ].section );
-	assert.deepEqual( Object.keys( f.conflicts[ 'sgs/hero' ] ), [ 'renders-tag=table' ] );
+	assert.ok( f.blocks[ 'sgs/hero' ].facts[ 'renders-tag' ].table, 'a code no seen live is recorded, for the seeder to count' );
+	assert.ok( f.blocks[ 'sgs/hero' ].facts[ 'renders-tag' ].section, 'a code yes seen live is recorded too' );
+	assert.equal( f.conflicts, undefined );
 } );
 
 test( 'a block found on no page is listed and carries no facts', () => {

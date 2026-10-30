@@ -1,0 +1,545 @@
+{
+	"_meta": {
+		"purpose": "WordPress core's markup output read from pinned source by identity_pinned.py --refresh-core; read by the identification facts (block_identity_facts.py). Core as shipped: third-party filters are not part of it.",
+		"wordpress": "7.1.3",
+		"files": {
+			"wp-includes/author-template.php": "66f27ee8be733b1c0fb94fc6293a9bc130fd02db55eb40612a052471bfd33e10",
+			"wp-includes/block-template-utils.php": "931a19ae4ae61cfbd07b34da9ebf6298706dfde28584886623c4578a02888211",
+			"wp-includes/block-template.php": "3705d95ebff4cbc98e1b0f84abe7d5b9e2ca157730bb4c957848718d80418330",
+			"wp-includes/category-template.php": "c090e5d145e6c935f7ab6a360f84b722e906efc45caca4d8b237f058bfb20a88",
+			"wp-includes/class-wp-block-supports.php": "f126a6cd4ea7758c2a5a9df918804751513ca66c211e898703fa6802b825fa88",
+			"wp-includes/comment-template.php": "a8266487acbc0b4940f3091b85c14d46fc27dc8077720785818113f1ae2d00c5",
+			"wp-includes/deprecated.php": "a0096570cb00b2f04b362b6a9af46851bd48a80f332392dfcf004de077205159",
+			"wp-includes/general-template.php": "3fa163fdd315e122ec721a66cfffbb64863d479d4edbabfac8f1dc4bdda1f845",
+			"wp-includes/kses.php": "ead6be7192295b9e7417c2146704c1935748f92b9ef4f6adca193a0e4118469d",
+			"wp-includes/link-template.php": "3e79919111e913b311343c498f30f0cb08b820ff80fd6005218d9e17a258867c",
+			"wp-includes/media.php": "5dcc6ca4f3e0edce9398387861c20e3fda8e0e61802352ac4ecf4ac8e6fcb260",
+			"wp-includes/nav-menu-template.php": "5396f89cd77916722631fe98ccd1591a861460011fa2f7a535b071f7b7ffdfb7",
+			"wp-includes/pluggable.php": "3a2482a65b50d62ebae75a728be98b78985d3a3f5a3e007cb2d0c1338bf05777",
+			"wp-includes/post-template.php": "9cb15c0f7fc9bb52bd6d0211e544f84dd3b05e150b2a046c7cbdb3350e1eec70",
+			"wp-includes/post-thumbnail-template.php": "5c9a3d21c1ed0989afae3ae75c8135b082e95dd6a67911e5ce64c8e1a8934266",
+			"wp-includes/shortcodes.php": "8b41aed4d1f2dd9a0b517bf85b941bacf4616ae148bff0a7cdf48286df6e7854",
+			"wp-includes/version.php": "7513dacf90ade66347561ffc2e79d27e74b6a3f05d869bd455144ed7cd378a04"
+		}
+	},
+	"functions": {
+		"block_template_part": {
+			"evidence": "WordPress 7.1.3 wp-includes/block-template-utils.php::block_template_part",
+			"tags": [
+				"a"
+			],
+			"roles": [],
+			"aria": [],
+			"unknown": "block_template_part prints content registered at run time"
+		},
+		"comment_form": {
+			"evidence": "WordPress 7.1.3 wp-includes/comment-template.php::comment_form",
+			"tags": [
+				"a",
+				"div",
+				"form",
+				"h3",
+				"input",
+				"label",
+				"p",
+				"small",
+				"span",
+				"textarea"
+			],
+			"roles": [],
+			"aria": [
+				"aria-describedby"
+			]
+		},
+		"do_shortcode": {
+			"evidence": "WordPress 7.1.3 wp-includes/shortcodes.php::do_shortcode",
+			"tags": [
+				"a"
+			],
+			"roles": [],
+			"aria": [],
+			"unknown": "do_shortcode prints content registered at run time"
+		},
+		"get_avatar": {
+			"evidence": "WordPress 7.1.3 wp-includes/pluggable.php::get_avatar",
+			"tags": [
+				"a",
+				"img"
+			],
+			"roles": [],
+			"aria": []
+		},
+		"get_block_wrapper_attributes": {
+			"evidence": "WordPress 7.1.3 wp-includes/class-wp-block-supports.php::get_block_wrapper_attributes",
+			"tags": [
+				"a"
+			],
+			"roles": [],
+			"aria": [
+				"aria-label"
+			]
+		},
+		"get_comment_reply_link": {
+			"evidence": "WordPress 7.1.3 wp-includes/comment-template.php::get_comment_reply_link",
+			"tags": [
+				"a"
+			],
+			"roles": [],
+			"aria": [
+				"aria-label"
+			]
+		},
+		"get_custom_logo": {
+			"evidence": "WordPress 7.1.3 wp-includes/general-template.php::get_custom_logo",
+			"tags": [
+				"a",
+				"img",
+				"span"
+			],
+			"roles": [],
+			"aria": [
+				"aria-current"
+			]
+		},
+		"get_image_tag": {
+			"evidence": "WordPress 7.1.3 wp-includes/media.php::get_image_tag",
+			"tags": [
+				"a",
+				"img"
+			],
+			"roles": [],
+			"aria": []
+		},
+		"get_search_form": {
+			"evidence": "WordPress 7.1.3 wp-includes/general-template.php::get_search_form",
+			"tags": [
+				"a",
+				"div",
+				"form",
+				"input",
+				"label",
+				"span"
+			],
+			"roles": [
+				"search"
+			],
+			"aria": [
+				"aria-label"
+			]
+		},
+		"get_the_author_link": {
+			"evidence": "WordPress 7.1.3 wp-includes/author-template.php::get_the_author_link",
+			"tags": [
+				"a"
+			],
+			"roles": [],
+			"aria": []
+		},
+		"get_the_block_template_html": {
+			"evidence": "WordPress 7.1.3 wp-includes/block-template.php::get_the_block_template_html",
+			"tags": [
+				"a",
+				"div",
+				"h1",
+				"iframe",
+				"img",
+				"p"
+			],
+			"roles": [],
+			"aria": [],
+			"unknown": "get_the_block_template_html prints content registered at run time"
+		},
+		"get_the_category_list": {
+			"evidence": "WordPress 7.1.3 wp-includes/category-template.php::get_the_category_list",
+			"tags": [
+				"a",
+				"li",
+				"ul"
+			],
+			"roles": [],
+			"aria": []
+		},
+		"get_the_password_form": {
+			"evidence": "WordPress 7.1.3 wp-includes/post-template.php::get_the_password_form",
+			"tags": [
+				"a",
+				"code",
+				"div",
+				"form",
+				"input",
+				"label",
+				"p",
+				"span"
+			],
+			"roles": [
+				"alert"
+			],
+			"aria": [
+				"aria-describedby"
+			]
+		},
+		"get_the_post_thumbnail": {
+			"evidence": "WordPress 7.1.3 wp-includes/post-thumbnail-template.php::get_the_post_thumbnail",
+			"tags": [
+				"a",
+				"img"
+			],
+			"roles": [],
+			"aria": []
+		},
+		"get_the_posts_pagination": {
+			"evidence": "WordPress 7.1.3 wp-includes/link-template.php::get_the_posts_pagination",
+			"tags": [
+				"a",
+				"div",
+				"h2",
+				"li",
+				"nav",
+				"span",
+				"ul"
+			],
+			"roles": [],
+			"aria": [
+				"aria-current",
+				"aria-label"
+			]
+		},
+		"get_the_privacy_policy_link": {
+			"evidence": "WordPress 7.1.3 wp-includes/link-template.php::get_the_privacy_policy_link",
+			"tags": [
+				"a"
+			],
+			"roles": [],
+			"aria": []
+		},
+		"get_the_tag_list": {
+			"evidence": "WordPress 7.1.3 wp-includes/category-template.php::get_the_tag_list",
+			"tags": [
+				"a"
+			],
+			"roles": [],
+			"aria": []
+		},
+		"get_the_term_list": {
+			"evidence": "WordPress 7.1.3 wp-includes/category-template.php::get_the_term_list",
+			"tags": [
+				"a"
+			],
+			"roles": [],
+			"aria": []
+		},
+		"paginate_links": {
+			"evidence": "WordPress 7.1.3 wp-includes/general-template.php::paginate_links",
+			"tags": [
+				"a",
+				"li",
+				"span",
+				"ul"
+			],
+			"roles": [],
+			"aria": [
+				"aria-current"
+			]
+		},
+		"the_custom_logo": {
+			"evidence": "WordPress 7.1.3 wp-includes/general-template.php::the_custom_logo",
+			"tags": [
+				"a",
+				"img",
+				"span"
+			],
+			"roles": [],
+			"aria": [
+				"aria-current"
+			]
+		},
+		"the_post_thumbnail": {
+			"evidence": "WordPress 7.1.3 wp-includes/post-thumbnail-template.php::the_post_thumbnail",
+			"tags": [
+				"a",
+				"img"
+			],
+			"roles": [],
+			"aria": []
+		},
+		"the_posts_pagination": {
+			"evidence": "WordPress 7.1.3 wp-includes/link-template.php::the_posts_pagination",
+			"tags": [
+				"a",
+				"div",
+				"h2",
+				"li",
+				"nav",
+				"span",
+				"ul"
+			],
+			"roles": [],
+			"aria": [
+				"aria-current",
+				"aria-label"
+			]
+		},
+		"wp_audio_shortcode": {
+			"evidence": "WordPress 7.1.3 wp-includes/media.php::wp_audio_shortcode",
+			"tags": [
+				"a",
+				"audio",
+				"code",
+				"source"
+			],
+			"roles": [],
+			"aria": []
+		},
+		"wp_dropdown_categories": {
+			"evidence": "WordPress 7.1.3 wp-includes/category-template.php::wp_dropdown_categories",
+			"tags": [
+				"a",
+				"option",
+				"select"
+			],
+			"roles": [],
+			"aria": [
+				"aria-describedby"
+			]
+		},
+		"wp_dropdown_pages": {
+			"evidence": "WordPress 7.1.3 wp-includes/post-template.php::wp_dropdown_pages",
+			"tags": [
+				"a",
+				"option",
+				"select"
+			],
+			"roles": [],
+			"aria": []
+		},
+		"wp_get_archives": {
+			"evidence": "WordPress 7.1.3 wp-includes/general-template.php::wp_get_archives",
+			"tags": [
+				"a",
+				"li",
+				"link",
+				"option"
+			],
+			"roles": [],
+			"aria": [
+				"aria-current"
+			]
+		},
+		"wp_get_attachment_image": {
+			"evidence": "WordPress 7.1.3 wp-includes/media.php::wp_get_attachment_image",
+			"tags": [
+				"a",
+				"img"
+			],
+			"roles": [],
+			"aria": []
+		},
+		"wp_get_attachment_link": {
+			"evidence": "WordPress 7.1.3 wp-includes/post-template.php::wp_get_attachment_link",
+			"tags": [
+				"a",
+				"img"
+			],
+			"roles": [],
+			"aria": []
+		},
+		"wp_get_loading_attr_default": {
+			"evidence": "WordPress 7.1.3 wp-includes/deprecated.php::wp_get_loading_attr_default",
+			"tags": [
+				"a"
+			],
+			"roles": [],
+			"aria": []
+		},
+		"wp_list_categories": {
+			"evidence": "WordPress 7.1.3 wp-includes/category-template.php::wp_list_categories",
+			"tags": [
+				"a",
+				"br",
+				"li",
+				"ul"
+			],
+			"roles": [],
+			"aria": []
+		},
+		"wp_list_pages": {
+			"evidence": "WordPress 7.1.3 wp-includes/post-template.php::wp_list_pages",
+			"tags": [
+				"a",
+				"li",
+				"ul"
+			],
+			"roles": [],
+			"aria": []
+		},
+		"wp_login_form": {
+			"evidence": "WordPress 7.1.3 wp-includes/general-template.php::wp_login_form",
+			"tags": [
+				"a",
+				"form",
+				"input",
+				"label",
+				"p"
+			],
+			"roles": [],
+			"aria": []
+		},
+		"wp_loginout": {
+			"evidence": "WordPress 7.1.3 wp-includes/general-template.php::wp_loginout",
+			"tags": [
+				"a"
+			],
+			"roles": [],
+			"aria": []
+		},
+		"wp_nav_menu": {
+			"evidence": "WordPress 7.1.3 wp-includes/nav-menu-template.php::wp_nav_menu",
+			"tags": [
+				"a",
+				"ul"
+			],
+			"roles": [],
+			"aria": [
+				"aria-label"
+			],
+			"unknown": "renders-tag from $args->container . $id . $class . $aria_label at wp-includes/nav-menu-template.php::wp_nav_menu"
+		},
+		"wp_video_shortcode": {
+			"evidence": "WordPress 7.1.3 wp-includes/media.php::wp_video_shortcode",
+			"tags": [
+				"a",
+				"code",
+				"div",
+				"source",
+				"video"
+			],
+			"roles": [],
+			"aria": []
+		}
+	},
+	"kses": {
+		"post": {
+			"tags": [
+				"a",
+				"abbr",
+				"address",
+				"area",
+				"article",
+				"aside",
+				"audio",
+				"b",
+				"bdo",
+				"blockquote",
+				"br",
+				"button",
+				"caption",
+				"cite",
+				"code",
+				"col",
+				"colgroup",
+				"data",
+				"dd",
+				"del",
+				"details",
+				"dfn",
+				"dialog",
+				"div",
+				"dl",
+				"dt",
+				"em",
+				"fieldset",
+				"figcaption",
+				"figure",
+				"footer",
+				"h1",
+				"h2",
+				"h3",
+				"h4",
+				"h5",
+				"h6",
+				"header",
+				"hgroup",
+				"hr",
+				"i",
+				"img",
+				"ins",
+				"kbd",
+				"label",
+				"legend",
+				"li",
+				"main",
+				"map",
+				"mark",
+				"menu",
+				"meter",
+				"nav",
+				"object",
+				"ol",
+				"p",
+				"pre",
+				"progress",
+				"q",
+				"rp",
+				"rt",
+				"ruby",
+				"s",
+				"samp",
+				"search",
+				"section",
+				"small",
+				"span",
+				"strong",
+				"sub",
+				"summary",
+				"sup",
+				"table",
+				"tbody",
+				"td",
+				"textarea",
+				"tfoot",
+				"th",
+				"thead",
+				"time",
+				"title",
+				"tr",
+				"track",
+				"u",
+				"ul",
+				"var",
+				"video",
+				"wbr"
+			],
+			"aria": [
+				"aria-controls",
+				"aria-current",
+				"aria-describedby",
+				"aria-details",
+				"aria-expanded",
+				"aria-haspopup",
+				"aria-hidden",
+				"aria-label",
+				"aria-labelledby",
+				"aria-live"
+			],
+			"role": true
+		},
+		"data": {
+			"tags": [
+				"a",
+				"abbr",
+				"b",
+				"blockquote",
+				"cite",
+				"code",
+				"del",
+				"em",
+				"i",
+				"q",
+				"s",
+				"strong"
+			],
+			"aria": [],
+			"role": false
+		}
+	}
+}
