@@ -160,7 +160,7 @@ export function makeContent( ctx ) {
 		const quoteBody = 'blockquote' === e.tag;
 		const cite = quoteBody ? citeOf( e ) : null;
 		// A text element holding inline parts writes them as the markup the receiving setting holds (lib/inline-text.mjs).
-		const rich = textAttr && t && ! quoteBody ? inlineText( { m, e, block, attr: textAttr, codeRepo: facts.codeRepo, siteLink } ) : null;
+		const rich = textAttr && t && ! quoteBody ? inlineText( { m, e, block, attr: textAttr, codeRepo: facts.codeRepo, siteLink, clickable: !! linkAttr } ) : null;
 		rich && handover.push( ...rich.handover );
 		const plain = m.textWithBreaks( e ).includes( '<br>' ) ? m.textWithBreaks( e ) : t;
 		textAttr && t && ! quoteBody && ( a[ textAttr ] = rich ? rich.value : plain );
@@ -176,7 +176,10 @@ export function makeContent( ctx ) {
 		}
 		const levelAttr = textAttr ? levelSetting( facts, block ) : null;
 		levelAttr && enumOf( block, levelAttr ).includes( e.tag ) && ( a[ levelAttr ] = e.tag );
-		textAttr && cite && ( a[ textAttr ] = m.words( cite ) );
+		// The attribution keeps the cite's inline markup (a link to the source) as the setting holds it.
+		const citeRich = textAttr && cite ? inlineText( { m, e: cite, block, attr: textAttr, codeRepo: facts.codeRepo, siteLink } ) : null;
+		citeRich && handover.push( ...citeRich.handover );
+		textAttr && cite && ( a[ textAttr ] = citeRich ? citeRich.value : m.words( cite ) );
 		top.linkSource && ( a.linkSource = top.linkSource );
 		linkAttr && linkSettings( block, e, top, linkAttr, a, handover );
 		return { a: { ...a, ...Object.fromEntries( Object.entries( top.attributes || {} ) ) }, handover };

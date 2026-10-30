@@ -33,6 +33,7 @@ import { loadReasons, refusalsFor } from './lib/state-map-io.mjs';
 import { walkerLintFault } from './lib/walker-lint.mjs';
 import { hopCanvasSettable } from './lib/cite-emission.mjs';
 import { solveLoopBody } from './lib/solve-loop-body.mjs';
+import { solveInline } from './lib/inline-writer.mjs';
 import { solveLoop } from './lib/solve-loop.mjs';
 import { journalFile, readJournal, resumeFrom, writeJournal } from './lib/solve-journal.mjs';
 
@@ -241,7 +242,7 @@ export function unpaintedBorder( report, g ) {
 	return { gap: 'not-painted', detail: `the draft has no ${ m[ 1 ] } border (${ measured.map( ( w ) => `${ widths[ w ] } ${ styles[ w ] || '' }`.trim() + '@' + w ).join( ', ' ) }): its ${ g.prop } is currentColor and paints nothing` };
 }
 
-export function writeRound( report, tree, { db, snapshot, round, log, blocked = new Map(), stateMap, calFor, refs = detectReferences(), canvas = false, ancestorHop = resolveViaAncestor, ownerOf = () => null, refused = [], loopBody = null } ) {
+export function writeRound( report, tree, { db, snapshot, round, log, blocked = new Map(), stateMap, calFor, refs = detectReferences(), canvas = false, ancestorHop = resolveViaAncestor, ownerOf = () => null, refused = [], loopBody = null, inlineOf = () => null } ) {
 	const { groups, stateConflict, content } = writableGroups( report, stateMap, refused );
 	const writes = [];
 	const gaps = {};
@@ -374,7 +375,8 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 	}
 	// Content rows: the draft's words, an element's presence, a link. Each resolves through the block's calibrated `text`,
 	// `presence` or `link` entry (lib/solve-rows.mjs::resolveContent); with none, the row is a gap, or a handover where
-	// ownerOf( node ) names the outside-the-tree owner of the block's content. Never a style value (R-47-4).
+	// ownerOf( node ) names the outside-the-tree owner of the block's content. Never a style value (R-47-4). inlineOf( node,
+	// ref ) gives the draft element's words as the markup a setting holds (lib/inline-writer.mjs), so a text repair keeps them.
 	for ( const g of content ) {
 		const node = nodeByRef( tree, g.ref );
 		if ( blocked.has( g.key ) ) {
@@ -390,7 +392,7 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 			gaps[ g.key ] = { gap: 'linked', detail: `${ node.name } renders ${ ref.key } "${ ref.value }" from its own post: solve that post's surface` };
 			continue;
 		}
-		const res = resolveContent( g, { calibration: calFor( node.name ), report } );
+		const res = resolveContent( g, { calibration: calFor( node.name ), report, inline: inlineOf( node, g.ref ) } );
 		if ( res.gap ) {
 			const owner = 'no-setting' === res.gap ? ownerOf( node, g ) : null;
 			gaps[ g.key ] = HANDOVER_OWNERS.includes( owner ) ? { gap: 'handover', owner, detail: `${ node.name } holds no setting for this ${ g.type }; its content is not in the tree` } : res;
@@ -401,7 +403,7 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 				continue;
 			}
 			const { before, after } = setAttr( node, w );
-			writes.push( { round, group: g.key, ref: g.ref, block: node.name, path: g.path, prop: g.rows[ 0 ].key, kind: g.type, state: null, attr: w.attr, before, after, rows: g.rows.map( ( x ) => ( { width: x.width, draft: x.draft, live: x.live } ) ) } );
+			writes.push( { round, group: g.key, ref: g.ref, block: node.name, path: g.path, prop: g.rows[ 0 ].key, kind: g.type, state: null, attr: w.attr, before, after, rows: g.rows.map( ( x ) => ( { width: x.width, draft: x.draft, live: x.live } ) ), ...( res.handover?.length ? { handover: res.handover } : {} ) } );
 		}
 	}
 	return { writes, gaps, held: holds };
@@ -500,7 +502,10 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	// FR-48-14: the fact record and origin map the ancestor hop's loop-body check reads (lib/solve-loop-body.mjs).
 	const { loopBody, note: loopNote } = solveLoopBody( { repo: REPO, client, surface, draftIndex: s.draftIndex } );
 	console.log( `solve ${ surface }: ${ loopNote }` );
-	const ctx = { db: openDb(), snapshot: loadSnapshot( path.join( REPO, 'sites', client, 'theme-snapshot.json' ) ), log: [], calFor, loopBody };
+	// A text repair writes the draft element's inline markup (bold, links) as the setting holds it (lib/inline-writer.mjs).
+	const { inlineOf, note: inlineNote } = solveInline( { repo: REPO, client, surface, draftIndex: s.draftIndex } );
+	console.log( `solve ${ surface }: ${ inlineNote }` );
+	const ctx = { db: openDb(), snapshot: loadSnapshot( path.join( REPO, 'sites', client, 'theme-snapshot.json' ) ), log: [], calFor, loopBody, inlineOf };
 	const tree = readTree( treeFile );
 	const added = addRefs( tree, surface );
 	writeTree( treeFile, tree );

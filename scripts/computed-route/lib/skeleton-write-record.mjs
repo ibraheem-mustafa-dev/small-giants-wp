@@ -5,9 +5,10 @@
 // The factory takes the writer's shared context (`ctx`: m, facts, overrides, rows, rowOf, base, w); the functions it
 // returns reach the other writer modules through `ctx.w` when they are called.
 import { isSiteInfoValue } from './skeleton-rules.mjs';
+import { inlineText } from './inline-text.mjs';
 
 export function makeRecorder( ctx ) {
-	const { m, facts, overrides, rows, rowOf, base, w, widthAlternatives, variantsOf } = ctx;
+	const { m, facts, overrides, rows, rowOf, base, w, widthAlternatives, variantsOf, siteLink } = ctx;
 	const record = ( e, r, extra = {} ) => {
 		const top = r.candidates?.[ 0 ];
 		const row = {
@@ -58,9 +59,12 @@ export function makeRecorder( ctx ) {
 		if ( textAttr && node.attributes?.[ textAttr ] ) {
 			// An attribute the block's verdict set because its words are a Site Info value (the label reading the phone
 			// number) is kept only when the variation's own words are that value too.
-			const own = { ...node.attributes, [ textAttr ]: m.words( k ) };
+			// The variant's words keep their inline markup as the setting holds it (lib/inline-text.mjs).
+			const rich = inlineText( { m, e: k, block: top.block, attr: textAttr, codeRepo: facts.codeRepo, siteLink } );
+			const own = { ...node.attributes, [ textAttr ]: rich ? rich.value : m.words( k ) };
 			Object.entries( top.wordBound || {} ).filter( ( [ , kind ] ) => ! isSiteInfoValue( m.words( k ), kind ) ).forEach( ( [ attr ] ) => delete own[ attr ] );
 			made = base( k, top.block, own );
+			rich?.handover.length && ( made.handover = [ ...( made.handover || [] ), ...rich.handover ] );
 			// Only the words vary: the variant is the same drawn element (the pill's link, its icon, its look), so Fill
 			// measures it where it measures the default; `variantKey` names the words element, whose widths gate it.
 			Object.assign( made, { draftRef: node.draftRef, draftFingerprint: node.draftFingerprint, variantKey: k.key }, node.draftSlots ? { draftSlots: node.draftSlots } : {} );

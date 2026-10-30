@@ -3,17 +3,24 @@
 //   - a loop: an `sc-for` inside the element. Its copies are read from the rendered surface inventory (the skeleton's
 //     `<surface>.inventory.json`, the draft rendered on this surface's route, so a loop nested in another loop reads this
 //     page's copies only); each copy's fields are the loop variable's paths its elements print (the fact record's template
-//     holes), the value being the element's rendered words.
+//     holes), the value being the element's rendered words (its inline parts' words in their place, lib/skeleton-model.mjs::words).
+//     Each copy also names the element that prints each text field (`elements`, parallel to `items`), so the writer rebuilds
+//     its inline markup as the receiving setting holds it (lib/inline-text.mjs);
 //   - a current-item display: the element prints `x.field` where `x` is no loop variable and resolves (through the draft's
 //     logic, lib/intake-ast-eval.mjs) to an element of an array picked by an index the code moves (a testimonial slider
 //     showing `items[i]`). The draft renders one copy, so every item is read from the logic: each element of that array,
 //     each field read as one static string.
 // A field is named by its path after the loop variable (`ms.year` gives `year`); a field held by an <img> or an image
 // placeholder (`id`, `src` or `data-src`) is an image field. A hole in an element's style, an event, an input's placeholder text or
-// a list binding is no field (an image placeholder's `placeholder` is its alt, a text field). Returns { items: [{ field: value }], fields: [{ name, image }], source, reason }.
+// a list binding is no field (an image placeholder's `placeholder` is its alt, a text field). Returns { items: [{ field: value }],
+// fields: [{ name, image }], source, reason, elements? ([{ field: inventory key }], a loop's only: a current item's values are
+// the logic's static strings, which hold no markup) }.
 import { templateKeyOf } from './fact-key.mjs';
 import { classMethod, isFn } from './intake-ast.mjs';
 import { ref, resolveRefs, propRefs, returnsOf, oneString } from './intake-ast-eval.mjs';
+import { inventoryModel } from './skeleton-model.mjs';
+import { elementFacts } from './element-facts.mjs';
+import { recordView } from './skeleton-record.mjs';
 
 // The template holes that print an item's content: its words, its address, and an image's source.
 const CONTENT_WHERE = /^(?:text|attr:(?:href|src|data-src|alt|id|placeholder))$/;
@@ -92,8 +99,12 @@ export function loopItems( { inventory, facts, rootKey, rootComponent = null } )
 	// A copy is a loop member whose parent is outside the loop; its fields are read from the copy and its descendants.
 	const copies = els.filter( ( e ) => inLoop( e ) && ! inLoop( byKey.get( e.parentKey ) ) );
 	const fields = new Map();
+	const m = inventoryModel( inventory, elementFacts( recordView( facts ?? null, { rootComponent } ) ) );
+	const elements = [];
 	const items = copies.map( ( copy ) => {
 		const item = {};
+		const from = {};
+		elements.push( from );
 		const within = els.filter( ( e ) => {
 			for ( let x = e; x; x = byKey.get( x.parentKey ) ) {
 				if ( x === copy ) {
@@ -113,7 +124,8 @@ export function loopItems( { inventory, facts, rootKey, rootComponent = null } )
 					item[ f.name ] ??= null;
 				} else if ( f.text ) {
 					// An element printing two fields shows them run together: neither value is the element's words.
-					item[ f.name ] = 1 === texts.length ? String( e.words ?? '' ).replace( /\s+/g, ' ' ).trim() : null;
+					item[ f.name ] = 1 === texts.length ? m.words( e ) : null;
+					1 === texts.length && ( from[ f.name ] = e.key );
 				} else {
 					item[ f.name ] = e.attrs?.[ f.attr ] ?? null;
 				}
@@ -122,7 +134,7 @@ export function loopItems( { inventory, facts, rootKey, rootComponent = null } )
 		return item;
 	} );
 	// A list block holds one list: every other loop the element draws is named, never dropped without a word (S7).
-	return { items, fields: [ ...fields.values() ], source: `loop ${ loop.as } (sc-for ${ loop.tpl }), ${ items.length } rendered copies`, reason: null, others: ranked.slice( 1 ).map( ( l ) => ( { tpl: l.tpl, as: l.as, list: l.list ?? null } ) ) };
+	return { items, elements, fields: [ ...fields.values() ], source: `loop ${ loop.as } (sc-for ${ loop.tpl }), ${ items.length } rendered copies`, reason: null, others: ranked.slice( 1 ).map( ( l ) => ( { tpl: l.tpl, as: l.as, list: l.list ?? null } ) ) };
 }
 
 // What the draft's renderVals returns (the template's root data), for a parsed logic index.

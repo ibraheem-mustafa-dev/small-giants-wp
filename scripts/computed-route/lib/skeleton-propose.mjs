@@ -209,7 +209,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		carryProblems.push( ...missing );
 		Object.assign( a, carry, null != collapse?.value ? { [ collapseAttr ]: collapse.value } : {}, top.attributes || {}, carry );
 		const clash = Object.keys( carry ).filter( ( k ) => undefined !== top.attributes?.[ k ] && String( top.attributes[ k ] ) !== String( carry[ k ] ) );
-		r.handover && handover.push( r.handover );
+		r.handover && handover.push( ...[].concat( r.handover ) );
 		const node = base( e, block, a );
 		'modalOpener' === r.rule && ctx.openedModals.set( r.opens.row.slug, r.opens );
 		// A linked form reads nothing from the draft: the saved form's own surface holds its look (Spec 48 §2). Nor does a

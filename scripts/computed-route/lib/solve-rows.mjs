@@ -1,6 +1,7 @@
 // Solve's reading of a walker report (FR-47-3): which open rows it may write, the draft value at every width for each
 // (node, element, property), and the classification of the rows that survive the last round.
 import { isContentRow, HANDOVER_OWNERS } from './issue-classes.mjs';
+import { plainOf } from './inline-text.mjs';
 
 // The property kinds Solve writes through the property-to-setting resolver (box rows are split off and never written).
 // Content rows (text, presence, link coverage) are not here: they resolve through calibration's content entries
@@ -298,8 +299,12 @@ const at1920 = ( w ) => ( 1920 === w ? 1440 : w );
 // The setting that holds a content group, from the block's calibrated `text`, `presence` or `link` entries: { writes } in
 // the resolver's write shape, or { gap, detail }. ctx: { calibration, report }. Gaps: no-setting (no calibrated entry for
 // that element), ambiguous, unreached (the setting did not reach the element at a measured width), shape (the read cannot
-// be written as it stands), no-target (a link to add whose target the walker did not record).
-export function resolveContent( g, { calibration, report = { runs: [] } } ) {
+// be written as it stands), no-target (a link to add whose target the walker did not record). inline( attr, path ): the
+// draft element's words as the markup that setting holds (lib/inline-text.mjs::inlineText, { value, handover }), or null
+// when the element holds no inline parts or is not known. A text group writes that markup where its words are the draft's
+// words, so a bold or a link the skeleton wrote survives the repair; any other text group writes the words, escaped. The
+// markup's handover rows come back as `handover`.
+export function resolveContent( g, { calibration, report = { runs: [] }, inline = null } ) {
 	const widths = [ ...new Set( g.rows.map( ( x ) => x.width ) ) ];
 	const one = ( hits, what ) => ( hits.length ? ( hits.length > 1 ? { gap: 'ambiguous', detail: `${ hits.map( ( h ) => h[ 0 ] ).join( ', ' ) } all hold ${ what } at "${ g.path }"` } : null ) : { gap: 'no-setting', detail: `no calibrated ${ g.type } setting for "${ g.path }"` } );
 	const row = g.rows[ 0 ];
@@ -318,6 +323,10 @@ export function resolveContent( g, { calibration, report = { runs: [] } } ) {
 		const styles = report.runs.map( ( run ) => run.pairs?.[ g.pair ]?.draft?.styles?.[ 'text-transform' ] ).filter( Boolean );
 		if ( words.length > 1 || ! words[ 0 ] || words[ 0 ].length >= TEXT_READ_CAP || styles.some( ( s ) => 'none' !== s ) ) {
 			return { gap: 'shape', detail: words.length > 1 ? 'the draft reads different words at different widths' : ( ! words[ 0 ] ? 'the draft reads no words' : ( words[ 0 ].length >= TEXT_READ_CAP ? `the walker caps a text read at ${ TEXT_READ_CAP } characters, so this one may be cut short` : 'the draft text is read through a text-transform, so its source case is unknown' ) ) };
+		}
+		const rich = inline ? inline( attr, e.path ) : null;
+		if ( rich && plainOf( rich.value ) === words[ 0 ] ) {
+			return { writes: [ { attr, value: rich.value, merge: 'replace' } ], handover: rich.handover };
 		}
 		return { writes: [ { attr, value: escapeHtml( words[ 0 ] ), merge: 'replace' } ] };
 	}

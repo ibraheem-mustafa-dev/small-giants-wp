@@ -146,7 +146,7 @@ export function makeUnits( ctx ) {
 			}
 			out.handover && handover.push( out.handover );
 			// An item holding inline parts writes them as the markup the item's text holds (lib/inline-text.mjs).
-			const rich = inlineText( { m, e: l, block: slug, attr: `items.${ li.text }`, codeRepo: facts.codeRepo, siteLink } );
+			const rich = inlineText( { m, e: l, block: slug, attr: `items.${ li.text }`, codeRepo: facts.codeRepo, siteLink, clickable: !! li.url } );
 			rich && handover.push( ...rich.handover );
 			return { [ li.text ]: rich ? rich.value : m.words( l ) || String( l.allText ?? '' ).replace( /\s+/g, ' ' ).trim(), ...( null !== out.value ? { [ li.url ]: out.value } : {} ) };
 		} );

@@ -68,6 +68,10 @@ function fillContent( st, rec, ref, cal ) {
 		st.out.notes.push( ...r.notes.map( ( n ) => `${ ref } ${ rec.name }: ${ n }` ) );
 		st.out.images.push( ...( r.checks || [] ).map( ( c ) => ( { node: ref, index: rec.index, block: rec.name, slot: '', draftId: null, ...c } ) ) );
 		local.push( ...r.unmapped.map( ( u ) => ( { node: ref, block: rec.name, ...u } ) ) );
+		// What a text setting cannot hold of the draft's inline markup (lib/inline-text.mjs) is the handover row it names.
+		for ( const h of r.textHandover || [] ) {
+			st.out.handover.push( handoverEntry( { owner: h.owner, kind: h.kind, node: ref, block: rec.name, slot: h.slot, evidence: { key: h.attr, draft: h.words, width: at }, reason: h.detail } ) );
+		}
 		// A link setting bound to Site Info: the draft address stays in the setting as the fallback, and Site Info is handed it.
 		for ( const h of r.handover || [] ) {
 			st.out.handover.push( handoverEntry( { owner: 'site-info', kind: 'link', node: ref, block: rec.name, slot: h.slot, evidence: { key: h.attr, draft: h.address, width: at, siteInfoKey: h.siteInfoKey }, reason: `${ h.attr } is bound to Site Info "${ h.siteInfoKey }"; the draft links to ${ h.address }, kept as the fallback. Fill Site Info "${ h.siteInfoKey }" from it` } ) );
@@ -79,7 +83,12 @@ function fillContent( st, rec, ref, cal ) {
 		st.out.notes.push( `${ rec.name }: calibration has no ${ absent.join( ', ' ) } key, so those were not judged for this block (recalibrate it to read them)` );
 	}
 	take( presenceDecisions( { calibration: cal, schema: blockSchema( rec.name ), attributes: node.attributes || {}, evidence } ) );
-	take( textDecisions( { calibration: cal, attributes: node.attributes || {}, slots: words, leaf: 0 === rec.children.length } ) );
+	// The draft element of a slot written as the markup its setting holds (st.inline: lib/inline-writer.mjs::inlineByKey).
+	const richAt = ( p, attr ) => {
+		const tpl = rec.targets.find( ( t ) => LOOSE( t.slot ) === LOOSE( p ) )?.finder?.tpl;
+		return tpl && st.inline ? st.inline( tpl, rec.name, attr ) : null;
+	};
+	take( textDecisions( { calibration: cal, attributes: node.attributes || {}, slots: words, leaf: 0 === rec.children.length, rich: richAt } ) );
 	take( linkDecisions( { calibration: cal, attributes: node.attributes || {}, slots: hrefs, origin: st.origin, pages: st.pages } ) );
 	take( linkAttrDecisions( { calibration: cal, schema: blockSchema( rec.name ) || {}, anchor: blockSupportsAnchor( rec.name ), attributes: node.attributes || {}, slots: linkFacts, imageAlts: imageSlots( st.db, rec.name, blockSchema( rec.name ) ).map( ( s ) => s.alt ), pictureSlot: pictureSlotOf( atDesktop ) } ) );
 	// The fact record speaks for the element the image is drawn by: the target whose slot is the image's own (a nested image names its slot).

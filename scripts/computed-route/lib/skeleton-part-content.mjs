@@ -4,11 +4,12 @@
 //   - the element prints the field the route writes into the setting: a text hole of the fact record (`{{ r.name }}`), the
 //     field matched to the setting by the route's one field matcher (lib/fill-list-content.mjs::matchFields, the matcher Fill
 //     writes the item's settings with), keeping to the setting of the field's own name or of a role the setting holds first;
-//   - the element's words are the value the skeleton wrote into the setting (after folding white space, curly quotes and
-//     dashes).
+//   - the element's words are the value the skeleton wrote into the setting (read as words, its inline markup dropped:
+//     lib/inline-text.mjs::plainOf, after folding white space, curly quotes and dashes).
 // A setting two elements could supply stays unpaired with its reason; parts whose settings all hold words (a quote, a name, a
 // role) are told apart this way where kinds and order cannot.
 import { matchFields, fieldRoles } from './fill-list-content.mjs';
+import { plainOf } from './inline-text.mjs';
 
 // The words of a value or an element, folded: white space collapsed, curly quotes straight, dashes one hyphen.
 export const fold = ( s ) => String( s ?? '' ).replace( /[‘’‚‛]/g, '\'' ).replace( /[“”„‟]/g, '"' ).replace( /[‐-―−]/g, '-' ).replace( /\s+/g, ' ' ).trim();
@@ -34,7 +35,7 @@ export function contentPairs( { text = {}, attributes = {}, els = [], fieldsOf =
 		supplier[ attr ] = byField.get( field );
 	}
 	for ( const [ attr, path ] of Object.entries( paths ) ) {
-		const value = fold( attributes[ attr ] );
+		const value = fold( plainOf( attributes[ attr ] ) );
 		const found = supplier[ attr ] ?? ( 'string' === typeof attributes[ attr ] && value ? els.filter( ( e ) => fold( words( e ) ) === value ) : [] );
 		if ( 1 === found.length ) {
 			out.pairs[ path ] = found[ 0 ];

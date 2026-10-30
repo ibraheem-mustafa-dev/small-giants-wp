@@ -53,6 +53,8 @@ import { presetWrites, dropPresetMotion } from './lib/fill-preset.mjs';
 import { formWrites, formSources } from './lib/fill-form.mjs';
 import { draftFolderOf } from './lib/fill-form-success.mjs';
 import { listContentWrites, logicReader, applyChildren } from './lib/fill-list-content.mjs';
+import { inlineByKey } from './lib/inline-writer.mjs';
+import { draftLinksFor } from './lib/draft-link.mjs';
 import { loadShopParts, shopPartWrites } from './lib/fill-shop-parts.mjs';
 import { shopPartTargets } from './lib/fill-shop-targets.mjs';
 import { blockSchema } from './lib/resolve.mjs';
@@ -189,6 +191,8 @@ export async function fillSurface( o ) {
 			// FR-48-39: the uploaded images of the surface's site (a null map when media-upload has not run).
 			media: { map: readMediaMap( path.join( buildDir, 'media-map.json' ) ), site: entry.site },
 			snapshot, rawSnapshot, facts, rootComponent: intakeParts.rootComponent,
+			// A draft text element's inline markup (bold, links) as each setting holds it (lib/inline-writer.mjs).
+			inline: inlineByKey( { inventory, record: facts, rootComponent: intakeParts.rootComponent, draftLinks: draftLinksFor( { repo, client: o.client } ) } ),
 			fixtures,
 			ledger: loadLedger( ledgerFile ),
 			ledgerStates: Object.entries( entry.states || {} ).filter( ( [ , v ] ) => null === v ).map( ( [ k ] ) => k ),
@@ -260,7 +264,7 @@ export async function fillSurface( o ) {
 		result.notes.push( ...forms.notes );
 		// FR-48-82: a block holding a list (an array setting, or one kind of child block) takes the items the draft draws,
 		// read from the surface's skeleton inventory and the draft's logic (lib/fill-list-content.mjs, `idxFor` above).
-		const listed = listContentWrites( { nodes, flat, refOf, facts, inventory, idxFor, db, schemaOf: blockSchema, media: { map: readMediaMap( path.join( buildDir, 'media-map.json' ) ), site: entry.site, origin: reads.origin }, pages: fs.existsSync( path.join( buildDir, 'page-map.json' ) ) ? JSON.parse( fs.readFileSync( path.join( buildDir, 'page-map.json' ), 'utf8' ) ) : null, rootComponent: intakeParts.rootComponent, picturesOf: ( id ) => [ 1440, 768, 375 ].map( ( w ) => reads.widths[ w ]?.[ id ]?.pictures ).find( Boolean ) ?? null } );
+		const listed = listContentWrites( { nodes, flat, refOf, facts, inventory, idxFor, db, schemaOf: blockSchema, media: { map: readMediaMap( path.join( buildDir, 'media-map.json' ) ), site: entry.site, origin: reads.origin }, pages: fs.existsSync( path.join( buildDir, 'page-map.json' ) ) ? JSON.parse( fs.readFileSync( path.join( buildDir, 'page-map.json' ), 'utf8' ) ) : null, rootComponent: intakeParts.rootComponent, picturesOf: ( id ) => [ 1440, 768, 375 ].map( ( w ) => reads.widths[ w ]?.[ id ]?.pictures ).find( Boolean ) ?? null, inline: fillOptions.inline } );
 		result.writes.push( ...listed.writes );
 		result.unmapped.push( ...listed.unmapped );
 		result.handover.push( ...listed.handover );
