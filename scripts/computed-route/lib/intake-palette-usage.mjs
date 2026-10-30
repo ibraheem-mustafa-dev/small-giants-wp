@@ -106,9 +106,13 @@ export function usageRoles( groups, uses ) {
 	const divider = ( g ) => g !== surface && opaque( g.hex ) && chroma( g.hex ) <= SATURATED_C;
 	const border = give( 'border', best( lines, divider ), ( n ) => `the divider line colour that draws the most (${ n } px; a link's underline and a line in the page ground's colour are not dividers)` );
 	border && give( 'border-light', best( lines, ( g ) => g !== border && divider( g ) && lightness( g.hex ) > lightness( border.hex ) ), ( n ) => `the next divider line colour by length, lighter than the border (${ n } px)` );
-	// A colour painted as the ground of a link that opens a registry brand's channel (WhatsApp, Facebook...) is that brand's
-	// colour, which the brand's block paints itself: it takes no slot, and it is never offered as primary, accent or section.
-	const channel = new Set( [ ...tally( ( u ) => !! u.channel && isBackground( u.property ) ).keys() ].filter( ( g ) => opaque( g.hex ) && chroma( g.hex ) > SATURATED_C ) );
+	// A colour painted only as the ground of links that open a registry brand's channel (WhatsApp, Facebook...) is that
+	// brand's colour, which the brand's block paints itself: it takes no slot, and it is never offered as primary, accent or
+	// section. A colour that also paints other grounds (the client's own blue on its buttons and on one Google review link)
+	// keeps its place in the contest.
+	const channelGrounds = tally( ( u ) => !! u.channel && isBackground( u.property ) );
+	const allGrounds = tally( ( u ) => isBackground( u.property ) );
+	const channel = new Set( [ ...channelGrounds.keys() ].filter( ( g ) => opaque( g.hex ) && chroma( g.hex ) > SATURATED_C && channelGrounds.get( g ) === allGrounds.get( g ) ) );
 	const grounds = tally( ( u ) => isBackground( u.property ) && ! BASE_TAG.test( tag( u ) ) );
 	const buttons = tally( ( u ) => isBackground( u.property ) && BUTTON_TAG.test( tag( u ) ) );
 	const linkGrounds = tally( ( u ) => isBackground( u.property ) && 'a' === tag( u ) );

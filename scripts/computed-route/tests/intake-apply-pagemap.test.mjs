@@ -1,22 +1,31 @@
 // Spec 48 FR-48-17, FR-48-30, FR-48-55: `--apply-review` keeps the WordPress id the site build wrote into each row of
-// page-map.json. Run on a scratch copy of the wholesale food client's committed page map, intake record and review.
+// page-map.json. Run on a scratch copy of the wholesale food client's intake record and review (lib/intake-run.mjs::confirmedPageMap gives the built map).
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { applyIntakeReview, pathsFor, REPO } from '../lib/intake-run.mjs';
+import { applyIntakeReview, confirmedPageMap, pathsFor, REPO } from '../lib/intake-run.mjs';
+import { applyReview } from '../lib/intake-review.mjs';
 import { rowKey } from '../lib/site-build-map.mjs';
 
 const CLIENT = 'indus-foods';
 
+// The client's intake record and review, with every section's Accept all ticked (a fresh intake leaves rows unmarked
+// until Bean reviews them, and the marks are not what this test is about), and as the current page map the map those
+// marks confirm with a WordPress id in every row, as a site build writes it.
 function scratch() {
 	const src = pathsFor( REPO, CLIENT );
 	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'apply-pagemap-' ) );
 	const at = pathsFor( repo, CLIENT );
 	fs.mkdirSync( at.dir, { recursive: true } );
-	[ 'intake', 'review', 'pageMap' ].forEach( ( k ) => fs.copyFileSync( src[ k ], at[ k ] ) );
-	return { repo, at, committed: JSON.parse( fs.readFileSync( src.pageMap, 'utf8' ) ) };
+	fs.copyFileSync( src.intake, at.intake );
+	fs.writeFileSync( at.review, fs.readFileSync( src.review, 'utf8' ).replace( /^Accept all:\s*\[\s*\]\s*$/gim, 'Accept all: [x]' ) );
+	const res = applyReview( JSON.parse( fs.readFileSync( at.intake, 'utf8' ) ), fs.readFileSync( at.review, 'utf8' ), { today: quiet.today } );
+	assert.deepEqual( [ ...res.problems, ...res.missing.map( ( r ) => r.rowId ) ], [], 'fixture: the ticked review marks every row' );
+	const committed = confirmedPageMap( res.intake ).map( ( r, i ) => ( { ...r, id: 90000 + i } ) );
+	fs.writeFileSync( at.pageMap, `${ JSON.stringify( committed, null, 2 ) }\n` );
+	return { repo, at, committed };
 }
 const quiet = { log: () => {}, today: '2026-10-24', knownBlock: () => true };
 

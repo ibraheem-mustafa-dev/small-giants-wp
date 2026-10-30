@@ -142,7 +142,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	const textOwned = opts?.textOthers ? ownedOf( opts.textOthers ) : owned;
 	const cs = getComputedStyle( el );
 	const r = el.getBoundingClientRect();
-	// Text properties come from the element painting the first visible text (a button's label span, not the button).
+	// Text properties come from the paint carrying most of the visible text (paint.mjs::textCarrier: a button's label span, not the button; a paragraph, not the bold words it opens with).
 	const TEXT_PROPS = [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color', 'text-shadow' ];
 	// A text-run finder ({ textRun: { within, direct } }) measures the block's rendered text only: its extent and its paint.
 	// A group finder ({ group: { paths } }) measures the union box of its elements only (no styles).
