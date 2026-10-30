@@ -351,13 +351,12 @@ def live_rows(code_rows: list[tuple], path: Path) -> tuple[list[tuple], dict]:
     """The source='live' rows of `scripts/computed-route/data/block-live-facts.json` (written by
     `scripts/computed-route/tools/block-live-facts.mjs`): a value seen live becomes a `yes` row only where the code row
     for the same block, fact and value is `unknown`. A live `yes` beside a code `no` is a conflict for gate A, counted and
-    never imported; beside a code `yes` it adds nothing. `read_conflict` lists the file's own `conflicts` (a code `no` the
-    read saw, recorded by the reader against the DB it read). No file: no live rows."""
-    stats = {"file": path.is_file(), "imported": 0, "conflict": [], "read_conflict": [], "already_yes": 0, "no_code_row": 0}
+    never imported; beside a code `yes` it adds nothing. The conflicts are computed here, against the code rows this seed
+    writes, never read from the file (a stored conflict goes stale when the code read changes). No file: no live rows."""
+    stats = {"file": path.is_file(), "imported": 0, "conflict": [], "already_yes": 0, "no_code_row": 0}
     if not path.is_file():
         return [], stats
     data = json.loads(path.read_text(encoding="utf-8"))
-    stats["read_conflict"] = [f"{slug} {k}" for slug, c in sorted((data.get("conflicts") or {}).items()) for k in sorted(c)]
     code = {r[:3]: r[3] for r in code_rows}
     out = []
     for slug, entry in sorted((data.get("blocks") or {}).items()):

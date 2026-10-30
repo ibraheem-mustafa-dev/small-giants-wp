@@ -82,7 +82,7 @@ export async function run( o ) {
 	}
 	const toRead = blocksToRead( code );
 	const targetsJson = JSON.parse( fs.readFileSync( path.join( ROUTE, 'calibration-targets.json' ), 'utf8' ) );
-	const acc = { blocks: {}, conflicts: {}, outside: {} };
+	const acc = { blocks: {}, outside: {} };
 	const sites = {};
 	const failures = [];
 	const { chromium } = await loadChromium();
@@ -131,7 +131,7 @@ function summary( file ) {
 	return [
 		`[block-live-facts] pages read: ${ pages } (x ${ file.widths.join( '/' ) })`,
 		`  blocks seen ${ Object.keys( file.blocks ).length }, yes values ${ yes }, on no page ${ file.notSeen.length }: ${ file.notSeen.join( ', ' ) }`,
-		`  conflicts (code no, seen live) ${ Object.values( file.conflicts ).reduce( ( n, c ) => n + Object.keys( c ).length, 0 ) }, outside the vocabulary ${ Object.values( file.outsideVocabulary ).reduce( ( n, c ) => n + Object.keys( c ).length, 0 ) }, failed page reads ${ ( file.failures || [] ).length }`,
+		`  outside the vocabulary ${ Object.values( file.outsideVocabulary ).reduce( ( n, c ) => n + Object.keys( c ).length, 0 ) }, failed page reads ${ ( file.failures || [] ).length }`,
 	].join( '\n' );
 }
 

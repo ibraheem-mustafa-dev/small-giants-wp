@@ -15,8 +15,10 @@
 // are wider than the instance needs: a part the block renders itself that is also a saved block elsewhere (a product
 // card's option picker) is cut too, so the read may miss a value, never claim one that is not the block's.
 // A value seen is `yes` with its site, page, width and selector; a value never seen stays unknown, because no page set
-// proves every variant of a block rendered, so the read never writes `no`. Only values the code read left `unknown` are
-// recorded; a code `no` seen live is listed under `conflicts` for gate A, never imported.
+// proves every variant of a block rendered, so the read never writes `no`. Every value in the code read's vocabulary is
+// recorded whatever its code state when read: the seeder (`block_identity_facts.py::live_rows`, stage 14) compares each
+// with the code rows it is writing, so a value beside a code `unknown` is imported and one beside a code `no` is a gate A
+// conflict, computed afresh at every seed and never stored here.
 
 export const MARKUP_FACTS = [ 'renders-tag', 'renders-role', 'renders-aria' ];
 export const WIDTHS = [ 375, 768, 1440 ];
@@ -175,7 +177,7 @@ export function targetsFor( blocks, inventory ) {
 const vocab = ( code, block, fact, value ) => code[ block ]?.[ fact ]?.[ value ];
 
 // Folds one page read into the accumulator. `read`: readInstances' result; `where`: { site, path, width }.
-// `acc`: { blocks: { block: { instances: { site: n }, facts: { fact: { value: [ evidence ] } } } }, conflicts: {}, outside: {} }.
+// `acc`: { blocks: { block: { instances: { site: n }, facts: { fact: { value: [ evidence ] } } } }, outside: {} }.
 export function absorb( acc, read, where, code, inventory ) {
 	for ( const [ block, instances ] of Object.entries( read ) ) {
 		if ( ! instances.length ) {
@@ -193,14 +195,12 @@ export function absorb( acc, read, where, code, inventory ) {
 					}
 					const ev = `${ where.site } ${ where.path } @${ where.width } ${ selector }`;
 					const state = vocab( code, block, fact, value );
-					if ( 'unknown' === state ) {
+					if ( undefined !== state ) {
 						const list = ( ( entry.facts[ fact ] ??= {} )[ value ] ??= [] );
 						if ( list.length < EVIDENCE_CAP && ! list.includes( ev ) ) {
 							list.push( ev );
 						}
-					} else if ( 'no' === state ) {
-						( ( acc.conflicts[ block ] ??= {} )[ `${ fact }=${ value }` ] ??= ev );
-					} else if ( undefined === state ) {
+					} else {
 						( ( acc.outside[ block ] ??= {} )[ `${ fact }=${ value }` ] ??= ev );
 					}
 				}
@@ -213,7 +213,7 @@ export function absorb( acc, read, where, code, inventory ) {
 const sortObj = ( o ) => Object.fromEntries( Object.keys( o ).sort().map( ( k ) => [ k, o[ k ] ] ) );
 
 // The file `data/block-live-facts.json`: block -> fact -> value -> { state: 'yes', evidence }, with the pages read, the
-// blocks found on no page, and the conflicts and out-of-vocabulary values for gate A.
+// blocks found on no page, and the out-of-vocabulary values for gate A.
 export function liveFile( acc, { sites, toRead, readOn } ) {
 	const blocks = {};
 	for ( const b of Object.keys( acc.blocks ).sort() ) {
@@ -227,13 +227,12 @@ export function liveFile( acc, { sites, toRead, readOn } ) {
 		blocks[ b ] = { instances: sortObj( acc.blocks[ b ].instances ), facts };
 	}
 	return {
-		about: 'Spec 48 F1 step A2b: renders-tag / renders-role / renders-aria values the code read left unknown, seen on the local mirrors (scripts/computed-route/tools/block-live-facts.mjs). Imported by sgs-update-v2.py stage 14 as source=live rows; a value never seen stays unknown (no `no` is written).',
+		about: 'Spec 48 F1 step A2b: renders-tag / renders-role / renders-aria values seen on the local mirrors (scripts/computed-route/tools/block-live-facts.mjs). Stage 14 of sgs-update-v2.py imports a value as a source=live row beside a code unknown and counts one beside a code no as a gate A conflict, both computed at each seed; a value never seen stays unknown (no `no` is written).',
 		readOn,
 		widths: WIDTHS,
 		sites,
 		blocks,
 		notSeen: toRead.filter( ( b ) => ! acc.blocks[ b ] ),
-		conflicts: sortObj( acc.conflicts ),
 		outsideVocabulary: sortObj( acc.outside ),
 	};
 }

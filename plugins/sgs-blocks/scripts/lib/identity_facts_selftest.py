@@ -15,7 +15,8 @@ A throwaway repo tree is written to a temp folder and read by the real extractor
 - sgs/acme-badge carries a registry brand's name: platform acme yes; sgs/fx-plain: no;
 - sgs/fx-field may sit only inside sgs/fx-form (a form): context form yes, any no;
 - the live import (`live_rows`): a live yes on sgs/fx-dyn's unknown `table` becomes one source='live' row; the same on
-  sgs/fx-plain's code `no` is a conflict and no row; a live entry that is not `yes` is ignored;
+  sgs/fx-plain's code `no` is a conflict and no row, computed from this seed's code rows (a stale `conflicts` list stored
+  in the file, naming sgs/fx-tabs' code-yes tablist, is ignored); a live entry that is not `yes` is ignored;
 - the false `no` shapes the live read found, and their kin (each MUST FAIL on the extractor before the fix):
   sgs/fx-wrapper sets `$args['role'] = 'dialog'` and `$args['aria-modal']` on the array it hands to
   get_block_wrapper_attributes (dialog, aria-modal yes); sgs/fx-fieldset opens `<fieldset <?php echo $w; ?>>` in raw
@@ -275,7 +276,11 @@ def run() -> int:
             "sgs/fx-dyn": {"facts": {"renders-tag": {"table": {"state": "yes", "evidence": ["local-x / @375 .wp-block-sgs-fx-dyn[0] table"]}}}},
             "sgs/fx-plain": {"facts": {"renders-tag": {"table": {"state": "yes", "evidence": ["local-x / @375 .wp-block-sgs-fx-plain[0] table"]}},
                                        "renders-role": {"tablist": {"state": "unknown", "evidence": []}}}},
-        }}), encoding="utf-8")
+            # A seen value beside a code yes adds nothing.
+            "sgs/fx-tabs": {"facts": {"renders-role": {"tablist": {"state": "yes", "evidence": ["local-x / @375 .wp-block-sgs-fx-tabs[0]"]}}}},
+        },
+            # A stored conflict list is stale data: never read (conflicts are computed against this seed's code rows).
+            "conflicts": {"sgs/fx-tabs": {"renders-role=tablist": "stale"}}}), encoding="utf-8")
         live, lstats = live_rows(rows, live_file)
         if [r[:5] for r in live] != [("sgs/fx-dyn", "renders-tag", "table", "yes", "live")]:
             fails.append(f"sgs/fx-dyn renders-tag=table (live): expected exactly one live yes row, got {[r[:5] for r in live]}")

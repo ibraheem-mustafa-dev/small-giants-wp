@@ -1,5 +1,5 @@
 {
-	"about": "Spec 48 F1 step A2b: renders-tag / renders-role / renders-aria values the code read left unknown, seen on the local mirrors (scripts/computed-route/tools/block-live-facts.mjs). Imported by sgs-update-v2.py stage 14 as source=live rows; a value never seen stays unknown (no `no` is written).",
+	"about": "Spec 48 F1 step A2b: renders-tag / renders-role / renders-aria values seen on the local mirrors (scripts/computed-route/tools/block-live-facts.mjs). Stage 14 of sgs-update-v2.py imports a value as a source=live row beside a code unknown and counts one beside a code no as a gate A conflict, both computed at each seed; a value never seen stays unknown (no `no` is written).",
 	"readOn": "2026-10-30",
 	"widths": [
 		375,
@@ -983,7 +983,16 @@
 				"local-mamas /saved-items/": 5,
 				"local-mamas /shop/": 5
 			},
-			"facts": {}
+			"facts": {
+				"renders-tag": {
+					"br": {
+						"state": "yes",
+						"evidence": [
+							"local-eye-care / @375 .wp-block-sgs-icon-list[2] span.sgs-icon-list__text > a.sgs-icon-list__item-link > br"
+						]
+					}
+				}
+			}
 		},
 		"sgs/label": {
 			"instances": {
@@ -1406,7 +1415,24 @@
 				"local-mamas /saved-items/": 1,
 				"local-mamas /shop/": 1
 			},
-			"facts": {}
+			"facts": {
+				"renders-aria": {
+					"aria-modal": {
+						"state": "yes",
+						"evidence": [
+							"local-indus / @375 .wp-block-sgs-nav-drawer[0]"
+						]
+					}
+				},
+				"renders-role": {
+					"dialog": {
+						"state": "yes",
+						"evidence": [
+							"local-indus / @375 .wp-block-sgs-nav-drawer[0]"
+						]
+					}
+				}
+			}
 		},
 		"sgs/nav-drawer-menu": {
 			"instances": {
@@ -1462,7 +1488,16 @@
 				"local-eye-care /shop/": 16,
 				"local-mamas /shop/": 6
 			},
-			"facts": {}
+			"facts": {
+				"renders-tag": {
+					"fieldset": {
+						"state": "yes",
+						"evidence": [
+							"local-mamas /shop/ @375 .wp-block-sgs-option-picker[0]"
+						]
+					}
+				}
+			}
 		},
 		"sgs/process-steps": {
 			"instances": {
@@ -2023,17 +2058,5 @@
 		"sgs/trustpilot-reviews",
 		"sgs/whatsapp-cta"
 	],
-	"conflicts": {
-		"sgs/icon-list": {
-			"renders-tag=br": "local-eye-care / @375 .wp-block-sgs-icon-list[2] span.sgs-icon-list__text > a.sgs-icon-list__item-link > br"
-		},
-		"sgs/nav-drawer": {
-			"renders-role=dialog": "local-indus / @375 .wp-block-sgs-nav-drawer[0]",
-			"renders-aria=aria-modal": "local-indus / @375 .wp-block-sgs-nav-drawer[0]"
-		},
-		"sgs/option-picker": {
-			"renders-tag=fieldset": "local-mamas /shop/ @375 .wp-block-sgs-option-picker[0]"
-		}
-	},
 	"outsideVocabulary": {}
 }
