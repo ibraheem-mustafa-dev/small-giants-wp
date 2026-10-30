@@ -326,3 +326,83 @@ test( 'MUST FAIL (the reviews block as the proposal pairs it, with the fact reco
 	const printing = Object.keys( F.fields ).filter( ( k ) => F.elements.reviews.some( ( e ) => e.key === k ) && ! k.startsWith( 'Root/193#' ) );
 	assert.ok( ! Object.values( r.slots ).some( ( f ) => printing.includes( f.tpl ) ) );
 } );
+
+// A drawer menu whose calibrated copies differ in kind: the block draws plain links and accordion items (each holding a
+// submenu panel), and the draft's copies of one template hold a hidden panel or none.
+const MENU = JSON.parse( fs.readFileSync( new URL( './fixtures/universal-part-pairing/menu-kinds.json', import.meta.url ), 'utf8' ) );
+const NAV = ( k ) => `.sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(${ k })`;
+const SUMMARY = ( k ) => `${ NAV( k ) } > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary`;
+const menu = ( cal, elements = MENU.drawer.elements ) => {
+	const m = inventoryModel( { elements } );
+	return { m, r: pairParts( { db, block: 'sgs/nav-drawer-menu', cal, paint: cal.elements, m, el: m.byKey[ 'Root/122#0' ], own: () => true, isMedia, finder } ) };
+};
+// The draft copy (Root/124#<n>) a slot's element sits in.
+const copyOf = ( m, tpl ) => {
+	for ( let e = m.byKey[ tpl ]; e; e = m.byKey[ e.parentKey ] ) {
+		if ( /^Root\/124#/.test( e.key ) ) {
+			return e.key;
+		}
+	}
+	return null;
+};
+test( 'MUST FAIL (menu items pair by kind): a draft copy holding a panel pairs with an accordion copy, a copy holding none with a plain link, and a later copy mirrors the first of its own kind', () => {
+	const { m, r } = menu( MENU.drawer.cal );
+	const accordions = [ 'Root/124#1', 'Root/124#2', 'Root/124#3', 'Root/124#4' ];
+	// The four draft items holding a panel are the four accordion copies, each its own, in order.
+	assert.deepEqual( [ 2, 3, 4, 5 ].map( ( k ) => copyOf( m, r.slots[ `${ SUMMARY( k ) } > .sgs-nav-drawer-menu__caret` ]?.tpl ) ), accordions );
+	assert.equal( copyOf( m, r.slots[ SUMMARY( 2 ) ]?.tpl ), 'Root/124#1' );
+	// The two plain items are plain link copies; no plain link part takes an item holding a panel, and no accordion part a plain item.
+	const placed = Object.entries( r.slots ).filter( ( [ s ] ) => s.startsWith( `${ NAV( 1 ).replace( /:nth-of-type\(1\)$/, '' ) }:` ) );
+	for ( const [ s, f ] of placed ) {
+		const panel = s.includes( '__accordion-row' );
+		assert.equal( accordions.includes( copyOf( m, f.tpl ) ), panel, `${ s } sits in ${ copyOf( m, f.tpl ) }` );
+	}
+	assert.deepEqual( [ 1, 6 ].map( ( k ) => copyOf( m, r.slots[ `${ NAV( k ) } > .sgs-nav-drawer-menu__link` ]?.tpl ) ), [ 'Root/124#0', 'Root/124#5' ] );
+	// The calibrated copy the draft draws no item of its kind for is named.
+	assert.match( r.unpaired.find( ( u ) => u.slot.startsWith( NAV( 7 ) ) ).reason, /no draft copy is left of a kind this copy draws/ );
+} );
+
+test( 'negative control: a menu whose calibrated copies are all one kind pairs its copies by place', () => {
+	const plain = ( p ) => ! p.includes( '__accordion' ) && ! p.includes( '__submenu' );
+	const settings = Object.fromEntries( Object.entries( MENU.drawer.cal.settings ).filter( ( [ , s ] ) => plain( s.slot || '' ) ).map( ( [ k, s ] ) => [ k, { ...s, slots: ( s.slots || [] ).filter( plain ) } ] ) );
+	const elements = Object.fromEntries( Object.entries( MENU.drawer.cal.elements ).filter( ( [ p ] ) => plain( p ) ) );
+	const { m, r } = menu( { settings, elements } );
+	assert.deepEqual( [ 1, 3, 6 ].map( ( k ) => copyOf( m, r.slots[ `${ NAV( k ) } > .sgs-nav-drawer-menu__link` ]?.tpl ) ), [ 'Root/124#0', 'Root/124#2', 'Root/124#5' ] );
+} );
+
+test( 'a panel below a part is a part read with its disclosure open, a repeated part of the block\'s own, or another block\'s root; a bare tag\'s position is none', () => {
+	const tree = ( paint, settings = {} ) => partTree( { db, block: 'sgs/nav-bar-menu', cal: { settings }, paint } );
+	const ITEM1 = '.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1)';
+	assert.ok( tree( [ `${ ITEM1 } > .sgs-nav-bar-menu__submenu > .sgs-nav-bar-menu__subitem:nth-of-type(1)` ] ).panelBelow( ITEM1 ) );
+	assert.ok( tree( [ `${ ITEM1 } > .sgs-nav-bar-menu__mega > .sgs-mega-panel` ] ).panelBelow( ITEM1 ) );
+	const open = { itemColourOpen: { slot: `${ ITEM1.replace( '(1)', '(2)' ) } > .sgs-nav-bar-menu__row > .sgs-nav-bar-menu__link`, state: 'open' } };
+	assert.ok( tree( [ `${ ITEM1 } > .sgs-nav-bar-menu__row > .sgs-nav-bar-menu__link` ], open ).panelBelow( ITEM1 ) );
+	// Negative controls: the same part read in no open state, and a link holding spans by position.
+	assert.ok( ! tree( [ `${ ITEM1 } > .sgs-nav-bar-menu__row > .sgs-nav-bar-menu__link` ], { itemColour: { ...open.itemColourOpen, state: null } } ).panelBelow( ITEM1 ) );
+	assert.ok( ! tree( [ `${ ITEM1 } > .sgs-nav-bar-menu__link > span:nth-of-type(2)` ] ).panelBelow( ITEM1 ) );
+} );
+
+test( 'MUST FAIL (menu items pair by kind, not place): a plain draft item between the first and the accordions takes the next copy drawing a plain link, and the accordions the copies drawing a panel', () => {
+	const by = Object.fromEntries( MENU.drawer.elements.map( ( e ) => [ e.key, e ] ) );
+	const inPanel = ( e ) => {
+		for ( let p = e; p; p = by[ p.parentKey ] ) {
+			if ( 'Root/133#0' === p.key ) {
+				return true;
+			}
+		}
+		return false;
+	};
+	const shown = { 375: true, 768: true, 1440: true };
+	// The second draft item holds no panel; the last item's button is hidden at one width only, and the first item holds an empty
+	// element hidden at every width: neither is a panel.
+	const elements = MENU.drawer.elements.filter( ( e ) => ! inPanel( e ) ).map( ( e ) => ( 'Root/125#5' === e.key ? { ...e, visible: { ...shown, 375: false } } : e ) )
+		.concat( [ { key: 'Root/900#0', parentKey: 'Root/124#0', depth: by[ 'Root/125#0' ].depth, tag: 'span', words: '', allText: '', visible: { 375: false, 768: false, 1440: false } } ] );
+	const { m, r } = menu( MENU.drawer.cal, elements );
+	assert.deepEqual( [ 1, 3, 6 ].map( ( k ) => copyOf( m, r.slots[ `${ NAV( k ) } > .sgs-nav-drawer-menu__link` ]?.tpl ) ), [ 'Root/124#0', 'Root/124#1', 'Root/124#5' ] );
+	assert.deepEqual( [ 2, 4, 5 ].map( ( k ) => copyOf( m, r.slots[ `${ SUMMARY( k ) } > .sgs-nav-drawer-menu__caret` ]?.tpl ) ), [ 'Root/124#2', 'Root/124#3', 'Root/124#4' ] );
+	// The first item holding the panel instead takes the first copy, so the first plain item is a copy the block draws either
+	// way: there the plain render is the one its own kind chooses.
+	const panel = MENU.drawer.elements.filter( inPanel ).map( ( e ) => ( { ...e, key: `${ e.key }x`, parentKey: 'Root/133#0' === e.key ? 'Root/124#0' : `${ e.parentKey }x` } ) );
+	const swapped = menu( MENU.drawer.cal, [ ...elements, ...panel ] );
+	assert.equal( copyOf( swapped.m, swapped.r.slots[ `${ NAV( 3 ) } > .sgs-nav-drawer-menu__link` ]?.tpl ), 'Root/124#1' );
+} );
