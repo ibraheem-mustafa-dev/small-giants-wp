@@ -1,17 +1,17 @@
 {
-	"generated": "2026-10-29T08:40:19.012Z",
+	"generated": "2026-10-30T07:29:18.685Z",
 	"client": "mamas-munches-redesign",
 	"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
 	"picksFile": "finalise-picks.json",
 	"picksShape": "{ \"<surface>\": [ <one answerShape entry per row of that surface> ] }",
 	"context": "Built from intake.json rows: the element is the row (tag, words, snippet); candidate evidence lines are not kept there. parent, siblings (the nearest 12 in document order; siblingCount is the full number) and boxes (375, 768, 1440; x and y are page coordinates) come from the skeleton inventory, null where it held none. neighbours are the rows before and after it in the surface.",
 	"counts": {
-		"surfaces": 15,
-		"rows": 171
+		"surfaces": 21,
+		"rows": 182
 	},
 	"surfaces": {
 		"site-header-announcement-strip-bar": {
-			"generated": "2026-10-29T08:40:19.007Z",
+			"generated": "2026-10-30T07:29:18.681Z",
 			"surface": "site-header-announcement-strip-bar",
 			"source": "intake.json skeletons[\"site-header-announcement-strip-bar\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -449,6 +449,75 @@
 					]
 				},
 				{
+					"key": "Home>SiteHeader@7#0/28#0",
+					"element": {
+						"tag": "button",
+						"words": "",
+						"snippet": "<button sc-camel-on-click=\"{{ openBasket }}\" aria-label=\"Open basket\" style=\"position:relative;width:48px;height:48px;border:0;background:transparent;border-rad"
+					},
+					"parent": {
+						"draftId": "SiteHeader:23",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "SiteHeader:24",
+							"tag": "a",
+							"block": "sgs/icon"
+						}
+					],
+					"confidence": 0.5,
+					"candidates": [
+						{
+							"block": "sgs/cart",
+							"score": 1,
+							"share": 0.5
+						},
+						{
+							"block": "sgs/button",
+							"score": 0.75,
+							"share": 0.5
+						}
+					],
+					"reason": "the control that opens a drawer the page map hands to a block is that block, which draws both the drawer and its own trigger: the control's label, count and icon become the block's trigger settings (byTemplate.<template>.trigger) and are absorbed, never a container in the header (the bag pill is sgs/cart in drawer mode with a pill trigger; Bean S5, 2026-10-23); it opens S-04 (Basket drawer (right)), which the page map holds as the drawer part \"Basket\" of the cart row; the framework DB prefers sgs/button (confidence 0.75: html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\"); block_composition: sgs/button is a leaf; the element holds words and no block children); a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two",
+					"rowId": "skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/28#0",
+					"draftId": "SiteHeader:28",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home>SiteHeader@7#0/24#0",
+							"tag": "a",
+							"words": "",
+							"block": "sgs/icon"
+						},
+						{
+							"key": "Home>SiteHeader@7#0/35#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/site-header-row"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 768,
+							"x": 700,
+							"y": 40,
+							"w": 48,
+							"h": 48
+						},
+						{
+							"width": 375,
+							"x": 319,
+							"y": 40,
+							"w": 48,
+							"h": 48
+						}
+					]
+				},
+				{
 					"key": "Home>SiteHeader@7#0/37#0",
 					"element": {
 						"tag": "img",
@@ -564,7 +633,7 @@
 			]
 		},
 		"nav-drawer-left": {
-			"generated": "2026-10-29T08:40:19.008Z",
+			"generated": "2026-10-30T07:29:18.682Z",
 			"surface": "nav-drawer-left",
 			"source": "intake.json skeletons[\"nav-drawer-left\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -1150,7 +1219,7 @@
 			]
 		},
 		"site-footer": {
-			"generated": "2026-10-29T08:40:19.008Z",
+			"generated": "2026-10-30T07:29:18.682Z",
 			"surface": "site-footer",
 			"source": "intake.json skeletons[\"site-footer\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -1538,7 +1607,7 @@
 			]
 		},
 		"page-home-dc-html": {
-			"generated": "2026-10-29T08:40:19.011Z",
+			"generated": "2026-10-30T07:29:18.683Z",
 			"surface": "page-home-dc-html",
 			"source": "intake.json skeletons[\"page-home-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -4766,82 +4835,11 @@
 							"h": 28
 						}
 					]
-				},
-				{
-					"key": "Home/247",
-					"element": {
-						"tag": "span",
-						"words": "+",
-						"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center"
-					},
-					"parent": {
-						"draftId": "Home:246",
-						"tag": "button",
-						"block": "sgs/container"
-					},
-					"siblings": [],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "4 copies of one template element",
-					"rowId": "skeleton:page-home-dc-html:Home/247",
-					"draftId": "Home:247",
-					"action": null,
-					"copies": 4,
-					"keys": [
-						"Home/247#0",
-						"Home/247#1",
-						"Home/247#2",
-						"Home/247#3"
-					],
-					"neighbours": [
-						{
-							"key": "Home/246",
-							"tag": "button",
-							"words": "When will my order arrive?",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Home/249#0",
-							"tag": "p",
-							"words": "Zainab bakes every order fresh when it comes in, then posts it with Royal Mail Tracked. Most orders are with you in 3–5 days.",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 0,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1274.5,
-							"y": 5868.3,
-							"w": 50.9,
-							"h": 50.9
-						},
-						{
-							"width": 768,
-							"x": 670.5,
-							"y": 7566.8,
-							"w": 50.9,
-							"h": 50.9
-						},
-						{
-							"width": 375,
-							"x": 289.5,
-							"y": 8322,
-							"w": 50.9,
-							"h": 50.9
-						}
-					]
 				}
 			]
 		},
 		"build-your-zookie": {
-			"generated": "2026-10-29T08:40:19.011Z",
+			"generated": "2026-10-30T07:29:18.683Z",
 			"surface": "build-your-zookie",
 			"source": "intake.json skeletons[\"build-your-zookie\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -4926,7 +4924,7 @@
 			]
 		},
 		"page-shop-dc-html": {
-			"generated": "2026-10-29T08:40:19.011Z",
+			"generated": "2026-10-30T07:29:18.683Z",
 			"surface": "page-shop-dc-html",
 			"source": "intake.json skeletons[\"page-shop-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -5653,7 +5651,7 @@
 			]
 		},
 		"page-product-dc-html-id-zookies": {
-			"generated": "2026-10-29T08:40:19.011Z",
+			"generated": "2026-10-30T07:29:18.683Z",
 			"surface": "page-product-dc-html-id-zookies",
 			"source": "intake.json skeletons[\"page-product-dc-html-id-zookies\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -6044,8 +6042,70 @@
 				}
 			]
 		},
+		"product-buy-box": {
+			"generated": "2026-10-30T07:29:18.683Z",
+			"surface": "product-buy-box",
+			"source": "intake.json skeletons[\"product-buy-box\"]",
+			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
+			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
+			"rows": [
+				{
+					"key": "Product/108#0",
+					"element": {
+						"tag": "button",
+						"words": "Add to basket · £21.50",
+						"snippet": "<button ref=\"{{ addRef }}\" sc-camel-on-click=\"{{ add }}\" style=\"flex:1;height:64px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;font-weight:7"
+					},
+					"parent": null,
+					"siblings": [],
+					"confidence": 0.5,
+					"candidates": [
+						{
+							"block": "sgs/form",
+							"score": 1,
+							"share": 0.5
+						},
+						{
+							"block": "sgs/button",
+							"score": 0.75,
+							"share": 0.5
+						}
+					],
+					"reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part; the framework DB prefers sgs/button (confidence 0.75: html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\"); block_composition: sgs/button is a leaf; the element holds words and no block children); a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two",
+					"rowId": "skeleton:product-buy-box:Product/108#0",
+					"draftId": "Product:108",
+					"action": null,
+					"copies": 1,
+					"neighbours": [],
+					"siblingCount": 0,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 766.3,
+							"y": 1259.2,
+							"w": 573.7,
+							"h": 64
+						},
+						{
+							"width": 768,
+							"x": 402,
+							"y": 1455.4,
+							"w": 334,
+							"h": 64
+						},
+						{
+							"width": 375,
+							"x": 20,
+							"y": 1878.4,
+							"w": 335,
+							"h": 64
+						}
+					]
+				}
+			]
+		},
 		"product-gift-note": {
-			"generated": "2026-10-29T08:40:19.011Z",
+			"generated": "2026-10-30T07:29:18.683Z",
 			"surface": "product-gift-note",
 			"source": "intake.json skeletons[\"product-gift-note\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -6124,7 +6184,7 @@
 			]
 		},
 		"page-gifts-dc-html": {
-			"generated": "2026-10-29T08:40:19.011Z",
+			"generated": "2026-10-30T07:29:18.683Z",
 			"surface": "page-gifts-dc-html",
 			"source": "intake.json skeletons[\"page-gifts-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -7708,8 +7768,70 @@
 				}
 			]
 		},
+		"gift-finder": {
+			"generated": "2026-10-30T07:29:18.684Z",
+			"surface": "gift-finder",
+			"source": "intake.json skeletons[\"gift-finder\"]",
+			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
+			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
+			"rows": [
+				{
+					"key": "Gifts/24#0",
+					"element": {
+						"tag": "a",
+						"words": "Show 4 gifts ↓",
+						"snippet": "<a href=\"#results\" style=\"height:56px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;font-size:17px;display:flex;"
+					},
+					"parent": null,
+					"siblings": [],
+					"confidence": 0.5,
+					"candidates": [
+						{
+							"block": "sgs/form",
+							"score": 1,
+							"share": 0.5
+						},
+						{
+							"block": "sgs/button",
+							"score": 0.75,
+							"share": 0.5
+						}
+					],
+					"reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part; the framework DB prefers sgs/button (confidence 0.75: html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\"); block_composition: sgs/button is a leaf; the element holds words and no block children); a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two",
+					"rowId": "skeleton:gift-finder:Gifts/24#0",
+					"draftId": "Gifts:24",
+					"action": null,
+					"copies": 1,
+					"neighbours": [],
+					"siblingCount": 0,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 162,
+							"y": 765,
+							"w": 530.1,
+							"h": 56
+						},
+						{
+							"width": 768,
+							"x": 54,
+							"y": 804.8,
+							"w": 303.8,
+							"h": 56
+						},
+						{
+							"width": 375,
+							"x": 42,
+							"y": 765.7,
+							"w": 291,
+							"h": 56
+						}
+					]
+				}
+			]
+		},
 		"page-basket-dc-html": {
-			"generated": "2026-10-29T08:40:19.012Z",
+			"generated": "2026-10-30T07:29:18.684Z",
 			"surface": "page-basket-dc-html",
 			"source": "intake.json skeletons[\"page-basket-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -9034,7 +9156,7 @@
 			]
 		},
 		"page-checkout-dc-html": {
-			"generated": "2026-10-29T08:40:19.012Z",
+			"generated": "2026-10-30T07:29:18.684Z",
 			"surface": "page-checkout-dc-html",
 			"source": "intake.json skeletons[\"page-checkout-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -10600,7 +10722,7 @@
 			]
 		},
 		"page-contact-dc-html": {
-			"generated": "2026-10-29T08:40:19.012Z",
+			"generated": "2026-10-30T07:29:18.684Z",
 			"surface": "page-contact-dc-html",
 			"source": "intake.json skeletons[\"page-contact-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -10850,22 +10972,22 @@
 						{
 							"draftId": "Contact:77",
 							"tag": "a",
-							"block": "sgs/icon-list"
+							"block": "sgs/button"
 						},
 						{
 							"draftId": "Contact:77",
 							"tag": "a",
-							"block": "sgs/icon-list"
+							"block": "sgs/button"
 						},
 						{
 							"draftId": "Contact:77",
 							"tag": "a",
-							"block": "sgs/icon-list"
+							"block": "sgs/button"
 						},
 						{
 							"draftId": "Contact:77",
 							"tag": "a",
-							"block": "sgs/icon-list"
+							"block": "sgs/button"
 						},
 						{
 							"draftId": "Contact:79",
@@ -10897,7 +11019,7 @@
 							"key": "Contact/77",
 							"tag": "a",
 							"words": "When will my order arrive?",
-							"block": "sgs/icon-list"
+							"block": "sgs/button"
 						}
 					],
 					"siblingCount": 5,
@@ -10946,22 +11068,22 @@
 						{
 							"draftId": "Contact:77",
 							"tag": "a",
-							"block": "sgs/icon-list"
+							"block": "sgs/button"
 						},
 						{
 							"draftId": "Contact:77",
 							"tag": "a",
-							"block": "sgs/icon-list"
+							"block": "sgs/button"
 						},
 						{
 							"draftId": "Contact:77",
 							"tag": "a",
-							"block": "sgs/icon-list"
+							"block": "sgs/button"
 						},
 						{
 							"draftId": "Contact:77",
 							"tag": "a",
-							"block": "sgs/icon-list"
+							"block": "sgs/button"
 						}
 					],
 					"confidence": 0.25,
@@ -11013,7 +11135,7 @@
 			]
 		},
 		"page-help-dc-html": {
-			"generated": "2026-10-29T08:40:19.012Z",
+			"generated": "2026-10-30T07:29:18.684Z",
 			"surface": "page-help-dc-html",
 			"source": "intake.json skeletons[\"page-help-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -12604,7 +12726,7 @@
 			]
 		},
 		"page-signin-dc-html": {
-			"generated": "2026-10-29T08:40:19.012Z",
+			"generated": "2026-10-30T07:29:18.684Z",
 			"surface": "page-signin-dc-html",
 			"source": "intake.json skeletons[\"page-signin-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -13161,7 +13283,7 @@
 			]
 		},
 		"page-account-dc-html": {
-			"generated": "2026-10-29T08:40:19.012Z",
+			"generated": "2026-10-30T07:29:18.684Z",
 			"surface": "page-account-dc-html",
 			"source": "intake.json skeletons[\"page-account-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -13235,6 +13357,738 @@
 							"y": 117.3,
 							"w": 335.8,
 							"h": 41.7
+						}
+					]
+				}
+			]
+		},
+		"cancel-subscription-confirm": {
+			"generated": "2026-10-30T07:29:18.684Z",
+			"surface": "cancel-subscription-confirm",
+			"source": "intake.json skeletons[\"cancel-subscription-confirm\"]",
+			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
+			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
+			"rows": [
+				{
+					"key": "Account/131#0",
+					"element": {
+						"tag": "div",
+						"words": "Cancel this subscription?",
+						"snippet": "<div style=\"font-family:'Young Serif',serif;font-size:20px\" data-dc-tpl=\"131\">Cancel this subscription?</div>"
+					},
+					"parent": {
+						"draftId": "Account:130",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Account:132",
+							"tag": "div",
+							"block": "sgs/text"
+						},
+						{
+							"draftId": "Account:133",
+							"tag": "div",
+							"block": "sgs/multi-button"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:cancel-subscription-confirm:Account/131#0",
+					"draftId": "Account:131",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Account/130#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Account/132#0",
+							"tag": "div",
+							"words": "You’ll lose 10% off and your guaranteed slot in every bake. Pausing keeps both.",
+							"block": "sgs/text"
+						}
+					],
+					"siblingCount": 2,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 450,
+							"y": 836.2,
+							"w": 840,
+							"h": 28
+						},
+						{
+							"width": 768,
+							"x": 78,
+							"y": 846.5,
+							"w": 612,
+							"h": 28
+						},
+						{
+							"width": 375,
+							"x": 60,
+							"y": 909.1,
+							"w": 255,
+							"h": 28
+						}
+					]
+				},
+				{
+					"key": "Account/132#0",
+					"element": {
+						"tag": "div",
+						"words": "You’ll lose 10% off and your guaranteed slot in every bake. Pausing keeps both.",
+						"snippet": "<div style=\"font-size:15px;line-height:1.5\" data-dc-tpl=\"132\">You’ll lose 10% off and your guaranteed slot in every bake. Pausing keeps both.</div>"
+					},
+					"parent": {
+						"draftId": "Account:130",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Account:131",
+							"tag": "div",
+							"block": "sgs/text"
+						},
+						{
+							"draftId": "Account:133",
+							"tag": "div",
+							"block": "sgs/multi-button"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:cancel-subscription-confirm:Account/132#0",
+					"draftId": "Account:132",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Account/131#0",
+							"tag": "div",
+							"words": "Cancel this subscription?",
+							"block": "sgs/text"
+						},
+						{
+							"key": "Account/133#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/multi-button"
+						}
+					],
+					"siblingCount": 2,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 450,
+							"y": 876.2,
+							"w": 840,
+							"h": 22.5
+						},
+						{
+							"width": 768,
+							"x": 78,
+							"y": 886.5,
+							"w": 612,
+							"h": 22.5
+						},
+						{
+							"width": 375,
+							"x": 60,
+							"y": 949.1,
+							"w": 255,
+							"h": 67.5
+						}
+					]
+				},
+				{
+					"key": "Account/133#0",
+					"element": {
+						"tag": "div",
+						"words": "",
+						"snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:10px\" data-dc-tpl=\"133\"> <button sc-camel-on-click=\"{{ s.keep }}\" style=\"height:48px;padding:0 20px;border-radius:99"
+					},
+					"parent": {
+						"draftId": "Account:130",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Account:131",
+							"tag": "div",
+							"block": "sgs/text"
+						},
+						{
+							"draftId": "Account:132",
+							"tag": "div",
+							"block": "sgs/text"
+						}
+					],
+					"confidence": 0.51,
+					"candidates": [
+						{
+							"block": "sgs/multi-button",
+							"score": 0.75,
+							"share": 0.682
+						},
+						{
+							"block": "sgs/container",
+							"score": 0.35,
+							"share": 0.318
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:cancel-subscription-confirm:Account/133#0",
+					"draftId": "Account:133",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Account/132#0",
+							"tag": "div",
+							"words": "You’ll lose 10% off and your guaranteed slot in every bake. Pausing keeps both.",
+							"block": "sgs/text"
+						},
+						{
+							"key": "Account/134#0",
+							"tag": "button",
+							"words": "Keep it",
+							"block": "sgs/button"
+						}
+					],
+					"siblingCount": 2,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 450,
+							"y": 910.7,
+							"w": 840,
+							"h": 48
+						},
+						{
+							"width": 768,
+							"x": 78,
+							"y": 921,
+							"w": 612,
+							"h": 48
+						},
+						{
+							"width": 375,
+							"x": 60,
+							"y": 1028.6,
+							"w": 255,
+							"h": 48
+						}
+					]
+				}
+			]
+		},
+		"address-form-add-edit": {
+			"generated": "2026-10-30T07:29:18.684Z",
+			"surface": "address-form-add-edit",
+			"source": "intake.json skeletons[\"address-form-add-edit\"]",
+			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
+			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
+			"rows": [
+				{
+					"key": "Account/162#0",
+					"element": {
+						"tag": "div",
+						"words": "Add an address",
+						"snippet": "<div style=\"font-family:'Young Serif',serif;font-size:24px\" data-dc-tpl=\"162\">{{ formTitle }}</div>"
+					},
+					"parent": {
+						"draftId": "Account:161",
+						"tag": "form",
+						"block": "sgs/form"
+					},
+					"siblings": [
+						{
+							"draftId": "Account:163",
+							"tag": "label",
+							"block": null
+						},
+						{
+							"draftId": "Account:165",
+							"tag": "label",
+							"block": null
+						},
+						{
+							"draftId": "Account:167",
+							"tag": "label",
+							"block": null
+						},
+						{
+							"draftId": "Account:169",
+							"tag": "div",
+							"block": "sgs/container"
+						},
+						{
+							"draftId": "Account:176",
+							"tag": "div",
+							"block": "sgs/multi-button"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:address-form-add-edit:Account/162#0",
+					"draftId": "Account:162",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Account/161#0",
+							"tag": "form",
+							"words": "",
+							"block": "sgs/form"
+						},
+						{
+							"key": "Account/163#0",
+							"tag": "label",
+							"words": "Full name",
+							"block": null
+						}
+					],
+					"siblingCount": 5,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 430,
+							"y": 520.4,
+							"w": 880,
+							"h": 34
+						},
+						{
+							"width": 768,
+							"x": 58,
+							"y": 530.7,
+							"w": 652,
+							"h": 34
+						},
+						{
+							"width": 375,
+							"x": 40,
+							"y": 460.8,
+							"w": 295,
+							"h": 34
+						}
+					]
+				},
+				{
+					"key": "Account/176#0",
+					"element": {
+						"tag": "div",
+						"words": "",
+						"snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:12px\" data-dc-tpl=\"176\"> <button type=\"submit\" style=\"height:56px;padding:0 28px;border-radius:999px;border:2px soli"
+					},
+					"parent": {
+						"draftId": "Account:161",
+						"tag": "form",
+						"block": "sgs/form"
+					},
+					"siblings": [
+						{
+							"draftId": "Account:162",
+							"tag": "div",
+							"block": "sgs/text"
+						},
+						{
+							"draftId": "Account:163",
+							"tag": "label",
+							"block": null
+						},
+						{
+							"draftId": "Account:165",
+							"tag": "label",
+							"block": null
+						},
+						{
+							"draftId": "Account:167",
+							"tag": "label",
+							"block": null
+						},
+						{
+							"draftId": "Account:169",
+							"tag": "div",
+							"block": "sgs/container"
+						}
+					],
+					"confidence": 0.51,
+					"candidates": [
+						{
+							"block": "sgs/multi-button",
+							"score": 0.75,
+							"share": 0.682
+						},
+						{
+							"block": "sgs/container",
+							"score": 0.35,
+							"share": 0.318
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:address-form-add-edit:Account/176#0",
+					"draftId": "Account:176",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Account/173#0",
+							"tag": "input",
+							"words": "",
+							"block": "sgs/form-field-text"
+						},
+						{
+							"key": "Account/177#0",
+							"tag": "button",
+							"words": "Save address",
+							"block": "sgs/button"
+						}
+					],
+					"siblingCount": 5,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 430,
+							"y": 936.4,
+							"w": 880,
+							"h": 56
+						},
+						{
+							"width": 768,
+							"x": 58,
+							"y": 946.7,
+							"w": 652,
+							"h": 56
+						},
+						{
+							"width": 375,
+							"x": 40,
+							"y": 968.8,
+							"w": 295,
+							"h": 56
+						}
+					]
+				}
+			]
+		},
+		"account-details-change-password": {
+			"generated": "2026-10-30T07:29:18.685Z",
+			"surface": "account-details-change-password",
+			"source": "intake.json skeletons[\"account-details-change-password\"]",
+			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
+			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
+			"rows": [
+				{
+					"key": "Account/200#0",
+					"element": {
+						"tag": "div",
+						"words": "Change password",
+						"snippet": "<div style=\"font-family:'Young Serif',serif;font-size:22px\" data-dc-tpl=\"200\">Change password</div>"
+					},
+					"parent": {
+						"draftId": "Account:199",
+						"tag": "form",
+						"block": "sgs/form"
+					},
+					"siblings": [
+						{
+							"draftId": "Account:201",
+							"tag": "div",
+							"block": "sgs/container"
+						},
+						{
+							"draftId": "Account:208",
+							"tag": "div",
+							"block": "sgs/container"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:account-details-change-password:Account/200#0",
+					"draftId": "Account:200",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Account/199#0",
+							"tag": "form",
+							"words": "",
+							"block": "sgs/form"
+						},
+						{
+							"key": "Account/201#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 2,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 430,
+							"y": 892.4,
+							"w": 880,
+							"h": 31
+						},
+						{
+							"width": 768,
+							"x": 58,
+							"y": 898.7,
+							"w": 652,
+							"h": 31
+						},
+						{
+							"width": 375,
+							"x": 40,
+							"y": 1004.8,
+							"w": 295,
+							"h": 31
+						}
+					]
+				}
+			]
+		},
+		"checkout-header": {
+			"generated": "2026-10-30T07:29:18.685Z",
+			"surface": "checkout-header",
+			"source": "intake.json skeletons[\"checkout-header\"]",
+			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
+			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
+			"rows": [
+				{
+					"key": "Checkout/7#0",
+					"element": {
+						"tag": "header",
+						"words": "",
+						"snippet": "<header style=\"background:#F5C2C8;border-bottom:2px solid #3A2A22\" data-dc-tpl=\"7\"> <div style=\"max-width:1160px;margin:0 auto;padding:0 20px;height:72px;displa"
+					},
+					"parent": null,
+					"siblings": [],
+					"confidence": 0.58,
+					"candidates": [
+						{
+							"block": "sgs/site-header",
+							"score": 1.4,
+							"share": 0.583
+						},
+						{
+							"block": "sgs/hero",
+							"score": 1,
+							"share": 0.417
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:checkout-header:Checkout/7#0",
+					"draftId": "Checkout:7",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Checkout/8#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/site-header-row"
+						}
+					],
+					"siblingCount": 0,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 0,
+							"y": 0,
+							"w": 1440,
+							"h": 74
+						},
+						{
+							"width": 768,
+							"x": 0,
+							"y": 0,
+							"w": 768,
+							"h": 74
+						},
+						{
+							"width": 375,
+							"x": 0,
+							"y": 0,
+							"w": 375,
+							"h": 74
+						}
+					]
+				},
+				{
+					"key": "Checkout/11#0",
+					"element": {
+						"tag": "img",
+						"words": "",
+						"snippet": "<img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:{{ logoH }};width:auto\" data-dc-tpl=\"11\">"
+					},
+					"parent": {
+						"draftId": "Checkout:10",
+						"tag": "a",
+						"block": "sgs/container"
+					},
+					"siblings": [],
+					"confidence": 0.66,
+					"candidates": [
+						{
+							"block": "sgs/responsive-logo",
+							"score": 0.85,
+							"share": 0.773
+						},
+						{
+							"block": "sgs/media",
+							"score": 0.25,
+							"share": 0.227
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:checkout-header:Checkout/11#0",
+					"draftId": "Checkout:11",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Checkout/10#0",
+							"tag": "a",
+							"words": "",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Checkout/12#0",
+							"tag": "span",
+							"words": "Secure checkout",
+							"block": "sgs/text"
+						}
+					],
+					"siblingCount": 0,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 645,
+							"y": 11,
+							"w": 150,
+							"h": 50
+						},
+						{
+							"width": 768,
+							"x": 309,
+							"y": 11,
+							"w": 150,
+							"h": 50
+						},
+						{
+							"width": 375,
+							"x": 127.5,
+							"y": 16,
+							"w": 120,
+							"h": 40
+						}
+					]
+				},
+				{
+					"key": "Checkout/12#0",
+					"element": {
+						"tag": "span",
+						"words": "Secure checkout",
+						"snippet": "<span style=\"justify-self:end;font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px\" data-dc-tpl=\"12\"><svg width=\"16\" height=\"16\" sc-camel-view"
+					},
+					"parent": {
+						"draftId": "Checkout:8",
+						"tag": "div",
+						"block": "sgs/site-header-row"
+					},
+					"siblings": [
+						{
+							"draftId": "Checkout:9",
+							"tag": "a",
+							"block": "sgs/button"
+						},
+						{
+							"draftId": "Checkout:10",
+							"tag": "a",
+							"block": "sgs/container"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:checkout-header:Checkout/12#0",
+					"draftId": "Checkout:12",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Checkout/11#0",
+							"tag": "img",
+							"words": "",
+							"block": "sgs/responsive-logo"
+						}
+					],
+					"siblingCount": 2,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 1147.5,
+							"y": 27.5,
+							"w": 132.5,
+							"h": 17
+						},
+						{
+							"width": 768,
+							"x": 615.5,
+							"y": 27.5,
+							"w": 132.5,
+							"h": 17
+						},
+						{
+							"width": 375,
+							"x": 287.5,
+							"y": 27.5,
+							"w": 67.5,
+							"h": 17
 						}
 					]
 				}
