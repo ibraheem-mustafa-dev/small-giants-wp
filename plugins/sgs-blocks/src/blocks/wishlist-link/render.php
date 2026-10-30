@@ -44,7 +44,7 @@ $icon_html       = ( 'lucide' === $icon_source )
 	? sgs_get_lucide_icon( $icon_name )
 	: sgs_get_lucide_icon( 'heart' ); // Only lucide is offered for this icon-link; any other stored source falls back safely.
 
-$label      = sanitize_text_field( (string) ( $attributes['label'] ?? __( 'Wishlist', 'sgs-blocks' ) ) );
+$label      = (string) ( $attributes['label'] ?? __( 'Wishlist', 'sgs-blocks' ) );
 $show_count = ! empty( $attributes['showCount'] );
 
 // ── Href resolution: an explicit URL wins; otherwise the Saved items page
@@ -197,6 +197,6 @@ $badge_html = $show_count
 <?php endif; ?>
 <a <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() is pre-sanitised. ?> href="<?php echo $href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url() above. ?>" aria-label="<?php echo esc_attr( $aria_label ); ?>" data-sgs-wishlist-link>
 	<span class="sgs-wishlist-link__icon" aria-hidden="true"><?php echo $icon_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted Lucide SVG. ?></span>
-	<span class="sgs-wishlist-link__label"><?php echo esc_html( $label ); ?></span>
+	<span class="sgs-wishlist-link__label"><?php echo sgs_rich_text_kses( $label, false ); ?></span>
 	<?php echo $badge_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from static markup + absint(0) above. ?>
 </a>

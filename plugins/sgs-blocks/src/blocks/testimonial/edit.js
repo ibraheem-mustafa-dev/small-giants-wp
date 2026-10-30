@@ -59,6 +59,7 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
 	RICH_TEXT_BODY,
 	RICH_TEXT_EMPHASIS,
+	RICH_TEXT_FREE_TEXT,
 	RICH_TEXT_PLAIN,
 } from '../../utils/rich-text-formats';
 
@@ -2285,7 +2286,7 @@ export default function Edit( {
 								'Role / job title',
 								'sgs-blocks'
 							) }
-							allowedFormats={ RICH_TEXT_PLAIN }
+							allowedFormats={ RICH_TEXT_FREE_TEXT }
 						/>
 						<RichText
 							tagName="span"
@@ -2296,7 +2297,7 @@ export default function Edit( {
 								setAttributes( { orgName: val } )
 							}
 							placeholder={ __( 'Organisation', 'sgs-blocks' ) }
-							allowedFormats={ RICH_TEXT_PLAIN }
+							allowedFormats={ RICH_TEXT_FREE_TEXT }
 						/>
 					</div>
 				</footer>

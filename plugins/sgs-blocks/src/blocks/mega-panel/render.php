@@ -1131,7 +1131,7 @@ $wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
 // a free text attr rendered outside a child SGS block.
 $eyebrow_html = '';
 if ( 'brands' === $variant && '' !== trim( $brands_eyebrow ) ) {
-	$eyebrow_html = '<p class="sgs-mega-panel__eyebrow">' . esc_html( $brands_eyebrow ) . '</p>';
+	$eyebrow_html = '<p class="sgs-mega-panel__eyebrow">' . sgs_rich_text_kses( $brands_eyebrow ) . '</p>';
 }
 
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $css pre-sanitised (sgs_colour_value / sgs_css_length_sanitise / sgs_emit_responsive_css / enum whitelists), wp_strip_all_tags guards </style>; $wrapper_attributes from get_block_wrapper_attributes(); $eyebrow_html built from esc_html() above; $content is trusted WP InnerBlocks output.

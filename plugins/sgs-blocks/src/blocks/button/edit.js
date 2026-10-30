@@ -70,6 +70,8 @@ import { buttonFocusState, focusHostBorder } from './focus-style';
 import { useFocusPreview } from './components/FocusPreviewToggle';
 import { RICH_TEXT_EMPHASIS } from '../../utils/rich-text-formats';
 
+import AuthoredText from '../../components/AuthoredText';
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 const ICON_POSITION_OPTIONS = [
 	{ label: __( 'Before label', 'sgs-blocks' ), value: 'before' },
 	{ label: __( 'After label', 'sgs-blocks' ), value: 'after' },
@@ -561,7 +563,7 @@ export default function Edit( {
 							) }
 						/>
 					) }
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Note', 'sgs-blocks' ) }
 						value={ attributes.note || '' }
 						onChange={ ( val ) => setAttributes( { note: val } ) }
@@ -569,8 +571,6 @@ export default function Edit( {
 							'Optional. A short muted line at the far end of the button, e.g. a price hint "from +£59".',
 							'sgs-blocks'
 						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Aria label', 'sgs-blocks' ) }
@@ -1442,9 +1442,7 @@ export default function Edit( {
 					/>
 				) }
 				{ attributes.note && (
-					<span className="sgs-button__note">
-						{ attributes.note }
-					</span>
+					<AuthoredText className="sgs-button__note" value={ attributes.note } />
 				) }
 				{ hasIcon &&
 					( iconPosition === 'after' || iconPosition === 'only' ) &&

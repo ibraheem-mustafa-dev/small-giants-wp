@@ -17,17 +17,14 @@
  */
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import {
-	PanelBody,
-	SelectControl,
-	TextControl,
-	RangeControl,
-} from '@wordpress/components';
+import { PanelBody, SelectControl, RangeControl } from '@wordpress/components';
 import { LogicalAlignControl, IconPicker, IconPreview, ResponsiveOverride, ResponsiveBoxControl, TypographyControls, SgsColourPanel, SgsLengthControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle, usePreviewTier, typographyPreviewStyle,  tierBoxLonghands, resolveTier } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { cssLengthValue } from '../../utils/css-length';
 
+import AuthoredText from '../../components/AuthoredText';
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
@@ -331,15 +328,13 @@ export default function Edit( { attributes, setAttributes } ) {
 
 					{ 'text' === contentMode && (
 						<>
-							<TextControl
+							<SgsFreeTextField type="rich"
 								label={ __( 'Label text', 'sgs-blocks' ) }
 								value={ contentText }
 								onChange={ ( val ) =>
 									setAttributes( { contentText: val } )
 								}
 								placeholder={ __( 'OR', 'sgs-blocks' ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 							{ /* Text colour moved to the top-level SgsColourPanel
 							   (D618/D621) — "Content colour" row. */ }
@@ -532,7 +527,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									colourVar
 								) }
 							>
-								{ contentText || __( 'Label…', 'sgs-blocks' ) }
+								<AuthoredText value={ contentText || __( 'Label…', 'sgs-blocks' ) } />
 							</span>
 						) }
 					</span>

@@ -30,6 +30,8 @@ import {
 	textPaintPreview,
 } from '../../utils';
 
+import AuthoredText from '../../components/AuthoredText';
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
  * @param {Object}   props               Block props.
  * @param {Object}   props.attributes    Block attributes.
@@ -136,9 +138,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { wishlistUrl: value } )
 						}
 					/>
-					<TextControl
-						__next40pxDefaultSize
-						__nextHasNoMarginBottom
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Label', 'sgs-blocks' ) }
 						value={ label }
 						onChange={ ( value ) =>
@@ -235,7 +235,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								  }
 						}
 					>
-						{ label }
+						<AuthoredText value={ label } />
 					</span>
 				) : null }
 				{ showCount ? (

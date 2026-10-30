@@ -21,6 +21,6 @@ if ( ! function_exists( 'sgs_button_note_html' ) ) {
 	 */
 	function sgs_button_note_html( array $attributes ): string {
 		$note = isset( $attributes['note'] ) ? trim( (string) $attributes['note'] ) : '';
-		return '' === $note ? '' : '<span class="sgs-button__note">' . esc_html( $note ) . '</span>';
+		return '' === $note ? '' : '<span class="sgs-button__note">' . sgs_rich_text_kses( $note, false ) . '</span>';
 	}
 }

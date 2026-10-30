@@ -807,7 +807,7 @@ if ( $needs_wrapper ) {
 		'<%1$s id="%2$s" class="sgs-icon-list__heading">%3$s</%1$s>',
 		esc_attr( $heading_level ),
 		esc_attr( $heading_id ),
-		wp_kses_post( $heading_text )
+		sgs_rich_text_kses( $heading_text )
 	) : '';
 	printf(
 		'<%1$s %2$s>%3$s<%4$s class="%5$s">%6$s</%4$s></%1$s>',

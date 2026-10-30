@@ -219,7 +219,7 @@ if ( $synced_is_empty || $woo_is_empty ) {
 		printf(
 			'<div %s><p class="sgs-trustpilot-reviews__coming-soon">%s</p></div>',
 			$wrapper_attrs, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes returns escaped attribute string.
-			esc_html( $empty_state_fallback )
+			sgs_rich_text_kses( $empty_state_fallback )
 		);
 	}
 	// emptyState=hide: output nothing — no gap, no layout break.
@@ -456,7 +456,7 @@ if ( $show_source_header ) :
 	?>
 	<div class="sgs-trustpilot-reviews__header sgs-on-light">
 		<?php if ( '' !== $trust_score_label ) : ?>
-			<span class="sgs-trustpilot-reviews__label"><?php echo esc_html( $trust_score_label ); ?></span>
+			<span class="sgs-trustpilot-reviews__label"><?php echo sgs_rich_text_kses( $trust_score_label ); ?></span>
 		<?php endif; ?>
 
 		<img
@@ -524,7 +524,7 @@ endif;
 
 if ( $show_subtitle && '' !== $subtitle_text ) :
 	?>
-	<p class="sgs-trustpilot-reviews__subtitle"><?php echo esc_html( $subtitle_text ); ?></p>
+	<p class="sgs-trustpilot-reviews__subtitle"><?php echo sgs_rich_text_kses( $subtitle_text ); ?></p>
 	<?php
 endif;
 ?>

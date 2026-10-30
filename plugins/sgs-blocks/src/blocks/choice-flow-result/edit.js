@@ -2,8 +2,9 @@ import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, RichText } from '@wordpress/block-editor';
 import { PanelBody, TextControl, SelectControl, ToggleControl } from '@wordpress/components';
 import { NumberControl } from '../../components/primitives';
-import { RICH_TEXT_BODY, RICH_TEXT_PLAIN } from '../../utils/rich-text-formats';
+import { RICH_TEXT_BODY, RICH_TEXT_FREE_TEXT } from '../../utils/rich-text-formats';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		heading,
@@ -126,13 +127,11 @@ export default function Edit( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
-						<TextControl
+						<SgsFreeTextField type="rich"
 							label={ __( 'Success message', 'sgs-blocks' ) }
 							value={ successMessage }
 							onChange={ ( val ) => setAttributes( { successMessage: val } ) }
 							help={ __( 'Shown in place of the form once the submission succeeds.', 'sgs-blocks' ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
 						/>
 						</>
 					) }
@@ -159,7 +158,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					value={ heading }
 					onChange={ ( val ) => setAttributes( { heading: val } ) }
 					placeholder={ __( 'Your recommended result…', 'sgs-blocks' ) }
-					allowedFormats={ RICH_TEXT_PLAIN }
+					allowedFormats={ RICH_TEXT_FREE_TEXT }
 				/>
 				<RichText
 					tagName="div"

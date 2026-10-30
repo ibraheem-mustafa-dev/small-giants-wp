@@ -508,9 +508,9 @@ if ( ( '' !== $text_before || '' !== $text_after ) && 0 === strpos( $html, '<p c
 	$html = '<p class="sgs-business-info sgs-business-info--inline-text ' . substr( $html, strlen( '<p class="sgs-business-info ' ) );
 	$open = strpos( $html, '>' ) + 1;
 	$html = substr( $html, 0, $open )
-		. ( '' !== $text_before ? '<span class="sgs-business-info__before">' . esc_html( $text_before ) . '</span>' : '' )
+		. ( '' !== $text_before ? '<span class="sgs-business-info__before">' . sgs_rich_text_kses( $text_before ) . '</span>' : '' )
 		. substr( $html, $open, -4 )
-		. ( '' !== $text_after ? '<span class="sgs-business-info__after">' . esc_html( $text_after ) . '</span>' : '' )
+		. ( '' !== $text_after ? '<span class="sgs-business-info__after">' . sgs_rich_text_kses( $text_after ) . '</span>' : '' )
 		. '</p>';
 }
 

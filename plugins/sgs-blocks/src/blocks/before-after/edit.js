@@ -52,6 +52,7 @@ import {
 import { BooleanResponsiveControl } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 const HEIGHT_UNITS = [
 	{ value: 'px', label: 'px' },
 	{ value: 'vh', label: 'vh' },
@@ -776,23 +777,19 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					{ showLabels && (
 						<>
-							<TextControl
+							<SgsFreeTextField type="rich"
 								label={ __( 'Before label', 'sgs-blocks' ) }
 								value={ beforeLabel }
 								onChange={ ( val ) =>
 									setAttributes( { beforeLabel: val } )
 								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
-							<TextControl
+							<SgsFreeTextField type="rich"
 								label={ __( 'After label', 'sgs-blocks' ) }
 								value={ afterLabel }
 								onChange={ ( val ) =>
 									setAttributes( { afterLabel: val } )
 								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 							<TypographyControls
 								attributes={ attributes }

@@ -10,7 +10,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { SelectControl, TextControl } from '@wordpress/components';
+import { SelectControl } from '@wordpress/components';
 import {
 	DesignTokenPicker,
 	SgsLengthControl,
@@ -19,6 +19,7 @@ import {
 import { Section, Row, typographyAttrs } from './panel-kit';
 import { TierBox, TierLength, TypographyRow, typoTarget } from './panel-fields';
 
+import SgsFreeTextField from '../../../components/SgsFreeTextField';
 export const HEADER_TYPOGRAPHY_PREFIXES = [
 	'sourceLabel',
 	'score',
@@ -83,7 +84,7 @@ export default function HeaderPanel( { attributes, setAttributes } ) {
 				attrs={ [ 'sourceLabel' ] }
 				{ ...shared }
 			>
-				<TextControl
+				<SgsFreeTextField type="rich"
 					label={ __( 'Source caption', 'sgs-blocks' ) }
 					value={ attributes.sourceLabel }
 					onChange={ ( value ) =>
@@ -93,7 +94,6 @@ export default function HeaderPanel( { attributes, setAttributes } ) {
 						'Small text beside the logo, for example "Google Reviews". Leave empty for none.',
 						'sgs-blocks'
 					) }
-					__next40pxDefaultSize
 				/>
 			</Row>
 			<Row

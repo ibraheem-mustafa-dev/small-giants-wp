@@ -101,7 +101,7 @@ if ( $query->have_posts() ) {
 	// No posts: the client's own message, or nothing at all (the grid wrapper still closes below).
 	$empty_message = trim( (string) ( $attributes['emptyMessage'] ?? '' ) );
 	if ( '' !== $empty_message ) {
-		echo '<div class="sgs-post-grid__empty" role="status"><p class="sgs-post-grid__empty-text">' . esc_html( $empty_message ) . '</p></div>';
+		echo '<div class="sgs-post-grid__empty" role="status"><p class="sgs-post-grid__empty-text">' . sgs_rich_text_kses( $empty_message ) . '</p></div>';
 	}
 }
 echo '</div>';

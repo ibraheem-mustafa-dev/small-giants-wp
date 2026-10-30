@@ -376,7 +376,7 @@ if ( $mobile_decls ) {
 $heading_html = sprintf(
 	'<%1$s class="sgs-product-faq__heading">%2$s</%1$s>',
 	esc_attr( $heading_tag ),
-	esc_html( $heading )
+	sgs_rich_text_kses( $heading, false )
 );
 
 $inner_html = $heading_html

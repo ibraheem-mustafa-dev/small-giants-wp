@@ -43,6 +43,7 @@ import {
 	todayRowColourRows,
 } from './OpenStatusPanels';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 /** Labels for the type selector drop-down. */
 const TYPE_OPTIONS = [
 	{ label: __( 'Phone Number', 'sgs-blocks' ), value: 'phone' },
@@ -578,7 +579,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Surrounding Text', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<TextControl
+					<SgsFreeTextField type="rich"
 						label={ __( 'Text before', 'sgs-blocks' ) }
 						help={ __(
 							'Shown before the value in the same line, e.g. "Call the clinic on ". Include the trailing space. Single-line values only.',
@@ -588,10 +589,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) =>
 							setAttributes( { textBefore: val } )
 						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
-					<TextControl
+					<SgsFreeTextField type="rich"
 						label={ __( 'Text after', 'sgs-blocks' ) }
 						help={ __(
 							'Shown straight after the value, e.g. ", or send us a message."',
@@ -601,8 +600,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) =>
 							setAttributes( { textAfter: val } )
 						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 				</PanelBody>
 

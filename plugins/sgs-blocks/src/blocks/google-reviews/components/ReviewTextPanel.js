@@ -12,6 +12,7 @@ import { ToggleControl, RangeControl, TextControl } from '@wordpress/components'
 import { Section, Row, typographyAttrs } from './panel-kit';
 import { TypographyRow, typoTarget } from './panel-fields';
 
+import SgsFreeTextField from '../../../components/SgsFreeTextField';
 export const REVIEW_TEXT_TYPOGRAPHY_PREFIXES = [ 'text', 'reviewLink', 'footnote' ];
 
 /** Every attribute this section owns (drives "Reset all"). */
@@ -72,12 +73,11 @@ export default function ReviewTextPanel( { attributes, setAttributes } ) {
 				) }
 			</Row>
 			<Row label={ __( 'Footnote', 'sgs-blocks' ) } attrs={ [ 'footnote' ] } { ...shared }>
-				<TextControl
+				<SgsFreeTextField type="rich"
 					label={ __( 'Footnote', 'sgs-blocks' ) }
 					value={ attributes.footnote }
 					onChange={ ( value ) => setAttributes( { footnote: value } ) }
 					help={ __( 'A short line under the reviews, for example "Scroll for more". Leave empty for none.', 'sgs-blocks' ) }
-					__next40pxDefaultSize
 				/>
 			</Row>
 			<TypographyRow

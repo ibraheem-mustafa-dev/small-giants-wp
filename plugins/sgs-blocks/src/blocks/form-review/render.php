@@ -90,9 +90,9 @@ if ( '' !== $sgs_fr_css ) {
 	echo '<style>' . wp_strip_all_tags( $sgs_fr_css ) . '</style>';
 }
 echo '<div ' . $wrapper_attributes . '>';
-echo '<' . esc_attr( $heading_level ) . ' class="sgs-form-review__heading">' . esc_html( $heading ) . '</' . esc_attr( $heading_level ) . '>';
+echo '<' . esc_attr( $heading_level ) . ' class="sgs-form-review__heading">' . sgs_rich_text_kses( $heading ) . '</' . esc_attr( $heading_level ) . '>';
 if ( '' !== $intro ) {
-	echo '<p class="sgs-form-review__intro">' . esc_html( $intro ) . '</p>';
+	echo '<p class="sgs-form-review__intro">' . sgs_rich_text_kses( $intro ) . '</p>';
 }
 echo '<div class="sgs-form-review__cards"></div>';
 echo '<noscript><p class="sgs-form-review__noscript">' . esc_html__( 'JavaScript is required to preview your form responses.', 'sgs-blocks' ) . '</p></noscript>';

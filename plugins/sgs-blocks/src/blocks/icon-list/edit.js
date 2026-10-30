@@ -57,6 +57,8 @@ import {
 	ToggleGroupControlOption,
 } from '../../components/primitives';
 
+import AuthoredText from '../../components/AuthoredText';
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 // The icon sources render.php's $render_icon draws (lucide, emoji, wp-icon, dashicon): the picker offers only these.
 const ICON_LIST_SOURCES = [ 'lucide', 'emoji', 'wp-icon', 'dashicon' ];
 
@@ -689,7 +691,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						className="sgs-icon-list__heading"
 						style={ elementPreview.heading }
 					>
-						{ heading || selectedMenuName }
+						<AuthoredText value={ heading || selectedMenuName } />
 					</HeadingTag>
 				) }
 				<p style={ { opacity: 0.6, fontStyle: 'italic' } }>
@@ -712,7 +714,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					className="sgs-icon-list__heading"
 					style={ elementPreview.heading }
 				>
-					{ heading }
+					<AuthoredText value={ heading } />
 				</HeadingTag>
 				<ListTag { ...blockProps }>{ listItemNodes }</ListTag>
 			</div>
@@ -928,7 +930,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Heading', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<TextControl
+					<SgsFreeTextField type="rich"
 						label={ __( 'Heading text', 'sgs-blocks' ) }
 						help={
 							'menu' === resolvedSource
@@ -948,8 +950,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onChange={ ( val ) =>
 							setAttributes( { heading: val } )
 						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 					{ ( heading ||
 						( 'menu' === resolvedSource && selectedMenuName ) ) && (

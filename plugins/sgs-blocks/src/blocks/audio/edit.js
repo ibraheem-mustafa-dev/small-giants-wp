@@ -14,6 +14,8 @@ import { SgsColourPanel, ResponsiveBoxControl, resolveColourToken, ResponsiveOve
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { usePreviewTier, boxPreview } from '../../utils';
 
+import AuthoredText from '../../components/AuthoredText';
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 // Shared with isReactive below so the two can't drift apart. `toggle` is
 // listed as reactive too — its `bars` icon (the default) reuses the same
 // analyser loop, so the Reactivity slider is relevant to it exactly like
@@ -296,12 +298,10 @@ export default function Edit( { attributes, setAttributes } ) {
 							__next40pxDefaultSize
 						/>
 					) }
-					<TextControl
+					<SgsFreeTextField type="rich"
 						label={ __( 'Title / label (optional)', 'sgs-blocks' ) }
 						value={ title || '' }
 						onChange={ ( value ) => setAttributes( { title: value } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -428,7 +428,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					)
 				) : (
 					<div className="sgs-audio-editor-preview">
-						{ title && <p className="sgs-audio__title">{ title }</p> }
+						{ title && <AuthoredText as="p" className="sgs-audio__title" value={ title } /> }
 						<audio className="sgs-audio__native" controls src={ audioUrl } style={ { width: '100%' } } />
 						{ isReactive && (
 							<div style={ { marginTop: '12px', display: 'flex', alignItems: 'flex-end', gap: '4px', height: '60px' } }>

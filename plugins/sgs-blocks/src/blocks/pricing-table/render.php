@@ -54,7 +54,7 @@ $cta_style               = sanitize_key( $attributes['ctaStyle'] ?? 'accent' );
 $cta_colour              = $attributes['ctaColour'] ?? '';
 $cta_background          = $attributes['ctaBackground'] ?? '';
 $cta_background_gradient = (string) ( $attributes['ctaBackgroundGradient'] ?? '' );
-$badge_text              = sanitize_text_field( $attributes['popularBadgeText'] ?? __( 'Popular', 'sgs-blocks' ) );
+$badge_text              = (string) ( $attributes['popularBadgeText'] ?? __( 'Popular', 'sgs-blocks' ) );
 $badge_colour            = $attributes['popularBadgeColour'] ?? 'white';
 $badge_bg                = $attributes['popularBadgeBackground'] ?? 'accent';
 $badge_bg_gradient       = (string) ( $attributes['popularBadgeBackgroundGradient'] ?? '' );
@@ -84,8 +84,8 @@ $default_period = ( 'yearly-only' === $billing_toggle ) ? 'yearly' : 'monthly';
 $toggle_style       = in_array( $attributes['toggleStyle'] ?? 'text', array( 'text', 'button' ), true )
 	? ( $attributes['toggleStyle'] ?? 'text' )
 	: 'text';
-$toggle_monthly_lbl = sanitize_text_field( $attributes['billingToggleMonthlyLabel'] ?? __( 'Monthly', 'sgs-blocks' ) );
-$toggle_yearly_lbl  = sanitize_text_field( $attributes['billingToggleYearlyLabel'] ?? __( 'Yearly', 'sgs-blocks' ) );
+$toggle_monthly_lbl = (string) ( $attributes['billingToggleMonthlyLabel'] ?? __( 'Monthly', 'sgs-blocks' ) );
+$toggle_yearly_lbl  = (string) ( $attributes['billingToggleYearlyLabel'] ?? __( 'Yearly', 'sgs-blocks' ) );
 
 // ── Unique block ID for billing toggle radio inputs ──────────────────────────
 $block_id = wp_unique_id( 'sgs-pricing-' );
@@ -119,11 +119,11 @@ if ( $show_toggle ) {
 		esc_attr( $monthly_id ),
 		esc_attr( $block_id ),
 		esc_attr( $monthly_id ),
-		esc_html( $toggle_monthly_lbl ),
+		sgs_rich_text_kses( $toggle_monthly_lbl, false ),
 		esc_attr( $yearly_id ),
 		esc_attr( $block_id ),
 		esc_attr( $yearly_id ),
-		esc_html( $toggle_yearly_lbl )
+		sgs_rich_text_kses( $toggle_yearly_lbl, false )
 	);
 }
 
@@ -202,7 +202,7 @@ foreach ( $plans as $plan_index => $plan ) {
 	if ( $plan_highlighted ) {
 		$badge_html = sprintf(
 			'<div class="sgs-pricing-table__badge">%s</div>',
-			esc_html( $badge_text )
+			sgs_rich_text_kses( $badge_text )
 		);
 	}
 

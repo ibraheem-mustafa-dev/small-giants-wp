@@ -18,6 +18,7 @@
 import { __ } from '@wordpress/i18n';
 import { SelectControl, TextControl, TextareaControl } from '@wordpress/components';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
  * @param {Object}   props
  * @param {Object}   props.attributes    Block attributes.
@@ -28,7 +29,7 @@ export default function IntroField( { attributes, setAttributes } ) {
 
 	return (
 		<>
-			<TextareaControl
+			<SgsFreeTextField type="rich" multiline
 				label={ __( 'Intro text', 'sgs-blocks' ) }
 				value={ intro || '' }
 				onChange={ ( val ) => setAttributes( { intro: val } ) }
@@ -36,8 +37,6 @@ export default function IntroField( { attributes, setAttributes } ) {
 					'An optional short line under the question title. Keep it brief — the showcase layout caps it to about 56 characters wide.',
 					'sgs-blocks'
 				) }
-				rows={ 2 }
-				__nextHasNoMarginBottom
 			/>
 			{ intro && (
 				<SelectControl

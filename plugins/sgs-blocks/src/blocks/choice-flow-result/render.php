@@ -158,7 +158,7 @@ if ( 'email' === $result_action ) {
 	echo '>' . esc_html( $submit_label ) . '</button>';
 	echo '<div class="sgs-choice-flow-result__email-status" role="status" aria-live="polite"></div>';
 	echo '</form>';
-	echo '<div class="sgs-choice-flow-result__email-success" hidden>' . esc_html( $success_message ) . '</div>';
+	echo '<div class="sgs-choice-flow-result__email-success" hidden>' . sgs_rich_text_kses( $success_message ) . '</div>';
 }
 
 echo '</div>';

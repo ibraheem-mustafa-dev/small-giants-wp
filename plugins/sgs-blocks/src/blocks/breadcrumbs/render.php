@@ -382,7 +382,7 @@ $crumbs = array();
 // Home.
 if ( $show_home ) {
 	$crumbs[] = array(
-		'label' => esc_html( $home_label ),
+		'label' => sgs_rich_text_kses( $home_label, false ),
 		'url'   => esc_url( home_url( '/' ) ),
 	);
 }

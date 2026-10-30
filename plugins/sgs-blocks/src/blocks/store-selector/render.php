@@ -268,7 +268,7 @@ $output .= '<div ' . $wrapper_attrs . '>';
 // Trigger button.
 $output .= '<button type="button" class="sgs-store-selector__trigger" aria-expanded="false" aria-controls="' . $list_id . '">';
 if ( '' !== $trigger_prefix ) {
-	$output .= '<span class="sgs-store-selector__prefix">' . esc_html( $trigger_prefix ) . '</span>';
+	$output .= '<span class="sgs-store-selector__prefix">' . sgs_rich_text_kses( $trigger_prefix, false ) . '</span>';
 }
 if ( '' !== $current_store['flagUrl'] ) {
 	$output .= '<img class="sgs-store-selector__flag" src="' . esc_url( $current_store['flagUrl'] ) . '" alt="" width="' . esc_attr( (string) $flag_desktop['w'] ) . '" height="' . esc_attr( (string) $flag_desktop['h'] ) . '" loading="lazy" decoding="async">';

@@ -789,7 +789,7 @@ $scoped_css = array_merge( $scoped_css, $border['rules'] );
 $bs_title_html  = '';
 $bs_title_value = (string) ( $attributes['title'] ?? '' );
 if ( '' !== trim( wp_strip_all_tags( $bs_title_value ) ) ) {
-	$bs_title_html = '<p class="sgs-brand-strip__title">' . wp_kses_post( $bs_title_value ) . '</p>';
+	$bs_title_html = '<p class="sgs-brand-strip__title">' . sgs_rich_text_kses( $bs_title_value ) . '</p>';
 	$bs_title_sel  = "{$root_sel} .sgs-brand-strip__title";
 	$scoped_css[]  = sgs_text_states_css(
 		$bs_title_sel,

@@ -148,7 +148,7 @@ $wrapper_attrs = get_block_wrapper_attributes(
 
 $label_html = '';
 if ( '' !== $label_text ) {
-	$label_html = '<span class="sgs-local-time__label">' . esc_html( $label_text ) . '</span>';
+	$label_html = '<span class="sgs-local-time__label">' . sgs_rich_text_kses( $label_text ) . '</span>';
 }
 
 $sep_html = '';

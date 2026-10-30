@@ -29,6 +29,7 @@ import {
 } from '@wordpress/components';
 import { NumberControl, ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 // D649 — no JSON `enum` reliance in the UI list order; mirrors sgs/icon-list's
 // allow-list exactly (render.php validates the same set independently).
 const HEADING_LEVEL_OPTIONS = [
@@ -241,13 +242,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					) }
 					{ ( dataSource === 'synced' || dataSource === 'woocommerce' ) && emptyState === 'coming-soon' && (
-						<TextControl
+						<SgsFreeTextField type="rich"
 							label={ __( 'Empty state message', 'sgs-blocks' ) }
 							value={ emptyStateMessage }
 							onChange={ ( value ) => setAttributes( { emptyStateMessage: value } ) }
 							placeholder={ __( 'Reviews coming soon', 'sgs-blocks' ) }
 							help={ __( 'Leave blank to use the default message.', 'sgs-blocks' ) }
-							__next40pxDefaultSize
 						/>
 					) }
 					{ dataSource === 'woocommerce' && (
@@ -354,12 +354,11 @@ export default function Edit( { attributes, setAttributes } ) {
 							hasValue={ () => !! trustScoreLabel }
 							onDeselect={ () => setAttributes( { trustScoreLabel: '' } ) }
 						>
-							<TextControl
+							<SgsFreeTextField type="rich"
 								label={ __( 'Score label override', 'sgs-blocks' ) }
 								value={ trustScoreLabel }
 								onChange={ ( value ) => setAttributes( { trustScoreLabel: value } ) }
 								placeholder={ __( 'Auto: Excellent / Great / Good / Average / Poor / Bad', 'sgs-blocks' ) }
-								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -411,11 +410,10 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange={ ( value ) => setAttributes( { showSubtitle: value } ) }
 							/>
 							{ showSubtitle && (
-								<TextControl
+								<SgsFreeTextField type="rich"
 									label={ __( 'Subtitle text', 'sgs-blocks' ) }
 									value={ subtitleText }
 									onChange={ ( value ) => setAttributes( { subtitleText: value } ) }
-									__next40pxDefaultSize
 								/>
 							) }
 						</ToolsPanelItem>

@@ -3,10 +3,11 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { PanelBody, SelectControl, RangeControl, ToggleControl, TextControl } from '@wordpress/components';
+import { PanelBody, SelectControl, RangeControl, ToggleControl } from '@wordpress/components';
 import SgsMultiSelectField from '../../../components/SgsMultiSelectField';
 import { ORDER_BY_OPTIONS, ORDER_OPTIONS } from './constants';
 
+import SgsFreeTextField from '../../../components/SgsFreeTextField';
 export default function QueryPanel( { attributes, set, catSuggestions, tagSuggestions, selectedCatNames, selectedTagNames, onCategoriesChange, onTagsChange } ) {
 	const {
 		postType,
@@ -82,13 +83,11 @@ export default function QueryPanel( { attributes, set, catSuggestions, tagSugges
 						onChange={ set( 'excludeCurrent' ) }
 						__nextHasNoMarginBottom
 					/>
-					<TextControl
+					<SgsFreeTextField type="rich"
 						label={ __( 'Message when there are no posts', 'sgs-blocks' ) }
 						help={ __( 'Leave empty to show nothing.', 'sgs-blocks' ) }
 						value={ attributes.emptyMessage || '' }
 						onChange={ set( 'emptyMessage' ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 				</PanelBody>
 	);

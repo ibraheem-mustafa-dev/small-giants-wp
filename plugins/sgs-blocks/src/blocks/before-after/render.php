@@ -728,10 +728,10 @@ $scoped_css = array_merge( $scoped_css, $border['rules'] );
 		<?php if ( $show_labels && ( '' !== trim( $before_label ) || '' !== trim( $after_label ) ) ) : ?>
 			<div class="wp-block-sgs-before-after__labels" aria-hidden="true">
 				<?php if ( '' !== trim( $before_label ) ) : ?>
-					<span class="wp-block-sgs-before-after__label wp-block-sgs-before-after__label--before"><?php echo esc_html( $before_label ); ?></span>
+					<span class="wp-block-sgs-before-after__label wp-block-sgs-before-after__label--before"><?php echo sgs_rich_text_kses( $before_label ); ?></span>
 				<?php endif; ?>
 				<?php if ( '' !== trim( $after_label ) ) : ?>
-					<span class="wp-block-sgs-before-after__label wp-block-sgs-before-after__label--after"><?php echo esc_html( $after_label ); ?></span>
+					<span class="wp-block-sgs-before-after__label wp-block-sgs-before-after__label--after"><?php echo sgs_rich_text_kses( $after_label ); ?></span>
 				<?php endif; ?>
 			</div>
 		<?php endif; ?>
@@ -774,8 +774,8 @@ $scoped_css = array_merge( $scoped_css, $border['rules'] );
 				sprintf(
 					/* translators: %1$s: before label, %2$s: after label */
 					__( 'Drag to compare %1$s and %2$s', 'sgs-blocks' ),
-					'' !== trim( $before_label ) ? $before_label : __( 'before', 'sgs-blocks' ),
-					'' !== trim( $after_label ) ? $after_label : __( 'after', 'sgs-blocks' )
+					'' !== trim( $before_label ) ? sgs_authored_text_plain( $before_label ) : __( 'before', 'sgs-blocks' ),
+					'' !== trim( $after_label ) ? sgs_authored_text_plain( $after_label ) : __( 'after', 'sgs-blocks' )
 				)
 			);
 			?>

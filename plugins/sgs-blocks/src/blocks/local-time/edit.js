@@ -34,6 +34,8 @@ import {
 	usePreviewTier,
 } from '../../utils';
 
+import AuthoredText from '../../components/AuthoredText';
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
  * The IANA time-zone list, from the runtime when available. Every evergreen
  * browser and Node 18+ support Intl.supportedValuesOf; a handful of stable
@@ -142,7 +144,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const labelNode = label ? (
 		<span className="sgs-local-time__label" style={ labelStyle }>
-			{ label }
+			<AuthoredText value={ label } />
 		</span>
 	) : null;
 	const sepNode =
@@ -212,7 +214,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						allowReset
 						__nextHasNoMarginBottom
 					/>
-					<TextControl
+					<SgsFreeTextField type="rich"
 						label={ __( 'Label', 'sgs-blocks' ) }
 						help={ __(
 							'e.g. a city name — "London", "LA".',
@@ -220,8 +222,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 						value={ label }
 						onChange={ ( val ) => setAttributes( { label: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 					<ToggleGroupControl
 						label={ __( 'Label position', 'sgs-blocks' ) }

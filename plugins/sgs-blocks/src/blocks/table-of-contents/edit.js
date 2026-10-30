@@ -1,17 +1,12 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
-import {
-	PanelBody,
-	SelectControl,
-	TextControl,
-	ToggleControl,
-	RangeControl,
-	CheckboxControl,
-} from '@wordpress/components';
+import { PanelBody, SelectControl, ToggleControl, RangeControl, CheckboxControl } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, usePreviewTier,  tierBoxLonghands, sgsBorderPreview } from '../../utils';
 
+import AuthoredText from '../../components/AuthoredText';
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 const STYLE_OPTIONS = [
 	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },
 	{ label: __( 'Minimal', 'sgs-blocks' ), value: 'minimal' },
@@ -240,14 +235,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Title', 'sgs-blocks' ) }
 						value={ title }
 						onChange={ ( val ) =>
 							setAttributes( { title: val } )
 						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 					<p className="components-base-control__label">
 						{ __( 'Heading levels', 'sgs-blocks' ) }
@@ -472,7 +465,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								className="sgs-toc__title"
 								style={ titlePreviewStyle }
 							>
-								{ title }
+								<AuthoredText value={ title } />
 							</summary>
 						) }
 						{ headings.length > 0 ? (
@@ -521,7 +514,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								className="sgs-toc__title"
 								style={ titlePreviewStyle }
 							>
-								{ title }
+								<AuthoredText value={ title } />
 							</p>
 						) }
 						{ headings.length > 0 ? (

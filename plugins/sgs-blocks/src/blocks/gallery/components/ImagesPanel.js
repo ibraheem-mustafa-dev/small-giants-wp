@@ -2,11 +2,12 @@
  * Gallery settings-tab Images panel: thumbnail list, media picker and empty-state message.
  */
 import { __ } from '@wordpress/i18n';
-import { PanelBody, TextControl } from '@wordpress/components';
+import { PanelBody } from '@wordpress/components';
 import MediaGalleryPicker from '../../../components/MediaGalleryPicker';
 import GalleryThumbnail from './GalleryThumbnail';
 import { resolveGalleryMedia } from '../resolve-gallery-media';
 
+import SgsFreeTextField from '../../../components/SgsFreeTextField';
 export default function ImagesPanel( {
 	attributes,
 	setAttributes,
@@ -85,13 +86,11 @@ export default function ImagesPanel( {
 						</p>
 					) }
 
-					<TextControl
+					<SgsFreeTextField type="rich"
 						label={ __( 'Message when the gallery is empty', 'sgs-blocks' ) }
 						help={ __( 'Shown on the live site. Leave empty to show nothing.', 'sgs-blocks' ) }
 						value={ attributes.emptyMessage || '' }
 						onChange={ ( val ) => setAttributes( { emptyMessage: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 				</PanelBody>
 		</>

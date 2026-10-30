@@ -380,7 +380,7 @@ $wrapper = get_block_wrapper_attributes(
 		'data-smooth-scroll' => $smooth_scroll ? 'true' : 'false',
 		'data-scroll-offset' => (string) $scroll_offset,
 		'data-scroll-spy'    => $scroll_spy ? 'true' : 'false',
-		'aria-label'         => esc_attr( $toc_title ),
+		'aria-label'         => esc_attr( sgs_authored_text_plain( $toc_title ) ),
 	)
 );
 
@@ -411,14 +411,14 @@ if ( $collapsible ) {
 	printf( '<details%s>', $open_attr );
 	printf(
 		'<summary class="sgs-toc__title">%s</summary>',
-		esc_html( $toc_title )
+		sgs_rich_text_kses( $toc_title, false )
 	);
 } else {
 	printf( '<nav %s>', $wrapper ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	if ( $toc_title ) {
 		printf(
 			'<p class="sgs-toc__title">%s</p>',
-			esc_html( $toc_title )
+			sgs_rich_text_kses( $toc_title, false )
 		);
 	}
 }

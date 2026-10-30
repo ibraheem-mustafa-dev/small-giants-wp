@@ -6,13 +6,7 @@ import {
 	useSettings,
 } from '@wordpress/block-editor';
 import { useEntityRecords } from '@wordpress/core-data';
-import {
-	PanelBody,
-	SelectControl,
-	TextControl,
-	ToggleControl,
-	Notice,
-} from '@wordpress/components';
+import { PanelBody, SelectControl, ToggleControl, Notice } from '@wordpress/components';
 import { dialogPreviewStyle } from './preview-style';
 import { resolveColourToken, DesignTokenPicker, GradientCapableColourControl, SgsColourPanel, ScrimControls, scrimColourRow } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel } from '../../components/primitives';
@@ -20,6 +14,8 @@ import { resolveTextColourPreviewStyle, resolveBackgroundPaintPreviewStyle, back
 import { ModalAnchorNotice, ModalHashLoadToggle, ModalNoOpenerWarning } from './anchor-open-controls';
 import { DialogSizeBorderControls, DialogShadowControl, CloseStyleControl } from './dialog-style-controls';
 
+import AuthoredText from '../../components/AuthoredText';
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 const MAX_WIDTH_OPTIONS = [
 	{ label: __( 'Small (480px)', 'sgs-blocks' ), value: 'small' },
 	{ label: __( 'Medium (640px)', 'sgs-blocks' ), value: 'medium' },
@@ -321,14 +317,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					   Extracted to its own file since this file already
 					   exceeds the 250-line JS limit. */ }
 					<ModalAnchorNotice anchor={ anchor } />
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Button text', 'sgs-blocks' ) }
 						value={ triggerText }
 						onChange={ ( val ) =>
 							setAttributes( { triggerText: val } )
 						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 					<ToggleGroupControl
 						label={ __( 'Button style', 'sgs-blocks' ) }
@@ -543,7 +537,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						style={ triggerButtonStyle }
 						type="button"
 					>
-						{ triggerText }
+						<AuthoredText value={ triggerText } />
 					</button>
 				) }
 

@@ -1,14 +1,11 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import {
-	PanelBody,
-	TextControl,
-	ToggleControl,
-	SelectControl,
-} from '@wordpress/components';
+import { PanelBody, ToggleControl, SelectControl } from '@wordpress/components';
 import { FlexWrapControl, SgsColourPanel, textRow, ResponsiveBoxControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, SgsLengthControl } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, usePreviewTier, tierBoxLonghands, sgsLengthPreview, sgsBorderPreview } from '../../utils';
 
+import AuthoredText from '../../components/AuthoredText';
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 const SEPARATOR_OPTIONS = [
 	{ label: '/', value: '/' },
 	{ label: '›', value: '›' },
@@ -153,12 +150,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 					{ showHome && (
-						<TextControl
+						<SgsFreeTextField type="rich" noLink
 							label={ __( 'Home label', 'sgs-blocks' ) }
 							value={ homeLabel }
 							onChange={ ( val ) => setAttributes( { homeLabel: val } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
 						/>
 					) }
 					<SelectControl
@@ -288,7 +283,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				<ol className="sgs-breadcrumbs__list" style={ listStyle }>
 					{ showHome && (
 						<li className="sgs-breadcrumbs__item" style={ gapStyle }>
-							<a href="#" style={ linkPaint }>{ homeLabel }</a>
+							<AuthoredText as="a" href="#" style={ linkPaint } value={ homeLabel } />
 							<span className="sgs-breadcrumbs__separator" aria-hidden="true" style={ separatorPaint }>{ separator }</span>
 						</li>
 					) }

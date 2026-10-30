@@ -38,6 +38,7 @@ import {
 } from '../../components/primitives';
 import { SourcePanel, BrandTextStylePanel } from './source-controls';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 const LOGO_FIT_OPTIONS = [
 	{
 		label: __( 'Fit (whole logo, same proportions)', 'sgs-blocks' ),
@@ -1035,7 +1036,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Title', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<TextControl
+					<SgsFreeTextField type="rich"
 						label={ __( 'Title text', 'sgs-blocks' ) }
 						help={ __(
 							'Printed above the strip. Leave empty to show no title.',
@@ -1043,8 +1044,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 						value={ attributes.title || '' }
 						onChange={ ( val ) => setAttributes( { title: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 					<TypographyControls
 						fontSizePresets
