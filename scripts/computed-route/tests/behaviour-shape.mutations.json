@@ -232,5 +232,35 @@
 		"find": "export const readsScrollY = ( n ) => ( 'Identifier' === n?.type && /^(?:scrollY|pageYOffset)$/.test( n.name ) ) ||",
 		"replace": "export const readsScrollY = ( n ) => ( 'Identifier' === n?.type ) ||",
 		"why": "any name is the scroll position"
+	},
+	{
+		"file": "lib/motion-record-text.mjs",
+		"find": "const ms = 'NumericLiteral' === v?.type ? v.value : 'Identifier' === v?.type ? constant( v.name ) : null;",
+		"replace": "const ms = 'NumericLiteral' === v?.type ? v.value : null;",
+		"why": "a delay held in a constant is not read"
+	},
+	{
+		"file": "lib/motion-record-text.mjs",
+		"find": "for ( const c of names.flatMap( ( name ) => callsOf( tree, name ) ) ) {",
+		"replace": "for ( const c of [] ) {",
+		"why": "the timer call is never read"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "...( null === every ? [] : [ { attr: 'autoplaySpeed', value: every } ] ),",
+		"replace": "{ attr: 'autoplaySpeed', value: every ?? 6000 },",
+		"why": "an unread interval is written as a guess"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "...( null === every ? { unread: [ { field: 'autoplaySpeed',",
+		"replace": "...( false ? { unread: [ { field: 'autoplaySpeed',",
+		"why": "an unread interval raises no row"
+	},
+	{
+		"file": "lib/fill-behaviour.mjs",
+		"find": "( b.unread || [] ).forEach( ( u ) => out.unmapped.push(",
+		"replace": "( [] ).forEach( ( u ) => out.unmapped.push(",
+		"why": "a setting the behaviour could not read is silent"
 	}
 ]

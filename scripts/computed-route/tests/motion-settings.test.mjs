@@ -108,13 +108,13 @@ test( 'MUST FAIL: a script that scrolls the container to the accordion row it op
 } );
 
 test( 'MUST FAIL: a state-driven card entrance with an interval is the testimonial slider\'s autoplay: one card, the interval in ms, the change duration; the slide-change differences are accepted', () => {
-	const CARD = rec( 'S-4', { trigger: { type: 'state', detail: 'state.tIdx changes: prev/next, dots, or the 6.5s setInterval in componentDidMount', state_keys: [ 'tIdx' ] }, duration_ms: 520, easing: EASE, element: { dc: 'Site', template_tpl_id: '10', selector: 'ref setTCard', description: 'Gold testimonial card' },
+	const CARD = rec( 'S-4', { source: { code: 'this._iv = setInterval(() => this.setState({ tIdx: this.state.tIdx + 1 }), 6500)' }, trigger: { type: 'state', detail: 'state.tIdx changes: prev/next, dots, or the 6.5s setInterval in componentDidMount', state_keys: [ 'tIdx' ] }, duration_ms: 520, easing: EASE, element: { dc: 'Site', template_tpl_id: '10', selector: 'ref setTCard', description: 'Gold testimonial card' },
 		properties: [ { property: 'opacity', from: 0, to: 1 }, { property: 'transform', from: 'translateX(26px)', to: 'none' } ] } );
 	const { attrs, out } = run( [ [ 'sgs/testimonial-slider', '10' ] ], [ CARD ] );
 	assert.deepEqual( attrs(), { autoplay: true, autoplaySpeed: 6500, slidesVisible: 1, transitionDuration: '520' } );
 	assert.equal( attrs().pauseButton, undefined, 'the draft has no pause button, so the setting stays off' );
 	assert.match( out.notes.map( ( n ) => n.text ).join( '\n' ), /accepted difference: the slide change/ );
-	const plain = { ...CARD, trigger: { ...CARD.trigger, detail: 'state.tIdx changes' } };
+	const plain = { ...CARD, source: { code: "this._tCard.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 520 }); log('setInterval(f, 6500)')" } };
 	assert.equal( recogniseBehaviour( plain ), null, 'a card entrance with no interval is not the autoplay' );
 } );
 

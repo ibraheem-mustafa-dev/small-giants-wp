@@ -199,3 +199,30 @@ test( 'MUST FAIL: a page progress bar is a scale written from the scroll as a fr
 	assert.equal( bar( "'scaleX(' + hovered + ')'" ), null, 'a scale not read from the scroll' );
 	assert.equal( bar( "'translateX(' + window.scrollY / max + ')'" )?.effects?.[ 0 ]?.effect === 'scroll-progress', false, 'a move is not a bar' );
 } );
+
+// The slider's interval is the delay of the timer call in the record's own code (syntax tree), never the trigger's words.
+test( 'MUST FAIL: the autoplay interval is the setInterval delay in the record\'s code, a literal or a constant the code declares', () => {
+	const timer = ( code, detail = 'setInterval every 9999ms via advance' ) => ( { ...step, source: { ...step.source, code }, trigger: { type: 'interval', detail } } );
+	const speed = ( t ) => carouselOf( t, { records: [ t ] } ).blocks[ 'sgs/testimonial-slider' ].find( ( s ) => 'autoplaySpeed' === s.attr )?.value ?? null;
+	assert.equal( speed( timer( 'this.iv = setInterval(() => t.scrollTo({ left: t.scrollLeft + w }), 6000)' ) ), 6000, 'the code\'s delay, not the 9999 in the trigger words' );
+	assert.equal( speed( timer( 'const EVERY = 4500; this.iv = setInterval(() => t.scrollTo({ left: x }), EVERY)' ) ), 4500 );
+} );
+
+test( 'negative control: with no timer call in the record\'s code the interval is not written and a named row says so; a delay spelled in a string is no delay', () => {
+	const t = { ...step, source: { ...step.source, code: "t.scrollTo({ left: t.scrollLeft + w }); log('setInterval(f, 6000)')" } };
+	const b = carouselOf( t, { records: [ t ] } );
+	assert.equal( b.blocks[ 'sgs/testimonial-slider' ].find( ( s ) => 'autoplaySpeed' === s.attr ), undefined );
+	assert.deepEqual( b.unread.map( ( u ) => u.field ), [ 'autoplaySpeed' ] );
+	const card = { id: 'A-1', mechanism: 'waapi', status: 'active', element: { dc: 'Site', template_tpl_id: '9', selector: 'ref card' }, source: { code: 'card.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500 })' }, trigger: { type: 'state', detail: 'state.i changes or the 6.5s setInterval', state_keys: [ 'i' ] }, properties: [ { property: 'opacity', from: 0, to: 1 } ], duration_ms: 500 };
+	assert.equal( recogniseBehaviour( card, {} )?.kind === 'settings', false, 'the trigger words alone are no interval' );
+} );
+
+test( 'MUST FAIL: a setting a behaviour could not read is a named unmapped row where its block is written', async () => {
+	const { applySettings } = await import( '../lib/fill-behaviour.mjs' );
+	const t = { ...step, source: { ...step.source, code: 't.scrollTo({ left: t.scrollLeft + w })' } };
+	const out = { writes: [], unmapped: [], notes: [] };
+	applySettings( { items: [ { r: t, b: carouselOf( t, { records: [ t ] } ) } ], n: { name: 'sgs/testimonial-slider', index: 0 }, out, where: { node: 'r0', block: 'sgs/testimonial-slider', slot: '' }, flat: [ { attributes: {} } ], hasAttr: () => true } );
+	assert.deepEqual( out.writes.map( ( w ) => w.attr ), [ 'autoplay' ] );
+	assert.equal( out.unmapped.length, 1 );
+	assert.match( out.unmapped[ 0 ].reason, /^sgs\/testimonial-slider autoplaySpeed not written: the timer's interval is not in the record's own code/ );
+} );

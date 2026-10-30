@@ -133,7 +133,7 @@ const step = ( id, trigger, detail, code ) => J( id, { mechanism: 'js-scroll', e
 const drag = ( id, mechanism, property, code ) => J( id, { mechanism, element: { ...TRACK, template_tpl_id: null }, source: { file: 'Home.dc.html', function: 'drag', code }, trigger: { type: 'state', detail: 'a value renderVals passes to the template as rd (→ drag)' }, properties: [ { property, to: 'none' } ] } );
 const TIMER = 'setInterval every 6000ms via step';
 const CAROUSEL = [
-	step( 'J-07', 'interval', TIMER, 't.scrollTo({ left: 0 })' ), step( 'J-09', 'interval', TIMER, 't.scrollTo({ left: i * w })' ),
+	step( 'J-07', 'interval', TIMER, 'this.auto = setInterval(() => t.scrollTo({ left: 0 }), 6000)' ), step( 'J-09', 'interval', TIMER, 't.scrollTo({ left: i * w })' ),
 	step( 'J-08', 'state', 'a value renderVals passes to the template as prev (→ step) (and 1 more: next)', 't.scrollTo({ left: 0 })' ),
 	drag( 'J-01', 'js-style-write', 'scroll-snap-type', "t.style.scrollSnapType = 'none'" ), drag( 'J-03', 'js-scroll', 'scroll-left', 't.scrollLeft = d.sl - dx' ),
 ];
@@ -163,7 +163,7 @@ test( 'negative control (C5 recognition 5): with no drag the setting is not writ
 	assert.equal( recogniseBehaviour( CAROUSEL[ 2 ], { records: other } ), null, 'records of another component are not this track\'s' );
 	const dead = CAROUSEL.map( ( r ) => ( 'interval' === r.trigger.type ? { ...r, status: 'dead-code' } : r ) );
 	assert.equal( recogniseBehaviour( dead[ 2 ], { records: dead } ), null, 'a timer the draft never runs is not an autoplay' );
-	const slow = CAROUSEL.map( ( r ) => ( 'J-07' === r.id ? { ...r, trigger: { type: 'interval', detail: 'setInterval every 4500ms via step' } } : r ) );
+	const slow = CAROUSEL.map( ( r ) => ( 'J-07' === r.id ? { ...r, source: { ...r.source, code: 'const PERIOD = 4500; this.auto = setInterval(() => t.scrollTo({ left: 0 }), PERIOD)' } } : r ) );
 	assert.equal( recogniseBehaviour( slow[ 0 ], { records: slow } ).blocks[ 'sgs/testimonial-slider' ][ 1 ].value, 4500 );
 	const unrelated = J( 'J-20', { mechanism: 'js-scroll', element: TRACK, source: { file: 'Home.dc.html', function: 'jump', code: 'window.scrollTo({ left: 0 })' }, trigger: { type: 'press', detail: 'onClick' } } );
 	assert.equal( recogniseBehaviour( unrelated, { records: [ ...CAROUSEL, unrelated ] } ), null, "another function of the component is not the track's" );
