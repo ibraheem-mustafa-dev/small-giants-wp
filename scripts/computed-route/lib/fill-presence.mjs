@@ -126,7 +126,9 @@ export function presenceDecisions( { calibration, schema, attributes = {}, evide
 // that path as the markup the setting holds (lib/inline-text.mjs::inlineText, { value, handover }), or null: a setting
 // takes that markup where it reads as the draft's words, and its handover rows come back as `textHandover`
 // ([ { slot, attr, words, owner, kind, detail } ]).
-export function textDecisions( { calibration, attributes = {}, slots = {}, leaf = true, rich = () => null } ) {
+// glyph( attr ): whether the setting holds a glyph (role `glyph`, a symbol copied exactly): it is written as the element's
+// characters, never read as markup, decoded, collapsed or rebuilt as inline formats.
+export function textDecisions( { calibration, attributes = {}, slots = {}, leaf = true, rich = () => null, glyph = () => false } ) {
 	const out = empty();
 	const text = calibration?.text;
 	if ( ! text ) {
@@ -141,7 +143,9 @@ export function textDecisions( { calibration, attributes = {}, slots = {}, leaf 
 			continue;
 		}
 		claimed.add( hit[ 0 ] );
-		if ( unset( attributes[ attr ] ) ) {
+		if ( glyph( attr ) ) {
+			unset( attributes[ attr ] ) && out.writes.push( { attr, value: String( slots[ hit[ 0 ] ] ), merge: 'replace' } );
+		} else if ( unset( attributes[ attr ] ) ) {
 			const r = rich( hit[ 0 ], attr );
 			const kept = r && plainText( r.value ) === hit[ 1 ];
 			out.writes.push( { attr, value: kept ? r.value : hit[ 1 ], merge: 'replace' } );
