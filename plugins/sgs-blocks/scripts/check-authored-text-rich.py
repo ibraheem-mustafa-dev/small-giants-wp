@@ -113,7 +113,7 @@ def mounts_for(slug, attr):
     hits = []
     for f in block_files(slug):
         src = read(f)
-        if "Control" not in src and "RichText" not in src:
+        if "Control" not in src and "RichText" not in src and "SgsFreeTextField" not in src:
             continue
         for name, s, e, text in opening_tags(src):
             if binds(text, attr):
@@ -138,8 +138,11 @@ def print_ok(reader):
     f = PLUGIN / path
     if not path.endswith(".php") or not f.exists():
         return False
-    src = read(f)
-    return "sgs_rich_text_kses(" in src or "sgs_authored_text_plain(" in src
+    files = [f]
+    m = re.match(r"src/blocks/([^/]+)/", path)
+    if m:
+        files += sorted((PLUGIN / "src/blocks" / m.group(1)).glob("*.php"))
+    return any("sgs_rich_text_kses(" in read(x) or "sgs_authored_text_plain(" in read(x) for x in files)
 
 
 def state_of(group, block, attr, reader, roles, exceptions):

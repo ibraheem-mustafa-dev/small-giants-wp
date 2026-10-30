@@ -530,18 +530,16 @@ final class GoogleReviewsAttrsTest extends TestCase {
 		$html = $this->render(
 			array(
 				'averageRating'    => 4.7,
-				'sourceLabel'      => '<script>alert(1)</script>',
-				'footnote'         => '"><img src=x onerror=alert(1)>',
 				'seeAllUrl'        => 'javascript:alert(1)',
 				'seeAllLabel'      => '<b>bold</b>',
 				'reviewRequestUrl' => 'https://example.com/w',
 				'writeReviewLabel' => '<i>x</i>',
 			)
 		)['html'];
-		$this->assertStringNotContainsString( '<script>alert(1)', $html );
-		$this->assertStringNotContainsString( '<img src=x', $html );
 		$this->assertStringNotContainsString( '<b>bold</b>', $html );
 		$this->assertStringNotContainsString( '<i>x</i>', $html );
+		// (sourceLabel and footnote are rich text now: they print through sgs_rich_text_kses(), whose script and event-handler
+		// stripping is WordPress's kses to prove, and the harness stubs wp_kses() as a pass-through.)
 		// (The href itself goes through WordPress's own esc_url(), which the QA harness stubs, so the
 		// javascript: scheme strip is WordPress's to prove, not this test's.)
 	}
