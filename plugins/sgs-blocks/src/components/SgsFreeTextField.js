@@ -44,7 +44,7 @@ import { NumberControl } from './primitives';
 function RichInput( { value: html, onChange, labelId, placeholder, multiline } ) {
 	return (
 		<RichText
-			identifier="sgs-free-text"
+			identifier={ labelId }
 			tagName="div"
 			className="sgs-free-text-field__input"
 			aria-labelledby={ labelId }
@@ -61,7 +61,7 @@ function RichInput( { value: html, onChange, labelId, placeholder, multiline } )
 function RichInputNoLink( { value: htmlText, onChange, labelId, placeholder, multiline } ) {
 	return (
 		<RichText
-			identifier="sgs-free-text"
+			identifier={ labelId }
 			tagName="div"
 			className="sgs-free-text-field__input"
 			aria-labelledby={ labelId }
