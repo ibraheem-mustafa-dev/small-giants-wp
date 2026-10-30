@@ -226,7 +226,11 @@ test( 'MUST FAIL: the plain-text review lists sentence settings only: no child-b
 	assert.ok( ! has( 'sgs/form', 'successMessage' ) && ! has( 'sgs/form-field-text', 'label' ), 'form and form-field blocks' );
 	assert.ok( ! has( 'sgs/tab', 'label' ) && ! has( 'sgs/cart', 'checkoutLabel' ) && ! has( 'sgs/modal', 'triggerText' ), 'clickable labels' );
 	assert.ok( ! has( 'sgs/cart', 'emptyCartMessage' ) && ! has( 'sgs/breadcrumbs', 'separator' ), 'interface strings' );
-	assert.ok( has( 'sgs/cart', 'freeDeliveryMessage' ) && has( 'sgs/google-reviews', 'footnote' ) && has( 'sgs/choice-flow-question', 'intro' ), 'negative control: sentence settings stay' );
+	assert.ok( ! has( 'sgs/product-card', 'productName' ), 'data-bound text (the product title)' );
+	assert.ok( ! has( 'sgs/countdown-timer', 'expiredMessage' ) && ! has( 'sgs/wishlist-panel', 'errorText' ), 'computed or live text' );
+	assert.ok( ! has( 'sgs/buybox', 'gallerySavingBadgeFormat' ) && ! has( 'sgs/cart', 'freeDeliveryMessage' ) && ! has( 'sgs/business-info', 'copyrightPrefix' ), 'format templates' );
+	assert.ok( ! has( 'sgs/before-after', 'handleIconName' ) && ! has( 'sgs/countdown-timer', 'targetDate' ), 'mis-tagged values' );
+	assert.ok( has( 'sgs/account', 'guestLineText' ) && has( 'sgs/google-reviews', 'footnote' ) && has( 'sgs/choice-flow-question', 'intro' ), 'negative control: sentence settings stay' );
 	assert.ok( plain.every( ( p ) => /::/.test( p.reader ) ), 'each names the reader that prints it' );
 } );
 

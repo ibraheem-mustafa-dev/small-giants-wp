@@ -1,5 +1,5 @@
 {
-	"_meta": "The plain-text settings (role text-content, string, no RichText format: lib/inline-text.mjs::richTextSettings) filed by where the page prints them (Bean 2026-10-30), each with the reader that prints it (file::symbol, proved by a search of the block's PHP, includes/ and the view script its block.json loads). lib/inline-text.mjs::plainTextSettings reports the `sentences` group for Bean's review: prose a draft could partly format. The other groups are never reported: child-block text (the text lives in a child block), form controls (a form or form-field block's labels belong to its controls), clickable labels (printed inside the block's own link, button, summary or tab, which makes the whole element clickable), interface strings (short UI text: headings of a panel, empty states, notes, prefixes, separators, dates, badges). A plain-text setting filed in no group, or in two, fails tests/inline-fill-solve.test.mjs: file it here.",
+	"_meta": "The plain-text settings (role text-content, string, no RichText format: lib/inline-text.mjs::richTextSettings) filed by where the page prints them (Bean 2026-10-30), each with the reader that prints it (file::symbol, proved by a search of the block's PHP, includes/ and the view script its block.json loads). lib/inline-text.mjs::plainTextSettings reports the `sentences` group for Bean's review: prose a draft could partly format. The other groups are never reported: child-block text (the text lives in a child block), form controls (a form or form-field block's labels belong to its controls), clickable labels (printed inside the block's own link, button, summary or tab, which makes the whole element clickable), data-bound text (the words come from a record: a WooCommerce product's title, price or brand; the clone binds it, so formatting is typography only), computed or live text (the site's script writes it at run time: emit_shape script-rendered, a countdown's expired message, a live free-delivery or summary line), format templates (a string the block fills with a value: a {placeholder} or %s, or a prefix or suffix the block joins to a computed value), mis-tagged values (not words: an icon slug, a date, a time zone, a number, alt text; their role is corrected in plugins/sgs-blocks/scripts/attr-classification-overrides.json and they leave this list at the next reseed), interface strings (short UI text: headings of a panel, empty states, notes, separators, badges). Dead settings (nothing prints them) are named in their entry's reader. A plain-text setting filed in no group, or in two, fails tests/inline-fill-solve.test.mjs: file it here.",
 	"groups": {
 		"child-block text": [
 			{
@@ -58,16 +58,6 @@
 				"block": "sgs/form-field-date",
 				"attr": "label",
 				"reader": "includes/forms/field-render-helpers.php::field_label"
-			},
-			{
-				"block": "sgs/form-field-date",
-				"attr": "maxDate",
-				"reader": "src/blocks/form-field-date/render.php::(file scope)"
-			},
-			{
-				"block": "sgs/form-field-date",
-				"attr": "minDate",
-				"reader": "src/blocks/form-field-date/render.php::(file scope)"
 			},
 			{
 				"block": "sgs/form-field-email",
@@ -282,11 +272,6 @@
 				"reader": "src/blocks/product-card/render.php::(file scope)"
 			},
 			{
-				"block": "sgs/product-card",
-				"attr": "productName",
-				"reader": "src/blocks/product-card/render.php::(file scope)"
-			},
-			{
 				"block": "sgs/product-faq",
 				"attr": "heading",
 				"reader": "src/blocks/product-faq/render.php::(file scope)"
@@ -327,6 +312,159 @@
 				"reader": "src/blocks/wishlist-panel/render.php::(file scope)"
 			}
 		],
+		"data-bound text": [
+			{
+				"block": "sgs/product-card",
+				"attr": "brandName",
+				"reader": "includes/product-card-builtin-render.php::sgs_product_card_brand_markup: the typed brand overlay; a live card prints the product's brand"
+			},
+			{
+				"block": "sgs/product-card",
+				"attr": "priceLarge",
+				"reader": "includes/product-card-builtin-render.php::sgs_product_card_builtin_render: the typed price; a live card prints the product's own price"
+			},
+			{
+				"block": "sgs/product-card",
+				"attr": "productName",
+				"reader": "src/blocks/product-card/render.php::(file scope) sgs_product_card_resolve_element( name, productName, $data[title] ): the product's title, the typed value only in typed mode"
+			}
+		],
+		"computed or live text": [
+			{
+				"block": "sgs/cart",
+				"attr": "freeDeliverySuccessMessage",
+				"reader": "src/blocks/cart/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/choice-flow",
+				"attr": "summaryPendingText",
+				"reader": "includes/choice-flow-summary.php::sgs_choice_flow_summary_panel_html"
+			},
+			{
+				"block": "sgs/countdown-timer",
+				"attr": "expiredMessage",
+				"reader": "src/blocks/countdown-timer/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/wishlist-panel",
+				"attr": "errorText",
+				"reader": "src/blocks/wishlist-panel/alerts.js::(file scope)"
+			},
+			{
+				"block": "sgs/wishlist-panel",
+				"attr": "guestPromptText",
+				"reader": "src/blocks/wishlist-panel/render-bars.js::guestPromptHtml"
+			},
+			{
+				"block": "sgs/wishlist-panel",
+				"attr": "notifyConsentText",
+				"reader": "src/blocks/wishlist-panel/notify-form.js::privacyLink"
+			},
+			{
+				"block": "sgs/wishlist-panel",
+				"attr": "notifySuccessText",
+				"reader": "src/blocks/wishlist-panel/notify-form.js::json"
+			},
+			{
+				"block": "sgs/wishlist-panel",
+				"attr": "shareCopiedText",
+				"reader": "src/blocks/wishlist-panel/share.js::copied"
+			},
+			{
+				"block": "sgs/wishlist-panel",
+				"attr": "sharedGoneText",
+				"reader": "src/blocks/wishlist-panel/shared-view.js::result"
+			}
+		],
+		"format templates": [
+			{
+				"block": "sgs/business-info",
+				"attr": "copyrightPrefix",
+				"reader": "src/blocks/business-info/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/buybox",
+				"attr": "gallerySavingBadgeFormat",
+				"reader": "src/blocks/buybox/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/buybox",
+				"attr": "perUnitDenomination",
+				"reader": "src/blocks/buybox/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/buybox",
+				"attr": "rrpSavingPrefix",
+				"reader": "src/blocks/buybox/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/cart",
+				"attr": "freeDeliveryMessage",
+				"reader": "src/blocks/cart/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/counter",
+				"attr": "prefix",
+				"reader": "src/blocks/counter/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/counter",
+				"attr": "suffix",
+				"reader": "src/blocks/counter/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/wishlist-panel",
+				"attr": "dateSavedText",
+				"reader": "src/blocks/wishlist-panel/render-rows.js::dateText"
+			},
+			{
+				"block": "sgs/wishlist-panel",
+				"attr": "priceDropText",
+				"reader": "src/blocks/wishlist-panel/price-drop.js::(file scope)"
+			}
+		],
+		"mis-tagged values": [
+			{
+				"block": "sgs/before-after",
+				"attr": "handleIconName",
+				"reader": "src/blocks/before-after/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/button",
+				"attr": "iconTitle",
+				"reader": "src/blocks/button/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/countdown-timer",
+				"attr": "targetDate",
+				"reader": "src/blocks/countdown-timer/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/diagram-dimension",
+				"attr": "value",
+				"reader": "src/blocks/diagram-dimension/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/form-field-date",
+				"attr": "maxDate",
+				"reader": "src/blocks/form-field-date/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/form-field-date",
+				"attr": "minDate",
+				"reader": "src/blocks/form-field-date/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/local-time",
+				"attr": "timeZone",
+				"reader": "src/blocks/local-time/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/nav-drawer",
+				"attr": "chromeLogoAlt",
+				"reader": "includes/nav-drawer-chrome.php::sgs_nav_drawer_chrome_logo_html"
+			}
+		],
 		"interface strings": [
 			{
 				"block": "sgs/account",
@@ -354,11 +492,6 @@
 				"reader": "src/blocks/before-after/render.php::(file scope)"
 			},
 			{
-				"block": "sgs/before-after",
-				"attr": "handleIconName",
-				"reader": "src/blocks/before-after/render.php::(file scope)"
-			},
-			{
 				"block": "sgs/brand-strip",
 				"attr": "title",
 				"reader": "src/blocks/brand-strip/render.php::(file scope)"
@@ -375,11 +508,6 @@
 			},
 			{
 				"block": "sgs/business-info",
-				"attr": "copyrightPrefix",
-				"reader": "src/blocks/business-info/render.php::(file scope)"
-			},
-			{
-				"block": "sgs/business-info",
 				"attr": "textAfter",
 				"reader": "src/blocks/business-info/render.php::(file scope)"
 			},
@@ -390,28 +518,8 @@
 			},
 			{
 				"block": "sgs/button",
-				"attr": "iconTitle",
-				"reader": "src/blocks/button/render.php::(file scope)"
-			},
-			{
-				"block": "sgs/button",
 				"attr": "note",
 				"reader": "includes/helpers-button-note.php::sgs_button_note_html"
-			},
-			{
-				"block": "sgs/buybox",
-				"attr": "gallerySavingBadgeFormat",
-				"reader": "src/blocks/buybox/render.php::(file scope)"
-			},
-			{
-				"block": "sgs/buybox",
-				"attr": "perUnitDenomination",
-				"reader": "src/blocks/buybox/render.php::(file scope)"
-			},
-			{
-				"block": "sgs/buybox",
-				"attr": "rrpSavingPrefix",
-				"reader": "src/blocks/buybox/render.php::(file scope)"
 			},
 			{
 				"block": "sgs/buybox",
@@ -485,11 +593,6 @@
 			},
 			{
 				"block": "sgs/choice-flow",
-				"attr": "summaryPendingText",
-				"reader": "includes/choice-flow-summary.php::sgs_choice_flow_summary_panel_html"
-			},
-			{
-				"block": "sgs/choice-flow",
 				"attr": "title",
 				"reader": "src/blocks/choice-flow/render.php::(file scope)"
 			},
@@ -504,28 +607,8 @@
 				"reader": "src/blocks/choice-flow-result/render.php::(file scope)"
 			},
 			{
-				"block": "sgs/countdown-timer",
-				"attr": "targetDate",
-				"reader": "src/blocks/countdown-timer/render.php::(file scope)"
-			},
-			{
-				"block": "sgs/counter",
-				"attr": "prefix",
-				"reader": "src/blocks/counter/render.php::(file scope)"
-			},
-			{
-				"block": "sgs/counter",
-				"attr": "suffix",
-				"reader": "src/blocks/counter/render.php::(file scope)"
-			},
-			{
 				"block": "sgs/diagram-dimension",
 				"attr": "caption",
-				"reader": "src/blocks/diagram-dimension/render.php::(file scope)"
-			},
-			{
-				"block": "sgs/diagram-dimension",
-				"attr": "value",
 				"reader": "src/blocks/diagram-dimension/render.php::(file scope)"
 			},
 			{
@@ -579,19 +662,9 @@
 				"reader": "src/blocks/local-time/render.php::(file scope)"
 			},
 			{
-				"block": "sgs/local-time",
-				"attr": "timeZone",
-				"reader": "src/blocks/local-time/render.php::(file scope)"
-			},
-			{
 				"block": "sgs/mega-panel",
 				"attr": "brandsEyebrow",
 				"reader": "src/blocks/mega-panel/render.php::(file scope)"
-			},
-			{
-				"block": "sgs/nav-drawer",
-				"attr": "chromeLogoAlt",
-				"reader": "includes/nav-drawer-chrome.php::sgs_nav_drawer_chrome_logo_html"
 			},
 			{
 				"block": "sgs/nav-drawer",
@@ -620,11 +693,6 @@
 			},
 			{
 				"block": "sgs/product-card",
-				"attr": "brandName",
-				"reader": "includes/product-card-builtin-render.php::sgs_product_card_brand_markup"
-			},
-			{
-				"block": "sgs/product-card",
 				"attr": "featuredTag",
 				"reader": "src/blocks/product-card/render.php::(file scope)"
 			},
@@ -637,11 +705,6 @@
 				"block": "sgs/product-card",
 				"attr": "noReviewsText",
 				"reader": "includes/product-card-builtin-render.php::sgs_product_card_rating_markup"
-			},
-			{
-				"block": "sgs/product-card",
-				"attr": "priceLarge",
-				"reader": "includes/product-card-builtin-render.php::sgs_product_card_builtin_render"
 			},
 			{
 				"block": "sgs/product-card",
@@ -705,11 +768,6 @@
 			},
 			{
 				"block": "sgs/wishlist-panel",
-				"attr": "dateSavedText",
-				"reader": "src/blocks/wishlist-panel/render-rows.js::dateText"
-			},
-			{
-				"block": "sgs/wishlist-panel",
 				"attr": "emptyText",
 				"reader": "src/blocks/wishlist-panel/render.php::(file scope)"
 			},
@@ -717,21 +775,6 @@
 				"block": "sgs/wishlist-panel",
 				"attr": "heading",
 				"reader": "src/blocks/wishlist-panel/render.php::(file scope)"
-			},
-			{
-				"block": "sgs/wishlist-panel",
-				"attr": "priceDropText",
-				"reader": "src/blocks/wishlist-panel/price-drop.js::(file scope)"
-			},
-			{
-				"block": "sgs/wishlist-panel",
-				"attr": "shareCopiedText",
-				"reader": "src/blocks/wishlist-panel/share.js::copied"
-			},
-			{
-				"block": "sgs/wishlist-panel",
-				"attr": "sharedGoneText",
-				"reader": "src/blocks/wishlist-panel/shared-view.js::result"
 			}
 		],
 		"sentences": [
@@ -739,16 +782,6 @@
 				"block": "sgs/account",
 				"attr": "guestLineText",
 				"reader": "src/blocks/account/render.php::(file scope)"
-			},
-			{
-				"block": "sgs/cart",
-				"attr": "freeDeliveryMessage",
-				"reader": "src/blocks/cart/render.php::(file scope)"
-			},
-			{
-				"block": "sgs/cart",
-				"attr": "freeDeliverySuccessMessage",
-				"reader": "src/blocks/cart/render.php::(file scope)"
 			},
 			{
 				"block": "sgs/choice-flow-question",
@@ -759,11 +792,6 @@
 				"block": "sgs/choice-flow-result",
 				"attr": "successMessage",
 				"reader": "src/blocks/choice-flow-result/render.php::(file scope)"
-			},
-			{
-				"block": "sgs/countdown-timer",
-				"attr": "expiredMessage",
-				"reader": "src/blocks/countdown-timer/render.php::(file scope)"
 			},
 			{
 				"block": "sgs/google-reviews",
@@ -779,26 +807,6 @@
 				"block": "sgs/trustpilot-reviews",
 				"attr": "subtitleText",
 				"reader": "src/blocks/trustpilot-reviews/render.php::(file scope)"
-			},
-			{
-				"block": "sgs/wishlist-panel",
-				"attr": "errorText",
-				"reader": "src/blocks/wishlist-panel/alerts.js::(file scope)"
-			},
-			{
-				"block": "sgs/wishlist-panel",
-				"attr": "guestPromptText",
-				"reader": "src/blocks/wishlist-panel/render-bars.js::guestPromptHtml"
-			},
-			{
-				"block": "sgs/wishlist-panel",
-				"attr": "notifyConsentText",
-				"reader": "src/blocks/wishlist-panel/notify-form.js::privacyLink"
-			},
-			{
-				"block": "sgs/wishlist-panel",
-				"attr": "notifySuccessText",
-				"reader": "src/blocks/wishlist-panel/notify-form.js::json"
 			}
 		]
 	}
