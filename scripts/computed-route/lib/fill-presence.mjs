@@ -122,8 +122,11 @@ export function presenceDecisions( { calibration, schema, attributes = {}, evide
 
 // The draft's words into the content settings calibration's `text` ties to each element. slots: { path: the draft
 // element's text }. leaf: false for a block holding other blocks (their words are theirs, so its root text is skipped).
-// A setting that already holds words is never overwritten; a difference is a note.
-export function textDecisions( { calibration, attributes = {}, slots = {}, leaf = true } ) {
+// A setting that already holds words is never overwritten; a difference is a note. rich( path, attr ): the draft element at
+// that path as the markup the setting holds (lib/inline-text.mjs::inlineText, { value, handover }), or null: a setting
+// takes that markup where it reads as the draft's words, and its handover rows come back as `textHandover`
+// ([ { slot, attr, words, owner, kind, detail } ]).
+export function textDecisions( { calibration, attributes = {}, slots = {}, leaf = true, rich = () => null } ) {
 	const out = empty();
 	const text = calibration?.text;
 	if ( ! text ) {
@@ -139,7 +142,10 @@ export function textDecisions( { calibration, attributes = {}, slots = {}, leaf 
 		}
 		claimed.add( hit[ 0 ] );
 		if ( unset( attributes[ attr ] ) ) {
-			out.writes.push( { attr, value: hit[ 1 ], merge: 'replace' } );
+			const r = rich( hit[ 0 ], attr );
+			const kept = r && plainText( r.value ) === hit[ 1 ];
+			out.writes.push( { attr, value: kept ? r.value : hit[ 1 ], merge: 'replace' } );
+			kept && r.handover.length && ( out.textHandover ||= [] ).push( ...r.handover.map( ( h ) => ( { slot: hit[ 0 ], attr, words: hit[ 1 ], ...h } ) ) );
 		} else if ( plainText( attributes[ attr ] ) !== hit[ 1 ] ) {
 			out.notes.push( `${ attr } holds "${ plainText( attributes[ attr ] ) }"; the draft shows "${ hit[ 1 ] }"` );
 		}

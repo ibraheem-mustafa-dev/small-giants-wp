@@ -152,8 +152,11 @@ const escapeText = ( s ) => String( s ).replace( /&/g, '&amp;' ).replace( /</g, 
 // The attachment a picture field's value names in the media map, or null: a draft file path or a stock preview address.
 export const itemPicture = pictureEntry;
 
-// One item's settings from the draft item: { attrs, rows } where rows are [{ field, value, reason }] the item cannot hold.
-export function itemAttrs( item, { map, keys, media, pages = null, label, slot = null, pictureField = null, altField = null } ) {
+// One item's settings from the draft item: { attrs, rows } where rows are [{ field, value, reason, owner?, kind? }] the item
+// cannot hold. rich( field, key ): the draft element printing that field as the markup item key `key` holds
+// (lib/inline-text.mjs::inlineText, { value, handover }), null when it holds no inline parts: a text key takes that markup,
+// and each of its handover rows (a format the key holds none of, a coloured word, a link to no address) is a row.
+export function itemAttrs( item, { map, keys, media, pages = null, label, slot = null, pictureField = null, altField = null, rich = () => null } ) {
 	const attrs = {};
 	const rows = [];
 	// The draft's picture goes into the item's picture slot: the file the media map holds for it (url and attachment id), else
@@ -194,7 +197,10 @@ export function itemAttrs( item, { map, keys, media, pages = null, label, slot =
 		if ( 'number' === k.type || 'integer' === k.type ) {
 			Number.isFinite( Number( v ) ) ? ( attrs[ key ] = Number( v ) ) : rows.push( { field, value: v, reason: `${ label }'s ${ field } "${ v }" is not a number, and ${ key } holds a number` } );
 		} else if ( 'string' === k.type || null === k.type ) {
-			attrs[ key ] = k.html ? `<p>${ escapeText( v ) }</p>` : String( v );
+			const r = rich( field, key );
+			const text = r ? r.value : ( k.html ? escapeText( v ) : String( v ) );
+			attrs[ key ] = k.html ? `<p>${ text }</p>` : text;
+			( r?.handover || [] ).forEach( ( h ) => rows.push( { field, value: v, reason: `${ label }: ${ h.detail }`, owner: h.owner, kind: h.kind } ) );
 		} else {
 			rows.push( { field, value: v, reason: `${ label }'s ${ field } "${ v }" is words, and ${ key } holds ${ k.type }` } );
 		}
@@ -214,12 +220,14 @@ export function withPictures( list, pictures, media = {} ) {
 	return { ...list, items: list.items.map( ( it, i ) => ( itemPicture( it[ f.name ], media ) ? it : { ...it, [ f.name ]: pictures[ i ] } ) ) };
 }
 
-// The decisions for one list block. node: the tree node; list: lib/fill-list-items.mjs::listItems. Returns { writes:
+// The decisions for one list block. node: the tree node; list: lib/fill-list-items.mjs::listItems; inline( key, block,
+// attr ): lib/inline-writer.mjs::inlineByKey, the markup of the inventory element `key` (list.elements names each item's
+// text field elements) as `attr` of `block` holds it: the host's `<array>.<key>`, or a child block's own `key`. Returns { writes:
 // [{ attr, value }], children: [node] | null, childWrites: [{ position, attr, value }], rows: [{ field, value, reason }], notes }.
 // A host whose skeleton children are all its item block, one per item, is the list already: each child takes only the
 // item values it does not hold (its own draft element is read for the rest), and nothing is a row but a count that differs.
 // A host holding any other child is not drawing this list.
-export function listDecisions( { block, target, node, list, media = {}, pages = null } ) {
+export function listDecisions( { block, target, node, list, media = {}, pages = null, inline = () => null } ) {
 	const out = { writes: [], children: null, childWrites: [], rows: [], notes: [] };
 	const kids = 'children' === target.kind ? node.innerBlocks || [] : [];
 	if ( kids.some( ( k ) => k.name !== target.child ) ) {
@@ -233,7 +241,9 @@ export function listDecisions( { block, target, node, list, media = {}, pages = 
 	const { map } = matched;
 	const unmatched = [ ...matched.unmatched, ...pictures.slice( 1 ).map( ( f ) => f.name ) ];
 	const altField = list.fields.find( ( f ) => f.alt )?.name ?? null;
-	const built = list.items.map( ( item, i ) => itemAttrs( item, { map, keys: target.keys, media, pages, label: `item ${ i + 1 }`, slot, pictureField: pictures[ 0 ]?.name ?? null, altField } ) );
+	const setting = ( key ) => ( 'attr' === target.kind ? [ block, `${ target.attr }.${ key }` ] : [ target.child, key ] );
+	const rich = ( i ) => ( field, key ) => ( list.elements?.[ i ]?.[ field ] ? inline( list.elements[ i ][ field ], ...setting( key ) ) : null );
+	const built = list.items.map( ( item, i ) => itemAttrs( item, { map, keys: target.keys, media, pages, label: `item ${ i + 1 }`, slot, pictureField: pictures[ 0 ]?.name ?? null, altField, rich: rich( i ) } ) );
 	const fields = Object.entries( map ).map( ( [ f, k ] ) => `${ f } -> ${ k }` ).join( ', ' ) || 'none matched';
 	if ( kids.length ) {
 		if ( kids.length !== built.length ) {
@@ -295,9 +305,10 @@ export function logicReader( folder ) {
 }
 
 // Fill's list pass over every node with a draft element. inventory: the surface's skeleton inventory (null when absent);
+// inline: lib/inline-writer.mjs::inlineByKey over that inventory (an item's bold or link kept as its setting holds it);
 // idxFor( component ): logicReader's reader; picturesOf( targetId ): the pictures the draft read found in a target's element. Writes into the tree and returns { writes, children: [{ index, nodes }],
 // unmapped, handover, notes }; the caller places `children` (applyChildren) once nothing else walks the tree.
-export function listContentWrites( { nodes, flat, refOf, facts, inventory, idxFor = () => null, db, schemaOf, media = {}, pages = null, rootComponent = null, picturesOf = () => null } ) {
+export function listContentWrites( { nodes, flat, refOf, facts, inventory, idxFor = () => null, db, schemaOf, media = {}, pages = null, rootComponent = null, picturesOf = () => null, inline = () => null } ) {
 	const out = { writes: [], children: [], unmapped: [], handover: [], notes: [] };
 	for ( const rec of nodes ) {
 		const root = rec.targets.find( ( t ) => '' === t.slot && t.finder?.tpl );
@@ -323,7 +334,7 @@ export function listContentWrites( { nodes, flat, refOf, facts, inventory, idxFo
 			}
 			continue;
 		}
-		const d = listDecisions( { block: rec.name, target, node, list: withPictures( list, picturesOf( root.id ), media ), media, pages } );
+		const d = listDecisions( { block: rec.name, target, node, list: withPictures( list, picturesOf( root.id ), media ), media, pages, inline } );
 		for ( const w of d.writes ) {
 			const { before, after } = setAttr( node, { attr: w.attr, value: w.value, merge: 'replace' } );
 			out.writes.push( { node: ref, index: rec.index, block: rec.name, slot: '', prop: '(content)', attr: w.attr, before, after, widths: [], how: 'content' } );
@@ -338,7 +349,7 @@ export function listContentWrites( { nodes, flat, refOf, facts, inventory, idxFo
 			out.writes.push( { node: ref, index: rec.index, block: rec.name, slot: '', prop: '(content)', attr: 'innerBlocks', before: [], after: d.children.map( ( c ) => ( { name: c.name, attributes: c.attributes } ) ), widths: [], how: 'content' } );
 		}
 		for ( const r of d.rows ) {
-			out.handover.push( handoverEntry( { owner: 'content-page', kind: 'presence', node: ref, block: rec.name, slot: '', evidence: { key: r.field, draft: String( r.value ?? '' ), width: 1440 }, reason: r.reason } ) );
+			out.handover.push( handoverEntry( { owner: r.owner ?? 'content-page', kind: r.kind ?? 'presence', node: ref, block: rec.name, slot: '', evidence: { key: r.field, draft: String( r.value ?? '' ), width: 1440 }, reason: r.reason } ) );
 		}
 		out.notes.push( ...d.notes.map( ( n ) => `${ ref } ${ rec.name }: ${ n }` ) );
 	}
