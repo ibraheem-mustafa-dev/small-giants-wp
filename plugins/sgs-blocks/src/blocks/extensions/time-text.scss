@@ -1,0 +1,11 @@
+// Inspector layout for the "Text by time of day" panel (time-text.js): each range is one bordered group.
+.sgs-time-text-range {
+	margin: 0 0 16px;
+	padding: 12px;
+	border: 1px solid #ddd;
+	border-radius: 2px;
+
+	.components-base-control {
+		margin-bottom: 12px;
+	}
+}

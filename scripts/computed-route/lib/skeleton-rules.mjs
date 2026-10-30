@@ -31,6 +31,7 @@ import { formOpenerOf, prefillHref } from './skeleton-form-prefill.mjs';
 import { makeFieldGroups } from './skeleton-field-groups.mjs';
 import { makeRecogniser, hostKindOf } from './skeleton-recognise.mjs';
 import { backToTopOptions, fixedAt, missingFixedFeature, readingProgressOptions, timedPopupMissing } from './skeleton-fixed-controls.mjs';
+import { makeClock } from './skeleton-clock.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
 // them reads Site Info too.
@@ -127,6 +128,17 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const iconOnly = ( e ) => bare( e ) && hasSvg( e );
 	const emojiOnly = ( e ) => ! m.blockKids( e ).length && EMOJI.test( m.words( e ).replace( /\s+/g, '' ) );
 	const desc = ( e ) => m.blockKids( e ).flatMap( ( k ) => [ k, ...desc( k ) ] );
+	// A live open or closed line, read from the draft's code (lib/skeleton-clock.mjs), never from the words a read showed: the
+	// element's own text is a value the clock decides by the opening hours the code holds, or it has no words of its own and
+	// every worded piece inside it is such a line.
+	const clock = makeClock( { facts, view, read } );
+	const openLine = ( x ) => {
+		if ( clock( x )?.openStatus ) {
+			return true;
+		}
+		const worded = desc( x ).filter( ( y ) => m.words( y ) );
+		return ! m.words( x ) && worded.length > 0 && worded.every( ( y ) => clock( y )?.openStatus );
+	};
 	// A control the visitor operates: a button, anything binding an event (any event: a click, a change, a pointer or key),
 	// a pressed or expanded state. It is never static text (a label, a heading, a card title).
 	const interactive = ( e ) => 'button' === e.tag || read.events( e ).length > 0 || null != view.attr( e, 'aria-pressed' ) || null != view.attr( e, 'aria-expanded' );
@@ -523,14 +535,14 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		},
 		( { e } ) => ( 'iframe' === e.tag && specHit( R.mapEmbed, srcOf( e ) ) ? v( 'mapEmbed', { block: R.mapEmbed?.block, attributes: { displayType: 'map' }, absorb: true, handover: { owner: 'site-info', kind: 'presence', detail: R.mapEmbed.handover } } ) : null ),
 		// A live open or closed line; a second line beside the first is part of the same display.
-		( { e, text } ) => {
-			if ( ! specHit( R.openStatus, text ) || desc( e ).length > 2 ) {
+		( { e } ) => {
+			if ( ! openLine( e ) || desc( e ).length > 2 ) {
 				return null;
 			}
 			// An earlier open-status line within the same block (up to two levels up, as a sibling or a cousin) holds it.
 			const scope = m.byKey[ m.byKey[ e.parentKey ]?.parentKey ] || m.byKey[ e.parentKey ];
 			const order = m.els.indexOf( e );
-			const first = scope ? desc( scope ).find( ( x ) => m.els.indexOf( x ) < order && specHit( R.openStatus, all( x ) ) && desc( x ).length <= 2 ) : null;
+			const first = scope ? desc( scope ).find( ( x ) => m.els.indexOf( x ) < order && openLine( x ) && desc( x ).length <= 2 ) : null;
 			return first ? v( 'openStatus', { action: 'absorbed', into: first.key } ) : v( 'openStatus', { block: R.openStatus?.block, attributes: { displayType: 'open-status' }, absorb: true } );
 		},
 		// An hours row: a few pieces of text (a day, its times) and nothing nested, reading as a day and a clock time. The
@@ -940,7 +952,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const T = R.trustBar;
 			// A badge is a short label that is not a business detail (an open status, hours or a Site Info value have their
 			// own rules); the badges sit side by side, never stacked.
-			const detail = ( k ) => !! specHit( R.openStatus, all( k ) ) || !! specHit( facts.decisions.siteInfoPatterns?.hours, all( k ) ) || hooks.siteInfoKinds( k ).size > 0;
+			const detail = ( k ) => openLine( k ) || !! specHit( facts.decisions.siteInfoPatterns?.hours, all( k ) ) || hooks.siteInfoKinds( k ).size > 0;
 			const badge = ( k ) => ! [ 'a', 'button' ].includes( k.tag ) && ! HEADING.test( k.tag ) && !! all( k ) && ! /^\d+$/.test( all( k ) ) && all( k ).split( ' ' ).length <= ( T?.maxWords ?? 4 ) && ! detail( k ) && m.blockKids( k ).every( ( g ) => bare( g ) || iconOnly( g ) || bindingGlyph( g ) );
 			// What makes a badge a trust badge is its meaning: at least one names a capability the framework database records
 			// for the trust bar (accreditation, certification, halal and the like), matched on the word's stem.

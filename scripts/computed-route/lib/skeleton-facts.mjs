@@ -150,7 +150,7 @@ export function decisionsProblems( facts ) {
 	( r.coreExceptions || [] ).forEach( ( x, i ) => ( ! x.block?.startsWith( 'core/' ) || ! String( x.reason || '' ).trim() ) && problems.push( `rules.coreExceptions[${ i }] must name a core block and give its reason` ) );
 	( r.surfaceRoot?.entries || [] ).forEach( ( x, i ) => specs0.push( [ `rules.surfaceRoot[${ i }]`, { patterns: [ x.namePattern ], flags: 'i' } ] ) );
 	const specs = [ ...specs0, ...( d.briefOnlyLines || [] ).map( ( s ) => [ `briefOnlyLines.${ s.id }`, s ] ), ...Object.entries( d.siteInfoPatterns || {} ).map( ( [ k, s ] ) => [ `siteInfoPatterns.${ k }`, s ] ), [ 'addressLinkPatterns', d.addressLinkPatterns ], [ 'logoImage', d.logoImage ],
-		...[ 'typedDivider', 'homeLink', 'backToTop', 'mapEmbed', 'openStatus' ].map( ( k ) => [ `rules.${ k }`, r[ k ] ] ), [ 'rules.backToTop.handlers', r.backToTop?.handlers ] ];
+		...[ 'typedDivider', 'homeLink', 'backToTop', 'mapEmbed' ].map( ( k ) => [ `rules.${ k }`, r[ k ] ] ), [ 'rules.backToTop.handlers', r.backToTop?.handlers ] ];
 	for ( const [ where, spec ] of specs ) {
 		try {
 			rxList( spec );

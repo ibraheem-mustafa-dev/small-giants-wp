@@ -5,6 +5,7 @@
 // The factory takes the writer's shared context (`ctx`).
 import { LOGO_HANDOVER } from './skeleton-write-units.mjs';
 import { linkWrite } from './draft-link.mjs';
+import { makeClock, timeTextRanges } from './skeleton-clock.mjs';
 
 // The words a draft's copyright line prints before its © mark (sgs/business-info prints `{copyrightPrefix} © {year} {line}`):
 // "Copyright © 2026 Acme" gives "Copyright", "© 2026 Acme" gives "" (the block then omits the word). A line with no mark
@@ -59,6 +60,16 @@ export function makeContent( ctx ) {
 	const { m, facts, view, carried, surfaceKind, siteLink } = ctx;
 	const { composition, enumOf } = facts;
 	const attrExists = ( slug, name ) => !! facts.attr( slug, name );
+	const clock = makeClock( { facts, view, read: m.read } );
+	// The time-based text option of a text block whose words the draft's code picks by the hour of the clock
+	// (lib/skeleton-clock.mjs, rules.timeText): the hour ranges with their words, and the time zone when the code names one.
+	// {} when the element's words are no such value or the block does not take the option (the framework DB).
+	const timeTextAttrs = ( block, e ) => {
+		const T = facts.decisions.rules?.timeText;
+		const c = T?.attribute && attrExists( block, T.attribute ) ? clock( e ) : null;
+		const ranges = c && ! c.openStatus ? timeTextRanges( c ) : null;
+		return ranges ? { [ T.attribute ]: ranges, ...( c.zone && T.zoneAttribute && attrExists( block, T.zoneAttribute ) ? { [ T.zoneAttribute ]: c.zone } : {} ) } : {};
+	};
 	const layoutOf = ( slug, e ) => {
 		const opts = attrExists( slug, 'layout' ) ? enumOf( slug, 'layout' ) || [] : [];
 		const want = 'flex' === e.display && 'column' === e.flexDirection && opts.includes( 'stack' ) ? 'stack' : e.display;
@@ -107,7 +118,7 @@ export function makeContent( ctx ) {
 			return null;
 		}
 		const leading = m.read.textLeads( e );
-		return { node: { name: textBlock, attributes: { [ textAttr ]: words }, innerBlocks: [] }, leading };
+		return { node: { name: textBlock, attributes: { [ textAttr ]: words, ...timeTextAttrs( textBlock, e ) }, innerBlocks: [] }, leading };
 	}
 
 	// The content settings of one element's block. Returns { a (attributes), handover }.
@@ -147,6 +158,7 @@ export function makeContent( ctx ) {
 		const quoteBody = 'blockquote' === e.tag;
 		const cite = quoteBody ? citeOf( e ) : null;
 		textAttr && t && ! quoteBody && ( a[ textAttr ] = m.textWithBreaks( e ).includes( '<br>' ) ? m.textWithBreaks( e ) : t );
+		textAttr && t && ! quoteBody && Object.assign( a, timeTextAttrs( block, e ) );
 		// A control with no words (a swatch, a dot) must not print the block's default label: the label is written empty and
 		// the draft's aria-label names the control. A block a rule configured (`top.attributes`) takes its settings from the
 		// rule, so its text setting is not this element's label.

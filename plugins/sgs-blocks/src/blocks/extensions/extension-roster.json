@@ -23,6 +23,16 @@
 			}
 		},
 		{
+			"id": "timeText",
+			"file": "time-text.js",
+			"rule": { "mode": "allowlist", "enabledSlug": "timeText", "requiresClassName": false },
+			"_comment": "Text by time of day (Spec 02 FR-2-14): hour ranges, each with its own words, swapped in the visitor's browser by includes/time-text.php's @sgs/time-text module. supports.sgs.timeTextWords names the attribute holding the block's words (the server fallback).",
+			"attributes": {
+				"sgsTimeText": { "type": "array", "default": [], "role": "content" },
+				"sgsTimeTextZone": { "type": "string", "default": "", "role": "behaviour" }
+			}
+		},
+		{
 			"id": "blockLink",
 			"file": "hover-effects/attributes.js",
 			"rule": { "mode": "allowlist", "enabledSlug": "blockLink", "requiresClassName": true },

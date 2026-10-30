@@ -393,12 +393,13 @@
 			"block": "sgs/business-info"
 		},
 		"openStatus": {
-			"patterns": [
-				"^\\s*(?:open now|closed now|open today|closed today|opens? at\\b|closes? at\\b|closed until\\b)"
-			],
-			"flags": "i",
-			"reason": "a live open or closed line is sgs/business-info's open-status display, computed in the visitor's browser from the Site Info hours",
+			"reason": "a live open or closed line (text the draft's code computes from the clock against the opening hours it holds, lib/skeleton-clock.mjs) is sgs/business-info's open-status display, computed in the visitor's browser from the Site Info hours",
 			"block": "sgs/business-info"
+		},
+		"timeText": {
+			"reason": "text the draft's code picks by the hour of the clock (a conditional chain on getHours, lib/skeleton-clock.mjs) is the text block's time-based text option: one hour range per branch with its words, swapped in the visitor's browser",
+			"attribute": "sgsTimeText",
+			"zoneAttribute": "sgsTimeTextZone"
 		},
 		"hoursRows": {
 			"maxChars": 80,

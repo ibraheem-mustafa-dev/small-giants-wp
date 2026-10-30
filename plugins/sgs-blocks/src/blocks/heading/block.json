@@ -29,8 +29,10 @@
 		"sgs": {
 			"motion": true,
 			"enabledExtensions": [
-				"childSizing"
+				"childSizing",
+				"timeText"
 			],
+			"timeTextWords": "content",
 			"boxFamilies": {
 				"borderWidth": [
 					"borderWidth"
