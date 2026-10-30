@@ -76,3 +76,5 @@ The signal between parallel sessions working the cloning tool plan (`.claude/pla
 - 2026-10-30 S reseed-end (exit 0; child-block facts seeded, sgs/hero renders h1 = yes; no unexpected seed-history change)
 - 2026-10-30 S reseed-start (sgs-update-v2.py from main 338affb1c: the glyph role, the rich-text slice's role data)
 - 2026-10-30 S reseed-end (exit 0; separators carry the glyph role; identity facts 30813 code + 4 live rows; no unexpected seed-history change)
+- 2026-10-30 S reseed-start (sgs-update-v2.py from main a4cb93ea2: both identity audits; restores block_identity_facts after an audit agent's stage-14 run wrote it from an older extractor)
+- 2026-10-30 S reseed-end (exit 0; identity facts 30893 code + 4 live rows from main a4cb93ea2, restoring the table an audit's stage-14 run had written from an older extractor; no unexpected seed-history change)
