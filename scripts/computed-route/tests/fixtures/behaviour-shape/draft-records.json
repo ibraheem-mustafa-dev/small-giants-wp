@@ -2617,6 +2617,1660 @@
 				"parent": null,
 				"realParent": null,
 				"parentChain": []
+			},
+			"Draft Site v2/367": {
+				"tag": "a",
+				"realTag": "a",
+				"attrs": {
+					"data-tilt": "",
+					"href": "{{ c.href }}"
+				},
+				"style": {
+					"static": [
+						[
+							"position",
+							"relative"
+						],
+						[
+							"overflow-x",
+							"hidden"
+						],
+						[
+							"overflow-y",
+							"hidden"
+						],
+						[
+							"border-top-left-radius",
+							"22px"
+						],
+						[
+							"border-top-right-radius",
+							"22px"
+						],
+						[
+							"border-bottom-right-radius",
+							"22px"
+						],
+						[
+							"border-bottom-left-radius",
+							"22px"
+						],
+						[
+							"display",
+							"flex"
+						],
+						[
+							"flex-direction",
+							"column"
+						],
+						[
+							"padding-top",
+							"20px"
+						],
+						[
+							"padding-right",
+							"20px"
+						],
+						[
+							"padding-bottom",
+							"20px"
+						],
+						[
+							"padding-left",
+							"20px"
+						],
+						[
+							"transition-behavior",
+							"normal, normal"
+						],
+						[
+							"transition-duration",
+							"0.4s, 0.4s"
+						],
+						[
+							"transition-timing-function",
+							"cubic-bezier(0.16, 0.84, 0.32, 1), ease"
+						],
+						[
+							"transition-delay",
+							"0s, 0s"
+						],
+						[
+							"transition-property",
+							"transform, box-shadow"
+						],
+						[
+							"box-shadow",
+							"rgba(0, 0, 0, 0.04) 0px 1px 0px"
+						]
+					],
+					"holes": [
+						"style:background#1",
+						"style:color#2",
+						"style:min-height#3"
+					]
+				},
+				"holes": [
+					{
+						"id": "attr:href#0",
+						"where": "attr:href",
+						"expr": "c.href",
+						"path": "c.href",
+						"whole": true
+					},
+					{
+						"id": "style:background#1",
+						"where": "style:background",
+						"expr": "c.bg",
+						"path": "c.bg",
+						"whole": true
+					},
+					{
+						"id": "style:color#2",
+						"where": "style:color",
+						"expr": "c.fg",
+						"path": "c.fg",
+						"whole": true
+					},
+					{
+						"id": "style:min-height#3",
+						"where": "style:min-height",
+						"expr": "R.sectorMinH",
+						"path": "R.sectorMinH",
+						"whole": true
+					},
+					{
+						"id": "style-hover:color#4",
+						"where": "style-hover:color",
+						"expr": "c.fg",
+						"path": "c.fg",
+						"whole": true
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/366",
+				"realParent": "Draft Site v2/365",
+				"parentChain": [
+					"Draft Site v2/366",
+					"Draft Site v2/365",
+					"Draft Site v2/364",
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/371": {
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"position",
+							"relative"
+						],
+						[
+							"height",
+							"160px"
+						],
+						[
+							"border-top-left-radius",
+							"14px"
+						],
+						[
+							"border-top-right-radius",
+							"14px"
+						],
+						[
+							"border-bottom-right-radius",
+							"14px"
+						],
+						[
+							"border-bottom-left-radius",
+							"14px"
+						],
+						[
+							"overflow-x",
+							"hidden"
+						],
+						[
+							"overflow-y",
+							"hidden"
+						],
+						[
+							"background-image",
+							"initial"
+						],
+						[
+							"background-position-x",
+							"initial"
+						],
+						[
+							"background-position-y",
+							"initial"
+						],
+						[
+							"background-size",
+							"initial"
+						],
+						[
+							"background-repeat",
+							"initial"
+						],
+						[
+							"background-attachment",
+							"initial"
+						],
+						[
+							"background-origin",
+							"initial"
+						],
+						[
+							"background-clip",
+							"initial"
+						],
+						[
+							"background-color",
+							"rgba(255, 255, 255, 0.14)"
+						]
+					],
+					"holes": []
+				},
+				"holes": [],
+				"words": "",
+				"parent": "Draft Site v2/367",
+				"realParent": "Draft Site v2/367",
+				"parentChain": [
+					"Draft Site v2/367",
+					"Draft Site v2/366",
+					"Draft Site v2/365",
+					"Draft Site v2/364",
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/395": {
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"position",
+							"relative"
+						],
+						[
+							"border-top-left-radius",
+							"22px"
+						],
+						[
+							"border-top-right-radius",
+							"22px"
+						],
+						[
+							"border-bottom-right-radius",
+							"22px"
+						],
+						[
+							"border-bottom-left-radius",
+							"22px"
+						],
+						[
+							"overflow-x",
+							"hidden"
+						],
+						[
+							"overflow-y",
+							"hidden"
+						],
+						[
+							"background-image",
+							"initial"
+						],
+						[
+							"background-position-x",
+							"initial"
+						],
+						[
+							"background-position-y",
+							"initial"
+						],
+						[
+							"background-size",
+							"initial"
+						],
+						[
+							"background-repeat",
+							"initial"
+						],
+						[
+							"background-attachment",
+							"initial"
+						],
+						[
+							"background-origin",
+							"initial"
+						],
+						[
+							"background-clip",
+							"initial"
+						],
+						[
+							"background-color",
+							"rgb(234, 244, 247)"
+						],
+						[
+							"border-top-width",
+							"5px"
+						],
+						[
+							"border-right-width",
+							"5px"
+						],
+						[
+							"border-bottom-width",
+							"5px"
+						],
+						[
+							"border-left-width",
+							"5px"
+						],
+						[
+							"border-top-style",
+							"solid"
+						],
+						[
+							"border-right-style",
+							"solid"
+						],
+						[
+							"border-bottom-style",
+							"solid"
+						],
+						[
+							"border-left-style",
+							"solid"
+						],
+						[
+							"border-top-color",
+							"rgb(255, 255, 255)"
+						],
+						[
+							"border-right-color",
+							"rgb(255, 255, 255)"
+						],
+						[
+							"border-bottom-color",
+							"rgb(255, 255, 255)"
+						],
+						[
+							"border-left-color",
+							"rgb(255, 255, 255)"
+						],
+						[
+							"border-image-source",
+							"initial"
+						],
+						[
+							"border-image-slice",
+							"initial"
+						],
+						[
+							"border-image-width",
+							"initial"
+						],
+						[
+							"border-image-outset",
+							"initial"
+						],
+						[
+							"border-image-repeat",
+							"initial"
+						],
+						[
+							"box-shadow",
+							"rgba(44, 62, 80, 0.6) 0px 30px 54px -30px"
+						]
+					],
+					"holes": [
+						"style:aspect-ratio#0"
+					]
+				},
+				"holes": [
+					{
+						"id": "style:aspect-ratio#0",
+						"where": "style:aspect-ratio",
+						"expr": "b.ratio",
+						"path": "b.ratio",
+						"whole": true
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/394",
+				"realParent": "Draft Site v2/394",
+				"parentChain": [
+					"Draft Site v2/394",
+					"Draft Site v2/379",
+					"Draft Site v2/378",
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/451": {
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"position",
+							"relative"
+						],
+						[
+							"aspect-ratio",
+							"4 / 5"
+						],
+						[
+							"border-top-left-radius",
+							"22px"
+						],
+						[
+							"border-top-right-radius",
+							"22px"
+						],
+						[
+							"border-bottom-right-radius",
+							"22px"
+						],
+						[
+							"border-bottom-left-radius",
+							"22px"
+						],
+						[
+							"overflow-x",
+							"hidden"
+						],
+						[
+							"overflow-y",
+							"hidden"
+						],
+						[
+							"background-image",
+							"initial"
+						],
+						[
+							"background-position-x",
+							"initial"
+						],
+						[
+							"background-position-y",
+							"initial"
+						],
+						[
+							"background-size",
+							"initial"
+						],
+						[
+							"background-repeat",
+							"initial"
+						],
+						[
+							"background-attachment",
+							"initial"
+						],
+						[
+							"background-origin",
+							"initial"
+						],
+						[
+							"background-clip",
+							"initial"
+						],
+						[
+							"background-color",
+							"rgb(234, 244, 247)"
+						]
+					],
+					"holes": []
+				},
+				"holes": [],
+				"words": "",
+				"parent": "Draft Site v2/446",
+				"realParent": "Draft Site v2/446",
+				"parentChain": [
+					"Draft Site v2/446",
+					"Draft Site v2/445",
+					"Draft Site v2/444",
+					"Draft Site v2/438",
+					"Draft Site v2/437",
+					"Draft Site v2/436",
+					"Draft Site v2/435",
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/456": {
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"display",
+							"flex"
+						],
+						[
+							"row-gap",
+							"16px"
+						],
+						[
+							"column-gap",
+							"16px"
+						],
+						[
+							"overflow-x",
+							"auto"
+						],
+						[
+							"scroll-snap-type",
+							"x mandatory"
+						],
+						[
+							"-webkit-overflow-scrolling",
+							"touch",
+							"rejected"
+						],
+						[
+							"scrollbar-width",
+							"none"
+						]
+					],
+					"holes": [
+						"style:scroll-padding-inline#0",
+						"style:margin#1",
+						"style:padding#2"
+					]
+				},
+				"holes": [
+					{
+						"id": "style:scroll-padding-inline#0",
+						"where": "style:scroll-padding-inline",
+						"expr": "R.px",
+						"path": "R.px",
+						"whole": true
+					},
+					{
+						"id": "style:margin#1",
+						"where": "style:margin",
+						"expr": "R.px",
+						"path": "R.px",
+						"whole": false
+					},
+					{
+						"id": "style:padding#2",
+						"where": "style:padding",
+						"expr": "R.px",
+						"path": "R.px",
+						"whole": false
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/453",
+				"realParent": "Draft Site v2/345",
+				"parentChain": [
+					"Draft Site v2/453",
+					"Draft Site v2/435",
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/458": {
+				"tag": "article",
+				"realTag": "article",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"scroll-snap-align",
+							"start"
+						],
+						[
+							"background-image",
+							"initial"
+						],
+						[
+							"background-position-x",
+							"initial"
+						],
+						[
+							"background-position-y",
+							"initial"
+						],
+						[
+							"background-size",
+							"initial"
+						],
+						[
+							"background-repeat",
+							"initial"
+						],
+						[
+							"background-attachment",
+							"initial"
+						],
+						[
+							"background-origin",
+							"initial"
+						],
+						[
+							"background-clip",
+							"initial"
+						],
+						[
+							"background-color",
+							"rgb(255, 255, 255)"
+						],
+						[
+							"border-top-left-radius",
+							"24px"
+						],
+						[
+							"border-top-right-radius",
+							"24px"
+						],
+						[
+							"border-bottom-right-radius",
+							"24px"
+						],
+						[
+							"border-bottom-left-radius",
+							"24px"
+						],
+						[
+							"overflow-x",
+							"hidden"
+						],
+						[
+							"overflow-y",
+							"hidden"
+						],
+						[
+							"box-shadow",
+							"rgba(44, 62, 80, 0.6) 0px 26px 44px -30px"
+						],
+						[
+							"border-top-width",
+							"1px"
+						],
+						[
+							"border-right-width",
+							"1px"
+						],
+						[
+							"border-bottom-width",
+							"1px"
+						],
+						[
+							"border-left-width",
+							"1px"
+						],
+						[
+							"border-top-style",
+							"solid"
+						],
+						[
+							"border-right-style",
+							"solid"
+						],
+						[
+							"border-bottom-style",
+							"solid"
+						],
+						[
+							"border-left-style",
+							"solid"
+						],
+						[
+							"border-top-color",
+							"rgba(44, 62, 80, 0.08)"
+						],
+						[
+							"border-right-color",
+							"rgba(44, 62, 80, 0.08)"
+						],
+						[
+							"border-bottom-color",
+							"rgba(44, 62, 80, 0.08)"
+						],
+						[
+							"border-left-color",
+							"rgba(44, 62, 80, 0.08)"
+						],
+						[
+							"border-image-source",
+							"initial"
+						],
+						[
+							"border-image-slice",
+							"initial"
+						],
+						[
+							"border-image-width",
+							"initial"
+						],
+						[
+							"border-image-outset",
+							"initial"
+						],
+						[
+							"border-image-repeat",
+							"initial"
+						]
+					],
+					"holes": [
+						"style:flex#0"
+					]
+				},
+				"holes": [
+					{
+						"id": "style:flex#0",
+						"where": "style:flex",
+						"expr": "R.hsFlex",
+						"path": "R.hsFlex",
+						"whole": true
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/457",
+				"realParent": "Draft Site v2/456",
+				"parentChain": [
+					"Draft Site v2/457",
+					"Draft Site v2/456",
+					"Draft Site v2/453",
+					"Draft Site v2/435",
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/481": {
+				"tag": "a",
+				"realTag": "a",
+				"attrs": {
+					"href": "{{ c.href }}",
+					"data-peek": "{{ c.peekAttr }}"
+				},
+				"style": {
+					"static": [
+						[
+							"position",
+							"relative"
+						],
+						[
+							"color",
+							"rgb(30, 42, 60)"
+						],
+						[
+							"background-image",
+							"initial"
+						],
+						[
+							"background-position-x",
+							"initial"
+						],
+						[
+							"background-position-y",
+							"initial"
+						],
+						[
+							"background-size",
+							"initial"
+						],
+						[
+							"background-repeat",
+							"initial"
+						],
+						[
+							"background-attachment",
+							"initial"
+						],
+						[
+							"background-origin",
+							"initial"
+						],
+						[
+							"background-clip",
+							"initial"
+						],
+						[
+							"background-color",
+							"rgb(255, 255, 255)"
+						],
+						[
+							"border-top-width",
+							"1px"
+						],
+						[
+							"border-right-width",
+							"1px"
+						],
+						[
+							"border-bottom-width",
+							"1px"
+						],
+						[
+							"border-left-width",
+							"1px"
+						],
+						[
+							"border-top-style",
+							"solid"
+						],
+						[
+							"border-right-style",
+							"solid"
+						],
+						[
+							"border-bottom-style",
+							"solid"
+						],
+						[
+							"border-left-style",
+							"solid"
+						],
+						[
+							"border-top-color",
+							"rgba(30, 42, 60, 0.11)"
+						],
+						[
+							"border-right-color",
+							"rgba(30, 42, 60, 0.11)"
+						],
+						[
+							"border-bottom-color",
+							"rgba(30, 42, 60, 0.11)"
+						],
+						[
+							"border-left-color",
+							"rgba(30, 42, 60, 0.11)"
+						],
+						[
+							"border-image-source",
+							"initial"
+						],
+						[
+							"border-image-slice",
+							"initial"
+						],
+						[
+							"border-image-width",
+							"initial"
+						],
+						[
+							"border-image-outset",
+							"initial"
+						],
+						[
+							"border-image-repeat",
+							"initial"
+						],
+						[
+							"border-top-left-radius",
+							"22px"
+						],
+						[
+							"border-top-right-radius",
+							"22px"
+						],
+						[
+							"border-bottom-right-radius",
+							"22px"
+						],
+						[
+							"border-bottom-left-radius",
+							"22px"
+						],
+						[
+							"overflow-x",
+							"hidden"
+						],
+						[
+							"overflow-y",
+							"hidden"
+						],
+						[
+							"display",
+							"flex"
+						],
+						[
+							"flex-direction",
+							"column"
+						],
+						[
+							"transition-behavior",
+							"normal, normal, normal"
+						],
+						[
+							"transition-duration",
+							"0.35s, 0.35s, 0.35s"
+						],
+						[
+							"transition-timing-function",
+							"cubic-bezier(0.16, 0.84, 0.32, 1), ease, ease"
+						],
+						[
+							"transition-delay",
+							"0s, 0s, 0s"
+						],
+						[
+							"transition-property",
+							"transform, box-shadow, border-color"
+						]
+					],
+					"holes": []
+				},
+				"holes": [
+					{
+						"id": "attr:href#0",
+						"where": "attr:href",
+						"expr": "c.href",
+						"path": "c.href",
+						"whole": true
+					},
+					{
+						"id": "attr:data-peek#1",
+						"where": "attr:data-peek",
+						"expr": "c.peekAttr",
+						"path": "c.peekAttr",
+						"whole": true
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/480",
+				"realParent": "Draft Site v2/479",
+				"parentChain": [
+					"Draft Site v2/480",
+					"Draft Site v2/479",
+					"Draft Site v2/478",
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/502": {
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"height",
+							"130px"
+						],
+						[
+							"border-top-left-radius",
+							"12px"
+						],
+						[
+							"border-top-right-radius",
+							"12px"
+						],
+						[
+							"border-bottom-right-radius",
+							"12px"
+						],
+						[
+							"border-bottom-left-radius",
+							"12px"
+						],
+						[
+							"background-image",
+							"initial"
+						],
+						[
+							"background-position-x",
+							"initial"
+						],
+						[
+							"background-position-y",
+							"initial"
+						],
+						[
+							"background-size",
+							"initial"
+						],
+						[
+							"background-repeat",
+							"initial"
+						],
+						[
+							"background-attachment",
+							"initial"
+						],
+						[
+							"background-origin",
+							"initial"
+						],
+						[
+							"background-clip",
+							"initial"
+						],
+						[
+							"background-color",
+							"rgb(242, 245, 247)"
+						],
+						[
+							"overflow-x",
+							"hidden"
+						],
+						[
+							"overflow-y",
+							"hidden"
+						]
+					],
+					"holes": []
+				},
+				"holes": [],
+				"words": "",
+				"parent": "Draft Site v2/501",
+				"realParent": "Draft Site v2/501",
+				"parentChain": [
+					"Draft Site v2/501",
+					"Draft Site v2/500",
+					"Draft Site v2/499",
+					"Draft Site v2/498",
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/515": {
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"position",
+							"relative"
+						],
+						[
+							"overflow-x",
+							"hidden"
+						],
+						[
+							"overflow-y",
+							"hidden"
+						],
+						[
+							"border-top-left-radius",
+							"26px"
+						],
+						[
+							"border-top-right-radius",
+							"26px"
+						],
+						[
+							"border-bottom-right-radius",
+							"26px"
+						],
+						[
+							"border-bottom-left-radius",
+							"26px"
+						],
+						[
+							"background-image",
+							"linear-gradient(135deg, rgb(14, 139, 184) 0%, rgb(10, 126, 168) 45%, rgb(7, 94, 128) 100%)"
+						],
+						[
+							"background-position-x",
+							"initial"
+						],
+						[
+							"background-position-y",
+							"initial"
+						],
+						[
+							"background-size",
+							"initial"
+						],
+						[
+							"background-repeat",
+							"initial"
+						],
+						[
+							"background-attachment",
+							"initial"
+						],
+						[
+							"background-origin",
+							"initial"
+						],
+						[
+							"background-clip",
+							"initial"
+						],
+						[
+							"background-color",
+							"initial"
+						],
+						[
+							"color",
+							"rgb(255, 255, 255)"
+						],
+						[
+							"display",
+							"grid"
+						],
+						[
+							"row-gap",
+							"30px"
+						],
+						[
+							"column-gap",
+							"30px"
+						],
+						[
+							"align-items",
+							"center"
+						]
+					],
+					"holes": [
+						"style:padding#0",
+						"style:grid-template-columns#1"
+					]
+				},
+				"holes": [
+					{
+						"id": "style:padding#0",
+						"where": "style:padding",
+						"expr": "R.ctaPad",
+						"path": "R.ctaPad",
+						"whole": true
+					},
+					{
+						"id": "style:grid-template-columns#1",
+						"where": "style:grid-template-columns",
+						"expr": "R.ctaCols",
+						"path": "R.ctaCols",
+						"whole": true
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/514",
+				"realParent": "Draft Site v2/345",
+				"parentChain": [
+					"Draft Site v2/514",
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/537": {
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"position",
+							"relative"
+						],
+						[
+							"border-top-left-radius",
+							"28px"
+						],
+						[
+							"border-top-right-radius",
+							"28px"
+						],
+						[
+							"border-bottom-right-radius",
+							"28px"
+						],
+						[
+							"border-bottom-left-radius",
+							"28px"
+						],
+						[
+							"overflow-x",
+							"hidden"
+						],
+						[
+							"overflow-y",
+							"hidden"
+						],
+						[
+							"background-image",
+							"initial"
+						],
+						[
+							"background-position-x",
+							"initial"
+						],
+						[
+							"background-position-y",
+							"initial"
+						],
+						[
+							"background-size",
+							"initial"
+						],
+						[
+							"background-repeat",
+							"initial"
+						],
+						[
+							"background-attachment",
+							"initial"
+						],
+						[
+							"background-origin",
+							"initial"
+						],
+						[
+							"background-clip",
+							"initial"
+						],
+						[
+							"background-color",
+							"rgb(234, 244, 247)"
+						],
+						[
+							"border-top-width",
+							"5px"
+						],
+						[
+							"border-right-width",
+							"5px"
+						],
+						[
+							"border-bottom-width",
+							"5px"
+						],
+						[
+							"border-left-width",
+							"5px"
+						],
+						[
+							"border-top-style",
+							"solid"
+						],
+						[
+							"border-right-style",
+							"solid"
+						],
+						[
+							"border-bottom-style",
+							"solid"
+						],
+						[
+							"border-left-style",
+							"solid"
+						],
+						[
+							"border-top-color",
+							"rgb(255, 255, 255)"
+						],
+						[
+							"border-right-color",
+							"rgb(255, 255, 255)"
+						],
+						[
+							"border-bottom-color",
+							"rgb(255, 255, 255)"
+						],
+						[
+							"border-left-color",
+							"rgb(255, 255, 255)"
+						],
+						[
+							"border-image-source",
+							"initial"
+						],
+						[
+							"border-image-slice",
+							"initial"
+						],
+						[
+							"border-image-width",
+							"initial"
+						],
+						[
+							"border-image-outset",
+							"initial"
+						],
+						[
+							"border-image-repeat",
+							"initial"
+						],
+						[
+							"box-shadow",
+							"rgba(44, 62, 80, 0.6) 0px 30px 60px -34px"
+						]
+					],
+					"holes": [
+						"style:min-height#0"
+					]
+				},
+				"holes": [
+					{
+						"id": "style:min-height#0",
+						"where": "style:min-height",
+						"expr": "R.mapH",
+						"path": "R.mapH",
+						"whole": true
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/528",
+				"realParent": "Draft Site v2/528",
+				"parentChain": [
+					"Draft Site v2/528",
+					"Draft Site v2/527",
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/572": {
+				"tag": "aside",
+				"realTag": "aside",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"top",
+							"120px"
+						],
+						[
+							"background-image",
+							"initial"
+						],
+						[
+							"background-position-x",
+							"initial"
+						],
+						[
+							"background-position-y",
+							"initial"
+						],
+						[
+							"background-size",
+							"initial"
+						],
+						[
+							"background-repeat",
+							"initial"
+						],
+						[
+							"background-attachment",
+							"initial"
+						],
+						[
+							"background-origin",
+							"initial"
+						],
+						[
+							"background-clip",
+							"initial"
+						],
+						[
+							"background-color",
+							"rgb(10, 126, 168)"
+						],
+						[
+							"color",
+							"rgb(255, 255, 255)"
+						],
+						[
+							"border-top-left-radius",
+							"22px"
+						],
+						[
+							"border-top-right-radius",
+							"22px"
+						],
+						[
+							"border-bottom-right-radius",
+							"22px"
+						],
+						[
+							"border-bottom-left-radius",
+							"22px"
+						],
+						[
+							"padding-top",
+							"32px"
+						],
+						[
+							"padding-right",
+							"32px"
+						],
+						[
+							"padding-bottom",
+							"32px"
+						],
+						[
+							"padding-left",
+							"32px"
+						],
+						[
+							"overflow-x",
+							"hidden"
+						],
+						[
+							"overflow-y",
+							"hidden"
+						],
+						[
+							"min-width",
+							"0px"
+						]
+					],
+					"holes": [
+						"style:position#0"
+					]
+				},
+				"holes": [
+					{
+						"id": "style:position#0",
+						"where": "style:position",
+						"expr": "R.sticky",
+						"path": "R.sticky",
+						"whole": true
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/541",
+				"realParent": "Draft Site v2/541",
+				"parentChain": [
+					"Draft Site v2/541",
+					"Draft Site v2/540",
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
+			},
+			"Draft Site v2/606": {
+				"tag": "a",
+				"realTag": "a",
+				"attrs": {
+					"href": "{{ p.href }}"
+				},
+				"style": {
+					"static": [
+						[
+							"display",
+							"flex"
+						],
+						[
+							"flex-direction",
+							"column"
+						],
+						[
+							"color",
+							"rgb(30, 42, 60)"
+						],
+						[
+							"background-image",
+							"initial"
+						],
+						[
+							"background-position-x",
+							"initial"
+						],
+						[
+							"background-position-y",
+							"initial"
+						],
+						[
+							"background-size",
+							"initial"
+						],
+						[
+							"background-repeat",
+							"initial"
+						],
+						[
+							"background-attachment",
+							"initial"
+						],
+						[
+							"background-origin",
+							"initial"
+						],
+						[
+							"background-clip",
+							"initial"
+						],
+						[
+							"background-color",
+							"rgb(255, 255, 255)"
+						],
+						[
+							"border-top-width",
+							"1px"
+						],
+						[
+							"border-right-width",
+							"1px"
+						],
+						[
+							"border-bottom-width",
+							"1px"
+						],
+						[
+							"border-left-width",
+							"1px"
+						],
+						[
+							"border-top-style",
+							"solid"
+						],
+						[
+							"border-right-style",
+							"solid"
+						],
+						[
+							"border-bottom-style",
+							"solid"
+						],
+						[
+							"border-left-style",
+							"solid"
+						],
+						[
+							"border-top-color",
+							"rgba(30, 42, 60, 0.11)"
+						],
+						[
+							"border-right-color",
+							"rgba(30, 42, 60, 0.11)"
+						],
+						[
+							"border-bottom-color",
+							"rgba(30, 42, 60, 0.11)"
+						],
+						[
+							"border-left-color",
+							"rgba(30, 42, 60, 0.11)"
+						],
+						[
+							"border-image-source",
+							"initial"
+						],
+						[
+							"border-image-slice",
+							"initial"
+						],
+						[
+							"border-image-width",
+							"initial"
+						],
+						[
+							"border-image-outset",
+							"initial"
+						],
+						[
+							"border-image-repeat",
+							"initial"
+						],
+						[
+							"border-top-left-radius",
+							"22px"
+						],
+						[
+							"border-top-right-radius",
+							"22px"
+						],
+						[
+							"border-bottom-right-radius",
+							"22px"
+						],
+						[
+							"border-bottom-left-radius",
+							"22px"
+						],
+						[
+							"overflow-x",
+							"hidden"
+						],
+						[
+							"overflow-y",
+							"hidden"
+						],
+						[
+							"transition-behavior",
+							"normal, normal"
+						],
+						[
+							"transition-duration",
+							"0.35s, 0.35s"
+						],
+						[
+							"transition-timing-function",
+							"cubic-bezier(0.16, 0.84, 0.32, 1), ease"
+						],
+						[
+							"transition-delay",
+							"0s, 0s"
+						],
+						[
+							"transition-property",
+							"transform, box-shadow"
+						]
+					],
+					"holes": []
+				},
+				"holes": [
+					{
+						"id": "attr:href#0",
+						"where": "attr:href",
+						"expr": "p.href",
+						"path": "p.href",
+						"whole": true
+					}
+				],
+				"words": "",
+				"parent": "Draft Site v2/605",
+				"realParent": "Draft Site v2/604",
+				"parentChain": [
+					"Draft Site v2/605",
+					"Draft Site v2/604",
+					"Draft Site v2/599",
+					"Draft Site v2/345",
+					"Draft Site v2/344",
+					"Draft Site v2/343",
+					"Draft Site v2/201",
+					"Draft Site v2/8"
+				]
 			}
 		}
 	}

@@ -55,8 +55,8 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "INDEXED.test( words( x.source?.code ) ) );",
-		"replace": "true );",
+		"find": "&& isIndexed( x ) );",
+		"replace": "&& true );",
 		"why": "a fixed-offset press is a dot"
 	},
 	{

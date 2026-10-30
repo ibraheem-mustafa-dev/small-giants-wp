@@ -1,8 +1,8 @@
 [
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "{ attr: 'scrolledOffset', value: number( at[ 1 ] ) }",
-		"replace": "{ attr: 'scrolledOffset', value: 50 }",
+		"find": "{ attr: 'scrolledOffset', value: at },",
+		"replace": "{ attr: 'scrolledOffset', value: 50 },",
 		"why": "the scroll threshold is not the code's"
 	},
 	{
@@ -199,8 +199,8 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "if ( hit ) {\n\t\t\treturn hit.right.value;\n\t\t}",
-		"replace": "if ( hit ) {\n\t\t\treturn 0;\n\t\t}",
+		"find": "if ( hit ) {\n\t\t\treturn hit.right.value;\n\t\t}\n\t}\n\treturn null;\n}\n\n// A script that scrolls a page element",
+		"replace": "if ( hit ) {\n\t\t\treturn 0;\n\t\t}\n\t}\n\treturn null;\n}\n\n// A script that scrolls a page element",
 		"why": "the scroll gap is not the code's"
 	}
 ]

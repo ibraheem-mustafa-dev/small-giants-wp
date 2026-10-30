@@ -43,8 +43,8 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "{ attr: 'orientation', value: 'horizontal', companion: true } ] },",
-		"replace": "] },",
+		"find": "{ attr: 'orientation', value: 'horizontal', companion: true }, ...( strip",
+		"replace": "...( strip",
 		"why": "the pinned timeline is written without its orientation"
 	},
 	{
@@ -103,8 +103,8 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "const isStep = ( r ) => 'js-scroll' === r.mechanism && 'active' === ( r.status ?? 'active' ) && STEPS.test( words( r.source?.code ) );",
-		"replace": "const isStep = ( r ) => 'active' === ( r.status ?? 'active' ) && STEPS.test( words( r.source?.code ) );",
+		"find": "const isStep = ( r ) => 'js-scroll' === r.mechanism && 'active' === ( r.status ?? 'active' ) && steps( r ).length > 0;",
+		"replace": "const isStep = ( r ) => 'active' === ( r.status ?? 'active' ) && steps( r ).length > 0;",
 		"why": "a non-scroll write is a step"
 	},
 	{

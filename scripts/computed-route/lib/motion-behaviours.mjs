@@ -24,7 +24,7 @@
 // (lib/motion-effect-element.mjs: the sheen band's width, the ripple circle's size and colour).
 
 import { poseOf, IDENTITY } from './motion-channels.mjs';
-import { props, nameOf, words, triggerOf, scrollValueName, MINUS, TIMES, NUMBER, number, round, durationOf, easingOf, compact } from './motion-record-text.mjs';
+import { props, nameOf, words, triggerOf, scrollValueName, MINUS, TIMES, NUMBER, number, round, durationOf, easingOf, compact, cssCallOf, codeTree, nodesOf, readsScrollY } from './motion-record-text.mjs';
 import { pinnedSectionOf, headerScrollOf, dotPulseOf, accordionScrollOf, autoplayOf, pinnedTimelineOf, carouselOf } from './motion-behaviour-settings.mjs';
 import { hiddenStartOf } from './motion-reveal.mjs';
 import { effectElementStyle, effectElementOwner, colourOf, largerSideFactor } from './motion-effect-element.mjs';
@@ -173,6 +173,10 @@ function peekDragOf( r ) {
 	return p && 'js-style-write' === r.mechanism && /dragenter|dragover|drop/i.test( words( r.trigger?.detail, r.source?.code ) ) ? p : null;
 }
 
+// Whether a formula reads the scroll as a fraction of the page: it divides the scroll position by a distance, or reads the
+// page's `scrollHeight` (from the syntax tree).
+const scrollFraction = ( q ) => nodesOf( codeTree( q.formula ), ( n ) => ( 'BinaryExpression' === n.type && '/' === n.operator && readsScrollY( n.left ) ) || ( 'MemberExpression' === n.type && 'scrollHeight' === n.property?.name ) || ( 'Identifier' === n.type && 'scrollHeight' === n.name ) ).length > 0;
+
 // A transform or translate written in proportion to the scroll position: a parallax (distance from the page top, or
 // from the element's own place in the view) and, for a scale written to the scroll fraction (the page's, or a pinned
 // section's progress, lib/motion-behaviour-settings.mjs::pinnedSectionOf), a progress bar.
@@ -182,9 +186,9 @@ function scrollOf( r, ctx = {} ) {
 		return null;
 	}
 	const pin = !! pinnedSectionOf( r, ctx );
-	const bar = list.find( ( q ) => 'transform' === nameOf( q ) && /scale([XY])\(/i.test( words( q.to, q.formula ) ) && ( pin || /scrollHeight|scrollable/i.test( words( q.formula ) ) ) );
+	const bar = list.find( ( q ) => 'transform' === nameOf( q ) && /^scale[xy]$/.test( cssCallOf( q )?.name ?? '' ) && ( pin || scrollFraction( q ) ) );
 	if ( bar ) {
-		const axis = /scaleY/i.test( words( bar.to, bar.formula ) ) ? 'bar-y' : 'bar-x';
+		const axis = 'scaley' === cssCallOf( bar ).name ? 'bar-y' : 'bar-x';
 		return { effect: 'scroll-progress', panel: 'effects', trigger: 'scroll', values: { source: pin ? 'pin' : 'page', output: axis } };
 	}
 	const move = list.find( ( q ) => /^(?:translate|transform)$/.test( nameOf( q ) ) && scrollValueName( q, r ) );

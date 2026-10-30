@@ -8,7 +8,7 @@
 import { colourHex } from './tokens.mjs';
 import { shadowParts } from './motion-shadow.mjs';
 import { templateKey, templateKeyOf } from './fact-key.mjs';
-import { props, nameOf, words, triggerOf, NUMBER, number, durationOf, codeTree, nodesOf, callsOf, expressionOf, negativeExpr, stringPieces } from './motion-record-text.mjs';
+import { props, nameOf, words, triggerOf, NUMBER, number, durationOf, codeTree, nodesOf, callsOf, negativeExpr, readsScrollY, optionKeys, optionValue, cssCallOf } from './motion-record-text.mjs';
 
 const px = ( n ) => `${ n }px`;
 
@@ -78,13 +78,25 @@ export function stickyTiers( by ) {
 	return out;
 }
 
+// The scroll distance a write switches at: the number a comparison `scrollY > n` (or `>=`) tests in the record's code or
+// formula, read from the syntax tree, or null.
+export function scrollThreshold( r ) {
+	for ( const text of [ r.source?.code, ...props( r ).map( ( q ) => q.formula ) ] ) {
+		const hit = nodesOf( codeTree( text ), ( n ) => 'BinaryExpression' === n.type && /^>=?$/.test( n.operator ) && readsScrollY( n.left ) && 'NumericLiteral' === n.right.type )[ 0 ];
+		if ( hit ) {
+			return hit.right.value;
+		}
+	}
+	return null;
+}
+
 // A script that writes a box-shadow once the page has scrolled past a distance: the site header's scrolled shadow and
 // threshold and, for a header the draft pins, its sticky behaviour per tier (stickyTiers, from `ctx.positions`,
 // positionsByTemplate's map). The shadow is the `shadowScrolled` shape with its colour split into `shadowScrolledColour`.
 export function headerScrollOf( r, ctx ) {
 	const p = props( r ).find( ( q ) => 'box-shadow' === nameOf( q ) );
-	const at = new RegExp( `scrollY\\s*>\\s*${ NUMBER }` ).exec( words( r.source?.code, r.trigger?.detail ) );
-	if ( 'js-style-write' !== r.mechanism || 'scroll-position' !== triggerOf( r ) || ! p || ! at || 'none' !== String( p.from ?? 'none' ).trim() ) {
+	const at = scrollThreshold( r );
+	if ( 'js-style-write' !== r.mechanism || 'scroll-position' !== triggerOf( r ) || ! p || null === at || 'none' !== String( p.from ?? 'none' ).trim() ) {
 		return null;
 	}
 	const shadow = shadowParts( p.to );
@@ -96,7 +108,7 @@ export function headerScrollOf( r, ctx ) {
 	const sticky = by ? stickyTiers( by ) : ( stickyOf( r, ctx ) ? { desktop: 'on' } : null );
 	return {
 		blocks: { 'sgs/site-header': [
-			{ attr: 'scrolledOffset', value: number( at[ 1 ] ) },
+			{ attr: 'scrolledOffset', value: at },
 			{ attr: 'shadowScrolled', value: [ shadow.x, shadow.y, shadow.blur, shadow.spread ].map( px ).join( ' ' ) },
 			...( colour ? [ { attr: 'shadowScrolledColour', value: colour, colour: true } ] : [] ),
 			...( sticky ? [ { attr: 'headerSticky', value: sticky } ] : [] ),
@@ -150,7 +162,7 @@ export function dotPulseOf( r, ctx = {} ) {
 }
 
 // Whether a record's code calls `scrollTo` with an options object holding `top`, read from its syntax tree.
-export const scrollsToTop = ( r ) => callsOf( codeTree( r.source?.code ), 'scrollTo' ).some( ( c ) => 'ObjectExpression' === c.arguments[ 0 ]?.type && c.arguments[ 0 ].properties.some( ( q ) => 'top' === ( q.key?.name ?? q.key?.value ) ) );
+export const scrollsToTop = ( r ) => callsOf( codeTree( r.source?.code ), 'scrollTo' ).some( ( c ) => optionKeys( c ).includes( 'top' ) );
 
 // The gap a scroll target keeps above an element's offset: the number in `<element>.offsetTop - <n>`, read from the syntax
 // tree of the property's target value or formula, or null.
@@ -204,18 +216,24 @@ export function autoplayOf( r ) {
 // from the formula's syntax tree (its string pieces, each computed piece judged by its expression), else from the stated
 // end value.
 export function movesSideways( q ) {
-	const expr = expressionOf( codeTree( q?.formula ) );
-	const pieces = expr ? stringPieces( expr ) : 'string' === typeof q?.to ? [ q.to ] : [];
-	const exprs = pieces.filter( ( x ) => 'string' !== typeof x );
-	const value = pieces.map( ( x ) => ( 'string' === typeof x ? x : `\u0001${ exprs.indexOf( x ) }\u0001` ) ).join( '' );
-	const fn = /^\s*(translate3d|translateX)\(([^()]*)\)\s*$/i.exec( value );
-	const args = fn ? fn[ 2 ].split( ',' ).map( ( a ) => a.trim() ) : [];
-	const flat = 'translate3d' === fn?.[ 1 ].toLowerCase() ? 3 === args.length && args.slice( 1 ).every( ( a ) => /^0(?:px)?$/.test( a ) ) : 1 === args.length;
-	if ( ! fn || ! flat ) {
+	const c = cssCallOf( q );
+	const zero = ( a ) => ( a.nodes.length ? 1 === a.nodes.length && null === a.text && 'NumericLiteral' === a.nodes[ 0 ].type && 0 === a.nodes[ 0 ].value : /^0(?:px)?$/.test( a.text ) );
+	const flat = 'translate3d' === c?.name ? 3 === c.args.length && c.args.slice( 1 ).every( zero ) : 'translatex' === c?.name && 1 === c.args.length;
+	if ( ! flat ) {
 		return false;
 	}
-	const computed = /\u0001(\d+)\u0001/.exec( args[ 0 ] );
-	return computed ? negativeExpr( exprs[ Number( computed[ 1 ] ) ] ) : /^-\s*\S/.test( args[ 0 ] );
+	const x = c.args[ 0 ];
+	return x.nodes.length ? negativeExpr( x.nodes[ 0 ] ) : /^-\s*\S/.test( x.text );
+}
+
+// The touch strip a pinned stage gives way to: inside the same `<section>` as the stage, outside the stage, a template
+// element the draft declares as a horizontal scroll track (overflow-x auto or scroll, with x scroll snapping). Read from the
+// fact record's declared styles.
+function touchStripBeside( stage, ctx ) {
+	const elements = ctx.template.elements;
+	const section = [ stage, ...( elements[ stage ]?.parentChain || [] ) ].find( ( k ) => /^section$/i.test( String( elements[ k ]?.realTag ?? elements[ k ]?.tag ?? '' ) ) );
+	return !! section && Object.entries( elements ).some( ( [ k, e ] ) => k !== stage && ( e.parentChain || [] ).includes( section ) && ! ( e.parentChain || [] ).includes( stage )
+		&& /^(?:auto|scroll)$/.test( String( staticStyle( e, 'overflow-x' ) ?? '' ).trim() ) && /^(?:x|both)\b/.test( String( staticStyle( e, 'scroll-snap-type' ) ?? '' ).trim() ) );
 }
 
 // The section a scroll write holds in place: the nearest ancestor of its element positioned `sticky` (the stage that stays
@@ -276,8 +294,9 @@ export function pinnedTimelineOf( r, ctx = {} ) {
 	}
 	const move = get( 'transform', 'translate' );
 	if ( move && movesSideways( move ) ) {
+		const strip = touchStripBeside( pinnedSectionOf( r, ctx ), ctx );
 		return {
-			blocks: { 'sgs/timeline': [ { attr: 'scrollEffect', value: 'pinned-horizontal' }, { attr: 'orientation', value: 'horizontal', companion: true } ] },
+			blocks: { 'sgs/timeline': [ { attr: 'scrollEffect', value: 'pinned-horizontal' }, { attr: 'orientation', value: 'horizontal', companion: true }, ...( strip ? [ { attr: 'mobileLayout', value: 'carousel' } ] : [] ) ] },
 			accepted: 'the draft switches to its touch-only strip at 1024px; SGS pins from 768px and swipes below (Ruling 9)',
 			notes: [ 'the track moves sideways with the scroll while pinned' ],
 		};
@@ -305,9 +324,11 @@ export function pinnedTimelineOf( r, ctx = {} ) {
 // the same function are its arrows; press controls of another function that scroll the same track to an offset derived from
 // an index (`scrollTo( { left: i * w } )` inside the object each dot returns) are its dots. The track's other script writes (the drag handlers, the arrows' steps) are the slider's
 // own. Returns a behaviour ({ kind: 'settings' | 'covered', ... }) or null. `ctx.records` is the whole inventory.
-const STEPS = /scrollTo\(\s*\{\s*left/;
-const INDEXED = /scrollTo\(\s*\{\s*left\s*:\s*\w+\s*\*/;
-const isStep = ( r ) => 'js-scroll' === r.mechanism && 'active' === ( r.status ?? 'active' ) && STEPS.test( words( r.source?.code ) );
+// A scroll write whose code calls scrollTo with a `left` option (a step of a sideways track), read from the syntax tree;
+// an indexed one sets that offset to a product (`i * w`).
+const steps = ( r ) => callsOf( codeTree( r.source?.code ), 'scrollTo' ).filter( ( c ) => optionKeys( c ).includes( 'left' ) );
+const isStep = ( r ) => 'js-scroll' === r.mechanism && 'active' === ( r.status ?? 'active' ) && steps( r ).length > 0;
+const isIndexed = ( r ) => steps( r ).some( ( c ) => 'BinaryExpression' === optionValue( c, 'left' )?.type && '*' === optionValue( c, 'left' ).operator );
 const everyMs = ( r ) => number( /setInterval\s+every\s+(\d*\.?\d+)\s*ms/i.exec( words( r.trigger?.detail ) )?.[ 1 ] );
 export function carouselOf( r, ctx = {} ) {
 	const all = ( ctx.records || [] ).filter( ( x ) => x.element?.dc === r.element?.dc && 'active' === ( x.status ?? 'active' ) );
@@ -324,7 +345,7 @@ export function carouselOf( r, ctx = {} ) {
 	const moves = offsets.filter( ( y ) => drags.some( ( x ) => sameWriter( x, y ) ) );
 	const steps = all.filter( ( x ) => x.source?.function === fn && isStep( x ) && 'interval' !== triggerOf( x ) );
 	const trackTpl = timer.element?.template_tpl_id;
-	const dots = all.filter( ( x ) => isStep( x ) && 'press' === triggerOf( x ) && x.source?.function !== fn && null != trackTpl && trackTpl === x.element?.template_tpl_id && INDEXED.test( words( x.source?.code ) ) );
+	const dots = all.filter( ( x ) => isStep( x ) && 'press' === triggerOf( x ) && x.source?.function !== fn && null != trackTpl && trackTpl === x.element?.template_tpl_id && isIndexed( x ) );
 	const owns = new Set( [ ...all.filter( ( x ) => isStep( x ) && 'interval' === triggerOf( x ) && x.source?.function === fn ), ...drags, ...moves, ...steps, ...dots ].map( ( x ) => x.id ) );
 	const dragging = drags.length > 0;
 	const arrows = steps.length > 0;
