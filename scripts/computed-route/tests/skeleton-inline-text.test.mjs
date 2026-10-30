@@ -144,7 +144,8 @@ test( 'the settings that hold inline markup come from the RichText record of the
 	assert.deepEqual( inlineAllowance( REPO, 'sgs/account', 'guestLineText' ).formats, [ 'core/bold', 'core/italic', 'core/link', 'core/strikethrough' ] );
 	assert.deepEqual( inlineAllowance( REPO, 'sgs/store-selector', 'triggerPrefix' ).formats, [ 'core/bold', 'core/italic', 'core/strikethrough' ], 'a setting printed inside a button takes no link' );
 	assert.ok( ! inlineAllowance( REPO, 'sgs/breadcrumbs', 'separator' ).rich, 'a glyph holds no format' );
-	assert.ok( plainTextSettings( { db, codeRepo: REPO, groups: { sentences: [ { block: 'sgs/breadcrumbs', attr: 'separator', reader: 'x' } ] } } ).some( ( p ) => 'separator' === p.attr ), 'negative control: a setting no RichText edits is still a finding' );
+	assert.ok( ! plainTextSettings( { db, codeRepo: REPO, groups: { sentences: [ { block: 'sgs/breadcrumbs', attr: 'separator', reader: 'x' } ] } } ).length, 'a glyph (role glyph since the reseed) is no plain-text finding' );
+	assert.ok( plainTextSettings( { db, codeRepo: REPO, groups: { sentences: [ { block: 'sgs/media', attr: 'caption', reader: 'x' } ] } } ).some( ( p ) => 'caption' === p.attr ), 'negative control: a setting no RichText edits is still a finding' );
 	assert.ok( ! plain.some( ( p ) => 'sgs/tab' === p.block && 'label' === p.attr ), 'a clickable element\'s label is no finding (Bean 2026-10-30)' );
 	assert.ok( ! plain.some( ( p ) => 'sgs/heading' === p.block && 'content' === p.attr ), 'negative control: a RichText with formats is no finding' );
 	assert.throws( () => formatLists( 'export const X = Object.freeze( makeList() );' ), /X is no list/ );
