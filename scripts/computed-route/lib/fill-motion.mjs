@@ -24,7 +24,7 @@ import { positionsByTemplate } from './motion-behaviour-settings.mjs';
 import { applyHeaderBehaviour } from './fill-header-behaviour.mjs';
 import { normaliseReveals } from './motion-reveal.mjs';
 import { exactHome } from './fill-part-pairing.mjs';
-import { splitPartRecords, writePartMotion } from './fill-motion-parts.mjs';
+import { splitPartRecords, writePartMotion, rehomeParts } from './fill-motion-parts.mjs';
 
 export { elementMotion, elementEffects, renderRefutes } from './fill-motion-element.mjs';
 
@@ -273,6 +273,7 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 	// The draft's computed position per template element and width, so a header pinned only at some widths is sticky only there.
 	const idx = behaviourIndex( { records, template, css: draftCss, positions: reads ? positionsByTemplate( { reads, nodes, rootComponent } ) : undefined } );
 	const targetKeys = new Set( nodes.flatMap( ( n ) => n.targets.map( ( t ) => elementKey( t.finder, rootComponent ) ) ).filter( Boolean ) );
+	rehomeParts( split.parts, { targetKeys, template } );
 	adoptDrawnBehaviours( byElement, { targetKeys, template, isBehaviour: ( r ) => idx.found.some( ( x ) => x.r === r ) } );
 	// A list entrance with a per-item delay is the stagger of the block holding the items, so the items do not also take it.
 	const staggers = staggerPlans( { records, template, nodes, keyOf: ( finder ) => elementKey( finder, rootComponent ) } );

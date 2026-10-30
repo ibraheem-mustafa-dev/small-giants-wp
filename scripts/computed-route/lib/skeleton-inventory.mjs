@@ -192,6 +192,43 @@ function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, 
 	return { records: out, beside, unstamped, rootKey: out[ 0 ]?.key ?? null, rootName: window.__dcRootName() };
 }
 
+// In-page (self-contained). The content the draft's code put into each inventoried element at run time (Spec 48 RC12): an
+// <svg> child the element holds with no data-dc-tpl stamp of its own (a fetched SVG written into a holder, or a custom
+// element's own content) whose source is an SVG file the page fetched, as { <data-inv-i>: { tag: 'svg', viewBox, source } }.
+// `source` is the fetched file whose element structure (every element's tag in order, metadata left out) and viewBox equal
+// the injected one (the code may rename ids or drop attributes, not elements), as a path relative to the page. An <svg> no
+// fetched file matches (an icon the template binds as markup) is not injected content.
+export async function injectedContent() {
+	const shape = ( svg ) => [ ...svg.querySelectorAll( '*' ) ].filter( ( x ) => ! x.closest( 'metadata' ) ).map( ( x ) => x.localName ).join( ',' );
+	const holders = [ ...document.querySelectorAll( '[data-inv-i]' ) ].map( ( e ) => [ e, [ ...e.children ].find( ( c ) => 'svg' === c.localName && ! c.hasAttribute( 'data-dc-tpl' ) ) ] ).filter( ( [ , svg ] ) => svg );
+	if ( ! holders.length ) {
+		return {};
+	}
+	const base = location.href.replace( /[#?].*$/, '' ).replace( /[^/]*$/, '' );
+	const files = [];
+	for ( const url of [ ...new Set( performance.getEntriesByType( 'resource' ).map( ( r ) => r.name ).filter( ( u ) => /\.svg(?:[?#]|$)/i.test( u ) ) ) ] ) {
+		try {
+			const root = new DOMParser().parseFromString( await ( await fetch( url ) ).text(), 'image/svg+xml' ).documentElement;
+			'svg' === root?.localName && files.push( { url, shape: shape( root ), viewBox: root.getAttribute( 'viewBox' ) } );
+		} catch {
+			// A file the page cannot fetch again names no source.
+		}
+	}
+	const out = {};
+	for ( const [ e, svg ] of holders ) {
+		const hit = files.find( ( f ) => f.shape === shape( svg ) && f.viewBox === svg.getAttribute( 'viewBox' ) );
+		hit && ( out[ e.getAttribute( 'data-inv-i' ) ] = { tag: 'svg', viewBox: svg.getAttribute( 'viewBox' ), source: decodeURI( hit.url.startsWith( base ) ? hit.url.slice( base.length ) : hit.url ) } );
+	}
+	return out;
+}
+
+// Each record's injected content (injectedContent) on the read it belongs to.
+async function withInjected( page, res ) {
+	const injected = await page.evaluate( injectedContent );
+	Object.entries( injected ).forEach( ( [ i, v ] ) => res.records[ Number( i ) ] && ( res.records[ Number( i ) ].injected = v ) );
+	return res;
+}
+
 const safe = ( k ) => k.replace( /[^A-Za-z0-9]+/g, '_' ).replace( /^_|_$/g, '' );
 
 // Scrolls the whole page so scroll-triggered entrances fire, then rests on the root.
@@ -247,7 +284,7 @@ async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt, s
 		if ( res.error ) {
 			throw new Error( `${ res.error } at ${ w }px` );
 		}
-		runs[ w ] = res;
+		runs[ w ] = await withInjected( page, res );
 		log( `inventory ${ w }px: ${ res.records.length } elements` );
 		if ( 1440 !== w && 375 !== w ) {
 			continue;
@@ -313,7 +350,7 @@ export async function readInventory( { url, root, shotsDir, log = () => {}, page
 			if ( res.error ) {
 				throw new Error( `${ res.error } at ${ w }px` );
 			}
-			runs[ w ] = res;
+			runs[ w ] = await withInjected( page, res );
 			log( `inventory ${ w }px: ${ res.records.length } elements` );
 			if ( 1440 === w || 375 === w ) {
 				// Hide fixed and sticky overlays outside the root so crops show only the element (boxes were measured before this).
@@ -380,13 +417,19 @@ export function withWidthOnly( runs ) {
 	return out;
 }
 
+// The injected content of one element per width ({ injected: { 375, 768, 1440 } }), or nothing when no width holds any.
+const injectedOf = ( atWidth ) => {
+	const by = Object.fromEntries( INVENTORY_WIDTHS.map( ( w ) => [ w, atWidth( w )?.injected ?? null ] ) );
+	return Object.values( by ).some( Boolean ) ? { injected: by } : {};
+};
+
 // The inventory from the per-width reads ({ width: collect result }).
 function summarise( { runs, shots, skipped, url, root } ) {
 	const base = runs[ 1440 ];
 	const at = ( w, key ) => runs[ w ].records.find( ( x ) => x.key === key );
 	const elements = withWidthOnly( runs ).map( ( r ) => {
 		const { i, ...rest } = r;
-		return { ...rest, box: { 375: at( 375, r.key )?.box ?? null, 768: at( 768, r.key )?.box ?? null, 1440: r.box }, visible: { 375: at( 375, r.key )?.visible ?? false, 768: at( 768, r.key )?.visible ?? false, 1440: r.visible }, position: { 375: at( 375, r.key )?.position ?? null, 768: at( 768, r.key )?.position ?? null, 1440: r.position ?? null }, resolved: { 375: at( 375, r.key )?.resolved ?? null, 768: at( 768, r.key )?.resolved ?? null, 1440: r.resolved ?? null }, layoutChanged375: at( 375, r.key )?.layoutChanged ?? null, screenshots: shots[ r.key ] || {} };
+		return { ...rest, box: { 375: at( 375, r.key )?.box ?? null, 768: at( 768, r.key )?.box ?? null, 1440: r.box }, visible: { 375: at( 375, r.key )?.visible ?? false, 768: at( 768, r.key )?.visible ?? false, 1440: r.visible }, position: { 375: at( 375, r.key )?.position ?? null, 768: at( 768, r.key )?.position ?? null, 1440: r.position ?? null }, resolved: { 375: at( 375, r.key )?.resolved ?? null, 768: at( 768, r.key )?.resolved ?? null, 1440: r.resolved ?? null }, ...injectedOf( ( w ) => ( 1440 === w ? r : at( w, r.key ) ) ), layoutChanged375: at( 375, r.key )?.layoutChanged ?? null, screenshots: shots[ r.key ] || {} };
 	} );
 	const tagOk = ( r ) => !! r.srcTag && r.srcTag.replace( /^sc-raw-/, '' ).toLowerCase() === r.tag;
 	const checks = {

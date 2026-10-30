@@ -9,7 +9,7 @@
 //   - resolved values per width from the inventory's browser read (lib/skeleton-inventory.mjs `resolved`): the result of a
 //     clamp(), var() or calc() and the inherited text properties, beside the box, position and visibility it measures;
 //   - the element's own text as the runtime rendered it (its line breaks kept, whether it opens before the children) from
-//     the same read; its placeholders from the record's holes.
+//     the same read; its placeholders from the record's holes; the SVG the draft's code injected into it, per width.
 // What a handler does is read from the logic's syntax tree by lib/skeleton-handler-opens.mjs and its siblings, fed the
 // handler name this reader gives. A rule judges a value at every width the element renders (`acrossWidths`) unless the rule
 // itself names a width range; a verdict that holds at some widths only goes to the review marked width-dependent.
@@ -83,5 +83,8 @@ export function elementFacts( view = EMPTY ) {
 		// Whether the element's own words open its content, before its first child element (an element read before the
 		// inventory recorded it opens with its words).
 		textLeads: ( e ) => false !== e?.textLeads,
+		// The content the draft's code injected into the element at one width (lib/skeleton-inventory.mjs::injectedContent:
+		// { tag, viewBox, source }), or null.
+		injected: ( e, w ) => e?.injected?.[ w ] ?? null,
 	} ).get( view ) );
 }

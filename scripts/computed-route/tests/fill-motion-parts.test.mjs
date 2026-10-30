@@ -79,3 +79,13 @@ test( 'MUST FAIL: a hover that speeds up a running part animation is a named fra
 	assert.notEqual( recogniseBehaviour( speed( 1 ) )?.kind, 'unmapped' );
 	assert.notEqual( recogniseBehaviour( speed( 14, 'press' ) )?.kind, 'unmapped', 'a press is not a hover' );
 } );
+
+test( 'MUST FAIL: the parts of a holder no block draws (a section\'s SVG background holder) are written on the nearest ancestor block', () => {
+	const hero = { ...rec( 'A-40', '#sunrays_spin', { trigger: { type: 'mount', detail: 'ref callback' }, properties: [ { property: 'opacity', from: 0, to: 1 } ], duration_ms: 700, easing: E } ), element: { dc: 'Site', template_tpl_id: '321', selector: '#sunrays_spin' } };
+	const template = { elements: { 'Site/43': { attrs: {}, parent: null }, 'Site/320': { attrs: {}, parent: 'Site/43' }, 'Site/321': { attrs: {}, parent: 'Site/320' } } };
+	const { attrs, out } = run( [ hero ], template );
+	assert.deepEqual( out.unmapped, [] );
+	assert.equal( Object.values( attrs.sgsMotion.elements ).find( ( e ) => e.selector )?.selector, '#sunrays_spin' );
+	const orphan = { elements: { 'Site/43': { attrs: {}, parent: null }, 'Site/321': { attrs: {}, parent: null } } };
+	assert.equal( run( [ hero ], orphan ).attrs.sgsMotion, undefined, 'a holder with no target ancestor is not written on an unrelated block' );
+} );

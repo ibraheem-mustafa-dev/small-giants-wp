@@ -14115,7 +14115,7 @@
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
 			"write": "scripts/computed-route/lib/skeleton-propose.mjs#proposeSkeleton",
 			"check": "scripts/computed-route/pairs.mjs#runPairing",
-			"note": "a custom element the draft defines: read on the render by draft identity and mapped by what it is (lib/skeleton-rules.mjs: one named as a logo is the logo block, one used as an image placeholder the media block), otherwise by its rendered role like any element; its shadow-DOM internals are the component's own"
+			"note": "a custom element the draft defines: read on the render by draft identity and mapped by what it is (lib/skeleton-rules.mjs: one named as a logo is the logo block, one used as an image placeholder the media block), otherwise by its rendered role like any element; the content it puts into itself is read like any content the draft's code injects (METHOD.md §5.2): the inventory records the fetched SVG it holds per width (lib/skeleton-inventory.mjs::injectedContent), Fill carries it through the block's SVG settings (lib/fill-injected-svg.mjs), and the motion on its parts is recorded against the element with each part's id (lib/intake-inventory-part.mjs) and written on parts (lib/fill-motion-parts.mjs)"
 		},
 		"html:data": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
