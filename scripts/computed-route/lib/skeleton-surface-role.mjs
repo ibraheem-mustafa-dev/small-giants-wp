@@ -31,8 +31,16 @@ function names( draftId, { id, m, view } ) {
 	return !! t && !! m && m.els.some( ( e ) => ( view?.realTag( e ) ?? e.tag ) === t.tag && componentOf( e, view ) === t.component && ( null == t.ariaLabel || ( view?.attr( e, 'aria-label' ) ?? e.attrs?.[ 'aria-label' ] ) === t.ariaLabel ) );
 }
 
-// A route without its query string and fragment (`SignIn.dc.html?mode=register` is the SignIn page).
-export const routePath = ( route ) => ( null == route ? null : String( route ).split( /[?#]/ )[ 0 ] );
+// A route without its query string and its fragment (`SignIn.dc.html?mode=register` is the SignIn page). A fragment that is
+// itself a route (`#/account`, a hash-routed draft) is kept, without its own query string.
+export const routePath = ( route ) => {
+	if ( null == route ) {
+		return null;
+	}
+	const [ base, ...rest ] = String( route ).split( '#' );
+	const hash = rest.join( '#' );
+	return `${ base.split( '?' )[ 0 ] }${ hash.startsWith( '/' ) ? `#${ hash.split( '?' )[ 0 ] }` : '' }`;
+};
 
 // The page-map row whose page is `route`: the row's own route, or one it folds in (`folds`, the twin rule).
 export const rowOfRoute = ( rows, route ) => {

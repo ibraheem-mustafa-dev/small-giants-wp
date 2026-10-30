@@ -10,7 +10,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { E, R0, build, db, facts, names } from './fixtures/choice-flow-fixture.mjs';
 import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
-import { surfaceRole, rowOfRoute } from '../lib/skeleton-surface-role.mjs';
+import { surfaceRole, rowOfRoute, routePath } from '../lib/skeleton-surface-role.mjs';
 
 // A form surface: a card holding an email field and its submit button.
 const FORM = [
@@ -81,4 +81,12 @@ test( 'MUST FAIL: a form surface whose root is a lone link or button is that con
 	assert.equal( run( FORM ).skeleton[ 0 ].name, 'sgs/form' );
 	assert.equal( run( [ E( 1, 'input', null, { attrs: { type: 'search' }, rendered: R0 } ) ] ).skeleton[ 0 ].name, 'sgs/form' );
 	assert.equal( run( [ E( 1, 'form', null, { rendered: R0 } ), E( 2, 'input', 1, { attrs: { type: 'text' }, rendered: R0 } ) ], { kind: 'modal' } ).skeleton[ 0 ].name, 'sgs/form' );
+} );
+
+test( 'MUST FAIL: a hash route keeps its route fragment, so a hash-routed draft folds its account views like a file-routed one', () => {
+	assert.equal( routePath( '#/account?tab=orders' ), '#/account' );
+	assert.equal( routePath( 'Site.dc.html?x=1#/account/addresses' ), 'Site.dc.html#/account/addresses' );
+	assert.equal( rowOfRoute( [ { slug: 'my-account', route: '#/signin', folds: [ '#/account' ] } ], '#/account?tab=1' )?.slug, 'my-account' );
+	assert.equal( routePath( 'SignIn.dc.html?mode=register' ), 'SignIn.dc.html', 'negative control: a query string still goes' );
+	assert.equal( routePath( 'Help.dc.html#faq' ), 'Help.dc.html', 'negative control: an in-page anchor is not a route' );
 } );
