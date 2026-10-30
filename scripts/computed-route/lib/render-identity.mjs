@@ -195,11 +195,17 @@ function comparedKey( d, param ) {
 
 // The identity keys of every element of an inventory subtree, by the data it shows: { keys: Map( element → [ key ] ),
 // byKey: Map( key → element ) }. An element's sources are its own binding holes (`{{ link.label }}`, `href`) and, for the item
-// element of a loop, its list's element (`<list>[*]`), each pinned with `state` (pinIndexes); a key is a source with the
-// element's copy of its innermost loop (`this._menus[1].links[*].label#2`, the third link's label): the place of the loop
-// item holding it among that loop's items under their parent, never a count of what the read happened to keep; a source the
-// state pins whole takes `#0`. records: the
+// element of a loop, its list's element (`<list>[*]`), each pinned with `state` (pinIndexes); a key is a data path: the
+// source with its innermost loop's `[*]` set to the element's copy (`this._menus[1].links[2].label`, the third link's
+// label): the place of the loop item holding it among that loop's items under their parent, never a count of what the read
+// happened to keep; a source the state pins whole is its own key. records: the
 // fact record's elements; keyOf( element ): its template key in the record.
+// A data source with its innermost loop's `[*]` set to one copy (`links[*].label`, 2 → `links[2].label`).
+const atCopy = ( src, copy ) => {
+	const at = src.lastIndexOf( '[*]' );
+	return src.slice( 0, at ) + '[' + copy + ']' + src.slice( at + 3 );
+};
+
 export function identityKeys( { d, records, m, root, keyOf, state = {} } ) {
 	const keys = new Map();
 	const byKey = new Map();
@@ -234,7 +240,7 @@ export function identityKeys( { d, records, m, root, keyOf, state = {} } ) {
 		// A source the state pins whole (no `[*]` left: the open section's feature) is one element, whatever loop it sits in.
 		const pinned = [ ...new Set( sources.map( ( x ) => pinIndexes( d, x, state ) ).filter( Boolean ) ) ];
 		const copy = copyOf( e, rec );
-		const ks = pinned.flatMap( ( src ) => ( ! src.includes( '[*]' ) ? [ `${ src }#0` ] : null === copy ? [] : [ `${ src }#${ copy }` ] ) );
+		const ks = pinned.flatMap( ( src ) => ( ! src.includes( '[*]' ) ? [ src ] : null === copy ? [] : [ atCopy( src, copy ) ] ) );
 		ks.length && keys.set( e, ks );
 		ks.forEach( ( k ) => byKey.has( k ) || byKey.set( k, e ) );
 		m.kids( e ).forEach( walk );

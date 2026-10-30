@@ -4,7 +4,7 @@
 // (lib/intake-skeletons.mjs renderParts, a drawer's section showing the panel's links). Paired by draft identity (FR-48-10),
 // never by class or words:
 //   identity a draft element's identity is the data its bindings show, read from the logic's syntax tree with each surface's
-//            own open state (lib/render-identity.mjs::identityKeys: `this._menus[1].links[*].label#0`, the first link's label
+//            own open state (lib/render-identity.mjs::identityKeys: `this._menus[1].links[0].label`, the first link's label
 //            of the menu the state opens), so the panel's `{{ link.label }}` over `activePanel.links` and the drawer section's
 //            `{{ link.label }}` over `item.mobileLinks` are one element of data drawn by two templates;
 //   part     the render part of that kind sharing the most identity keys with the node's own draft subtree;

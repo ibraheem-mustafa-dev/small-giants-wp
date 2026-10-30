@@ -9,6 +9,6 @@
 	{ "file": "lib/render-identity.mjs", "find": "return st.property.name;", "replace": "return null;", "why": "the section's index would not be pinned by the state that opens it, so no data of the panel is found" },
 	{ "file": "lib/render-identity.mjs", "find": "? `[${ state[ k ] }]` : '[*]'", "replace": "? '[*]' : '[*]'", "why": "the open panel's menu would not be pinned, so every section would match it" },
 	{ "file": "lib/render-identity.mjs", "find": "return items.indexOf( p );", "replace": "return 0;", "why": "every copy of a loop would be one identity, so another link's label would stand in for a missing one" },
-	{ "file": "lib/render-identity.mjs", "find": "( ! src.includes( '[*]' ) ? [ `${ src }#0` ] :", "replace": "( false ? [ `${ src }#0` ] :", "why": "an element the state pins whole would need a loop copy inside the part, so the card would not pair" },
+	{ "file": "lib/render-identity.mjs", "find": "( ! src.includes( '[*]' ) ? [ src ] :", "replace": "( false ? [ src ] :", "why": "an element the state pins whole would need a loop copy inside the part, so the card would not pair" },
 	{ "file": "lib/render-identity.mjs", "find": "return go( node.callee.object, [] );", "replace": "return null;", "why": "a mapped list would show no data, so a loop's items would not pair" }
 ]
