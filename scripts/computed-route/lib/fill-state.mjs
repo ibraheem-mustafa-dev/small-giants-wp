@@ -102,8 +102,13 @@ export function interactionStates( db ) {
 	return new Set( statesVocabulary( db ).rows.filter( ( r ) => INTERACTION_FAMILIES.includes( r.family ) ).map( ( r ) => r.state ) );
 }
 
-// A text colour and the ground it is read against, held together (holdDefaults).
-const PAIR = [ 'color', 'background-color' ];
+// The ground a text colour is read against, held with it (holdDefaults): the element's background colour, or its
+// background image where the draft rests on a gradient at every width it is drawn (a gradient paints over the colour,
+// so a block that changes its ground colour on a state changes the ground the gradient paints).
+export function groundOf( rest ) {
+	const images = Object.values( rest[ 'background-image' ] || {} );
+	return images.length && images.every( ( v ) => /gradient\(/.test( v ) ) ? 'background-image' : 'background-color';
+}
 
 const pathOf = ( effect ) => effect.slice( 0, effect.lastIndexOf( '|' ) );
 const propOf = ( effect ) => effect.slice( effect.lastIndexOf( '|' ) + 1 );
@@ -228,13 +233,18 @@ export function holdDefaults( { node, ref, rec, target, cal, db, snapshot, reads
 	const ctx = stateContext( reads, target.id );
 	const read = ( prop ) => READ_WIDTHS.some( ( w ) => reads.widths?.[ w ]?.[ target.id ]?.styles?.[ prop ] );
 	const declared = ( state, prop ) => [ ...drafts.values() ].some( ( d ) => d.state === state && ! d.pseudo && ( d.prop === prop || longhands( d.prop ).includes( prop ) ) );
+	// A text colour and its ground, held together.
+	const ground = groundOf( rest );
+	const PAIR = [ 'color', ground ];
 	const gapRow = ( prop, state, why ) => ( { node: ref, block: rec.name, slot: target.slot, property: prop, state, value: JSON.stringify( rest[ prop ] || {} ), reason: `default-state: ${ rec.name } changes ${ prop } on ${ state } by itself and the draft does not, and nothing holds it (${ why })` } );
 	for ( const state of interaction ) {
 		const look = defaultStateLook( cal, state, rest, ctx.at );
 		const plan = [];
-		for ( const prop of [ ...new Set( Object.values( look ).flatMap( ( s ) => [ ...s ] ) ) ] ) {
+		for ( const changed of [ ...new Set( Object.values( look ).flatMap( ( s ) => [ ...s ] ) ) ] ) {
+			// A change of the ground colour is a change of the ground the draft paints, a gradient's included (groundOf).
+			const prop = 'background-color' === changed ? ground : changed;
 			const slots = holdSlots( cal, node, target.slot, prop, rest[ prop ] || {} ).filter( ( p ) => partPresent( { path: p, block: rec.name, node, db } ) );
-			if ( declared( state, prop ) || ! slots.some( ( p ) => look[ LOOSE( p ) ]?.has( prop ) ) || ( ! rest[ prop ] && read( prop ) ) ) {
+			if ( declared( state, prop ) || ! slots.some( ( p ) => look[ LOOSE( p ) ]?.has( changed ) ) || ( ! rest[ prop ] && read( prop ) ) ) {
 				continue;
 			}
 			const from = follows( state, prop );
