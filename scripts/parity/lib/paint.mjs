@@ -127,8 +127,8 @@ export function paintElement( el, owned = null ) {
 	return el;
 }
 
-// Self-contained. The element painting the first visible text inside el (a button's label span, not the button),
-// or null. Text properties at rest and on hover are read from it. Text inside an element of `owned` (a Set of the elements
+// Self-contained. The element painting most of the visible text of the box laying out el's first visible text (a
+// button's label span, not the button; a paragraph, not the bold words it opens with), or null. Text properties at rest and on hover are read from it. Text inside an element of `owned` (a Set of the elements
 // other pairs measure) is that pair's, never this one's: an outer pair whose first text sits in an inner pair's block (the
 // header's phone label) reads its own text or none. Text in a nested block no pair measures belongs to the nearest
 // enclosing pair, so an outer pair reads it (a wordmark in the logo link beside an inner pair's span is the header root's).
@@ -168,7 +168,33 @@ export function textCarrier( el, owned = null, detail = false ) {
 			return range.getClientRects().length ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
 		},
 	} );
-	const carrier = walker.nextNode()?.parentElement || null;
+	const first = walker.nextNode();
+	// The paint carrying most of the text, by characters across the runs of the box that lays out the first text (the
+	// element's own text and its inline parts): `<p><b>Vegan base:</b> no eggs…</p>` is the paragraph's paint, never the
+	// bold label's, while a <b> holding every word is the bold's. A tie goes to the paint met first.
+	const boxOf = ( n ) => {
+		let a = n.parentElement;
+		while ( a !== el && [ 'inline', 'contents' ].includes( getComputedStyle( a ).display ) ) {
+			a = a.parentElement;
+		}
+		return a;
+	};
+	const PAINT = [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color', 'text-shadow' ];
+	let carrier = first?.parentElement || null;
+	if ( first ) {
+		const box = boxOf( first );
+		const weights = new Map();
+		for ( let n = first; n; n = walker.nextNode() ) {
+			if ( boxOf( n ) === box ) {
+				const cs = getComputedStyle( n.parentElement );
+				const paint = PAINT.map( ( p ) => cs.getPropertyValue( p ) ).join( '|' );
+				const w = weights.get( paint ) || { el: n.parentElement, chars: 0 };
+				w.chars += n.textContent.replace( /\s+/g, '' ).length;
+				weights.set( paint, w );
+			}
+		}
+		carrier = [ ...weights.values() ].reduce( ( a, b ) => ( b.chars > a.chars ? b : a ) ).el;
+	}
 	if ( ! detail ) {
 		return carrier;
 	}
@@ -201,7 +227,7 @@ export function decoratedElement( from ) {
 // Self-contained. A text run: the rendered text of `el` (only its own text nodes when `direct`, every text node inside it
 // otherwise; with `match`, a regex source, only the nodes it matches), for a block whose draft text has no element of its
 // own (a value sharing its element with a label). Returns { box: the union of the text's rects (page coordinates),
-// carrier: the element painting the first text, rows: { count, space } } or null. Rows are the text's boxes grouped by
+// carrier: the element painting most of its characters, rows: { count, space } } or null. Rows are the text's boxes grouped by
 // their top (a day and its hours on one line are one row); space is the median distance from one row's bottom to the
 // next row's top less the line's leading (a text box is the font's height, the line box the line-height's), so it
 // reads as the gap between the rows' line boxes; 0 for one row.
@@ -228,6 +254,7 @@ export function textRun( el, direct, match = null ) {
 	};
 	let box = null;
 	let carrier = null;
+	const weights = new Map();
 	const tops = [];
 	for ( const n of nodes.filter( ( x ) => x.textContent.trim() && ( ! re || re.test( x.textContent ) ) && ! srOnly( x.parentElement ) ) ) {
 		const rg = document.createRange();
@@ -236,7 +263,12 @@ export function textRun( el, direct, match = null ) {
 		if ( ! b.width || ! b.height ) {
 			continue;
 		}
-		carrier = carrier || n.parentElement;
+		// The paint carrying most of the run's characters, a tie to the paint met first (textCarrier's rule).
+		const cs = getComputedStyle( n.parentElement );
+		const paint = [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color', 'text-shadow' ].map( ( p ) => cs.getPropertyValue( p ) ).join( '|' );
+		const w = weights.get( paint ) || { el: n.parentElement, chars: 0 };
+		w.chars += n.textContent.replace( /\s+/g, '' ).length;
+		weights.set( paint, w );
 		const row = tops.find( ( r ) => Math.abs( r.t - b.top ) <= 2 );
 		if ( row ) {
 			row.b = Math.max( row.b, b.bottom );
@@ -245,6 +277,7 @@ export function textRun( el, direct, match = null ) {
 		}
 		box = box ? { l: Math.min( box.l, b.left ), t: Math.min( box.t, b.top ), r: Math.max( box.r, b.right ), b: Math.max( box.b, b.bottom ) } : { l: b.left, t: b.top, r: b.right, b: b.bottom };
 	}
+	carrier = weights.size ? [ ...weights.values() ].reduce( ( x, y ) => ( y.chars > x.chars ? y : x ) ).el : null;
 	tops.sort( ( a, c ) => a.t - c.t );
 	const lh = carrier ? parseFloat( getComputedStyle( carrier ).lineHeight ) : NaN;
 	const textH = Math.min( ...tops.map( ( r ) => r.b - r.t ) );

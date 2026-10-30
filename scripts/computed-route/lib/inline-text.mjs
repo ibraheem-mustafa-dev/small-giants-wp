@@ -173,8 +173,8 @@ export function inlineText( { m, e, block, attr, codeRepo, siteLink, clickable =
 	// An element never shown prints nothing, and the parent's own children are its inline parts alone.
 	const prints = ( x, el ) => Object.values( el.visible || {} ).some( Boolean ) && ( x !== e || m.inlineParts( e ).includes( el ) );
 	// The inline elements holding every word of the text between them (Bean 2026-10-30): one <b> around it all, two <b>s with
-	// only white space between them. Their weight, slant or other paint is the block's own typography (Fill reads it from the element painting
-	// the first text, parity/lib/paint.mjs::textCarrier), never inline markup and never a handover; a link around the whole
+	// only white space between them. Their weight, slant or other paint is the block's own typography (Fill reads it from the paint carrying
+	// most of the text, parity/lib/paint.mjs::textCarrier), never inline markup and never a handover; a link around the whole
 	// text is the block's own link (`clickable`: the block has a link or control setting making the whole element clickable),
 	// or one its setting holds no link format for, never a link inside the text and never a handover.
 	const runs = [];
