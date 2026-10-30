@@ -1,6 +1,6 @@
 {
 	"client": "mamas-munches-redesign",
-	"takenOn": "2026-10-24T09:26:51.235Z",
+	"takenOn": "2026-10-30T12:07:00.386Z",
 	"manifestHash": "153bb09fe400dcae98c503ad44580b2cc0f6dcd5b9d775e770a90370b6d3e995",
 	"palette": {
 		"tokens": [
@@ -4309,6 +4309,7 @@
 			"draftId": "SiteFooter:16",
 			"count": 60,
 			"tag": "a",
+			"channel": "instagram",
 			"length": 12000
 		},
 		{
@@ -4317,6 +4318,7 @@
 			"draftId": "SiteFooter:16",
 			"count": 60,
 			"tag": "a",
+			"channel": "instagram",
 			"length": 12000
 		},
 		{
@@ -4325,6 +4327,7 @@
 			"draftId": "SiteFooter:16",
 			"count": 60,
 			"tag": "a",
+			"channel": "instagram",
 			"length": 12000
 		},
 		{
@@ -4333,6 +4336,7 @@
 			"draftId": "SiteFooter:16",
 			"count": 60,
 			"tag": "a",
+			"channel": "instagram",
 			"length": 12000
 		},
 		{
@@ -4341,14 +4345,16 @@
 			"draftId": "SiteFooter:16",
 			"count": 60,
 			"tag": "a",
-			"ground": "#F9D5D3"
+			"ground": "#F9D5D3",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#A8404F",
 			"property": "text-decoration-color",
 			"draftId": "SiteFooter:16",
 			"count": 60,
-			"tag": "a"
+			"tag": "a",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#A8404F",
@@ -4356,14 +4362,16 @@
 			"draftId": "SiteFooter:17",
 			"count": 60,
 			"tag": "img",
-			"ground": "#F9D5D3"
+			"ground": "#F9D5D3",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#F9D5D3",
 			"property": "background-color",
 			"draftId": "SiteFooter:16",
 			"count": 60,
-			"tag": "a"
+			"tag": "a",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#3A2A22",
@@ -4859,7 +4867,8 @@
 			"draftId": "SiteFooter:10",
 			"count": 10,
 			"tag": "svg",
-			"ground": "#FFFAF0"
+			"ground": "#FFFAF0",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#3A2A22",
@@ -4867,7 +4876,8 @@
 			"draftId": "SiteFooter:11",
 			"count": 10,
 			"tag": "rect",
-			"ground": "#FFFAF0"
+			"ground": "#FFFAF0",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#3A2A22",
@@ -4875,7 +4885,8 @@
 			"draftId": "SiteFooter:12",
 			"count": 10,
 			"tag": "circle",
-			"ground": "#FFFAF0"
+			"ground": "#FFFAF0",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#3A2A22",
@@ -4883,7 +4894,8 @@
 			"draftId": "SiteFooter:13",
 			"count": 10,
 			"tag": "circle",
-			"ground": "#FFFAF0"
+			"ground": "#FFFAF0",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#3A2A22",
@@ -5189,6 +5201,7 @@
 			"draftId": "SiteFooter:45",
 			"count": 10,
 			"tag": "a",
+			"channel": "instagram",
 			"length": 480
 		},
 		{
@@ -5197,6 +5210,7 @@
 			"draftId": "SiteFooter:45",
 			"count": 10,
 			"tag": "a",
+			"channel": "instagram",
 			"length": 480
 		},
 		{
@@ -5205,6 +5219,7 @@
 			"draftId": "SiteFooter:45",
 			"count": 10,
 			"tag": "a",
+			"channel": "instagram",
 			"length": 480
 		},
 		{
@@ -5213,6 +5228,7 @@
 			"draftId": "SiteFooter:45",
 			"count": 10,
 			"tag": "a",
+			"channel": "instagram",
 			"length": 480
 		},
 		{
@@ -5359,6 +5375,7 @@
 			"tag": "a",
 			"ground": "#FFFAF0",
 			"text": true,
+			"channel": "instagram",
 			"chars": 120
 		},
 		{
@@ -5367,6 +5384,7 @@
 			"draftId": "SiteFooter:9",
 			"count": 10,
 			"tag": "a",
+			"channel": "instagram",
 			"length": 1730
 		},
 		{
@@ -5375,6 +5393,7 @@
 			"draftId": "SiteFooter:9",
 			"count": 10,
 			"tag": "a",
+			"channel": "instagram",
 			"length": 1730
 		},
 		{
@@ -5383,6 +5402,7 @@
 			"draftId": "SiteFooter:9",
 			"count": 10,
 			"tag": "a",
+			"channel": "instagram",
 			"length": 520
 		},
 		{
@@ -5391,6 +5411,7 @@
 			"draftId": "SiteFooter:9",
 			"count": 10,
 			"tag": "a",
+			"channel": "instagram",
 			"length": 520
 		},
 		{
@@ -5617,6 +5638,7 @@
 			"tag": "a",
 			"ground": "#FFFAF0",
 			"text": true,
+			"channel": "instagram",
 			"chars": 90
 		},
 		{
@@ -5625,6 +5647,7 @@
 			"draftId": "SiteHeader:117",
 			"count": 10,
 			"tag": "a",
+			"channel": "instagram",
 			"length": 1130
 		},
 		{
@@ -5633,6 +5656,7 @@
 			"draftId": "SiteHeader:117",
 			"count": 10,
 			"tag": "a",
+			"channel": "instagram",
 			"length": 1130
 		},
 		{
@@ -5641,6 +5665,7 @@
 			"draftId": "SiteHeader:117",
 			"count": 10,
 			"tag": "a",
+			"channel": "instagram",
 			"length": 780
 		},
 		{
@@ -5649,6 +5674,7 @@
 			"draftId": "SiteHeader:117",
 			"count": 10,
 			"tag": "a",
+			"channel": "instagram",
 			"length": 780
 		},
 		{
@@ -5657,6 +5683,7 @@
 			"draftId": "SiteHeader:118",
 			"count": 10,
 			"tag": "span",
+			"channel": "instagram",
 			"length": 360
 		},
 		{
@@ -5665,6 +5692,7 @@
 			"draftId": "SiteHeader:118",
 			"count": 10,
 			"tag": "span",
+			"channel": "instagram",
 			"length": 360
 		},
 		{
@@ -5673,6 +5701,7 @@
 			"draftId": "SiteHeader:118",
 			"count": 10,
 			"tag": "span",
+			"channel": "instagram",
 			"length": 360
 		},
 		{
@@ -5681,6 +5710,7 @@
 			"draftId": "SiteHeader:118",
 			"count": 10,
 			"tag": "span",
+			"channel": "instagram",
 			"length": 360
 		},
 		{
@@ -6981,7 +7011,8 @@
 			"property": "background-color",
 			"draftId": "SiteFooter:9",
 			"count": 10,
-			"tag": "a"
+			"tag": "a",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#FFFAF0",
@@ -7002,7 +7033,8 @@
 			"property": "background-color",
 			"draftId": "SiteHeader:117",
 			"count": 10,
-			"tag": "a"
+			"tag": "a",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#FFFAF0",
@@ -7066,14 +7098,16 @@
 			"draftId": "SiteFooter:45",
 			"count": 10,
 			"tag": "a",
-			"ground": "#FD5949"
+			"ground": "#FD5949",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#FFFFFF",
 			"property": "text-decoration-color",
 			"draftId": "SiteFooter:45",
 			"count": 10,
-			"tag": "a"
+			"tag": "a",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#FFFFFF",
@@ -7081,7 +7115,8 @@
 			"draftId": "SiteFooter:46",
 			"count": 10,
 			"tag": "svg",
-			"ground": "#FD5949"
+			"ground": "#FD5949",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#FFFFFF",
@@ -7089,7 +7124,8 @@
 			"draftId": "SiteFooter:47",
 			"count": 10,
 			"tag": "rect",
-			"ground": "#FD5949"
+			"ground": "#FD5949",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#FFFFFF",
@@ -7097,7 +7133,8 @@
 			"draftId": "SiteFooter:48",
 			"count": 10,
 			"tag": "circle",
-			"ground": "#FD5949"
+			"ground": "#FD5949",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#FFFFFF",
@@ -7105,7 +7142,8 @@
 			"draftId": "SiteFooter:49",
 			"count": 10,
 			"tag": "circle",
-			"ground": "#FD5949"
+			"ground": "#FD5949",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#FFFFFF",
@@ -7184,7 +7222,8 @@
 			"draftId": "SiteHeader:118",
 			"count": 10,
 			"tag": "span",
-			"ground": "#FD5949"
+			"ground": "#FD5949",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#FFFFFF",
@@ -7192,7 +7231,8 @@
 			"draftId": "SiteHeader:119",
 			"count": 10,
 			"tag": "svg",
-			"ground": "#FD5949"
+			"ground": "#FD5949",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#FFFFFF",
@@ -7200,7 +7240,8 @@
 			"draftId": "SiteHeader:120",
 			"count": 10,
 			"tag": "rect",
-			"ground": "#FD5949"
+			"ground": "#FD5949",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#FFFFFF",
@@ -7208,7 +7249,8 @@
 			"draftId": "SiteHeader:121",
 			"count": 10,
 			"tag": "circle",
-			"ground": "#FD5949"
+			"ground": "#FD5949",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#FFFFFF",
@@ -7216,7 +7258,8 @@
 			"draftId": "SiteHeader:122",
 			"count": 10,
 			"tag": "circle",
-			"ground": "#FD5949"
+			"ground": "#FD5949",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#3A2A22",
@@ -13277,7 +13320,8 @@
 			"draftId": "Confirmation:67",
 			"count": 1,
 			"tag": "a",
-			"ground": "#F9D5D3"
+			"ground": "#F9D5D3",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#3A2A22",
@@ -13285,6 +13329,7 @@
 			"draftId": "Confirmation:67",
 			"count": 1,
 			"tag": "a",
+			"channel": "instagram",
 			"length": 490
 		},
 		{
@@ -13293,6 +13338,7 @@
 			"draftId": "Confirmation:67",
 			"count": 1,
 			"tag": "a",
+			"channel": "instagram",
 			"length": 490
 		},
 		{
@@ -13301,6 +13347,7 @@
 			"draftId": "Confirmation:67",
 			"count": 1,
 			"tag": "a",
+			"channel": "instagram",
 			"length": 104
 		},
 		{
@@ -13309,6 +13356,7 @@
 			"draftId": "Confirmation:67",
 			"count": 1,
 			"tag": "a",
+			"channel": "instagram",
 			"length": 104
 		},
 		{
@@ -13317,6 +13365,7 @@
 			"draftId": "Confirmation:68",
 			"count": 1,
 			"tag": "span",
+			"channel": "instagram",
 			"length": 56
 		},
 		{
@@ -13325,6 +13374,7 @@
 			"draftId": "Confirmation:68",
 			"count": 1,
 			"tag": "span",
+			"channel": "instagram",
 			"length": 56
 		},
 		{
@@ -13333,6 +13383,7 @@
 			"draftId": "Confirmation:68",
 			"count": 1,
 			"tag": "span",
+			"channel": "instagram",
 			"length": 56
 		},
 		{
@@ -13341,6 +13392,7 @@
 			"draftId": "Confirmation:68",
 			"count": 1,
 			"tag": "span",
+			"channel": "instagram",
 			"length": 56
 		},
 		{
@@ -13357,7 +13409,8 @@
 			"draftId": "Confirmation:73",
 			"count": 1,
 			"tag": "span",
-			"ground": "#F9D5D3"
+			"ground": "#F9D5D3",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#3A2A22",
@@ -13367,6 +13420,7 @@
 			"tag": "b",
 			"ground": "#F9D5D3",
 			"text": true,
+			"channel": "instagram",
 			"chars": 20
 		},
 		{
@@ -13377,6 +13431,7 @@
 			"tag": "span",
 			"ground": "#F9D5D3",
 			"text": true,
+			"channel": "instagram",
 			"chars": 20
 		},
 		{
@@ -13677,7 +13732,8 @@
 			"draftId": "Contact:26",
 			"count": 1,
 			"tag": "a",
-			"ground": "#FFFAF0"
+			"ground": "#FFFAF0",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#3A2A22",
@@ -13685,6 +13741,7 @@
 			"draftId": "Contact:26",
 			"count": 1,
 			"tag": "a",
+			"channel": "instagram",
 			"length": 405
 		},
 		{
@@ -13693,6 +13750,7 @@
 			"draftId": "Contact:26",
 			"count": 1,
 			"tag": "a",
+			"channel": "instagram",
 			"length": 405
 		},
 		{
@@ -13701,6 +13759,7 @@
 			"draftId": "Contact:26",
 			"count": 1,
 			"tag": "a",
+			"channel": "instagram",
 			"length": 210
 		},
 		{
@@ -13709,6 +13768,7 @@
 			"draftId": "Contact:26",
 			"count": 1,
 			"tag": "a",
+			"channel": "instagram",
 			"length": 210
 		},
 		{
@@ -13717,6 +13777,7 @@
 			"draftId": "Contact:27",
 			"count": 1,
 			"tag": "span",
+			"channel": "instagram",
 			"length": 57
 		},
 		{
@@ -13725,6 +13786,7 @@
 			"draftId": "Contact:27",
 			"count": 1,
 			"tag": "span",
+			"channel": "instagram",
 			"length": 57
 		},
 		{
@@ -13733,6 +13795,7 @@
 			"draftId": "Contact:27",
 			"count": 1,
 			"tag": "span",
+			"channel": "instagram",
 			"length": 57
 		},
 		{
@@ -13741,6 +13804,7 @@
 			"draftId": "Contact:27",
 			"count": 1,
 			"tag": "span",
+			"channel": "instagram",
 			"length": 57
 		},
 		{
@@ -13751,6 +13815,7 @@
 			"tag": "b",
 			"ground": "#FFFAF0",
 			"text": true,
+			"channel": "instagram",
 			"chars": 9
 		},
 		{
@@ -13761,6 +13826,7 @@
 			"tag": "span",
 			"ground": "#FFFAF0",
 			"text": true,
+			"channel": "instagram",
 			"chars": 39
 		},
 		{
@@ -22449,7 +22515,8 @@
 			"property": "background-color",
 			"draftId": "Confirmation:67",
 			"count": 1,
-			"tag": "a"
+			"tag": "a",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#F9D5D3",
@@ -22919,7 +22986,8 @@
 			"property": "background-color",
 			"draftId": "Contact:26",
 			"count": 1,
-			"tag": "a"
+			"tag": "a",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#FFFAF0",
@@ -23395,7 +23463,8 @@
 			"draftId": "Confirmation:68",
 			"count": 1,
 			"tag": "span",
-			"ground": "#FD5949"
+			"ground": "#FD5949",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#FFFFFF",
@@ -23403,7 +23472,8 @@
 			"draftId": "Confirmation:69",
 			"count": 1,
 			"tag": "svg",
-			"ground": "#FD5949"
+			"ground": "#FD5949",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#FFFFFF",
@@ -23411,7 +23481,8 @@
 			"draftId": "Confirmation:70",
 			"count": 1,
 			"tag": "rect",
-			"ground": "#FD5949"
+			"ground": "#FD5949",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#FFFFFF",
@@ -23419,7 +23490,8 @@
 			"draftId": "Confirmation:71",
 			"count": 1,
 			"tag": "circle",
-			"ground": "#FD5949"
+			"ground": "#FD5949",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#FFFFFF",
@@ -23427,7 +23499,8 @@
 			"draftId": "Confirmation:72",
 			"count": 1,
 			"tag": "circle",
-			"ground": "#FD5949"
+			"ground": "#FD5949",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#FFFFFF",
@@ -23467,7 +23540,8 @@
 			"draftId": "Contact:27",
 			"count": 1,
 			"tag": "span",
-			"ground": "#FD5949"
+			"ground": "#FD5949",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#FFFFFF",
@@ -23475,7 +23549,8 @@
 			"draftId": "Contact:28",
 			"count": 1,
 			"tag": "svg",
-			"ground": "#FD5949"
+			"ground": "#FD5949",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#FFFFFF",
@@ -23483,7 +23558,8 @@
 			"draftId": "Contact:29",
 			"count": 1,
 			"tag": "rect",
-			"ground": "#FD5949"
+			"ground": "#FD5949",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#FFFFFF",
@@ -23491,7 +23567,8 @@
 			"draftId": "Contact:30",
 			"count": 1,
 			"tag": "circle",
-			"ground": "#FD5949"
+			"ground": "#FD5949",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#FFFFFF",
@@ -23499,7 +23576,8 @@
 			"draftId": "Contact:31",
 			"count": 1,
 			"tag": "circle",
-			"ground": "#FD5949"
+			"ground": "#FD5949",
+			"channel": "instagram"
 		},
 		{
 			"hex": "#FFFFFF",

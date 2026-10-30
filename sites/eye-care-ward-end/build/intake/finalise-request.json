@@ -1,17 +1,17 @@
 {
-	"generated": "2026-10-30T07:29:19.187Z",
+	"generated": "2026-10-30T12:01:26.046Z",
 	"client": "eye-care-ward-end",
 	"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
 	"picksFile": "finalise-picks.json",
 	"picksShape": "{ \"<surface>\": [ <one answerShape entry per row of that surface> ] }",
 	"context": "Built from intake.json rows: the element is the row (tag, words, snippet); candidate evidence lines are not kept there. parent, siblings (the nearest 12 in document order; siblingCount is the full number) and boxes (375, 768, 1440; x and y are page coordinates) come from the skeleton inventory, null where it held none. neighbours are the rows before and after it in the surface.",
 	"counts": {
-		"surfaces": 17,
-		"rows": 115
+		"surfaces": 16,
+		"rows": 99
 	},
 	"surfaces": {
 		"header": {
-			"generated": "2026-10-30T07:29:19.183Z",
+			"generated": "2026-10-30T12:01:26.044Z",
 			"surface": "header",
 			"source": "intake.json skeletons[\"header\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -345,7 +345,7 @@
 			]
 		},
 		"mega-menu-sunglasses": {
-			"generated": "2026-10-30T07:29:19.184Z",
+			"generated": "2026-10-30T12:01:26.044Z",
 			"surface": "mega-menu-sunglasses",
 			"source": "intake.json skeletons[\"mega-menu-sunglasses\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -419,7 +419,7 @@
 			]
 		},
 		"mega-menu-brands": {
-			"generated": "2026-10-30T07:29:19.184Z",
+			"generated": "2026-10-30T12:01:26.044Z",
 			"surface": "mega-menu-brands",
 			"source": "intake.json skeletons[\"mega-menu-brands\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -497,7 +497,7 @@
 			]
 		},
 		"mobile-menu": {
-			"generated": "2026-10-30T07:29:19.184Z",
+			"generated": "2026-10-30T12:01:26.044Z",
 			"surface": "mobile-menu",
 			"source": "intake.json skeletons[\"mobile-menu\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -570,7 +570,7 @@
 			]
 		},
 		"footer": {
-			"generated": "2026-10-30T07:29:19.184Z",
+			"generated": "2026-10-30T12:01:26.044Z",
 			"surface": "footer",
 			"source": "intake.json skeletons[\"footer\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -655,7 +655,7 @@
 			]
 		},
 		"page-home": {
-			"generated": "2026-10-30T07:29:19.185Z",
+			"generated": "2026-10-30T12:01:26.045Z",
 			"surface": "page-home",
 			"source": "intake.json skeletons[\"page-home\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -2171,7 +2171,7 @@
 			]
 		},
 		"page-shop": {
-			"generated": "2026-10-30T07:29:19.185Z",
+			"generated": "2026-10-30T12:01:26.045Z",
 			"surface": "page-shop",
 			"source": "intake.json skeletons[\"page-shop\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -2256,7 +2256,7 @@
 			]
 		},
 		"page-product": {
-			"generated": "2026-10-30T07:29:19.186Z",
+			"generated": "2026-10-30T12:01:26.045Z",
 			"surface": "page-product",
 			"source": "intake.json skeletons[\"page-product\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -3375,7 +3375,7 @@
 			]
 		},
 		"page-lenses": {
-			"generated": "2026-10-30T07:29:19.186Z",
+			"generated": "2026-10-30T12:01:26.045Z",
 			"surface": "page-lenses",
 			"source": "intake.json skeletons[\"page-lenses\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -4893,7 +4893,7 @@
 			]
 		},
 		"page-about": {
-			"generated": "2026-10-30T07:29:19.186Z",
+			"generated": "2026-10-30T12:01:26.046Z",
 			"surface": "page-about",
 			"source": "intake.json skeletons[\"page-about\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -5363,7 +5363,7 @@
 			]
 		},
 		"page-help": {
-			"generated": "2026-10-30T07:29:19.186Z",
+			"generated": "2026-10-30T12:01:26.046Z",
 			"surface": "page-help",
 			"source": "intake.json skeletons[\"page-help\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -5767,7 +5767,7 @@
 			]
 		},
 		"page-contact": {
-			"generated": "2026-10-30T07:29:19.186Z",
+			"generated": "2026-10-30T12:01:26.046Z",
 			"surface": "page-contact",
 			"source": "intake.json skeletons[\"page-contact\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -6139,1140 +6139,8 @@
 				}
 			]
 		},
-		"page-checkout": {
-			"generated": "2026-10-30T07:29:19.186Z",
-			"surface": "page-checkout",
-			"source": "intake.json skeletons[\"page-checkout\"]",
-			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
-			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
-			"rows": [
-				{
-					"key": "Eye Care Birmingham/742#0",
-					"element": {
-						"tag": "div",
-						"words": "",
-						"snippet": "<div style=\"display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px\" data-dc-tpl=\"742\"> <button style=\"background:#000;color:#fff;border:0"
-					},
-					"parent": {
-						"draftId": "Eye Care Birmingham:741",
-						"tag": "section",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Eye Care Birmingham:747",
-							"tag": "div",
-							"block": "sgs/label"
-						}
-					],
-					"confidence": 0.51,
-					"candidates": [
-						{
-							"block": "sgs/multi-button",
-							"score": 0.75,
-							"share": 0.682
-						},
-						{
-							"block": "sgs/container",
-							"score": 0.35,
-							"share": 0.318
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout:Eye Care Birmingham/742#0",
-					"draftId": "Eye Care Birmingham:742",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Eye Care Birmingham/741#0",
-							"tag": "section",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Eye Care Birmingham/743#0",
-							"tag": "button",
-							"words": "Apple Pay",
-							"block": "sgs/button"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 172,
-							"y": 253.8,
-							"w": 648,
-							"h": 48
-						},
-						{
-							"width": 768,
-							"x": 52,
-							"y": 253.8,
-							"w": 664,
-							"h": 48
-						},
-						{
-							"width": 375,
-							"x": 20,
-							"y": 203.8,
-							"w": 335,
-							"h": 104
-						}
-					]
-				},
-				{
-					"key": "Eye Care Birmingham/752#0",
-					"element": {
-						"tag": "span",
-						"words": "1",
-						"snippet": "<span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px;letter-spacing:0;color:var(--accInk,#6F6152)\" data-dc-tpl=\"752\">1</span>"
-					},
-					"parent": {
-						"draftId": "Eye Care Birmingham:751",
-						"tag": "h2",
-						"block": "sgs/container"
-					},
-					"siblings": [],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout:Eye Care Birmingham/752#0",
-					"draftId": "Eye Care Birmingham:752",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Eye Care Birmingham/751#0",
-							"tag": "h2",
-							"words": "Contact",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Eye Care Birmingham/753#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 0,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 172,
-							"y": 381.8,
-							"w": 8.2,
-							"h": 33
-						},
-						{
-							"width": 768,
-							"x": 52,
-							"y": 381.8,
-							"w": 8.2,
-							"h": 33
-						},
-						{
-							"width": 375,
-							"x": 20,
-							"y": 387.8,
-							"w": 8.2,
-							"h": 33
-						}
-					]
-				},
-				{
-					"key": "Eye Care Birmingham/770#0",
-					"element": {
-						"tag": "span",
-						"words": "2",
-						"snippet": "<span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px;letter-spacing:0;color:var(--accInk,#6F6152)\" data-dc-tpl=\"770\">2</span>"
-					},
-					"parent": {
-						"draftId": "Eye Care Birmingham:769",
-						"tag": "h2",
-						"block": "sgs/container"
-					},
-					"siblings": [],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout:Eye Care Birmingham/770#0",
-					"draftId": "Eye Care Birmingham:770",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Eye Care Birmingham/769#0",
-							"tag": "h2",
-							"words": "Delivery",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Eye Care Birmingham/771#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 0,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 172,
-							"y": 665.8,
-							"w": 10.9,
-							"h": 33
-						},
-						{
-							"width": 768,
-							"x": 52,
-							"y": 665.8,
-							"w": 10.9,
-							"h": 33
-						},
-						{
-							"width": 375,
-							"x": 20,
-							"y": 692,
-							"w": 10.9,
-							"h": 33
-						}
-					]
-				},
-				{
-					"key": "Eye Care Birmingham/774#0",
-					"element": {
-						"tag": "span",
-						"words": "Post it to me",
-						"snippet": "<span data-dc-tpl=\"774\">Post it to me</span>"
-					},
-					"parent": {
-						"draftId": "Eye Care Birmingham:773",
-						"tag": "span",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Eye Care Birmingham:775",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout:Eye Care Birmingham/774#0",
-					"draftId": "Eye Care Birmingham:774",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Eye Care Birmingham/773#0",
-							"tag": "span",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Eye Care Birmingham/775#0",
-							"tag": "span",
-							"words": "Free",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 193,
-							"y": 733.8,
-							"w": 87.8,
-							"h": 20
-						},
-						{
-							"width": 768,
-							"x": 73,
-							"y": 733.8,
-							"w": 87.8,
-							"h": 20
-						},
-						{
-							"width": 375,
-							"x": 41,
-							"y": 760,
-							"w": 87.8,
-							"h": 20
-						}
-					]
-				},
-				{
-					"key": "Eye Care Birmingham/775#0",
-					"element": {
-						"tag": "span",
-						"words": "Free",
-						"snippet": "<span style=\"color:var(--accInk,#6F6152)\" data-dc-tpl=\"775\">{{ shippingLabel }}</span>"
-					},
-					"parent": {
-						"draftId": "Eye Care Birmingham:773",
-						"tag": "span",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Eye Care Birmingham:774",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout:Eye Care Birmingham/775#0",
-					"draftId": "Eye Care Birmingham:775",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Eye Care Birmingham/774#0",
-							"tag": "span",
-							"words": "Post it to me",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Eye Care Birmingham/776#0",
-							"tag": "span",
-							"words": "Royal Mail Tracked 48. Free over £75.",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 438.6,
-							"y": 733.8,
-							"w": 32.4,
-							"h": 20
-						},
-						{
-							"width": 768,
-							"x": 326.6,
-							"y": 733.8,
-							"w": 32.4,
-							"h": 20
-						},
-						{
-							"width": 375,
-							"x": 301.6,
-							"y": 760,
-							"w": 32.4,
-							"h": 20
-						}
-					]
-				},
-				{
-					"key": "Eye Care Birmingham/776#0",
-					"element": {
-						"tag": "span",
-						"words": "Royal Mail Tracked 48. Free over £75.",
-						"snippet": "<span style=\"display:block;font-size:13.5px;color:#5E584F;margin-top:4px\" data-dc-tpl=\"776\">Royal Mail Tracked 48. Free over £75.</span>"
-					},
-					"parent": {
-						"draftId": "Eye Care Birmingham:772",
-						"tag": "button",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Eye Care Birmingham:773",
-							"tag": "span",
-							"block": "sgs/container"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout:Eye Care Birmingham/776#0",
-					"draftId": "Eye Care Birmingham:776",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Eye Care Birmingham/775#0",
-							"tag": "span",
-							"words": "Free",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Eye Care Birmingham/777#0",
-							"tag": "button",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 193,
-							"y": 757.8,
-							"w": 278,
-							"h": 18
-						},
-						{
-							"width": 768,
-							"x": 73,
-							"y": 757.8,
-							"w": 286,
-							"h": 18
-						},
-						{
-							"width": 375,
-							"x": 41,
-							"y": 784,
-							"w": 293,
-							"h": 18
-						}
-					]
-				},
-				{
-					"key": "Eye Care Birmingham/779#0",
-					"element": {
-						"tag": "span",
-						"words": "Collect in Birmingham",
-						"snippet": "<span data-dc-tpl=\"779\">Collect in Birmingham</span>"
-					},
-					"parent": {
-						"draftId": "Eye Care Birmingham:778",
-						"tag": "span",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Eye Care Birmingham:780",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout:Eye Care Birmingham/779#0",
-					"draftId": "Eye Care Birmingham:779",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Eye Care Birmingham/778#0",
-							"tag": "span",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Eye Care Birmingham/780#0",
-							"tag": "span",
-							"words": "Free",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 521,
-							"y": 733.8,
-							"w": 156,
-							"h": 20
-						},
-						{
-							"width": 768,
-							"x": 409,
-							"y": 733.8,
-							"w": 156,
-							"h": 20
-						},
-						{
-							"width": 375,
-							"x": 41,
-							"y": 848,
-							"w": 156,
-							"h": 20
-						}
-					]
-				},
-				{
-					"key": "Eye Care Birmingham/780#0",
-					"element": {
-						"tag": "span",
-						"words": "Free",
-						"snippet": "<span style=\"color:var(--accInk,#6F6152)\" data-dc-tpl=\"780\">Free</span>"
-					},
-					"parent": {
-						"draftId": "Eye Care Birmingham:778",
-						"tag": "span",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Eye Care Birmingham:779",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout:Eye Care Birmingham/780#0",
-					"draftId": "Eye Care Birmingham:780",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Eye Care Birmingham/779#0",
-							"tag": "span",
-							"words": "Collect in Birmingham",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Eye Care Birmingham/781#0",
-							"tag": "span",
-							"words": "I'll fit and adjust them to you in person.",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 766.6,
-							"y": 733.8,
-							"w": 32.4,
-							"h": 20
-						},
-						{
-							"width": 768,
-							"x": 662.6,
-							"y": 733.8,
-							"w": 32.4,
-							"h": 20
-						},
-						{
-							"width": 375,
-							"x": 301.6,
-							"y": 848,
-							"w": 32.4,
-							"h": 20
-						}
-					]
-				},
-				{
-					"key": "Eye Care Birmingham/781#0",
-					"element": {
-						"tag": "span",
-						"words": "I'll fit and adjust them to you in person.",
-						"snippet": "<span style=\"display:block;font-size:13.5px;color:#5E584F;margin-top:4px\" data-dc-tpl=\"781\">I'll fit and adjust them to you in person.</span>"
-					},
-					"parent": {
-						"draftId": "Eye Care Birmingham:777",
-						"tag": "button",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Eye Care Birmingham:778",
-							"tag": "span",
-							"block": "sgs/container"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout:Eye Care Birmingham/781#0",
-					"draftId": "Eye Care Birmingham:781",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Eye Care Birmingham/780#0",
-							"tag": "span",
-							"words": "Free",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Eye Care Birmingham/783#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 521,
-							"y": 757.8,
-							"w": 278,
-							"h": 18
-						},
-						{
-							"width": 768,
-							"x": 409,
-							"y": 757.8,
-							"w": 286,
-							"h": 18
-						},
-						{
-							"width": 375,
-							"x": 41,
-							"y": 872,
-							"w": 293,
-							"h": 18
-						}
-					]
-				},
-				{
-					"key": "Eye Care Birmingham/806#0",
-					"element": {
-						"tag": "span",
-						"words": "3",
-						"snippet": "<span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px;letter-spacing:0;color:var(--accInk,#6F6152)\" data-dc-tpl=\"806\">{{ payStepNo }}"
-					},
-					"parent": {
-						"draftId": "Eye Care Birmingham:805",
-						"tag": "h2",
-						"block": "sgs/container"
-					},
-					"siblings": [],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout:Eye Care Birmingham/806#0",
-					"draftId": "Eye Care Birmingham:806",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Eye Care Birmingham/805#0",
-							"tag": "h2",
-							"words": "Payment",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Eye Care Birmingham/807#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 0,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 172,
-							"y": 1006.8,
-							"w": 10.2,
-							"h": 33
-						},
-						{
-							"width": 768,
-							"x": 52,
-							"y": 1006.8,
-							"w": 10.2,
-							"h": 33
-						},
-						{
-							"width": 375,
-							"x": 20,
-							"y": 1121,
-							"w": 10.2,
-							"h": 33
-						}
-					]
-				},
-				{
-					"key": "Eye Care Birmingham/833#0",
-					"element": {
-						"tag": "span",
-						"words": "Subtotal",
-						"snippet": "<span data-dc-tpl=\"833\">Subtotal</span>"
-					},
-					"parent": {
-						"draftId": "Eye Care Birmingham:832",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Eye Care Birmingham:834",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout:Eye Care Birmingham/833#0",
-					"draftId": "Eye Care Birmingham:833",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Eye Care Birmingham/832#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Eye Care Birmingham/834#0",
-							"tag": "span",
-							"words": "£0",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 893,
-							"y": 346.8,
-							"w": 51.8,
-							"h": 21
-						},
-						{
-							"width": 768,
-							"x": 77,
-							"y": 1409.5,
-							"w": 51.8,
-							"h": 21
-						},
-						{
-							"width": 375,
-							"x": 45,
-							"y": 1542.5,
-							"w": 51.8,
-							"h": 21
-						}
-					]
-				},
-				{
-					"key": "Eye Care Birmingham/834#0",
-					"element": {
-						"tag": "span",
-						"words": "£0",
-						"snippet": "<span style=\"color:#141414\" data-dc-tpl=\"834\">{{ subtotalLabel }}</span>"
-					},
-					"parent": {
-						"draftId": "Eye Care Birmingham:832",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Eye Care Birmingham:833",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout:Eye Care Birmingham/834#0",
-					"draftId": "Eye Care Birmingham:834",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Eye Care Birmingham/833#0",
-							"tag": "span",
-							"words": "Subtotal",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Eye Care Birmingham/835#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1225.1,
-							"y": 346.8,
-							"w": 17.9,
-							"h": 21
-						},
-						{
-							"width": 768,
-							"x": 673.1,
-							"y": 1409.5,
-							"w": 17.9,
-							"h": 21
-						},
-						{
-							"width": 375,
-							"x": 312.1,
-							"y": 1542.5,
-							"w": 17.9,
-							"h": 21
-						}
-					]
-				},
-				{
-					"key": "Eye Care Birmingham/836#0",
-					"element": {
-						"tag": "span",
-						"words": "Delivery",
-						"snippet": "<span data-dc-tpl=\"836\">{{ shipLine }}</span>"
-					},
-					"parent": {
-						"draftId": "Eye Care Birmingham:835",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Eye Care Birmingham:837",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout:Eye Care Birmingham/836#0",
-					"draftId": "Eye Care Birmingham:836",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Eye Care Birmingham/835#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Eye Care Birmingham/837#0",
-							"tag": "span",
-							"words": "Free",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 893,
-							"y": 375.8,
-							"w": 51.2,
-							"h": 21
-						},
-						{
-							"width": 768,
-							"x": 77,
-							"y": 1438.5,
-							"w": 51.2,
-							"h": 21
-						},
-						{
-							"width": 375,
-							"x": 45,
-							"y": 1571.5,
-							"w": 51.2,
-							"h": 21
-						}
-					]
-				},
-				{
-					"key": "Eye Care Birmingham/837#0",
-					"element": {
-						"tag": "span",
-						"words": "Free",
-						"snippet": "<span style=\"color:#141414\" data-dc-tpl=\"837\">{{ shippingLabel }}</span>"
-					},
-					"parent": {
-						"draftId": "Eye Care Birmingham:835",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Eye Care Birmingham:836",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout:Eye Care Birmingham/837#0",
-					"draftId": "Eye Care Birmingham:837",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Eye Care Birmingham/836#0",
-							"tag": "span",
-							"words": "Delivery",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Eye Care Birmingham/838#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1214.7,
-							"y": 375.8,
-							"w": 28.3,
-							"h": 21
-						},
-						{
-							"width": 768,
-							"x": 662.7,
-							"y": 1438.5,
-							"w": 28.3,
-							"h": 21
-						},
-						{
-							"width": 375,
-							"x": 301.7,
-							"y": 1571.5,
-							"w": 28.3,
-							"h": 21
-						}
-					]
-				},
-				{
-					"key": "Eye Care Birmingham/839#0",
-					"element": {
-						"tag": "span",
-						"words": "Total",
-						"snippet": "<span data-dc-tpl=\"839\">Total</span>"
-					},
-					"parent": {
-						"draftId": "Eye Care Birmingham:838",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Eye Care Birmingham:840",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout:Eye Care Birmingham/839#0",
-					"draftId": "Eye Care Birmingham:839",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Eye Care Birmingham/838#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Eye Care Birmingham/840#0",
-							"tag": "span",
-							"words": "£0",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 893,
-							"y": 417.8,
-							"w": 39.6,
-							"h": 36
-						},
-						{
-							"width": 768,
-							"x": 77,
-							"y": 1480.5,
-							"w": 39.6,
-							"h": 36
-						},
-						{
-							"width": 375,
-							"x": 45,
-							"y": 1613.5,
-							"w": 39.6,
-							"h": 36
-						}
-					]
-				},
-				{
-					"key": "Eye Care Birmingham/840#0",
-					"element": {
-						"tag": "span",
-						"words": "£0",
-						"snippet": "<span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:24px\" data-dc-tpl=\"840\">{{ totalLabel }}</span>"
-					},
-					"parent": {
-						"draftId": "Eye Care Birmingham:838",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Eye Care Birmingham:839",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout:Eye Care Birmingham/840#0",
-					"draftId": "Eye Care Birmingham:840",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Eye Care Birmingham/839#0",
-							"tag": "span",
-							"words": "Total",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Eye Care Birmingham/841#0",
-							"tag": "p",
-							"words": "Klarna: 3 interest-free payments of £0 . 18+, T&Cs apply.",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1213.3,
-							"y": 417.8,
-							"w": 29.7,
-							"h": 36
-						},
-						{
-							"width": 768,
-							"x": 661.3,
-							"y": 1480.5,
-							"w": 29.7,
-							"h": 36
-						},
-						{
-							"width": 375,
-							"x": 300.3,
-							"y": 1613.5,
-							"w": 29.7,
-							"h": 36
-						}
-					]
-				}
-			]
-		},
 		"page-done": {
-			"generated": "2026-10-30T07:29:19.186Z",
+			"generated": "2026-10-30T12:01:26.046Z",
 			"surface": "page-done",
 			"source": "intake.json skeletons[\"page-done\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -7362,7 +6230,7 @@
 			]
 		},
 		"size-guide": {
-			"generated": "2026-10-30T07:29:19.187Z",
+			"generated": "2026-10-30T12:01:26.046Z",
 			"surface": "size-guide",
 			"source": "intake.json skeletons[\"size-guide\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -8309,7 +7177,7 @@
 			]
 		},
 		"page-signin": {
-			"generated": "2026-10-30T07:29:19.187Z",
+			"generated": "2026-10-30T12:01:26.046Z",
 			"surface": "page-signin",
 			"source": "intake.json skeletons[\"page-signin\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -8399,7 +7267,7 @@
 			]
 		},
 		"page-account": {
-			"generated": "2026-10-30T07:29:19.187Z",
+			"generated": "2026-10-30T12:01:26.046Z",
 			"surface": "page-account",
 			"source": "intake.json skeletons[\"page-account\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",

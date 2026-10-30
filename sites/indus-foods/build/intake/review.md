@@ -75,37 +75,37 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `palette:--border-accent` | **changed** --border-accent #D8CA50 | role:primary,accent-text | 0.85: the most used strong ground (5 buttons) |  |
-| `palette:--brand-blue` | **changed** --brand-blue #0A7EA8 | role:link | 0.98: the draft declares --text-link: var(--brand-blue); usage agrees |  |
-| `palette:--brand-gold` | **changed** --brand-gold #D8CA50 | role:primary,accent-text | 0.85: the most used strong ground (5 buttons) |  |
-| `palette:--ink` | **changed** --ink #1E2A3C | role:primary-text | 0.85: the most used text colour on the primary ground (weight 109) |  |
-| `palette:--selection-bg` | **changed** --selection-bg #D8CA50 | role:primary,accent-text | 0.85: the most used strong ground (5 buttons) |  |
-| `palette:--selection-fg` | **changed** --selection-fg #1E2A3C | role:primary-text | 0.85: the most used text colour on the primary ground (weight 109) |  |
-| `palette:--slate` | **changed** --slate #2C3E50 | role:footer-bg,accent,heading | 0.85: the footer's ground on 23 page(s) |  |
-| `palette:--social-linkedin` | **changed** --social-linkedin #0A66C2 | role:section | 0.85: the most used ground after the page, raised and primary grounds (46 elements) |  |
-| `palette:--surface-header` | **changed** --surface-header #FFFFFF | role:surface,section-text,text-inverse | 0.95: the page ground: the body background on 23 page(s); the name --surface-white agrees |  |
-| `palette:--surface-section-blue` | **changed** --surface-section-blue #0A7EA8 | role:link | 0.98: the draft declares --text-link: var(--brand-blue); usage agrees |  |
-| `palette:--surface-section-gold` | **changed** --surface-section-gold #D8CA50 | role:primary,accent-text | 0.85: the most used strong ground (5 buttons) |  |
-| `palette:--surface-topbar` | **changed** --surface-topbar #0A7EA8 | role:link | 0.98: the draft declares --text-link: var(--brand-blue); usage agrees |  |
-| `palette:--surface-white` | **changed** --surface-white #FFFFFF | role:surface,section-text,text-inverse | 0.95: the page ground: the body background on 23 page(s); the name --surface-white agrees |  |
-| `palette:--text-heading` | **changed** --text-heading #2C3E50 | role:heading,footer-bg,accent | 0.98: the draft declares --text-heading: var(--slate); usage agrees |  |
-| `palette:--text-link` | **changed** --text-link #0A7EA8 | role:link | 0.98: the draft declares --text-link: var(--brand-blue); usage agrees |  |
-| `palette:--whatsapp-green` | **changed** --whatsapp-green #25D366 | no slug (one-off) | 0.9: brand colour: WhatsApp (every use is on its own control), painted by the brand's own setting, so no palette slot |  |
+| `palette:--border-accent` | --border-accent #D8CA50 | role:primary,accent-text,section-text | 0.85: the most used strong ground (5 buttons) |  |
+| `palette:--brand-blue` | --brand-blue #0A7EA8 | role:link | 0.98: the draft declares --text-link: var(--brand-blue); usage agrees |  |
 | `palette:--brand-blue-hover` | --brand-blue-hover #075E80 | role:primary-dark,link-hover | 0.6: hover shade of the primary family (the name alone decides this) | role:primary-dark |
 | `palette:--brand-blue-light` | --brand-blue-light #2EADE2 | role:custom-brand-blue-light | 0.8: light shade of the primary family has no slug | role:custom-brand-blue-light |
+| `palette:--brand-gold` | --brand-gold #D8CA50 | role:primary,accent-text,section-text | 0.85: the most used strong ground (5 buttons) |  |
 | `palette:--brand-gold-light` | --brand-gold-light #E7D768 | role:accent-light | 0.6: light shade of the accent family (the name alone decides this) | role:accent-light |
 | `palette:--brand-gold-mid` | --brand-gold-mid #E3D35F | no slug (one-off) | unused: no element in the draft uses this value | one-off |
 | `palette:--brand-gold-pale` | --brand-gold-pale #EBDD78 | no slug (one-off) | unused: no element in the draft uses this value | one-off |
 | `palette:--grey-body` | --grey-body #4A5563 | role:text | 0.98: the draft declares --text-body: var(--grey-body); usage agrees | role:text |
 | `palette:--grey-muted` | --grey-muted #68727C | role:text-muted | 0.95: the draft declares --text-muted: var(--grey-muted) (the slug's own name) | one-off |
+| `palette:--ink` | --ink #1E2A3C | role:primary-text | 0.85: the most used text colour on the primary ground (weight 109) |  |
+| `palette:--selection-bg` | --selection-bg #D8CA50 | role:primary,accent-text,section-text | 0.85: the most used strong ground (5 buttons) |  |
+| `palette:--selection-fg` | --selection-fg #1E2A3C | role:primary-text | 0.85: the most used text colour on the primary ground (weight 109) |  |
+| `palette:--slate` | --slate #2C3E50 | role:footer-bg,accent,section,heading | 0.85: the footer's ground on 23 page(s) |  |
 | `palette:--social-facebook` | --social-facebook #1877F2 | no slug (one-off) | 0.9: brand colour: Facebook (the brand registry names it), painted by the brand's own setting, so no palette slot |  |
 | `palette:--social-google` | --social-google #EA4335 | no slug (one-off) | 0.9: brand colour: Google (the brand registry names it), painted by the brand's own setting, so no palette slot | one-off |
+| `palette:--social-linkedin` | --social-linkedin #0A66C2 | no slug (one-off) | 0.9: brand colour: LinkedIn (the brand registry names it), painted by the brand's own setting, so no palette slot |  |
 | `palette:--surface-cool` | --surface-cool #F2F5F7 | role:surface-alt | 0.95: the most used light ground after the page ground (14 elements); the name --surface-cool agrees | role:surface-alt |
+| `palette:--surface-header` | --surface-header #FFFFFF | role:surface,text-inverse | 0.95: the page ground: the body background on 23 page(s); the name --surface-white agrees |  |
+| `palette:--surface-section-blue` | --surface-section-blue #0A7EA8 | role:link | 0.98: the draft declares --text-link: var(--brand-blue); usage agrees |  |
+| `palette:--surface-section-gold` | --surface-section-gold #D8CA50 | role:primary,accent-text,section-text | 0.85: the most used strong ground (5 buttons) |  |
+| `palette:--surface-topbar` | --surface-topbar #0A7EA8 | role:link | 0.98: the draft declares --text-link: var(--brand-blue); usage agrees |  |
 | `palette:--surface-warm` | --surface-warm #FAFAF8 | no slug (one-off) | unused: no element in the draft uses this value | one-off |
+| `palette:--surface-white` | --surface-white #FFFFFF | role:surface,text-inverse | 0.95: the page ground: the body background on 23 page(s); the name --surface-white agrees |  |
 | `palette:--text-body` | --text-body #4A5563 | role:text | 0.98: the draft declares --text-body: var(--grey-body); usage agrees | role:text |
+| `palette:--text-heading` | --text-heading #2C3E50 | role:heading,footer-bg,accent,section | 0.98: the draft declares --text-heading: var(--slate); usage agrees |  |
+| `palette:--text-link` | --text-link #0A7EA8 | role:link | 0.98: the draft declares --text-link: var(--brand-blue); usage agrees |  |
 | `palette:--text-link-hover` | --text-link-hover #075E80 | role:link-hover,primary-dark | 0.95: the draft declares --text-link-hover: var(--brand-blue-hover) | role:link-hover |
 | `palette:--text-muted` | --text-muted #68727C | role:text-muted | 0.95: the draft declares --text-muted: var(--grey-muted) (the slug's own name) | role:text-muted |
 | `palette:--tint-on-blue` | --tint-on-blue #E3EFF4 | role:custom-tint-on-blue | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) | role:custom-tint-on-blue |
+| `palette:--whatsapp-green` | --whatsapp-green #25D366 | no slug (one-off) | 0.9: brand colour: WhatsApp (every use is on its own control), painted by the brand's own setting, so no palette slot |  |
 
 ## Site Info (site-info)
 
@@ -262,7 +262,7 @@ Accept all: [ ]
 
 Accept all: [ ]
 
-### Changed since the last export (44)
+### Changed since the last export (43)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -296,7 +296,6 @@ Accept all: [ ]
 | `skeleton:page-home:Indus Foods Website v2/262` | **changed** page-home Indus Foods Website v2/262 <span> | absorbed | 1: 4 copies of one template element; drawn by sgs/timeline: array_item_schema: sgs/timeline holds its items in an attribute |  |
 | `skeleton:page-home:Indus Foods Website v2/263` | **changed** page-home Indus Foods Website v2/263 <span> "A shop on Ladypool Road" | absorbed | 1: 4 copies of one template element; drawn by sgs/timeline: array_item_schema: sgs/timeline holds its items in an attribute |  |
 | `skeleton:page-home:Indus Foods Website v2/264` | **changed** page-home Indus Foods Website v2/264 <span> "One of the UK’s first halal butchers and greengrocers." | absorbed | 1: 4 copies of one template element; drawn by sgs/timeline: array_item_schema: sgs/timeline holds its items in an attribute |  |
-| `skeleton:page-home:Indus Foods Website v2/312#0` | **changed** page-home Indus Foods Website v2/312#0 <div> | block:sgs/multi-button | 0.51 |  |
 | `skeleton:page-home:Indus Foods Website v2/313#0` | **changed** page-home Indus Foods Website v2/313#0 <a> "Apply For A Trade Account" | block:sgs/button | 0.75 |  |
 | `skeleton:page-home:Indus Foods Website v2/314#0` | **changed** page-home Indus Foods Website v2/314#0 <a> "Request Our Catalogue" | block:sgs/button | 0.75 |  |
 | `skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466#0/100#0` | **changed** trade-account-application Indus Foods Website v2>TradeApplication@466#0/100#0 <p> "Our trade team can complete the application with you over the phone." | remove | 1: inside a removed element (Indus Foods Website v2>TradeApplication@466#0/86#0) |  |
@@ -311,42 +310,63 @@ Accept all: [ ]
 | `skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466/95` | **changed** trade-account-application Indus Foods Website v2>TradeApplication@466/95 <div> "Your trading and registered business name" | remove | 1: 5 copies of one template element; inside a removed element (Indus Foods Website v2>TradeApplication@466#0/86#0) |  |
 | `skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466/96` | **changed** trade-account-application Indus Foods Website v2>TradeApplication@466/96 <span> | remove | 1: 5 copies of one template element; inside a removed element (Indus Foods Website v2>TradeApplication@466#0/86#0) |  |
 
-### Needs a decision (low): block:sgs/business-info (2)
+### Needs a decision (agent-pick): block:sgs/business-info (2)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:footer:Indus Foods Website v2/712#0` | footer Indus Foods Website v2/712#0 <iframe> | block:sgs/business-info | 0.5: an embedded map is sgs/business-info's map display; the framework DB prefers sgs/media (confidence 0.75: html_tag_to_core_block: iframe -> sgs/media ("Embedded iframe (YouTube/Vimeo) → sgs/media"); block_composition: sgs/media is a leaf; the element holds words and no block children); a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two | accept |
-| `skeleton:page-contact:Indus Foods Website v2/538#0` | page-contact Indus Foods Website v2/538#0 <iframe> | block:sgs/business-info | 0.5: an embedded map is sgs/business-info's map display; the framework DB prefers sgs/media (confidence 0.75: html_tag_to_core_block: iframe -> sgs/media ("Embedded iframe (YouTube/Vimeo) → sgs/media"); block_composition: sgs/media is a leaf; the element holds words and no block children); a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two | accept |
+| `skeleton:footer:Indus Foods Website v2/712#0` | footer Indus Foods Website v2/712#0 <iframe> | block:sgs/business-info | agent pick 0.75: The iframe is a Google map of the business address; Site Info content reads Site Info, and sgs/business-info has the map display (mapSource, mapZoom, mapHeight in the DB), where sgs/media would hard-code the address URL.; was block:sgs/business-info 0.5 |  |
+| `skeleton:page-contact:Indus Foods Website v2/538#0` | page-contact Indus Foods Website v2/538#0 <iframe> | block:sgs/business-info | agent pick 0.75: A Google map of the business address beside Get Directions; Site Info content reads Site Info through sgs/business-info's map display rather than a hard-coded sgs/media iframe.; was block:sgs/business-info 0.5 |  |
 
-### Needs a decision (low): block:sgs/multi-button (2)
+### Needs a decision (agent-pick): block:sgs/counter (1)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-about:Indus Foods Website v2/362=sgs/text` | page-about Indus Foods Website v2/362=sgs/text <div> "5,000+" | block:sgs/counter | agent pick 0.8: The same template element ({{ s.n }}) is sgs/counter on its 1962 copy; the stat list shares one block, and 5,000+ is a count with a suffix.; was block:sgs/text 0.25 |  |
+
+### Needs a decision (agent-pick): block:sgs/heading (2)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:about-mega-menu:Indus Foods Website v2/81#0` | about-mega-menu Indus Foods Website v2/81#0 <div> "Six decades of heritage" | block:sgs/heading | agent pick 0.7: The bold 22px title of the feature panel between its kicker (sgs/label) and its description and button; a title role, so sgs/heading (a real block, chosen over the sole text candidate).; was block:sgs/text 0.25 |  |
+| `skeleton:page-about:Indus Foods Website v2/490=sgs/text` | page-about Indus Foods Website v2/490=sgs/text <div> "Certifications" | block:sgs/heading | agent pick 0.8: The card title ({{ c.title }}, 19px bold Montserrat) is sgs/heading on its other 44 copies; one repeated item keeps one block.; was block:sgs/text 0.25 |  |
+
+### Needs a decision (agent-pick): block:sgs/multi-button (2)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-home:Indus Foods Website v2/312#0` | page-home Indus Foods Website v2/312#0 <div> | block:sgs/multi-button | agent pick 0.85: A flex-wrap row of CTA links proposed as sgs/button; sgs/multi-button is the DB group for SGS Buttons.; was block:sgs/multi-button 0.51 |  |
+| `skeleton:sticky-header:Indus Foods Website v2/11#0` | sticky-header Indus Foods Website v2/11#0 <div> | block:sgs/multi-button | agent pick 0.85: The draft code holds three pill links in one flex row (apply, tel:, mailto:); sgs/multi-button is the framework's group of SGS Buttons and outranks a plain container.; was block:sgs/multi-button 0.51 |  |
+
+### Needs a decision (agent-pick): block:sgs/site-header (1)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:sticky-header:Indus Foods Website v2/39#0` | sticky-header Indus Foods Website v2/39#0 <header> | block:sgs/site-header | agent pick 0.92: The surface-root sticky header spanning the full width at 1440, 768 and 375 is the site header shell; sgs/site-header is the top candidate and the hero reading is only a box-size match.; was block:sgs/site-header 0.58 |  |
+
+### Needs a decision (agent-pick): block:sgs/text (7)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:about-mega-menu:Indus Foods Website v2/71` | about-mega-menu Indus Foods Website v2/71 <span> "01" | block:sgs/text | agent pick 0.65: A two-digit index number ({{ link.num }}) set beside each mega-menu link; no counter or list block owns it, so sgs/text, the only candidate.; was block:sgs/text 0.25 |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/74` | about-mega-menu Indus Foods Website v2/74 <span> "Six decades of family heritage" | block:sgs/text | agent pick 0.85: Running description copy ({{ link.desc }}) under each link title with no link or heading role; sgs/text.; was block:sgs/text 0.25 |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/82#0` | about-mega-menu Indus Foods Website v2/82#0 <div> "From a Sparkbrook corner shop to one of the UK’s leading Indian food wholesalers." | block:sgs/text | agent pick 0.85: The feature panel's description sentence; sgs/text.; was block:sgs/text 0.25 |  |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/104#0` | brands-mega-menu Indus Foods Website v2/104#0 <div> "We develop and market our own Sanam range alongside trusted brands like Shan, Green Leaf and The Lemon Tree." | block:sgs/text | agent pick 0.85: The own-brands aside's description paragraph between its label and button; sgs/text.; was block:sgs/text 0.25 |  |
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/104#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/104#0 <span> "Prefer to apply over the phone?" | block:sgs/text | agent pick 0.85: A short prompt line beside the call button; plain copy, sgs/text.; was block:sgs/text 0.25 |  |
+| `skeleton:page-terms:Indus Foods Website v2/651=sgs/text` | page-terms Indus Foods Website v2/651=sgs/text <span> "02" | block:sgs/text | agent pick 0.5: The section number inside each h3; on the first copy the h3 is sgs/heading and the number is absorbed into it, but the other six h3 copies are proposed as sgs/container, so removing the number here would lose it; the h3 block choice goes to Bean.; was block:sgs/text 0.25 |  |
+| `skeleton:sectors-mega-menu:Indus Foods Website v2/92` | sectors-mega-menu Indus Foods Website v2/92 <div> "Quality ingredients for venues, caterers & events across the UK." | block:sgs/text | agent pick 0.85: Each sector card's description between its heading and button; sgs/text.; was block:sgs/text 0.25 |  |
+
+### Needs a decision (agent-pick): remove (2)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-about:Indus Foods Website v2/363=sgs/text` | page-about Indus Foods Website v2/363=sgs/text <div> "Trade customers" | remove | agent pick 0.8: The stat caption ({{ s.l }}); its 'Family-run since' copy is absorbed into the counter (Bean, 2026-10-19), and sgs/counter carries a label attribute, so every copy folds into its counter.; was block:sgs/text 0.25 |  |
+| `skeleton:page-our-story:Indus Foods Website v2/328#0` | page-our-story Indus Foods Website v2/328#0 <span> "Our Story" | remove | agent pick 0.85: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed.; was block:sgs/text 0.25 |  |
+
+### Needs a decision (low): block:sgs/multi-button (1)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:page-about:Indus Foods Website v2/524#0` | page-about Indus Foods Website v2/524#0 <div> | block:sgs/multi-button | 0.51: 23 copies of one template element on 23 surfaces | accept |
-| `skeleton:sticky-header:Indus Foods Website v2/11#0` | sticky-header Indus Foods Website v2/11#0 <div> | block:sgs/multi-button | 0.51 | accept |
-
-### Needs a decision (low): block:sgs/site-header (1)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:sticky-header:Indus Foods Website v2/39#0` | sticky-header Indus Foods Website v2/39#0 <header> | block:sgs/site-header | 0.58 | accept |
-
-### Needs a decision (low): block:sgs/text (12)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:about-mega-menu:Indus Foods Website v2/71` | about-mega-menu Indus Foods Website v2/71 <span> "01" | block:sgs/text | 0.25: 11 copies of one template element on 2 surfaces | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/74` | about-mega-menu Indus Foods Website v2/74 <span> "Six decades of family heritage" | block:sgs/text | 0.25: 11 copies of one template element on 2 surfaces | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/81#0` | about-mega-menu Indus Foods Website v2/81#0 <div> "Six decades of heritage" | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/82#0` | about-mega-menu Indus Foods Website v2/82#0 <div> "From a Sparkbrook corner shop to one of the UK’s leading Indian food wholesalers." | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces | accept |
-| `skeleton:brands-mega-menu:Indus Foods Website v2/104#0` | brands-mega-menu Indus Foods Website v2/104#0 <div> "We develop and market our own Sanam range alongside trusted brands like Shan, Green Leaf and The Lemon Tree." | block:sgs/text | 0.25 | accept |
-| `skeleton:page-about:Indus Foods Website v2/362=sgs/text` | page-about Indus Foods Website v2/362=sgs/text <div> "5,000+" | block:sgs/text | 0.25: 7 copies of one template element on 2 surfaces | accept |
-| `skeleton:page-about:Indus Foods Website v2/363=sgs/text` | page-about Indus Foods Website v2/363=sgs/text <div> "Trade customers" | block:sgs/text | 0.25: 7 copies of one template element on 2 surfaces | accept |
-| `skeleton:page-about:Indus Foods Website v2/490=sgs/text` | page-about Indus Foods Website v2/490=sgs/text <div> "Certifications" | block:sgs/text | 0.25: 11 copies of one template element on 2 surfaces | accept |
-| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/104#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/104#0 <span> "Prefer to apply over the phone?" | block:sgs/text | 0.25 | accept |
-| `skeleton:page-our-story:Indus Foods Website v2/328#0` | page-our-story Indus Foods Website v2/328#0 <span> "Our Story" | block:sgs/text | 0.25: 27 copies of one template element on 27 surfaces | accept |
-| `skeleton:page-terms:Indus Foods Website v2/651=sgs/text` | page-terms Indus Foods Website v2/651=sgs/text <span> "02" | block:sgs/text | 0.25: 6 copies of one template element | accept |
-| `skeleton:sectors-mega-menu:Indus Foods Website v2/92` | sectors-mega-menu Indus Foods Website v2/92 <div> "Quality ingredients for venues, caterers & events across the UK." | block:sgs/text | 0.25: 4 copies of one template element | accept |
 
 ### Settled by rule alignWrapper: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) (6)
 

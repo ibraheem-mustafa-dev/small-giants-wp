@@ -1,0 +1,956 @@
+{
+ "header": [
+  {
+   "key": "Eye Care Birmingham/13#0",
+   "block": "sgs/site-header",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.92,
+   "reason": "The surface-root sticky header spanning the full width at 1440, 768 and 375 is the site header shell; the hero reading is only a box-size match."
+  },
+  {
+   "key": "Eye Care Birmingham/10=sgs/text",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A marquee duplicate of the ticker item (shown only off-screen at 375, x 1341); its other copies are drawn by sgs/brand-strip (rule marquee), so this copy folds into the strip too."
+  },
+  {
+   "key": "Eye Care Birmingham/30#0",
+   "block": "sgs/responsive-logo",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "The wordmark image beside the mark inside the home link; brand text or a logo image is the logo block, and its sibling mark is already sgs/responsive-logo."
+  },
+  {
+   "key": "Eye Care Birmingham/38#0",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "An icon-only account button (no words, aria-label from accountLabel) beside the cart; a glyph on its own is sgs/icon (linkable), while sgs/account is the My Account page wrapper, not a header control."
+  }
+ ],
+ "mega-menu-sunglasses": [
+  {
+   "key": "Eye Care Birmingham/70#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A one-line description under the card heading; plain copy."
+  }
+ ],
+ "mega-menu-brands": [
+  {
+   "key": "Eye Care Birmingham/72#0",
+   "block": "sgs/card-grid",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "Its children (the Most asked for kicker and the brand items) are drawn by sgs/card-grid (array_item_schema: card-grid holds its items in an attribute), so the holder is that card grid."
+  }
+ ],
+ "mobile-menu": [
+  {
+   "key": "Eye Care Birmingham/1191#0",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The WhatsApp brand glyph alone inside its link button (beside the Instagram and Google glyph links); a glyph on its own is sgs/icon, which carries the brand registry, not a media image."
+  }
+ ],
+ "footer": [
+  {
+   "key": "Eye Care Birmingham/1155#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "A flex row of the footer legal links (Privacy, Terms) whose children are proposed as sgs/button; sgs/multi-button is the DB group for SGS Buttons."
+  }
+ ],
+ "page-home": [
+  {
+   "key": "Eye Care Birmingham/121#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The hero CTA row: a flex-wrap group of buttons; sgs/multi-button."
+  },
+  {
+   "key": "Eye Care Birmingham/131#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A 12px uppercase line with 0.24em tracking directly above the section heading: a kicker, sgs/label (the rule outranks the generic p mapping)."
+  },
+  {
+   "key": "Eye Care Birmingham/142#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A 12px uppercase line with 0.24em tracking directly above the section heading: a kicker, sgs/label (the rule outranks the generic p mapping)."
+  },
+  {
+   "key": "Eye Care Birmingham/148",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.65,
+   "reason": "A large 01-04 index number on each reason card; no counter or list block owns a static ordinal, so sgs/text, the only candidate."
+  },
+  {
+   "key": "Eye Care Birmingham/172#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A 12px uppercase line with 0.24em tracking directly above the section heading: a kicker, sgs/label (the rule outranks the generic p mapping)."
+  },
+  {
+   "key": "Eye Care Birmingham/177#0",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "Part of the Google reviews summary and its slider arrows, which sgs/google-reviews draws itself (showAggregate, sourceLabel, averageRating, reviewCount, seeAllLabel, writeReviewLabel, showArrows, navPosition in the DB); the review loop beside it is already sgs/google-reviews."
+  },
+  {
+   "key": "Eye Care Birmingham/179#0",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "Part of the Google reviews summary and its slider arrows, which sgs/google-reviews draws itself (showAggregate, sourceLabel, averageRating, reviewCount, seeAllLabel, writeReviewLabel, showArrows, navPosition in the DB); the review loop beside it is already sgs/google-reviews."
+  },
+  {
+   "key": "Eye Care Birmingham/181#0",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "Part of the Google reviews summary and its slider arrows, which sgs/google-reviews draws itself (showAggregate, sourceLabel, averageRating, reviewCount, seeAllLabel, writeReviewLabel, showArrows, navPosition in the DB); the review loop beside it is already sgs/google-reviews."
+  },
+  {
+   "key": "Eye Care Birmingham/184#0",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "Part of the Google reviews summary and its slider arrows, which sgs/google-reviews draws itself (showAggregate, sourceLabel, averageRating, reviewCount, seeAllLabel, writeReviewLabel, showArrows, navPosition in the DB); the review loop beside it is already sgs/google-reviews."
+  },
+  {
+   "key": "Eye Care Birmingham/185#0",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "Part of the Google reviews summary and its slider arrows, which sgs/google-reviews draws itself (showAggregate, sourceLabel, averageRating, reviewCount, seeAllLabel, writeReviewLabel, showArrows, navPosition in the DB); the review loop beside it is already sgs/google-reviews."
+  },
+  {
+   "key": "Eye Care Birmingham/207#0",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "Part of the Google reviews summary and its slider arrows, which sgs/google-reviews draws itself (showAggregate, sourceLabel, averageRating, reviewCount, seeAllLabel, writeReviewLabel, showArrows, navPosition in the DB); the review loop beside it is already sgs/google-reviews."
+  },
+  {
+   "key": "Eye Care Birmingham/208#0",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "Part of the Google reviews summary and its slider arrows, which sgs/google-reviews draws itself (showAggregate, sourceLabel, averageRating, reviewCount, seeAllLabel, writeReviewLabel, showArrows, navPosition in the DB); the review loop beside it is already sgs/google-reviews."
+  },
+  {
+   "key": "Eye Care Birmingham/211#0",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "Part of the Google reviews summary and its slider arrows, which sgs/google-reviews draws itself (showAggregate, sourceLabel, averageRating, reviewCount, seeAllLabel, writeReviewLabel, showArrows, navPosition in the DB); the review loop beside it is already sgs/google-reviews."
+  },
+  {
+   "key": "Eye Care Birmingham/217#0",
+   "block": "sgs/media",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A full photograph (Unsplash, alt text) filling its column; a content image is sgs/media, not a logo."
+  },
+  {
+   "key": "Eye Care Birmingham/219#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A 12px uppercase line with 0.24em tracking directly above the section heading: a kicker, sgs/label (the rule outranks the generic p mapping)."
+  },
+  {
+   "key": "Eye Care Birmingham/224#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "The step number inside each li of an ordered list; the ol and li are proposed as sgs/container, so the number stays text to keep it (the DB maps ol to sgs/icon-list ordered, which would draw it)."
+  },
+  {
+   "key": "Eye Care Birmingham/226#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "The step number inside each li of an ordered list; the ol and li are proposed as sgs/container, so the number stays text to keep it (the DB maps ol to sgs/icon-list ordered, which would draw it)."
+  },
+  {
+   "key": "Eye Care Birmingham/228#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "The step number inside each li of an ordered list; the ol and li are proposed as sgs/container, so the number stays text to keep it (the DB maps ol to sgs/icon-list ordered, which would draw it)."
+  },
+  {
+   "key": "Eye Care Birmingham/235#0",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "Designer brief copy inside an image placeholder (whichever you would rather show, no portrait needed); a line that exists only because of the brief is removed."
+  },
+  {
+   "key": "Eye Care Birmingham/242#0",
+   "block": "sgs/whatsapp-cta",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A wa.me link styled in WhatsApp green with the WhatsApp words; sgs/whatsapp-cta (inline variant) holds exactly this link kind."
+  }
+ ],
+ "page-shop": [
+  {
+   "key": "Eye Care Birmingham/249#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A 12px uppercase line with 0.24em tracking directly above the section heading: a kicker, sgs/label (the rule outranks the generic p mapping)."
+  }
+ ],
+ "page-product": [
+  {
+   "key": "Eye Care Birmingham/348#0",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "Photography to come: placeholder brief copy in the gallery frame; removed."
+  },
+  {
+   "key": "Eye Care Birmingham/352#0",
+   "block": "sgs/container",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "The gallery thumbnails grid (a loop of buttons swapping the main image); on the single-product template this is the product gallery, which no candidate offers, so a container keeps the layout."
+  },
+  {
+   "key": "Eye Care Birmingham/416#0",
+   "block": "sgs/container",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "A role=tablist loop of role=tab buttons with aria-selected and panels shown by sc-if beside it: sgs/tabs at the section level, which no row here offers; a container keeps the layout without calling it a button group."
+  },
+  {
+   "key": "Eye Care Birmingham/423#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "An item of the product description list; its ul is proposed as sgs/container, so the item stays text to keep it (the DB maps ul to sgs/icon-list, which would draw it)."
+  },
+  {
+   "key": "Eye Care Birmingham/424#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "An item of the product description list; its ul is proposed as sgs/container, so the item stays text to keep it (the DB maps ul to sgs/icon-list, which would draw it)."
+  },
+  {
+   "key": "Eye Care Birmingham/425#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "An item of the product description list; its ul is proposed as sgs/container, so the item stays text to keep it (the DB maps ul to sgs/icon-list, which would draw it)."
+  },
+  {
+   "key": "Eye Care Birmingham/426#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "An item of the product description list; its ul is proposed as sgs/container, so the item stays text to keep it (the DB maps ul to sgs/icon-list, which would draw it)."
+  },
+  {
+   "key": "Eye Care Birmingham/495",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "The question title in an aria-expanded toggle loop (Good to know); the loop is an accordion (sgs/accordion or sgs/product-faq) that no row offers, so the title stays text."
+  },
+  {
+   "key": "Eye Care Birmingham/496",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "The + glyph that rotates when the question opens; a glyph on its own is sgs/icon (an accordion would draw it as its own indicator)."
+  },
+  {
+   "key": "Eye Care Birmingham/512=sgs/text",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "A copy of the rating-breakdown row Bean removed on 2026-10-26 (511=remove); the mark covered only the first copy, so every copy of the row goes the same way."
+  },
+  {
+   "key": "Eye Care Birmingham/514=unresolved",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "The breakdown bar fill inside the rating-breakdown row Bean removed on 2026-10-26; removed with its row."
+  },
+  {
+   "key": "Eye Care Birmingham/515=sgs/text",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "A copy of the rating-breakdown row Bean removed on 2026-10-26 (511=remove); the mark covered only the first copy, so every copy of the row goes the same way."
+  },
+  {
+   "key": "Eye Care Birmingham/522",
+   "block": "sgs/quote",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "A review quote ({{ r.text }}) in a figure; sgs/quote is the DB mapping for blockquote, but these are placeholder reviews standing in for the product reviews."
+  },
+  {
+   "key": "Eye Care Birmingham/523",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "The reviewer line ({{ r.who }}, printed as Placeholder review); kept as text with its quote, though the whole reviews block is placeholder content."
+  }
+ ],
+ "page-lenses": [
+  {
+   "key": "Eye Care Birmingham/551#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A 12px uppercase line with 0.24em tracking directly above the section heading: a kicker, sgs/label (the rule outranks the generic p mapping)."
+  },
+  {
+   "key": "Eye Care Birmingham/557#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "A price line (34px Playfair) on a lens-type card between its label and description; not a product price (no product), so sgs/text."
+  },
+  {
+   "key": "Eye Care Birmingham/561#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "A price line (34px Playfair) on a lens-type card between its label and description; not a product price (no product), so sgs/text."
+  },
+  {
+   "key": "Eye Care Birmingham/565#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "A price line (34px Playfair) on a lens-type card between its label and description; not a product price (no product), so sgs/text."
+  },
+  {
+   "key": "Eye Care Birmingham/569#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "A price line (34px Playfair) on a lens-type card between its label and description; not a product price (no product), so sgs/text."
+  },
+  {
+   "key": "Eye Care Birmingham/575#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "An item of the included-with-every-lens list; its ul is proposed as sgs/container, so the item stays text (the DB maps ul to sgs/icon-list, which would draw it)."
+  },
+  {
+   "key": "Eye Care Birmingham/576#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "An item of the included-with-every-lens list; its ul is proposed as sgs/container, so the item stays text (the DB maps ul to sgs/icon-list, which would draw it)."
+  },
+  {
+   "key": "Eye Care Birmingham/577#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "An item of the included-with-every-lens list; its ul is proposed as sgs/container, so the item stays text (the DB maps ul to sgs/icon-list, which would draw it)."
+  },
+  {
+   "key": "Eye Care Birmingham/578#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "An item of the included-with-every-lens list; its ul is proposed as sgs/container, so the item stays text (the DB maps ul to sgs/icon-list, which would draw it)."
+  },
+  {
+   "key": "Eye Care Birmingham/579#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "An item of the included-with-every-lens list; its ul is proposed as sgs/container, so the item stays text (the DB maps ul to sgs/icon-list, which would draw it)."
+  },
+  {
+   "key": "Eye Care Birmingham/580#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "An item of the included-with-every-lens list; its ul is proposed as sgs/container, so the item stays text (the DB maps ul to sgs/icon-list, which would draw it)."
+  },
+  {
+   "key": "Eye Care Birmingham/585#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "The step number in each li of the how-it-works ol; the list is proposed as containers, so the number stays text (sgs/icon-list ordered would draw it)."
+  },
+  {
+   "key": "Eye Care Birmingham/586#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "The step sentence beside its number; plain copy."
+  },
+  {
+   "key": "Eye Care Birmingham/588#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "The step number in each li of the how-it-works ol; the list is proposed as containers, so the number stays text (sgs/icon-list ordered would draw it)."
+  },
+  {
+   "key": "Eye Care Birmingham/589#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "The step sentence beside its number; plain copy."
+  },
+  {
+   "key": "Eye Care Birmingham/591#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "The step number in each li of the how-it-works ol; the list is proposed as containers, so the number stays text (sgs/icon-list ordered would draw it)."
+  },
+  {
+   "key": "Eye Care Birmingham/592#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "The step sentence beside its number; plain copy."
+  },
+  {
+   "key": "Eye Care Birmingham/594#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "The step number in each li of the how-it-works ol; the list is proposed as containers, so the number stays text (sgs/icon-list ordered would draw it)."
+  },
+  {
+   "key": "Eye Care Birmingham/595#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "The step sentence beside its number; plain copy."
+  }
+ ],
+ "page-about": [
+  {
+   "key": "Eye Care Birmingham/602#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A 12px uppercase line with 0.24em tracking directly above the section heading: a kicker, sgs/label (the rule outranks the generic p mapping)."
+  },
+  {
+   "key": "Eye Care Birmingham/609#0",
+   "block": "sgs/whatsapp-cta",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A wa.me link in WhatsApp green; sgs/whatsapp-cta."
+  },
+  {
+   "key": "Eye Care Birmingham/614#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The 22px Playfair title of each qualification item with its description paragraph below; a title role, sgs/heading."
+  },
+  {
+   "key": "Eye Care Birmingham/617#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The 22px Playfair title of each qualification item with its description paragraph below; a title role, sgs/heading."
+  },
+  {
+   "key": "Eye Care Birmingham/620#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The 22px Playfair title of each qualification item with its description paragraph below; a title role, sgs/heading."
+  },
+  {
+   "key": "Eye Care Birmingham/623#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The 22px Playfair title of each qualification item with its description paragraph below; a title role, sgs/heading."
+  }
+ ],
+ "page-help": [
+  {
+   "key": "Eye Care Birmingham/627#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A 12px uppercase line with 0.24em tracking directly above the section heading: a kicker, sgs/label (the rule outranks the generic p mapping)."
+  },
+  {
+   "key": "Eye Care Birmingham/641#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "A row of jump buttons (Size guide and the rest) beside the Questions heading; sgs/multi-button groups them."
+  },
+  {
+   "key": "Eye Care Birmingham/654#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The 24px Playfair title of the still-not-answered card above its text and buttons; sgs/heading."
+  },
+  {
+   "key": "Eye Care Birmingham/655#0",
+   "block": "sgs/business-info",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A sentence printing the Site Info phone ({{ phone }}); Site Info content reads Site Info, though the sentence around the number may need its own wording."
+  },
+  {
+   "key": "Eye Care Birmingham/656#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The card button row (Contact me, Call); sgs/multi-button."
+  }
+ ],
+ "page-contact": [
+  {
+   "key": "Eye Care Birmingham/663#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A 12px uppercase line with 0.24em tracking directly above the section heading: a kicker, sgs/label (the rule outranks the generic p mapping)."
+  },
+  {
+   "key": "Eye Care Birmingham/666#0",
+   "block": "sgs/whatsapp-cta",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A wa.me link in WhatsApp green printing the number; sgs/whatsapp-cta."
+  },
+  {
+   "key": "Eye Care Birmingham/681#0",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "The form heading: the page holds the linked form block only (rule formLink, Bean 2026-10-25), and the heading is cloned on the contact-form surface (sgs/heading there)."
+  },
+  {
+   "key": "Eye Care Birmingham/731#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "A flex-wrap row of map links (Reviews & hours, Directions) whose children are proposed as sgs/button; sgs/multi-button."
+  }
+ ],
+ "page-checkout": [
+  {
+   "key": "Eye Care Birmingham/742#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "The express-payment row (Apple Pay, G Pay, PayPal, Klarna); the WooCommerce Checkout block draws these, but no commerce region was found on this surface, so the row stays a group pending Bean."
+  },
+  {
+   "key": "Eye Care Birmingham/752#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "The step number inside each checkout section h2 (proposed as sgs/container); kept as text so the number is not lost."
+  },
+  {
+   "key": "Eye Care Birmingham/770#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "The step number inside each checkout section h2 (proposed as sgs/container); kept as text so the number is not lost."
+  },
+  {
+   "key": "Eye Care Birmingham/774#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "Text of a delivery-method choice button; on a working checkout the WooCommerce shipping options draw this, but no commerce region was found, so it stays text pending Bean."
+  },
+  {
+   "key": "Eye Care Birmingham/775#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "Text of a delivery-method choice button; on a working checkout the WooCommerce shipping options draw this, but no commerce region was found, so it stays text pending Bean."
+  },
+  {
+   "key": "Eye Care Birmingham/776#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "Text of a delivery-method choice button; on a working checkout the WooCommerce shipping options draw this, but no commerce region was found, so it stays text pending Bean."
+  },
+  {
+   "key": "Eye Care Birmingham/779#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "Text of a delivery-method choice button; on a working checkout the WooCommerce shipping options draw this, but no commerce region was found, so it stays text pending Bean."
+  },
+  {
+   "key": "Eye Care Birmingham/780#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "Text of a delivery-method choice button; on a working checkout the WooCommerce shipping options draw this, but no commerce region was found, so it stays text pending Bean."
+  },
+  {
+   "key": "Eye Care Birmingham/781#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "Text of a delivery-method choice button; on a working checkout the WooCommerce shipping options draw this, but no commerce region was found, so it stays text pending Bean."
+  },
+  {
+   "key": "Eye Care Birmingham/806#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "The step number inside each checkout section h2 (proposed as sgs/container); kept as text so the number is not lost."
+  },
+  {
+   "key": "Eye Care Birmingham/833#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "A line of the order summary (a label or a live amount such as £0); the WooCommerce order summary draws these with real values, but no commerce region was found, so it stays text pending Bean."
+  },
+  {
+   "key": "Eye Care Birmingham/834#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "A line of the order summary (a label or a live amount such as £0); the WooCommerce order summary draws these with real values, but no commerce region was found, so it stays text pending Bean."
+  },
+  {
+   "key": "Eye Care Birmingham/836#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "A line of the order summary (a label or a live amount such as £0); the WooCommerce order summary draws these with real values, but no commerce region was found, so it stays text pending Bean."
+  },
+  {
+   "key": "Eye Care Birmingham/837#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "A line of the order summary (a label or a live amount such as £0); the WooCommerce order summary draws these with real values, but no commerce region was found, so it stays text pending Bean."
+  },
+  {
+   "key": "Eye Care Birmingham/839#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "A line of the order summary (a label or a live amount such as £0); the WooCommerce order summary draws these with real values, but no commerce region was found, so it stays text pending Bean."
+  },
+  {
+   "key": "Eye Care Birmingham/840#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "A line of the order summary (a label or a live amount such as £0); the WooCommerce order summary draws these with real values, but no commerce region was found, so it stays text pending Bean."
+  }
+ ],
+ "page-done": [
+  {
+   "key": "Eye Care Birmingham/844#0",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "A lone check glyph in a 64px accent circle above the confirmation heading; a glyph on its own is sgs/icon, not text."
+  }
+ ],
+ "size-guide": [
+  {
+   "key": "Eye Care Birmingham/1236#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "The 24px Playfair title of the size-guide modal beside its close button; sgs/heading."
+  },
+  {
+   "key": "Eye Care Birmingham/1242#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "One of the three sizes printed on a frame arm (55, 18, 137) in the worked example; static figures, sgs/text."
+  },
+  {
+   "key": "Eye Care Birmingham/1243#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "One of the three sizes printed on a frame arm (55, 18, 137) in the worked example; static figures, sgs/text."
+  },
+  {
+   "key": "Eye Care Birmingham/1244#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "One of the three sizes printed on a frame arm (55, 18, 137) in the worked example; static figures, sgs/text."
+  },
+  {
+   "key": "Eye Care Birmingham/1251#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "The medium-weight title of each measurement item with its description paragraph below; a title role, sgs/heading."
+  },
+  {
+   "key": "Eye Care Birmingham/1254#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "The medium-weight title of each measurement item with its description paragraph below; a title role, sgs/heading."
+  },
+  {
+   "key": "Eye Care Birmingham/1257#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "The medium-weight title of each measurement item with its description paragraph below; a title role, sgs/heading."
+  },
+  {
+   "key": "Eye Care Birmingham/1261#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A cell of the small, medium and large size table; plain copy."
+  },
+  {
+   "key": "Eye Care Birmingham/1262#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A cell of the small, medium and large size table; plain copy."
+  },
+  {
+   "key": "Eye Care Birmingham/1264#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A cell of the small, medium and large size table; plain copy."
+  },
+  {
+   "key": "Eye Care Birmingham/1265#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A cell of the small, medium and large size table; plain copy."
+  },
+  {
+   "key": "Eye Care Birmingham/1267#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A cell of the small, medium and large size table; plain copy."
+  },
+  {
+   "key": "Eye Care Birmingham/1268#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A cell of the small, medium and large size table; plain copy."
+  }
+ ],
+ "page-signin": [
+  {
+   "key": "Eye Care Birmingham/857#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A 12px uppercase line with 0.24em tracking directly above the section heading: a kicker, sgs/label (the rule outranks the generic p mapping)."
+  }
+ ],
+ "page-account": [
+  {
+   "key": "Eye Care Birmingham/920#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A 12px uppercase line with 0.24em tracking directly above the section heading: a kicker, sgs/label (the rule outranks the generic p mapping)."
+  },
+  {
+   "key": "Eye Care Birmingham/927=sgs/text",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "The tab name on the one copy of the account tab button proposed as sgs/container (its other 4 copies are sgs/button with the name absorbed); kept as text so this tab keeps its label."
+  },
+  {
+   "key": "Eye Care Birmingham/928#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "The order count beside the Orders tab; text."
+  },
+  {
+   "key": "Eye Care Birmingham/939",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "A field of a signed-in order row (number, date, summary, total); sgs/account draws live orders, but this surface is built as static blocks, so it stays text pending Bean."
+  },
+  {
+   "key": "Eye Care Birmingham/940",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "A field of a signed-in order row (number, date, summary, total); sgs/account draws live orders, but this surface is built as static blocks, so it stays text pending Bean."
+  },
+  {
+   "key": "Eye Care Birmingham/941",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "A field of a signed-in order row (number, date, summary, total); sgs/account draws live orders, but this surface is built as static blocks, so it stays text pending Bean."
+  },
+  {
+   "key": "Eye Care Birmingham/944",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "A field of a signed-in order row (number, date, summary, total); sgs/account draws live orders, but this surface is built as static blocks, so it stays text pending Bean."
+  }
+ ]
+}

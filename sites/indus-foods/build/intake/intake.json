@@ -64413,7 +64413,8 @@
     "role": "primary",
     "roles": [
      "primary",
-     "accent-text"
+     "accent-text",
+     "section-text"
     ],
     "confidence": 0.85,
     "why": "the most used strong ground (5 buttons)",
@@ -64428,6 +64429,11 @@
       "role": "accent-text",
       "by": "usage",
       "why": "the colour of the most text on the accent ground (1189 characters)"
+     },
+     {
+      "role": "section-text",
+      "by": "usage",
+      "why": "the colour of the most text on the section ground (1189 characters)"
      }
     ]
    },
@@ -64608,6 +64614,7 @@
     "roles": [
      "footer-bg",
      "accent",
+     "section",
      "heading"
     ],
     "confidence": 0.85,
@@ -64623,6 +64630,11 @@
       "role": "accent",
       "by": "usage",
       "why": "the next most used strong ground (1 buttons)"
+     },
+     {
+      "role": "section",
+      "by": "usage",
+      "why": "the most used ground after the page, raised and primary grounds (26 elements)"
      },
      {
       "role": "heading",
@@ -64776,7 +64788,6 @@
     "role": "surface",
     "roles": [
      "surface",
-     "section-text",
      "text-inverse"
     ],
     "confidence": 0.95,
@@ -64787,11 +64798,6 @@
       "role": "surface",
       "by": "usage",
       "why": "the page ground: the body background on 23 page(s); the name --surface-white agrees"
-     },
-     {
-      "role": "section-text",
-      "by": "usage",
-      "why": "the most used text colour on the section ground (weight 138)"
      },
      {
       "role": "text-inverse",
@@ -64892,20 +64898,12 @@
      }
     ],
     "sharedWith": [],
-    "role": "section",
-    "roles": [
-     "section"
-    ],
-    "confidence": 0.85,
-    "why": "the most used ground after the page, raised and primary grounds (46 elements)",
-    "by": "usage",
-    "basis": [
-     {
-      "role": "section",
-      "by": "usage",
-      "why": "the most used ground after the page, raised and primary grounds (46 elements)"
-     }
-    ]
+    "role": null,
+    "roles": [],
+    "brand": "linkedin",
+    "confidence": 0.9,
+    "why": "brand colour: LinkedIn (the brand registry names it), painted by the brand's own setting, so no palette slot",
+    "by": "brand"
    },
    {
     "rowId": "palette:--social-facebook",
@@ -65051,7 +65049,8 @@
     "roles": [
      "heading",
      "footer-bg",
-     "accent"
+     "accent",
+     "section"
     ],
     "confidence": 0.98,
     "why": "the draft declares --text-heading: var(--slate); usage agrees",
@@ -65066,6 +65065,11 @@
       "role": "accent",
       "by": "usage",
       "why": "the next most used strong ground (1 buttons)"
+     },
+     {
+      "role": "section",
+      "by": "usage",
+      "why": "the most used ground after the page, raised and primary grounds (26 elements)"
      },
      {
       "role": "heading",
@@ -65365,7 +65369,6 @@
     "role": "surface",
     "roles": [
      "surface",
-     "section-text",
      "text-inverse"
     ],
     "confidence": 0.95,
@@ -65376,11 +65379,6 @@
       "role": "surface",
       "by": "usage",
       "why": "the page ground: the body background on 23 page(s); the name --surface-white agrees"
-     },
-     {
-      "role": "section-text",
-      "by": "usage",
-      "why": "the most used text colour on the section ground (weight 138)"
      },
      {
       "role": "text-inverse",
@@ -65660,7 +65658,8 @@
     "role": "primary",
     "roles": [
      "primary",
-     "accent-text"
+     "accent-text",
+     "section-text"
     ],
     "confidence": 0.85,
     "why": "the most used strong ground (5 buttons)",
@@ -65675,6 +65674,11 @@
       "role": "accent-text",
       "by": "usage",
       "why": "the colour of the most text on the accent ground (1189 characters)"
+     },
+     {
+      "role": "section-text",
+      "by": "usage",
+      "why": "the colour of the most text on the section ground (1189 characters)"
      }
     ]
    },
@@ -65755,7 +65759,8 @@
     "role": "primary",
     "roles": [
      "primary",
-     "accent-text"
+     "accent-text",
+     "section-text"
     ],
     "confidence": 0.85,
     "why": "the most used strong ground (5 buttons)",
@@ -65770,6 +65775,11 @@
       "role": "accent-text",
       "by": "usage",
       "why": "the colour of the most text on the accent ground (1189 characters)"
+     },
+     {
+      "role": "section-text",
+      "by": "usage",
+      "why": "the colour of the most text on the section ground (1189 characters)"
      }
     ]
    },
@@ -65850,7 +65860,8 @@
     "role": "primary",
     "roles": [
      "primary",
-     "accent-text"
+     "accent-text",
+     "section-text"
     ],
     "confidence": 0.85,
     "why": "the most used strong ground (5 buttons)",
@@ -65865,6 +65876,11 @@
       "role": "accent-text",
       "by": "usage",
       "why": "the colour of the most text on the accent ground (1189 characters)"
+     },
+     {
+      "role": "section-text",
+      "by": "usage",
+      "why": "the colour of the most text on the section ground (1189 characters)"
      }
     ]
    },
@@ -74892,9 +74908,9 @@
      "tag": "header",
      "words": "",
      "block": "sgs/site-header",
-     "confidence": 0.58,
-     "low": true,
-     "reason": null,
+     "confidence": 0.92,
+     "low": false,
+     "reason": "The surface-root sticky header spanning the full width at 1440, 768 and 375 is the site header shell; sgs/site-header is the top candidate and the hero reading is only a box-size match.",
      "rule": null,
      "candidates": [
       {
@@ -74936,7 +74952,27 @@
        "h": 75
       }
      ],
-     "draftId": "Indus Foods Website v2:39"
+     "draftId": "Indus Foods Website v2:39",
+     "finalisedBy": "agent",
+     "original": {
+      "block": "sgs/site-header",
+      "action": null,
+      "confidence": 0.58,
+      "low": true,
+      "reason": null,
+      "candidates": [
+       {
+        "block": "sgs/site-header",
+        "score": 1.4,
+        "share": 0.583
+       },
+       {
+        "block": "sgs/hero",
+        "score": 1,
+        "share": 0.417
+       }
+      ]
+     }
     },
     {
      "rowId": "skeleton:sticky-header:Indus Foods Website v2/9#0",
@@ -75065,9 +75101,9 @@
      "tag": "div",
      "words": "",
      "block": "sgs/multi-button",
-     "confidence": 0.51,
-     "low": true,
-     "reason": null,
+     "confidence": 0.85,
+     "low": false,
+     "reason": "The draft code holds three pill links in one flex row (apply, tel:, mailto:); sgs/multi-button is the framework's group of SGS Buttons and outranks a plain container.",
      "rule": null,
      "candidates": [
       {
@@ -75119,7 +75155,27 @@
        "h": 35.3
       }
      ],
-     "draftId": "Indus Foods Website v2:11"
+     "draftId": "Indus Foods Website v2:11",
+     "finalisedBy": "agent",
+     "original": {
+      "block": "sgs/multi-button",
+      "action": null,
+      "confidence": 0.51,
+      "low": true,
+      "reason": null,
+      "candidates": [
+       {
+        "block": "sgs/multi-button",
+        "score": 0.75,
+        "share": 0.682
+       },
+       {
+        "block": "sgs/container",
+        "score": 0.35,
+        "share": 0.318
+       }
+      ]
+     }
     },
     {
      "rowId": "skeleton:sticky-header:Indus Foods Website v2/13#0",
@@ -77160,9 +77216,9 @@
      "tag": "span",
      "words": "01",
      "block": "sgs/text",
-     "confidence": 0.25,
+     "confidence": 0.65,
      "low": true,
-     "reason": "11 copies of one template element on 2 surfaces",
+     "reason": "A two-digit index number ({{ link.num }}) set beside each mega-menu link; no counter or list block owns it, so sgs/text, the only candidate.",
      "rule": null,
      "candidates": [
       {
@@ -77237,7 +77293,22 @@
         "Indus Foods Website v2/71#4"
        ]
       }
-     ]
+     ],
+     "finalisedBy": "agent",
+     "original": {
+      "block": "sgs/text",
+      "action": null,
+      "confidence": 0.25,
+      "low": true,
+      "reason": "11 copies of one template element on 2 surfaces",
+      "candidates": [
+       {
+        "block": "sgs/text",
+        "score": 0.25,
+        "share": 1
+       }
+      ]
+     }
     },
     {
      "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/72",
@@ -77447,9 +77518,9 @@
      "tag": "span",
      "words": "Six decades of family heritage",
      "block": "sgs/text",
-     "confidence": 0.25,
-     "low": true,
-     "reason": "11 copies of one template element on 2 surfaces",
+     "confidence": 0.85,
+     "low": false,
+     "reason": "Running description copy ({{ link.desc }}) under each link title with no link or heading role; sgs/text.",
      "rule": null,
      "candidates": [
       {
@@ -77524,7 +77595,22 @@
         "Indus Foods Website v2/74#4"
        ]
       }
-     ]
+     ],
+     "finalisedBy": "agent",
+     "original": {
+      "block": "sgs/text",
+      "action": null,
+      "confidence": 0.25,
+      "low": true,
+      "reason": "11 copies of one template element on 2 surfaces",
+      "candidates": [
+       {
+        "block": "sgs/text",
+        "score": 0.25,
+        "share": 1
+       }
+      ]
+     }
     },
     {
      "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/76#0",
@@ -77933,10 +78019,10 @@
      },
      "tag": "div",
      "words": "Six decades of heritage",
-     "block": "sgs/text",
-     "confidence": 0.25,
-     "low": true,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "block": "sgs/heading",
+     "confidence": 0.7,
+     "low": false,
+     "reason": "The bold 22px title of the feature panel between its kicker (sgs/label) and its description and button; a title role, so sgs/heading (a real block, chosen over the sole text candidate).",
      "rule": null,
      "candidates": [
       {
@@ -78002,7 +78088,22 @@
        ]
       }
      ],
-     "copies": 2
+     "copies": 2,
+     "finalisedBy": "agent",
+     "original": {
+      "block": "sgs/text",
+      "action": null,
+      "confidence": 0.25,
+      "low": true,
+      "reason": "2 copies of one template element on 2 surfaces",
+      "candidates": [
+       {
+        "block": "sgs/text",
+        "score": 0.25,
+        "share": 1
+       }
+      ]
+     }
     },
     {
      "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/82#0",
@@ -78022,9 +78123,9 @@
      "tag": "div",
      "words": "From a Sparkbrook corner shop to one of the UK’s leading Indian food wholesalers.",
      "block": "sgs/text",
-     "confidence": 0.25,
-     "low": true,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "confidence": 0.85,
+     "low": false,
+     "reason": "The feature panel's description sentence; sgs/text.",
      "rule": null,
      "candidates": [
       {
@@ -78090,7 +78191,22 @@
        ]
       }
      ],
-     "copies": 2
+     "copies": 2,
+     "finalisedBy": "agent",
+     "original": {
+      "block": "sgs/text",
+      "action": null,
+      "confidence": 0.25,
+      "low": true,
+      "reason": "2 copies of one template element on 2 surfaces",
+      "candidates": [
+       {
+        "block": "sgs/text",
+        "score": 0.25,
+        "share": 1
+       }
+      ]
+     }
     },
     {
      "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/83#0",
@@ -78721,9 +78837,9 @@
      "tag": "div",
      "words": "Quality ingredients for venues, caterers & events across the UK.",
      "block": "sgs/text",
-     "confidence": 0.25,
-     "low": true,
-     "reason": "4 copies of one template element",
+     "confidence": 0.85,
+     "low": false,
+     "reason": "Each sector card's description between its heading and button; sgs/text.",
      "rule": null,
      "candidates": [
       {
@@ -78789,7 +78905,22 @@
       "Retail-ready packaging for independent & national retailers.",
       "Reliable stock levels & fast delivery across the whole of the UK."
      ],
-     "distinctWords": 4
+     "distinctWords": 4,
+     "finalisedBy": "agent",
+     "original": {
+      "block": "sgs/text",
+      "action": null,
+      "confidence": 0.25,
+      "low": true,
+      "reason": "4 copies of one template element",
+      "candidates": [
+       {
+        "block": "sgs/text",
+        "score": 0.25,
+        "share": 1
+       }
+      ]
+     }
     },
     {
      "rowId": "skeleton:sectors-mega-menu:Indus Foods Website v2/93",
@@ -79555,9 +79686,9 @@
      "tag": "div",
      "words": "We develop and market our own Sanam range alongside trusted brands like Shan, Green Leaf and The Lemon Tree.",
      "block": "sgs/text",
-     "confidence": 0.25,
-     "low": true,
-     "reason": null,
+     "confidence": 0.85,
+     "low": false,
+     "reason": "The own-brands aside's description paragraph between its label and button; sgs/text.",
      "rule": null,
      "candidates": [
       {
@@ -79609,7 +79740,22 @@
        "h": 96
       }
      ],
-     "draftId": "Indus Foods Website v2:104"
+     "draftId": "Indus Foods Website v2:104",
+     "finalisedBy": "agent",
+     "original": {
+      "block": "sgs/text",
+      "action": null,
+      "confidence": 0.25,
+      "low": true,
+      "reason": null,
+      "candidates": [
+       {
+        "block": "sgs/text",
+        "score": 0.25,
+        "share": 1
+       }
+      ]
+     }
     },
     {
      "rowId": "skeleton:brands-mega-menu:Indus Foods Website v2/105#0",
@@ -85729,9 +85875,9 @@
      "tag": "iframe",
      "words": "",
      "block": "sgs/business-info",
-     "confidence": 0.5,
-     "low": true,
-     "reason": "an embedded map is sgs/business-info's map display; the framework DB prefers sgs/media (confidence 0.75: html_tag_to_core_block: iframe -> sgs/media (\"Embedded iframe (YouTube/Vimeo) → sgs/media\"); block_composition: sgs/media is a leaf; the element holds words and no block children); a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two",
+     "confidence": 0.75,
+     "low": false,
+     "reason": "The iframe is a Google map of the business address; Site Info content reads Site Info, and sgs/business-info has the map display (mapSource, mapZoom, mapHeight in the DB), where sgs/media would hard-code the address URL.",
      "rule": "mapEmbed",
      "handover": {
       "owner": "site-info",
@@ -85795,7 +85941,27 @@
        "h": 210
       }
      ],
-     "draftId": "Indus Foods Website v2:712"
+     "draftId": "Indus Foods Website v2:712",
+     "finalisedBy": "agent",
+     "original": {
+      "block": "sgs/business-info",
+      "action": null,
+      "confidence": 0.5,
+      "low": true,
+      "reason": "an embedded map is sgs/business-info's map display; the framework DB prefers sgs/media (confidence 0.75: html_tag_to_core_block: iframe -> sgs/media (\"Embedded iframe (YouTube/Vimeo) → sgs/media\"); block_composition: sgs/media is a leaf; the element holds words and no block children); a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two",
+      "candidates": [
+       {
+        "block": "sgs/business-info",
+        "score": 1,
+        "share": 0.5
+       },
+       {
+        "block": "sgs/media",
+        "score": 0.75,
+        "share": 0.5
+       }
+      ]
+     }
     },
     {
      "rowId": "skeleton:footer:Indus Foods Website v2/713#0",
@@ -94961,9 +95127,9 @@
      "tag": "div",
      "words": "",
      "block": "sgs/multi-button",
-     "confidence": 0.51,
-     "low": true,
-     "reason": null,
+     "confidence": 0.85,
+     "low": false,
+     "reason": "A flex-wrap row of CTA links proposed as sgs/button; sgs/multi-button is the DB group for SGS Buttons.",
      "rule": null,
      "candidates": [
       {
@@ -95015,7 +95181,27 @@
        "h": 131.6
       }
      ],
-     "draftId": "Indus Foods Website v2:312"
+     "draftId": "Indus Foods Website v2:312",
+     "finalisedBy": "agent",
+     "original": {
+      "block": "sgs/multi-button",
+      "action": null,
+      "confidence": 0.51,
+      "low": true,
+      "reason": null,
+      "candidates": [
+       {
+        "block": "sgs/multi-button",
+        "score": 0.75,
+        "share": 0.682
+       },
+       {
+        "block": "sgs/container",
+        "score": 0.35,
+        "share": 0.318
+       }
+      ]
+     }
     },
     {
      "rowId": "skeleton:page-home:Indus Foods Website v2/313#0",
@@ -99533,10 +99719,10 @@
      },
      "tag": "div",
      "words": "5,000+",
-     "block": "sgs/text",
-     "confidence": 0.25,
-     "low": true,
-     "reason": "7 copies of one template element on 2 surfaces",
+     "block": "sgs/counter",
+     "confidence": 0.8,
+     "low": false,
+     "reason": "The same template element ({{ s.n }}) is sgs/counter on its 1962 copy; the stat list shares one block, and 5,000+ is a count with a suffix.",
      "rule": null,
      "candidates": [
       {
@@ -99616,7 +99802,22 @@
         "Indus Foods Website v2/362#3"
        ]
       }
-     ]
+     ],
+     "finalisedBy": "agent",
+     "original": {
+      "block": "sgs/text",
+      "action": null,
+      "confidence": 0.25,
+      "low": true,
+      "reason": "7 copies of one template element on 2 surfaces",
+      "candidates": [
+       {
+        "block": "sgs/text",
+        "score": 0.25,
+        "share": 1
+       }
+      ]
+     }
     },
     {
      "rowId": "skeleton:page-about:Indus Foods Website v2/363=remove",
@@ -99717,10 +99918,10 @@
      },
      "tag": "div",
      "words": "Trade customers",
-     "block": "sgs/text",
-     "confidence": 0.25,
-     "low": true,
-     "reason": "7 copies of one template element on 2 surfaces",
+     "block": null,
+     "confidence": 0.8,
+     "low": false,
+     "reason": "The stat caption ({{ s.l }}); its 'Family-run since' copy is absorbed into the counter (Bean, 2026-10-19), and sgs/counter carries a label attribute, so every copy folds into its counter.",
      "rule": null,
      "candidates": [
       {
@@ -99729,7 +99930,7 @@
        "share": 1
       }
      ],
-     "action": null,
+     "action": "remove",
      "snippet": "<div style=\"font-size:14.5px;color:#4A5563;margin-top:12px;font-weight:500;\" data-dc-tpl=\"363\">{{ s.l }}</div>",
      "parent": {
       "draftId": "Indus Foods Website v2:360",
@@ -99800,7 +100001,22 @@
         "Indus Foods Website v2/363#3"
        ]
       }
-     ]
+     ],
+     "finalisedBy": "agent",
+     "original": {
+      "block": "sgs/text",
+      "action": null,
+      "confidence": 0.25,
+      "low": true,
+      "reason": "7 copies of one template element on 2 surfaces",
+      "candidates": [
+       {
+        "block": "sgs/text",
+        "score": 0.25,
+        "share": 1
+       }
+      ]
+     }
     },
     {
      "rowId": "skeleton:page-about:Indus Foods Website v2/347",
@@ -103924,10 +104140,10 @@
      },
      "tag": "div",
      "words": "Certifications",
-     "block": "sgs/text",
-     "confidence": 0.25,
-     "low": true,
-     "reason": "11 copies of one template element on 2 surfaces",
+     "block": "sgs/heading",
+     "confidence": 0.8,
+     "low": false,
+     "reason": "The card title ({{ c.title }}, 19px bold Montserrat) is sgs/heading on its other 44 copies; one repeated item keeps one block.",
      "rule": null,
      "candidates": [
       {
@@ -104017,7 +104233,22 @@
         "Indus Foods Website v2/490#3"
        ]
       }
-     ]
+     ],
+     "finalisedBy": "agent",
+     "original": {
+      "block": "sgs/text",
+      "action": null,
+      "confidence": 0.25,
+      "low": true,
+      "reason": "11 copies of one template element on 2 surfaces",
+      "candidates": [
+       {
+        "block": "sgs/text",
+        "score": 0.25,
+        "share": 1
+       }
+      ]
+     }
     },
     {
      "rowId": "skeleton:page-about:Indus Foods Website v2/491",
@@ -107384,10 +107615,10 @@
      },
      "tag": "span",
      "words": "Our Story",
-     "block": "sgs/text",
-     "confidence": 0.25,
-     "low": true,
-     "reason": "27 copies of one template element on 27 surfaces",
+     "block": null,
+     "confidence": 0.85,
+     "low": false,
+     "reason": "The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed.",
      "rule": null,
      "candidates": [
       {
@@ -107396,7 +107627,7 @@
        "share": 1
       }
      ],
-     "action": null,
+     "action": "remove",
      "snippet": "<span style=\"color:{{ hero.fg }};font-weight:500;\" data-dc-tpl=\"328\">{{ hero.crumb }}</span>",
      "parent": {
       "draftId": "Indus Foods Website v2:323",
@@ -107608,7 +107839,22 @@
        ]
       }
      ],
-     "copies": 27
+     "copies": 27,
+     "finalisedBy": "agent",
+     "original": {
+      "block": "sgs/text",
+      "action": null,
+      "confidence": 0.25,
+      "low": true,
+      "reason": "27 copies of one template element on 27 surfaces",
+      "candidates": [
+       {
+        "block": "sgs/text",
+        "score": 0.25,
+        "share": 1
+       }
+      ]
+     }
     },
     {
      "rowId": "skeleton:page-our-story:Indus Foods Website v2/340#0",
@@ -122197,9 +122443,9 @@
      "tag": "span",
      "words": "Prefer to apply over the phone?",
      "block": "sgs/text",
-     "confidence": 0.25,
-     "low": true,
-     "reason": null,
+     "confidence": 0.85,
+     "low": false,
+     "reason": "A short prompt line beside the call button; plain copy, sgs/text.",
      "rule": null,
      "candidates": [
       {
@@ -122239,7 +122485,22 @@
        "h": 24
       }
      ],
-     "draftId": "TradeApplication:104"
+     "draftId": "TradeApplication:104",
+     "finalisedBy": "agent",
+     "original": {
+      "block": "sgs/text",
+      "action": null,
+      "confidence": 0.25,
+      "low": true,
+      "reason": null,
+      "candidates": [
+       {
+        "block": "sgs/text",
+        "score": 0.25,
+        "share": 1
+       }
+      ]
+     }
     },
     {
      "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/105#0",
@@ -124102,9 +124363,9 @@
      "tag": "span",
      "words": "02",
      "block": "sgs/text",
-     "confidence": 0.25,
+     "confidence": 0.5,
      "low": true,
-     "reason": "6 copies of one template element",
+     "reason": "The section number inside each h3; on the first copy the h3 is sgs/heading and the number is absorbed into it, but the other six h3 copies are proposed as sgs/container, so removing the number here would lose it; the h3 block choice goes to Bean.",
      "rule": null,
      "candidates": [
       {
@@ -124166,6 +124427,21 @@
      "blocksAcrossCopies": {
       "none": 1,
       "sgs/text": 6
+     },
+     "finalisedBy": "agent",
+     "original": {
+      "block": "sgs/text",
+      "action": null,
+      "confidence": 0.25,
+      "low": true,
+      "reason": "6 copies of one template element",
+      "candidates": [
+       {
+        "block": "sgs/text",
+        "score": 0.25,
+        "share": 1
+       }
+      ]
      }
     },
     {
@@ -126702,9 +126978,9 @@
      "tag": "iframe",
      "words": "",
      "block": "sgs/business-info",
-     "confidence": 0.5,
-     "low": true,
-     "reason": "an embedded map is sgs/business-info's map display; the framework DB prefers sgs/media (confidence 0.75: html_tag_to_core_block: iframe -> sgs/media (\"Embedded iframe (YouTube/Vimeo) → sgs/media\"); block_composition: sgs/media is a leaf; the element holds words and no block children); a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two",
+     "confidence": 0.75,
+     "low": false,
+     "reason": "A Google map of the business address beside Get Directions; Site Info content reads Site Info through sgs/business-info's map display rather than a hard-coded sgs/media iframe.",
      "rule": "mapEmbed",
      "handover": {
       "owner": "site-info",
@@ -126768,7 +127044,27 @@
        "h": 310
       }
      ],
-     "draftId": "Indus Foods Website v2:538"
+     "draftId": "Indus Foods Website v2:538",
+     "finalisedBy": "agent",
+     "original": {
+      "block": "sgs/business-info",
+      "action": null,
+      "confidence": 0.5,
+      "low": true,
+      "reason": "an embedded map is sgs/business-info's map display; the framework DB prefers sgs/media (confidence 0.75: html_tag_to_core_block: iframe -> sgs/media (\"Embedded iframe (YouTube/Vimeo) → sgs/media\"); block_composition: sgs/media is a leaf; the element holds words and no block children); a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two",
+      "candidates": [
+       {
+        "block": "sgs/business-info",
+        "score": 1,
+        "share": 0.5
+       },
+       {
+        "block": "sgs/media",
+        "score": 0.75,
+        "share": 0.5
+       }
+      ]
+     }
     },
     {
      "rowId": "skeleton:page-contact:Indus Foods Website v2/539#0",
@@ -139009,270 +139305,6 @@
    "carriedFrom": "2026-10-19T02:13:36.160Z"
   },
   {
-   "rowId": "palette:--brand-blue",
-   "rowType": "palette-role",
-   "contentHash": "a79c8a8f00c05249cb49ed762e807deea906fe67166fdd6f0908872b7f613914",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
-  },
-  {
-   "rowId": "palette:--brand-blue-hover",
-   "rowType": "palette-role",
-   "contentHash": "80dbb748a481eb3694781be04718c9853fbdf0c92d9f81190d4406c5a0078539",
-   "mark": "role:primary-dark",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--brand-blue-light",
-   "rowType": "palette-role",
-   "contentHash": "76aa8c756c4472a6b9c32f45126abce3323fa73d6b1c377bdb0133c8b028210b",
-   "mark": "role:custom-brand-blue-light",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--brand-gold",
-   "rowType": "palette-role",
-   "contentHash": "fee0d7c33b7f219bd39947a1fb3d660a8a105d001bad426a70de54c7dfaf7198",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
-  },
-  {
-   "rowId": "palette:--brand-gold-light",
-   "rowType": "palette-role",
-   "contentHash": "39bfee52d68e5cbb657ebd1c088cd561cf6798475a04d6ad46ba3f15a47f2631",
-   "mark": "role:accent-light",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--brand-gold-mid",
-   "rowType": "palette-role",
-   "contentHash": "d964811e2f79ba164689ffaab39c81631cea6fab6399e1f0921f578d938604d0",
-   "mark": "one-off",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--brand-gold-pale",
-   "rowType": "palette-role",
-   "contentHash": "de645306e89bbb871c27de8ab4486a7368a87d9ea99478d76da8f9557e4f8691",
-   "mark": "one-off",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--ink",
-   "rowType": "palette-role",
-   "contentHash": "c8ea49462f2c93011c0bf94283bdb792dcdc3a88e84eff1d61697943efe03733",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
-  },
-  {
-   "rowId": "palette:--slate",
-   "rowType": "palette-role",
-   "contentHash": "80bbb1bd93b384f30d5aaae39faba9ced8ddd5baa3e15416d1faeba18c17ba2e",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
-  },
-  {
-   "rowId": "palette:--grey-body",
-   "rowType": "palette-role",
-   "contentHash": "45540e9ba749a4a8a348a4033d9eb82f724b7c5db9953df776d687463420124d",
-   "mark": "role:text",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--grey-muted",
-   "rowType": "palette-role",
-   "contentHash": "5fa7d426e21c75c648a4f085a579d6a06c0c85c2c0c9c749163384f3f0ae2ffa",
-   "mark": "one-off",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--surface-white",
-   "rowType": "palette-role",
-   "contentHash": "0d210c6de19da54c37eb15a1ab2b53d554f61af1fb37695b113ef3f0862ed2a9",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
-  },
-  {
-   "rowId": "palette:--surface-warm",
-   "rowType": "palette-role",
-   "contentHash": "c2b31c39153946017837d2632ba5f3ce74cd879dd4738cbbde9940456daa41f2",
-   "mark": "one-off",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--surface-cool",
-   "rowType": "palette-role",
-   "contentHash": "312d52b127037540b2233ecb9f8a8bcd1e2e3094a0ddff982c4025f991a4aca5",
-   "mark": "role:surface-alt",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--tint-on-blue",
-   "rowType": "palette-role",
-   "contentHash": "8a63a2f22bc3feb0ec2deb6a99aa5a48ca1ac8ec73033433e4820ba3a4ad8a20",
-   "mark": "role:custom-tint-on-blue",
-   "markedOn": "2026-10-28",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--social-linkedin",
-   "rowType": "palette-role",
-   "contentHash": "29032f1bbc24d7b3cb8a2137b60ad758ae287b0a9c1f0dfb247a10f5ed1e43d0",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
-  },
-  {
-   "rowId": "palette:--social-facebook",
-   "rowType": "palette-role",
-   "contentHash": "8b66c8e8be28d45c93e8d026e2f0256dffec07ddb64956c6a0e13183fa6d9c21",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--social-google",
-   "rowType": "palette-role",
-   "contentHash": "38232f2dd223c977cd52b38635df20afacff453df8d3a4ac9004bc80ae4cf81b",
-   "mark": "one-off",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--whatsapp-green",
-   "rowType": "palette-role",
-   "contentHash": "5419b1b709677db8fc319badde334e53b5ab742c264447b5b7be854d23d78845",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
-  },
-  {
-   "rowId": "palette:--text-heading",
-   "rowType": "palette-role",
-   "contentHash": "d4e1da8abfd73e3ee854fab0cc00a0ef27422308955d7bd20aee8ac7fae179b2",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
-  },
-  {
-   "rowId": "palette:--text-body",
-   "rowType": "palette-role",
-   "contentHash": "02ca74ca5acde4e9ffc30cd322f4694642959c84afa497928747e0912100281e",
-   "mark": "role:text",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--text-muted",
-   "rowType": "palette-role",
-   "contentHash": "dd1c6c08e6b48f2b10c9157f59f7acc40b8543f4be28d7b455b364ceaaa8e1a7",
-   "mark": "role:text-muted",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--text-link",
-   "rowType": "palette-role",
-   "contentHash": "5040517c21c03f5b77ce25e5fca15468d8f54cd07c8d165f3772cdff121b81f0",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
-  },
-  {
-   "rowId": "palette:--text-link-hover",
-   "rowType": "palette-role",
-   "contentHash": "f9b01cec04a20201ac576dae114429354e193c9f62e8a2b6ef8dc1dd8fc70acd",
-   "mark": "role:link-hover",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--surface-header",
-   "rowType": "palette-role",
-   "contentHash": "9e978889e472a9d9186c2b0e34b17f7d9fa500450dda0c6331f468658c3bb9fa",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
-  },
-  {
-   "rowId": "palette:--surface-topbar",
-   "rowType": "palette-role",
-   "contentHash": "aa44f2846ee65b4e42a00f1f31e40858203dd227cc345663828f547bbee109f0",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
-  },
-  {
-   "rowId": "palette:--surface-section-blue",
-   "rowType": "palette-role",
-   "contentHash": "d0c7b3ba4e5c937eeb57f5da06289fb8be8b3104edec08b8e7cbd8c40718dc25",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
-  },
-  {
-   "rowId": "palette:--surface-section-gold",
-   "rowType": "palette-role",
-   "contentHash": "297bf981d2b43c546e39da32a95adf6835c9e4637caa2c54fe6a9cfd1dd442c1",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
-  },
-  {
-   "rowId": "palette:--border-accent",
-   "rowType": "palette-role",
-   "contentHash": "45e59ef3190580085c4d3a90c2f2bf219744b0b3bcc5537f5fed888db6357c9c",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
-  },
-  {
-   "rowId": "palette:--selection-bg",
-   "rowType": "palette-role",
-   "contentHash": "0dfa663c3daecc06d03bab3b8247387f50e9c63223fea7fe7098a4db4e09f331",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
-  },
-  {
-   "rowId": "palette:--selection-fg",
-   "rowType": "palette-role",
-   "contentHash": "8af38154996938b67ff4296d81640b12233165547b42f7120717735adb405e03",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
-  },
-  {
    "rowId": "siteinfo:phone",
    "rowType": "site-info",
    "contentHash": "77ee8a8ea0d3c939f39570afc874fb54d2b460a47460383f999b2e58fa779f53",
@@ -140117,9 +140149,9 @@
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/39#0",
    "rowType": "skeleton-block",
    "contentHash": "22ef71b124145540a5a8a440a9db5bc4d933c398dacbca557649ffb2154f0bc1",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z"
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/9#0",
@@ -140147,12 +140179,9 @@
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/11#0",
    "rowType": "skeleton-block",
    "contentHash": "e7e1e4da5ccbbc548df90b74686ee9b090bf98cb9e9a8f9d72dece28e4fe55ad",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z",
-   "realignedFrom": [
-    "skeleton:top-bar:Indus Foods Website v2/11#0"
-   ]
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/13#0",
@@ -140414,9 +140443,9 @@
    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/71",
    "rowType": "skeleton-block",
    "contentHash": "e5dd61d16ca3b11d16ba3f298a5150b276bb77f9d69470410dd8182892ddd54c",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": "2026-10-23T23:58:47.556Z"
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/72",
@@ -140438,9 +140467,9 @@
    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/74",
    "rowType": "skeleton-block",
    "contentHash": "e510ee21b88c22d906576bfba00c53aed57f65cdf1ebc15eef1a8a8d02c4bf1a",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": "2026-10-23T23:58:47.556Z"
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/76#0",
@@ -140485,18 +140514,18 @@
   {
    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/81#0",
    "rowType": "skeleton-block",
-   "contentHash": "e868ad166a8a52312522597b1a07a9bbf2a59ec23b843a52d573c444e2e97a22",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": "2026-10-23T23:58:47.556Z"
+   "contentHash": "54637e360819c97ae050e59f4b588c67698ab5f950ad3dcf7e4025d8bc9b83da",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/82#0",
    "rowType": "skeleton-block",
    "contentHash": "b1eadddce43b3943b3923b1bae23b800d2fdd8a24fcfadd083284f226ab23ebb",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": "2026-10-23T23:58:47.556Z"
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/83#0",
@@ -140558,9 +140587,9 @@
    "rowId": "skeleton:sectors-mega-menu:Indus Foods Website v2/92",
    "rowType": "skeleton-block",
    "contentHash": "ed08c32d9089d90837422d0644065c5458cb12460ae52c6c1240825dd629807a",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z"
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:sectors-mega-menu:Indus Foods Website v2/93",
@@ -140638,9 +140667,9 @@
    "rowId": "skeleton:brands-mega-menu:Indus Foods Website v2/104#0",
    "rowType": "skeleton-block",
    "contentHash": "af91ec1edeab477238c218b52f91da3d2d700fd91c16081c9b521f35de8e397f",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": "2026-10-23T23:58:47.556Z"
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:brands-mega-menu:Indus Foods Website v2/105#0",
@@ -141285,9 +141314,9 @@
    "rowId": "skeleton:footer:Indus Foods Website v2/712#0",
    "rowType": "skeleton-block",
    "contentHash": "938f195bb5b8d900eb1733679c145b5e667201d9d276838df76d3c048ca025f3",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z"
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:footer:Indus Foods Website v2/713#0",
@@ -142259,8 +142288,7 @@
    "contentHash": "8da9970b3833c801b2c573799000a68cdb6b20a8437291eba972ca29aa79e627",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home:Indus Foods Website v2/313#0",
@@ -142467,10 +142495,10 @@
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/362=sgs/text",
    "rowType": "skeleton-block",
-   "contentHash": "70d4bc5625c4bafd3003323767d622e89022ff91b49a12ce892be8fcc19c8377",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T04:18:38.803Z"
+   "contentHash": "2ec89b63bb7cc0eec0b0a9be8cca6671dbd96cc82286ab99d66d1271e5fabac2",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/363=remove",
@@ -142483,10 +142511,10 @@
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/363=sgs/text",
    "rowType": "skeleton-block",
-   "contentHash": "154aa1dac6699778d9346c2cb49dde37134f6874a94b505023942bedb1347cd3",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T04:18:38.803Z"
+   "contentHash": "fc7e91e17754d2d06a4cafa6c43853eed2436b684e594ec2f9f1f115839ae6db",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/347",
@@ -142786,10 +142814,10 @@
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/490=sgs/text",
    "rowType": "skeleton-block",
-   "contentHash": "99d434d5d2c7620d93d53402a8801c09322f390670be9adfbc5e6b5c3100cfa8",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T04:18:38.803Z"
+   "contentHash": "4d9fcc5bbe43a19fc8ee42e32cb2ba5cf7343e7a015456cabb19ed0d805d0502",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/491",
@@ -142922,10 +142950,10 @@
   {
    "rowId": "skeleton:page-our-story:Indus Foods Website v2/328#0",
    "rowType": "skeleton-block",
-   "contentHash": "d48e2b9109c10f3c2bef19592d2f95ba90eab71701485757b66cb2dedf11aa74",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T04:18:38.803Z"
+   "contentHash": "b3f21e94629075a1ebee1558bc14f0a57684a7c1f6ce3ecf7dbecb15663eb5a8",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-our-story:Indus Foods Website v2/340#0",
@@ -144064,9 +144092,9 @@
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/104#0",
    "rowType": "skeleton-block",
    "contentHash": "a49dbbda913cb705d0cb2a3804d638f55281df6ae9d5642cf99898f3da3c80ca",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": "2026-10-23T23:58:47.556Z"
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/105#0",
@@ -144232,9 +144260,9 @@
    "rowId": "skeleton:page-terms:Indus Foods Website v2/651=sgs/text",
    "rowType": "skeleton-block",
    "contentHash": "cc78fd29377b8e40f7dd470f478491157b03cbca919356c6aaf842ef0904c340",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T04:18:38.803Z"
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-terms:Indus Foods Website v2/652",
@@ -144424,9 +144452,9 @@
    "rowId": "skeleton:page-contact:Indus Foods Website v2/538#0",
    "rowType": "skeleton-block",
    "contentHash": "659e440018048cbf9e7cd40cdd82b35fc556b54ca08e9b73d02f12d53135f1d5",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z"
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2/539#0",
@@ -148902,6 +148930,118 @@
    "mark": "noted",
    "markedOn": "2026-10-19",
    "carriedFrom": "2026-10-19T02:13:36.160Z"
+  },
+  {
+   "rowId": "palette:--brand-blue-hover",
+   "rowType": "palette-role",
+   "contentHash": "80dbb748a481eb3694781be04718c9853fbdf0c92d9f81190d4406c5a0078539",
+   "mark": "role:primary-dark",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--brand-blue-light",
+   "rowType": "palette-role",
+   "contentHash": "76aa8c756c4472a6b9c32f45126abce3323fa73d6b1c377bdb0133c8b028210b",
+   "mark": "role:custom-brand-blue-light",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--brand-gold-light",
+   "rowType": "palette-role",
+   "contentHash": "39bfee52d68e5cbb657ebd1c088cd561cf6798475a04d6ad46ba3f15a47f2631",
+   "mark": "role:accent-light",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--brand-gold-mid",
+   "rowType": "palette-role",
+   "contentHash": "d964811e2f79ba164689ffaab39c81631cea6fab6399e1f0921f578d938604d0",
+   "mark": "one-off",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--brand-gold-pale",
+   "rowType": "palette-role",
+   "contentHash": "de645306e89bbb871c27de8ab4486a7368a87d9ea99478d76da8f9557e4f8691",
+   "mark": "one-off",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--grey-body",
+   "rowType": "palette-role",
+   "contentHash": "45540e9ba749a4a8a348a4033d9eb82f724b7c5db9953df776d687463420124d",
+   "mark": "role:text",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--grey-muted",
+   "rowType": "palette-role",
+   "contentHash": "5fa7d426e21c75c648a4f085a579d6a06c0c85c2c0c9c749163384f3f0ae2ffa",
+   "mark": "one-off",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--surface-warm",
+   "rowType": "palette-role",
+   "contentHash": "c2b31c39153946017837d2632ba5f3ce74cd879dd4738cbbde9940456daa41f2",
+   "mark": "one-off",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--surface-cool",
+   "rowType": "palette-role",
+   "contentHash": "312d52b127037540b2233ecb9f8a8bcd1e2e3094a0ddff982c4025f991a4aca5",
+   "mark": "role:surface-alt",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--tint-on-blue",
+   "rowType": "palette-role",
+   "contentHash": "8a63a2f22bc3feb0ec2deb6a99aa5a48ca1ac8ec73033433e4820ba3a4ad8a20",
+   "mark": "role:custom-tint-on-blue",
+   "markedOn": "2026-10-28",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--social-google",
+   "rowType": "palette-role",
+   "contentHash": "38232f2dd223c977cd52b38635df20afacff453df8d3a4ac9004bc80ae4cf81b",
+   "mark": "one-off",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--text-body",
+   "rowType": "palette-role",
+   "contentHash": "02ca74ca5acde4e9ffc30cd322f4694642959c84afa497928747e0912100281e",
+   "mark": "role:text",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--text-muted",
+   "rowType": "palette-role",
+   "contentHash": "dd1c6c08e6b48f2b10c9157f59f7acc40b8543f4be28d7b455b364ceaaa8e1a7",
+   "mark": "role:text-muted",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--text-link-hover",
+   "rowType": "palette-role",
+   "contentHash": "f9b01cec04a20201ac576dae114429354e193c9f62e8a2b6ef8dc1dd8fc70acd",
+   "mark": "role:link-hover",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
   }
  ],
  "catalogue": {

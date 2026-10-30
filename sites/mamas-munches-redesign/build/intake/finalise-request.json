@@ -1,5 +1,5 @@
 {
-	"generated": "2026-10-30T07:29:18.685Z",
+	"generated": "2026-10-30T12:00:47.334Z",
 	"client": "mamas-munches-redesign",
 	"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
 	"picksFile": "finalise-picks.json",
@@ -7,11 +7,11 @@
 	"context": "Built from intake.json rows: the element is the row (tag, words, snippet); candidate evidence lines are not kept there. parent, siblings (the nearest 12 in document order; siblingCount is the full number) and boxes (375, 768, 1440; x and y are page coordinates) come from the skeleton inventory, null where it held none. neighbours are the rows before and after it in the surface.",
 	"counts": {
 		"surfaces": 21,
-		"rows": 182
+		"rows": 151
 	},
 	"surfaces": {
 		"site-header-announcement-strip-bar": {
-			"generated": "2026-10-30T07:29:18.681Z",
+			"generated": "2026-10-30T12:00:47.331Z",
 			"surface": "site-header-announcement-strip-bar",
 			"source": "intake.json skeletons[\"site-header-announcement-strip-bar\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -633,7 +633,7 @@
 			]
 		},
 		"nav-drawer-left": {
-			"generated": "2026-10-30T07:29:18.682Z",
+			"generated": "2026-10-30T12:00:47.332Z",
 			"surface": "nav-drawer-left",
 			"source": "intake.json skeletons[\"nav-drawer-left\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -1219,7 +1219,7 @@
 			]
 		},
 		"site-footer": {
-			"generated": "2026-10-30T07:29:18.682Z",
+			"generated": "2026-10-30T12:00:47.332Z",
 			"surface": "site-footer",
 			"source": "intake.json skeletons[\"site-footer\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -1607,7 +1607,7 @@
 			]
 		},
 		"page-home-dc-html": {
-			"generated": "2026-10-30T07:29:18.683Z",
+			"generated": "2026-10-30T12:00:47.332Z",
 			"surface": "page-home-dc-html",
 			"source": "intake.json skeletons[\"page-home-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -4839,7 +4839,7 @@
 			]
 		},
 		"build-your-zookie": {
-			"generated": "2026-10-30T07:29:18.683Z",
+			"generated": "2026-10-30T12:00:47.333Z",
 			"surface": "build-your-zookie",
 			"source": "intake.json skeletons[\"build-your-zookie\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -4924,7 +4924,7 @@
 			]
 		},
 		"page-shop-dc-html": {
-			"generated": "2026-10-30T07:29:18.683Z",
+			"generated": "2026-10-30T12:00:47.333Z",
 			"surface": "page-shop-dc-html",
 			"source": "intake.json skeletons[\"page-shop-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -5651,7 +5651,7 @@
 			]
 		},
 		"page-product-dc-html-id-zookies": {
-			"generated": "2026-10-30T07:29:18.683Z",
+			"generated": "2026-10-30T12:00:47.333Z",
 			"surface": "page-product-dc-html-id-zookies",
 			"source": "intake.json skeletons[\"page-product-dc-html-id-zookies\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -6043,7 +6043,7 @@
 			]
 		},
 		"product-buy-box": {
-			"generated": "2026-10-30T07:29:18.683Z",
+			"generated": "2026-10-30T12:00:47.333Z",
 			"surface": "product-buy-box",
 			"source": "intake.json skeletons[\"product-buy-box\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -6105,7 +6105,7 @@
 			]
 		},
 		"product-gift-note": {
-			"generated": "2026-10-30T07:29:18.683Z",
+			"generated": "2026-10-30T12:00:47.333Z",
 			"surface": "product-gift-note",
 			"source": "intake.json skeletons[\"product-gift-note\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -6184,7 +6184,7 @@
 			]
 		},
 		"page-gifts-dc-html": {
-			"generated": "2026-10-30T07:29:18.683Z",
+			"generated": "2026-10-30T12:00:47.333Z",
 			"surface": "page-gifts-dc-html",
 			"source": "intake.json skeletons[\"page-gifts-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -7769,7 +7769,7 @@
 			]
 		},
 		"gift-finder": {
-			"generated": "2026-10-30T07:29:18.684Z",
+			"generated": "2026-10-30T12:00:47.333Z",
 			"surface": "gift-finder",
 			"source": "intake.json skeletons[\"gift-finder\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -7831,7 +7831,7 @@
 			]
 		},
 		"page-basket-dc-html": {
-			"generated": "2026-10-30T07:29:18.684Z",
+			"generated": "2026-10-30T12:00:47.333Z",
 			"surface": "page-basket-dc-html",
 			"source": "intake.json skeletons[\"page-basket-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -7858,7 +7858,7 @@
 						{
 							"draftId": "Basket:22",
 							"tag": "div",
-							"block": "sgs/container"
+							"block": "core/post-content"
 						}
 					],
 					"confidence": 0.25,
@@ -7950,7 +7950,7 @@
 							"key": "Basket/22#0",
 							"tag": "div",
 							"words": "",
-							"block": "sgs/container"
+							"block": "core/post-content"
 						}
 					],
 					"siblingCount": 0,
@@ -7977,1305 +7977,16 @@
 							"h": 32
 						}
 					]
-				},
-				{
-					"key": "Basket/25#0",
-					"element": {
-						"tag": "div",
-						"words": "Add £8.50 more for free UK delivery",
-						"snippet": "<div style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"25\">{{ freeMsg }}</div>"
-					},
-					"parent": {
-						"draftId": "Basket:24",
-						"tag": "div",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "Basket:26",
-							"tag": "div",
-							"block": null
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-basket-dc-html:Basket/25#0",
-					"draftId": "Basket:25",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Basket/24#0",
-							"tag": "div",
-							"words": "",
-							"block": null
-						},
-						{
-							"key": "Basket/26#0",
-							"tag": "div",
-							"words": "",
-							"block": null
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 122,
-							"y": 307,
-							"w": 676,
-							"h": 19
-						},
-						{
-							"width": 768,
-							"x": 54,
-							"y": 261,
-							"w": 660,
-							"h": 19
-						},
-						{
-							"width": 375,
-							"x": 42,
-							"y": 239,
-							"w": 291,
-							"h": 19
-						}
-					]
-				},
-				{
-					"key": "Basket/32",
-					"element": {
-						"tag": "div",
-						"words": "Zookies · 20 pack",
-						"snippet": "<div style=\"font-family:'Young Serif',serif;font-size:19px;line-height:1.2\" data-dc-tpl=\"32\">{{ it.name }}</div>"
-					},
-					"parent": {
-						"draftId": "Basket:31",
-						"tag": "div",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "Basket:33",
-							"tag": "div",
-							"block": "sgs/text"
-						},
-						{
-							"draftId": "Basket:34",
-							"tag": "div",
-							"block": "sgs/container"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "2 copies of one template element",
-					"rowId": "skeleton:page-basket-dc-html:Basket/32",
-					"draftId": "Basket:32",
-					"action": null,
-					"copies": 2,
-					"keys": [
-						"Basket/32#0",
-						"Basket/32#1"
-					],
-					"otherWords": [
-						"Taster Trio"
-					],
-					"neighbours": [
-						{
-							"key": "Basket/31",
-							"tag": "div",
-							"words": "",
-							"block": null
-						},
-						{
-							"key": "Basket/33",
-							"tag": "div",
-							"words": "Oat · Milk choc · Strawberry",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 236,
-							"y": 401.8,
-							"w": 491,
-							"h": 22.8
-						},
-						{
-							"width": 768,
-							"x": 160,
-							"y": 354,
-							"w": 483,
-							"h": 22.8
-						},
-						{
-							"width": 375,
-							"x": 124,
-							"y": 332,
-							"w": 138,
-							"h": 45.6
-						}
-					]
-				},
-				{
-					"key": "Basket/33",
-					"element": {
-						"tag": "div",
-						"words": "Oat · Milk choc · Strawberry",
-						"snippet": "<div style=\"font-size:14px;color:#5E4A3D;line-height:1.4\" data-dc-tpl=\"33\">{{ it.variant }}</div>"
-					},
-					"parent": {
-						"draftId": "Basket:31",
-						"tag": "div",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "Basket:32",
-							"tag": "div",
-							"block": "sgs/text"
-						},
-						{
-							"draftId": "Basket:34",
-							"tag": "div",
-							"block": "sgs/container"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "2 copies of one template element",
-					"rowId": "skeleton:page-basket-dc-html:Basket/33",
-					"draftId": "Basket:33",
-					"action": null,
-					"copies": 2,
-					"keys": [
-						"Basket/33#0",
-						"Basket/33#1"
-					],
-					"otherWords": [
-						"3 Classic Zookies"
-					],
-					"neighbours": [
-						{
-							"key": "Basket/32",
-							"tag": "div",
-							"words": "Zookies · 20 pack",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Basket/34",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 236,
-							"y": 428.6,
-							"w": 491,
-							"h": 19.6
-						},
-						{
-							"width": 768,
-							"x": 160,
-							"y": 380.8,
-							"w": 483,
-							"h": 19.6
-						},
-						{
-							"width": 375,
-							"x": 124,
-							"y": 381.6,
-							"w": 138,
-							"h": 39.2
-						}
-					]
-				},
-				{
-					"key": "Basket/37",
-					"element": {
-						"tag": "span",
-						"words": "1",
-						"snippet": "<span style=\"min-width:22px;text-align:center;font-weight:700\" data-dc-tpl=\"37\">{{ it.qty }}</span>"
-					},
-					"parent": {
-						"draftId": "Basket:35",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Basket:36",
-							"tag": "button",
-							"block": "sgs/button"
-						},
-						{
-							"draftId": "Basket:38",
-							"tag": "button",
-							"block": "sgs/button"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "2 copies of one template element",
-					"rowId": "skeleton:page-basket-dc-html:Basket/37",
-					"draftId": "Basket:37",
-					"action": null,
-					"copies": 2,
-					"keys": [
-						"Basket/37#0",
-						"Basket/37#1"
-					],
-					"neighbours": [
-						{
-							"key": "Basket/36",
-							"tag": "button",
-							"words": "−",
-							"block": "sgs/button"
-						},
-						{
-							"key": "Basket/38",
-							"tag": "button",
-							"words": "+",
-							"block": "sgs/button"
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 280,
-							"y": 470.7,
-							"w": 22,
-							"h": 19
-						},
-						{
-							"width": 768,
-							"x": 204,
-							"y": 422.9,
-							"w": 22,
-							"h": 19
-						},
-						{
-							"width": 375,
-							"x": 168,
-							"y": 443.3,
-							"w": 22,
-							"h": 19
-						}
-					]
-				},
-				{
-					"key": "Basket/40",
-					"element": {
-						"tag": "div",
-						"words": "£21.50",
-						"snippet": "<div style=\"font-family:'Young Serif',serif;font-size:20px;text-align:right;align-self:start\" data-dc-tpl=\"40\">{{ it.total }}</div>"
-					},
-					"parent": {
-						"draftId": "Basket:29",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Basket:30",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "Basket:31",
-							"tag": "div",
-							"block": null
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "2 copies of one template element",
-					"rowId": "skeleton:page-basket-dc-html:Basket/40",
-					"draftId": "Basket:40",
-					"action": null,
-					"copies": 2,
-					"keys": [
-						"Basket/40#0",
-						"Basket/40#1"
-					],
-					"otherWords": [
-						"£5.00"
-					],
-					"neighbours": [
-						{
-							"key": "Basket/39",
-							"tag": "button",
-							"words": "Remove",
-							"block": "sgs/button"
-						},
-						{
-							"key": "Basket/41#0",
-							"tag": "div",
-							"words": "",
-							"block": null
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 743,
-							"y": 400,
-							"w": 61,
-							"h": 28
-						},
-						{
-							"width": 768,
-							"x": 659,
-							"y": 354,
-							"w": 61,
-							"h": 28
-						},
-						{
-							"width": 375,
-							"x": 278,
-							"y": 332,
-							"w": 61,
-							"h": 28
-						}
-					]
-				},
-				{
-					"key": "Basket/45#0",
-					"element": {
-						"tag": "span",
-						"words": "This is a gift",
-						"snippet": "<span style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"45\">This is a gift</span>"
-					},
-					"parent": {
-						"draftId": "Basket:44",
-						"tag": "span",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "Basket:46",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-basket-dc-html:Basket/45#0",
-					"draftId": "Basket:45",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Basket/44#0",
-							"tag": "span",
-							"words": "",
-							"block": null
-						},
-						{
-							"key": "Basket/46#0",
-							"tag": "span",
-							"words": "Add a note. The prices stay off the packing slip.",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 165,
-							"y": 712,
-							"w": 297.8,
-							"h": 19
-						},
-						{
-							"width": 768,
-							"x": 97,
-							"y": 658.8,
-							"w": 297.8,
-							"h": 19
-						},
-						{
-							"width": 375,
-							"x": 85,
-							"y": 769.2,
-							"w": 248,
-							"h": 19
-						}
-					]
-				},
-				{
-					"key": "Basket/46#0",
-					"element": {
-						"tag": "span",
-						"words": "Add a note. The prices stay off the packing slip.",
-						"snippet": "<span style=\"font-size:14px;color:#5E4A3D\" data-dc-tpl=\"46\">Add a note. The prices stay off the packing slip.</span>"
-					},
-					"parent": {
-						"draftId": "Basket:44",
-						"tag": "span",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "Basket:45",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-basket-dc-html:Basket/46#0",
-					"draftId": "Basket:46",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Basket/45#0",
-							"tag": "span",
-							"words": "This is a gift",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Basket/56#0",
-							"tag": "aside",
-							"words": "",
-							"block": null
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 165,
-							"y": 731,
-							"w": 297.8,
-							"h": 17
-						},
-						{
-							"width": 768,
-							"x": 97,
-							"y": 677.8,
-							"w": 297.8,
-							"h": 17
-						},
-						{
-							"width": 375,
-							"x": 85,
-							"y": 788.2,
-							"w": 248,
-							"h": 34
-						}
-					]
-				},
-				{
-					"key": "Basket/59#0",
-					"element": {
-						"tag": "span",
-						"words": "Subtotal",
-						"snippet": "<span data-dc-tpl=\"59\">Subtotal</span>"
-					},
-					"parent": {
-						"draftId": "Basket:58",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Basket:60",
-							"tag": "b",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-basket-dc-html:Basket/59#0",
-					"draftId": "Basket:59",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Basket/58#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Basket/60#0",
-							"tag": "b",
-							"words": "£26.50",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 886,
-							"y": 364,
-							"w": 62.9,
-							"h": 19
-						},
-						{
-							"width": 768,
-							"x": 58,
-							"y": 817.8,
-							"w": 62.9,
-							"h": 19
-						},
-						{
-							"width": 375,
-							"x": 46,
-							"y": 933.2,
-							"w": 62.9,
-							"h": 19
-						}
-					]
-				},
-				{
-					"key": "Basket/60#0",
-					"element": {
-						"tag": "b",
-						"words": "£26.50",
-						"snippet": "<b data-dc-tpl=\"60\">{{ subText }}</b>"
-					},
-					"parent": {
-						"draftId": "Basket:58",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Basket:59",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-basket-dc-html:Basket/60#0",
-					"draftId": "Basket:60",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Basket/59#0",
-							"tag": "span",
-							"words": "Subtotal",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Basket/61#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1262.1,
-							"y": 364,
-							"w": 51.9,
-							"h": 19
-						},
-						{
-							"width": 768,
-							"x": 658.1,
-							"y": 817.8,
-							"w": 51.9,
-							"h": 19
-						},
-						{
-							"width": 375,
-							"x": 277.1,
-							"y": 933.2,
-							"w": 51.9,
-							"h": 19
-						}
-					]
-				},
-				{
-					"key": "Basket/62#0",
-					"element": {
-						"tag": "span",
-						"words": "Delivery",
-						"snippet": "<span data-dc-tpl=\"62\">Delivery</span>"
-					},
-					"parent": {
-						"draftId": "Basket:61",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Basket:63",
-							"tag": "b",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-basket-dc-html:Basket/62#0",
-					"draftId": "Basket:62",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Basket/61#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Basket/63#0",
-							"tag": "b",
-							"words": "£3.95",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 886,
-							"y": 395,
-							"w": 57.5,
-							"h": 19
-						},
-						{
-							"width": 768,
-							"x": 58,
-							"y": 848.8,
-							"w": 57.5,
-							"h": 19
-						},
-						{
-							"width": 375,
-							"x": 46,
-							"y": 964.2,
-							"w": 57.5,
-							"h": 19
-						}
-					]
-				},
-				{
-					"key": "Basket/63#0",
-					"element": {
-						"tag": "b",
-						"words": "£3.95",
-						"snippet": "<b data-dc-tpl=\"63\">{{ delText }}</b>"
-					},
-					"parent": {
-						"draftId": "Basket:61",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Basket:62",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-basket-dc-html:Basket/63#0",
-					"draftId": "Basket:63",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Basket/62#0",
-							"tag": "span",
-							"words": "Delivery",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Basket/64#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1271.9,
-							"y": 395,
-							"w": 42.1,
-							"h": 19
-						},
-						{
-							"width": 768,
-							"x": 667.9,
-							"y": 848.8,
-							"w": 42.1,
-							"h": 19
-						},
-						{
-							"width": 375,
-							"x": 286.9,
-							"y": 964.2,
-							"w": 42.1,
-							"h": 19
-						}
-					]
-				},
-				{
-					"key": "Basket/65#0",
-					"element": {
-						"tag": "span",
-						"words": "Total",
-						"snippet": "<span style=\"font-weight:700;font-size:17px\" data-dc-tpl=\"65\">Total</span>"
-					},
-					"parent": {
-						"draftId": "Basket:64",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Basket:66",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-basket-dc-html:Basket/65#0",
-					"draftId": "Basket:65",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Basket/64#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Basket/66#0",
-							"tag": "span",
-							"words": "£30.45",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 886,
-							"y": 455,
-							"w": 39,
-							"h": 20
-						},
-						{
-							"width": 768,
-							"x": 58,
-							"y": 908.8,
-							"w": 39,
-							"h": 20
-						},
-						{
-							"width": 375,
-							"x": 46,
-							"y": 1024.2,
-							"w": 39,
-							"h": 20
-						}
-					]
-				},
-				{
-					"key": "Basket/66#0",
-					"element": {
-						"tag": "span",
-						"words": "£30.45",
-						"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:30px\" data-dc-tpl=\"66\">{{ totalText }}</span>"
-					},
-					"parent": {
-						"draftId": "Basket:64",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Basket:65",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-basket-dc-html:Basket/66#0",
-					"draftId": "Basket:66",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Basket/65#0",
-							"tag": "span",
-							"words": "Total",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Basket/67#0",
-							"tag": "a",
-							"words": "Checkout securely →",
-							"block": "sgs/button"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1218.2,
-							"y": 440,
-							"w": 95.8,
-							"h": 42
-						},
-						{
-							"width": 768,
-							"x": 614.2,
-							"y": 893.8,
-							"w": 95.8,
-							"h": 42
-						},
-						{
-							"width": 375,
-							"x": 233.2,
-							"y": 1009.2,
-							"w": 95.8,
-							"h": 42
-						}
-					]
-				},
-				{
-					"key": "Basket/68#0",
-					"element": {
-						"tag": "div",
-						"words": "",
-						"snippet": "<div style=\"display:grid;grid-template-columns:1fr 1fr;gap:8px\" data-dc-tpl=\"68\"> <button style=\"height:48px;border-radius:999px;border:2px solid #3A2A22;backgr"
-					},
-					"parent": {
-						"draftId": "Basket:56",
-						"tag": "aside",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "Basket:57",
-							"tag": "div",
-							"block": "sgs/heading"
-						},
-						{
-							"draftId": "Basket:58",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "Basket:61",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "Basket:64",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "Basket:67",
-							"tag": "a",
-							"block": "sgs/button"
-						},
-						{
-							"draftId": "Basket:71",
-							"tag": "div",
-							"block": "sgs/text"
-						},
-						{
-							"draftId": "Basket:72",
-							"tag": "a",
-							"block": "sgs/button"
-						}
-					],
-					"confidence": 0.51,
-					"candidates": [
-						{
-							"block": "sgs/multi-button",
-							"score": 0.75,
-							"share": 0.682
-						},
-						{
-							"block": "sgs/container",
-							"score": 0.35,
-							"share": 0.318
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-basket-dc-html:Basket/68#0",
-					"draftId": "Basket:68",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Basket/67#0",
-							"tag": "a",
-							"words": "Checkout securely →",
-							"block": "sgs/button"
-						},
-						{
-							"key": "Basket/69#0",
-							"tag": "button",
-							"words": "Apple Pay",
-							"block": "sgs/button"
-						}
-					],
-					"siblingCount": 7,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 886,
-							"y": 568,
-							"w": 428,
-							"h": 48
-						},
-						{
-							"width": 768,
-							"x": 58,
-							"y": 1021.8,
-							"w": 652,
-							"h": 48
-						},
-						{
-							"width": 375,
-							"x": 46,
-							"y": 1137.2,
-							"w": 283,
-							"h": 48
-						}
-					]
-				},
-				{
-					"key": "Basket/71#0",
-					"element": {
-						"tag": "div",
-						"words": "Baked fresh for you · with you in 3–5 days",
-						"snippet": "<div style=\"font-size:14px;line-height:1.5;text-align:center\" data-dc-tpl=\"71\">Baked fresh for you · with you in 3–5 days</div>"
-					},
-					"parent": {
-						"draftId": "Basket:56",
-						"tag": "aside",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "Basket:57",
-							"tag": "div",
-							"block": "sgs/heading"
-						},
-						{
-							"draftId": "Basket:58",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "Basket:61",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "Basket:64",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "Basket:67",
-							"tag": "a",
-							"block": "sgs/button"
-						},
-						{
-							"draftId": "Basket:68",
-							"tag": "div",
-							"block": "sgs/multi-button"
-						},
-						{
-							"draftId": "Basket:72",
-							"tag": "a",
-							"block": "sgs/button"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-basket-dc-html:Basket/71#0",
-					"draftId": "Basket:71",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Basket/70#0",
-							"tag": "button",
-							"words": "Google Pay",
-							"block": "sgs/button"
-						},
-						{
-							"key": "Basket/72#0",
-							"tag": "a",
-							"words": "Keep shopping",
-							"block": "sgs/button"
-						}
-					],
-					"siblingCount": 7,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 886,
-							"y": 628,
-							"w": 428,
-							"h": 21
-						},
-						{
-							"width": 768,
-							"x": 58,
-							"y": 1081.8,
-							"w": 652,
-							"h": 21
-						},
-						{
-							"width": 375,
-							"x": 46,
-							"y": 1197.2,
-							"w": 283,
-							"h": 21
-						}
-					]
 				}
 			]
 		},
-		"page-checkout-dc-html": {
-			"generated": "2026-10-30T07:29:18.684Z",
-			"surface": "page-checkout-dc-html",
-			"source": "intake.json skeletons[\"page-checkout-dc-html\"]",
+		"checkout-form": {
+			"generated": "2026-10-30T12:00:47.333Z",
+			"surface": "checkout-form",
+			"source": "intake.json skeletons[\"checkout-form\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
 			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
 			"rows": [
-				{
-					"key": "Checkout/20#0",
-					"element": {
-						"tag": "span",
-						"words": "Show order summary ▾",
-						"snippet": "<span data-dc-tpl=\"20\">{{ sumLabel }}</span>"
-					},
-					"parent": {
-						"draftId": "Checkout:19",
-						"tag": "button",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Checkout:21",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/20#0",
-					"draftId": "Checkout:20",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Checkout/19#0",
-							"tag": "button",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Checkout/21#0",
-							"tag": "span",
-							"words": "£30.45",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 375,
-							"x": 36,
-							"y": 109.5,
-							"w": 179,
-							"h": 21
-						}
-					]
-				},
-				{
-					"key": "Checkout/21#0",
-					"element": {
-						"tag": "span",
-						"words": "£30.45",
-						"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:20px\" data-dc-tpl=\"21\">{{ totalText }}</span>"
-					},
-					"parent": {
-						"draftId": "Checkout:19",
-						"tag": "button",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Checkout:20",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/21#0",
-					"draftId": "Checkout:21",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Checkout/20#0",
-							"tag": "span",
-							"words": "Show order summary ▾",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Checkout/31#0",
-							"tag": "form",
-							"words": "",
-							"block": null
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 375,
-							"x": 275.1,
-							"y": 106,
-							"w": 63.9,
-							"h": 28
-						}
-					]
-				},
 				{
 					"key": "Checkout/33#0",
 					"element": {
@@ -9286,7 +7997,7 @@
 					"parent": {
 						"draftId": "Checkout:32",
 						"tag": "div",
-						"block": null
+						"block": "sgs/container"
 					},
 					"siblings": [
 						{
@@ -9313,25 +8024,17 @@
 							"share": 1
 						}
 					],
-					"reason": "2 copies of one template element on 2 surfaces",
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/33#0",
+					"reason": null,
+					"rowId": "skeleton:checkout-form:Checkout/33#0",
 					"draftId": "Checkout:33",
 					"action": null,
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "checkout-form",
-							"keys": [
-								"Checkout/33#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Checkout/32#0",
 							"tag": "div",
 							"words": "",
-							"block": null
+							"block": "sgs/container"
 						},
 						{
 							"key": "Checkout/34#0",
@@ -9375,7 +8078,7 @@
 					"parent": {
 						"draftId": "Checkout:32",
 						"tag": "div",
-						"block": null
+						"block": "sgs/container"
 					},
 					"siblings": [
 						{
@@ -9407,19 +8110,11 @@
 							"share": 0.318
 						}
 					],
-					"reason": "2 copies of one template element on 2 surfaces",
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/35#0",
+					"reason": null,
+					"rowId": "skeleton:checkout-form:Checkout/35#0",
 					"draftId": "Checkout:35",
 					"action": null,
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "checkout-form",
-							"keys": [
-								"Checkout/35#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Checkout/34#0",
@@ -9469,7 +8164,7 @@
 					"parent": {
 						"draftId": "Checkout:42",
 						"tag": "fieldset",
-						"block": null
+						"block": "sgs/container"
 					},
 					"siblings": [
 						{
@@ -9490,7 +8185,7 @@
 						{
 							"draftId": "Checkout:57",
 							"tag": "div",
-							"block": null
+							"block": "sgs/container"
 						}
 					],
 					"confidence": 0.25,
@@ -9501,25 +8196,17 @@
 							"share": 1
 						}
 					],
-					"reason": "2 copies of one template element on 2 surfaces",
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/43#0",
+					"reason": null,
+					"rowId": "skeleton:checkout-form:Checkout/43#0",
 					"draftId": "Checkout:43",
 					"action": null,
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "checkout-form",
-							"keys": [
-								"Checkout/43#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Checkout/42#0",
 							"tag": "fieldset",
 							"words": "",
-							"block": null
+							"block": "sgs/container"
 						},
 						{
 							"key": "Checkout/50#0",
@@ -9554,148 +8241,6 @@
 					]
 				},
 				{
-					"key": "Checkout/61#0",
-					"element": {
-						"tag": "span",
-						"words": "Create an account (optional)",
-						"snippet": "<span style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"61\">Create an account (optional)</span>"
-					},
-					"parent": {
-						"draftId": "Checkout:60",
-						"tag": "span",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "Checkout:62",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/61#0",
-					"draftId": "Checkout:61",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Checkout/60#0",
-							"tag": "span",
-							"words": "",
-							"block": null
-						},
-						{
-							"key": "Checkout/62#0",
-							"tag": "span",
-							"words": "See your bake dates and manage subscriptions online.",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 229,
-							"y": 614,
-							"w": 348.6,
-							"h": 19
-						},
-						{
-							"width": 768,
-							"x": 113,
-							"y": 592,
-							"w": 348.6,
-							"h": 19
-						},
-						{
-							"width": 375,
-							"x": 95,
-							"y": 654,
-							"w": 228,
-							"h": 19
-						}
-					]
-				},
-				{
-					"key": "Checkout/62#0",
-					"element": {
-						"tag": "span",
-						"words": "See your bake dates and manage subscriptions online.",
-						"snippet": "<span style=\"font-size:14px;color:#5E4A3D\" data-dc-tpl=\"62\">See your bake dates and manage subscriptions online.</span>"
-					},
-					"parent": {
-						"draftId": "Checkout:60",
-						"tag": "span",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "Checkout:61",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/62#0",
-					"draftId": "Checkout:62",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Checkout/61#0",
-							"tag": "span",
-							"words": "Create an account (optional)",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Checkout/71#0",
-							"tag": "fieldset",
-							"words": "",
-							"block": null
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 229,
-							"y": 633,
-							"w": 348.6,
-							"h": 17
-						},
-						{
-							"width": 768,
-							"x": 113,
-							"y": 611,
-							"w": 348.6,
-							"h": 17
-						},
-						{
-							"width": 375,
-							"x": 95,
-							"y": 673,
-							"w": 228,
-							"h": 34
-						}
-					]
-				},
-				{
 					"key": "Checkout/86#0",
 					"element": {
 						"tag": "legend",
@@ -9705,7 +8250,7 @@
 					"parent": {
 						"draftId": "Checkout:85",
 						"tag": "fieldset",
-						"block": null
+						"block": "sgs/container"
 					},
 					"siblings": [
 						{
@@ -9737,25 +8282,17 @@
 							"share": 1
 						}
 					],
-					"reason": "2 copies of one template element on 2 surfaces",
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/86#0",
+					"reason": null,
+					"rowId": "skeleton:checkout-form:Checkout/86#0",
 					"draftId": "Checkout:86",
 					"action": null,
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "checkout-form",
-							"keys": [
-								"Checkout/86#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Checkout/85#0",
 							"tag": "fieldset",
 							"words": "",
-							"block": null
+							"block": "sgs/container"
 						},
 						{
 							"key": "Checkout/87#0",
@@ -9799,7 +8336,7 @@
 					"parent": {
 						"draftId": "Checkout:106",
 						"tag": "fieldset",
-						"block": null
+						"block": "sgs/container"
 					},
 					"siblings": [
 						{
@@ -9821,25 +8358,17 @@
 							"share": 1
 						}
 					],
-					"reason": "2 copies of one template element on 2 surfaces",
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/107#0",
+					"reason": null,
+					"rowId": "skeleton:checkout-form:Checkout/107#0",
 					"draftId": "Checkout:107",
 					"action": null,
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "checkout-form",
-							"keys": [
-								"Checkout/107#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Checkout/106#0",
 							"tag": "fieldset",
 							"words": "",
-							"block": null
+							"block": "sgs/container"
 						},
 						{
 							"key": "Checkout/108#0",
@@ -9872,857 +8401,11 @@
 							"h": 31
 						}
 					]
-				},
-				{
-					"key": "Checkout/122#0",
-					"element": {
-						"tag": "div",
-						"words": "Your order",
-						"snippet": "<div style=\"font-family:'Young Serif',serif;font-size:24px\" data-dc-tpl=\"122\">Your order</div>"
-					},
-					"parent": {
-						"draftId": "Checkout:121",
-						"tag": "aside",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "Checkout:124",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "Checkout:124",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "Checkout:131",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "Checkout:134",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "Checkout:137",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "Checkout:140",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "Checkout:143",
-							"tag": "div",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/122#0",
-					"draftId": "Checkout:122",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Checkout/121#0",
-							"tag": "aside",
-							"words": "",
-							"block": null
-						},
-						{
-							"key": "Checkout/124",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 7,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 849.4,
-							"y": 140,
-							"w": 424.6,
-							"h": 34
-						},
-						{
-							"width": 768,
-							"x": 54,
-							"y": 1909.4,
-							"w": 660,
-							"h": 34
-						}
-					]
-				},
-				{
-					"key": "Checkout/126",
-					"element": {
-						"tag": "span",
-						"words": "1",
-						"snippet": "<span style=\"position:absolute;top:-8px;right:-8px;min-width:22px;height:22px;border-radius:99px;background:#3A2A22;color:#FFFAF0;font-size:12px;font-weight:700"
-					},
-					"parent": {
-						"draftId": "Checkout:125",
-						"tag": "div",
-						"block": null
-					},
-					"siblings": [],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "2 copies of one template element",
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/126",
-					"draftId": "Checkout:126",
-					"action": null,
-					"copies": 2,
-					"keys": [
-						"Checkout/126#0",
-						"Checkout/126#1"
-					],
-					"neighbours": [
-						{
-							"key": "Checkout/125",
-							"tag": "div",
-							"words": "",
-							"block": null
-						},
-						{
-							"key": "Checkout/127",
-							"tag": "div",
-							"words": "",
-							"block": null
-						}
-					],
-					"siblingCount": 0,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 889.4,
-							"y": 182,
-							"w": 22,
-							"h": 22
-						},
-						{
-							"width": 768,
-							"x": 94,
-							"y": 1951.4,
-							"w": 22,
-							"h": 22
-						}
-					]
-				},
-				{
-					"key": "Checkout/128",
-					"element": {
-						"tag": "div",
-						"words": "Zookies · 20 pack",
-						"snippet": "<div style=\"font-weight:700;font-size:15px\" data-dc-tpl=\"128\">{{ it.name }}</div>"
-					},
-					"parent": {
-						"draftId": "Checkout:127",
-						"tag": "div",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "Checkout:129",
-							"tag": "div",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "2 copies of one template element",
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/128",
-					"draftId": "Checkout:128",
-					"action": null,
-					"copies": 2,
-					"keys": [
-						"Checkout/128#0",
-						"Checkout/128#1"
-					],
-					"otherWords": [
-						"Taster Trio"
-					],
-					"neighbours": [
-						{
-							"key": "Checkout/127",
-							"tag": "div",
-							"words": "",
-							"block": null
-						},
-						{
-							"key": "Checkout/129",
-							"tag": "div",
-							"words": "Oat · Milk choc · Strawberry",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 917.4,
-							"y": 199.5,
-							"w": 296.7,
-							"h": 18
-						},
-						{
-							"width": 768,
-							"x": 122,
-							"y": 1968.9,
-							"w": 532.1,
-							"h": 18
-						}
-					]
-				},
-				{
-					"key": "Checkout/129",
-					"element": {
-						"tag": "div",
-						"words": "Oat · Milk choc · Strawberry",
-						"snippet": "<div style=\"font-size:13px;color:#4E3C31\" data-dc-tpl=\"129\">{{ it.variant }}</div>"
-					},
-					"parent": {
-						"draftId": "Checkout:127",
-						"tag": "div",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "Checkout:128",
-							"tag": "div",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "2 copies of one template element",
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/129",
-					"draftId": "Checkout:129",
-					"action": null,
-					"copies": 2,
-					"keys": [
-						"Checkout/129#0",
-						"Checkout/129#1"
-					],
-					"otherWords": [
-						"3 Classic Zookies"
-					],
-					"neighbours": [
-						{
-							"key": "Checkout/128",
-							"tag": "div",
-							"words": "Zookies · 20 pack",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Checkout/130",
-							"tag": "b",
-							"words": "£21.50",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 917.4,
-							"y": 217.5,
-							"w": 296.7,
-							"h": 15
-						},
-						{
-							"width": 768,
-							"x": 122,
-							"y": 1986.9,
-							"w": 532.1,
-							"h": 15
-						}
-					]
-				},
-				{
-					"key": "Checkout/130",
-					"element": {
-						"tag": "b",
-						"words": "£21.50",
-						"snippet": "<b data-dc-tpl=\"130\">{{ it.total }}</b>"
-					},
-					"parent": {
-						"draftId": "Checkout:124",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Checkout:125",
-							"tag": "div",
-							"block": null
-						},
-						{
-							"draftId": "Checkout:127",
-							"tag": "div",
-							"block": null
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "2 copies of one template element",
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/130",
-					"draftId": "Checkout:130",
-					"action": null,
-					"copies": 2,
-					"keys": [
-						"Checkout/130#0",
-						"Checkout/130#1"
-					],
-					"otherWords": [
-						"£5.00"
-					],
-					"neighbours": [
-						{
-							"key": "Checkout/129",
-							"tag": "div",
-							"words": "Oat · Milk choc · Strawberry",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Checkout/131#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1226.1,
-							"y": 206.5,
-							"w": 47.9,
-							"h": 19
-						},
-						{
-							"width": 768,
-							"x": 666.1,
-							"y": 1975.9,
-							"w": 47.9,
-							"h": 19
-						}
-					]
-				},
-				{
-					"key": "Checkout/135#0",
-					"element": {
-						"tag": "span",
-						"words": "Subtotal",
-						"snippet": "<span data-dc-tpl=\"135\">Subtotal</span>"
-					},
-					"parent": {
-						"draftId": "Checkout:134",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Checkout:136",
-							"tag": "b",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/135#0",
-					"draftId": "Checkout:135",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Checkout/134#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Checkout/136#0",
-							"tag": "b",
-							"words": "£26.50",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 849.4,
-							"y": 404,
-							"w": 62.9,
-							"h": 19
-						},
-						{
-							"width": 768,
-							"x": 54,
-							"y": 2173.4,
-							"w": 62.9,
-							"h": 19
-						}
-					]
-				},
-				{
-					"key": "Checkout/136#0",
-					"element": {
-						"tag": "b",
-						"words": "£26.50",
-						"snippet": "<b data-dc-tpl=\"136\">{{ subText }}</b>"
-					},
-					"parent": {
-						"draftId": "Checkout:134",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Checkout:135",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/136#0",
-					"draftId": "Checkout:136",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Checkout/135#0",
-							"tag": "span",
-							"words": "Subtotal",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Checkout/137#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1222.1,
-							"y": 404,
-							"w": 51.9,
-							"h": 19
-						},
-						{
-							"width": 768,
-							"x": 662.1,
-							"y": 2173.4,
-							"w": 51.9,
-							"h": 19
-						}
-					]
-				},
-				{
-					"key": "Checkout/138#0",
-					"element": {
-						"tag": "span",
-						"words": "Delivery",
-						"snippet": "<span data-dc-tpl=\"138\">Delivery</span>"
-					},
-					"parent": {
-						"draftId": "Checkout:137",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Checkout:139",
-							"tag": "b",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/138#0",
-					"draftId": "Checkout:138",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Checkout/137#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Checkout/139#0",
-							"tag": "b",
-							"words": "£3.95",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 849.4,
-							"y": 437,
-							"w": 57.5,
-							"h": 19
-						},
-						{
-							"width": 768,
-							"x": 54,
-							"y": 2206.4,
-							"w": 57.5,
-							"h": 19
-						}
-					]
-				},
-				{
-					"key": "Checkout/139#0",
-					"element": {
-						"tag": "b",
-						"words": "£3.95",
-						"snippet": "<b data-dc-tpl=\"139\">{{ delText }}</b>"
-					},
-					"parent": {
-						"draftId": "Checkout:137",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Checkout:138",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/139#0",
-					"draftId": "Checkout:139",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Checkout/138#0",
-							"tag": "span",
-							"words": "Delivery",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Checkout/140#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1231.9,
-							"y": 437,
-							"w": 42.1,
-							"h": 19
-						},
-						{
-							"width": 768,
-							"x": 671.9,
-							"y": 2206.4,
-							"w": 42.1,
-							"h": 19
-						}
-					]
-				},
-				{
-					"key": "Checkout/141#0",
-					"element": {
-						"tag": "b",
-						"words": "Total",
-						"snippet": "<b style=\"font-size:17px\" data-dc-tpl=\"141\">Total</b>"
-					},
-					"parent": {
-						"draftId": "Checkout:140",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Checkout:142",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/141#0",
-					"draftId": "Checkout:141",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Checkout/140#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Checkout/142#0",
-							"tag": "span",
-							"words": "£30.45",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 849.4,
-							"y": 499,
-							"w": 39,
-							"h": 20
-						},
-						{
-							"width": 768,
-							"x": 54,
-							"y": 2268.4,
-							"w": 39,
-							"h": 20
-						}
-					]
-				},
-				{
-					"key": "Checkout/142#0",
-					"element": {
-						"tag": "span",
-						"words": "£30.45",
-						"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:30px\" data-dc-tpl=\"142\">{{ totalText }}</span>"
-					},
-					"parent": {
-						"draftId": "Checkout:140",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Checkout:141",
-							"tag": "b",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/142#0",
-					"draftId": "Checkout:142",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Checkout/141#0",
-							"tag": "b",
-							"words": "Total",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Checkout/143#0",
-							"tag": "div",
-							"words": "Baked fresh for you · with you in 3–5 days",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1178.2,
-							"y": 484,
-							"w": 95.8,
-							"h": 42
-						},
-						{
-							"width": 768,
-							"x": 618.2,
-							"y": 2253.4,
-							"w": 95.8,
-							"h": 42
-						}
-					]
-				},
-				{
-					"key": "Checkout/143#0",
-					"element": {
-						"tag": "div",
-						"words": "Baked fresh for you · with you in 3–5 days",
-						"snippet": "<div style=\"font-size:14px;text-align:center\" data-dc-tpl=\"143\">Baked fresh for you · with you in 3–5 days</div>"
-					},
-					"parent": {
-						"draftId": "Checkout:121",
-						"tag": "aside",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "Checkout:122",
-							"tag": "div",
-							"block": "sgs/text"
-						},
-						{
-							"draftId": "Checkout:124",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "Checkout:124",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "Checkout:131",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "Checkout:134",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "Checkout:137",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "Checkout:140",
-							"tag": "div",
-							"block": "sgs/container"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/143#0",
-					"draftId": "Checkout:143",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Checkout/142#0",
-							"tag": "span",
-							"words": "£30.45",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 7,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 849.4,
-							"y": 540,
-							"w": 424.6,
-							"h": 17
-						},
-						{
-							"width": 768,
-							"x": 54,
-							"y": 2309.4,
-							"w": 660,
-							"h": 17
-						}
-					]
 				}
 			]
 		},
 		"page-contact-dc-html": {
-			"generated": "2026-10-30T07:29:18.684Z",
+			"generated": "2026-10-30T12:00:47.334Z",
 			"surface": "page-contact-dc-html",
 			"source": "intake.json skeletons[\"page-contact-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -11135,7 +8818,7 @@
 			]
 		},
 		"page-help-dc-html": {
-			"generated": "2026-10-30T07:29:18.684Z",
+			"generated": "2026-10-30T12:00:47.334Z",
 			"surface": "page-help-dc-html",
 			"source": "intake.json skeletons[\"page-help-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -12726,7 +10409,7 @@
 			]
 		},
 		"page-signin-dc-html": {
-			"generated": "2026-10-30T07:29:18.684Z",
+			"generated": "2026-10-30T12:00:47.334Z",
 			"surface": "page-signin-dc-html",
 			"source": "intake.json skeletons[\"page-signin-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -13283,7 +10966,7 @@
 			]
 		},
 		"page-account-dc-html": {
-			"generated": "2026-10-30T07:29:18.684Z",
+			"generated": "2026-10-30T12:00:47.334Z",
 			"surface": "page-account-dc-html",
 			"source": "intake.json skeletons[\"page-account-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -13363,7 +11046,7 @@
 			]
 		},
 		"cancel-subscription-confirm": {
-			"generated": "2026-10-30T07:29:18.684Z",
+			"generated": "2026-10-30T12:00:47.334Z",
 			"surface": "cancel-subscription-confirm",
 			"source": "intake.json skeletons[\"cancel-subscription-confirm\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -13605,7 +11288,7 @@
 			]
 		},
 		"address-form-add-edit": {
-			"generated": "2026-10-30T07:29:18.684Z",
+			"generated": "2026-10-30T12:00:47.334Z",
 			"surface": "address-form-add-edit",
 			"source": "intake.json skeletons[\"address-form-add-edit\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -13801,7 +11484,7 @@
 			]
 		},
 		"account-details-change-password": {
-			"generated": "2026-10-30T07:29:18.685Z",
+			"generated": "2026-10-30T12:00:47.334Z",
 			"surface": "account-details-change-password",
 			"source": "intake.json skeletons[\"account-details-change-password\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -13886,7 +11569,7 @@
 			]
 		},
 		"checkout-header": {
-			"generated": "2026-10-30T07:29:18.685Z",
+			"generated": "2026-10-30T12:00:47.334Z",
 			"surface": "checkout-header",
 			"source": "intake.json skeletons[\"checkout-header\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",

@@ -1,6 +1,6 @@
 {
 	"client": "indus-foods",
-	"takenOn": "2026-10-24T09:25:14.989Z",
+	"takenOn": "2026-10-30T11:54:46.511Z",
 	"manifestHash": "50a00b4648eaa4217aa3fde6d4b99632515e00ab3ad06c015c3ed69505c4e3b6",
 	"palette": {
 		"tokens": [
@@ -1029,20 +1029,14 @@
 					"--surface-topbar",
 					"--surface-section-blue"
 				],
-				"role": "primary",
+				"role": "link",
 				"roles": [
-					"primary",
 					"link"
 				],
-				"confidence": 0.95,
-				"why": "the most used strong ground (8 buttons); the name --brand-blue agrees",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft declares --text-link: var(--brand-blue); usage agrees",
+				"by": "declared",
 				"basis": [
-					{
-						"role": "primary",
-						"by": "usage",
-						"why": "the most used strong ground (8 buttons); the name --brand-blue agrees"
-					},
 					{
 						"role": "link",
 						"by": "declared",
@@ -1188,24 +1182,30 @@
 					"--border-accent",
 					"--selection-bg"
 				],
-				"role": "accent",
+				"role": "primary",
 				"roles": [
-					"accent",
-					"section"
+					"primary",
+					"accent-text",
+					"section-text"
 				],
-				"confidence": 0.95,
-				"why": "the next most used strong ground (5 buttons); the name --brand-gold agrees",
+				"confidence": 0.85,
+				"why": "the most used strong ground (5 buttons)",
 				"by": "usage",
 				"basis": [
 					{
-						"role": "accent",
+						"role": "primary",
 						"by": "usage",
-						"why": "the next most used strong ground (5 buttons); the name --brand-gold agrees"
+						"why": "the most used strong ground (5 buttons)"
 					},
 					{
-						"role": "section",
+						"role": "accent-text",
 						"by": "usage",
-						"why": "the most used ground after the page, raised and primary grounds (365 elements); the name --surface-section-gold agrees"
+						"why": "the colour of the most text on the accent ground (1189 characters)"
+					},
+					{
+						"role": "section-text",
+						"by": "usage",
+						"why": "the colour of the most text on the section ground (1189 characters)"
 					}
 				]
 			},
@@ -1230,14 +1230,14 @@
 				"roles": [
 					"accent-light"
 				],
-				"confidence": 0.95,
-				"why": "the light ground of the accent's hue (1 grounds and lines, carrying the accent ink); the name --brand-gold-light agrees",
-				"by": "usage",
+				"confidence": 0.6,
+				"why": "light shade of the accent family (the name alone decides this)",
+				"by": "name",
 				"basis": [
 					{
 						"role": "accent-light",
-						"by": "usage",
-						"why": "the light ground of the accent's hue (1 grounds and lines, carrying the accent ink); the name --brand-gold-light agrees"
+						"by": "name",
+						"why": "light shade of the accent family (the name alone decides this)"
 					}
 				]
 			},
@@ -1294,13 +1294,20 @@
 				"sharedWith": [
 					"--selection-fg"
 				],
-				"role": "custom-ink",
+				"role": "primary-text",
 				"roles": [
-					"custom-ink"
+					"primary-text"
 				],
-				"confidence": 0.3,
-				"why": "no rendered fact or name gives it a slug; stays a custom colour (FR-33-2)",
-				"by": "none"
+				"confidence": 0.85,
+				"why": "the most used text colour on the primary ground (weight 109)",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "primary-text",
+						"by": "usage",
+						"why": "the most used text colour on the primary ground (weight 109)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--slate",
@@ -1378,8 +1385,8 @@
 				"role": "footer-bg",
 				"roles": [
 					"footer-bg",
-					"accent-text",
-					"section-text",
+					"accent",
+					"section",
 					"heading"
 				],
 				"confidence": 0.85,
@@ -1392,14 +1399,14 @@
 						"why": "the footer's ground on 23 page(s)"
 					},
 					{
-						"role": "accent-text",
+						"role": "accent",
 						"by": "usage",
-						"why": "the colour of the most text on the accent ground (575 characters)"
+						"why": "the next most used strong ground (1 buttons)"
 					},
 					{
-						"role": "section-text",
+						"role": "section",
 						"by": "usage",
-						"why": "the colour of the most text on the section ground (575 characters)"
+						"why": "the most used ground after the page, raised and primary grounds (26 elements)"
 					},
 					{
 						"role": "heading",
@@ -1553,7 +1560,6 @@
 				"role": "surface",
 				"roles": [
 					"surface",
-					"primary-text",
 					"text-inverse"
 				],
 				"confidence": 0.95,
@@ -1564,11 +1570,6 @@
 						"role": "surface",
 						"by": "usage",
 						"why": "the page ground: the body background on 23 page(s); the name --surface-white agrees"
-					},
-					{
-						"role": "primary-text",
-						"by": "usage",
-						"why": "the most used text colour on the primary ground (weight 384)"
 					},
 					{
 						"role": "text-inverse",
@@ -1669,13 +1670,12 @@
 					}
 				],
 				"sharedWith": [],
-				"role": "custom-social-linkedin",
-				"roles": [
-					"custom-social-linkedin"
-				],
-				"confidence": 0.8,
-				"why": "header, selection and social colours have no palette slug (FR-33-13, FR-33-16)",
-				"by": "name"
+				"role": null,
+				"roles": [],
+				"brand": "linkedin",
+				"confidence": 0.9,
+				"why": "brand colour: LinkedIn (the brand registry names it), painted by the brand's own setting, so no palette slot",
+				"by": "brand"
 			},
 			{
 				"rowId": "palette:--social-facebook",
@@ -1695,13 +1695,12 @@
 					}
 				],
 				"sharedWith": [],
-				"role": "custom-social-facebook",
-				"roles": [
-					"custom-social-facebook"
-				],
-				"confidence": 0.8,
-				"why": "header, selection and social colours have no palette slug (FR-33-13, FR-33-16)",
-				"by": "name"
+				"role": null,
+				"roles": [],
+				"brand": "facebook",
+				"confidence": 0.9,
+				"why": "brand colour: Facebook (the brand registry names it), painted by the brand's own setting, so no palette slot",
+				"by": "brand"
 			},
 			{
 				"rowId": "palette:--social-google",
@@ -1714,9 +1713,10 @@
 				"sharedWith": [],
 				"role": null,
 				"roles": [],
-				"confidence": 0,
-				"why": "unused: no element in the draft uses this value",
-				"by": "none"
+				"brand": "google",
+				"confidence": 0.9,
+				"why": "brand colour: Google (the brand registry names it), painted by the brand's own setting, so no palette slot",
+				"by": "brand"
 			},
 			{
 				"rowId": "palette:--whatsapp-green",
@@ -1735,20 +1735,12 @@
 					}
 				],
 				"sharedWith": [],
-				"role": "whatsapp",
-				"roles": [
-					"whatsapp"
-				],
-				"confidence": 0.95,
-				"why": "the ground of the links that open WhatsApp (23 elements); the name --whatsapp-green agrees",
-				"by": "usage",
-				"basis": [
-					{
-						"role": "whatsapp",
-						"by": "usage",
-						"why": "the ground of the links that open WhatsApp (23 elements); the name --whatsapp-green agrees"
-					}
-				]
+				"role": null,
+				"roles": [],
+				"brand": "whatsapp",
+				"confidence": 0.9,
+				"why": "brand colour: WhatsApp (every use is on its own control), painted by the brand's own setting, so no palette slot",
+				"by": "brand"
 			},
 			{
 				"rowId": "palette:--text-heading",
@@ -1829,8 +1821,8 @@
 				"roles": [
 					"heading",
 					"footer-bg",
-					"accent-text",
-					"section-text"
+					"accent",
+					"section"
 				],
 				"confidence": 0.98,
 				"why": "the draft declares --text-heading: var(--slate); usage agrees",
@@ -1842,14 +1834,14 @@
 						"why": "the footer's ground on 23 page(s)"
 					},
 					{
-						"role": "accent-text",
+						"role": "accent",
 						"by": "usage",
-						"why": "the colour of the most text on the accent ground (575 characters)"
+						"why": "the next most used strong ground (1 buttons)"
 					},
 					{
-						"role": "section-text",
+						"role": "section",
 						"by": "usage",
-						"why": "the colour of the most text on the section ground (575 characters)"
+						"why": "the most used ground after the page, raised and primary grounds (26 elements)"
 					},
 					{
 						"role": "heading",
@@ -2010,18 +2002,12 @@
 				],
 				"role": "link",
 				"roles": [
-					"link",
-					"primary"
+					"link"
 				],
 				"confidence": 0.98,
 				"why": "the draft declares --text-link: var(--brand-blue); usage agrees",
 				"by": "declared",
 				"basis": [
-					{
-						"role": "primary",
-						"by": "usage",
-						"why": "the most used strong ground (8 buttons); the name --brand-blue agrees"
-					},
 					{
 						"role": "link",
 						"by": "declared",
@@ -2155,7 +2141,6 @@
 				"role": "surface",
 				"roles": [
 					"surface",
-					"primary-text",
 					"text-inverse"
 				],
 				"confidence": 0.95,
@@ -2166,11 +2151,6 @@
 						"role": "surface",
 						"by": "usage",
 						"why": "the page ground: the body background on 23 page(s); the name --surface-white agrees"
-					},
-					{
-						"role": "primary-text",
-						"by": "usage",
-						"why": "the most used text colour on the primary ground (weight 384)"
 					},
 					{
 						"role": "text-inverse",
@@ -2261,20 +2241,14 @@
 					"--text-link",
 					"--surface-section-blue"
 				],
-				"role": "primary",
+				"role": "link",
 				"roles": [
-					"primary",
 					"link"
 				],
-				"confidence": 0.95,
-				"why": "the most used strong ground (8 buttons); the name --brand-blue agrees",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft declares --text-link: var(--brand-blue); usage agrees",
+				"by": "declared",
 				"basis": [
-					{
-						"role": "primary",
-						"by": "usage",
-						"why": "the most used strong ground (8 buttons); the name --brand-blue agrees"
-					},
 					{
 						"role": "link",
 						"by": "declared",
@@ -2364,20 +2338,14 @@
 					"--text-link",
 					"--surface-topbar"
 				],
-				"role": "primary",
+				"role": "link",
 				"roles": [
-					"primary",
 					"link"
 				],
-				"confidence": 0.95,
-				"why": "the most used strong ground (8 buttons); the name --brand-blue agrees",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft declares --text-link: var(--brand-blue); usage agrees",
+				"by": "declared",
 				"basis": [
-					{
-						"role": "primary",
-						"by": "usage",
-						"why": "the most used strong ground (8 buttons); the name --brand-blue agrees"
-					},
 					{
 						"role": "link",
 						"by": "declared",
@@ -2459,24 +2427,30 @@
 					"--border-accent",
 					"--selection-bg"
 				],
-				"role": "section",
+				"role": "primary",
 				"roles": [
-					"section",
-					"accent"
+					"primary",
+					"accent-text",
+					"section-text"
 				],
-				"confidence": 0.95,
-				"why": "the most used ground after the page, raised and primary grounds (365 elements); the name --surface-section-gold agrees",
+				"confidence": 0.85,
+				"why": "the most used strong ground (5 buttons)",
 				"by": "usage",
 				"basis": [
 					{
-						"role": "accent",
+						"role": "primary",
 						"by": "usage",
-						"why": "the next most used strong ground (5 buttons); the name --brand-gold agrees"
+						"why": "the most used strong ground (5 buttons)"
 					},
 					{
-						"role": "section",
+						"role": "accent-text",
 						"by": "usage",
-						"why": "the most used ground after the page, raised and primary grounds (365 elements); the name --surface-section-gold agrees"
+						"why": "the colour of the most text on the accent ground (1189 characters)"
+					},
+					{
+						"role": "section-text",
+						"by": "usage",
+						"why": "the colour of the most text on the section ground (1189 characters)"
 					}
 				]
 			},
@@ -2554,24 +2528,30 @@
 					"--surface-section-gold",
 					"--selection-bg"
 				],
-				"role": "accent",
+				"role": "primary",
 				"roles": [
-					"accent",
-					"section"
+					"primary",
+					"accent-text",
+					"section-text"
 				],
-				"confidence": 0.95,
-				"why": "the next most used strong ground (5 buttons); the name --brand-gold agrees",
+				"confidence": 0.85,
+				"why": "the most used strong ground (5 buttons)",
 				"by": "usage",
 				"basis": [
 					{
-						"role": "accent",
+						"role": "primary",
 						"by": "usage",
-						"why": "the next most used strong ground (5 buttons); the name --brand-gold agrees"
+						"why": "the most used strong ground (5 buttons)"
 					},
 					{
-						"role": "section",
+						"role": "accent-text",
 						"by": "usage",
-						"why": "the most used ground after the page, raised and primary grounds (365 elements); the name --surface-section-gold agrees"
+						"why": "the colour of the most text on the accent ground (1189 characters)"
+					},
+					{
+						"role": "section-text",
+						"by": "usage",
+						"why": "the colour of the most text on the section ground (1189 characters)"
 					}
 				]
 			},
@@ -2649,24 +2629,30 @@
 					"--surface-section-gold",
 					"--border-accent"
 				],
-				"role": "accent",
+				"role": "primary",
 				"roles": [
-					"accent",
-					"section"
+					"primary",
+					"accent-text",
+					"section-text"
 				],
-				"confidence": 0.95,
-				"why": "the next most used strong ground (5 buttons); the name --brand-gold agrees",
+				"confidence": 0.85,
+				"why": "the most used strong ground (5 buttons)",
 				"by": "usage",
 				"basis": [
 					{
-						"role": "accent",
+						"role": "primary",
 						"by": "usage",
-						"why": "the next most used strong ground (5 buttons); the name --brand-gold agrees"
+						"why": "the most used strong ground (5 buttons)"
 					},
 					{
-						"role": "section",
+						"role": "accent-text",
 						"by": "usage",
-						"why": "the most used ground after the page, raised and primary grounds (365 elements); the name --surface-section-gold agrees"
+						"why": "the colour of the most text on the accent ground (1189 characters)"
+					},
+					{
+						"role": "section-text",
+						"by": "usage",
+						"why": "the colour of the most text on the section ground (1189 characters)"
 					}
 				]
 			},
@@ -2695,13 +2681,20 @@
 				"sharedWith": [
 					"--ink"
 				],
-				"role": "custom-selection-fg",
+				"role": "primary-text",
 				"roles": [
-					"custom-selection-fg"
+					"primary-text"
 				],
-				"confidence": 0.8,
-				"why": "header, selection and social colours have no palette slug (FR-33-13, FR-33-16)",
-				"by": "name"
+				"confidence": 0.85,
+				"why": "the most used text colour on the primary ground (weight 109)",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "primary-text",
+						"by": "usage",
+						"why": "the most used text colour on the primary ground (weight 109)"
+					}
+				]
 			}
 		],
 		"unused": [
@@ -4488,7 +4481,8 @@
 			"property": "background-color",
 			"draftId": "Indus Foods Website v2:717",
 			"count": 23,
-			"tag": "a"
+			"tag": "a",
+			"channel": "google"
 		},
 		{
 			"hex": "#0A7EA8",
@@ -5412,6 +5406,7 @@
 			"tag": "a",
 			"ground": "#0A7EA8",
 			"text": true,
+			"channel": "google",
 			"chars": 322
 		},
 		{
@@ -5420,6 +5415,7 @@
 			"draftId": "Indus Foods Website v2:717",
 			"count": 23,
 			"tag": "a",
+			"channel": "google",
 			"length": 3887
 		},
 		{
@@ -5428,6 +5424,7 @@
 			"draftId": "Indus Foods Website v2:717",
 			"count": 23,
 			"tag": "a",
+			"channel": "google",
 			"length": 3887
 		},
 		{
@@ -5436,6 +5433,7 @@
 			"draftId": "Indus Foods Website v2:717",
 			"count": 23,
 			"tag": "a",
+			"channel": "google",
 			"length": 1219
 		},
 		{
@@ -5444,6 +5442,7 @@
 			"draftId": "Indus Foods Website v2:717",
 			"count": 23,
 			"tag": "a",
+			"channel": "google",
 			"length": 1219
 		},
 		{
@@ -9915,7 +9914,8 @@
 			"property": "background-color",
 			"draftId": "Indus Foods Website v2:539",
 			"count": 1,
-			"tag": "a"
+			"tag": "a",
+			"channel": "google"
 		},
 		{
 			"hex": "#0A7EA8",
@@ -12555,6 +12555,7 @@
 			"tag": "a",
 			"ground": "#0A7EA8",
 			"text": true,
+			"channel": "google",
 			"chars": 14
 		},
 		{
@@ -12563,6 +12564,7 @@
 			"draftId": "Indus Foods Website v2:539",
 			"count": 1,
 			"tag": "a",
+			"channel": "google",
 			"length": 173
 		},
 		{
@@ -12571,6 +12573,7 @@
 			"draftId": "Indus Foods Website v2:539",
 			"count": 1,
 			"tag": "a",
+			"channel": "google",
 			"length": 173
 		},
 		{
@@ -12579,6 +12582,7 @@
 			"draftId": "Indus Foods Website v2:539",
 			"count": 1,
 			"tag": "a",
+			"channel": "google",
 			"length": 55
 		},
 		{
@@ -12587,6 +12591,7 @@
 			"draftId": "Indus Foods Website v2:539",
 			"count": 1,
 			"tag": "a",
+			"channel": "google",
 			"length": 55
 		},
 		{

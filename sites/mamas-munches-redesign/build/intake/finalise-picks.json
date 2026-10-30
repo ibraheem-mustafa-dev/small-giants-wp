@@ -1,0 +1,1500 @@
+{
+ "site-header-announcement-strip-bar": [
+  {
+   "key": "Home>SiteHeader@7#0/13#0",
+   "block": "sgs/site-header",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.92,
+   "reason": "The surface-root header spanning the full width at every width is the site header shell; the hero reading is only a box-size match."
+  },
+  {
+   "key": "Home>SiteHeader@7#0/7#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "An announcement-strip message between typed dot separators; plain copy, sgs/text."
+  },
+  {
+   "key": "Home>SiteHeader@7#0/10#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "An announcement-strip message between typed dot separators; plain copy, sgs/text."
+  },
+  {
+   "key": "Home>SiteHeader@7#0/12#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "An announcement-strip message between typed dot separators; plain copy, sgs/text."
+  },
+  {
+   "key": "Home>SiteHeader@7#0/22#0",
+   "block": "sgs/responsive-logo",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.9,
+   "reason": "The brand logo image (logo-horizontal.png, alt Mama's Munches) inside the home link; a logo image is the logo block."
+  },
+  {
+   "key": "Home>SiteHeader@7#0/24#0",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A 48px round icon-only link to the account page beside the basket; sgs/icon is linkable and draws a circle (DB description); sgs/account is the My Account page wrapper, not a header link."
+  },
+  {
+   "key": "Home>SiteHeader@7#0/28#0",
+   "block": "sgs/cart",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.9,
+   "reason": "The button opens the basket drawer the page map hands to the cart row; the standing rule (Bean S5, 2026-10-23) makes it sgs/cart in drawer mode with a pill trigger, which outranks the DB tag mapping."
+  },
+  {
+   "key": "Home>SiteHeader@7#0/37#0",
+   "block": "sgs/responsive-logo",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.9,
+   "reason": "The brand logo image inside the home link at 1440; a logo image is the logo block."
+  },
+  {
+   "key": "Home>SiteHeader@7#0/45#0",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A 48px round icon-only link to the account page beside the basket; sgs/icon is linkable and draws a circle (DB description); sgs/account is the My Account page wrapper, not a header link."
+  }
+ ],
+ "nav-drawer-left": [
+  {
+   "key": "Home>SiteHeader@7#0/58#0",
+   "block": "sgs/responsive-logo",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.9,
+   "reason": "The brand logo image at the top of the drawer; a logo image is the logo block."
+  },
+  {
+   "key": "Home>SiteHeader@7#0/61#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "A 13px bold uppercase line with .08em tracking above the drawer cards; a kicker in capitals with wide tracking is sgs/label."
+  },
+  {
+   "key": "Home>SiteHeader@7#0/64#0",
+   "block": "sgs/media",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A cover photo (photo-bags-pink.jpg) at the top of a drawer card link; a photograph is sgs/media, never the logo block."
+  },
+  {
+   "key": "Home>SiteHeader@7#0/67#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The card's description under its heading; sgs/text."
+  },
+  {
+   "key": "Home>SiteHeader@7#0/69#0",
+   "block": "sgs/media",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A cover photo (photo-gift-heart.jpg) at the top of a drawer card link; a photograph is sgs/media, never the logo block."
+  },
+  {
+   "key": "Home>SiteHeader@7#0/72#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The card's description under its heading; sgs/text."
+  },
+  {
+   "key": "Home>SiteHeader@7#0/105#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.65,
+   "reason": "The handwritten line heading the drawer's contact column, matching the footer, where the same script column titles (shop, help) are sgs/heading by the columnHeading rule."
+  },
+  {
+   "key": "Home>SiteHeader@7#0/127#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The review-count words beside the star label inside the Trustpilot link; sgs/text."
+  }
+ ],
+ "site-footer": [
+  {
+   "key": "Home>SiteFooter@250#0/7#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the @mamasmunches h2)."
+  },
+  {
+   "key": "Home>SiteFooter@250#0/26#0",
+   "block": "sgs/responsive-logo",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The round brand logo (logo-round.png, alt Mama's Munches); a logo image is the logo block."
+  },
+  {
+   "key": "Home>SiteFooter@250#0/42#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The script title of the footer's contact column; its sibling columns' script titles (shop, help) are sgs/heading by the columnHeading rule, so one footer keeps one block."
+  },
+  {
+   "key": "Home>SiteFooter@250#0/57#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A flex row holding the Privacy and Terms links, which are proposed as sgs/button; the DB group for SGS Buttons."
+  },
+  {
+   "key": "Home>SiteFooter@250#0/60#0",
+   "block": "sgs/business-info",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The site attribution line (Website by Small Giants Studio); attribution is Site Info, read through sgs/business-info."
+  }
+ ],
+ "page-home-dc-html": [
+  {
+   "key": "Home/13#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "A twinkling glyph (data-twinkle, a looping scale and rotate) inside the greeting line, set in Karla with a text stroke; kept as text so its typography carries; sgs/icon (emoji) could also draw it."
+  },
+  {
+   "key": "Home/20#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The hero's CTA pair (Build your box, Send a gift); sgs/multi-button groups SGS Buttons."
+  },
+  {
+   "key": "Home/24#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "A row of two links proposed as sgs/button (4.3 on Trustpilot, the Taster Trio offer); sgs/multi-button."
+  },
+  {
+   "key": "Home/31#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "A handwritten caption printed on a hero collage photo; the photo is absorbed into the hero's split media, so the caption has no frame to sit in; kept as text rather than lost."
+  },
+  {
+   "key": "Home/34#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "A handwritten caption printed on a hero collage photo; the photo is absorbed into the hero's split media, so the caption has no frame to sit in; kept as text rather than lost."
+  },
+  {
+   "key": "Home/37#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "A handwritten caption printed on a hero collage photo; the photo is absorbed into the hero's split media, so the caption has no frame to sit in; kept as text rather than lost."
+  },
+  {
+   "key": "Home/40#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The second line of the round sticker after its Baked label; sgs/text."
+  },
+  {
+   "key": "Home/41#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A short tag line on a pink ribbon (background, border, clip-path) laid over the hero image; a pill or tag of a few words is sgs/label."
+  },
+  {
+   "key": "Home/48#0",
+   "block": "sgs/media",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A product photograph filling a whole-card link; sgs/media."
+  },
+  {
+   "key": "Home/51#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "The card's Young Serif title at the h3 size; the script kicker before it (for me) was made the heading by cardTitle, so the card now holds two headings and the review should settle it."
+  },
+  {
+   "key": "Home/52#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The card's description sentence; sgs/text."
+  },
+  {
+   "key": "Home/56#0",
+   "block": "sgs/media",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A product photograph filling a whole-card link; sgs/media."
+  },
+  {
+   "key": "Home/59#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "The card's Young Serif title at the h3 size; the script kicker before it (for her) was made the heading by cardTitle, so the card now holds two headings and the review should settle it."
+  },
+  {
+   "key": "Home/60#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The card's description sentence; sgs/text."
+  },
+  {
+   "key": "Home/128#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
+  },
+  {
+   "key": "Home/146#0",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "The gift carousel's dots (375 only) step a scroll track over the product collection; no block in the DB draws carousel controls for woocommerce/product-collection, and copied buttons would be dead, so they go."
+  },
+  {
+   "key": "Home/149#0",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "The gift carousel's previous and next buttons (375 only) step a scroll track over the product collection; no block draws them for woocommerce/product-collection, and copied buttons would be dead, so they go."
+  },
+  {
+   "key": "Home/155#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "The handwritten note copy inside the gift-note card; sgs/text."
+  },
+  {
+   "key": "Home/156#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The note card's caption sentence; sgs/text."
+  },
+  {
+   "key": "Home/158#0",
+   "block": "sgs/responsive-logo",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The round brand logo stamped on the gift-card band; a logo image is the logo block."
+  },
+  {
+   "key": "Home/161#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The description under the Baby shower coming up? heading; sgs/text."
+  },
+  {
+   "key": "Home/166#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.65,
+   "reason": "The recipe card's title, set larger than the line after it; it titles the card (cardHeading pattern)."
+  },
+  {
+   "key": "Home/167#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The recipe card's subtitle; sgs/text."
+  },
+  {
+   "key": "Home/170#0",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A tick in a 32px yellow circle with a border beside each ingredient; sgs/icon draws a glyph in a circle with its own border (DB description)."
+  },
+  {
+   "key": "Home/172#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The ingredient name, Young Serif 22px above its description; it titles the row."
+  },
+  {
+   "key": "Home/173#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The ingredient's description; sgs/text."
+  },
+  {
+   "key": "Home/175#0",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A tick in a 32px yellow circle with a border beside each ingredient; sgs/icon draws a glyph in a circle with its own border (DB description)."
+  },
+  {
+   "key": "Home/177#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The ingredient name, Young Serif 22px above its description; it titles the row."
+  },
+  {
+   "key": "Home/178#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The ingredient's description; sgs/text."
+  },
+  {
+   "key": "Home/180#0",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A tick in a 32px yellow circle with a border beside each ingredient; sgs/icon draws a glyph in a circle with its own border (DB description)."
+  },
+  {
+   "key": "Home/182#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The ingredient name, Young Serif 22px above its description; it titles the row."
+  },
+  {
+   "key": "Home/183#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The ingredient's description; sgs/text."
+  },
+  {
+   "key": "Home/185#0",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A tick in a 32px yellow circle with a border beside each ingredient; sgs/icon draws a glyph in a circle with its own border (DB description)."
+  },
+  {
+   "key": "Home/187#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The ingredient name, Young Serif 22px above its description; it titles the row."
+  },
+  {
+   "key": "Home/188#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The ingredient's description; sgs/text."
+  },
+  {
+   "key": "Home/199#0",
+   "block": "sgs/media",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A square photograph (photo-tray-love.jpg) in the story section; sgs/media."
+  },
+  {
+   "key": "Home/200#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A handwritten caption on the story photo, beside its sgs/media; sgs/text."
+  },
+  {
+   "key": "Home/202#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (the story column's eyebrow)."
+  },
+  {
+   "key": "Home/207#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "The founder's handwritten sign-off at the end of the story; sgs/text."
+  },
+  {
+   "key": "Home/212#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
+  },
+  {
+   "key": "Home/219#0",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "The review slider's previous and next buttons; sgs/testimonial-slider draws its own arrows (showArrows in the DB)."
+  },
+  {
+   "key": "Home/233#0",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The review slider's dots; sgs/testimonial-slider draws its own dots (showDots in the DB)."
+  },
+  {
+   "key": "Home/239#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
+  }
+ ],
+ "build-your-zookie": [
+  {
+   "key": "Home/67#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
+  }
+ ],
+ "page-shop-dc-html": [
+  {
+   "key": "Shop/12#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1)."
+  },
+  {
+   "key": "Shop/27#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "The product count line ({{ countText }}) above the collection; it should be WooCommerce's result count in the shop toolbar, but the shop parts record did not stamp it, so it stays text until that is fixed."
+  },
+  {
+   "key": "Shop/34#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "A handwritten kicker at the top of the card link before its title; a kicker is sgs/label."
+  },
+  {
+   "key": "Shop/35#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "The card's Young Serif title at the h2 size; it titles the card."
+  },
+  {
+   "key": "Shop/36#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The card's description; sgs/text."
+  },
+  {
+   "key": "Shop/41#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "The card's Young Serif title at the h2 size; the script kicker before it was made the heading by cardTitle, so the card holds two headings."
+  },
+  {
+   "key": "Shop/44=sgs/text",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A pill chip ({{ k }}, border and 999px radius); its other copy (10% off every box) is sgs/label, and one list keeps one block."
+  },
+  {
+   "key": "Shop/48#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "The card's Young Serif title at the h2 size; the script kicker before it was made the heading by cardTitle, so the card holds two headings."
+  },
+  {
+   "key": "Shop/49#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The card's description; sgs/text."
+  }
+ ],
+ "page-product-dc-html-id-zookies": [
+  {
+   "key": "Product/14#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "The current crumb of a Home / Shop / Zookies trail; the trail is proposed as a container of buttons rather than sgs/breadcrumbs, which would draw this crumb itself."
+  },
+  {
+   "key": "Product/20#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A short tag line on a pink ribbon laid over the product image; a pill or tag is sgs/label."
+  },
+  {
+   "key": "Product/21#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "The product image thumbnails row (a loop of image buttons that switch the main image); no gallery block owns it in the proposal, so it stays the button group, which needs the review."
+  },
+  {
+   "key": "Product/124#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
+  },
+  {
+   "key": "Product/133",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The reviewer's name ({{ r.name }}) before the date in each review card; sgs/text."
+  }
+ ],
+ "product-buy-box": [
+  {
+   "key": "Product/108#0",
+   "block": "sgs/button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "The buy box surface holds only the Add to basket button, which the page already draws inside the product's commerce region; making it sgs/form would save an empty form post, so it stays a button."
+  }
+ ],
+ "product-gift-note": [
+  {
+   "key": "Product/101#0",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The characters-left counter under the gift-note textarea; sgs/form-field-textarea draws it (showCounter and maxLength in the DB)."
+  }
+ ],
+ "page-gifts-dc-html": [
+  {
+   "key": "Gifts/12#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1)."
+  },
+  {
+   "key": "Gifts/16#0",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "The title above the moment option picker; sgs/option-picker draws its own label (label in the DB)."
+  },
+  {
+   "key": "Gifts/20#0",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "The title above the budget option picker; sgs/option-picker draws its own label (label in the DB)."
+  },
+  {
+   "key": "Gifts/28#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A handwritten caption on the gift photo beside its sgs/media; sgs/text."
+  },
+  {
+   "key": "Gifts/31#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "Handwritten note-card copy; sgs/text."
+  },
+  {
+   "key": "Gifts/32#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "Handwritten note-card copy; sgs/text."
+  },
+  {
+   "key": "Gifts/33#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "Handwritten note-card sign-off; sgs/text."
+  },
+  {
+   "key": "Gifts/46#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
+  },
+  {
+   "key": "Gifts/51",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "The step number in a 52px filled circle with a border; a short pill-shaped badge is sgs/label."
+  },
+  {
+   "key": "Gifts/52",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "Each step's Young Serif 22px title ({{ s.t }}) above its description; it titles the step."
+  },
+  {
+   "key": "Gifts/53",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "Each step's description; sgs/text."
+  },
+  {
+   "key": "Gifts/57#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
+  },
+  {
+   "key": "Gifts/68#0",
+   "block": "sgs/responsive-logo",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "The round brand logo stamped on the note preview; a logo image is the logo block."
+  },
+  {
+   "key": "Gifts/69#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "The note preview's To line ({{ toLine }}), which the draft fills from the note form as the visitor types; kept as text."
+  },
+  {
+   "key": "Gifts/70#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "The note preview's message, which the draft fills from the note form as the visitor types; kept as text."
+  },
+  {
+   "key": "Gifts/71#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "The note preview's From line ({{ fromLine }}), which the draft fills from the note form as the visitor types; kept as text."
+  },
+  {
+   "key": "Gifts/74#0",
+   "block": "sgs/responsive-logo",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "The round brand logo on the gift-card band link; a logo image is the logo block."
+  },
+  {
+   "key": "Gifts/77#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "The band's Young Serif title at the h2 size; the script kicker before it was made the heading by cardTitle, so the band holds two headings."
+  },
+  {
+   "key": "Gifts/78#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The band's description; sgs/text."
+  }
+ ],
+ "gift-finder": [
+  {
+   "key": "Gifts/24#0",
+   "block": "sgs/button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "The gift finder's Show 4 gifts link jumps to #results; the surface holds only this link, so sgs/form would save an empty form post; a button keeps the link."
+  }
+ ],
+ "page-basket-dc-html": [
+  {
+   "key": "Basket/10#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1)."
+  },
+  {
+   "key": "Basket/12#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "The item-count pill inside the h1; a short pill is sgs/label."
+  },
+  {
+   "key": "Basket/25#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "The free-delivery progress message; a working cart computes it, but no commerce region was placed on this page (the hero rule took it), so it stays text until that is fixed."
+  },
+  {
+   "key": "Basket/32",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "An order line's product name; WooCommerce's Cart block draws the lines, but no commerce region was placed on this page (the hero rule took it), so it stays text until that is fixed."
+  },
+  {
+   "key": "Basket/33",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "An order line's variant; WooCommerce's Cart block draws the lines, but no commerce region was placed on this page (the hero rule took it), so it stays text until that is fixed."
+  },
+  {
+   "key": "Basket/37",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "An order line's quantity; WooCommerce's Cart block draws the lines, but no commerce region was placed on this page (the hero rule took it), so it stays text until that is fixed."
+  },
+  {
+   "key": "Basket/40",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "An order line's total; WooCommerce's Cart block draws the lines, but no commerce region was placed on this page (the hero rule took it), so it stays text until that is fixed."
+  },
+  {
+   "key": "Basket/45#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "The gift checkbox's title beside its checkbox; text."
+  },
+  {
+   "key": "Basket/46#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "The gift checkbox's hint; text."
+  },
+  {
+   "key": "Basket/59#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "A summary row label; the Cart block draws the totals, but no commerce region was placed on this page (the hero rule took it), so it stays text until that is fixed."
+  },
+  {
+   "key": "Basket/60#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "A summary amount; the Cart block draws the totals, but no commerce region was placed on this page (the hero rule took it), so it stays text until that is fixed."
+  },
+  {
+   "key": "Basket/62#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "A summary row label; the Cart block draws the totals, but no commerce region was placed on this page (the hero rule took it), so it stays text until that is fixed."
+  },
+  {
+   "key": "Basket/63#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "A summary amount; the Cart block draws the totals, but no commerce region was placed on this page (the hero rule took it), so it stays text until that is fixed."
+  },
+  {
+   "key": "Basket/65#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "A summary row label; the Cart block draws the totals, but no commerce region was placed on this page (the hero rule took it), so it stays text until that is fixed."
+  },
+  {
+   "key": "Basket/66#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "The summary total; the Cart block draws the totals, but no commerce region was placed on this page (the hero rule took it), so it stays text until that is fixed."
+  },
+  {
+   "key": "Basket/68#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "The Apple Pay and Google Pay pair; a button group, though the wallet buttons belong to WooCommerce's Cart and Checkout."
+  },
+  {
+   "key": "Basket/71#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "A reassurance line under the checkout buttons; sgs/text."
+  }
+ ],
+ "page-checkout-dc-html": [
+  {
+   "key": "Checkout/20#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "The mobile order-summary toggle label; WooCommerce's Checkout draws the summary, but no commerce region was placed on this page (the hero rule took it), so it stays text until that is fixed."
+  },
+  {
+   "key": "Checkout/21#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "The toggle's total; the Checkout block draws it, but no commerce region was placed on this page (the hero rule took it), so it stays text until that is fixed."
+  },
+  {
+   "key": "Checkout/33#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1)."
+  },
+  {
+   "key": "Checkout/35#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "The express wallet buttons (Apple Pay, Google Pay, PayPal); a button group, though they belong to WooCommerce's Checkout."
+  },
+  {
+   "key": "Checkout/43#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A fieldset legend titling a checkout step (Young Serif 22px); it heads the step."
+  },
+  {
+   "key": "Checkout/61#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "The create-account checkbox's title; text."
+  },
+  {
+   "key": "Checkout/62#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "The create-account checkbox's hint; text."
+  },
+  {
+   "key": "Checkout/86#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A fieldset legend titling a checkout step (Young Serif 22px); it heads the step."
+  },
+  {
+   "key": "Checkout/107#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A fieldset legend titling a checkout step (Young Serif 22px); it heads the step."
+  },
+  {
+   "key": "Checkout/122#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "The order-summary card's title (Young Serif 24px)."
+  },
+  {
+   "key": "Checkout/126",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "An order line's quantity badge; the Checkout block draws the lines, but no commerce region was placed on this page (the hero rule took it), so it stays text until that is fixed."
+  },
+  {
+   "key": "Checkout/128",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "An order line's name; the Checkout block draws the lines, but no commerce region was placed on this page (the hero rule took it), so it stays text until that is fixed."
+  },
+  {
+   "key": "Checkout/129",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "An order line's variant; the Checkout block draws the lines, but no commerce region was placed on this page (the hero rule took it), so it stays text until that is fixed."
+  },
+  {
+   "key": "Checkout/130",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "An order line's total; the Checkout block draws the lines, but no commerce region was placed on this page (the hero rule took it), so it stays text until that is fixed."
+  },
+  {
+   "key": "Checkout/135#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "A summary label; the Checkout block draws the totals, but no commerce region was placed on this page (the hero rule took it), so it stays text until that is fixed."
+  },
+  {
+   "key": "Checkout/136#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "A summary amount; the Checkout block draws the totals, but no commerce region was placed on this page (the hero rule took it), so it stays text until that is fixed."
+  },
+  {
+   "key": "Checkout/138#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "A summary label; the Checkout block draws the totals, but no commerce region was placed on this page (the hero rule took it), so it stays text until that is fixed."
+  },
+  {
+   "key": "Checkout/139#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "A summary amount; the Checkout block draws the totals, but no commerce region was placed on this page (the hero rule took it), so it stays text until that is fixed."
+  },
+  {
+   "key": "Checkout/141#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "A summary label; the Checkout block draws the totals, but no commerce region was placed on this page (the hero rule took it), so it stays text until that is fixed."
+  },
+  {
+   "key": "Checkout/142#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "The summary total; the Checkout block draws the totals, but no commerce region was placed on this page (the hero rule took it), so it stays text until that is fixed."
+  },
+  {
+   "key": "Checkout/143#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "A reassurance line under the summary; sgs/text."
+  }
+ ],
+ "page-contact-dc-html": [
+  {
+   "key": "Contact/12#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1)."
+  },
+  {
+   "key": "Contact/25#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "The WhatsApp card's description; its second sentence (Number to be added.) is a brief placeholder, not design, so the words need the review."
+  },
+  {
+   "key": "Contact/33#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The Instagram card's description; sgs/text."
+  },
+  {
+   "key": "Contact/75#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "A handwritten eyebrow above the quick-answer links; sgs/label."
+  },
+  {
+   "key": "Contact/79#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A dashed-border note paragraph; sgs/text (its border is Fill's to measure)."
+  }
+ ],
+ "page-help-dc-html": [
+  {
+   "key": "Help/11#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1)."
+  },
+  {
+   "key": "Help/24#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "The answer count ({{ countText }}) above the filtered FAQ list; text."
+  },
+  {
+   "key": "Help/30",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "Each FAQ question inside its toggle button; the Help FAQ list was not read as sgs/accordion (the Home FAQ was), so it needs the review."
+  },
+  {
+   "key": "Help/31",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "The + in a 36px bordered circle on each FAQ toggle; an accordion would draw it as its icon; sgs/icon until the list is the accordion."
+  },
+  {
+   "key": "Help/39#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
+  },
+  {
+   "key": "Help/45#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A delivery option's name in the delivery table; sgs/text."
+  },
+  {
+   "key": "Help/47#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A delivery option's timing; sgs/text."
+  },
+  {
+   "key": "Help/50#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A delivery option's price note; sgs/text."
+  },
+  {
+   "key": "Help/53#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A delivery option's name; sgs/text."
+  },
+  {
+   "key": "Help/55#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A delivery option's timing; sgs/text."
+  },
+  {
+   "key": "Help/56#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A delivery option's price; sgs/text."
+  },
+  {
+   "key": "Help/59#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A delivery option's name; sgs/text."
+  },
+  {
+   "key": "Help/61#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A delivery option's note; sgs/text."
+  },
+  {
+   "key": "Help/62#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A delivery option's price; sgs/text."
+  },
+  {
+   "key": "Help/63#0",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "A brief note to the client (Prices and timings to be confirmed by Zainab.), not design; a brief-only line is removed."
+  },
+  {
+   "key": "Help/66#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
+  },
+  {
+   "key": "Help/75#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "The bold lead-in (Vegan base:) of a paragraph that was split into a container because it holds inline bold; text keeps the words."
+  },
+  {
+   "key": "Help/79#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "The Privacy policy title (Young Serif 20px) above its paragraph; it titles the block."
+  },
+  {
+   "key": "Help/82#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "The Terms and conditions title (Young Serif 20px) above its paragraph; it titles the block."
+  },
+  {
+   "key": "Help/87#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "The card link's Young Serif 24px title; the script kicker before it (still stuck?) was made the heading by cardTitle, so the card holds two headings."
+  }
+ ],
+ "page-signin-dc-html": [
+  {
+   "key": "SignIn/11#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1)."
+  },
+  {
+   "key": "SignIn/23#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "A two-button tablist switching between the sign-in and register forms; a button group, though the account block draws its own sign-in and register cards."
+  },
+  {
+   "key": "SignIn/36#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "The form's submit button and forgotten-password link in one row; sgs/multi-button."
+  },
+  {
+   "key": "SignIn/96#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "A handwritten eyebrow above the benefits list; sgs/label."
+  },
+  {
+   "key": "SignIn/100",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A tick in a 32px yellow bordered circle beside each benefit; sgs/icon draws a glyph in a circle with its own border."
+  },
+  {
+   "key": "SignIn/102",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "Each benefit's Young Serif 20px title ({{ k.t }}) above its description."
+  },
+  {
+   "key": "SignIn/103",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "Each benefit's description; sgs/text."
+  }
+ ],
+ "page-account-dc-html": [
+  {
+   "key": "Account/11#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1)."
+  }
+ ],
+ "cancel-subscription-confirm": [
+  {
+   "key": "Account/131#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The confirm panel's Young Serif title above its explanation and buttons."
+  },
+  {
+   "key": "Account/132#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The confirm panel's explanation; sgs/text."
+  },
+  {
+   "key": "Account/133#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The keep and cancel buttons in one row; sgs/multi-button."
+  }
+ ],
+ "address-form-add-edit": [
+  {
+   "key": "Account/162#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The address form's title ({{ formTitle }}, Young Serif 24px)."
+  },
+  {
+   "key": "Account/176#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The form's submit and cancel buttons in one row; sgs/multi-button."
+  }
+ ],
+ "account-details-change-password": [
+  {
+   "key": "Account/200#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The change-password form's title (Young Serif 22px)."
+  }
+ ],
+ "checkout-header": [
+  {
+   "key": "Checkout/7#0",
+   "block": "sgs/site-header",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.9,
+   "reason": "The checkout page's own header spanning the full width; the site header shell."
+  },
+  {
+   "key": "Checkout/11#0",
+   "block": "sgs/responsive-logo",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.9,
+   "reason": "The brand logo image in the checkout header; the logo block."
+  },
+  {
+   "key": "Checkout/12#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.65,
+   "reason": "The Secure checkout line with its padlock glyph at the end of the header row; text."
+  }
+ ]
+}
