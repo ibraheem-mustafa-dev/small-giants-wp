@@ -290,6 +290,20 @@ export function confirmedPageMap( intake ) {
 // --apply-review. Returns the exit code. Bean's confirmed skeleton choices (intake-run-finalise.mjs::reviewDecisions)
 // go into sites/<client>/build/skeleton/decisions.json; `knownBlock` (default: the framework DB, read-only) must know
 // every block they name, or nothing is written.
+// The words of an element as the surface's saved inventory recorded them (build/intake/inventories/<surface>.json), read
+// once per surface; undefined when the inventory or the element is missing.
+export function inventoryWords( dir ) {
+	const bySurface = new Map();
+	return ( surface, key ) => {
+		if ( ! bySurface.has( surface ) ) {
+			const file = path.join( dir, 'inventories', `${ surface }.json` );
+			const els = fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ).elements || [] : [];
+			bySurface.set( surface, new Map( els.map( ( e ) => [ e.key, e.words ?? '' ] ) ) );
+		}
+		return bySurface.get( surface ).get( key );
+	};
+}
+
 export function applyIntakeReview( o, { log = ( l ) => process.stderr.write( `${ l }\n` ), today = isoDay(), knownBlock = null } = {} ) {
 	const at = pathsFor( o.repo, o.client );
 	const say = ( l ) => log( `[intake --apply-review] ${ l }` );
@@ -335,7 +349,7 @@ export function applyIntakeReview( o, { log = ( l ) => process.stderr.write( `${
 	const ajv = loadAjv();
 	const problems = [ ...recordProblems( res.intake, ajv ), ...pageMapProblems( pageMap, ajv ).map( ( p ) => `confirmed page map ${ p }` ),
 		...lostIds( Array.isArray( current ) ? current : [], pageMap, marks ).map( ( g ) => `confirmed page map loses the WordPress id of ${ g }; mark that row drop to remove it` ) ];
-	const decisions = reviewDecisions( res.intake, today );
+	const decisions = reviewDecisions( res.intake, today, inventoryWords( at.dir ) );
 	if ( decisions.length ) {
 		const db = knownBlock ? null : dbKnownBlock();
 		try {

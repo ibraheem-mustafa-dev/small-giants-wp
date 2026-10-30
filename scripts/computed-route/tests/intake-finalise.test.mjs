@@ -227,7 +227,10 @@ test( 'MUST FAIL: --apply-review saves block:<slug> marks and accepted finaliser
 	assert.equal( fs.existsSync( path.join( HERE, '..', 'data', 'skeleton-decisions.json' ) ) ? JSON.stringify( JSON.parse( fs.readFileSync( path.join( HERE, '..', 'data', 'skeleton-decisions.json' ), 'utf8' ) ) ).includes( CLIENT ) : false, false, 'the framework-wide file is never written' );
 	const varied = { ...JSON.parse( read( 'intake.json' ) ) };
 	varied.skeletons.footer.rows[ 1 ].distinctWords = 3;
-	assert.deepEqual( reviewDecisions( varied, '2026-10-12' ).filter( ( d ) => 'footer' === d.surface && d.element.key.startsWith( 'Site/18' ) ).map( ( d ) => d.element.key ), [ 'Site/18#0' ], 'copies with other words save the first copy only' );
+	assert.deepEqual( reviewDecisions( varied, '2026-10-12' ).filter( ( d ) => 'footer' === d.surface && d.element.key.startsWith( 'Site/18' ) ).map( ( d ) => d.element.key ), [ 'Site/18#0' ], 'negative control: copies with other words and no inventory words save the first copy only' );
+	const own = { 'Site/18#0': 'Pricing', 'Site/18#1': 'Delivery', 'Site/18#2': 'Payment' };
+	const each = reviewDecisions( varied, '2026-10-12', ( s, k ) => ( 'footer' === s ? own[ k ] : undefined ) ).filter( ( d ) => 'footer' === d.surface && d.element.key.startsWith( 'Site/18' ) );
+	assert.deepEqual( each.map( ( d ) => [ d.element.key, d.element.words ] ), Object.entries( own ), 'MUST FAIL: every copy is saved with its own words, so one mark settles the whole repeated item' );
 } );
 
 test( 'MUST FAIL: --apply-review naming an unknown block in a block:<slug> mark writes nothing', () => {

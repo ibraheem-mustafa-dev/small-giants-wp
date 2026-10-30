@@ -149,10 +149,11 @@ export function applyIntakePicks( intake, picks ) {
 // The skeleton choices --apply-review saves in the client decisions file (§3.4 step 4): a row Bean marked
 // `block:<slug>` (his correction), and a finaliser pick he accepted. A confident writer proposal he accepted is not
 // saved: it already follows from the framework DB, so a decision would add no evidence the next run lacks. Each copy of
-// a collapsed row is saved under its own element key when the copies share one text; otherwise only the first copy
-// (the element signature is tag and words, so a copy with other words would read as stale). Returns
-// [ { surface, element: { key, tag, words }, choice, reason } ].
-export function reviewDecisions( intake, today ) {
+// a collapsed row is saved under its own element key: with the row's words when the copies share one text, and with each
+// copy's own words (the element signature is tag and words) when they differ and `wordsOf( surface, key )` knows them
+// (the saved inventory, lib/intake-run.mjs::inventoryWords); a copy whose words it does not know is not saved, as a
+// decision under another copy's words would read as stale. Returns [ { surface, element: { key, tag, words }, choice, reason } ].
+export function reviewDecisions( intake, today, wordsOf = () => undefined ) {
 	const marks = new Map( ( intake.review || [] ).map( ( r ) => [ r.rowId, r.mark ] ) );
 	const out = [];
 	for ( const [ surface, s ] of Object.entries( intake.skeletons || {} ) ) {
@@ -166,12 +167,14 @@ export function reviewDecisions( intake, today ) {
 			}
 			const choice = own ? { block: own } : removed || 'remove' === r.action ? { remove: true } : { block: r.block, ...( r.attributes ? { attributes: r.attributes } : {} ) };
 			const reason = own ? `Bean marked block:${ own } in the intake review on ${ today }` : removed ? `Bean marked remove in the intake review on ${ today }: the element is absorbed into its parent block` : `Bean accepted the finaliser's pick in the intake review on ${ today }: ${ r.reason || '' }`.trim();
-			const one = Boolean( r.distinctWords && r.distinctWords > 1 );
-			const homes = [ { surface, keys: r.keys || [ r.key ] }, ...( one ? [] : r.alsoIn || [] ) ];
+			const distinct = Boolean( r.distinctWords && r.distinctWords > 1 );
+			const homes = [ { surface, keys: r.keys || [ r.key ] }, ...( r.alsoIn || [] ) ];
 			for ( const h of homes ) {
-				for ( const key of one ? h.keys.slice( 0, 1 ) : h.keys ) {
-					out.push( { surface: h.surface, element: { key, tag: r.tag, words: r.words ?? '' }, choice, reason } );
-				}
+				h.keys.forEach( ( key, i ) => {
+					const own = distinct ? wordsOf( h.surface, key ) : r.words ?? '';
+					const words = undefined === own && distinct && h.surface === surface && 0 === i ? r.words ?? '' : own;
+					undefined !== words && out.push( { surface: h.surface, element: { key, tag: r.tag, words }, choice, reason } );
+				} );
 			}
 		}
 	}
