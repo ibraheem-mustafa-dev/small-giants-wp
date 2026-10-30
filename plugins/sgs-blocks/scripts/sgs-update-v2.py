@@ -7196,9 +7196,10 @@ def stage_13_export_db_to_csv(dry_run: bool = False, self_test: bool = False) ->
 # ---------------------------------------------------------------------------
 
 def stage_14_block_identity_facts(conn: sqlite3.Connection, dry_run: bool = False) -> dict:
-    """Replace the source='code' rows of block_identity_facts with a fresh derivation from the block, helper, filter and
-    view-script code (scripts/lib/block_identity_facts.py::seed; live rows from step A2b are kept). Missing table: an
-    error naming the migration."""
+    """Replace the rows of block_identity_facts: source='code' from a fresh derivation from the block, helper, filter and
+    view-script code, source='live' from scripts/computed-route/data/block-live-facts.json (step A2b's live read; a value
+    imported only where the code row is unknown) (scripts/lib/block_identity_facts.py::seed). Missing table: an error
+    naming the migration."""
     if not conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='block_identity_facts'").fetchone():
         return {"status": "ERROR", "error": "table block_identity_facts absent: apply migrations/2026-10-30-block-identity-facts-table.py (dbschema/migrate.py --apply)"}
     lib = Path(__file__).resolve().parent / "lib"
@@ -7209,7 +7210,15 @@ def stage_14_block_identity_facts(conn: sqlite3.Connection, dry_run: bool = Fals
     print(f"Stage 14: {result['rows']} rows over {result['blocks']} blocks{' (dry run: nothing written)' if dry_run else ''}")
     for key, n in result["by_fact_state"].items():
         print(f"  {key:28} {n}")
-    return {"status": "dry-run" if dry_run else "seeded", "rows": result["rows"], "blocks": result["blocks"]}
+    live = result["live"]
+    if not live["file"]:
+        print("  live rows: none (scripts/computed-route/data/block-live-facts.json absent)")
+    else:
+        print(f"  live rows: {live['imported']} over {live['blocks']} blocks; settled per cause (live yes of code unknown): "
+              + ", ".join(f"{c} {v}" for c, v in live["settled_by_cause"].items()))
+        gate_a = live["conflict"] + live["read_conflict"]
+        print(f"  live yes beside code no (gate A conflicts, never imported): {len(gate_a)}" + (": " + "; ".join(gate_a[:12]) if gate_a else ""))
+    return {"status": "dry-run" if dry_run else "seeded", "rows": result["rows"], "blocks": result["blocks"], "live_rows": live["imported"]}
 
 
 def _build_stage_dispatch(conn: sqlite3.Connection, args: argparse.Namespace) -> dict[int, Callable[[], dict]]:

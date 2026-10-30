@@ -14,6 +14,8 @@ A throwaway repo tree is written to a temp folder and read by the real extractor
   table and tab are no; its view script moves a track from setInterval: self-moving timer yes;
 - sgs/acme-badge carries a registry brand's name: platform acme yes; sgs/fx-plain: no;
 - sgs/fx-field may sit only inside sgs/fx-form (a form): context form yes, any no;
+- the live import (`live_rows`): a live yes on sgs/fx-dyn's unknown `table` becomes one source='live' row; the same on
+  sgs/fx-plain's code `no` is a conflict and no row; a live entry that is not `yes` is ignored;
 - the roster predicate equals `sgs-update-v2.py::_extension_applies` on every real block.json and roster rule.
 """
 from __future__ import annotations
@@ -26,7 +28,7 @@ import tempfile
 from pathlib import Path
 
 from identity_markup import DbInputs, Extractor, Paths, _extension_applies
-from block_identity_facts import Rows
+from block_identity_facts import Rows, live_rows
 
 FIXTURE_PHP = {
     "includes/helpers-fixture.php": """<?php
@@ -160,6 +162,18 @@ def run() -> int:
         ]
         fails = [f"{slug} {fact}={value}: expected {want}, got {state.get((slug, fact, value), 'no row')} ({why})"
                  for slug, fact, value, want, why in expect if state.get((slug, fact, value)) != want]
+        # The live import: a live yes lands only on a code unknown; beside a code no it is a conflict, never a row.
+        live_file = tmp / "block-live-facts.json"
+        live_file.write_text(json.dumps({"readOn": "2026-10-30", "blocks": {
+            "sgs/fx-dyn": {"facts": {"renders-tag": {"table": {"state": "yes", "evidence": ["local-x / @375 .wp-block-sgs-fx-dyn[0] table"]}}}},
+            "sgs/fx-plain": {"facts": {"renders-tag": {"table": {"state": "yes", "evidence": ["local-x / @375 .wp-block-sgs-fx-plain[0] table"]}},
+                                       "renders-role": {"tablist": {"state": "unknown", "evidence": []}}}},
+        }}), encoding="utf-8")
+        live, lstats = live_rows(rows, live_file)
+        if [r[:5] for r in live] != [("sgs/fx-dyn", "renders-tag", "table", "yes", "live")]:
+            fails.append(f"sgs/fx-dyn renders-tag=table (live): expected exactly one live yes row, got {[r[:5] for r in live]}")
+        if lstats["conflict"] != ["sgs/fx-plain renders-tag=table"]:
+            fails.append(f"sgs/fx-plain renders-tag=table (live): expected a conflict, got {lstats['conflict']}")
         if any(r[1] == "platform" and r[2] == "phone" for r in rows):
             fails.append("a contact entry (no colour) became a platform")
         con = sqlite3.connect(":memory:")

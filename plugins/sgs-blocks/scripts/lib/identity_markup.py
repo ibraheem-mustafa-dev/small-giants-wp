@@ -46,6 +46,7 @@ class Paths:
     qualifying: Path = BLOCKS / "extensions" / "generated-fx-qualifying-blocks.json"
     brands: Path = PLUGIN / "includes" / "data" / "brand-registry.json"
     decisions: Path = REPO / "scripts" / "computed-route" / "data" / "skeleton-decisions.json"
+    live: Path = REPO / "scripts" / "computed-route" / "data" / "block-live-facts.json"
 
 
 @dataclass
