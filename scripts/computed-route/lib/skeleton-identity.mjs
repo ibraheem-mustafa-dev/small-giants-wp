@@ -24,7 +24,9 @@ import { makeDraftFacts, RANKING_FACTS } from './skeleton-identity-draft.mjs';
 import { paletteBrands } from './brand-registry.mjs';
 
 // The facts that rule a block out: a meaning (a role, written or implied by the tag) or an aria state or property the block
-// can never show (Bean 2026-10-30). Open state, motion, held values, parts and platform only rank.
+// can never show (Bean 2026-10-30), and a kind of value (an emoji, a stroke-drawn icon) no field of a restricted block accepts;
+// an emoji never rules out a block with a text setting, which prints it as text. Open state, motion, held values, parts and
+// platform only rank.
 const MEANING = new Set( [ 'renders-role', 'implied-role', 'renders-aria' ] );
 const fmt = ( f ) => `${ f.fact } ${ f.value }`;
 const at = ( f, n = 3 ) => [ ...f.at ].slice( 0, n ).join( ', ' ) + ( f.at.size > n ? ` (+${ f.at.size - n })` : '' );
@@ -49,7 +51,7 @@ export function makeIdentity( { m, facts, surface = {}, logicOf = () => null, ca
 	const candidates = table.blocks.filter( ( b ) => 'no' !== table.state( b, 'context', ctxValue ) );
 	const maxShare = R.maxShare ?? 0.5;
 	const naming = ( f ) => RANKING_FACTS.has( f.fact ) && 'platform' !== f.fact && table.yesShare( f.fact, f.value ) <= maxShare;
-	const draft = makeDraftFacts( { m, read: m.read, logicOf, brands: paletteBrands( facts.brands, table.blocks.filter( ( b ) => /^sgs\/[a-z0-9]+-reviews$/.test( b ) ) ), platforms: table.platforms, divider: facts.decisions.rules?.typedDivider, carousels, owned, keepAll: ( fact, value ) => 'platform' === fact || naming( { fact, value } ) } );
+	const draft = makeDraftFacts( { m, read: m.read, logicOf, brands: paletteBrands( facts.brands, table.blocks.filter( ( b ) => /^sgs\/[a-z0-9]+-reviews$/.test( b ) ) ), platforms: table.platforms, divider: facts.decisions.rules?.typedDivider, carousels, owned, kinds: table.kinds, keepAll: ( fact, value ) => [ 'platform', 'shows-part' ].includes( fact ) || naming( { fact, value } ) } );
 	// Per fact and value, the candidates that cannot show it and those that show it as yes (read once per surface).
 	const pool = new Set( candidates );
 	const cannot = new Map();
@@ -68,7 +70,8 @@ export function makeIdentity( { m, facts, surface = {}, logicOf = () => null, ca
 	// What rules a block out at an element: the first fact its region shows that the block cannot show, or null.
 	const ruledOut = ( block, e ) => {
 		for ( const f of listOf( e ) ) {
-			if ( MEANING.has( f.fact ) && ( pool.has( block ) ? cannotShow( f ).has( block ) : ! table.canShow( block, f.fact, f.value ) ) ) {
+			const kind = 'accepts-kind' === f.fact && ! ( /icon:emoji$/.test( f.value ) && table.hasText( block ) );
+			if ( ( MEANING.has( f.fact ) || kind ) && ( pool.has( block ) ? cannotShow( f ).has( block ) : ! table.canShow( block, f.fact, f.value ) ) ) {
 				return { block, fact: f.fact, value: f.value, at: [ ...f.at ], why: `${ block } never shows ${ fmt( f ) } (shown at ${ at( f ) })` };
 			}
 		}
