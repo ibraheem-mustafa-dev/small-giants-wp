@@ -678,7 +678,7 @@
 			"record": "Shop filter + sort",
 			"file": "Shop.dc.html",
 			"problem": null,
-			"units": 6,
+			"units": 7,
 			"parts": [
 				{
 					"id": "filter-sort",
@@ -719,6 +719,26 @@
 					],
 					"sample": [
 						"{{ c.label }} {{ c.n }}"
+					]
+				},
+				{
+					"id": "filter-result-count",
+					"label": "Result count",
+					"home": {
+						"type": "template-block",
+						"file": "theme/sgs-theme/templates/archive-product.html",
+						"contains": "wp:woocommerce/product-results-count"
+					},
+					"write": null,
+					"by": [
+						"structure"
+					],
+					"units": 1,
+					"locators": [
+						"Shop/27"
+					],
+					"sample": [
+						"{{ countText }}"
 					]
 				}
 			],
@@ -1053,11 +1073,13 @@
 						"type": "setting",
 						"block": "sgs/cart",
 						"settings": [
-							"viewCartLabel",
-							"panelShowViewCart"
+							"viewCartLabel"
 						]
 					},
-					"write": null,
+					"write": {
+						"panelShowViewCart": true,
+						"viewCartLabel": "View full basket"
+					},
 					"by": [
 						"structure"
 					],
@@ -1212,9 +1234,9 @@
 		}
 	],
 	"counts": {
-		"units": 76,
-		"parts": 44,
-		"mapped": 17,
+		"units": 77,
+		"parts": 45,
+		"mapped": 18,
 		"missing": 26,
 		"elsewhere": 1,
 		"hinted": 8,
