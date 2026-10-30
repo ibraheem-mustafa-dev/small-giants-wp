@@ -246,7 +246,7 @@ test( 'MUST FAIL (a card of word parts): the testimonial\'s quote, name and date
 	assert.ok( ! ( `${ META } > .sgs-testimonial__name` in ( bare.draftSlots || {} ) ) );
 } );
 
-test( 'MUST FAIL (a product card\'s content part): the saving badge is the element printing the saving label; the product name, which the block draws from the product, pairs with no content part', () => {
+test( 'MUST FAIL (a product card\'s content part): the saving badge is the element printing the saving label; with no text path for the product name, the name pairs with no content part', () => {
 	const r = one( 'sgs/product-card', 'Root/138#0', F.elements.card );
 	assert.equal( r.slots[ 'div:nth-of-type(1) > .sgs-product-card__saving-badge' ]?.tpl, 'Root>Frame Card@139#0/9#0' );
 	assert.ok( ! Object.entries( r.slots ).some( ( [ k, f ] ) => 'Root>Frame Card@139#0/15#0' === f.tpl && /__(title|attribute-tag|saving)/.test( k ) ) );
@@ -257,6 +257,23 @@ test( 'MUST FAIL (a product card\'s content part): the saving badge is the eleme
 		assert.ok( ! ( part in r.slots ), `${ part } is not the wrapping section` );
 		assert.match( r.unpaired.find( ( u ) => part === u.slot ).reason, /only wraps it/ );
 	}
+} );
+
+// The product name's text path as the calibration reads it with the fixture's name override (calibration-fixtures.json
+// overrideElements): the deepest element printing the marker in the live card's title, its link.
+const NAME_PATH = '.sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__title > .sgs-focus-source';
+test( 'a product card\'s name (proof on the client draft): with the name\'s text path, the element printing the record\'s name field is the title\'s link on its own', () => {
+	assert.ok( ! ( NAME_PATH in one( 'sgs/product-card', 'Root/138#0', F.elements.card ).slots ), 'the cause: the slot map held no text path for productName' );
+	const text = { ...F.cal[ 'sgs/product-card' ].text, productName: { path: NAME_PATH } };
+	const m = inventoryModel( { elements: F.elements.card } );
+	const pair = ( fieldsOf ) => {
+		const node = { name: 'sgs/product-card', draftRef: { tpl: 'Root/138#0' }, attributes: {}, innerBlocks: [] };
+		pairSkeletonParts( { db, tree: [ node ], m, finder, calSettings: ( b ) => F.cal[ b ].settings, calPaint: ( b ) => F.cal[ b ].elements || {}, calText: () => text, fieldsOf } );
+		return node.draftSlots || {};
+	};
+	assert.equal( pair( ( e ) => F.fields[ e.key ] || [] )[ NAME_PATH ]?.tpl, 'Root>Frame Card@139#0/15#0' );
+	// Negative control: without the record's fields, nothing says which element prints the name.
+	assert.ok( ! ( NAME_PATH in pair( () => [] ) ) );
 } );
 
 test( 'wrappers only the draft draws around a loop or around the parts pass through', () => {

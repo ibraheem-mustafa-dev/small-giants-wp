@@ -578,7 +578,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `tests/calibrate-presence.test.mjs` | FR-47-2 (L7.2): a boolean that shows and hides elements records both; an element rendered but not displayed counts as absent; a boolean that only recolours yields no presence entry. |
 | `tests/calibrate-text.test.mjs` | FR-47-2 (L7.3): the deepest element carrying the marker string is the text path, not its wrapper; both `content` and `text-content` roles get a marker; a setting holding a list or an object takes none. |
 | `tests/calibrate-link.test.mjs` | FR-47-2 (L7.4): a URL setting landing on a nested `<a href>` records that path and attribute; a target setting records `target`, not `href`; every link needle survives percent-encoding whole. |
-| `tests/calibrate-content-rows.test.mjs` | FR-47-2: the role query reads both halves of each role pair and only SGS-owned rows (R-47-10); content instances carry their own preconditions, so a variant-gated setting is not credited with everything its variant renders. |
+| `tests/calibrate-content-rows.test.mjs`, `tests/content-variants.mutations.json` | FR-47-2: the role query reads both halves of each role pair and only SGS-owned rows (R-47-10); content instances carry their own preconditions, so a variant-gated setting is not credited with everything its variant renders; a text or link setting is read under every fixture variant too and the first variant printing it gives its path (the product card's typed price; MUST FAIL, 7 of 7 mutations killed). |
 | `tests/independent-check.test.mjs` | PA-4: screen-reader-only and off-page text is not counted as painted by a site's `qa/independent-check.mjs`. |
 | `tests/walker-reads.test.mjs` | A-1 at unit level: motion timings and `::before`/`::after` layers are rows Solve can write on calibration's layer path; a declared width passes Solve's used-value gate; a text run's spacing is a `row-gap` row. |
 | `tests/sweep.test.mjs` | The sweep (A3): a surface's issue total equals `wholePage`'s distinct count, unmapped walker states included (class `unmapped-state`); a row two surfaces walking one config share counts once (`alsoIn`), while block-less rows of the same pair name from two configs stay two; a surface with no report is unmeasured; another surface's block is not counted. |
@@ -1197,14 +1197,14 @@ Re-exports `MARKER_DURATION_MS` and `MARKER_EASING` from `lib/calibrate-markers.
 - `contentRowsFor(db, block)` → one block's content settings by role, SGS-owned only: `{ presence, text, link }`.
 - `contentMarkerFor(row, kind, schema)` → the marker for one content setting (`{ label, attrs, needle }`), or null when its shape can hold none.
 - `variantPresenceValues(schema, variant, current)` → the values of a block's variant setting that get their own presence reading.
-- `planContentInstances(block, { contentRows, variant, schema, fixture, ctx })` → `{ instances, noMarker }`: one instance per content setting plus the baseline instances their preconditions need.
+- `planContentInstances(block, { contentRows, variant, schema, fixture, ctx })` → `{ instances, noMarker }`: one instance per content setting plus the baseline instances their preconditions need; each text and link setting again under every later fixture variant (`variant` its index), so a setting only a later variant renders is read.
 - `needlesOf(instances)` → every needle the page must be searched for, once each.
 - `readContentInPage(args)` → in-page: per element, whether it is present and which needles its text and link attributes carry.
 - `readContentAll(page, url, instances, needles)` → the content read of every instance at each width, `{ width: [ reads ] }`.
 - `presenceFrom(defRead, markRead)` → `{ shows, hides }`: the elements a flip makes appear and disappear, from existence and display only, so a recolour yields nothing.
 - `textFrom(needle, markRead)` → `{ path, reachedAt }` for the deepest element carrying the marker, or null.
 - `linkFrom(needle, markRead)` → `{ path, attr }` for the element carrying the marker in its most preferred link attribute, or null.
-- `collectContent(instances)` → the cache file's `text`, `presence` and `link` keys, each omitted when the block has nothing of that kind.
+- `collectContent(instances)` → the cache file's `text`, `presence` and `link` keys, each omitted when the block has nothing of that kind; a setting read under several variants takes the earliest variant printing it (by `variant`, the default first).
 - `structurePresenceValues(row, schema, variant, current)` → the values of a structure setting that get their own presence reading: every enum value but the empty one and the one the default instance already renders; a setting that is not a string or is the block's variant setting is planned elsewhere. `lib/calibrate.mjs` re-exports it.
 
 ### `lib/calibration-lock.mjs`

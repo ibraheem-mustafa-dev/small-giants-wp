@@ -133,9 +133,10 @@ export function structurePresenceValues( row, schema, variant, current = {} ) {
 }
 
 // Every content instance for one block: one per presence row (its boolean flipped), one per other value of the block's
-// variant setting, one per text row (its marker string) and one per link row (its marker URL). Each carries the
-// preconditions its element needs (lib/calibrate-instances.mjs::preconditionsFor), so a setting gated by a show
-// toggle or living under one variant still renders. Returns { instances, noMarker }.
+// variant setting, one per text row (its marker string) and one per link row (its marker URL), the text and link rows again
+// under each later fixture variant. Each carries the preconditions its element needs
+// (lib/calibrate-instances.mjs::preconditionsFor), so a setting gated by a show toggle or living under one variant still
+// renders. Returns { instances, noMarker }.
 export function planContentInstances( block, { contentRows, variant, schema = {}, fixture = {}, ctx = {} } ) {
 	const base = variantAttributes( fixture.attributes, ( fixture.variants || [] )[ 0 ] || {} );
 	const instances = [];
@@ -143,21 +144,21 @@ export function planContentInstances( block, { contentRows, variant, schema = {}
 	// A marker needing preconditions is read against a baseline instance carrying the same preconditions and not the
 	// marker, one per distinct set: otherwise everything the precondition itself renders (a whole variant) reads as the
 	// setting's own effect. A marker needing none is read against the chunk's plain default instance (baseKey null).
-	const addBase = ( pre ) => {
-		const baseKey = `content:${ JSON.stringify( pre ) }`;
+	const addBase = ( pre, vattrs = base, vi = 0 ) => {
+		const baseKey = `content:${ vi ? `v${ vi }:` : '' }${ JSON.stringify( pre ) }`;
 		if ( ! instances.some( ( i ) => i.isBase && i.baseKey === baseKey ) ) {
-			instances.push( { key: `content-base-${ Object.keys( pre ).join( '-' ) }`, attrs: { ...base, ...pre }, variant: 0, isBase: true, baseKey } );
+			instances.push( { key: `content-base-${ Object.keys( pre ).join( '-' ) }${ vi ? `-v${ vi }` : '' }`, attrs: { ...vattrs, ...pre }, variant: vi, isBase: true, baseKey } );
 		}
 		return baseKey;
 	};
-	const add = ( row, kind, marker, extra = {} ) => {
-		const pre = preconditionsFor( row, schema, base, ctx );
+	const add = ( row, kind, marker, extra = {}, vattrs = base, vi = 0 ) => {
+		const pre = preconditionsFor( row, schema, vattrs, ctx );
 		instances.push( {
-			key: `content-${ kind }-${ row.attr_name }${ extra.value ? `-${ extra.value }` : '' }`,
+			key: `content-${ kind }-${ row.attr_name }${ extra.value ? `-${ extra.value }` : '' }${ vi ? `-v${ vi }` : '' }`,
 			content: { attr: row.attr_name, kind, needle: marker.needle, ...( undefined === extra.value ? {} : { value: extra.value } ) },
-			attrs: { ...base, ...pre, ...marker.attrs },
-			variant: 0,
-			baseKey: Object.keys( pre ).length ? addBase( pre ) : null,
+			attrs: { ...vattrs, ...pre, ...marker.attrs },
+			variant: vi,
+			baseKey: Object.keys( pre ).length ? addBase( pre, vattrs, vi ) : null,
 		} );
 	};
 	for ( const [ kind, rows ] of [ [ 'presence', contentRows.presence ], [ 'text', contentRows.text ], [ 'link', contentRows.link ] ] ) {
@@ -166,6 +167,17 @@ export function planContentInstances( block, { contentRows, variant, schema = {}
 			marker ? add( row, kind, marker ) : noMarker.add( row.attr_name );
 		}
 	}
+	// A text or link setting a later fixture variant renders (a product card's typed price, printed only in the typed mode a
+	// variant sets) is read under every later variant too; collectContent keeps the first variant that prints it.
+	( fixture.variants || [] ).slice( 1 ).forEach( ( v, i ) => {
+		const vattrs = variantAttributes( fixture.attributes, v );
+		for ( const [ kind, rows ] of [ [ 'text', contentRows.text ], [ 'link', contentRows.link ] ] ) {
+			for ( const row of rows || [] ) {
+				const marker = contentMarkerFor( row, kind, schema );
+				marker && add( row, kind, marker, {}, vattrs, i + 1 );
+			}
+		}
+	} );
 	const attr = variant?.variantAttr;
 	for ( const value of variantPresenceValues( schema, variant, base ) ) {
 		const row = { attr_name: attr, attr_type: 'string', css_property: null, role: 'variant' };
@@ -304,6 +316,7 @@ export function collectContent( instances ) {
 	const text = {};
 	const presence = {};
 	const link = {};
+	const variantOf = {};
 	for ( const inst of instances ) {
 		const { attr, kind, needle, value } = inst.content || {};
 		if ( ! attr ) {
@@ -317,8 +330,11 @@ export function collectContent( instances ) {
 			continue;
 		}
 		const found = 'text' === kind ? textFrom( needle, inst.contentRead ) : linkFrom( needle, inst.contentRead );
-		if ( found ) {
-			( 'text' === kind ? text : link )[ attr ] = found;
+		// A setting read under several variants takes the earliest variant printing it (the default first).
+		const into = 'text' === kind ? text : link;
+		if ( found && ( ! ( attr in into ) || ( inst.variant ?? 0 ) < variantOf[ attr ] ) ) {
+			into[ attr ] = found;
+			variantOf[ attr ] = inst.variant ?? 0;
 		}
 	}
 	return { ...( Object.keys( text ).length ? { text } : {} ), ...( Object.keys( presence ).length ? { presence } : {} ), ...( Object.keys( link ).length ? { link } : {} ) };
