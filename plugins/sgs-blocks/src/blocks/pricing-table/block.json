@@ -433,7 +433,8 @@
 						"role": "text-content"
 					},
 					"price": {
-						"type": "string"
+						"type": "string",
+						"role": "text-content"
 					},
 					"priceYearly": {
 						"type": "string",
@@ -453,13 +454,16 @@
 					},
 					"ctaUrlSource": {
 						"type": "string",
-						"description": "Where the plan's button goes: '' (the typed ctaUrl), post:<id> (a page or post, followed by ID), a Site Info link (phone, email, whatsapp, directions, google, facebook, instagram, twitter, linkedin, youtube, tiktok) or top. Resolved by includes/helpers-link-source.php; the typed ctaUrl is the fallback."
+						"description": "Where the plan's button goes: '' (the typed ctaUrl), post:<id> (a page or post, followed by ID), a Site Info link (phone, email, whatsapp, directions, google, facebook, instagram, twitter, linkedin, youtube, tiktok) or top. Resolved by includes/helpers-link-source.php; the typed ctaUrl is the fallback.",
+						"role": "enum-mode"
 					},
 					"ctaTarget": {
-						"type": "string"
+						"type": "string",
+						"role": "behaviour"
 					},
 					"ctaRel": {
-						"type": "string"
+						"type": "string",
+						"role": "technical"
 					},
 					"ribbonText": {
 						"type": "string",
@@ -488,10 +492,17 @@
 						}
 					},
 					"highlighted": {
-						"type": "boolean"
+						"type": "boolean",
+						"role": "state-modifier-boolean"
 					},
 					"period": {
-						"type": "string"
+						"type": "string",
+						"role": "enum-mode"
+					},
+					"ribbonColour": {
+						"type": "string",
+						"role": "color",
+						"description": "The plan's ribbon colour: a palette slug or a colour. Empty or absent paints the accent colour."
 					}
 				}
 			}

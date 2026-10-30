@@ -763,10 +763,10 @@ $sgs_tl_loop_i     = 0;
 
 				// ── Milestone media ────────────────────────────────────────────────
 				//
-				// `entries` is declared `"type": "array"` with NO `items` schema, so new
-				// per-entry keys round-trip freely and need no migration: an entry
-				// authored before this feature has `image` set and `mediaType` absent,
-				// resolves to 'image', and renders exactly as it did.
+				// An entry with `image` set and no `mediaType` resolves to 'image'.
+				// block.json's `entries` item schema types every key this loop reads
+				// (WordPress validates the whole array against it on render, so a
+				// wrongly typed key would blank every entry).
 				//
 				// ONE tier, not three. sgs/hero declares 32 attributes for split media
 				// because it art-directs PER DEVICE; replicating that per milestone would

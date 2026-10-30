@@ -311,16 +311,19 @@
 				"properties": {
 					"icon": {
 						"type": "string",
-						"role": "icon"
+						"role": "icon-slug"
 					},
 					"number": {
-						"type": "string"
+						"type": "string",
+						"role": "text-content"
 					},
 					"title": {
-						"type": "string"
+						"type": "string",
+						"role": "text-content"
 					},
 					"description": {
-						"type": "string"
+						"type": "string",
+						"role": "text-content"
 					}
 				}
 			}

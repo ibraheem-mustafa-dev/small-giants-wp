@@ -261,7 +261,10 @@ def _js_prop(attr: str) -> re.Pattern[str]:
 
 def _items_type(block_dir: Path, attr: str) -> str:
     items = _read_json(block_dir / "block.json").get("attributes", {}).get(attr, {}).get("items")
-    return str(items.get("type")) if isinstance(items, dict) and items.get("type") else "untyped"
+    t = items.get("type") if isinstance(items, dict) else None
+    if isinstance(t, list):
+        return "|".join(str(x) for x in t) or "untyped"
+    return str(t) if t else "untyped"
 
 
 Verdict = tuple[str, str] | None

@@ -810,7 +810,8 @@
 					},
 					"datePublished": {
 						"type": "string",
-						"description": "Optional ISO date (YYYY-MM-DD) of the review. Used for the machine-readable datetime and for sorting; the visible text comes from 'date' when set."
+						"description": "Optional ISO date (YYYY-MM-DD) of the review. Used for the machine-readable datetime and for sorting; the visible text comes from 'date' when set.",
+						"role": "technical"
 					},
 					"photo": {
 						"type": "object",
@@ -841,7 +842,8 @@
 					},
 					"_key": {
 						"type": "string",
-						"_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field. Keeps an item's editor state through reorder, add and remove."
+						"_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field. Keeps an item's editor state through reorder, add and remove.",
+						"role": "technical"
 					}
 				}
 			}

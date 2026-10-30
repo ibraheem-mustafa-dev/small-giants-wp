@@ -390,6 +390,46 @@
 		},
 		"entries": {
 			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"date": {
+						"type": "string",
+						"role": "text-content"
+					},
+					"title": {
+						"type": "string",
+						"role": "text-content"
+					},
+					"description": {
+						"type": "string",
+						"role": "text-content"
+					},
+					"icon": {
+						"type": "string",
+						"role": "icon-slug"
+					},
+					"image": {
+						"type": [
+							"number",
+							"string"
+						],
+						"role": "image-object"
+					},
+					"mediaType": {
+						"type": "string",
+						"role": "enum-mode"
+					},
+					"video": {
+						"type": "object",
+						"role": "image-object"
+					},
+					"svg": {
+						"type": "string",
+						"role": "svg"
+					}
+				}
+			},
 			"default": [
 				{
 					"date": "2020-01-01",

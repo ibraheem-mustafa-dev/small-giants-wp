@@ -199,17 +199,20 @@
 				"type": "object",
 				"properties": {
 					"label": {
-						"type": "string"
+						"type": "string",
+						"role": "text-content"
 					},
 					"value": {
-						"type": "string"
+						"type": "string",
+						"role": "technical"
 					},
 					"icon": {
 						"type": "string",
 						"role": "icon"
 					},
 					"iconSource": {
-						"type": "string"
+						"type": "string",
+						"role": "enum-mode"
 					},
 					"image": {
 						"type": "string",
@@ -217,7 +220,8 @@
 					},
 					"description": {
 						"type": "string",
-						"default": ""
+						"default": "",
+						"role": "text-content"
 					}
 				}
 			}

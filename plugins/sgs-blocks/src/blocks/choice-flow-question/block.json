@@ -161,17 +161,20 @@
 			"items": {
 				"type": "object",
 				"properties": {
-					"summaryText": { "type": "string" },
-					"stageEffect": { "type": "string" },
+					"summaryText": { "type": "string", "role": "text-content" },
+					"stageEffect": { "type": "string", "role": "enum-mode" },
 					"label": {
-						"type": "string"
+						"type": "string",
+						"role": "text-content"
 					},
 					"value": {
-						"type": "string"
+						"type": "string",
+						"role": "technical"
 					},
 					"nextStepId": {
 						"type": "string",
-						"description": "Empty string = advance to the next step in flow order (default, FR-43-2). '__terminal__' = jump to the reachable result step. Any other value = the 0-based DOM-order position of a sibling sgs/form-step within the same sgs/choice-flow, resolved at editor-time by the step picker (not a clientId — clientId is editor-only and unresolvable by render.php/the runtime store, see choice-flow-question/edit.js and choice-flow/view.js)."
+						"description": "Empty string = advance to the next step in flow order (default, FR-43-2). '__terminal__' = jump to the reachable result step. Any other value = the 0-based DOM-order position of a sibling sgs/form-step within the same sgs/choice-flow, resolved at editor-time by the step picker (not a clientId — clientId is editor-only and unresolvable by render.php/the runtime store, see choice-flow-question/edit.js and choice-flow/view.js).",
+						"role": "technical"
 					},
 					"tags": {
 						"type": "array",
@@ -179,7 +182,8 @@
 							"type": "string"
 						},
 						"default": [],
-						"description": "FR-43-12: tags this option contributes to the path's accumulated tag set when chosen, for matching against a sgs/choice-flow-result's own matchTags. Empty when the flow only ever has one result (the common case)."
+						"description": "FR-43-12: tags this option contributes to the path's accumulated tag set when chosen, for matching against a sgs/choice-flow-result's own matchTags. Empty when the flow only ever has one result (the common case).",
+						"role": "technical"
 					},
 					"image": {
 						"type": "object",
@@ -194,32 +198,38 @@
 								"type": "string"
 							}
 						},
-						"description": "FR-43-15 (v1.3.0): optional per-option media attachment, shape matches sgs/media's own imageId/imageUrl/imageAlt attribute trio (nested here since this is one entry in a repeater, not a scalar block attribute). Renders in the option card's 16:9 preview zone. Optional — an option with no image (or an empty object) renders exactly as before, a plain text card."
+						"description": "FR-43-15 (v1.3.0): optional per-option media attachment, shape matches sgs/media's own imageId/imageUrl/imageAlt attribute trio (nested here since this is one entry in a repeater, not a scalar block attribute). Renders in the option card's 16:9 preview zone. Optional — an option with no image (or an empty object) renders exactly as before, a plain text card.",
+						"role": "image-object"
 					},
 					"helpText": {
 						"type": "string",
 						"default": "",
-						"description": "FR-43-16 (v1.3.0): optional per-option explanatory copy, revealed by a floating '?' toggle overlaid on the option card. Empty string = no toggle button renders at all (not a disabled one)."
+						"description": "FR-43-16 (v1.3.0): optional per-option explanatory copy, revealed by a floating '?' toggle overlaid on the option card. Empty string = no toggle button renders at all (not a disabled one).",
+						"role": "text-content"
 					},
 					"addToBagNow": {
 						"type": "boolean",
 						"default": false,
-						"description": "FR-43-20 (v1.4.0): choosing this option adds the page's product with NO add-ons and ends the flow (the draft's 'No prescription — keep the lenses they come with'). Clears any add-on answers already accumulated on this path; the operator still routes it to a result step via `nextStepId` (usually the add-to-bag terminal) — this flag only guarantees the add-on list is empty when it gets there."
+						"description": "FR-43-20 (v1.4.0): choosing this option adds the page's product with NO add-ons and ends the flow (the draft's 'No prescription — keep the lenses they come with'). Clears any add-on answers already accumulated on this path; the operator still routes it to a result step via `nextStepId` (usually the add-to-bag terminal) — this flag only guarantees the add-on list is empty when it gets there.",
+						"role": "boolean-visibility"
 					},
 					"isDefault": {
 						"type": "boolean",
 						"default": false,
-						"description": "Spec 43 Phase 3/4 §1/§5: pre-selects this option on load and records it as the answer, without auto-advancing. Rendering this pre-selection (Wave 2, question view.js) is not built here — only the stored flag."
+						"description": "Spec 43 Phase 3/4 §1/§5: pre-selects this option on load and records it as the answer, without auto-advancing. Rendering this pre-selection (Wave 2, question view.js) is not built here — only the stored flag.",
+						"role": "state-modifier-boolean"
 					},
 					"badge": {
 						"type": "string",
 						"default": "",
-						"description": "Spec 43 Phase 3/4 §1/§5: short pill label (up to 20 characters) rendered on the option card, e.g. 'Popular'. Empty string = no badge. Printed by render.php."
+						"description": "Spec 43 Phase 3/4 §1/§5: short pill label (up to 20 characters) rendered on the option card, e.g. 'Popular'. Empty string = no badge. Printed by render.php.",
+						"role": "text-content"
 					},
 					"description": {
 						"type": "string",
 						"default": "",
-						"description": "Spec 43 Phase 3/4 §1/§5: one line of explanatory copy (up to 140 characters) rendered under the option's label. Empty string = no description line. Printed by render.php."
+						"description": "Spec 43 Phase 3/4 §1/§5: one line of explanatory copy (up to 140 characters) rendered under the option's label. Empty string = no description line. Printed by render.php.",
+						"role": "text-content"
 					}
 				}
 			}

@@ -314,7 +314,29 @@
 			"type": "array",
 			"default": [],
 			"items": {
-				"type": "object"
+				"type": "object",
+				"properties": {
+					"platform": {
+						"type": "string",
+						"role": "enum-mode"
+					},
+					"url": {
+						"type": "string",
+						"role": "url-href"
+					},
+					"linkSource": {
+						"type": "string",
+						"role": "enum-mode"
+					},
+					"opensInNewTab": {
+						"type": "boolean",
+						"role": "boolean-visibility"
+					},
+					"rel": {
+						"type": "string",
+						"role": "technical"
+					}
+				}
 			}
 		},
 		"backgroundColour": {

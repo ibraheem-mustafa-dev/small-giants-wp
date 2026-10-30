@@ -327,31 +327,39 @@
 						"_note": "D1031 (2026-09-11) — TWO real shapes are accepted and both render (a THIRD, null, is the empty state): the object form { url, type, id, alt, mime, width, height } written by MediaPicker, and a bare URL STRING (for back-compat with starter patterns, though brand-strip doesn't currently use any such patterns). null is the empty state from addLogo()/Remove in edit.js -- it renders nothing, but must still validate so it doesn't wipe the rest of the array. Before this fix `media` was declared bare {\"type\":\"object\"} — WordPress's own WP_Block_Type::prepare_attributes_for_render() validates the WHOLE `logos` array against this schema on every server render (rest_validate_array_value_from_schema loops each item and returns the FIRST WP_Error it finds, wiping the array back to its `[]` default), so ANY item whose media was the actual object shape (every item added through the editor picker) silently blanked the ENTIRE logos array, not just that item, on the frontend. This is a sibling fix to D1027 (sgs/card-grid, same mechanism). Do not narrow this back to a single `type` -- object/null/string must all keep validating, or the array-wipe regresses. The object branch declares real `properties` (not a bare `{\"type\":\"object\"}`) so this stays scoped to the SGS media shape rather than accepting arbitrary object junk."
 					},
 					"alt": {
-						"type": "string"
+						"type": "string",
+						"role": "image-alt"
 					},
 					"decorative": {
 						"type": "boolean",
-						"default": false
+						"default": false,
+						"role": "boolean-visibility"
 					},
 					"linkUrl": {
-						"type": "string"
+						"type": "string",
+						"role": "url-href"
 					},
 					"linkUrlSource": {
 						"type": "string",
-						"description": "Where the logo link goes: '' (the typed linkUrl), post:<id> (a page or post, followed by ID), a Site Info link (phone, email, whatsapp, directions, google, facebook, instagram, twitter, linkedin, youtube, tiktok) or top. Resolved by includes/helpers-link-source.php; the typed link is the fallback."
+						"description": "Where the logo link goes: '' (the typed linkUrl), post:<id> (a page or post, followed by ID), a Site Info link (phone, email, whatsapp, directions, google, facebook, instagram, twitter, linkedin, youtube, tiktok) or top. Resolved by includes/helpers-link-source.php; the typed link is the fallback.",
+						"role": "enum-mode"
 					},
 					"linkTarget": {
-						"type": "string"
+						"type": "string",
+						"role": "behaviour"
 					},
 					"linkRel": {
-						"type": "string"
+						"type": "string",
+						"role": "technical"
 					},
 					"name": {
-						"type": "string"
+						"type": "string",
+						"role": "text-content"
 					},
 					"_key": {
 						"type": "string",
-						"_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field — no label, no editor control. Scopes this item's own object-fit CSS so a fit value survives reorder/add/remove instead of following array index (Spec 35 Part 4). Backfilled silently on mount for items created before this field existed."
+						"_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field — no label, no editor control. Scopes this item's own object-fit CSS so a fit value survives reorder/add/remove instead of following array index (Spec 35 Part 4). Backfilled silently on mount for items created before this field existed.",
+						"role": "technical"
 					},
 					"objectFit": {
 						"type": "string",
@@ -364,7 +372,8 @@
 							"none"
 						],
 						"default": "",
-						"description": "Per-item object-fit override. Logos are not photographs — object-fit only, no focal-point/crosshair (Bean-locked convention: see sgs/testimonial orgLogo + this block's own block-wide logoFit). Falls back to the block-wide logoFit default when unset."
+						"description": "Per-item object-fit override. Logos are not photographs — object-fit only, no focal-point/crosshair (Bean-locked convention: see sgs/testimonial orgLogo + this block's own block-wide logoFit). Falls back to the block-wide logoFit default when unset.",
+						"role": "visual"
 					}
 				}
 			}

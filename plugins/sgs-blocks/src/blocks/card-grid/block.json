@@ -457,30 +457,37 @@
             "role": "text-content"
           },
           "link": {
-            "type": "string"
+            "type": "string",
+            "role": "url-href"
           },
           "linkSource": {
             "type": "string",
-            "description": "Where the card link goes: '' (the typed link), post:<id> (a page or post, followed by ID), a Site Info link (phone, email, whatsapp, directions, google, facebook, instagram, twitter, linkedin, youtube, tiktok) or top. Resolved by includes/helpers-link-source.php; the typed link is the fallback."
+            "description": "Where the card link goes: '' (the typed link), post:<id> (a page or post, followed by ID), a Site Info link (phone, email, whatsapp, directions, google, facebook, instagram, twitter, linkedin, youtube, tiktok) or top. Resolved by includes/helpers-link-source.php; the typed link is the fallback.",
+            "role": "enum-mode"
           },
           "linkTarget": {
-            "type": "string"
+            "type": "string",
+            "role": "behaviour"
           },
           "linkRel": {
-            "type": "string"
+            "type": "string",
+            "role": "technical"
           },
           "badgeVariant": {
-            "type": "string"
+            "type": "string",
+            "role": "css-modifier"
           },
           "decorative": {
             "type": "boolean",
             "default": false,
-            "description": "When true, this card image is purely decorative — rendered with an empty alt attribute and aria-hidden on its wrapper so screen readers skip it (WCAG 2.1 AA 1.1.1). Manual/query modes only; wc-product/cpt-collection cards pull an informative product photo the client does not author."
+            "description": "When true, this card image is purely decorative — rendered with an empty alt attribute and aria-hidden on its wrapper so screen readers skip it (WCAG 2.1 AA 1.1.1). Manual/query modes only; wc-product/cpt-collection cards pull an informative product photo the client does not author.",
+            "role": "boolean-visibility"
           },
           "glyph": {
             "type": "string",
             "default": "",
-            "description": "Lucide icon slug shown as a small glyph on this card (over the image, or inside the image-fallback tile when the card has no image — see the block-wide `imageFallback` attribute). Empty = no glyph. Resolved through the same shared icon registry as sgs/icon and sgs/trust-bar (includes/lucide-icons.php::sgs_get_lucide_icon())."
+            "description": "Lucide icon slug shown as a small glyph on this card (over the image, or inside the image-fallback tile when the card has no image — see the block-wide `imageFallback` attribute). Empty = no glyph. Resolved through the same shared icon registry as sgs/icon and sgs/trust-bar (includes/lucide-icons.php::sgs_get_lucide_icon()).",
+            "role": "icon-slug"
           },
           "glyphImage": {
             "anyOf": [
@@ -507,7 +514,8 @@
           },
           "_key": {
             "type": "string",
-            "_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field — no label, no editor control. Scopes this item's own object-fit/focal-point CSS so a crop value survives reorder/add/remove instead of following array index (Spec 35 Part 4). Backfilled silently on mount for items created before this field existed."
+            "_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field — no label, no editor control. Scopes this item's own object-fit/focal-point CSS so a crop value survives reorder/add/remove instead of following array index (Spec 35 Part 4). Backfilled silently on mount for items created before this field existed.",
+            "role": "technical"
           },
           "objectFit": {
             "type": "string",
@@ -518,14 +526,16 @@
               "none",
               "scale-down"
             ],
-            "default": "cover"
+            "default": "cover",
+            "role": "visual"
           },
           "focalPoint": {
             "type": "object",
             "default": {
               "x": 0.5,
               "y": 0.5
-            }
+            },
+            "role": "visual"
           }
         }
       }

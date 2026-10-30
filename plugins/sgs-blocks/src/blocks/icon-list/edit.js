@@ -57,6 +57,9 @@ import {
 	ToggleGroupControlOption,
 } from '../../components/primitives';
 
+// The icon sources render.php's $render_icon draws (lucide, emoji, wp-icon, dashicon): the picker offers only these.
+const ICON_LIST_SOURCES = [ 'lucide', 'emoji', 'wp-icon', 'dashicon' ];
+
 const ICON_SIZE_OPTIONS = [
 	{ label: __( 'Small', 'sgs-blocks' ), value: 'small' },
 	{ label: __( 'Medium', 'sgs-blocks' ), value: 'medium' },
@@ -195,6 +198,7 @@ function ItemEditor( { item, fallback, onChange, onRemove } ) {
 			<IconPicker
 				label={ __( 'Icon', 'sgs-blocks' ) }
 				value={ resolved }
+				sources={ ICON_LIST_SOURCES }
 				onChange={ ( { source, name } ) =>
 					onChange( {
 						...item,
@@ -1114,6 +1118,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<IconPicker
 							label={ __( 'Default icon', 'sgs-blocks' ) }
 							value={ fallback }
+							sources={ ICON_LIST_SOURCES }
 							onChange={ ( {
 								source: iconSource,
 								name: iconName,

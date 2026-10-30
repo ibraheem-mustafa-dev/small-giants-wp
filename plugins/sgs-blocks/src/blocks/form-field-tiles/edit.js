@@ -394,6 +394,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							/>
 							<IconPicker
 								label={ __( 'Icon', 'sgs-blocks' ) }
+								/* render.php draws a Lucide icon or prints an emoji; it has no other source. */
+								sources={ [ 'lucide', 'emoji' ] }
 								value={ {
 									source: tile.iconSource || 'emoji',
 									name: tile.icon || '',
