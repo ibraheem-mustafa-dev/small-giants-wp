@@ -66,7 +66,7 @@ export function elementFacts( view = EMPTY ) {
 	const lengthAt = ( e, prop, w ) => pxOf( resolved( e, prop, w ) );
 	// The rendered box at one width ({ x, y, w, h }), or null.
 	const boxAt = ( e, w ) => e?.box?.[ w ] ?? null;
-	// The record's text holes of the element.
+	// The record's text holes of the element ([ { id, where: 'text', expr, path } ]).
 	const textHoles = ( e ) => ( entry( e )?.holes ?? [] ).filter( ( h ) => 'text' === h.where );
 	// Whether the element's whole content is one script value (`{{ arrowIcon }}`): one text hole and no words of its own.
 	const textBinding = ( e ) => {
@@ -77,7 +77,7 @@ export function elementFacts( view = EMPTY ) {
 	// The draft's own placeholders on the element (its attribute and text holes, `{{ phone }}`), not its children's.
 	const placeholders = ( e ) => ( entry( e )?.holes ?? [] ).filter( ( h ) => 'text' === h.where || String( h.where ).startsWith( 'attr:' ) ).map( ( h ) => `{{ ${ String( h.expr ).trim() } }}` );
 	return Object.freeze( readers.set( view, {
-		view, attr, events, handler, declared: ( e ) => view.declared( e ), bound: ( e ) => view.holeProps( e ), widths, resolved, lengthAt, boxAt, textBinding, placeholders,
+		view, attr, events, handler, declared: ( e ) => view.declared( e ), bound: ( e ) => view.holeProps( e ), widths, resolved, lengthAt, boxAt, textHoles, textBinding, placeholders,
 		// The element's text as rendered, each line break as <br> (only an element whose text holds one carries `textBreaks`).
 		textWithBreaks: ( e ) => String( e?.textBreaks ?? e?.allText ?? e?.words ?? '' ).replace( /\s+/g, ' ' ).trim(),
 		// Whether the element's own words open its content, before its first child element (an element read before the

@@ -139,15 +139,13 @@ test( 'mapEmbed: an embedded Google map is business-info\'s map display; MUST FA
 	assert.notEqual( byTag( run( tree, { facts: facts( 'mapEmbed' ) } ), 'iframe' ).block, 'sgs/business-info' );
 } );
 
-test( 'openStatus and hoursRows: a live open line is the open-status display, the next line part of it; an hours row is the hours display; MUST FAIL without each', () => {
-	const tree = section( [ E( 'span', { words: 'Open now' }, [ E( 'span', { style: 'width:8px;height:8px;border-radius:50%' } ) ] ), E( 'span', { words: 'Closes at 5pm today' } ), E( 'div', { display: 'flex' }, [ E( 'span', { words: 'Monday – Thursday' } ), E( 'span', { words: '9:30am – 5pm' } ) ] ) ] );
+// The open-status line is read from the draft's code, never its words: tests/skeleton-clock.test.mjs.
+test( 'hoursRows: an hours row is the hours display; MUST FAIL without the rule', () => {
+	const tree = section( [ E( 'div', { display: 'flex' }, [ E( 'span', { words: 'Monday – Thursday' } ), E( 'span', { words: '9:30am – 5pm' } ) ] ) ] );
 	const r = run( tree );
-	assert.deepEqual( [ byWords( r, 'Open now' ).block, byWords( r, 'Open now' ).attributes.displayType ], [ 'sgs/business-info', 'open-status' ] );
-	assert.deepEqual( settled( byWords( r, 'Closes at 5pm today' ) ), { block: null, action: 'absorbed', rule: 'openStatus' } );
 	const hours = row( r, ( x ) => 'div' === x.tag && x.depth === 1 );
 	assert.deepEqual( [ hours.block, hours.attributes.displayType ], [ 'sgs/business-info', 'hours' ] );
 	assert.equal( byWords( r, '9:30am – 5pm' ).action, 'absorbed' );
-	assert.notEqual( byWords( run( tree, { facts: facts( 'openStatus' ) } ), 'Open now' ).rule, 'openStatus' );
 	assert.notEqual( row( run( tree, { facts: facts( 'hoursRows' ) } ), ( x ) => 'div' === x.tag && x.depth === 1 ).rule, 'hoursRows' );
 } );
 
@@ -387,16 +385,6 @@ test( 'cardAction: every copy of one template element takes one verdict, a butto
 	const mixed = copies( false );
 	assert.deepEqual( kind( mixed ).map( ( x ) => 'cardAction' === x ), [ false, false ], 'one copy does not, so neither is a button' );
 	assert.equal( byWords( mixed, 'Alpha' ) ? byTag( mixed, 'a' ).attributes.sgsBlockLink : null, '/a', 'the card whose action is not a button keeps its own link' );
-} );
-
-test( 'openStatus: a second open-status line in a cousin position joins the first display and takes no text attribute', () => {
-	const tree = section( [ E( 'div', {}, [ E( 'div', {}, [ E( 'span', { words: 'Open now' } ) ] ), E( 'div', {}, [ E( 'span', { words: 'Closes at 5pm today' } ) ] ) ] ) ] );
-	const r = run( tree );
-	const displays = r.proposal.rows.filter( ( x ) => 'sgs/business-info' === x.block && 'open-status' === x.attributes?.displayType );
-	assert.equal( displays.length, 1, 'one open-status display, not two' );
-	assert.deepEqual( settled( byWords( r, 'Closes at 5pm today' ) ), { block: null, action: 'absorbed', rule: 'openStatus' } );
-	assert.equal( byWords( r, 'Closes at 5pm today' ).into, displays[ 0 ].key );
-	assert.deepEqual( Object.keys( displays[ 0 ].attributes ), [ 'displayType' ], 'no generic text attribute (copyrightPrefix) on a rule-set display' );
 } );
 
 test( 'readingProgress hands the bar over as a Floating UI site setting; without the rule no such handover exists', () => {
