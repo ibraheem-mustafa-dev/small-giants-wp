@@ -68,3 +68,5 @@ The signal between parallel sessions working the cloning tool plan (`.claude/pla
 - 2026-10-30 S deployed indus-test,mamas-test,eye-care-clone-test (199 fast + 13 full gates; code e382b3c9f, the product-card title text part fixed after the first attempt stopped at gate:full)
 - 2026-10-30 S reseed-start (sgs-update-v2.py from main ad66d637b: F4's item-field roles and item schemas, F3/F5 route merges)
 - 2026-10-30 S reseed-end (exit 0; array_item_schema 154 fields, 1 blank (the recorded nested-list role gap), was 122 of 153 blank; seed history: no unexpected changes)
+- 2026-10-30 S reseed-start (block_identity_facts migration + sgs-update-v2.py from main: F1 A1 stage 14, the counter icon selector)
+- 2026-10-30 S reseed-end (exit 0; block_identity_facts created by its migration alone, the runner's eight older unrecorded migrations left untouched; stage 14 seeded 28966 rows over 97 blocks; identity drift check and schema drift clean)
