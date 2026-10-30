@@ -105,37 +105,32 @@ export function inlineAllowance( codeRepo, block, attr ) {
 // decoded, white space collapsed. A value holding no markup reads as itself.
 export const plainOf = ( v ) => String( v ?? '' ).replace( /<br\s*\/?>/gi, ' ' ).replace( /<[^>]*>/g, '' ).replace( /&lt;/g, '<' ).replace( /&gt;/g, '>' ).replace( /&quot;/g, '"' ).replace( /&#0*39;/g, '\'' ).replace( /&amp;/g, '&' ).replace( /\s+/g, ' ' ).trim();
 
-// The words a review reads setting names by (data/plain-text-review.json): { labelWords, sentenceWords }. Throws on a file that
-// lists no words in either.
+// The filing of every plain-text setting (data/plain-text-review.json): { groups: { <group>: [ { block, attr, reader } ] } },
+// each setting filed by where the page prints it (its reader, file::symbol). Throws on a file with no sentences group.
 export const PLAIN_REVIEW_FILE = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'data', 'plain-text-review.json' );
 export function loadPlainReview( file = PLAIN_REVIEW_FILE ) {
 	const data = JSON.parse( fs.readFileSync( file, 'utf8' ) );
-	for ( const k of [ 'labelWords', 'sentenceWords' ] ) {
-		if ( ! Array.isArray( data[ k ] ) || ! data[ k ].length || ! data[ k ].every( ( w ) => 'string' === typeof w && w === w.toLowerCase() ) ) {
-			throw new Error( `${ file }: ${ k } must be a list of lower-case words` );
-		}
+	if ( ! Array.isArray( data.groups?.sentences ) ) {
+		throw new Error( `${ file }: no groups.sentences list` );
 	}
-	return { labelWords: new Set( data.labelWords ), sentenceWords: new Set( data.sentenceWords ) };
+	return data.groups;
 }
-const nameWords = ( name ) => String( name ).replace( /([a-z0-9])([A-Z])/g, '$1 $2' ).split( /[\s_-]+/ ).map( ( w ) => w.toLowerCase().replace( /\d+$/, '' ) ).filter( Boolean );
 
-// The sentence settings that hold plain text only, for Bean's review: the framework DB's string text-content settings no
-// RichText format reaches whose text is prose a draft could partly format (data/plain-text-review.json's sentence words in
-// the name), as [ { block, attr, why } ]. Never reported: a setting whose text lives in a child block (emit_shape `child`, an
-// info box's heading), a setting of a form or form-field block (its labels belong to the form's controls), a clickable
-// element's label (a label word in the name: a button, tab, chip, cart or buybox control, whose own link or control
-// setting makes the whole element clickable), and a setting that never reaches the front end (emit_shape `editor-only`).
-export function plainTextSettings( { db, codeRepo, review = loadPlainReview() } ) {
+// The plain-text settings: the framework DB's string text-content settings no RichText format reaches, [ { block, attr, why } ].
+export function plainSettings( { db, codeRepo } ) {
 	const { formats } = richTextSettings( codeRepo );
-	const form = ( b ) => /^sgs\/form(?:-|$)/.test( b );
-	return db.prepare( "SELECT block_slug, attr_name, emit_shape FROM block_attributes WHERE role = 'text-content' AND attr_type = 'string' AND block_slug LIKE 'sgs/%' ORDER BY block_slug, attr_name" ).all()
+	return db.prepare( "SELECT block_slug, attr_name FROM block_attributes WHERE role = 'text-content' AND attr_type = 'string' AND block_slug LIKE 'sgs/%' ORDER BY block_slug, attr_name" ).all()
 		.filter( ( r ) => ! formats.get( `${ r.block_slug }:${ r.attr_name }` )?.length )
-		.filter( ( r ) => ! [ 'child', 'editor-only' ].includes( r.emit_shape ) && ! form( r.block_slug ) )
-		.filter( ( r ) => {
-			const w = nameWords( r.attr_name );
-			return ! w.some( ( x ) => review.labelWords.has( x ) ) && w.some( ( x ) => review.sentenceWords.has( x ) );
-		} )
-		.map( ( r ) => ( { block: r.block_slug, attr: r.attr_name, why: `${ formats.has( `${ r.block_slug }:${ r.attr_name }` ) ? 'its RichText takes no format (RICH_TEXT_PLAIN: printed through esc_html)' : 'no RichText edits it (rich-text-format-roles.json lists none)' }; a sentence${ 'script-rendered' === r.emit_shape ? ' its script writes as text' : '' }, so a draft's bold or link inside it keeps only its words` } ) );
+		.map( ( r ) => ( { block: r.block_slug, attr: r.attr_name, why: formats.has( `${ r.block_slug }:${ r.attr_name }` ) ? 'its RichText takes no format (RICH_TEXT_PLAIN: printed through esc_html)' : 'no RichText edits it (rich-text-format-roles.json lists none)' } ) );
+}
+
+// The sentence settings that hold plain text, for Bean's review (Bean 2026-10-30): the plain-text settings filed as
+// `sentences` in data/plain-text-review.json (prose a draft could partly format: an intro, a success message, a footnote),
+// each [ { block, attr, why, reader } ]. Child-block text, form controls, clickable labels and interface strings are filed
+// there too and never reported.
+export function plainTextSettings( { db, codeRepo, groups = loadPlainReview() } ) {
+	const at = new Map( groups.sentences.map( ( x ) => [ `${ x.block }:${ x.attr }`, x.reader ] ) );
+	return plainSettings( { db, codeRepo } ).filter( ( r ) => at.has( `${ r.block }:${ r.attr }` ) ).map( ( r ) => ( { ...r, why: `${ r.why }; a sentence, so a draft's bold or link inside it keeps only its words`, reader: at.get( `${ r.block }:${ r.attr }` ) } ) );
 }
 
 

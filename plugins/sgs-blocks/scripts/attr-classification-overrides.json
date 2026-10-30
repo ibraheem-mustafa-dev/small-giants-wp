@@ -7616,6 +7616,9 @@
 				"role": "link-href"
 			},
 			"_reason": "2026-10-28 (content coverage check): the link's address; wishlist-link/render.php prints it as the anchor's href (esc_url), so calibration must read it with a URL marker, which only a link-href role gets (lib/calibrate-content.mjs LINK_ROLES)."
-		}
+		},
+		{"slug": "sgs/notice-message", "attr": "label", "fields": {"role": "technical"}, "_reason": "2026-10-30 (inline-text plain-settings review): the slide's List View name. edit.js passes it to the 'List view label' TextControl and render.php never prints it (block.json: 'Editor-only name shown in the list view. Never rendered on the frontend.'), so it is no page text and no draft carries it: an editor-facing key, not text-content."},
+		{"slug": "sgs/business-info", "attr": "openStatusOpenText", "fields": {"role": "color"}, "_reason": "2026-10-30 (inline-text plain-settings review): the open status pill's TEXT COLOUR, not its words. OpenStatusPanels.js lists it in the 'Status pill text' colour row beside openStatusOpenDot and openStatusOpenBackground; includes/helpers-business-info-open-status.php::sgs_business_info_open_status_css prints it only as --sgs-os-open-text, which style.css reads as the pill's --sgs-os-pill-text colour. Same role as its sibling openStatusOpenBackground."},
+		{"slug": "sgs/business-info", "attr": "openStatusClosedText", "fields": {"role": "color"}, "_reason": "2026-10-30 (inline-text plain-settings review): the closed status pill's TEXT COLOUR, not its words. OpenStatusPanels.js lists it in the 'Status pill text' colour row beside openStatusClosedDot and openStatusClosedBackground; includes/helpers-business-info-open-status.php::sgs_business_info_open_status_css prints it only as --sgs-os-closed-text, which style.css reads as the pill's --sgs-os-pill-text colour. Same role as its sibling openStatusClosedBackground."}
 	]
 }

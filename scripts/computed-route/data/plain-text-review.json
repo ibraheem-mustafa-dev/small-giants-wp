@@ -1,5 +1,805 @@
 {
-	"_meta": "Which plain-text settings lib/inline-text.mjs::plainTextSettings reports for Bean's review, read from the words of each setting's name (camelCase split, lower case). A setting whose words include a label word is a clickable element's label (a button, tab, chip, cart or buybox control), never reported; one whose words include a sentence word is prose a draft could partly format (an intro, a success message, a note, a footnote), reported. Settings whose text lives in a child block (emit_shape child) and settings of the form and form-field blocks are never reported.",
-	"labelWords": [ "label", "more", "cta", "button", "trigger", "link", "toggle", "badge", "tag", "prefix", "suffix", "separator" ],
-	"sentenceWords": [ "message", "intro", "note", "footnote", "prompt", "subtitle", "caption", "description", "text" ]
+	"_meta": "The plain-text settings (role text-content, string, no RichText format: lib/inline-text.mjs::richTextSettings) filed by where the page prints them (Bean 2026-10-30), each with the reader that prints it (file::symbol, proved by a search of the block's PHP, includes/ and the view script its block.json loads). lib/inline-text.mjs::plainTextSettings reports the `sentences` group for Bean's review: prose a draft could partly format. The other groups are never reported: child-block text (the text lives in a child block), form controls (a form or form-field block's labels belong to its controls), clickable labels (printed inside the block's own link, button, summary or tab, which makes the whole element clickable), interface strings (short UI text: headings of a panel, empty states, notes, prefixes, separators, dates, badges). A plain-text setting filed in no group, or in two, fails tests/inline-fill-solve.test.mjs: file it here.",
+	"groups": {
+		"child-block text": [
+			{
+				"block": "sgs/info-box",
+				"attr": "description",
+				"reader": "src/blocks/info-box/render.php::(none: dead, the description is the sgs/text child block)"
+			},
+			{
+				"block": "sgs/info-box",
+				"attr": "heading",
+				"reader": "src/blocks/info-box/render.php::(none: dead, the heading is the sgs/heading child block)"
+			}
+		],
+		"form controls": [
+			{
+				"block": "sgs/form",
+				"attr": "nextLabel",
+				"reader": "src/blocks/form/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/form",
+				"attr": "prevLabel",
+				"reader": "src/blocks/form/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/form",
+				"attr": "savedProgressSavedLabel",
+				"reader": "src/blocks/form/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/form",
+				"attr": "submitLabel",
+				"reader": "src/blocks/form/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/form",
+				"attr": "successMessage",
+				"reader": "src/blocks/form/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/form-field-address",
+				"attr": "label",
+				"reader": "includes/forms/field-render-helpers.php::field_label"
+			},
+			{
+				"block": "sgs/form-field-checkbox",
+				"attr": "label",
+				"reader": "src/blocks/form-field-checkbox/render.php::(file scope) $label"
+			},
+			{
+				"block": "sgs/form-field-consent",
+				"attr": "label",
+				"reader": "includes/forms/field-render-helpers.php::field_label"
+			},
+			{
+				"block": "sgs/form-field-date",
+				"attr": "label",
+				"reader": "includes/forms/field-render-helpers.php::field_label"
+			},
+			{
+				"block": "sgs/form-field-date",
+				"attr": "maxDate",
+				"reader": "src/blocks/form-field-date/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/form-field-date",
+				"attr": "minDate",
+				"reader": "src/blocks/form-field-date/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/form-field-email",
+				"attr": "label",
+				"reader": "includes/forms/field-render-helpers.php::field_label"
+			},
+			{
+				"block": "sgs/form-field-file",
+				"attr": "buttonLabel",
+				"reader": "src/blocks/form-field-file/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/form-field-file",
+				"attr": "label",
+				"reader": "includes/forms/field-render-helpers.php::field_label"
+			},
+			{
+				"block": "sgs/form-field-file",
+				"attr": "uploadText",
+				"reader": "src/blocks/form-field-file/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/form-field-number",
+				"attr": "columnHeading",
+				"reader": "includes/forms/field-render-helpers.php::field_headings"
+			},
+			{
+				"block": "sgs/form-field-number",
+				"attr": "label",
+				"reader": "includes/forms/field-render-helpers.php::field_label"
+			},
+			{
+				"block": "sgs/form-field-phone",
+				"attr": "label",
+				"reader": "includes/forms/field-render-helpers.php::field_label"
+			},
+			{
+				"block": "sgs/form-field-radio",
+				"attr": "label",
+				"reader": "src/blocks/form-field-radio/render.php::(file scope) $label"
+			},
+			{
+				"block": "sgs/form-field-select",
+				"attr": "label",
+				"reader": "includes/forms/field-render-helpers.php::field_label"
+			},
+			{
+				"block": "sgs/form-field-text",
+				"attr": "label",
+				"reader": "includes/forms/field-render-helpers.php::field_label"
+			},
+			{
+				"block": "sgs/form-field-textarea",
+				"attr": "label",
+				"reader": "includes/forms/field-render-helpers.php::field_label"
+			},
+			{
+				"block": "sgs/form-field-tiles",
+				"attr": "label",
+				"reader": "src/blocks/form-field-tiles/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/form-review",
+				"attr": "heading",
+				"reader": "src/blocks/form-review/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/form-review",
+				"attr": "intro",
+				"reader": "src/blocks/form-review/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/form-step",
+				"attr": "label",
+				"reader": "src/blocks/form-step/render.php::(file scope)"
+			}
+		],
+		"clickable labels": [
+			{
+				"block": "sgs/buybox",
+				"attr": "addToCartLabel",
+				"reader": "src/blocks/buybox/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/buybox",
+				"attr": "guidedNextLabel",
+				"reader": "src/blocks/buybox/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/buybox",
+				"attr": "notifyMeLabel",
+				"reader": "src/blocks/buybox/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/buybox",
+				"attr": "pickerLabelLinkText",
+				"reader": "src/blocks/buybox/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/cart",
+				"attr": "checkoutLabel",
+				"reader": "src/blocks/cart/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/cart",
+				"attr": "emptyCartCtaLabel",
+				"reader": "src/blocks/cart/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/cart",
+				"attr": "itemRemoveLabel",
+				"reader": "src/blocks/cart/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/cart",
+				"attr": "pillLabel",
+				"reader": "src/blocks/cart/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/cart",
+				"attr": "viewCartLabel",
+				"reader": "src/blocks/cart/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/choice-flow",
+				"attr": "closeLabel",
+				"reader": "includes/choice-flow-chrome.php::sgs_choice_flow_chrome_header_html"
+			},
+			{
+				"block": "sgs/choice-flow",
+				"attr": "continueLabel",
+				"reader": "includes/choice-flow-footer.php::sgs_choice_flow_footer_html"
+			},
+			{
+				"block": "sgs/choice-flow",
+				"attr": "skipLabel",
+				"reader": "includes/choice-flow-footer.php::sgs_choice_flow_footer_html"
+			},
+			{
+				"block": "sgs/choice-flow-question",
+				"attr": "question",
+				"reader": "src/blocks/choice-flow-question/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/choice-flow-result",
+				"attr": "submitLabel",
+				"reader": "src/blocks/choice-flow-result/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/google-rating-badge",
+				"attr": "linkLabel",
+				"reader": "src/blocks/google-rating-badge/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/google-reviews",
+				"attr": "reviewLinkLabel",
+				"reader": "src/blocks/google-reviews/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/google-reviews",
+				"attr": "seeAllLabel",
+				"reader": "src/blocks/google-reviews/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/google-reviews",
+				"attr": "writeReviewLabel",
+				"reader": "src/blocks/google-reviews/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/modal",
+				"attr": "triggerText",
+				"reader": "src/blocks/modal/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/nav-bar-menu",
+				"attr": "triggerHoverLabel",
+				"reader": "src/blocks/nav-bar-menu/render.php::from_page_list"
+			},
+			{
+				"block": "sgs/nav-bar-menu",
+				"attr": "triggerOpenLabel",
+				"reader": "src/blocks/nav-bar-menu/render.php::from_page_list"
+			},
+			{
+				"block": "sgs/nav-drawer",
+				"attr": "closeLabel",
+				"reader": "src/blocks/nav-drawer/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/post-grid",
+				"attr": "readMoreText",
+				"reader": "src/blocks/post-grid/render.php::sgs_post_grid_make_card_image_decorative"
+			},
+			{
+				"block": "sgs/pricing-table",
+				"attr": "billingToggleMonthlyLabel",
+				"reader": "src/blocks/pricing-table/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/pricing-table",
+				"attr": "billingToggleYearlyLabel",
+				"reader": "src/blocks/pricing-table/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/product-card",
+				"attr": "cta2Text",
+				"reader": "src/blocks/product-card/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/product-card",
+				"attr": "ctaText",
+				"reader": "src/blocks/product-card/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/product-card",
+				"attr": "productName",
+				"reader": "src/blocks/product-card/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/product-faq",
+				"attr": "heading",
+				"reader": "src/blocks/product-faq/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/product-faq-item",
+				"attr": "question",
+				"reader": "src/blocks/product-faq-item/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/product-search",
+				"attr": "buttonLabel",
+				"reader": "src/blocks/product-search/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/store-selector",
+				"attr": "triggerPrefix",
+				"reader": "src/blocks/store-selector/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/tab",
+				"attr": "label",
+				"reader": "src/blocks/tabs/render.php::(file scope) the parent sgs/tabs prints each tab button from its inner block's label"
+			},
+			{
+				"block": "sgs/theme-toggle",
+				"attr": "label",
+				"reader": "src/blocks/theme-toggle/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/wishlist-link",
+				"attr": "label",
+				"reader": "src/blocks/wishlist-link/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/wishlist-panel",
+				"attr": "emptyLinkLabel",
+				"reader": "src/blocks/wishlist-panel/render.php::(file scope)"
+			}
+		],
+		"interface strings": [
+			{
+				"block": "sgs/account",
+				"attr": "noOrdersText",
+				"reader": "includes/account/templates/dashboard.php::(file scope)"
+			},
+			{
+				"block": "sgs/account",
+				"attr": "orderTrackingHeading",
+				"reader": "src/blocks/account/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/audio",
+				"attr": "title",
+				"reader": "src/blocks/audio/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/before-after",
+				"attr": "afterLabel",
+				"reader": "src/blocks/before-after/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/before-after",
+				"attr": "beforeLabel",
+				"reader": "src/blocks/before-after/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/before-after",
+				"attr": "handleIconName",
+				"reader": "src/blocks/before-after/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/brand-strip",
+				"attr": "title",
+				"reader": "src/blocks/brand-strip/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/breadcrumbs",
+				"attr": "homeLabel",
+				"reader": "src/blocks/breadcrumbs/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/breadcrumbs",
+				"attr": "separator",
+				"reader": "src/blocks/breadcrumbs/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/business-info",
+				"attr": "copyrightPrefix",
+				"reader": "src/blocks/business-info/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/business-info",
+				"attr": "textAfter",
+				"reader": "src/blocks/business-info/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/business-info",
+				"attr": "textBefore",
+				"reader": "src/blocks/business-info/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/button",
+				"attr": "iconTitle",
+				"reader": "src/blocks/button/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/button",
+				"attr": "note",
+				"reader": "includes/helpers-button-note.php::sgs_button_note_html"
+			},
+			{
+				"block": "sgs/buybox",
+				"attr": "gallerySavingBadgeFormat",
+				"reader": "src/blocks/buybox/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/buybox",
+				"attr": "perUnitDenomination",
+				"reader": "src/blocks/buybox/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/buybox",
+				"attr": "rrpSavingPrefix",
+				"reader": "src/blocks/buybox/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/buybox",
+				"attr": "soldOutLabel",
+				"reader": "src/blocks/buybox/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/buybox",
+				"attr": "stockInStockLabel",
+				"reader": "src/blocks/buybox/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/buybox",
+				"attr": "unavailableLabel",
+				"reader": "src/blocks/buybox/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/card-grid",
+				"attr": "emptyMessage",
+				"reader": "includes/class-card-grid-items-rest.php::handle"
+			},
+			{
+				"block": "sgs/card-grid",
+				"attr": "noImageLabel",
+				"reader": "src/blocks/card-grid/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/card-grid",
+				"attr": "productEmptyMessage",
+				"reader": "includes/class-card-grid-results.php::empty_message"
+			},
+			{
+				"block": "sgs/cart",
+				"attr": "emptyCartMessage",
+				"reader": "src/blocks/cart/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/cart",
+				"attr": "panelHeading",
+				"reader": "src/blocks/cart/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/cart",
+				"attr": "panelInstalmentsNote",
+				"reader": "src/blocks/cart/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/cart",
+				"attr": "panelTaxNote",
+				"reader": "src/blocks/cart/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/choice-flow",
+				"attr": "pricePanelTitle",
+				"reader": "src/blocks/choice-flow/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/choice-flow",
+				"attr": "skipPrompt",
+				"reader": "includes/choice-flow-footer.php::sgs_choice_flow_footer_html"
+			},
+			{
+				"block": "sgs/choice-flow",
+				"attr": "stageNote",
+				"reader": "includes/choice-flow-showcase.php::sgs_choice_flow_stage_note_html"
+			},
+			{
+				"block": "sgs/choice-flow",
+				"attr": "summaryPendingLabel",
+				"reader": "includes/choice-flow-summary.php::sgs_choice_flow_summary_panel_html"
+			},
+			{
+				"block": "sgs/choice-flow",
+				"attr": "summaryPendingText",
+				"reader": "includes/choice-flow-summary.php::sgs_choice_flow_summary_panel_html"
+			},
+			{
+				"block": "sgs/choice-flow",
+				"attr": "title",
+				"reader": "src/blocks/choice-flow/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/choice-flow-result",
+				"attr": "emailLabel",
+				"reader": "src/blocks/choice-flow-result/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/choice-flow-result",
+				"attr": "heading",
+				"reader": "src/blocks/choice-flow-result/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/countdown-timer",
+				"attr": "targetDate",
+				"reader": "src/blocks/countdown-timer/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/counter",
+				"attr": "prefix",
+				"reader": "src/blocks/counter/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/counter",
+				"attr": "suffix",
+				"reader": "src/blocks/counter/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/diagram-dimension",
+				"attr": "caption",
+				"reader": "src/blocks/diagram-dimension/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/diagram-dimension",
+				"attr": "value",
+				"reader": "src/blocks/diagram-dimension/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/gallery",
+				"attr": "emptyMessage",
+				"reader": "src/blocks/gallery/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/google-reviews",
+				"attr": "businessName",
+				"reader": "includes/helpers-reviews-inline.php::sgs_reviews_inline_data"
+			},
+			{
+				"block": "sgs/google-reviews",
+				"attr": "sourceLabel",
+				"reader": "src/blocks/google-reviews/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/icon",
+				"attr": "brandName",
+				"reader": "src/blocks/icon/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/icon",
+				"attr": "labelText",
+				"reader": "src/blocks/icon/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/icon-list",
+				"attr": "heading",
+				"reader": "src/blocks/icon-list/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/language-switch",
+				"attr": "prefixLabel",
+				"reader": "src/blocks/language-switch/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/language-switch",
+				"attr": "separator",
+				"reader": "src/blocks/language-switch/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/local-time",
+				"attr": "label",
+				"reader": "src/blocks/local-time/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/local-time",
+				"attr": "separator",
+				"reader": "src/blocks/local-time/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/local-time",
+				"attr": "timeZone",
+				"reader": "src/blocks/local-time/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/mega-panel",
+				"attr": "brandsEyebrow",
+				"reader": "src/blocks/mega-panel/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/nav-drawer",
+				"attr": "chromeLogoAlt",
+				"reader": "includes/nav-drawer-chrome.php::sgs_nav_drawer_chrome_logo_html"
+			},
+			{
+				"block": "sgs/nav-drawer",
+				"attr": "chromeSlotText",
+				"reader": "includes/nav-drawer-chrome.php::sgs_nav_drawer_chrome_slot_html"
+			},
+			{
+				"block": "sgs/option-picker",
+				"attr": "label",
+				"reader": "src/blocks/option-picker/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/post-grid",
+				"attr": "emptyMessage",
+				"reader": "src/blocks/post-grid/render-interior.php::(file scope)"
+			},
+			{
+				"block": "sgs/pricing-table",
+				"attr": "popularBadgeText",
+				"reader": "src/blocks/pricing-table/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/product-card",
+				"attr": "attributeTagText",
+				"reader": "src/blocks/product-card/attribute-tag.php::sgs_product_card_attribute_tag_resolve_text"
+			},
+			{
+				"block": "sgs/product-card",
+				"attr": "brandName",
+				"reader": "includes/product-card-builtin-render.php::sgs_product_card_brand_markup"
+			},
+			{
+				"block": "sgs/product-card",
+				"attr": "featuredTag",
+				"reader": "src/blocks/product-card/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/product-card",
+				"attr": "noImageLabel",
+				"reader": "includes/product-card-no-photo.php::sgs_product_card_no_photo_markup"
+			},
+			{
+				"block": "sgs/product-card",
+				"attr": "noReviewsText",
+				"reader": "includes/product-card-builtin-render.php::sgs_product_card_rating_markup"
+			},
+			{
+				"block": "sgs/product-card",
+				"attr": "priceLarge",
+				"reader": "includes/product-card-builtin-render.php::sgs_product_card_builtin_render"
+			},
+			{
+				"block": "sgs/product-card",
+				"attr": "priceNote",
+				"reader": "includes/product-card-builtin-render.php::sgs_product_card_builtin_render"
+			},
+			{
+				"block": "sgs/product-card",
+				"attr": "savingLabel",
+				"reader": "includes/product-card-builtin-render.php::sgs_product_card_saving_badge_markup"
+			},
+			{
+				"block": "sgs/product-card",
+				"attr": "trialTag",
+				"reader": "src/blocks/product-card/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/separator",
+				"attr": "contentText",
+				"reader": "src/blocks/separator/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/star-rating",
+				"attr": "label",
+				"reader": "src/blocks/star-rating/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/table-of-contents",
+				"attr": "title",
+				"reader": "src/blocks/table-of-contents/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/testimonial",
+				"attr": "orgName",
+				"reader": "src/blocks/testimonial/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/testimonial",
+				"attr": "reviewDate",
+				"reader": "src/blocks/testimonial/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/testimonial",
+				"attr": "reviewerRole",
+				"reader": "src/blocks/testimonial/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/testimonial",
+				"attr": "sourcePlatform",
+				"reader": "src/blocks/testimonial/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/trustpilot-reviews",
+				"attr": "emptyStateMessage",
+				"reader": "src/blocks/trustpilot-reviews/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/trustpilot-reviews",
+				"attr": "trustScoreLabel",
+				"reader": "src/blocks/trustpilot-reviews/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/wishlist-panel",
+				"attr": "dateSavedText",
+				"reader": "src/blocks/wishlist-panel/render-rows.js::dateText"
+			},
+			{
+				"block": "sgs/wishlist-panel",
+				"attr": "emptyText",
+				"reader": "src/blocks/wishlist-panel/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/wishlist-panel",
+				"attr": "heading",
+				"reader": "src/blocks/wishlist-panel/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/wishlist-panel",
+				"attr": "priceDropText",
+				"reader": "src/blocks/wishlist-panel/price-drop.js::(file scope)"
+			},
+			{
+				"block": "sgs/wishlist-panel",
+				"attr": "shareCopiedText",
+				"reader": "src/blocks/wishlist-panel/share.js::copied"
+			},
+			{
+				"block": "sgs/wishlist-panel",
+				"attr": "sharedGoneText",
+				"reader": "src/blocks/wishlist-panel/shared-view.js::result"
+			}
+		],
+		"sentences": [
+			{
+				"block": "sgs/account",
+				"attr": "guestLineText",
+				"reader": "src/blocks/account/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/cart",
+				"attr": "freeDeliveryMessage",
+				"reader": "src/blocks/cart/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/cart",
+				"attr": "freeDeliverySuccessMessage",
+				"reader": "src/blocks/cart/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/choice-flow-question",
+				"attr": "intro",
+				"reader": "includes/choice-flow-showcase.php::sgs_choice_flow_question_intro_html"
+			},
+			{
+				"block": "sgs/choice-flow-result",
+				"attr": "successMessage",
+				"reader": "src/blocks/choice-flow-result/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/countdown-timer",
+				"attr": "expiredMessage",
+				"reader": "src/blocks/countdown-timer/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/google-reviews",
+				"attr": "footnote",
+				"reader": "src/blocks/google-reviews/render-interior.php::(file scope) $gr_footnote_html"
+			},
+			{
+				"block": "sgs/media",
+				"attr": "caption",
+				"reader": "src/blocks/media/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/trustpilot-reviews",
+				"attr": "subtitleText",
+				"reader": "src/blocks/trustpilot-reviews/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/wishlist-panel",
+				"attr": "errorText",
+				"reader": "src/blocks/wishlist-panel/alerts.js::(file scope)"
+			},
+			{
+				"block": "sgs/wishlist-panel",
+				"attr": "guestPromptText",
+				"reader": "src/blocks/wishlist-panel/render-bars.js::guestPromptHtml"
+			},
+			{
+				"block": "sgs/wishlist-panel",
+				"attr": "notifyConsentText",
+				"reader": "src/blocks/wishlist-panel/notify-form.js::privacyLink"
+			},
+			{
+				"block": "sgs/wishlist-panel",
+				"attr": "notifySuccessText",
+				"reader": "src/blocks/wishlist-panel/notify-form.js::json"
+			}
+		]
+	}
 }

@@ -192,7 +192,7 @@ test( 'MUST FAIL: a card\'s call to action keeps its bold in the button label; n
 
 // Bean 2026-10-30: formatting or a link covering a text's whole words is the block's own typography or link, never markup
 // inside the text and never a handover; partial formatting a setting cannot hold keeps its words and is the named row.
-import { inlineText, plainTextSettings } from '../lib/inline-text.mjs';
+import { inlineText, plainTextSettings, plainSettings, loadPlainReview } from '../lib/inline-text.mjs';
 import { inventoryModel } from '../lib/skeleton-model.mjs';
 const textModel = ( kids, flow ) => inventoryModel( inventory( [ el( 'Root/1#0', null, 'section' ), el( 'Root/2#0', 'Root/1#0', 'p', { words: flow.filter( ( x ) => 'string' === typeof x ).join( '' ).trim(), flow } ), ...kids.map( ( [ tag, words, attrs = {} ], i ) => el( `Root/${ 3 + i }#0`, 'Root/2#0', tag, { words, display: 'inline', attrs } ) ) ] ) );
 const rebuilt = ( m, block, attr, clickable = false ) => inlineText( { m, e: m.byKey[ 'Root/2#0' ], block, attr, codeRepo: REPO, siteLink: () => ( { kind: 'site', value: 'https://example.org/shop' } ), clickable } );
@@ -219,12 +219,26 @@ test( 'partial formatting inside a label keeps its words and raises the named ha
 	assert.match( r.handover[ 0 ].detail, /sgs\/button label holds only core\/bold, core\/italic, so the link "today"/ );
 } );
 
-test( 'MUST FAIL: the plain-text review lists sentence settings only: no child-block text, no form or form-field setting, no clickable label', () => {
+test( 'MUST FAIL: the plain-text review lists sentence settings only: no child-block text, no form or form-field setting, no clickable label, no interface string', () => {
 	const plain = plainTextSettings( { db, codeRepo: REPO } );
 	const has = ( b, a ) => plain.some( ( p ) => b === p.block && a === p.attr );
 	assert.ok( ! has( 'sgs/info-box', 'heading' ) && ! has( 'sgs/info-box', 'description' ), 'emit_shape child' );
 	assert.ok( ! has( 'sgs/form', 'successMessage' ) && ! has( 'sgs/form-field-text', 'label' ), 'form and form-field blocks' );
-	assert.ok( ! has( 'sgs/tab', 'label' ) && ! has( 'sgs/cart', 'checkoutLabel' ) && ! has( 'sgs/product-card', 'cta2Text' ), 'clickable labels' );
-	assert.ok( has( 'sgs/cart', 'emptyCartMessage' ) && has( 'sgs/google-reviews', 'footnote' ) && has( 'sgs/choice-flow-question', 'intro' ), 'negative control: sentence settings stay' );
-	assert.ok( plain.length < 60, 'a short list' );
+	assert.ok( ! has( 'sgs/tab', 'label' ) && ! has( 'sgs/cart', 'checkoutLabel' ) && ! has( 'sgs/modal', 'triggerText' ), 'clickable labels' );
+	assert.ok( ! has( 'sgs/cart', 'emptyCartMessage' ) && ! has( 'sgs/breadcrumbs', 'separator' ), 'interface strings' );
+	assert.ok( has( 'sgs/cart', 'freeDeliveryMessage' ) && has( 'sgs/google-reviews', 'footnote' ) && has( 'sgs/choice-flow-question', 'intro' ), 'negative control: sentence settings stay' );
+	assert.ok( plain.every( ( p ) => /::/.test( p.reader ) ), 'each names the reader that prints it' );
 } );
+
+test( 'every plain-text setting is filed in exactly one group of data/plain-text-review.json, each with its reader', () => {
+	const groups = loadPlainReview();
+	const filed = Object.entries( groups ).flatMap( ( [ g, list ] ) => list.map( ( x ) => [ `${ x.block }:${ x.attr }`, g, x.reader ] ) );
+	const keys = filed.map( ( [ k ] ) => k );
+	assert.deepEqual( keys.filter( ( k, i ) => keys.indexOf( k ) !== i ), [], 'no setting filed twice' );
+	const unfiled = plainSettings( { db, codeRepo: REPO } ).map( ( r ) => `${ r.block }:${ r.attr }` ).filter( ( k ) => ! keys.includes( k ) && ! RE_ROLED.includes( k ) );
+	assert.deepEqual( unfiled, [], 'file each new plain-text setting by where the page prints it' );
+	assert.ok( filed.every( ( [ , , reader ] ) => /::/.test( reader ) ), 'each filing names its reader' );
+} );
+// Settings this track re-roles (plugins/sgs-blocks/scripts/attr-classification-overrides.json): no page text, filed nowhere
+// once the framework DB is reseeded.
+const RE_ROLED = [ 'sgs/notice-message:label', 'sgs/business-info:openStatusOpenText', 'sgs/business-info:openStatusClosedText' ];

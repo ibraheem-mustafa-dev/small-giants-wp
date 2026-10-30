@@ -140,7 +140,7 @@ test( 'the settings that hold inline markup come from the RichText record of the
 	assert.ok( ! inlineAllowance( REPO, 'sgs/accordion-item', 'title' ).formats.includes( 'core/link' ) );
 	assert.ok( formats.size > 20 );
 	const plain = plainTextSettings( { db, codeRepo: REPO } );
-	assert.ok( plain.some( ( p ) => 'sgs/cart' === p.block && 'emptyCartMessage' === p.attr ), 'a plain sentence setting is a finding' );
+	assert.ok( plain.some( ( p ) => 'sgs/cart' === p.block && 'freeDeliveryMessage' === p.attr ), 'a plain sentence setting is a finding' );
 	assert.ok( ! plain.some( ( p ) => 'sgs/tab' === p.block && 'label' === p.attr ), 'a clickable element\'s label is no finding (Bean 2026-10-30)' );
 	assert.ok( ! plain.some( ( p ) => 'sgs/heading' === p.block && 'content' === p.attr ), 'negative control: a RichText with formats is no finding' );
 	assert.throws( () => formatLists( 'export const X = Object.freeze( makeList() );' ), /X is no list/ );
