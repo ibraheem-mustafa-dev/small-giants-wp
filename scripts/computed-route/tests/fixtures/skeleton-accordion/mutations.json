@@ -13,7 +13,7 @@
 	},
 	{
 		"file": "lib/skeleton-accordion.mjs",
-		"find": "const key = [ ...stateReads( d, shows ) ].find( ( k ) => written.has( k ) );",
+		"find": "const key = [ ...( shows ? stateReads( d, shows ) : [] ) ].find( ( k ) => written.has( k ) );",
 		"replace": "const key = [ ...written ][ 0 ];",
 		"why": "any control writing any state (a drawer opener) would make an accordion"
 	},
@@ -49,8 +49,8 @@
 	},
 	{
 		"file": "lib/skeleton-accordion.mjs",
-		"find": " || m.blockKids( holder ).some( ( k ) => ! items.includes( k ) )",
-		"replace": "",
+		"find": "run ? out.runs.set( items[ 0 ].key, { ...verdict, holder: holder.key, items: items.map( ( it ) => it.key ) } ) : out.holders.set( holder.key, verdict );",
+		"replace": "out.holders.set( holder.key, verdict );",
 		"why": "a holder with content beside its items would become an accordion holding that content"
 	},
 	{

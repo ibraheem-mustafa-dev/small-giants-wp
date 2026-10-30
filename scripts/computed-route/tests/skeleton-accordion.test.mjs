@@ -82,7 +82,7 @@ test( 'several open at once where the panel\'s field reads a list, and the code\
 	assert.deepEqual( [ third.attributes.allowMultiple, third.attributes.defaultOpen ], [ false, 2 ] );
 } );
 
-test( 'negative controls: a control opening a state the item\'s panel never reads (a drawer), a loop with no control, a control the render does not confirm, a holder holding more than the loop', () => {
+test( 'negative controls: a control opening a state the item\'s panel never reads (a drawer), a loop with no control, a control the render does not confirm; a holder holding more than the loop keeps that content beside one accordion', () => {
 	assert.equal( accordionOf( propose( draftRepo( ( t ) => t.replace( 'toggle: () => this.setState({ faq: open ? -1 : i })', 'toggle: () => this.setState({ menuOpen: true })' ) ) ) ), null, 'a drawer opener' );
 	const still = { ...FAQ.inventory, elements: FAQ.inventory.elements.map( ( e ) => ( { ...e, snippet: String( e.snippet ).replace( ' sc-camel-on-click="{{ f.toggle }}"', '' ) } ) ) };
 	assert.ok( still.elements.some( ( e, i ) => e.snippet !== FAQ.inventory.elements[ i ].snippet ) );
@@ -94,5 +94,10 @@ test( 'negative controls: a control opening a state the item\'s panel never read
 	assert.ok( unconfirmed.elements.some( ( e, i ) => e.snippet !== FAQ.inventory.elements[ i ].snippet ) );
 	assert.equal( accordionOf( propose( { inventory: unconfirmed, record: recordWith( 'Home/246', ( t ) => delete t.attrs[ 'aria-expanded' ] ) } ) ), null, 'no aria-expanded' );
 	const extra = { ...FAQ.inventory.elements.find( ( e ) => 'Root/241#0' === e.key ), key: 'Root/241#1', parentKey: 'Root/243#0', membership: [] };
-	assert.equal( accordionOf( propose( { inventory: { ...FAQ.inventory, elements: [ ...FAQ.inventory.elements, extra ] } } ) ), null, 'a holder with a paragraph beside its items' );
+	const beside = propose( { inventory: { ...FAQ.inventory, elements: [ ...FAQ.inventory.elements, extra ] } } );
+	const acc = accordionOf( beside );
+	assert.ok( acc, 'the items are still one accordion' );
+	assert.notEqual( rowOf( beside, 'Root/243#0' ).rule, 'accordion', 'a holder with a paragraph beside its items is not the accordion' );
+	assert.equal( acc.innerBlocks.length, 4, 'the accordion holds the items only' );
+	assert.equal( rowOf( beside, 'Root/241#1' ).action, null, 'the paragraph stays its own block beside the accordion' );
 } );

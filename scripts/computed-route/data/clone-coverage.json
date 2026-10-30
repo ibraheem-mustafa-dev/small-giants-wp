@@ -5,144 +5,144 @@
 	},
 	"entries": {
 		"aria-attr:aria-activedescendant": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-activedescendant: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-activedescendant: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-atomic": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-atomic: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-atomic: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-autocomplete": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-autocomplete: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-autocomplete: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-braillelabel": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-braillelabel: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-braillelabel: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-brailleroledescription": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-brailleroledescription: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-brailleroledescription: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-busy": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "shop, forms and data",
-			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings"
+			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-checked": {
 			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
 			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
 			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
-			"note": "aria-checked: the vocabulary row sets the attribute on the host and reads the look as the 'current' state; written to the selected-pill settings (sgs/option-picker, sgs/product-card) (tests/states-planted-draft.test.mjs)",
+			"note": "aria-checked: the vocabulary row sets the attribute on the host and reads the look as the 'current' state; written to the selected-pill settings (sgs/option-picker, sgs/product-card) (tests/states-planted-draft.test.mjs); the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)",
 			"test": "scripts/computed-route/tests/states-planted-draft.test.mjs"
 		},
 		"aria-attr:aria-colcount": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-colcount: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-colcount: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-colindex": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-colindex: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-colindex: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-colspan": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-colspan: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-colspan: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-controls": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-controls: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-controls: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-current": {
 			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
 			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
 			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
-			"note": "aria-current: the vocabulary row sets the attribute on the host and reads the look as the 'current' state; written to sgs/nav-bar-menu, sgs/nav-drawer-menu and sgs/breadcrumbs current settings (tests/states-planted-draft.test.mjs)",
+			"note": "aria-current: the vocabulary row sets the attribute on the host and reads the look as the 'current' state; written to sgs/nav-bar-menu, sgs/nav-drawer-menu and sgs/breadcrumbs current settings (tests/states-planted-draft.test.mjs); the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)",
 			"test": "scripts/computed-route/tests/states-planted-draft.test.mjs"
 		},
 		"aria-attr:aria-describedby": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-describedby: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-describedby: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-description": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-description: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-description: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-details": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-details: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-details: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-disabled": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "shop, forms and data",
-			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings"
+			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-dropeffect": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-dropeffect: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-dropeffect: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-errormessage": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-errormessage: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-errormessage: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-expanded": {
 			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
 			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
 			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
-			"note": "aria-expanded: the vocabulary row sets the attribute on the host and reads the look as the 'open' state; written to sgs/accordion headerColourOpen, sgs/nav-drawer-menu itemColourOpen (tests/states-planted-draft.test.mjs)",
+			"note": "aria-expanded: the vocabulary row sets the attribute on the host and reads the look as the 'open' state; written to sgs/accordion headerColourOpen, sgs/nav-drawer-menu itemColourOpen (tests/states-planted-draft.test.mjs); the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)",
 			"test": "scripts/computed-route/tests/states-planted-draft.test.mjs"
 		},
 		"aria-attr:aria-flowto": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-flowto: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-flowto: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-grabbed": {
 			"excluded": {
@@ -152,263 +152,263 @@
 			}
 		},
 		"aria-attr:aria-haspopup": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-haspopup: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-haspopup: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-hidden": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": "SGS and drafts set aria-hidden=\"true\" on decorative pieces for good, so a [aria-hidden=\"true\"] rule is in the resting read (fill-read readDraft) and written by the resting resolver; a panel toggled open and shut is covered by aria-expanded and [open]; tests/states-planted-draft.test.mjs proves the read",
+			"note": "SGS and drafts set aria-hidden=\"true\" on decorative pieces for good, so a [aria-hidden=\"true\"] rule is in the resting read (fill-read readDraft) and written by the resting resolver; a panel toggled open and shut is covered by aria-expanded and [open]; tests/states-planted-draft.test.mjs proves the read; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)",
 			"test": "scripts/computed-route/tests/states-planted-draft.test.mjs"
 		},
 		"aria-attr:aria-invalid": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "shop, forms and data",
-			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings"
+			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-keyshortcuts": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-keyshortcuts: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-keyshortcuts: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-label": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/fill-link-attrs.mjs#linkAttrDecisions",
 			"check": "scripts/parity/lib/links.mjs#compareLinkAttributes",
 			"test": "scripts/computed-route/tests/fill-link-attrs.test.mjs",
-			"note": "aria-label: written to the block's ariaLabel or ...AriaLabel setting, else a named aria-label gap; the live links check compares it on links"
+			"note": "aria-label: written to the block's ariaLabel or ...AriaLabel setting, else a named aria-label gap; the live links check compares it on links; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-labelledby": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-labelledby: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-labelledby: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-level": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-level: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-level: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-live": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-live: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-live: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-modal": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-modal: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-modal: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-multiline": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-multiline: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-multiline: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-multiselectable": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-multiselectable: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-multiselectable: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-orientation": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-orientation: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-orientation: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-owns": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-owns: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-owns: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-placeholder": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-placeholder: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-placeholder: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-posinset": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-posinset: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-posinset: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-pressed": {
 			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
 			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
 			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
-			"note": "aria-pressed: the vocabulary row sets the attribute on the host and reads the look as the 'current' state; written to sgs/theme-toggle textColourPressed (tests/states-planted-draft.test.mjs)",
+			"note": "aria-pressed: the vocabulary row sets the attribute on the host and reads the look as the 'current' state; written to sgs/theme-toggle textColourPressed (tests/states-planted-draft.test.mjs); the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)",
 			"test": "scripts/computed-route/tests/states-planted-draft.test.mjs"
 		},
 		"aria-attr:aria-readonly": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-readonly: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-readonly: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-relevant": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-relevant: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-relevant: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-required": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-required: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-required: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-roledescription": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-roledescription: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-roledescription: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-rowcount": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-rowcount: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-rowcount: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-rowindex": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-rowindex: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-rowindex: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-rowspan": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-rowspan: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-rowspan: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-selected": {
 			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
 			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
 			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
-			"note": "aria-selected: the vocabulary row sets the attribute on the host and reads the look as the 'current' state; written to sgs/tabs tabActive* settings (tests/states-planted-draft.test.mjs)",
+			"note": "aria-selected: the vocabulary row sets the attribute on the host and reads the look as the 'current' state; written to sgs/tabs tabActive* settings (tests/states-planted-draft.test.mjs); the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)",
 			"test": "scripts/computed-route/tests/states-planted-draft.test.mjs"
 		},
 		"aria-attr:aria-setsize": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-setsize: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-setsize: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-sort": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-sort: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-sort: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-valuemax": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-valuemax: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-valuemax: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-valuemin": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-valuemin: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-valuemin: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-valuenow": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-valuenow: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-valuenow: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-attr:aria-valuetext": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "aria-valuetext: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"note": "aria-valuetext: an ARIA property (name, description, relationship); SGS blocks render their own; the skeleton writer's identity matcher reads it from the draft region: its name is an identity fact (renders-aria) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:alert": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"alert\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"alert\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:alertdialog": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"alertdialog\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"alertdialog\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:application": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"application\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"application\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:article": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"article\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"article\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:banner": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"banner\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"banner\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:blockquote": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"blockquote\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"blockquote\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:button": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"button\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"button\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:caption": {
 			"recognise": null,
@@ -418,18 +418,18 @@
 			"note": "role=\"caption\": structure or landmark semantics; SGS blocks render their own ARIA"
 		},
 		"aria-role:cell": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"cell\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"cell\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:checkbox": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/fill-form.mjs#formWrites",
 			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
 			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
-			"note": "role=\"checkbox\" on a button: read as the field's ticked start (aria-checked) and written as the consent field's defaultChecked; the block draws its own native checkbox"
+			"note": "role=\"checkbox\" on a button: read as the field's ticked start (aria-checked) and written as the consent field's defaultChecked; the block draws its own native checkbox; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:code": {
 			"recognise": null,
@@ -439,39 +439,39 @@
 			"note": "role=\"code\": structure or landmark semantics; SGS blocks render their own ARIA"
 		},
 		"aria-role:columnheader": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"columnheader\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"columnheader\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:combobox": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"combobox\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"combobox\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:complementary": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"complementary\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"complementary\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:contentinfo": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"contentinfo\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"contentinfo\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:definition": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"definition\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"definition\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:deletion": {
 			"recognise": null,
@@ -488,305 +488,305 @@
 			}
 		},
 		"aria-role:directory": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"directory\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"directory\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-abstract": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-abstract\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-abstract\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-acknowledgments": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-acknowledgments\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-acknowledgments\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-afterword": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-afterword\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-afterword\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-appendix": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-appendix\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-appendix\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-backlink": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"doc-backlink\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"doc-backlink\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-biblioentry": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-biblioentry\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-biblioentry\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-bibliography": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-bibliography\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-bibliography\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-biblioref": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"doc-biblioref\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"doc-biblioref\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-chapter": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-chapter\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-chapter\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-colophon": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-colophon\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-colophon\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-conclusion": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-conclusion\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-conclusion\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-cover": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-cover\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-cover\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-credit": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-credit\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-credit\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-credits": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-credits\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-credits\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-dedication": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-dedication\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-dedication\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-endnote": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-endnote\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-endnote\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-endnotes": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-endnotes\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-endnotes\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-epigraph": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-epigraph\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-epigraph\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-epilogue": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-epilogue\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-epilogue\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-errata": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-errata\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-errata\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-example": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-example\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-example\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-footnote": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-footnote\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-footnote\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-foreword": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-foreword\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-foreword\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-glossary": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-glossary\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-glossary\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-glossref": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"doc-glossref\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"doc-glossref\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-index": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-index\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-index\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-introduction": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-introduction\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-introduction\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-noteref": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"doc-noteref\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"doc-noteref\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-notice": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-notice\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-notice\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-pagebreak": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-pagebreak\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-pagebreak\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-pagefooter": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-pagefooter\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-pagefooter\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-pageheader": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-pageheader\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-pageheader\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-pagelist": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-pagelist\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-pagelist\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-part": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-part\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-part\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-preface": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-preface\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-preface\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-prologue": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-prologue\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-prologue\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-pullquote": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-pullquote\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-pullquote\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-qna": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-qna\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-qna\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-subtitle": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-subtitle\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-subtitle\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-tip": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-tip\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-tip\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:doc-toc": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"doc-toc\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"doc-toc\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:document": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"document\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"document\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:emphasis": {
 			"recognise": null,
@@ -796,25 +796,25 @@
 			"note": "role=\"emphasis\": structure or landmark semantics; SGS blocks render their own ARIA"
 		},
 		"aria-role:feed": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"feed\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"feed\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:figure": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"figure\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"figure\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:form": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"form\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"form\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:generic": {
 			"recognise": null,
@@ -824,39 +824,39 @@
 			"note": "role=\"generic\": structure or landmark semantics; SGS blocks render their own ARIA"
 		},
 		"aria-role:graphics-document": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"graphics-document\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"graphics-document\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:graphics-object": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"graphics-object\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"graphics-object\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:graphics-symbol": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"graphics-symbol\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"graphics-symbol\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:grid": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"grid\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"grid\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:gridcell": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"gridcell\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"gridcell\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:group": {
 			"excluded": {
@@ -866,18 +866,18 @@
 			}
 		},
 		"aria-role:heading": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"heading\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"heading\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:img": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"img\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"img\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:insertion": {
 			"recognise": null,
@@ -887,137 +887,137 @@
 			"note": "role=\"insertion\": structure or landmark semantics; SGS blocks render their own ARIA"
 		},
 		"aria-role:link": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"link\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"link\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:list": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"list\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"list\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:listbox": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"listbox\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"listbox\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:listitem": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"listitem\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"listitem\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:log": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"log\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"log\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:main": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"main\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"main\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:mark": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"mark\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"mark\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:marquee": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"marquee\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"marquee\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:math": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"math\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"math\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:menu": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"menu\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"menu\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:menubar": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"menubar\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"menubar\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:menuitem": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"menuitem\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"menuitem\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:menuitemcheckbox": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"menuitemcheckbox\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"menuitemcheckbox\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:menuitemradio": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"menuitemradio\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"menuitemradio\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:meter": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"meter\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"meter\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:navigation": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"navigation\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"navigation\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:none": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"none\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"none\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:note": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"note\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"note\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:option": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"option\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"option\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:paragraph": {
 			"recognise": null,
@@ -1034,102 +1034,102 @@
 			"note": "role=\"presentation\": structure or landmark semantics; SGS blocks render their own ARIA"
 		},
 		"aria-role:progressbar": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"progressbar\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"progressbar\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:radio": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"radio\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"radio\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:radiogroup": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"radiogroup\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"radiogroup\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:region": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"region\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"region\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:row": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"row\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"row\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:rowgroup": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"rowgroup\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"rowgroup\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:rowheader": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"rowheader\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"rowheader\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:scrollbar": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"scrollbar\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"scrollbar\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:search": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"search\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"search\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:searchbox": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"searchbox\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"searchbox\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:separator": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"separator\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"separator\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:slider": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"slider\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"slider\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:spinbutton": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"spinbutton\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"spinbutton\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:status": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"status\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"status\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:strong": {
 			"recognise": null,
@@ -1153,102 +1153,102 @@
 			"note": "role=\"superscript\": structure or landmark semantics; SGS blocks render their own ARIA"
 		},
 		"aria-role:switch": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"switch\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"switch\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:tab": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"tab\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"tab\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:table": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"table\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"table\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:tablist": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"tablist\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"tablist\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:tabpanel": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"tabpanel\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"tabpanel\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:term": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"term\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"term\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:textbox": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"textbox\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"textbox\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:time": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"time\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"time\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:timer": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"timer\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"timer\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:toolbar": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"toolbar\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"toolbar\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:tooltip": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "role=\"tooltip\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"note": "role=\"tooltip\": structure or landmark semantics; SGS blocks render their own ARIA; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:tree": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"tree\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"tree\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:treegrid": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"treegrid\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"treegrid\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"aria-role:treeitem": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/skeleton-identity-draft.mjs#makeDraftFacts",
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "role=\"treeitem\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"note": "role=\"treeitem\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent; the skeleton writer's identity matcher reads it from the draft region: the role, written or implied by the tag through aria-query, is an identity fact (renders-role or implied-role) that rules out the blocks whose block_identity_facts prove they never show it (lib/skeleton-identity.mjs, tests/skeleton-identity.test.mjs)"
 		},
 		"block-setting:a11y-text:string": {
 			"recognise": null,

@@ -1,6 +1,7 @@
 // A loop of disclosures is an accordion (Spec 48 §3.4, the `accordion` standing rule, RC6). Read from the fact record and the
 // draft's logic syntax tree, never from words or from surfaces.json's kind alone:
-//   - the loop (`sc-for`) has one holder that holds nothing but its items, every item a copy of one template element;
+//   - the loop (`sc-for`) has one holder, every item a copy of one template element; a holder that holds other content too (a
+//     heading, a count line) keeps it, and its items, standing together, are one accordion beside it (a run);
 //   - inside the item template sit a conditional panel (`sc-if`) whose value is a field of the loop item and, outside that
 //     panel, a control binding an event to another field of the loop item (the fact record's `template.events`);
 //   - in the logic, the loop's list is `list.map( ( item, i ) => ( { … } ) )`; the control's field is a function whose
@@ -112,9 +113,10 @@ export function copyText( rec, copy ) {
 // defaultOpen, isOpen } }), titleAttr, textAttr (the item's and the panel block's text-content settings), rich( e, block,
 // attr ) (lib/inline-text.mjs::inlineText over the model: a rendered title or panel text keeps its inline markup as its
 // setting holds it, and the item carries its handover rows) }. Returns
-// { holders: Map( holder key → { attributes, reason } ), items: Map( item key → { attributes, inner, handover? } ), notes }.
+// { holders: Map( holder key → { attributes, reason } ), runs: Map( first item key → { attributes, reason, holder, items } ) (the
+// items of a holder that holds other content too), items: Map( item key → { attributes, inner, handover? } ), notes }.
 export function accordionLoops( { m, read, logicOf, rule, titleAttr, textAttr, rich = () => null } ) {
-	const out = { holders: new Map(), items: new Map(), notes: [] };
+	const out = { holders: new Map(), runs: new Map(), items: new Map(), notes: [] };
 	if ( ! rule || ! titleAttr || ! textAttr ) {
 		return out;
 	}
@@ -136,7 +138,15 @@ export function accordionLoops( { m, read, logicOf, rule, titleAttr, textAttr, r
 		const holders = [ ...new Set( items.map( ( e ) => e.parentKey ) ) ];
 		const holder = 1 === holders.length ? m.byKey[ holders[ 0 ] ] : null;
 		const itemKeys = [ ...new Set( items.map( ( e ) => entry( e )?.key ) ) ];
-		if ( ! holder || holder === m.root || 1 !== itemKeys.length || ! itemKeys[ 0 ] || m.blockKids( holder ).some( ( k ) => ! items.includes( k ) ) ) {
+		if ( ! holder || holder === m.root || 1 !== itemKeys.length || ! itemKeys[ 0 ] ) {
+			continue;
+		}
+		// A holder that also holds other content (a heading, a count line) keeps it: the items are a run of its children, one
+		// accordion beside that content, when they stand together.
+		const kidsOf = m.blockKids( holder );
+		const first = kidsOf.indexOf( items[ 0 ] );
+		const run = kidsOf.some( ( k ) => ! items.includes( k ) );
+		if ( run && ( first < 0 || kidsOf.slice( first, first + items.length ).some( ( k, i ) => k !== items[ i ] ) ) ) {
 			continue;
 		}
 		const itemKey = itemKeys[ 0 ];
@@ -157,13 +167,20 @@ export function accordionLoops( { m, read, logicOf, rule, titleAttr, textAttr, r
 			const shows = fieldValue( d, obj, x.p.field );
 			const handler = fieldValue( d, obj, x.c.field );
 			const written = new Set( handler ? patchProperties( d, handler ).map( keyName ) : [] );
-			const key = [ ...stateReads( d, shows ) ].find( ( k ) => written.has( k ) );
+			const key = [ ...( shows ? stateReads( d, shows ) : [] ) ].find( ( k ) => written.has( k ) );
 			return key ? { ...x, key, shows } : null;
 		} ).find( Boolean ) : null;
 		if ( ! pair ) {
 			out.notes.push( `${ holder.key }: a loop whose items hold a control and a conditional panel, but no control's handler writes a state the item's own panel reads, so it is no accordion` );
 			continue;
 		}
+		// The control's words: its own, else its first piece of text not hidden from assistive technology (a question in a span
+		// beside a "+" glyph).
+		const titleOf = ( c ) => {
+			const squash = ( x ) => m.words( x ).replace( /\s+/g, ' ' ).trim();
+			const inner = squash( c ) ? null : m.els.find( ( x ) => x !== c && within( x, c ) && 'true' !== String( read.attr( x, 'aria-hidden' ) ) && squash( x ).length > 1 );
+			return squash( c ) || ( inner ? squash( inner ) : '' );
+		};
 		const controlOf = ( it ) => m.els.find( ( x ) => entry( x )?.key === pair.c.rec.template.key && within( x, it ) ) ?? null;
 		if ( ! items.every( ( it ) => controlOf( it ) && null != read.attr( controlOf( it ), 'aria-expanded' ) ) ) {
 			out.notes.push( `${ holder.key }: a loop of toggles over their own panels whose controls carry no aria-expanded, so the render does not confirm a disclosure` );
@@ -176,10 +193,11 @@ export function accordionLoops( { m, read, logicOf, rule, titleAttr, textAttr, r
 		const content = Object.values( records ).filter( ( rec ) => rec.template.parent === pair.p.rec.template.key && String( rec.template.words ?? '' ).trim() );
 		const A = rule.attributes;
 		const firstOpen = items.findIndex( openAt );
-		out.holders.set( holder.key, {
+		const verdict = {
 			attributes: { [ A.allowMultiple ]: ! single, ...( single && firstOpen >= 0 ? { [ A.defaultOpen ]: firstOpen } : {} ) },
-			reason: `${ rule.reason } (a loop of ${ items.length } items whose control writes "${ pair.key }", which the item's own panel reads; ${ single ? 'one item open at a time' : 'several items open at once' })`,
-		} );
+			reason: `${ rule.reason } (a loop of ${ items.length } items whose control writes "${ pair.key }", which the item's own panel reads; ${ single ? 'one item open at a time' : 'several items open at once' }${ run ? `; the holder ${ holder.key } also holds other content, so the items are one accordion beside it` : '' })`,
+		};
+		run ? out.runs.set( items[ 0 ].key, { ...verdict, holder: holder.key, items: items.map( ( it ) => it.key ) } ) : out.holders.set( holder.key, verdict );
 		items.forEach( ( it, i ) => {
 			const handover = [];
 			const inner = content.map( ( rec ) => {
@@ -192,11 +210,12 @@ export function accordionLoops( { m, read, logicOf, rule, titleAttr, textAttr, r
 				const at = rendered ?? m.els.find( ( x ) => entry( x )?.key === rec.template.key );
 				return text ? { name: rule.panelBlock, attributes: { [ textAttr ]: text }, ...( at ? { itemKey: at.key } : {} ) } : null;
 			} ).filter( Boolean );
-			const title = rich( controlOf( it ), rule.itemBlock, titleAttr );
+			// A control with words of its own keeps their inline markup; one whose words sit in a child beside a glyph takes that text.
+			const title = m.words( controlOf( it ) ).trim() ? rich( controlOf( it ), rule.itemBlock, titleAttr ) : null;
 			title && handover.push( ...title.handover );
 			content.length > inner.length && out.notes.push( `${ it.key }: ${ content.length - inner.length } of the panel's ${ content.length } text elements have no value for this copy, so the item holds the rest` );
 			out.items.set( it.key, {
-				attributes: { [ titleAttr ]: title?.value ?? m.words( controlOf( it ) ).replace( /\s+/g, ' ' ).trim(), ...( openAt( it, i ) ? { [ A.isOpen ]: true } : {} ) },
+				attributes: { [ titleAttr ]: title?.value ?? titleOf( controlOf( it ) ), ...( openAt( it, i ) ? { [ A.isOpen ]: true } : {} ) },
 				inner,
 				...( handover.length ? { handover } : {} ),
 			} );
