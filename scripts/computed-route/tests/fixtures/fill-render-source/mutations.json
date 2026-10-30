@@ -1,0 +1,14 @@
+[
+	{ "file": "lib/fill-render-source.mjs", "find": "for ( const kind of [ ...new Set( Object.values( other ) ) ] ) {", "replace": "for ( const kind of [] ) {", "why": "the old behaviour: the drawer-only settings are never read from the drawer" },
+	{ "file": "lib/fill-render-source.mjs", "find": "if ( ! bar || ! best || ! best.shared ) {", "replace": "if ( ! bar || ! best ) {", "why": "a part showing none of the node's data would be its copy" },
+	{ "file": "lib/fill-render-source.mjs", "find": "parts.filter( ( p ) => p.context === kind )", "replace": "parts.filter( ( p ) => true )", "why": "a part of another render kind would answer for the drawer" },
+	{ "file": "lib/fill-render-source.mjs", "find": "if ( part ) {", "replace": "if ( true ) {", "why": "every slot would name the node itself" },
+	{ "file": "lib/fill-render-source.mjs", "find": "first.find( ( a ) => els.every( ( e ) => chain( e ).includes( a ) ) )", "replace": "first.find( ( a ) => els.some( ( e ) => chain( e ).includes( a ) ) )", "why": "a container would pair with one of its descendants' copies, not the element holding them all" },
+	{ "file": "lib/fill-render-source.mjs", "find": "a && b && a !== b ? { check:", "replace": "false ? { check:", "why": "a pair whose words disagree would not be flagged" },
+	{ "file": "lib/fill-render-source.mjs", "find": "state_keys: { ...keys, ...( st.state_keys || {} ) }", "replace": "state_keys: { ...( st.state_keys || {} ) }", "why": "a drawer section would be opened with the drawer shut" },
+	{ "file": "lib/render-identity.mjs", "find": "return st.property.name;", "replace": "return null;", "why": "the section's index would not be pinned by the state that opens it, so no data of the panel is found" },
+	{ "file": "lib/render-identity.mjs", "find": "? `[${ state[ k ] }]` : '[*]'", "replace": "? '[*]' : '[*]'", "why": "the open panel's menu would not be pinned, so every section would match it" },
+	{ "file": "lib/render-identity.mjs", "find": "return items.indexOf( p );", "replace": "return 0;", "why": "every copy of a loop would be one identity, so another link's label would stand in for a missing one" },
+	{ "file": "lib/render-identity.mjs", "find": "( ! src.includes( '[*]' ) ? [ `${ src }#0` ] :", "replace": "( false ? [ `${ src }#0` ] :", "why": "an element the state pins whole would need a loop copy inside the part, so the card would not pair" },
+	{ "file": "lib/render-identity.mjs", "find": "return go( node.callee.object, [] );", "replace": "return null;", "why": "a mapped list would show no data, so a loop's items would not pair" }
+]

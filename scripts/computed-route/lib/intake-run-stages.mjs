@@ -219,13 +219,19 @@ export const STAGES = [
 		const surfaces = want ? roots.surfaces.filter( ( s ) => want.includes( s.slug ) || want.includes( s.id ) ) : roots.surfaces;
 		const r = await proposeSkeletons( { folder: job.folder, harPath: job.harPath, surfaces, client: job.client, entry: job.entry, routing: ctx.routing, pageMap: ctx.pageMap ?? null, repo: job.repo, census: ctx.censusFull, propose: null, inventoriesDir: job.inventoriesDir ?? null, log: ( l ) => log( `  ${ l }` ) } );
 		ctx.skeletonReads = Object.fromEntries( r.skeletons.map( ( { surface, ...entry } ) => [ surface, entry ] ) );
+		// The parts a render-context surface draws another surface's block in (a drawer's sections: lib/intake-skeletons.mjs
+		// renderParts), read with their state open and saved beside the surfaces' inventories for Fill (lib/fill-render.mjs).
+		const parts = want ? [] : roots.renderParts;
+		const pr = parts.length ? await proposeSkeletons( { folder: job.folder, harPath: job.harPath, surfaces: parts, client: job.client, entry: job.entry, routing: ctx.routing, pageMap: ctx.pageMap ?? null, repo: job.repo, census: ctx.censusFull, propose: null, inventoriesDir: job.inventoriesDir ?? null, log: ( l ) => log( `  ${ l }` ) } ) : { skeletons: [], gaps: [], runs: [] };
+		const byPart = new Map( parts.map( ( p ) => [ p.slug, p ] ) );
+		const renderParts = Object.fromEntries( pr.skeletons.filter( ( x ) => ! x.gap ).map( ( { surface, ...entry } ) => [ surface, { ...entry, context: byPart.get( surface ).context, parent: byPart.get( surface ).parent } ] ) );
 		const opened = r.skeletons.filter( ( s ) => s.opened ).map( ( s ) => `${ s.surface } via ${ s.opened.via }` );
 		return {
-			skeletons: ctx.skeletonReads, surfaces: { surfaces: roots.surfaces.map( ( { states, ...s } ) => ( void states, s ) ), parts: roots.parts },
+			skeletons: ctx.skeletonReads, renderParts, surfaces: { surfaces: roots.surfaces.map( ( { states, ...s } ) => ( void states, s ) ), parts: roots.parts },
 			runs: r.runs.map( ( x ) => ( { file: x.file, hash: x.hash, surfaces: x.surfaces, requests: x.requests, proxyAttempts: x.proxyAttempts.length, ms: x.ms } ) ),
 			blocked: r.runs.flatMap( ( x ) => x.blocked ), proxyAttempts: r.runs.reduce( ( n, x ) => n + x.proxyAttempts.length, 0 ),
-			gaps: [ ...roots.gaps, ...r.gaps ],
-			note: `${ surfaces.length } surfaces, ${ r.gaps.length } gaps, ${ r.skeletons.length - r.gaps.length } inventories saved; opened ${ opened.join( ', ' ) || 'none' }`,
+			gaps: [ ...roots.gaps, ...r.gaps, ...pr.gaps ],
+			note: `${ surfaces.length } surfaces, ${ r.gaps.length } gaps, ${ r.skeletons.length - r.gaps.length } inventories saved; opened ${ opened.join( ', ' ) || 'none' }; ${ Object.keys( renderParts ).length } of ${ parts.length } render parts read`,
 		};
 	} ],
 	// FR-48-7: the template, logic and surfaces readers joined into sites/<client>/build/intake/facts.json. The widened

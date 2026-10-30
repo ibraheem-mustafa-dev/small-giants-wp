@@ -89,7 +89,7 @@ test( 'MUST FAIL every source kind is hashed: a script at any depth, an asset, a
 } );
 
 test( 'MUST FAIL the readers of an intake record call assertCurrent', () => {
-	for ( const f of [ 'skeleton.mjs', 'check-approved.mjs', 'fill.mjs', 'lib/skeleton-rerun.mjs' ] ) {
+	for ( const f of [ 'skeleton.mjs', 'check-approved.mjs', 'lib/fill-inputs.mjs', 'lib/skeleton-rerun.mjs' ] ) {
 		assert.match( fs.readFileSync( path.join( ROUTE, f ), 'utf8' ), /assertCurrent\(/, f );
 	}
 } );

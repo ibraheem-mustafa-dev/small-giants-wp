@@ -1,0 +1,10 @@
+[
+	{"file": "lib/intake-skeletons.mjs", "find": "if ( context && openingStates( r ).length ) {", "replace": "if ( openingStates( r ).length ) {", "why": "a page's accordion would be read as a render part"},
+	{"file": "lib/intake-skeletons.mjs", "find": "const context = ancestors.find( ( a ) => CONTEXT_KINDS.has( a.kind ) );", "replace": "const context = null;", "why": "the old behaviour: no part is read on its own"},
+	{"file": "lib/intake-skeletons.mjs", "find": "Object.values( st.state_keys || {} ).some( ( v ) => null != v && false !== v )", "replace": "true", "why": "a part's collapsed state would be offered to open it"},
+	{"file": "lib/intake-skeletons.mjs", "find": "if ( ( ! m.error && ! bounded && ! s.part ) || ! opener ) {", "replace": "if ( ( ! m.error && ! bounded ) || ! opener ) {", "why": "a render part mounted shut would be read without its state set"},
+	{"file": "lib/intake-skeletons.mjs", "find": "if ( s.part ) {\n\t\treturn true;", "replace": "if ( false ) {\n\t\treturn true;", "why": "a render part mounted at rest would be read at rest, shut"},
+	{"file": "lib/intake-skeletons.mjs", "find": "let root = ( shown && live.find( visible ) ) || live[ 0 ];", "replace": "let root = live[ 0 ];", "why": "a render part would mark the first copy of its root, not the one its state shows"},
+	{"file": "lib/intake-skeletons.mjs", "find": "'page' === s.kind, !! s.part ];", "replace": "'page' === s.kind, false ];", "why": "the mark would not look for the shown copy"},
+	{"file": "lib/intake-skeletons.mjs", "find": "let root = ( shown && live.find( visible ) ) || live[ 0 ];", "replace": "let root = live.find( visible ) || live[ 0 ];", "why": "every surface, not only a render part, would take the shown copy"}
+]

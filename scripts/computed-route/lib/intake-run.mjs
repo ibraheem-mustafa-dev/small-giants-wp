@@ -159,6 +159,7 @@ export function buildRecord( { client, takenOn, manifest, result, sources = null
 		notDefects: p[ 'draft defects' ]?.notDefects ?? [],
 		missingFeatures: p[ 'missing features' ]?.missingFeatures ?? [],
 		skeletons: p.proposals?.skeletons ?? p.skeletons?.skeletons ?? {},
+		renderParts: p.skeletons?.renderParts ?? {},
 		notices: { prose: p.notices?.prose ?? [], blockedHosts: mergeBlocked( result.blocked ?? Object.values( p ).flatMap( ( x ) => x?.blocked ?? [] ) ) },
 		gaps,
 		review: [],
