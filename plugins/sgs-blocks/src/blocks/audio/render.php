@@ -182,7 +182,7 @@ $audio_bool .= $show_native_controls ? ' controls' : '';
 $audio_bool .= $loop ? ' loop' : '';
 $audio_bool .= $autoplay ? ' autoplay' : '';
 
-$aria_label = '' !== $audio_title ? $audio_title : __( 'Audio player', 'sgs-blocks' );
+$aria_label = '' !== $audio_title ? sgs_authored_text_plain( $audio_title ) : __( 'Audio player', 'sgs-blocks' );
 
 // Schema.org AudioObject (structured data — SEO + AI-search citation). Emitted as
 // inline JSON-LD; JSON_HEX_TAG/AMP make it safe inside a <script> tag.
@@ -193,7 +193,7 @@ $schema = array(
 	'encodingFormat' => $resolved_mime,
 );
 if ( '' !== $audio_title ) {
-	$schema['name'] = $audio_title;
+	$schema['name'] = sgs_authored_text_plain( $audio_title );
 }
 $schema_json = wp_json_encode( $schema, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_SLASHES );
 
@@ -355,7 +355,7 @@ $wrapper_attrs = get_block_wrapper_attributes( $root_attr_args );
 		<script type="application/ld+json"><?php echo $schema_json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_json_encode with JSON_HEX_TAG|JSON_HEX_AMP is script-safe JSON-LD. ?></script>
 	<?php endif; ?>
 	<?php if ( '' !== $audio_title && 'hidden' !== $player_style ) : ?>
-		<p class="sgs-audio__title"><?php echo esc_html( $audio_title ); ?></p>
+		<p class="sgs-audio__title"><?php echo sgs_rich_text_kses( $audio_title ); ?></p>
 	<?php endif; ?>
 	<audio
 		class="sgs-audio__native"

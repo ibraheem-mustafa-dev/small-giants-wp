@@ -269,7 +269,7 @@ $grb_inner .= '<div class="sgs-google-rating-badge__stars" aria-hidden="true">' 
 if ( '' !== $grb_caption_html ) {
 	$grb_inner .= '<span class="sgs-google-rating-badge__caption" aria-hidden="true">' . $grb_caption_html . '</span>';
 }
-$grb_inner .= '<span class="sgs-sr-only">' . esc_html( $grb_name ) . '</span>';
+$grb_inner .= '<span class="sgs-sr-only">' . sgs_rich_text_kses( $grb_name, false ) . '</span>';
 if ( $grb_new_tab ) {
 	$grb_inner .= '<span class="sgs-sr-only">' . esc_html__( ' (opens in a new tab)', 'sgs-blocks' ) . '</span>';
 }

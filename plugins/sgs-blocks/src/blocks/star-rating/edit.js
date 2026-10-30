@@ -17,6 +17,8 @@ import {
 	boxPreview,
 } from '../../utils';
 
+import AuthoredText from '../../components/AuthoredText';
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 /** Build the wrapper's editor-preview style (mirrors render.php's scoped base declarations) at the previewed device tier. */
 function buildWrapperStyle( attributes, colourPalette, tier ) {
 	const { textColour, textColourGradient, backgroundColour, backgroundColourGradient } = attributes;
@@ -368,12 +370,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<TextControl
+					<SgsFreeTextField type="rich"
 						label={ __( 'Label', 'sgs-blocks' ) }
 						value={ label }
 						onChange={ ( val ) => setAttributes( { label: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 					<ToggleControl
 						label={ __( 'Show numeric value (legacy)', 'sgs-blocks' ) }
@@ -432,7 +432,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<span className="sgs-star-rating__numeric">{ rating }/{ maxRating }</span>
 				) }
 				{ label && (
-					<span className="sgs-star-rating__label">{ label }</span>
+					<AuthoredText className="sgs-star-rating__label" value={ label } />
 				) }
 			</div>
 		</>

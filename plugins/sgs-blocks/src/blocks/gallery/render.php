@@ -451,7 +451,7 @@ ob_start();
 			$sgs_gallery_empty_message = trim( (string) ( $attributes['emptyMessage'] ?? '' ) );
 			if ( '' !== $sgs_gallery_empty_message ) :
 				?>
-				<div class="sgs-gallery__empty" role="status"><p class="sgs-gallery__empty-text"><?php echo esc_html( $sgs_gallery_empty_message ); ?></p></div>
+				<div class="sgs-gallery__empty" role="status"><p class="sgs-gallery__empty-text"><?php echo sgs_rich_text_kses( $sgs_gallery_empty_message ); ?></p></div>
 				<?php
 			endif;
 		else :

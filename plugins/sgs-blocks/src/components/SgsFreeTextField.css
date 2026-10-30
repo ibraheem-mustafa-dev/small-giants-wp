@@ -1,0 +1,36 @@
+/**
+ * Editor-only look of `SgsFreeTextField type="rich"` (a RichText input in the inspector): the 40px field the
+ * other types draw, with the admin-colour focus ring.
+ */
+
+.sgs-free-text-field__label {
+	display: block;
+	margin-bottom: 8px;
+}
+
+.sgs-free-text-field__input {
+	box-sizing: border-box;
+	min-height: 40px;
+	padding: 8px 12px;
+	border: 1px solid #949494;
+	border-radius: 2px;
+	background: #fff;
+	color: #1e1e1e;
+	font-size: 13px;
+	line-height: 1.5;
+	overflow-wrap: anywhere;
+}
+
+.sgs-free-text-field__input[data-multiline="true"] {
+	min-height: 96px;
+}
+
+.sgs-free-text-field__input:focus {
+	outline: 2px solid transparent;
+	border-color: var(--wp-admin-theme-color, #3858e9);
+	box-shadow: 0 0 0 1px var(--wp-admin-theme-color, #3858e9);
+}
+
+.sgs-free-text-field__input[data-rich-text-placeholder]::after {
+	color: #757575;
+}

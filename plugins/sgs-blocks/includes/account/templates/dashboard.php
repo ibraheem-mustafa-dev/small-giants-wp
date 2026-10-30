@@ -106,7 +106,7 @@ $greeting          = str_replace( '{name}', esc_html( $name ), esc_html( $greeti
 		</div>
 	<?php else : ?>
 		<p class="sgs-account__no-orders">
-			<?php echo esc_html( (string) ( $attrs['noOrdersText'] ?? __( "You haven't placed an order yet.", 'sgs-blocks' ) ) ); ?>
+			<?php echo sgs_rich_text_kses( (string) ( $attrs['noOrdersText'] ?? __( "You haven't placed an order yet.", 'sgs-blocks' ) ) ); ?>
 			<a href="<?php echo esc_url( function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/' ) ); ?>">
 				<?php echo esc_html( (string) ( $attrs['shopLinkLabel'] ?? __( 'Start shopping', 'sgs-blocks' ) ) ); ?>
 			</a>

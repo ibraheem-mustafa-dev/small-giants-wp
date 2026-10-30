@@ -5,9 +5,10 @@
  * card, and the guest checkout line.
  */
 import { __ } from '@wordpress/i18n';
-import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
+import { PanelBody, ToggleControl } from '@wordpress/components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
  * @param {Object}   props
  * @param {Object}   props.attributes
@@ -44,9 +45,7 @@ export default function LoggedOutPanel( { attributes, setAttributes } ) {
 				onChange={ ( value ) => setAttributes( { showOrderTracking: value } ) }
 			/>
 			{ !! showOrderTracking && (
-				<TextControl
-					__next40pxDefaultSize
-					__nextHasNoMarginBottom
+				<SgsFreeTextField type="rich"
 					label={ __( 'Track an order heading', 'sgs-blocks' ) }
 					value={ orderTrackingHeading }
 					onChange={ ( value ) => setAttributes( { orderTrackingHeading: value } ) }
@@ -60,9 +59,7 @@ export default function LoggedOutPanel( { attributes, setAttributes } ) {
 				onChange={ ( value ) => setAttributes( { showGuestLine: value } ) }
 			/>
 			{ false !== showGuestLine && (
-				<TextControl
-					__next40pxDefaultSize
-					__nextHasNoMarginBottom
+				<SgsFreeTextField type="rich"
 					label={ __( 'Guest-checkout line text', 'sgs-blocks' ) }
 					value={ guestLineText }
 					onChange={ ( value ) => setAttributes( { guestLineText: value } ) }

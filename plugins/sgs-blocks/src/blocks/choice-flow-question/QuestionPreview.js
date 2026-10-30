@@ -15,6 +15,7 @@
 import { useSettings } from '@wordpress/block-editor';
 import { textPaintPreview, typographyPreviewCss, usePreviewTier } from '../../utils';
 
+import AuthoredText from '../../components/AuthoredText';
 const TITLE_WEIGHTS = [ '400', '500', '600', '700', '800' ];
 const INTRO_WIDTHS = [ '52', '56', '58', '60', '64', 'none' ];
 
@@ -38,7 +39,7 @@ export default function QuestionPreview( { attributes } ) {
 					{ question }
 				</h3>
 			) }
-			{ introText && <p className={ `sgs-choice-flow-question__intro${ introClass }` }>{ introText }</p> }
+			{ introText && <AuthoredText as="p" className={ `sgs-choice-flow-question__intro${ introClass }` } value={ introText } /> }
 		</>
 	);
 }

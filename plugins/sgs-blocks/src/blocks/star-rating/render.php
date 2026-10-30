@@ -437,7 +437,7 @@ if ( $schema_enabled && $schema_item_name ) {
 		<span class="sgs-star-rating__numeric"><?php echo esc_html( $rating . '/' . $max_rating ); ?></span>
 	<?php endif; ?>
 	<?php if ( $label ) : ?>
-		<span class="sgs-star-rating__label"><?php echo esc_html( $label ); ?></span>
+		<span class="sgs-star-rating__label"><?php echo sgs_rich_text_kses( $label ); ?></span>
 	<?php endif; ?>
 	<?php echo $schema_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_json_encode output in script tag. ?>
 </div>

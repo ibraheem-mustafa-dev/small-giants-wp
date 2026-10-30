@@ -84,7 +84,7 @@ $modal_id = 'sgs-modal-' . wp_unique_id();
 // the trigger text (a triggerless modal with no reference falls back to it too).
 $dialog_label = null !== $referenced_modal ? get_the_title( $referenced_modal ) : '';
 if ( '' === $dialog_label ) {
-	$dialog_label = $trigger_text;
+	$dialog_label = sgs_authored_text_plain( $trigger_text );
 }
 
 // Scoped-CSS class uid — this block has supports.anchor:true, so the uid MUST
@@ -282,7 +282,7 @@ $scoped_css = implode( '', $scoped_css_rules );
 			data-modal-id="<?php echo esc_attr( $modal_id ); ?>"
 			aria-haspopup="dialog"
 		>
-			<?php echo esc_html( $trigger_text ); ?>
+			<?php echo sgs_rich_text_kses( $trigger_text, false ); ?>
 		</button>
 	<?php endif; ?>
 

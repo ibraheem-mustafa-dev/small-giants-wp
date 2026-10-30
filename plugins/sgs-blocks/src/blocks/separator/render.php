@@ -347,7 +347,7 @@ if ( 'icon' === $content_mode ) {
 		}
 	}
 
-	$content_html = '<span class="sgs-separator__content">' . esc_html( $content_text ) . '</span>';
+	$content_html = '<span class="sgs-separator__content">' . sgs_rich_text_kses( $content_text ) . '</span>';
 }
 
 // ---------------------------------------------------------------------------

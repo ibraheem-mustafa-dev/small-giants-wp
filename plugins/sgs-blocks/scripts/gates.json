@@ -2024,5 +2024,23 @@
     "added_commit": null,
     "budget_ms": 40000,
     "order": 231
-  }
+  },
+    {
+      "id": "check-authored-text-rich-self-test",
+      "cmd": "python scripts/check-authored-text-rich.py --self-test",
+      "tier": "fast",
+      "added_D": null,
+      "added_commit": null,
+      "budget_ms": null,
+      "order": 232
+    },
+    {
+      "id": "check-authored-text-rich",
+      "cmd": "python scripts/check-authored-text-rich.py --check",
+      "tier": "fast",
+      "added_D": null,
+      "added_commit": null,
+      "budget_ms": null,
+      "order": 233
+    }
 ]

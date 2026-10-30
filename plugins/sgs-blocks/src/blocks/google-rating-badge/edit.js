@@ -40,6 +40,7 @@ import {
 } from '../../components';
 import { LINK_SOURCES_WEB } from '../../shared/link-source-options';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 const typoTarget = ( prefix, label ) => ( {
 	key: prefix,
 	label,
@@ -366,7 +367,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( patch );
 						} }
 					/>
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __(
 							'Link label for screen readers',
 							'sgs-blocks'
@@ -377,8 +378,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							'Leave empty for "Rated 4.7 out of 5 on Google from 15 reviews".',
 							'sgs-blocks'
 						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 					<ToggleControl
 						label={ __( 'Show the review count', 'sgs-blocks' ) }

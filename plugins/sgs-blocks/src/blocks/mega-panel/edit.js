@@ -41,13 +41,7 @@ import {
 	InspectorControls,
 	useSettings,
 } from '@wordpress/block-editor';
-import {
-	PanelBody,
-	TextControl,
-	ToggleControl,
-	Notice,
-	RangeControl,
-} from '@wordpress/components';
+import { PanelBody, ToggleControl, Notice, RangeControl } from '@wordpress/components';
 import {
 	ResponsiveControl,
 	ResponsiveBoxControl,
@@ -83,6 +77,8 @@ import {
 	ToolsPanelItem,
 } from '../../components/primitives';
 
+import AuthoredText from '../../components/AuthoredText';
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
  * Default general-variant template: 2 mega-groups — a starting
  *  point only; the panel is NOT locked to this shape.
@@ -1176,7 +1172,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						title={ __( 'Brands', 'sgs-blocks' ) }
 						initialOpen={ false }
 					>
-						<TextControl
+						<SgsFreeTextField type="rich"
 							label={ __( 'Eyebrow label', 'sgs-blocks' ) }
 							help={ __(
 								'A small label shown above the logo grid (e.g. "Our Partners").',
@@ -1186,8 +1182,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							onChange={ ( value ) =>
 								setAttributes( { brandsEyebrow: value } )
 							}
-							__next40pxDefaultSize
-							__nextHasNoMarginBottom
 						/>
 						{ brandsEyebrow && (
 							<>
@@ -1687,7 +1681,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							),
 						} }
 					>
-						{ brandsEyebrow }
+						<AuthoredText value={ brandsEyebrow } />
 					</p>
 				) }
 				<div { ...innerBlocksProps } />

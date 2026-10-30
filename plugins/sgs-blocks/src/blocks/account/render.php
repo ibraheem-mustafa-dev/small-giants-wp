@@ -111,12 +111,12 @@ $wrapper_attrs = get_block_wrapper_attributes( array( 'class' => implode( ' ', $
 
 	<?php if ( $logged_out && ! empty( $attributes['showOrderTracking'] ) && class_exists( 'WC_Shortcode_Order_Tracking' ) ) : ?>
 		<div class="sgs-account__card sgs-account__tracking-card">
-			<h2 class="sgs-account__heading"><?php echo esc_html( (string) ( $attributes['orderTrackingHeading'] ?? __( 'Track an order', 'sgs-blocks' ) ) ); ?></h2>
+			<h2 class="sgs-account__heading"><?php echo sgs_rich_text_kses( (string) ( $attributes['orderTrackingHeading'] ?? __( 'Track an order', 'sgs-blocks' ) ) ); ?></h2>
 			<?php \WC_Shortcode_Order_Tracking::output( array() ); // Echoes its own already-escaped markup directly — no return value to print. ?>
 		</div>
 	<?php endif; ?>
 
 	<?php if ( $logged_out && ( ! isset( $attributes['showGuestLine'] ) || ! empty( $attributes['showGuestLine'] ) ) ) : ?>
-		<p class="sgs-account__guest-line"><?php echo esc_html( (string) ( $attributes['guestLineText'] ?? __( 'No account? You can check out as a guest.', 'sgs-blocks' ) ) ); ?></p>
+		<p class="sgs-account__guest-line"><?php echo sgs_rich_text_kses( (string) ( $attributes['guestLineText'] ?? __( 'No account? You can check out as a guest.', 'sgs-blocks' ) ) ); ?></p>
 	<?php endif; ?>
 </div>

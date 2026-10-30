@@ -29,7 +29,8 @@ export const LINK_ATTRS = [ 'href', 'src', 'target', 'action', 'formaction', 'da
 // The framework-database roles each content read covers. Both halves of each pair are in scope (Bean, 2026-10-05 for
 // text; the main thread, 2026-10-05 for link): splitting a pair leaves the larger half unreachable.
 export const PRESENCE_ROLES = [ 'boolean-visibility', 'presence-boolean' ];
-export const TEXT_ROLES = [ 'content', 'text-content' ];
+// `glyph` is a symbol copied exactly (a separator): it is read where it prints like any text setting, and written verbatim.
+export const TEXT_ROLES = [ 'content', 'text-content', 'glyph' ];
 export const LINK_ROLES = [ 'link-content', 'link-href' ];
 // The roles of an enum setting with no CSS property that changes what a block renders rather than how it paints (a
 // layout, a mode, a position). Each of its values is read for presence, the way a variant setting's values are.

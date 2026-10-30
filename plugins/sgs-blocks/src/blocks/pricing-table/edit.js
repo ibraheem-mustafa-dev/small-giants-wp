@@ -37,6 +37,8 @@ import {
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { RICH_TEXT_PLAIN } from '../../utils/rich-text-formats';
 
+import AuthoredText from '../../components/AuthoredText';
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 // ⛔ `templateMode` (the container-family allowed-children preset) was
 // declared in block.json but REMOVED (was never wired): this block has no
 // InnerBlocks slot — every plan is a typed repeater ITEM inside the `plans`
@@ -431,23 +433,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 					{ showToggle && (
 						<>
-							<TextControl
+							<SgsFreeTextField type="rich" noLink
 								label={ __( 'Monthly label', 'sgs-blocks' ) }
 								value={ billingToggleMonthlyLabel }
 								onChange={ ( val ) =>
 									setAttributes( { billingToggleMonthlyLabel: val } )
 								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
-							<TextControl
+							<SgsFreeTextField type="rich" noLink
 								label={ __( 'Yearly label', 'sgs-blocks' ) }
 								value={ billingToggleYearlyLabel }
 								onChange={ ( val ) =>
 									setAttributes( { billingToggleYearlyLabel: val } )
 								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 							<SelectControl
 								label={ __( 'Toggle style', 'sgs-blocks' ) }
@@ -536,14 +534,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Popular Badge', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<TextControl
+					<SgsFreeTextField type="rich"
 						label={ __( 'Badge text', 'sgs-blocks' ) }
 						value={ popularBadgeText }
 						onChange={ ( val ) =>
 							setAttributes( { popularBadgeText: val } )
 						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 					{ /* Moved in from the shared SgsColourPanel (D622); "popular
 					     badge" is a declared element whose attrMap claims
@@ -727,10 +723,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						aria-label={ __( 'Billing period', 'sgs-blocks' ) }
 					>
 						<span className="sgs-pricing-table__toggle-label">
-							{ billingToggleMonthlyLabel }
+							<AuthoredText value={ billingToggleMonthlyLabel } />
 						</span>
 						<span className="sgs-pricing-table__toggle-label">
-							{ billingToggleYearlyLabel }
+							<AuthoredText value={ billingToggleYearlyLabel } />
 						</span>
 						<span
 							className="sgs-pricing-table__toggle-track"
@@ -765,7 +761,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 											),
 										} }
 									>
-										{ popularBadgeText }
+										<AuthoredText value={ popularBadgeText } />
 									</div>
 								) }
 

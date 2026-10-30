@@ -8,6 +8,7 @@ import { __ } from '@wordpress/i18n';
 import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 import { FlexWrapControl } from '../../components';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 const DEFAULT_CARD_DESCRIPTIONS = {
 	orders: __( 'See and reorder past orders', 'sgs-blocks' ),
 	'saved-items': __( 'Your saved products', 'sgs-blocks' ),
@@ -110,9 +111,7 @@ export default function DashboardPanel( { attributes, setAttributes } ) {
 							}
 						/>
 					) ) }
-					<TextControl
-						__next40pxDefaultSize
-						__nextHasNoMarginBottom
+					<SgsFreeTextField type="rich"
 						label={ __( 'No-orders text', 'sgs-blocks' ) }
 						value={ noOrdersText }
 						onChange={ ( value ) => setAttributes( { noOrdersText: value } ) }

@@ -4,6 +4,8 @@ import { PanelBody, TextControl, SelectControl, ToggleControl } from '@wordpress
 import { SgsColourPanel, fillRow, textRow, SgsBorderControl, SgsLengthControl, TypographyControls } from '../../components';
 import { backgroundPaintPreview, textPaintPreview, typographyPreviewStyle, usePreviewTier, sgsLengthPreview, sgsBorderPreview } from '../../utils';
 
+import AuthoredText from '../../components/AuthoredText';
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 // D649 — no JSON `enum` reliance in the UI list order; mirrors sgs/icon-list's
 // allow-list exactly (render.php validates the same set independently).
 const HEADING_LEVEL_OPTIONS = [
@@ -46,14 +48,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		<>
 			<InspectorControls>
 				<PanelBody title={ __( 'Review Settings', 'sgs-blocks' ) }>
-					<TextControl
+					<SgsFreeTextField type="rich"
 						label={ __( 'Heading', 'sgs-blocks' ) }
 						value={ heading }
 						onChange={ ( val ) =>
 							setAttributes( { heading: val } )
 						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Heading level', 'sgs-blocks' ) }
@@ -69,13 +69,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<TextControl
+					<SgsFreeTextField type="rich"
 						label={ __( 'Intro text', 'sgs-blocks' ) }
 						value={ intro }
 						onChange={ ( val ) => setAttributes( { intro: val } ) }
 						help={ __( 'Shown under the heading. Leave empty to hide it.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 					<ToggleControl
 						label={ __( 'Show an Edit button on each section', 'sgs-blocks' ) }
@@ -169,8 +167,8 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<HeadingTag className="sgs-form-review__heading">{ heading }</HeadingTag>
-				{ intro && <p className="sgs-form-review__intro">{ intro }</p> }
+				<AuthoredText as={ HeadingTag } className="sgs-form-review__heading" value={ heading } />
+				{ intro && <AuthoredText as="p" className="sgs-form-review__intro" value={ intro } /> }
 				{ /* A sample card painted from the card settings; the front end builds one per step from the visitor's answers. */ }
 				<div className="sgs-form-review__cards">
 					<section className="sgs-form-review__card" style={ cardStyle }>

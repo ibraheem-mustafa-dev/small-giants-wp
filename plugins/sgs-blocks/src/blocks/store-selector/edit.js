@@ -44,6 +44,8 @@ import { usePreviewTier } from '../../utils';
 import { LINK_SOURCES_PAGES } from '../../shared/link-source-options';
 import { flagSizeAtTier, storeSelectorPreviewStyles } from './preview-style';
 
+import AuthoredText from '../../components/AuthoredText';
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		triggerPrefix,
@@ -134,7 +136,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				<PanelBody
 					title={ __( 'Store Selector Settings', 'sgs-blocks' ) }
 				>
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Trigger prefix', 'sgs-blocks' ) }
 						help={ __(
 							'Text shown before the flag and current store, e.g. "Select store".',
@@ -144,8 +146,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) =>
 							setAttributes( { triggerPrefix: val } )
 						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 					<ToggleGroupControl
 						label={ __( 'Panel alignment', 'sgs-blocks' ) }
@@ -492,7 +492,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				>
 					{ triggerPrefix && (
 						<span className="sgs-store-selector__prefix">
-							{ triggerPrefix }
+							<AuthoredText value={ triggerPrefix } />
 						</span>
 					) }
 					{ stores[ 0 ]?.flagUrl && (

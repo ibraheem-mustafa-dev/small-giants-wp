@@ -81,7 +81,7 @@ if ( $gr_header_shown ) :
 		<div class="sgs-google-reviews__aggregate-main">
 		<div class="sgs-google-reviews__aggregate-text">
 			<?php if ( '' !== $gr_source_label ) : ?>
-				<span class="sgs-google-reviews__source-label"><?php echo esc_html( $gr_source_label ); ?></span>
+				<span class="sgs-google-reviews__source-label"><?php echo sgs_rich_text_kses( $gr_source_label ); ?></span>
 			<?php endif; ?>
 			<?php if ( $has_rating || $has_count ) : ?>
 			<div class="sgs-google-reviews__score-row">
@@ -198,7 +198,7 @@ $gr_pause_html = ( $gr_nav_enabled && ! empty( $autoplay ) && ! empty( $attribut
 // The footnote takes the navigation's leading slot when there is one, so it shares the arrows' row; with a
 // pause button the slot is a row holding both.
 $gr_footnote_html = '' !== $gr_footnote
-	? '<p class="' . esc_attr( 'sgs-google-reviews__footnote' . ( $gr_nav_enabled && '' === $gr_pause_html ? ' sgs-slider-nav__lead' : '' ) ) . '">' . esc_html( $gr_footnote ) . '</p>'
+	? '<p class="' . esc_attr( 'sgs-google-reviews__footnote' . ( $gr_nav_enabled && '' === $gr_pause_html ? ' sgs-slider-nav__lead' : '' ) ) . '">' . sgs_rich_text_kses( $gr_footnote ) . '</p>'
 	: '';
 if ( '' !== $gr_pause_html ) {
 	$gr_footnote_html = '<div class="sgs-google-reviews__lead sgs-slider-nav__lead">' . $gr_pause_html . $gr_footnote_html . '</div>';

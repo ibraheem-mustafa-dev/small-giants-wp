@@ -924,10 +924,10 @@ if ( '' !== $reviewer_name ) {
 	$attr_parts[] = '<cite class="sgs-testimonial__name">' . esc_html( $reviewer_name ) . '</cite>';
 }
 if ( '' !== $reviewer_role ) {
-	$attr_parts[] = '<span class="sgs-testimonial__role">' . esc_html( $reviewer_role ) . '</span>';
+	$attr_parts[] = '<span class="sgs-testimonial__role">' . sgs_rich_text_kses( $reviewer_role ) . '</span>';
 }
 if ( '' !== $org_name ) {
-	$attr_parts[] = '<span class="sgs-testimonial__org">' . esc_html( $org_name ) . '</span>';
+	$attr_parts[] = '<span class="sgs-testimonial__org">' . sgs_rich_text_kses( $org_name ) . '</span>';
 }
 if ( ! empty( $attr_parts ) ) {
 	$attribution_html = '<div class="sgs-testimonial__meta">' . implode( '', $attr_parts ) . '</div>';

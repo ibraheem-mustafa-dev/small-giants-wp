@@ -1,5 +1,5 @@
 {
-	"_meta": "The plain-text settings (role text-content, string, no RichText format: lib/inline-text.mjs::richTextSettings) filed by where the page prints them (Bean 2026-10-30), each with the reader that prints it (file::symbol, proved by a search of the block's PHP, includes/ and the view script its block.json loads). lib/inline-text.mjs::plainTextSettings reports the `sentences` group for Bean's review: prose a draft could partly format. The other groups are never reported: child-block text (the text lives in a child block), form controls (a form or form-field block's labels belong to its controls), clickable labels (printed inside the block's own link, button, summary or tab, which makes the whole element clickable), data-bound text (the words come from a record: a WooCommerce product's title, price or brand; the clone binds it, so formatting is typography only), computed or live text (the site's script writes it at run time: emit_shape script-rendered, a countdown's expired message, a live free-delivery or summary line), format templates (a string the block fills with a value: a {placeholder} or %s, or a prefix or suffix the block joins to a computed value), mis-tagged values (not words: an icon slug, a date, a time zone, a number, alt text; their role is corrected in plugins/sgs-blocks/scripts/attr-classification-overrides.json and they leave this list at the next reseed), interface strings (short UI text: headings of a panel, empty states, notes, separators, badges). Dead settings (nothing prints them) are named in their entry's reader. A plain-text setting filed in no group, or in two, fails tests/inline-fill-solve.test.mjs: file it here.",
+	"_meta": "The plain-text settings (role text-content, string, no RichText format: lib/inline-text.mjs::richTextSettings) filed by where the page prints them (Bean 2026-10-30), each with the reader that prints it (file::symbol, proved by a search of the block's PHP, includes/ and the view script its block.json loads). lib/inline-text.mjs::plainTextSettings reports the `sentences` group for Bean's review: prose a draft could partly format. The other groups are never reported: child-block text (the text lives in a child block), form controls (a form or form-field block's labels belong to its controls), clickable labels (printed inside the block's own link, button, summary or tab, which makes the whole element clickable), data-bound text (the words come from a record: a WooCommerce product's title, price or brand; the clone binds it, so formatting is typography only), computed or live text (the site's script writes it at run time: emit_shape script-rendered, a countdown's expired message, a live free-delivery or summary line), format templates (a string the block fills with a value: a {placeholder} or %s, or a prefix or suffix the block joins to a computed value), mis-tagged values (not words: an icon slug, a date, a time zone, a number, alt text, a glyph (a symbol the clone copies exactly: role `glyph`); their role is corrected in plugins/sgs-blocks/scripts/attr-classification-overrides.json and they leave this list at the next reseed), interface strings (short UI text: headings of a panel, empty states, notes, separators, badges). Dead settings (nothing prints them) are named in their entry's reader. A plain-text setting filed in no group, or in two, fails tests/inline-fill-solve.test.mjs: file it here.",
 	"groups": {
 		"child-block text": [
 			{
@@ -430,6 +430,11 @@
 				"reader": "src/blocks/before-after/render.php::(file scope)"
 			},
 			{
+				"block": "sgs/breadcrumbs",
+				"attr": "separator",
+				"reader": "src/blocks/breadcrumbs/render.php::(file scope)"
+			},
+			{
 				"block": "sgs/button",
 				"attr": "iconTitle",
 				"reader": "src/blocks/button/render.php::(file scope)"
@@ -453,6 +458,16 @@
 				"block": "sgs/form-field-date",
 				"attr": "minDate",
 				"reader": "src/blocks/form-field-date/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/language-switch",
+				"attr": "separator",
+				"reader": "src/blocks/language-switch/render.php::(file scope)"
+			},
+			{
+				"block": "sgs/local-time",
+				"attr": "separator",
+				"reader": "src/blocks/local-time/render.php::(file scope)"
 			},
 			{
 				"block": "sgs/local-time",
@@ -499,11 +514,6 @@
 			{
 				"block": "sgs/breadcrumbs",
 				"attr": "homeLabel",
-				"reader": "src/blocks/breadcrumbs/render.php::(file scope)"
-			},
-			{
-				"block": "sgs/breadcrumbs",
-				"attr": "separator",
 				"reader": "src/blocks/breadcrumbs/render.php::(file scope)"
 			},
 			{
@@ -647,18 +657,8 @@
 				"reader": "src/blocks/language-switch/render.php::(file scope)"
 			},
 			{
-				"block": "sgs/language-switch",
-				"attr": "separator",
-				"reader": "src/blocks/language-switch/render.php::(file scope)"
-			},
-			{
 				"block": "sgs/local-time",
 				"attr": "label",
-				"reader": "src/blocks/local-time/render.php::(file scope)"
-			},
-			{
-				"block": "sgs/local-time",
-				"attr": "separator",
 				"reader": "src/blocks/local-time/render.php::(file scope)"
 			},
 			{
