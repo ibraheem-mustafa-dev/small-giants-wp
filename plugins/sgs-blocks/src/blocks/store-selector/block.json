@@ -114,7 +114,32 @@
 			"type": "array",
 			"default": [],
 			"items": {
-				"type": "object"
+				"type": "object",
+				"properties": {
+					"label": {
+						"type": "string",
+						"role": "text-content"
+					},
+					"url": {
+						"type": "string",
+						"role": "url-href"
+					},
+					"linkSource": {
+						"type": "string",
+						"role": "enum-mode"
+					},
+					"flagId": {
+						"type": [
+							"number",
+							"string"
+						],
+						"role": "technical"
+					},
+					"flagUrl": {
+						"type": "string",
+						"role": "image-object"
+					}
+				}
 			}
 		},
 		"flagSize": {

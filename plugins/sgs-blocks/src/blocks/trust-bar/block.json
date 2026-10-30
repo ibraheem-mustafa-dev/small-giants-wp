@@ -387,10 +387,12 @@
 						"role": "icon"
 					},
 					"iconSvg": {
-						"type": "string"
+						"type": "string",
+						"role": "svg"
 					},
 					"label": {
-						"type": "string"
+						"type": "string",
+						"role": "text-content"
 					},
 					"url": {
 						"type": "string",
@@ -398,13 +400,16 @@
 					},
 					"linkSource": {
 						"type": "string",
-						"description": "Where the badge link goes: '' (the typed url), post:<id> (a page or post, followed by ID), a Site Info link (phone, email, whatsapp, directions, google, facebook, instagram, twitter, linkedin, youtube, tiktok) or top. Resolved by includes/helpers-link-source.php; the typed url is the fallback."
+						"description": "Where the badge link goes: '' (the typed url), post:<id> (a page or post, followed by ID), a Site Info link (phone, email, whatsapp, directions, google, facebook, instagram, twitter, linkedin, youtube, tiktok) or top. Resolved by includes/helpers-link-source.php; the typed url is the fallback.",
+						"role": "enum-mode"
 					},
 					"linkTarget": {
-						"type": "string"
+						"type": "string",
+						"role": "behaviour"
 					},
 					"linkRel": {
-						"type": "string"
+						"type": "string",
+						"role": "technical"
 					},
 					"fillStyle": {
 						"type": "string",
@@ -412,10 +417,12 @@
 							"outline",
 							"filled"
 						],
-						"default": "outline"
+						"default": "outline",
+						"role": "css-modifier"
 					},
 					"fillColour": {
-						"type": "string"
+						"type": "string",
+						"role": "color"
 					},
 					"media": {
 						"type": "object",
@@ -432,11 +439,13 @@
 					"decorative": {
 						"type": "boolean",
 						"default": false,
-						"description": "image-badge variant only. Explicit editorial choice (WCAG 2.1 AA 1.1.1) that this badge's image carries no information — render.php blanks its alt text and adds aria-hidden so assistive tech skips it entirely."
+						"description": "image-badge variant only. Explicit editorial choice (WCAG 2.1 AA 1.1.1) that this badge's image carries no information — render.php blanks its alt text and adds aria-hidden so assistive tech skips it entirely.",
+						"role": "boolean-visibility"
 					},
 					"_key": {
 						"type": "string",
-						"_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field — no label, no editor control. Scopes this item's own object-fit CSS (image-badge variant only) so a fit value survives reorder/add/remove instead of following array index (Spec 35 Part 4). Backfilled silently on mount for items created before this field existed."
+						"_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field — no label, no editor control. Scopes this item's own object-fit CSS (image-badge variant only) so a fit value survives reorder/add/remove instead of following array index (Spec 35 Part 4). Backfilled silently on mount for items created before this field existed.",
+						"role": "technical"
 					},
 					"objectFit": {
 						"type": "string",
@@ -445,7 +454,8 @@
 							"contain"
 						],
 						"default": "cover",
-						"description": "image-badge variant only. Per-item object-fit override — badges are logos/certification marks, so no focal-point/crop field exists here by design (see sgs/testimonial orgLogo, sgs/brand-strip logoFit)."
+						"description": "image-badge variant only. Per-item object-fit override — badges are logos/certification marks, so no focal-point/crop field exists here by design (see sgs/testimonial orgLogo, sgs/brand-strip logoFit).",
+						"role": "visual"
 					}
 				}
 			},

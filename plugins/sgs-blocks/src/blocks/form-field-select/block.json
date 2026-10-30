@@ -80,6 +80,22 @@
         },
         "options": {
             "type": "array",
+            "items": {
+                "type": [
+                    "object",
+                    "string"
+                ],
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "role": "technical"
+                    },
+                    "label": {
+                        "type": "string",
+                        "role": "text-content"
+                    }
+                }
+            },
             "default": [
                 {
                     "value": "option-1",

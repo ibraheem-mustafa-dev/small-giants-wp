@@ -277,11 +277,13 @@
 				"properties": {
 					"decorative": {
 						"type": "boolean",
-						"default": false
+						"default": false,
+						"role": "boolean-visibility"
 					},
 					"_key": {
 						"type": "string",
-						"_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field. Scopes this item's own object-fit/focal-point CSS so a crop value survives reorder/add/remove instead of following array index or the WP attachment id (which collides the moment the same image is used twice). Spec 35 Part 4."
+						"_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field. Scopes this item's own object-fit/focal-point CSS so a crop value survives reorder/add/remove instead of following array index or the WP attachment id (which collides the moment the same image is used twice). Spec 35 Part 4.",
+						"role": "technical"
 					},
 					"objectFit": {
 						"type": "string",
@@ -289,54 +291,64 @@
 							"cover",
 							"contain"
 						],
-						"default": "cover"
+						"default": "cover",
+						"role": "visual"
 					},
 					"focalPoint": {
 						"type": "object",
 						"default": {
 							"x": 0.5,
 							"y": 0.5
-						}
+						},
+						"role": "visual"
 					},
 					"linkUrl": {
 						"type": "string",
 						"default": "",
-						"description": "Destination of this item. Non-empty makes the item an <a> (sanitised with esc_url) that never opens the lightbox and is left out of the lightbox's image list; empty keeps the item's lightbox or plain behaviour."
+						"description": "Destination of this item. Non-empty makes the item an <a> (sanitised with esc_url) that never opens the lightbox and is left out of the lightbox's image list; empty keeps the item's lightbox or plain behaviour.",
+						"role": "url-href"
 					},
 					"linkUrlSource": {
 						"type": "string",
 						"default": "",
-						"description": "Where the item's link goes: '' (the typed linkUrl), post:<id> (a page or post, followed by ID), a Site Info link (phone, email, whatsapp, directions, google, facebook, instagram, twitter, linkedin, youtube, tiktok) or top. Resolved by includes/helpers-link-source.php; the typed linkUrl is the fallback."
+						"description": "Where the item's link goes: '' (the typed linkUrl), post:<id> (a page or post, followed by ID), a Site Info link (phone, email, whatsapp, directions, google, facebook, instagram, twitter, linkedin, youtube, tiktok) or top. Resolved by includes/helpers-link-source.php; the typed linkUrl is the fallback.",
+						"role": "enum-mode"
 					},
 					"linkTarget": {
 						"type": "string",
 						"default": "",
-						"description": "'_blank' opens the link in a new tab (rel=noopener noreferrer is added); anything else opens in the same tab."
+						"description": "'_blank' opens the link in a new tab (rel=noopener noreferrer is added); anything else opens in the same tab.",
+						"role": "behaviour"
 					},
 					"linkLabel": {
 						"type": "string",
 						"default": "",
-						"description": "Accessible name of the link (aria-label). Empty falls back to the image's alt text."
+						"description": "Accessible name of the link (aria-label). Empty falls back to the image's alt text.",
+						"role": "a11y-text"
 					},
 					"id": {
 						"type": "integer",
 						"default": 0,
-						"description": "The item's attachment ID in the Media Library. 0 is no attachment: the item then shows the picture at url, or no picture."
+						"description": "The item's attachment ID in the Media Library. 0 is no attachment: the item then shows the picture at url, or no picture.",
+						"role": "technical"
 					},
 					"url": {
 						"type": "string",
 						"default": "",
-						"description": "The item's picture address. Empty is an item with no picture yet (its link, label and caption still show)."
+						"description": "The item's picture address. Empty is an item with no picture yet (its link, label and caption still show).",
+						"role": "image-object"
 					},
 					"alt": {
 						"type": "string",
 						"default": "",
-						"description": "The picture's description for screen readers. Blank when the item is decorative."
+						"description": "The picture's description for screen readers. Blank when the item is decorative.",
+						"role": "image-alt"
 					},
 					"caption": {
 						"type": "string",
 						"default": "",
-						"description": "Text shown under or over the picture when the gallery shows captions."
+						"description": "Text shown under or over the picture when the gallery shows captions.",
+						"role": "text-content"
 					}
 				}
 			}

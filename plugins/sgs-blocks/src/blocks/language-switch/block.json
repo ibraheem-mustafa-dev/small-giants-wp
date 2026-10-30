@@ -127,7 +127,25 @@
 			"type": "array",
 			"default": [],
 			"items": {
-				"type": "object"
+				"type": "object",
+				"properties": {
+					"code": {
+						"type": "string",
+						"role": "technical"
+					},
+					"url": {
+						"type": "string",
+						"role": "url-href"
+					},
+					"linkSource": {
+						"type": "string",
+						"role": "enum-mode"
+					},
+					"customLabel": {
+						"type": "string",
+						"role": "text-content"
+					}
+				}
 			}
 		},
 		"linkColour": {

@@ -222,7 +222,33 @@
 			"type": "array",
 			"default": [],
 			"items": {
-				"type": "object"
+				"type": "object",
+				"properties": {
+					"author": {
+						"type": "string",
+						"role": "text-content"
+					},
+					"rating": {
+						"type": "number",
+						"role": "rating"
+					},
+					"datePublished": {
+						"type": "string",
+						"role": "technical"
+					},
+					"reviewBody": {
+						"type": "string",
+						"role": "text-content"
+					},
+					"title": {
+						"type": "string",
+						"role": "text-content"
+					},
+					"isVerified": {
+						"type": "boolean",
+						"role": "presence-boolean"
+					}
+				}
 			}
 		},
 		"trustScore": {

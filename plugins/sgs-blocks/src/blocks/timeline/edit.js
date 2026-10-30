@@ -90,8 +90,9 @@ function entryHasMedia( entry ) {
  *
  * ⚠ The reason this is safe here and was a data-loss bug on sgs/responsive-logo
  * (D496): that block read an UNDECLARED `_desktopLogoUrl`, which WP silently
- * discarded on save, so every preview went `undefined` on reload. `entries` is a
- * bare array with no `items` schema, so nothing strips a companion key from it.
+ * discarded on save, so every preview went `undefined` on reload. `entries`'
+ * item schema declares no `additionalProperties`, so nothing strips a companion
+ * key from an entry.
  *
  * @param {Object} props       Component props.
  * @param {Object} props.entry The entry to preview.
@@ -754,9 +755,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					description: '',
 					icon: '',
 					image: 0,
-					// `entries` is a bare `"type": "array"` with no `items`
-					// schema, so these round-trip without a block.json change.
-					// Seeded explicitly anyway: an entry whose mediaType is
+					// Every key here is declared in block.json's `entries`
+					// item schema. Seeded explicitly: an entry whose mediaType is
 					// absent falls back to 'image', but a seeded default is what
 					// the next reader sees when they open the stored content.
 					mediaType: 'image',

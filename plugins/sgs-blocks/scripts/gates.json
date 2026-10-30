@@ -1987,5 +1987,23 @@
     "added_commit": null,
     "budget_ms": 2000,
     "order": 227
+  },
+  {
+    "id": "check-item-field-roles",
+    "cmd": "python scripts/check-item-field-roles.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "935f7cfcd",
+    "budget_ms": 400,
+    "order": 228
+  },
+  {
+    "id": "check-item-field-roles-self-test",
+    "cmd": "python scripts/check-item-field-roles.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "935f7cfcd",
+    "budget_ms": 400,
+    "order": 229
   }
 ]

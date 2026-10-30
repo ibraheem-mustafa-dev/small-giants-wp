@@ -943,7 +943,8 @@
 				"type": "object",
 				"properties": {
 					"label": {
-						"type": "string"
+						"type": "string",
+						"role": "text-content"
 					},
 					"selected": {
 						"type": "boolean",
@@ -3007,13 +3008,16 @@
 				"type": "object",
 				"properties": {
 					"key": {
-						"type": "string"
+						"type": "string",
+						"role": "technical"
 					},
 					"label": {
-						"type": "string"
+						"type": "string",
+						"role": "a11y-text"
 					},
 					"colour": {
-						"type": "string"
+						"type": "string",
+						"role": "colour-background"
 					}
 				}
 			},

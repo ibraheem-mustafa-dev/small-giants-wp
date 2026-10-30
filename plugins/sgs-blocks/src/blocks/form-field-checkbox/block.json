@@ -75,6 +75,23 @@
         },
         "options": {
             "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "role": "technical"
+                    },
+                    "label": {
+                        "type": "string",
+                        "role": "text-content"
+                    },
+                    "checked": {
+                        "type": "boolean",
+                        "role": "state-modifier-boolean"
+                    }
+                }
+            },
             "default": [
                 {
                     "value": "option-1",
