@@ -109,9 +109,11 @@ export function copyText( rec, copy ) {
 
 // o: { m (the inventory model), read (lib/element-facts.mjs), logicOf( component ) (lib/skeleton-narrowing.mjs::draftLogicOf
 // for the client's draft, or null), rule (rules.accordion: { block, itemBlock, panelBlock, attributes: { allowMultiple,
-// defaultOpen, isOpen } }), titleAttr, textAttr (the item's and the panel block's text-content settings) }. Returns
-// { holders: Map( holder key → { attributes, reason } ), items: Map( item key → { attributes, inner } ), notes }.
-export function accordionLoops( { m, read, logicOf, rule, titleAttr, textAttr } ) {
+// defaultOpen, isOpen } }), titleAttr, textAttr (the item's and the panel block's text-content settings), rich( e, block,
+// attr ) (lib/inline-text.mjs::inlineText over the model: a rendered title or panel text keeps its inline markup as its
+// setting holds it, and the item carries its handover rows) }. Returns
+// { holders: Map( holder key → { attributes, reason } ), items: Map( item key → { attributes, inner, handover? } ), notes }.
+export function accordionLoops( { m, read, logicOf, rule, titleAttr, textAttr, rich = () => null } ) {
 	const out = { holders: new Map(), items: new Map(), notes: [] };
 	if ( ! rule || ! titleAttr || ! textAttr ) {
 		return out;
@@ -179,16 +181,24 @@ export function accordionLoops( { m, read, logicOf, rule, titleAttr, textAttr } 
 			reason: `${ rule.reason } (a loop of ${ items.length } items whose control writes "${ pair.key }", which the item's own panel reads; ${ single ? 'one item open at a time' : 'several items open at once' })`,
 		} );
 		items.forEach( ( it, i ) => {
+			const handover = [];
 			const inner = content.map( ( rec ) => {
 				const rendered = m.els.find( ( x ) => entry( x )?.key === rec.template.key && within( x, it ) );
-				const text = copyText( rec, i ) ?? ( rendered ? m.words( rendered ).replace( /\s+/g, ' ' ).trim() : null );
+				// A copy's text the logic gives is a static string (no markup); a rendered one keeps its inline parts.
+				const logic = copyText( rec, i );
+				const marked = null == logic && rendered ? rich( rendered, rule.panelBlock, textAttr ) : null;
+				marked && handover.push( ...marked.handover );
+				const text = logic ?? marked?.value ?? ( rendered ? m.words( rendered ).replace( /\s+/g, ' ' ).trim() : null );
 				const at = rendered ?? m.els.find( ( x ) => entry( x )?.key === rec.template.key );
 				return text ? { name: rule.panelBlock, attributes: { [ textAttr ]: text }, ...( at ? { itemKey: at.key } : {} ) } : null;
 			} ).filter( Boolean );
+			const title = rich( controlOf( it ), rule.itemBlock, titleAttr );
+			title && handover.push( ...title.handover );
 			content.length > inner.length && out.notes.push( `${ it.key }: ${ content.length - inner.length } of the panel's ${ content.length } text elements have no value for this copy, so the item holds the rest` );
 			out.items.set( it.key, {
-				attributes: { [ titleAttr ]: m.words( controlOf( it ) ).replace( /\s+/g, ' ' ).trim(), ...( openAt( it, i ) ? { [ A.isOpen ]: true } : {} ) },
+				attributes: { [ titleAttr ]: title?.value ?? m.words( controlOf( it ) ).replace( /\s+/g, ' ' ).trim(), ...( openAt( it, i ) ? { [ A.isOpen ]: true } : {} ) },
 				inner,
+				...( handover.length ? { handover } : {} ),
 			} );
 		} );
 	}

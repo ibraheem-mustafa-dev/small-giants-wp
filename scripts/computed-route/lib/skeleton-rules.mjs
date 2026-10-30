@@ -22,6 +22,7 @@ import { loopBlocks } from './skeleton-loop-blocks.mjs';
 import { filterRail, placeableFacets } from './skeleton-filter-rail.mjs';
 import { filterDrawer } from './skeleton-filter-drawer.mjs';
 import { linkWrite, siteLinkResolver } from './draft-link.mjs';
+import { inlineText } from './inline-text.mjs';
 import { choiceFlowModel } from './skeleton-choice-flow.mjs';
 import { makeOpenerRules } from './skeleton-openers.mjs';
 import { makeFieldGroups } from './skeleton-field-groups.mjs';
@@ -412,6 +413,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const out = linkWrite( ( hooks.siteLink || siteLinkResolver( null, null, read ) )( realHref( e ), e ), realHref( e ) );
 		return { attributes: null !== out.value ? { [ attr ]: out.value } : {}, ...( out.handover ? { handover: out.handover } : {} ) };
 	};
+	// An element's words as the markup a block setting holds (lib/inline-text.mjs::inlineText), or null with no inline parts.
+	const richOf = ( e, block, attr ) => inlineText( { m, e, block, attr, codeRepo: facts.codeRepo, siteLink: hooks.siteLink || siteLinkResolver( null, null, read ) } );
 	const linkAttrs = ( e, lk ) => {
 		if ( lk ) {
 			return { attributes: { sgsBlockLinkSource: lk.source } };
@@ -602,7 +605,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			}
 			const lk = linkKindOf( card );
 			const link = lk ? { attributes: { linkSource: lk.source } } : realHref( card ) ? siteLinkOf( 'url', card ) : { attributes: {} };
-			return v( 'cardAction', { block: R.cardAction?.block, ...link, attributes: { label: m.words( e ), ...link.attributes } } );
+			// The label keeps the action's inline markup as the button's label holds it; contentAttrs names what it cannot hold.
+			return v( 'cardAction', { block: R.cardAction?.block, ...link, attributes: { label: richOf( e, R.cardAction?.block, 'label' )?.value ?? m.words( e ), ...link.attributes } } );
 		},
 		// A short run of words: the first in a header or footer row's column heads it; set in capitals, wide tracking or a
 		// pill it is a kicker. A control the visitor operates and a bare number are neither.
@@ -683,7 +687,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// The cards of a review carousel are its testimonials (each draws its own quote, name and rating).
 	const carouselCardOf = new Map( loopResult.regions.filter( ( x ) => x.cards ).flatMap( ( x ) => x.cards.map( ( k ) => [ k, x ] ) ) );
 	// A loop of disclosures is the accordion, each item one of its items (lib/skeleton-accordion.mjs).
-	const accordion = accordionLoops( { m, read, rule: R.accordion, titleAttr: R.accordion && facts.firstAttrByRole( R.accordion.itemBlock, 'text-content' ), textAttr: R.accordion && facts.firstAttrByRole( R.accordion.panelBlock, 'text-content' ),
+	const accordion = accordionLoops( { m, read, rich: richOf, rule: R.accordion, titleAttr: R.accordion && facts.firstAttrByRole( R.accordion.itemBlock, 'text-content' ), textAttr: R.accordion && facts.firstAttrByRole( R.accordion.panelBlock, 'text-content' ),
 		logicOf: ( component ) => ( facts.repo && facts.client ? draftLogicOf( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component } ) : null ) } );
 	// The shop's filter rail beside its product listing (lib/skeleton-filter-rail.mjs), from the draft catalogue's facets.
 	const rail = region?.key ? filterRail( { m, region, filters: surface.commerce.filters, rule: R.filterRail, money: R.commerceRegion.money } ) : null;

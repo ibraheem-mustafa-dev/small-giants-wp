@@ -176,7 +176,10 @@ export function makeContent( ctx ) {
 		}
 		const levelAttr = textAttr ? levelSetting( facts, block ) : null;
 		levelAttr && enumOf( block, levelAttr ).includes( e.tag ) && ( a[ levelAttr ] = e.tag );
-		textAttr && cite && ( a[ textAttr ] = m.words( cite ) );
+		// The attribution keeps the cite's inline markup (a link to the source) as the setting holds it.
+		const citeRich = textAttr && cite ? inlineText( { m, e: cite, block, attr: textAttr, codeRepo: facts.codeRepo, siteLink } ) : null;
+		citeRich && handover.push( ...citeRich.handover );
+		textAttr && cite && ( a[ textAttr ] = citeRich ? citeRich.value : m.words( cite ) );
 		top.linkSource && ( a.linkSource = top.linkSource );
 		linkAttr && linkSettings( block, e, top, linkAttr, a, handover );
 		return { a: { ...a, ...Object.fromEntries( Object.entries( top.attributes || {} ) ) }, handover };
