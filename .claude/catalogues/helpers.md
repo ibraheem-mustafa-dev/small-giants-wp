@@ -96,10 +96,11 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 |---|---|---|
 | `sgs_button_icon_circle_css` | `function sgs_button_icon_circle_css( string $uid, array $attributes ): array` | The scoped CSS rules for the circle behind a button's icon. |
 
-#### `includes/helpers-button-inner-kses.php` — 1 function(s)
+#### `includes/helpers-button-inner-kses.php` — 2 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
+| `sgs_button_icon_svg_allowed` | `function sgs_button_icon_svg_allowed(): array` | The wp_kses() allowlist for the button's icon SVG: a narrow set of tags (shapes and a title, never <use>, <defs>, filters, masks, gradients… |
 | `sgs_button_inner_allowed_html` | `function sgs_button_inner_allowed_html(): array` | The wp_kses() allowlist for the button's inner markup. |
 
 #### `includes/helpers-button-note.php` — 1 function(s)
@@ -214,12 +215,13 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_container_tier_min_column_width` | `function sgs_container_tier_min_column_width( array $attributes, string $tier ): ?string` | Resolve the effective intrinsic-columns BASIS (minimum column width) for one device tier, from `sgs/container`'s client-configurable… |
 | `sgs_block_wants_intrinsic_columns` | `function sgs_block_wants_intrinsic_columns( $block ): bool` | Does this block type opt in to content-aware column collapse? |
 
-#### `includes/helpers-css-safety.php` — 4 function(s)
+#### `includes/helpers-css-safety.php` — 5 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
 | `sgs_css_length_value_preset_slugs` | `function sgs_css_length_value_preset_slugs(): array` | Return the currently-registered WP spacing-preset slugs (e.g. ['10','20', '30','40','50','60']), read live from theme.json via… |
 | `sgs_css_length_value` | `function sgs_css_length_value( $value )` | Validate and normalise a CSS length-shaped value for safe inline emission. |
+| `sgs_font_weight_value` | `function sgs_font_weight_value( $value ): string` | A font weight, safe to print after `font-weight:`. |
 | `sgs_css_single_length_value` | `function sgs_css_single_length_value( $raw ): string` | A SINGLE CSS length, safe to place inside `max()` and `blur()`. |
 | `sgs_css_length_value_self_test` | `function sgs_css_length_value_self_test()` | Run every accept/reject/backward-compat case and report an honest count. |
 
@@ -261,6 +263,18 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_end_shape_mask_decls` | `function sgs_end_shape_mask_decls( array $ends ): string` | Mask declarations that cut the shaped ends out of a box. |
 | `sgs_end_shape_border_box_decls` | `function sgs_end_shape_border_box_decls( array $ends, array $border_decls, string $paint ): string` | The layer's inset, border and border colour for one set of border declarations. |
 | `sgs_end_shape_layer_decls` | `function sgs_end_shape_layer_decls( array $ends, array $border_decls, string $paint ): string` | Declarations for a shaped box's `::after` layer: the box's border on the layer, then the cut mask. The caller adds the fill paint. |
+
+#### `includes/helpers-flex-wrap.php` — 1 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_flex_wrap_css` | `function sgs_flex_wrap_css( array $attributes, string $root_sel, array $map ): string` | Build the `flex-wrap` rules for the rows a block has a wrap setting for. |
+
+#### `includes/helpers-form-own-submit.php` — 1 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_form_has_own_submit` | `function sgs_form_has_own_submit( array $blocks ): bool` | Whether any block in a parsed block list, at any depth, is an sgs/button set as a submit button. |
 
 #### `includes/helpers-form-submit-motion.php` — 2 function(s)
 
@@ -317,11 +331,12 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 |---|---|---|
 | `sgs_hover_link_inherit_css` | `function sgs_hover_link_inherit_css( string $selector ): string` | Make links inside `$selector` inherit its hover colour. |
 
-#### `includes/helpers-hover-state.php` — 3 function(s)
+#### `includes/helpers-hover-state.php` — 4 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
 | `sgs_hover_guarded_rule` | `function sgs_hover_guarded_rule( string $hover_selector, string $decls ): string` | Wrap a hover-only rule in both guards. |
+| `sgs_focus_rests_active` | `function sgs_focus_rests_active(): bool` | Whether the block rendering now keeps its resting look on keyboard focus (`sgsFocusRests`). |
 | `sgs_hover_state_rules` | `function sgs_hover_state_rules( string $selector, string $decls, string $focus = ':focus-visible', string…` | Emit a hover state as a touch-safe PAIR: a guarded hover rule plus an unguarded focus rule carrying the identical declarations. |
 | `sgs_hover_media_wrap` | `function sgs_hover_media_wrap( string $rule ): string` | Wrap an ALREADY-BUILT hover rule in the layer-1 media query. |
 
@@ -379,6 +394,12 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_label_roll_markup` | `function sgs_label_roll_markup( string $text, string $roll, string $alt_hover = '', string $alt_open = ''…` | A label with its roll copies, or the plain escaped label when the roll is off (no extra DOM for anyone who has not asked for it). |
 | `sgs_label_roll_wrap_html` | `function sgs_label_roll_wrap_html( string $safe_html, string $roll ): string` | The roll around label HTML that is already safe (e.g. an icon-list item's kses'd text, which may carry inline formatting). The copy is the… |
 | `sgs_label_roll_css` | `function sgs_label_roll_css( string $scope_sel, string $trigger_sel, string $open_sel, array $attributes )…` | The roll's motion, scoped to one block instance. |
+
+#### `includes/helpers-layer-edges.php` — 1 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_layer_edges` | `function sgs_layer_edges( array $attributes ): array` | The layer's edge anchoring and its declarations per tier. |
 
 #### `includes/helpers-link-source.php` — 6 function(s)
 
@@ -741,6 +762,19 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_surface_tone` | `function sgs_surface_tone( array $layers ): string` | Judge what a composed surface looks like from its painted layers, top-down . |
 | `sgs_surface_tone_class` | `function sgs_surface_tone_class( array $layers ): string` | The `sgs-on-dark` / `sgs-on-light` marker class for a composed surface, enqueuing the dark-shadow stylesheet when the surface is dark. |
 
+#### `includes/helpers-svg-document.php` — 8 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_svg_document_allowed_tags` | `function sgs_svg_document_allowed_tags(): array` | The whole-file allowlist: the shared inline list plus <style>, the SMIL animation elements (animate's full attribute set, set… |
+| `sgs_svg_link_is_safe` | `function sgs_svg_link_is_safe( string $value ): bool` | Whether a link target stays inside the file: a #fragment or a raster data:image URI. |
+| `sgs_svg_css_problem` | `function sgs_svg_css_problem( string $css ): string` | \/` are caught. |
+| `sgs_svg_script_url_problem` | `function sgs_svg_script_url_problem( string $value ): string` | Why a decoded value holds a script URL, or ''. Whitespace and control characters are removed first, so `java\tscript:` and `JaVaScRiPt :`… |
+| `sgs_svg_attribute_problem` | `function sgs_svg_attribute_problem( string $element, DOMAttr $attr ): string` | Why one attribute makes the file unsafe, or ''. |
+| `sgs_svg_document_copy` | `function sgs_svg_document_copy( DOMNode $source, DOMElement $target, DOMDocument $out, array $allowed )…` | Copy `$source`'s children into `$target` (in `$out`) through the allowlist. |
+| `sgs_svg_parse_problem` | `function sgs_svg_parse_problem( string $markup ): string` | Why a file cannot be used as an SVG at all, or '': it is not UTF-8 (a UTF-16 or UTF-32 file, a declared other encoding), holds any DOCTYPE… |
+| `sgs_svg_sanitise_document` | `function sgs_svg_sanitise_document( string $markup ): array` | Make a whole SVG file safe, or say why it cannot be. |
+
 #### `includes/helpers-svg-gradient.php` — 4 function(s)
 
 | Function | Signature | Purpose |
@@ -750,11 +784,59 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_icon_gradient_css` | `function sgs_icon_gradient_css( string $icon_source, string $gradient_css, string $unique_id, string…` | Icon gradient composer — the ONE call site every icon-source-aware block (`sgs/icon`, `sgs/social-icons`' group glyph gradient, and… |
 | `sgs_icon_gradient_states_css` | `function sgs_icon_gradient_states_css( string $icon_source, string $base_gradient, string $hover_gradient…` | Resolve BOTH resting + hover icon gradient state in one call and return ready-to-append scoped-CSS rules plus each state's <defs> markup. |
 
+#### `includes/helpers-svg-inline-attachment.php` — 2 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_svg_inline_attachment` | `function sgs_svg_inline_attachment( int $attachment_id ): string` | The attachment's sanitised SVG markup, or '' when it is not an SVG file or the file is refused. |
+| `sgs_svg_inline_root_attributes` | `function sgs_svg_inline_root_attributes( string $svg, array $attrs ): string` | Put attributes on the root <svg> of sanitised markup, ahead of the file's own (the first of a repeated attribute wins in HTML, so these… |
+
+#### `includes/helpers-svg-instance-scope.php` — 9 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_svg_scope_instance` | `function sgs_svg_scope_instance( string $svg, string $scope ): string` | Scope sanitised SVG markup to one instance. |
+| `sgs_svg_scope_prefix` | `function sgs_svg_scope_prefix( string $root ): string` | The name prefix an instance gives its keyframes: its root selector without punctuation. |
+| `sgs_svg_scope_css_urls` | `function sgs_svg_scope_css_urls( string $value, array $ids ): string` | Point every url(#id) at the renamed id. |
+| `sgs_svg_scope_animation_names` | `function sgs_svg_scope_animation_names( string $decls, array $frames ): string` | Rename the file's keyframes inside every animation and animation-name declaration of a declaration block. |
+| `sgs_svg_scope_selector` | `function sgs_svg_scope_selector( string $selector, string $root, array $ids ): string` | Limit one selector to the instance root's subtree, keeping its specificity, or '' when it cannot be limited. A selector that starts with… |
+| `sgs_svg_scope_has_block` | `function sgs_svg_scope_has_block( string $decls ): bool` | Whether a declaration list holds a nested block (a nested rule or at-rule). |
+| `sgs_svg_scope_rules` | `function sgs_svg_scope_rules( string $css, string $root, array $ids, array $frames ): string` | Scope comment-free CSS: qualified rules limited to the root, @media and @supports recursed, @keyframes (and its vendor forms) renamed with… |
+| `sgs_svg_scope_verify` | `function sgs_svg_scope_verify( string $css, string $root ): bool` | Read scoped CSS again and confirm every top-level item is a clean rule whose every selector starts with the root scope, a @keyframes named… |
+| `sgs_svg_scope_css` | `function sgs_svg_scope_css( string $css, string $root, array $ids, array $frames ): string` | Scope a <style> element's CSS to the instance root, or return '' when the scoped result cannot be confirmed. |
+
 #### `includes/helpers-svg-kses.php` — 1 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
 | `sgs_svg_kses_allowed_tags` | `function sgs_svg_kses_allowed_tags(): array` | Returns the wp_kses allowed-tags array for sanitising inline SVG markup. |
+
+#### `includes/helpers-svg-scope-css-reader.php` — 5 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_svg_scope_scan` | `function sgs_svg_scope_scan( string $css, int $i, bool $body ): array` | Walk comment-free CSS from `$i` the way the browser's tokenizer does and stop at a boundary. A string ends at its quote or an unescaped… |
+| `sgs_svg_scope_strip_comments` | `function sgs_svg_scope_strip_comments( string $css ): string` | Normalise newlines and replace every comment outside a string with a space (an unclosed one runs to the end). |
+| `sgs_svg_scope_items` | `function sgs_svg_scope_items( string $css ): array` | Split comment-free CSS into its top-level items: a block (prelude and body) or a `;` statement (body null). |
+| `sgs_svg_scope_find_top_level` | `function sgs_svg_scope_find_top_level( string $text, int $i, string $chars ): ?int` | Offset of the first of `$chars` outside strings, escapes, parentheses and brackets, from `$i`, or null. |
+| `sgs_svg_scope_split` | `function sgs_svg_scope_split( string $text ): array` | Split a selector list on its top-level commas. |
+
+#### `includes/helpers-svg-trust.php` — 5 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_svg_trust_intent` | `function sgs_svg_trust_intent( string $hash = '', int $user = 0 ): array` | This request's trust intents: sha256 of a trusted upload's final tmp file => the uploading user ID. |
+| `sgs_svg_trusted_prepare` | `function sgs_svg_trusted_prepare( string $raw ): array` | A trusted upload's markup: refused when it holds an internal subset or entities (in any encoding) or is not an SVG document. A plain… |
+| `sgs_svg_trust_mark` | `function sgs_svg_trust_mark( $attachment_id ): void` | Store the trust mark on a new SVG attachment whose file this request's trusted upload produced. |
+| `sgs_svg_attachment_is_trusted` | `function sgs_svg_attachment_is_trusted( int $attachment_id, string $raw ): bool` | Whether the attachment's file may print as uploaded: the mark holds both keys, its hash matches the file's current contents, and the… |
+| `sgs_svg_trusted_inline_markup` | `function sgs_svg_trusted_inline_markup( string $raw ): string` | A trusted file's markup for inline printing: without the XML declaration, DOCTYPE and leading comments, so it starts with <svg>. '' when it… |
+
+#### `includes/helpers-text-shadow.php` — 2 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_text_shadow_value` | `function sgs_text_shadow_value( ?string $shape, ?string $colour ): string` | Compose a stored text shadow (shape text + colour text) into a CSS `text-shadow` value. |
+| `sgs_font_variant_numeric_value` | `function sgs_font_variant_numeric_value( $raw ): string` | Validate a stored number style against the allowlist the editor offers. |
 
 #### `includes/helpers-tier-media.php` — 4 function(s)
 
@@ -842,7 +924,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 27 Part 2 P1). |
 | `sgs_value_ladder_markup` | `function sgs_value_ladder_markup( string $wrapper_class, array $rows, int $default_pack, bool $decoy_enabled…` | Markup for the comparative value ladder: one <ul> of pack rows (Spec 27 Part 2 P1). |
 
-**84 files, 407 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**93 files, 444 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 
@@ -858,7 +940,10 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `DesignTokenPicker.js` | `DesignTokenPicker (default)`, `resolveColourToken` | Colour picker that reads the active theme.json palette. |
 | `DrawerPreviewToggle.js` | `useDrawerPreviewToggle (default)` | Editor-only "Preview drawer open" state shared by the blocks that own a drawer |
 | `FieldLabelLayoutPanel.js` | `FieldLabelLayoutPanel (default)` | "Label and headings" panel for SGS form fields: whether the field's label shows or is read only by screen readers, and (for boxes… |
+| `FlexWrapControl.js` | `FlexWrapControl (default)` | FlexWrapControl - the "Wrap" choice for a block's row of items (`flexWrap`: '' \| 'nowrap' \| 'wrap'). |
 | `FocalPositionField.js` | `FocalPositionField (default)` | FocalPositionField — the SGS wrapper around WP-native `FocalPointPicker` |
+| `form-field-preview.js` | `fieldLabelClasses`, `fieldDefaultValue`, `FieldCounterPreview` | Shared editor-canvas preview bits for the SGS form field blocks (Spec 04 FR-4-4, 4-5, 4-8). |
+| `FormFieldAdvancedPanel.js` | `FormFieldAdvancedPanel (default)`, `AUTOCOMPLETE_TOKENS`, `INPUTMODE_OPTIONS` | "Advanced field settings" inspector panel shared by the SGS form field blocks (Spec 04 FR-4-3 to FR-4-8). |
 | `GradientCapableColourControl.js` | `GradientCapableColourControl (default)`, `isGradientValue` | GradientCapableColourControl — the text-colour gradient rollout's shared control (D636 Task 1b, "text" builder). |
 | `GradientOverlayControl.js` | `GradientOverlayControl (default)`, `gradientOverlayAttrName`, `gradientOverlayAttrKeys` | GradientOverlayControl |
 | `index.js` | `ResponsiveControl`, `BooleanResponsiveControl`, `ResponsiveOverride`… | export { default as ResponsiveControl } from './ResponsiveControl'; export { default as BooleanResponsiveControl } from… |
@@ -882,6 +967,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `ResponsiveTriStateControl.js` | `ResponsiveTriStateControl (default)` | ResponsiveTriStateControl — the DP1 tri-state on/off control (Spec 35 T1.2). |
 | `RowQuickInsertAppender.js` | `RowQuickInsertAppender (default)` | Promoted quick-insert appender for a freeform row block (site-header-row / site-footer-row). Steering, not gating: the row still… |
 | `RowScrollBehaviourControls.js` | `RowScrollBehaviourControls (default)` | RowScrollBehaviourControls — per-row transparent / hide-on-scroll toggles |
+| `RowWrapPanel.js` | `RowWrapPanel (default)` | RowWrapPanel - one "Row wrapping" panel holding a block's FlexWrapControl rows, for a block with several rows of items… |
 | `SavedPostPicker.js` | `SavedPostPicker (default)` | SavedPostPicker: a searchable picker for posts of one non-public custom post type (sgs_form, sgs_choice_flow, ...). |
 | `ScaleAxisControl.js` | `ScaleAxisControl (default)` | ScaleAxisControl — 2-axis (X/Y) proportional scale control with a link/unlink toggle (Spec 35A §F.2.3, D637). |
 | `ScrimControls.js` | `ScrimControls (default)`, `scrimColourRow` | ScrimControls: the shared inspector controls for a viewport scrim, the see-through layer that dims the page behind an open… |
@@ -905,8 +991,9 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `SurfaceGroundControls.js` | `SurfaceGroundControls (default)` | SurfaceGroundControls: the shared inspector controls for a frosted surface |
 | `SweepAngleControl.js` | `SweepAngleControl (default)` | SweepAngleControl — the directional sweep angle: one preset SelectControl (UI sugar) plus core's own AnglePickerControl, both… |
 | `TypographyControls.js` | `TypographyControls (default)`, `isTieredValue`, `typographyAttrName`… | TypographyControls — shared, uniform typography UI for every SGS block. |
+| `TypographyNumberShadowRows.js` | `textShadowIsEditable`, `parseTextShadowShape`, `composeTextShadowShape`… | Number style and text shadow rows for TypographyControls (opt-in: `showNumberStyle`, `showTextShadow`). |
 
-**55 files.**
+**60 files.**
 
 ### JS media atoms — `src/components/media/atoms/*.js`
 
