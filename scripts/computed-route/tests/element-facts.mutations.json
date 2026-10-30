@@ -26,7 +26,7 @@
 	{ "file": "lib/skeleton-rules.mjs", "find": "const props = [ ...new Set( [ ...Object.keys( st ), ...read.bound( e ) ] ) ];", "replace": "const props = Object.keys( st );", "why": "a property bound to a script value is not declared" },
 	{ "file": "lib/element-facts.mjs", "find": "bound: ( e ) => view.holeProps( e ),", "replace": "bound: ( e ) => [],", "why": "the reader gives no bound properties" },
 	{ "file": "lib/skeleton-model.mjs", "find": "|| bound.some( ( p ) => /^padding(?:-left|-right|-inline)?$/.test( p ) );", "replace": ";", "why": "bound padding is no padding" },
-	{ "file": "lib/skeleton-model.mjs", "find": "return 'a' === e.tag && padded && ( ground || edge || boundGround );", "replace": "return 'a' === e.tag && padded && ( ground || edge );", "why": "a bound background or border is no ground" },
+	{ "file": "lib/skeleton-model.mjs", "find": "return padded && ( ground || edge || boundGround );", "replace": "return padded && ( ground || edge );", "why": "a bound background or border is no ground" },
 	{ "file": "lib/skeleton-model.mjs", "find": "const boundGround = bound.some( ( p ) => /^(?:background|border)/.test( p ) );", "replace": "const boundGround = bound.length > 0;", "why": "any bound property is a ground" },
 	{ "file": "lib/skeleton-rules.mjs", "find": "const ring = [ 'top', 'right', 'bottom', 'left' ].every( ( side ) =>", "replace": "const ring = [ 'top', 'right', 'bottom', 'left' ].some( ( side ) =>", "why": "a one-sided line is a ring" },
 	{ "file": "lib/skeleton-rules.mjs", "find": "( pxOf( st[ `border-${ side }-width` ] ) ?? 0 ) > 0 &&", "replace": "", "why": "a zero-width border is an outline" }

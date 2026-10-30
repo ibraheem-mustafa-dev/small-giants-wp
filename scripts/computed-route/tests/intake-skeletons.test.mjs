@@ -70,8 +70,9 @@ test( 'MUST FAIL: the inventory runs on the harness page inside the sandbox, nev
 	assert.deepEqual( run.unlisted, [], 'no request to an unlisted host' );
 	assert.deepEqual( run.proxyAttempts, [], 'nothing reached the trap proxy' );
 	// The footer prints new Date(): the harness clock proves the read came from the harness page.
-	const stamp = of( real, 'footer' ).rows.find( ( r ) => /^\d{4}-\d\d-\d\dT/.test( r.words ) ) ?? assert.fail( 'no footer row carries the render time' );
-	assert.equal( stamp.words, new Date( HARNESS_DEFAULTS.clock ).toISOString() );
+	// The time is an inline span inside the footer line's words, so the line's one text row reads it in place.
+	const stamp = of( real, 'footer' ).rows.find( ( r ) => /\d{4}-\d\d-\d\dT/.test( r.words ) ) ?? assert.fail( 'no footer row carries the render time' );
+	assert.equal( stamp.words, `Rendered at ${ new Date( HARNESS_DEFAULTS.clock ).toISOString() }` );
 } );
 
 test( 'every surface gets an inventory and a proposal row per element, keyed skeleton:<surface>:<key>', () => {

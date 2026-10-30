@@ -48,7 +48,7 @@ export function loadFacts( { db, client, repo = REPO, codeRepo = repo, siteName 
 		listItem = { text: props.text ? 'text' : null, url: Object.keys( props ).find( ( k ) => 'url-href' === props[ k ].role ) || null, siteInfoSource: props.siteInfoSource ? 'siteInfoSource' : null, siteInfoLink: props.siteInfoLink ? 'siteInfoLink' : null, kinds };
 	}
 	return {
-		client, repo, decisions, placeholderMap, composition, tagMap, capsOf, blocksWithCap, attr, attrsByRole, firstAttrByRole, blocksWithDisplayType, enumOf, q,
+		client, repo, codeRepo, decisions, placeholderMap, composition, tagMap, capsOf, blocksWithCap, attr, attrsByRole, firstAttrByRole, blocksWithDisplayType, enumOf, q,
 		// SGS bans core blocks: each core block's SGS replacement, from blocks.replaces (a comma list per SGS block).
 		replacedBy: Object.fromEntries( q( "SELECT slug, replaces FROM blocks WHERE replaces IS NOT NULL AND replaces <> ''" ).flatMap( ( r ) => r.replaces.split( ',' ).map( ( c ) => [ c.trim(), r.slug ] ) ).filter( ( [ c ] ) => c ) ),
 		brands: brandRegistry(),

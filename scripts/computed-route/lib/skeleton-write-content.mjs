@@ -6,6 +6,7 @@
 import { LOGO_HANDOVER } from './skeleton-write-units.mjs';
 import { linkWrite } from './draft-link.mjs';
 import { makeClock, timeTextRanges } from './skeleton-clock.mjs';
+import { inlineText } from './inline-text.mjs';
 
 // The words a draft's copyright line prints before its © mark (sgs/business-info prints `{copyrightPrefix} © {year} {line}`):
 // "Copyright © 2026 Acme" gives "Copyright", "© 2026 Acme" gives "" (the block then omits the word). A line with no mark
@@ -118,7 +119,8 @@ export function makeContent( ctx ) {
 			return null;
 		}
 		const leading = m.read.textLeads( e );
-		return { node: { name: textBlock, attributes: { [ textAttr ]: words, ...timeTextAttrs( textBlock, e ) }, innerBlocks: [] }, leading };
+		const rich = inlineText( { m, e, block: textBlock, attr: textAttr, codeRepo: facts.codeRepo, siteLink } );
+		return { node: { name: textBlock, attributes: { [ textAttr ]: rich ? rich.value : words, ...timeTextAttrs( textBlock, e ) }, innerBlocks: [], ...( rich?.handover.length ? { handover: rich.handover } : {} ) }, leading };
 	}
 
 	// The content settings of one element's block. Returns { a (attributes), handover }.
@@ -157,7 +159,11 @@ export function makeContent( ctx ) {
 		// attribution is its cite.
 		const quoteBody = 'blockquote' === e.tag;
 		const cite = quoteBody ? citeOf( e ) : null;
-		textAttr && t && ! quoteBody && ( a[ textAttr ] = m.textWithBreaks( e ).includes( '<br>' ) ? m.textWithBreaks( e ) : t );
+		// A text element holding inline parts writes them as the markup the receiving setting holds (lib/inline-text.mjs).
+		const rich = textAttr && t && ! quoteBody ? inlineText( { m, e, block, attr: textAttr, codeRepo: facts.codeRepo, siteLink } ) : null;
+		rich && handover.push( ...rich.handover );
+		const plain = m.textWithBreaks( e ).includes( '<br>' ) ? m.textWithBreaks( e ) : t;
+		textAttr && t && ! quoteBody && ( a[ textAttr ] = rich ? rich.value : plain );
 		textAttr && t && ! quoteBody && Object.assign( a, timeTextAttrs( block, e ) );
 		// A control with no words (a swatch, a dot) must not print the block's default label: the label is written empty and
 		// the draft's aria-label names the control. A block a rule configured (`top.attributes`) takes its settings from the
