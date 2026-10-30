@@ -247,3 +247,12 @@ export function inlineText( { m, e, block, attr, codeRepo, siteLink, clickable =
 	lost.length && handover.push( { owner: 'content-page', kind: 'text', detail: `${ where } ${ allow.rich ? `holds only ${ allow.formats.join( ', ' ) || 'no format' }` : 'holds plain text only (no RichText edits it)' }, so ${ lost.join( ', ' ) } inside "${ m.words( e ) }" keep${ 1 === lost.length ? 's' : '' } only ${ 1 === lost.length ? 'its' : 'their' } words` } );
 	return { value, handover };
 }
+
+// What a writer puts into a text setting for the draft element `e`: the element's inline markup as the setting holds it
+// (inlineText) when it has inline parts, else its words with white space collapsed. The one call a writer of a setting other
+// than the block's primary text makes (an item's label, a control's label), so no such setting is flattened to words.
+// Returns { value, handover }.
+export function inlineValue( o ) {
+	const rich = inlineText( o );
+	return rich ?? { value: String( o.m.words( o.e ) ?? '' ).replace( /\s+/g, ' ' ).trim(), handover: [] };
+}

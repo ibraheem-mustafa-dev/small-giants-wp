@@ -273,3 +273,19 @@ test( 'MUST FAIL: Fill copies a glyph-role setting verbatim (breadcrumbs separat
 	assert.deepEqual( at( ' / ' ).map( ( w ) => w.value ), [ '/' ], 'negative control: without the glyph role the text is read as words' );
 	assert.deepEqual( textDecisions( { calibration, attributes: { separator: '|' }, slots: { '.sgs-breadcrumbs__separator': '\u203a' }, glyph } ).writes, [], 'a glyph the block already holds is never overwritten' );
 } );
+
+import { elementFacts } from '../lib/element-facts.mjs';
+import { recordView } from '../lib/skeleton-record.mjs';
+import { siteLinkResolver } from '../lib/draft-link.mjs';
+import { inlineValue } from '../lib/inline-text.mjs';
+
+test( 'MUST FAIL: a writer of a block\'s SECONDARY text setting (an item\'s label) keeps the draft\'s bold where the setting holds it, and flattens it where it holds none', () => {
+	const inv = BOLD_INV();
+	const m = inventoryModel( inv, elementFacts( recordView( null, { rootComponent: null } ) ) );
+	const o = ( block, attr ) => ( { m, e: m.byKey[ 'Root/2#0' ], block, attr, codeRepo: REPO, siteLink: siteLinkResolver( null, null, m.read ) } );
+	assert.equal( inlineValue( o( 'sgs/google-reviews', 'footnote' ) ).value, '<strong>Vegan base:</strong> no eggs or dairy.', 'a rich setting takes the markup' );
+	const plain = inlineValue( o( 'sgs/cart', 'panelHeading' ) );
+	assert.equal( plain.value, 'Vegan base: no eggs or dairy.', 'negative control: a plain setting keeps the words' );
+	assert.ok( plain.handover.some( ( h ) => /bold/.test( h.detail ) ), 'and names the bold it cannot hold' );
+	assert.equal( inlineValue( { ...o( 'sgs/google-reviews', 'footnote' ), e: m.byKey[ 'Root/4#0' ] } ).value, 'Plain words.', 'a paragraph with no inline parts is its words' );
+} );

@@ -8,7 +8,7 @@
 import { brandOwnsAddress } from './brand-registry.mjs';
 import { linkWrite } from './draft-link.mjs';
 import { isMarker } from './skeleton-rules.mjs';
-import { inlineText } from './inline-text.mjs';
+import { inlineText, inlineValue } from './inline-text.mjs';
 import { finish, W } from './skeleton-classify.mjs';
 import { specHit } from './skeleton-facts.mjs';
 
@@ -221,7 +221,7 @@ export function makeUnits( ctx ) {
 			walk( k );
 		} );
 		walk( e );
-		node.innerBlocks = controls.map( ( c ) => ( { name: items.block, attributes: { [ items.labelAttr ]: m.words( c ).replace( /\s+/g, ' ' ).trim() }, draftRef: finder( c ), draftFingerprint: m.fingerprint( c ), innerBlocks: [] } ) );
+		node.innerBlocks = controls.map( ( c ) => ( { name: items.block, attributes: { [ items.labelAttr ]: inlineValue( { m, e: c, block: items.block, attr: items.labelAttr, codeRepo: facts.codeRepo, siteLink, clickable: true } ).value }, draftRef: finder( c ), draftFingerprint: m.fingerprint( c ), innerBlocks: [] } ) );
 		// The panel is built as itself (its own rules still apply: a sign-in form stays the form) inside item 1.
 		panels.forEach( ( p ) => node.innerBlocks[ 0 ] && node.innerBlocks[ 0 ].innerBlocks.push( ...[].concat( w.buildNode( p, items.block ) || [] ) ) );
 		const unread = controls.slice( 1 ).map( ( c ) => `"${ m.words( c ).trim() }"` );
