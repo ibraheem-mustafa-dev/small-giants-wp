@@ -6,6 +6,11 @@
 	},
 	"entries": [
 		{
+			"path": "plugins/sgs-blocks/src/components/SgsFreeTextField.css",
+			"selector": ".sgs-free-text-field__input:focus",
+			"reason": "Block-editor inspector chrome (the rich free-text input is a contenteditable beside core's text controls), painted in the WP admin colour; the front-end focus system never loads into the inspector."
+		},
+		{
 			"path": "plugins/sgs-blocks/src/components/SavedPostPicker.css",
 			"selector": ".sgs-saved-post-picker__row.components-button:focus-visible, .sgs-saved-post-picker__trigger.components-button:focus-visible, .sgs-saved-post-picker__remove.components-button:focus-visible",
 			"reason": "Block-editor inspector chrome (a components-button inside a panel), painted in the WP admin colour; the front-end focus system never loads into the inspector."
