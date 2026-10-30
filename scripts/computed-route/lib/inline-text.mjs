@@ -78,12 +78,31 @@ export function richTextSettings( codeRepo ) {
 	return out;
 }
 
+// The formats one block setting takes, or undefined when no RichText edits it. An array setting's item field is named
+// `<array>.<field>` (`entries.description`); the RichText record names it by the item its edit.js maps over
+// (`entry.description`), so an item field with no record of its own name takes the block's one item record of that field
+// name. Two item records of one field name (two arrays' `text`) are no answer: the field holds plain text.
+export function settingFormats( codeRepo, block, attr ) {
+	const { formats } = richTextSettings( codeRepo );
+	if ( formats.has( `${ block }:${ attr }` ) || ! /^[\w$]+\.[\w$]+$/.test( attr ) ) {
+		return formats.get( `${ block }:${ attr }` );
+	}
+	const field = attr.split( '.' )[ 1 ];
+	const hits = [ ...formats.keys() ].filter( ( k ) => k.startsWith( `${ block }:` ) && /^[\w$]+\.[\w$]+$/.test( k.slice( block.length + 1 ) ) && k.split( '.' )[ 1 ] === field );
+	return 1 === hits.length ? formats.get( hits[ 0 ] ) : undefined;
+}
+
 // What one block setting holds of a draft's inline markup: { rich (a RichText setting), formats, br (a line break) }. A
-// setting no RichText edits, or one printed as plain text (an empty format list), holds plain text only. `item` names an array setting's item field (`items.text`).
+// setting no RichText edits, or one printed as plain text (an empty format list), holds plain text only. An array setting's
+// item field is `<array>.<field>` (settingFormats).
 export function inlineAllowance( codeRepo, block, attr ) {
-	const f = richTextSettings( codeRepo ).formats.get( `${ block }:${ attr }` );
+	const f = settingFormats( codeRepo, block, attr );
 	return f?.length ? { rich: true, formats: f, br: true } : { rich: false, formats: [], br: false };
 }
+
+// The words a setting's value reads as: its markup's tags dropped (a line break a space), the escapes the inline path writes
+// decoded, white space collapsed. A value holding no markup reads as itself.
+export const plainOf = ( v ) => String( v ?? '' ).replace( /<br\s*\/?>/gi, ' ' ).replace( /<[^>]*>/g, '' ).replace( /&lt;/g, '<' ).replace( /&gt;/g, '>' ).replace( /&quot;/g, '"' ).replace( /&#0*39;/g, '\'' ).replace( /&amp;/g, '&' ).replace( /\s+/g, ' ' ).trim();
 
 // The text settings the framework DB lists (role text-content, string) that hold plain text only, as findings
 // [ { block, attr, why } ], for the review: a draft's bold, link or line break written there is flattened.
