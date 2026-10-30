@@ -63,6 +63,10 @@ export function richTextSettings( codeRepo ) {
 	const problems = [];
 	for ( const [ file, fields ] of Object.entries( roles.fields || {} ) ) {
 		const folder = /src\/blocks\/([^/]+)\//.exec( file )?.[ 1 ];
+		// A shared control (src/components/) is no block's setting: its formats are the list its mounts pass on.
+		if ( ! folder && file.startsWith( 'src/components/' ) ) {
+			continue;
+		}
 		const json = folder ? path.join( base, 'src/blocks', folder, 'block.json' ) : null;
 		const block = json && fs.existsSync( json ) ? JSON.parse( fs.readFileSync( json, 'utf8' ) ).name : null;
 		for ( const [ expr, list ] of Object.entries( fields ) ) {
@@ -96,6 +100,7 @@ export function settingFormats( codeRepo, block, attr ) {
 // What one block setting holds of a draft's inline markup: { rich (a RichText setting), formats, br (a line break) }. A
 // setting no RichText edits, or one printed as plain text (an empty format list), holds plain text only. An array setting's
 // item field is `<array>.<field>` (settingFormats).
+// A `glyph` setting (a symbol copied exactly) is in no RichText record, so it holds no format and no writer rebuilds it.
 export function inlineAllowance( codeRepo, block, attr ) {
 	const f = settingFormats( codeRepo, block, attr );
 	return f?.length ? { rich: true, formats: f, br: true } : { rich: false, formats: [], br: false };

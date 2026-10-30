@@ -57,6 +57,9 @@ if ( ! function_exists( 'sgs_rich_text_kses' ) ) {
 				'decoding' => true,
 			);
 		}
+		// A `<` that opens no tag (a stored plain value like "5 < 6") is text: kses would read it as the start of a tag and
+		// drop everything up to the next `>`.
+		$html = preg_replace( '/<(?![a-zA-Z\/!])/', '&lt;', $html ) ?? '';
 		if ( ! $links ) {
 			$html = preg_replace( '#</?a(?:\s[^>]*)?>#i', '', $html ) ?? '';
 		}

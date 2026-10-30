@@ -7,9 +7,10 @@
     "undecided": "Open decisions, not read by the detector: these fields stay unmapped until decided, and --check lists them."
   },
   "fields": {
+    "src/components/SgsFreeTextField.js": { "html || ''": "RICH_TEXT_FREE_TEXT", "htmlText || ''": "RICH_TEXT_FREE_TEXT_NO_LINK" },
     "src/blocks/accordion-item/edit.js": { "title": "RICH_TEXT_BODY_NO_LINK" },
-    "src/blocks/button/edit.js": { "label": "RICH_TEXT_EMPHASIS" },
-    "src/blocks/choice-flow-result/edit.js": { "heading": "RICH_TEXT_PLAIN", "body": "RICH_TEXT_BODY" },
+    "src/blocks/button/edit.js": { "label": "RICH_TEXT_EMPHASIS", "note": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/choice-flow-result/edit.js": { "heading": "RICH_TEXT_FREE_TEXT", "body": "RICH_TEXT_BODY", "successMessage": "RICH_TEXT_FREE_TEXT" },
     "src/blocks/collapsible-text/edit.js": { "text": "RICH_TEXT_BODY" },
     "src/blocks/counter/edit.js": { "label": "RICH_TEXT_BODY" },
     "src/blocks/form-field-consent/edit.js": { "consentText": "RICH_TEXT_BODY" },
@@ -19,19 +20,22 @@
       "plan.name": "RICH_TEXT_PLAIN",
       "plan.price": "RICH_TEXT_PLAIN",
       "plan.priceYearly || ''": "RICH_TEXT_PLAIN",
-      "feature.text": "RICH_TEXT_PLAIN"
+      "feature.text": "RICH_TEXT_PLAIN",
+      "popularBadgeText": "RICH_TEXT_FREE_TEXT",
+      "billingToggleMonthlyLabel": "RICH_TEXT_FREE_TEXT_NO_LINK",
+      "billingToggleYearlyLabel": "RICH_TEXT_FREE_TEXT_NO_LINK"
     },
     "src/blocks/product-card/edit.js": { "productName || ''": "RICH_TEXT_PLAIN", "description || ''": "RICH_TEXT_BODY" },
-    "src/blocks/product-faq/edit.js": { "heading": "RICH_TEXT_PLAIN" },
-    "src/blocks/product-faq-item/edit.js": { "question": "RICH_TEXT_PLAIN" },
+    "src/blocks/product-faq/edit.js": { "heading": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/product-faq-item/edit.js": { "question": "RICH_TEXT_FREE_TEXT_NO_LINK" },
     "src/blocks/quote/edit.js": { "attribution": "RICH_TEXT_BODY" },
     "src/blocks/team-member/edit.js": { "name": "RICH_TEXT_BODY", "role": "RICH_TEXT_BODY", "bio": "RICH_TEXT_BODY" },
     "src/blocks/testimonial/edit.js": {
       "quote": "RICH_TEXT_BODY",
       "summaryPhrase": "RICH_TEXT_EMPHASIS",
       "reviewerName": "RICH_TEXT_PLAIN",
-      "reviewerRole": "RICH_TEXT_PLAIN",
-      "orgName": "RICH_TEXT_PLAIN"
+      "reviewerRole": "RICH_TEXT_FREE_TEXT",
+      "orgName": "RICH_TEXT_FREE_TEXT"
     },
     "src/blocks/text/edit.js": { "text": "RICH_TEXT_BODY" },
     "src/blocks/timeline/edit.js": { "entry.description || ''": "RICH_TEXT_BODY" },
@@ -40,12 +44,40 @@
       "label": "RICH_TEXT_BODY_NO_LINK",
       "cardTitle": "RICH_TEXT_BODY_NO_LINK",
       "cardSubline": "RICH_TEXT_BODY_NO_LINK"
-    }
+    },
+    "src/blocks/account/LoggedOutPanel.js": { "guestLineText": "RICH_TEXT_FREE_TEXT", "orderTrackingHeading": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/choice-flow-question/IntroField.js": { "intro": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/google-reviews/components/ReviewTextPanel.js": { "footnote": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/trustpilot-reviews/edit.js": {
+      "subtitleText": "RICH_TEXT_FREE_TEXT",
+      "emptyStateMessage": "RICH_TEXT_FREE_TEXT",
+      "trustScoreLabel": "RICH_TEXT_FREE_TEXT"
+    },
+    "src/blocks/account/DashboardPanel.js": { "noOrdersText": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/audio/edit.js": { "title": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/before-after/edit.js": { "afterLabel": "RICH_TEXT_FREE_TEXT", "beforeLabel": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/brand-strip/edit.js": { "title": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/breadcrumbs/edit.js": { "homeLabel": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/business-info/edit.js": { "textAfter": "RICH_TEXT_FREE_TEXT", "textBefore": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/gallery/components/ImagesPanel.js": { "emptyMessage": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/google-reviews/components/HeaderPanel.js": { "sourceLabel": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/icon-list/edit.js": { "heading": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/local-time/edit.js": { "label": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/mega-panel/edit.js": { "brandsEyebrow": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/post-grid/components/QueryPanel.js": { "emptyMessage": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/separator/edit.js": { "contentText": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/star-rating/edit.js": { "label": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/table-of-contents/edit.js": { "title": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/google-rating-badge/edit.js": { "linkLabel": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/modal/edit.js": { "triggerText": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/store-selector/edit.js": { "triggerPrefix": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/wishlist-link/edit.js": { "label": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/form-review/edit.js": { "heading": "RICH_TEXT_FREE_TEXT", "intro": "RICH_TEXT_FREE_TEXT" }
   },
   "undecided": {},
   "render": {
     "src/blocks/accordion-item/render.php": { "$sgs_title": "rich-text" },
-    "src/blocks/choice-flow-result/render.php": { "$heading": "rich-text", "$body": "rich-text" },
+    "src/blocks/choice-flow-result/render.php": { "$heading": "rich-text", "$body": "rich-text", "$success_message": "rich-text" },
     "src/blocks/collapsible-text/render.php": { "$text": "rich-text" },
     "src/blocks/counter/render.php": { "$label": "rich-text" },
     "src/blocks/form-field-consent/render.php": { "$text": "rich-text" },
@@ -56,18 +88,23 @@
       "$data['price_from_html']": "WooCommerce price markup (wc_price), not RichText",
       "$data['price_html']": "WooCommerce price markup (get_price_html), not RichText"
     },
-    "src/blocks/product-faq-item/render.php": { "$question": "rich-text" },
+    "src/blocks/product-faq-item/render.php": { "$question, false": "rich-text" },
     "src/blocks/quote/render.php": { "$attribution": "rich-text" },
     "src/blocks/team-member/render.php": { "$bio": "rich-text", "$name": "rich-text", "$sgs_role": "rich-text" },
-    "src/blocks/testimonial/render.php": { "$summary_phrase": "rich-text", "$quote": "rich-text" },
+    "src/blocks/testimonial/render.php": {
+      "$summary_phrase": "rich-text",
+      "$quote": "rich-text",
+      "$reviewer_role": "rich-text",
+      "$org_name": "rich-text"
+    },
     "src/blocks/text/render.php": { "$text": "rich-text" },
     "src/blocks/timeline/render.php": { "$description": "rich-text" },
     "src/blocks/trust-bar/render.php": { "$block_title": "rich-text" },
-    "src/blocks/whatsapp-cta/variant-render.php": { "$title": "rich-text", "$subline": "rich-text" }
+    "src/blocks/whatsapp-cta/variant-render.php": { "$title": "rich-text", "$subline": "rich-text" },
+    "src/blocks/product-faq/render.php": { "$heading, false": "rich-text" }
   },
   "allowlist": {
     "button": "The label keeps its own narrower wp_kses() allowlist (no link, no style) in render.php.",
-    "pricing-table": "Every RichText field is printed through wp_strip_all_tags() and esc_html().",
-    "product-faq": "The heading is printed through esc_html()."
+    "pricing-table": "Every RichText field is printed through wp_strip_all_tags() and esc_html()."
   }
 }

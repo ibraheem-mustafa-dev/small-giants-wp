@@ -34,7 +34,7 @@ const BLOCKS_DIR = path.join( SRC_DIR, 'blocks' );
 const ROLES_FILE = path.join( __dirname, 'data', 'rich-text-format-roles.json' );
 const FORMATS_MODULE = path.join( SRC_DIR, 'utils', 'rich-text-formats' );
 
-const CONSTANTS = [ 'RICH_TEXT_BODY', 'RICH_TEXT_BODY_NO_LINK', 'RICH_TEXT_EMPHASIS', 'RICH_TEXT_LINK_ONLY', 'RICH_TEXT_PLAIN' ];
+const CONSTANTS = [ 'RICH_TEXT_BODY', 'RICH_TEXT_BODY_NO_LINK', 'RICH_TEXT_EMPHASIS', 'RICH_TEXT_LINK_ONLY', 'RICH_TEXT_FREE_TEXT', 'RICH_TEXT_FREE_TEXT_NO_LINK', 'RICH_TEXT_PLAIN' ];
 const RICH_TEXT_RENDER = 'rich-text';
 const OLD_SANITISER = 'wp_kses_post';
 const NEW_SANITISER = 'sgs_rich_text_kses';
