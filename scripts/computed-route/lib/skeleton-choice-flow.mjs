@@ -22,6 +22,7 @@ import { brandOwnsAddress } from './brand-registry.mjs';
 import { toggleGroups, summaryOf as summaryLine, stageNoteOf, canvasOf } from './skeleton-choice-flow-canvas.mjs';
 import { flowPieces } from './skeleton-choice-flow-refs.mjs';
 import { slugify } from './catalogue-read.mjs';
+import { answerLimits } from './choice-flow-limit.mjs';
 
 const HEADING = /^h[1-6]$/;
 const FIELD_TAGS = new Set( [ 'input', 'select', 'textarea', 'sc-raw-select' ] );
@@ -49,13 +50,14 @@ function recordTree( els, rootKey ) {
 // (rules.formControl), brands (lib/brand-registry.mjs), surfaceKind, parts (the surface's surfaces.json parts, from
 // surfaceContext), sale (lib/flow-product.mjs::flowSale: the catalogue product the flow sells and the render bindings of the
 // question loops that are its attributes; a question whose loop draws one is that attribute's product-option step,
-// `productAttribute`, Spec 43 FR-43-10) }. Returns { attributes (the root's settings), steps [{ key, label, question?, fields [{ block, label, key }],
+// `productAttribute`, Spec 43 FR-43-10), script (the flow component's script text: lib/choice-flow-limit.mjs reads each
+// question's answer count from it, `answersMin`/`answersMax`, Spec 43 FR-43-27) }. Returns { attributes (the root's settings), steps [{ key, label, question?, fields [{ block, label, key }],
 // result?, parts? (the record keys of the question's own pieces: heading, intro, description, badge, toggle), wrapper? (the
 // record key of the step's own element: a panel's), resultAt? (the record key a result part's result is drawn from) }], covered (record key -> what draws it), copies
 // [{ words, reason }], pieces (lib/skeleton-choice-flow-refs.mjs::flowPieces: the record keys of the flow's own pieces),
 // handovers, notes, missing [{ key, line, why }] (what a product-option step cannot draw, a missing feature on the
 // question's row) }.
-export function choiceFlowModel( { view, rootKey, R, formControl = null, brands = [], surfaceKind = null, parts = [], sale = null } ) {
+export function choiceFlowModel( { view, rootKey, R, formControl = null, brands = [], surfaceKind = null, parts = [], sale = null, script = null } ) {
 	const els = view.elements || {};
 	const out = { attributes: {}, steps: [], covered: new Map(), copies: [], handovers: [], notes: [], missing: [] };
 	if ( ! rootKey || ! els[ rootKey ] ) {
@@ -218,6 +220,9 @@ export function choiceFlowModel( { view, rootKey, R, formControl = null, brands 
 			cost.vals.v.some( ( v ) => specHit( R.pricePrefixFrom, v ) ) && ( question.pricePrefix = 'from' );
 			out.handovers.push( { owner: 'product-data', kind: 'text', detail: `${ name}: the option prices (${ cost.vals.v.join( ', ' ) }) come from the add-on price list (FR-43-17): name the question's price group and enter the prices there` } );
 		}
+		// A question the draft's logic caps (a handler that refuses or drops a pick past N) takes up to N answers; a priced or product-option question is left alone (the block ignores the count there).
+		const limits = ! attr && ! ( cost?.vals?.v.length ) ? answerLimits( script, { binding: q.loop.path, handler: handler( q.loop.button ).slice( q.loop.as.length + 1 ) } ) : null;
+		limits && Object.assign( question, limits );
 		t.desc( q.loop.button ).some( ( k ) => [ 'img', 'svg' ].includes( rec( k ).realTag ) ) && out.handovers.push( { owner: 'content-page', kind: 'presence', detail: `${ name }: each option shows a picture: choose each option's image (FR-43-15)` } );
 		const badges = t.desc( q.loop.button ).filter( ( k ) => conditional( k ) && ( literal( k ) || textHoles( [ k ] ).length ) );
 		const badgeWords = [ ...new Set( badges.map( ( k ) => literal( k ) || firstValue( k ) ).filter( Boolean ) ) ];

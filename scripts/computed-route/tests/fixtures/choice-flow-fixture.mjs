@@ -160,6 +160,6 @@ export const FLOW = [
 export const FLOW_ROW = { slug: 'choice-flow-pick', postType: 'sgs_choice_flow', draftId: 'surfaces.json S-09' };
 export const run = ( list, o = {} ) => {
 	const b = build( list, { ids: { 'S-09': { kind: o.kind || 'modal', name: 'Flow', root: list[ 0 ].n } }, statics: o.statics ?? SCHEMA } );
-	return proposeSkeleton( { inventory: b.inventory, facts: o.facts || facts(), surface: 'flow', surfaceKind: o.kind || 'modal', surfaceName: 'Flow', db, factRecord: b.record, openers: {}, pageMap: o.pageMap ?? [ FLOW_ROW ], surfaceId: 'S-09', ...( o.saleOf ? { saleOf: o.saleOf } : {} ), ...( o.calSettings ? { calSettings: o.calSettings } : {} ), ...( o.calKeys ? { calKeys: o.calKeys } : {} ) } );
+	return proposeSkeleton( { inventory: b.inventory, facts: o.facts || facts(), surface: 'flow', surfaceKind: o.kind || 'modal', surfaceName: 'Flow', db, factRecord: b.record, openers: {}, pageMap: o.pageMap ?? [ FLOW_ROW ], surfaceId: 'S-09', ...( o.saleOf ? { saleOf: o.saleOf } : {} ), ...( o.scriptOf ? { scriptOf: o.scriptOf } : {} ), ...( o.calSettings ? { calSettings: o.calSettings } : {} ), ...( o.calKeys ? { calKeys: o.calKeys } : {} ) } );
 };
 export const names = ( tree ) => ( JSON.stringify( tree ).match( /"name":"[^"]+"/g ) || [] ).map( ( x ) => x.slice( 8, -1 ) );

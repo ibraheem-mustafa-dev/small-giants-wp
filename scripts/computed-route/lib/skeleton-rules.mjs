@@ -731,7 +731,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const role = surface.role ?? null;
 	// The catalogue product it sells (lib/flow-product.mjs::flowSale through `surface.saleOf( component )`) binds its product-option steps.
 	const flowRoot = view.entry( m.root )?.template ?? null;
-	const flow = R.choiceFlow && 'choiceFlow' === role?.role ? choiceFlowModel( { view, rootKey: flowRoot?.key ?? null, R: R.choiceFlow, formControl: R.formControl, brands: facts.brands || [], surfaceKind: surface.kind, parts: scope?.surfaceParts ?? [], sale: flowRoot && surface.saleOf ? surface.saleOf( flowRoot.component ) : null } ) : null;
+	const flow = R.choiceFlow && 'choiceFlow' === role?.role ? choiceFlowModel( { view, rootKey: flowRoot?.key ?? null, R: R.choiceFlow, formControl: R.formControl, brands: facts.brands || [], surfaceKind: surface.kind, parts: scope?.surfaceParts ?? [], sale: flowRoot && surface.saleOf ? surface.saleOf( flowRoot.component ) : null, script: flowRoot && surface.scriptOf ? surface.scriptOf( flowRoot.component ) : null } ) : null;
 	const STRUCTURES = [
 		// A choice flow's root is sgs/choice-flow, whatever its surfaces.json kind (a modal, a form): the flow draws its frame, and
 		// its steps are composed from the record (lib/skeleton-choice-flow-tree.mjs), so the draft elements are absorbed.
