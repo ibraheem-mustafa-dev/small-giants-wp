@@ -258,8 +258,10 @@ test( 'MUST FAIL: Fill writes a block\'s SECONDARY text setting (google-reviews 
 	const rich = ( p, attr ) => inline( 'Root/2#0', 'sgs/google-reviews', attr );
 	const r = textDecisions( { calibration, slots: { '': 'Vegan base: no eggs or dairy.' }, rich } );
 	assert.deepEqual( r.writes.map( ( w ) => w.value ), [ '<strong>Vegan base:</strong> no eggs or dairy.' ], 'the footnote holds core/bold, so the bold is written as <strong>' );
-	// Negative control: a setting no RichText or free-text control edits keeps the words and names the bold in a handover.
-	const plain = textDecisions( { calibration: { text: { panelHeading: { path: '' } } }, slots: { '': 'Vegan base: no eggs or dairy.' }, rich: ( p, attr ) => inline( 'Root/2#0', 'sgs/cart', attr ) } );
+	// Negative control: a setting plain by design (data-bound text, as the plain-text review files it) keeps the words and
+	// names the bold in a handover.
+	const bound = loadPlainReview()[ 'data-bound text' ][ 0 ];
+	const plain = textDecisions( { calibration: { text: { [ bound.attr ]: { path: '' } } }, slots: { '': 'Vegan base: no eggs or dairy.' }, rich: ( p, attr ) => inline( 'Root/2#0', bound.block, attr ) } );
 	assert.deepEqual( plain.writes.map( ( w ) => w.value ), [ 'Vegan base: no eggs or dairy.' ] );
 } );
 
@@ -284,7 +286,9 @@ test( 'MUST FAIL: a writer of a block\'s SECONDARY text setting (an item\'s labe
 	const m = inventoryModel( inv, elementFacts( recordView( null, { rootComponent: null } ) ) );
 	const o = ( block, attr ) => ( { m, e: m.byKey[ 'Root/2#0' ], block, attr, codeRepo: REPO, siteLink: siteLinkResolver( null, null, m.read ) } );
 	assert.equal( inlineValue( o( 'sgs/google-reviews', 'footnote' ) ).value, '<strong>Vegan base:</strong> no eggs or dairy.', 'a rich setting takes the markup' );
-	const plain = inlineValue( o( 'sgs/cart', 'panelHeading' ) );
+	// A setting plain by design: data-bound text (filled from a record, never rich), as the plain-text review files it.
+	const bound = loadPlainReview()[ 'data-bound text' ][ 0 ];
+	const plain = inlineValue( o( bound.block, bound.attr ) );
 	assert.equal( plain.value, 'Vegan base: no eggs or dairy.', 'negative control: a plain setting keeps the words' );
 	assert.ok( plain.handover.some( ( h ) => /bold/.test( h.detail ) ), 'and names the bold it cannot hold' );
 	assert.equal( inlineValue( { ...o( 'sgs/google-reviews', 'footnote' ), e: m.byKey[ 'Root/4#0' ] } ).value, 'Plain words.', 'a paragraph with no inline parts is its words' );
