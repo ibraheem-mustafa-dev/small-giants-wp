@@ -905,14 +905,6 @@
    "reason": "A 12px uppercase line with 0.24em tracking directly above the section heading: a kicker, sgs/label (the rule outranks the generic p mapping)."
   },
   {
-   "key": "Eye Care Birmingham/927=sgs/text",
-   "block": "sgs/text",
-   "remove": false,
-   "attributes": {},
-   "confidence": 0.5,
-   "reason": "The tab name on the one copy of the account tab button proposed as sgs/container (its other 4 copies are sgs/button with the name absorbed); kept as text so this tab keeps its label."
-  },
-  {
    "key": "Eye Care Birmingham/928#0",
    "block": "sgs/text",
    "remove": false,

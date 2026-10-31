@@ -1,7 +1,7 @@
 {
  "schemaVersion": "1",
  "client": "indus-foods",
- "takenOn": "2026-10-30T06:28:02.893Z",
+ "takenOn": "2026-10-31T02:29:50.748Z",
  "sources": {
   "files": {
    "EnquiryForm.dc.html": "cdb4408622be747be444e21c75e3a7096569af77bf7657e7cb45d41e93acbf66",
@@ -26,7 +26,7 @@
    "tokens/typography.css": "9dcdef1dd3f8e3830a78e14b472900536cebcf3f17a08b945981d2a65816f64b"
   },
   "route": {
-   "commit": "fbd97384f8488f665f85776df59fe12e148afaa7"
+   "commit": "483583e65e051f50edc343c67aad9aa20056c69b"
   }
  },
  "manifest": {
@@ -24820,7 +24820,7 @@
   "animations": {
    "schema_version": "1.0",
    "project": "Indus Foods",
-   "generated": "2026-10-30",
+   "generated": "2026-10-31",
    "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
    "drafts": [
     {
@@ -47908,7 +47908,7 @@
   "surfaces": {
    "schema_version": "1.0",
    "project": "Indus Foods",
-   "generated": "2026-10-30",
+   "generated": "2026-10-31",
    "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
    "records": [
     {
@@ -64257,14 +64257,20 @@
      "--surface-topbar",
      "--surface-section-blue"
     ],
-    "role": "link",
+    "role": "primary",
     "roles": [
+     "primary",
      "link"
     ],
-    "confidence": 0.98,
-    "why": "the draft declares --text-link: var(--brand-blue); usage agrees",
-    "by": "declared",
+    "confidence": 0.95,
+    "why": "the most used strong ground (8 buttons); the name --brand-blue agrees",
+    "by": "usage",
     "basis": [
+     {
+      "role": "primary",
+      "by": "usage",
+      "why": "the most used strong ground (8 buttons); the name --brand-blue agrees"
+     },
      {
       "role": "link",
       "by": "declared",
@@ -64410,30 +64416,24 @@
      "--border-accent",
      "--selection-bg"
     ],
-    "role": "primary",
+    "role": "accent",
     "roles": [
-     "primary",
-     "accent-text",
-     "section-text"
+     "accent",
+     "section"
     ],
-    "confidence": 0.85,
-    "why": "the most used strong ground (5 buttons)",
+    "confidence": 0.95,
+    "why": "the next most used strong ground (5 buttons); the name --brand-gold agrees",
     "by": "usage",
     "basis": [
      {
-      "role": "primary",
+      "role": "accent",
       "by": "usage",
-      "why": "the most used strong ground (5 buttons)"
+      "why": "the next most used strong ground (5 buttons); the name --brand-gold agrees"
      },
      {
-      "role": "accent-text",
+      "role": "section",
       "by": "usage",
-      "why": "the colour of the most text on the accent ground (1189 characters)"
-     },
-     {
-      "role": "section-text",
-      "by": "usage",
-      "why": "the colour of the most text on the section ground (1189 characters)"
+      "why": "the most used ground after the page, raised and primary grounds (365 elements); the name --surface-section-gold agrees"
      }
     ]
    },
@@ -64458,14 +64458,14 @@
     "roles": [
      "accent-light"
     ],
-    "confidence": 0.6,
-    "why": "light shade of the accent family (the name alone decides this)",
-    "by": "name",
+    "confidence": 0.95,
+    "why": "the light ground of the accent's hue (1 grounds and lines, carrying the accent ink); the name --brand-gold-light agrees",
+    "by": "usage",
     "basis": [
      {
       "role": "accent-light",
-      "by": "name",
-      "why": "light shade of the accent family (the name alone decides this)"
+      "by": "usage",
+      "why": "the light ground of the accent's hue (1 grounds and lines, carrying the accent ink); the name --brand-gold-light agrees"
      }
     ]
    },
@@ -64522,20 +64522,13 @@
     "sharedWith": [
      "--selection-fg"
     ],
-    "role": "primary-text",
+    "role": "custom-ink",
     "roles": [
-     "primary-text"
+     "custom-ink"
     ],
-    "confidence": 0.85,
-    "why": "the most used text colour on the primary ground (weight 109)",
-    "by": "usage",
-    "basis": [
-     {
-      "role": "primary-text",
-      "by": "usage",
-      "why": "the most used text colour on the primary ground (weight 109)"
-     }
-    ]
+    "confidence": 0.3,
+    "why": "no rendered fact or name gives it a slug; stays a custom colour (FR-33-2)",
+    "by": "none"
    },
    {
     "rowId": "palette:--slate",
@@ -64613,8 +64606,8 @@
     "role": "footer-bg",
     "roles": [
      "footer-bg",
-     "accent",
-     "section",
+     "accent-text",
+     "section-text",
      "heading"
     ],
     "confidence": 0.85,
@@ -64627,14 +64620,14 @@
       "why": "the footer's ground on 23 page(s)"
      },
      {
-      "role": "accent",
+      "role": "accent-text",
       "by": "usage",
-      "why": "the next most used strong ground (1 buttons)"
+      "why": "the colour of the most text on the accent ground (575 characters)"
      },
      {
-      "role": "section",
+      "role": "section-text",
       "by": "usage",
-      "why": "the most used ground after the page, raised and primary grounds (26 elements)"
+      "why": "the colour of the most text on the section ground (575 characters)"
      },
      {
       "role": "heading",
@@ -64788,6 +64781,7 @@
     "role": "surface",
     "roles": [
      "surface",
+     "primary-text",
      "text-inverse"
     ],
     "confidence": 0.95,
@@ -64798,6 +64792,11 @@
       "role": "surface",
       "by": "usage",
       "why": "the page ground: the body background on 23 page(s); the name --surface-white agrees"
+     },
+     {
+      "role": "primary-text",
+      "by": "usage",
+      "why": "the most used text colour on the primary ground (weight 384)"
      },
      {
       "role": "text-inverse",
@@ -65049,8 +65048,8 @@
     "roles": [
      "heading",
      "footer-bg",
-     "accent",
-     "section"
+     "accent-text",
+     "section-text"
     ],
     "confidence": 0.98,
     "why": "the draft declares --text-heading: var(--slate); usage agrees",
@@ -65062,14 +65061,14 @@
       "why": "the footer's ground on 23 page(s)"
      },
      {
-      "role": "accent",
+      "role": "accent-text",
       "by": "usage",
-      "why": "the next most used strong ground (1 buttons)"
+      "why": "the colour of the most text on the accent ground (575 characters)"
      },
      {
-      "role": "section",
+      "role": "section-text",
       "by": "usage",
-      "why": "the most used ground after the page, raised and primary grounds (26 elements)"
+      "why": "the colour of the most text on the section ground (575 characters)"
      },
      {
       "role": "heading",
@@ -65230,12 +65229,18 @@
     ],
     "role": "link",
     "roles": [
-     "link"
+     "link",
+     "primary"
     ],
     "confidence": 0.98,
     "why": "the draft declares --text-link: var(--brand-blue); usage agrees",
     "by": "declared",
     "basis": [
+     {
+      "role": "primary",
+      "by": "usage",
+      "why": "the most used strong ground (8 buttons); the name --brand-blue agrees"
+     },
      {
       "role": "link",
       "by": "declared",
@@ -65369,6 +65374,7 @@
     "role": "surface",
     "roles": [
      "surface",
+     "primary-text",
      "text-inverse"
     ],
     "confidence": 0.95,
@@ -65379,6 +65385,11 @@
       "role": "surface",
       "by": "usage",
       "why": "the page ground: the body background on 23 page(s); the name --surface-white agrees"
+     },
+     {
+      "role": "primary-text",
+      "by": "usage",
+      "why": "the most used text colour on the primary ground (weight 384)"
      },
      {
       "role": "text-inverse",
@@ -65469,14 +65480,20 @@
      "--text-link",
      "--surface-section-blue"
     ],
-    "role": "link",
+    "role": "primary",
     "roles": [
+     "primary",
      "link"
     ],
-    "confidence": 0.98,
-    "why": "the draft declares --text-link: var(--brand-blue); usage agrees",
-    "by": "declared",
+    "confidence": 0.95,
+    "why": "the most used strong ground (8 buttons); the name --brand-blue agrees",
+    "by": "usage",
     "basis": [
+     {
+      "role": "primary",
+      "by": "usage",
+      "why": "the most used strong ground (8 buttons); the name --brand-blue agrees"
+     },
      {
       "role": "link",
       "by": "declared",
@@ -65566,14 +65583,20 @@
      "--text-link",
      "--surface-topbar"
     ],
-    "role": "link",
+    "role": "primary",
     "roles": [
+     "primary",
      "link"
     ],
-    "confidence": 0.98,
-    "why": "the draft declares --text-link: var(--brand-blue); usage agrees",
-    "by": "declared",
+    "confidence": 0.95,
+    "why": "the most used strong ground (8 buttons); the name --brand-blue agrees",
+    "by": "usage",
     "basis": [
+     {
+      "role": "primary",
+      "by": "usage",
+      "why": "the most used strong ground (8 buttons); the name --brand-blue agrees"
+     },
      {
       "role": "link",
       "by": "declared",
@@ -65655,30 +65678,24 @@
      "--border-accent",
      "--selection-bg"
     ],
-    "role": "primary",
+    "role": "section",
     "roles": [
-     "primary",
-     "accent-text",
-     "section-text"
+     "section",
+     "accent"
     ],
-    "confidence": 0.85,
-    "why": "the most used strong ground (5 buttons)",
+    "confidence": 0.95,
+    "why": "the most used ground after the page, raised and primary grounds (365 elements); the name --surface-section-gold agrees",
     "by": "usage",
     "basis": [
      {
-      "role": "primary",
+      "role": "accent",
       "by": "usage",
-      "why": "the most used strong ground (5 buttons)"
+      "why": "the next most used strong ground (5 buttons); the name --brand-gold agrees"
      },
      {
-      "role": "accent-text",
+      "role": "section",
       "by": "usage",
-      "why": "the colour of the most text on the accent ground (1189 characters)"
-     },
-     {
-      "role": "section-text",
-      "by": "usage",
-      "why": "the colour of the most text on the section ground (1189 characters)"
+      "why": "the most used ground after the page, raised and primary grounds (365 elements); the name --surface-section-gold agrees"
      }
     ]
    },
@@ -65756,30 +65773,24 @@
      "--surface-section-gold",
      "--selection-bg"
     ],
-    "role": "primary",
+    "role": "accent",
     "roles": [
-     "primary",
-     "accent-text",
-     "section-text"
+     "accent",
+     "section"
     ],
-    "confidence": 0.85,
-    "why": "the most used strong ground (5 buttons)",
+    "confidence": 0.95,
+    "why": "the next most used strong ground (5 buttons); the name --brand-gold agrees",
     "by": "usage",
     "basis": [
      {
-      "role": "primary",
+      "role": "accent",
       "by": "usage",
-      "why": "the most used strong ground (5 buttons)"
+      "why": "the next most used strong ground (5 buttons); the name --brand-gold agrees"
      },
      {
-      "role": "accent-text",
+      "role": "section",
       "by": "usage",
-      "why": "the colour of the most text on the accent ground (1189 characters)"
-     },
-     {
-      "role": "section-text",
-      "by": "usage",
-      "why": "the colour of the most text on the section ground (1189 characters)"
+      "why": "the most used ground after the page, raised and primary grounds (365 elements); the name --surface-section-gold agrees"
      }
     ]
    },
@@ -65857,30 +65868,24 @@
      "--surface-section-gold",
      "--border-accent"
     ],
-    "role": "primary",
+    "role": "accent",
     "roles": [
-     "primary",
-     "accent-text",
-     "section-text"
+     "accent",
+     "section"
     ],
-    "confidence": 0.85,
-    "why": "the most used strong ground (5 buttons)",
+    "confidence": 0.95,
+    "why": "the next most used strong ground (5 buttons); the name --brand-gold agrees",
     "by": "usage",
     "basis": [
      {
-      "role": "primary",
+      "role": "accent",
       "by": "usage",
-      "why": "the most used strong ground (5 buttons)"
+      "why": "the next most used strong ground (5 buttons); the name --brand-gold agrees"
      },
      {
-      "role": "accent-text",
+      "role": "section",
       "by": "usage",
-      "why": "the colour of the most text on the accent ground (1189 characters)"
-     },
-     {
-      "role": "section-text",
-      "by": "usage",
-      "why": "the colour of the most text on the section ground (1189 characters)"
+      "why": "the most used ground after the page, raised and primary grounds (365 elements); the name --surface-section-gold agrees"
      }
     ]
    },
@@ -65909,20 +65914,13 @@
     "sharedWith": [
      "--ink"
     ],
-    "role": "primary-text",
+    "role": "custom-selection-fg",
     "roles": [
-     "primary-text"
+     "custom-selection-fg"
     ],
-    "confidence": 0.85,
-    "why": "the most used text colour on the primary ground (weight 109)",
-    "by": "usage",
-    "basis": [
-     {
-      "role": "primary-text",
-      "by": "usage",
-      "why": "the most used text colour on the primary ground (weight 109)"
-     }
-    ]
+    "confidence": 0.8,
+    "why": "header, selection and social colours have no palette slug (FR-33-13, FR-33-16)",
+    "by": "name"
    }
   ],
   "unused": [
@@ -88860,7 +88858,7 @@
      "block": "sgs/brand-strip",
      "confidence": 1,
      "low": false,
-     "reason": "a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels that are a page's own section make sgs/trust-bar, labels inside another block make sgs/brand-strip showing the names as text (the section block cannot sit inside a section, and a button group does not offer the marquee effect), and the repeated items are its items",
+     "reason": "a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee, the block chosen by what its items show and where it sits: logos alone make sgs/brand-strip; labels, alone or each with an icon or an image, make sgs/trust-bar when its item fields hold every kind the items show (array_item_schema roles: icon-slug or svg, image-object, text-content) and the section block fits where the strip sits; otherwise sgs/brand-strip showing the names as text. A section block (block_composition.container_kind section, as sgs/trust-bar) never sits inside another section, and sits only in a slot that gives it its full width: a header row, the footer's top row, a drawer's, modal's or mega panel's body, any slot the draft lays out as one full-width child (it spans its parent's content box through every ancestor up to the surface root or the section root that holds only its slot blocks, and no sibling sits beside it); never a slot that lays its children out as columns (the footer's column and bottom rows) and never a page section's own container. The marquee motion and the widths it runs at are the motion writer's (sgsMotion, belowBreakpoint), and the repeated items are its items (Bean, 2026-10-31)",
      "rule": "marquee",
      "handover": {
       "owner": "content-page",
@@ -106463,9 +106461,9 @@
      "tag": "div",
      "words": "",
      "block": "sgs/multi-button",
-     "confidence": 0.51,
-     "low": true,
-     "reason": "23 copies of one template element on 23 surfaces",
+     "confidence": 0.9,
+     "low": false,
+     "reason": "Bean, 2026-10-31: a wrapping row of two CTA links is a button group",
      "rule": null,
      "candidates": [
       {
@@ -106667,7 +106665,27 @@
        ]
       }
      ],
-     "copies": 23
+     "copies": 23,
+     "finalisedBy": "agent",
+     "original": {
+      "block": "sgs/multi-button",
+      "action": null,
+      "confidence": 0.51,
+      "low": true,
+      "reason": "23 copies of one template element on 23 surfaces",
+      "candidates": [
+       {
+        "block": "sgs/multi-button",
+        "score": 0.75,
+        "share": 0.682
+       },
+       {
+        "block": "sgs/container",
+        "score": 0.35,
+        "share": 0.318
+       }
+      ]
+     }
     },
     {
      "rowId": "skeleton:page-about:Indus Foods Website v2/525#0",
@@ -109793,19 +109811,13 @@
      },
      "tag": "div",
      "words": "",
-     "block": "sgs/container",
+     "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "12 copies of one template element on 12 surfaces",
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/container",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "12 copies of one template element on 12 surfaces; a bare wrapper whose only content is one list goes: the list block is that wrapper",
+     "rule": "listWrapper",
+     "candidates": [],
+     "action": "unwrap",
      "snippet": "<div style=\"margin-top:26px;display:grid;grid-template-columns:{{ R.pointCols }};gap:0 24px;\" data-dc-tpl=\"388\"> <sc-for list=\"{{ b.points }}\" as=\"pt\" hint-plac",
      "parent": {
       "draftId": "Indus Foods Website v2:380",
@@ -109949,16 +109961,21 @@
      },
      "tag": "div",
      "words": "Today’s Group member",
-     "block": "sgs/container",
-     "confidence": 1,
+     "block": "sgs/icon-list",
+     "confidence": 0.7,
      "low": false,
      "reason": "47 copies of one template element on 12 surfaces",
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/container",
-       "score": 1,
-       "share": 1
+       "block": "sgs/icon-list",
+       "score": 1.15,
+       "share": 0.697
+      },
+      {
+       "block": "sgs/button",
+       "score": 0.5,
+       "share": 0.303
       }
      ],
      "action": null,
@@ -109966,23 +109983,23 @@
      "parent": {
       "draftId": "Indus Foods Website v2:388",
       "tag": "div",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "Indus Foods Website v2:390",
        "tag": "div",
-       "block": "sgs/container"
+       "block": "sgs/icon-list"
       },
       {
        "draftId": "Indus Foods Website v2:390",
        "tag": "div",
-       "block": "sgs/container"
+       "block": "sgs/icon-list"
       },
       {
        "draftId": "Indus Foods Website v2:390",
        "tag": "div",
-       "block": "sgs/container"
+       "block": "sgs/icon-list"
       }
      ],
      "siblingCount": 3,
@@ -110149,15 +110166,16 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "47 copies of one template element on 12 surfaces; a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
-     "rule": "dotMarker",
+     "reason": "47 copies of one template element on 12 surfaces; drawn by sgs/icon-list: the list item's marker",
+     "rule": "drawsChildren",
+     "into": "Indus Foods Website v2/390#0",
      "candidates": [],
-     "action": "remove",
+     "action": "absorbed",
      "snippet": "<span style=\"width:8px;height:8px;background:var(--acc,#D8CA50);border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"391\"></span>",
      "parent": {
       "draftId": "Indus Foods Website v2:390",
       "tag": "div",
-      "block": "sgs/container"
+      "block": "sgs/icon-list"
      },
      "siblings": [],
      "siblingCount": 0,
@@ -110192,7 +110210,7 @@
       "Indus Foods Website v2/391#2",
       "Indus Foods Website v2/391#3"
      ],
-     "proposalReason": "a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
+     "proposalReason": "drawn by sgs/icon-list: the list item's marker",
      "alsoIn": [
       {
        "surface": "page-sustainability",
@@ -110351,7 +110369,7 @@
       {
        "draftId": "Indus Foods Website v2:388",
        "tag": "div",
-       "block": "sgs/container"
+       "block": null
       }
      ],
      "siblingCount": 4,
@@ -110400,10 +110418,10 @@
     "inventoryElements": 174,
     "parts": 1,
     "rows": 173,
-    "skeletonNodes": 77,
-    "expandedNodes": 77,
+    "skeletonNodes": 69,
+    "expandedNodes": 69,
     "low": 10,
-    "removed": 100,
+    "removed": 101,
     "unresolved": 0,
     "byRule": {
      "hero": 1,
@@ -110411,9 +110429,9 @@
      "decorativeShape": 3,
      "heroInner": 6,
      "label": 10,
-     "drawsChildren": 35,
+     "drawsChildren": 39,
      "mediaElement": 2,
-     "dotMarker": 4,
+     "listWrapper": 1,
      "siteInfoLink": 1
     }
    },
@@ -112545,10 +112563,10 @@
     "inventoryElements": 84,
     "parts": 0,
     "rows": 84,
-    "skeletonNodes": 68,
-    "expandedNodes": 68,
+    "skeletonNodes": 62,
+    "expandedNodes": 62,
     "low": 10,
-    "removed": 19,
+    "removed": 20,
     "unresolved": 0,
     "byRule": {
      "hero": 1,
@@ -112557,7 +112575,8 @@
      "heroInner": 6,
      "label": 8,
      "cardHeading": 4,
-     "dotMarker": 3,
+     "listWrapper": 1,
+     "drawsChildren": 3,
      "mediaElement": 1,
      "siteInfoLink": 1
     }
@@ -114325,7 +114344,7 @@
       "line": 795
      },
      "tag": "span",
-     "words": "Full name",
+     "words": "Full name*",
      "block": null,
      "confidence": 1,
      "low": false,
@@ -114384,9 +114403,9 @@
      ],
      "proposalReason": "drawn by sgs/form: rule formLink",
      "otherWords": [
-      "Email",
+      "Email*",
       "Phone",
-      "Team"
+      "Team*"
      ],
      "distinctWords": 7,
      "alsoIn": [
@@ -114400,89 +114419,6 @@
         "Indus Foods Website v2/556#4",
         "Indus Foods Website v2/556#5",
         "Indus Foods Website v2/556#6"
-       ]
-      }
-     ]
-    },
-    {
-     "rowId": "skeleton:page-careers:Indus Foods Website v2/558",
-     "key": "Indus Foods Website v2/558",
-     "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "dd4f36a4",
-      "parentTags": [
-       "main",
-       "section",
-       "div",
-       "div",
-       "div",
-       "form",
-       "div",
-       "label",
-       "span"
-      ],
-      "textHash": "2b58f",
-      "line": 795
-     },
-     "tag": "span",
-     "words": "*",
-     "block": null,
-     "confidence": 1,
-     "low": false,
-     "reason": "8 copies of one template element on 2 surfaces; drawn by sgs/form: rule formLink",
-     "rule": "formLink",
-     "into": "Indus Foods Website v2/550#0",
-     "candidates": [],
-     "action": "absorbed",
-     "snippet": "<span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span>",
-     "parent": {
-      "draftId": "Indus Foods Website v2:556",
-      "tag": "span",
-      "block": null
-     },
-     "siblings": [],
-     "siblingCount": 0,
-     "boxes": [
-      {
-       "width": 1440,
-       "x": 199.3,
-       "y": 3238,
-       "w": 8.9,
-       "h": 19
-      },
-      {
-       "width": 768,
-       "x": 131.3,
-       "y": 3912.2,
-       "w": 8.9,
-       "h": 19
-      },
-      {
-       "width": 375,
-       "x": 103.3,
-       "y": 4404.4,
-       "w": 8.9,
-       "h": 19
-      }
-     ],
-     "draftId": "Indus Foods Website v2:558",
-     "copies": 8,
-     "keys": [
-      "Indus Foods Website v2/558#0",
-      "Indus Foods Website v2/558#1",
-      "Indus Foods Website v2/558#2"
-     ],
-     "proposalReason": "drawn by sgs/form: rule formLink",
-     "alsoIn": [
-      {
-       "surface": "page-catalogue",
-       "keys": [
-        "Indus Foods Website v2/558#0",
-        "Indus Foods Website v2/558#1",
-        "Indus Foods Website v2/558#2",
-        "Indus Foods Website v2/558#3",
-        "Indus Foods Website v2/558#4"
        ]
       }
      ]
@@ -115345,7 +115281,7 @@
       {
        "draftId": "Indus Foods Website v2:578",
        "tag": "div",
-       "block": "sgs/container"
+       "block": null
       },
       {
        "draftId": "Indus Foods Website v2:582",
@@ -115507,7 +115443,7 @@
       {
        "draftId": "Indus Foods Website v2:578",
        "tag": "div",
-       "block": "sgs/container"
+       "block": null
       },
       {
        "draftId": "Indus Foods Website v2:582",
@@ -115570,19 +115506,13 @@
      },
      "tag": "div",
      "words": "",
-     "block": "sgs/container",
+     "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces",
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/container",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "2 copies of one template element on 2 surfaces; a bare wrapper whose only content is one list goes: the list block is that wrapper",
+     "rule": "listWrapper",
+     "candidates": [],
+     "action": "unwrap",
      "snippet": "<div style=\"margin-top:20px;display:flex;flex-direction:column;\" data-dc-tpl=\"578\"> <sc-for list=\"{{ b.aside.points }}\" as=\"pt\" hint-placeholder-count=\"3\" data-",
      "parent": {
       "draftId": "Indus Foods Website v2:574",
@@ -115662,16 +115592,21 @@
      },
      "tag": "div",
      "words": "Call our office during working hours",
-     "block": "sgs/container",
-     "confidence": 1,
+     "block": "sgs/icon-list",
+     "confidence": 0.7,
      "low": false,
      "reason": "5 copies of one template element on 2 surfaces",
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/container",
-       "score": 1,
-       "share": 1
+       "block": "sgs/icon-list",
+       "score": 1.15,
+       "share": 0.697
+      },
+      {
+       "block": "sgs/button",
+       "score": 0.5,
+       "share": 0.303
       }
      ],
      "action": null,
@@ -115679,18 +115614,18 @@
      "parent": {
       "draftId": "Indus Foods Website v2:578",
       "tag": "div",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "Indus Foods Website v2:580",
        "tag": "div",
-       "block": "sgs/container"
+       "block": "sgs/icon-list"
       },
       {
        "draftId": "Indus Foods Website v2:580",
        "tag": "div",
-       "block": "sgs/container"
+       "block": "sgs/icon-list"
       }
      ],
      "siblingCount": 2,
@@ -115765,15 +115700,16 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "5 copies of one template element on 2 surfaces; a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
-     "rule": "dotMarker",
+     "reason": "5 copies of one template element on 2 surfaces; drawn by sgs/icon-list: the list item's marker",
+     "rule": "drawsChildren",
+     "into": "Indus Foods Website v2/580#0",
      "candidates": [],
-     "action": "remove",
+     "action": "absorbed",
      "snippet": "<span style=\"width:8px;height:8px;background:#D8CA50;border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"581\"></span>",
      "parent": {
       "draftId": "Indus Foods Website v2:580",
       "tag": "div",
-      "block": "sgs/container"
+      "block": "sgs/icon-list"
      },
      "siblings": [],
      "siblingCount": 0,
@@ -115807,7 +115743,7 @@
       "Indus Foods Website v2/581#1",
       "Indus Foods Website v2/581#2"
      ],
-     "proposalReason": "a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
+     "proposalReason": "drawn by sgs/icon-list: the list item's marker",
      "alsoIn": [
       {
        "surface": "page-catalogue",
@@ -115865,7 +115801,7 @@
       {
        "draftId": "Indus Foods Website v2:578",
        "tag": "div",
-       "block": "sgs/container"
+       "block": null
       }
      ],
      "siblingCount": 3,
@@ -116075,12 +116011,12 @@
    ],
    "counts": {
     "inventoryElements": 191,
-    "parts": 11,
-    "rows": 180,
-    "skeletonNodes": 136,
-    "expandedNodes": 136,
+    "parts": 14,
+    "rows": 177,
+    "skeletonNodes": 130,
+    "expandedNodes": 130,
     "low": 17,
-    "removed": 50,
+    "removed": 48,
     "unresolved": 0,
     "byRule": {
      "hero": 1,
@@ -116092,9 +116028,9 @@
      "cardHeading": 8,
      "formPrefillOpener": 3,
      "solitaryIcon": 4,
-     "formLink": 31,
-     "dotMarker": 3,
-     "listWrapper": 1
+     "formLink": 28,
+     "listWrapper": 2,
+     "drawsChildren": 3
     }
    },
    "problems": []
@@ -117706,10 +117642,10 @@
     "inventoryElements": 168,
     "parts": 0,
     "rows": 168,
-    "skeletonNodes": 145,
-    "expandedNodes": 145,
+    "skeletonNodes": 137,
+    "expandedNodes": 137,
     "low": 24,
-    "removed": 27,
+    "removed": 28,
     "unresolved": 0,
     "byRule": {
      "hero": 1,
@@ -117717,7 +117653,8 @@
      "decorativeShape": 6,
      "heroInner": 6,
      "label": 12,
-     "dotMarker": 4,
+     "listWrapper": 1,
+     "drawsChildren": 4,
      "mediaElement": 4,
      "wholeCardLink": 9,
      "cardHeading": 12,
@@ -117765,10 +117702,10 @@
     "inventoryElements": 162,
     "parts": 0,
     "rows": 162,
-    "skeletonNodes": 139,
-    "expandedNodes": 139,
+    "skeletonNodes": 131,
+    "expandedNodes": 131,
     "low": 24,
-    "removed": 27,
+    "removed": 28,
     "unresolved": 0,
     "byRule": {
      "hero": 1,
@@ -117776,7 +117713,8 @@
      "decorativeShape": 6,
      "heroInner": 6,
      "label": 12,
-     "dotMarker": 4,
+     "listWrapper": 1,
+     "drawsChildren": 4,
      "mediaElement": 4,
      "wholeCardLink": 8,
      "cardHeading": 11,
@@ -117831,10 +117769,10 @@
     "inventoryElements": 136,
     "parts": 0,
     "rows": 136,
-    "skeletonNodes": 113,
-    "expandedNodes": 113,
+    "skeletonNodes": 105,
+    "expandedNodes": 105,
     "low": 14,
-    "removed": 27,
+    "removed": 28,
     "unresolved": 0,
     "byRule": {
      "hero": 1,
@@ -117842,7 +117780,8 @@
      "decorativeShape": 6,
      "heroInner": 6,
      "label": 12,
-     "dotMarker": 4,
+     "listWrapper": 1,
+     "drawsChildren": 4,
      "mediaElement": 5,
      "cardHeading": 6,
      "wholeCardLink": 3,
@@ -118029,10 +117968,10 @@
     "inventoryElements": 125,
     "parts": 0,
     "rows": 125,
-    "skeletonNodes": 104,
-    "expandedNodes": 104,
+    "skeletonNodes": 96,
+    "expandedNodes": 96,
     "low": 14,
-    "removed": 26,
+    "removed": 27,
     "unresolved": 0,
     "byRule": {
      "hero": 1,
@@ -118040,8 +117979,10 @@
      "decorativeShape": 6,
      "heroInner": 6,
      "label": 8,
-     "dotMarker": 5,
+     "listWrapper": 1,
+     "drawsChildren": 4,
      "mediaElement": 4,
+     "dotMarker": 1,
      "cardHeading": 6,
      "wholeCardLink": 3,
      "cardAction": 3,
@@ -118710,10 +118651,10 @@
     "inventoryElements": 121,
     "parts": 0,
     "rows": 121,
-    "skeletonNodes": 99,
-    "expandedNodes": 99,
+    "skeletonNodes": 91,
+    "expandedNodes": 91,
     "low": 11,
-    "removed": 26,
+    "removed": 27,
     "unresolved": 0,
     "byRule": {
      "hero": 1,
@@ -118725,7 +118666,8 @@
      "mediaElement": 11,
      "alignWrapper": 10,
      "cardTitle": 10,
-     "dotMarker": 4
+     "listWrapper": 1,
+     "drawsChildren": 4
     }
    },
    "problems": []
@@ -118981,10 +118923,10 @@
     "inventoryElements": 111,
     "parts": 5,
     "rows": 106,
-    "skeletonNodes": 91,
-    "expandedNodes": 91,
+    "skeletonNodes": 83,
+    "expandedNodes": 83,
     "low": 12,
-    "removed": 19,
+    "removed": 20,
     "unresolved": 0,
     "byRule": {
      "hero": 1,
@@ -118992,7 +118934,8 @@
      "decorativeShape": 3,
      "heroInner": 6,
      "label": 8,
-     "dotMarker": 4,
+     "listWrapper": 1,
+     "drawsChildren": 4,
      "mediaElement": 6,
      "wholeCardLink": 5,
      "cardHeading": 5,
@@ -119039,10 +118982,10 @@
     "inventoryElements": 92,
     "parts": 3,
     "rows": 89,
-    "skeletonNodes": 74,
-    "expandedNodes": 74,
+    "skeletonNodes": 66,
+    "expandedNodes": 66,
     "low": 8,
-    "removed": 19,
+    "removed": 20,
     "unresolved": 0,
     "byRule": {
      "hero": 1,
@@ -119050,7 +118993,8 @@
      "decorativeShape": 3,
      "heroInner": 6,
      "label": 8,
-     "dotMarker": 4,
+     "listWrapper": 1,
+     "drawsChildren": 4,
      "mediaElement": 4,
      "wholeCardLink": 3,
      "cardHeading": 3,
@@ -119104,10 +119048,10 @@
     "inventoryElements": 92,
     "parts": 3,
     "rows": 89,
-    "skeletonNodes": 74,
-    "expandedNodes": 74,
+    "skeletonNodes": 66,
+    "expandedNodes": 66,
     "low": 8,
-    "removed": 19,
+    "removed": 20,
     "unresolved": 0,
     "byRule": {
      "hero": 1,
@@ -119115,7 +119059,8 @@
      "decorativeShape": 3,
      "heroInner": 6,
      "label": 8,
-     "dotMarker": 4,
+     "listWrapper": 1,
+     "drawsChildren": 4,
      "mediaElement": 4,
      "wholeCardLink": 3,
      "cardHeading": 3,
@@ -119169,10 +119114,10 @@
     "inventoryElements": 92,
     "parts": 3,
     "rows": 89,
-    "skeletonNodes": 74,
-    "expandedNodes": 74,
+    "skeletonNodes": 66,
+    "expandedNodes": 66,
     "low": 8,
-    "removed": 19,
+    "removed": 20,
     "unresolved": 0,
     "byRule": {
      "hero": 1,
@@ -119180,7 +119125,8 @@
      "decorativeShape": 3,
      "heroInner": 6,
      "label": 8,
-     "dotMarker": 4,
+     "listWrapper": 1,
+     "drawsChildren": 4,
      "mediaElement": 4,
      "wholeCardLink": 3,
      "cardHeading": 3,
@@ -122628,12 +122574,12 @@
    "rows": [],
    "counts": {
     "inventoryElements": 145,
-    "parts": 9,
-    "rows": 136,
-    "skeletonNodes": 92,
-    "expandedNodes": 92,
+    "parts": 14,
+    "rows": 131,
+    "skeletonNodes": 88,
+    "expandedNodes": 88,
     "low": 21,
-    "removed": 45,
+    "removed": 41,
     "unresolved": 0,
     "byRule": {
      "hero": 1,
@@ -122643,9 +122589,9 @@
      "label": 6,
      "wholeCardLink": 10,
      "cardHeading": 10,
-     "formLink": 33,
-     "dotMarker": 2,
-     "listWrapper": 1
+     "formLink": 28,
+     "listWrapper": 2,
+     "drawsChildren": 2
     }
    },
    "problems": [],
@@ -123465,19 +123411,21 @@
     "inventoryElements": 108,
     "parts": 0,
     "rows": 108,
-    "skeletonNodes": 96,
-    "expandedNodes": 96,
+    "skeletonNodes": 88,
+    "expandedNodes": 88,
     "low": 10,
-    "removed": 20,
+    "removed": 21,
     "unresolved": 0,
     "byRule": {
      "hero": 1,
      "decorationLayer": 2,
      "decorativeShape": 3,
      "heroInner": 6,
-     "dotMarker": 5,
+     "dotMarker": 1,
      "label": 8,
      "cardHeading": 4,
+     "listWrapper": 1,
+     "drawsChildren": 4,
      "mediaElement": 1,
      "solitaryIcon": 3,
      "siteInfoLink": 1
@@ -123669,19 +123617,13 @@
      },
      "tag": "div",
      "words": "",
-     "block": "sgs/container",
+     "block": null,
      "confidence": 1,
      "low": false,
-     "reason": null,
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/container",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "a bare wrapper whose only content is one list goes: the list block is that wrapper",
+     "rule": "listWrapper",
+     "candidates": [],
+     "action": "unwrap",
      "snippet": "<div style=\"position:{{ R.sticky }};top:120px;display:flex;flex-direction:column;border-left:2px solid rgba(30,42,60,.12);\" data-dc-tpl=\"643\"> <sc-for list=\"{{ ",
      "parent": {
       "draftId": "Indus Foods Website v2:642",
@@ -123739,17 +123681,22 @@
       "line": 920
      },
      "tag": "div",
-     "words": "Trade accounts",
-     "block": "sgs/container",
-     "confidence": 0.75,
+     "words": "01Trade accounts",
+     "block": "sgs/icon-list",
+     "confidence": 0.7,
      "low": false,
      "reason": "7 copies of one template element",
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/container",
-       "score": 0.75,
-       "share": 1
+       "block": "sgs/icon-list",
+       "score": 1.15,
+       "share": 0.697
+      },
+      {
+       "block": "sgs/button",
+       "score": 0.5,
+       "share": 0.303
       }
      ],
      "action": null,
@@ -123757,38 +123704,38 @@
      "parent": {
       "draftId": "Indus Foods Website v2:643",
       "tag": "div",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "Indus Foods Website v2:645",
        "tag": "div",
-       "block": "sgs/container"
+       "block": "sgs/icon-list"
       },
       {
        "draftId": "Indus Foods Website v2:645",
        "tag": "div",
-       "block": "sgs/container"
+       "block": "sgs/icon-list"
       },
       {
        "draftId": "Indus Foods Website v2:645",
        "tag": "div",
-       "block": "sgs/container"
+       "block": "sgs/icon-list"
       },
       {
        "draftId": "Indus Foods Website v2:645",
        "tag": "div",
-       "block": "sgs/container"
+       "block": "sgs/icon-list"
       },
       {
        "draftId": "Indus Foods Website v2:645",
        "tag": "div",
-       "block": "sgs/container"
+       "block": "sgs/icon-list"
       },
       {
        "draftId": "Indus Foods Website v2:645",
        "tag": "div",
-       "block": "sgs/container"
+       "block": "sgs/icon-list"
       }
      ],
      "siblingCount": 6,
@@ -123828,92 +123775,9 @@
      ],
      "proposalReason": null,
      "otherWords": [
-      "Orders",
-      "Pricing",
-      "Delivery"
-     ],
-     "distinctWords": 7
-    },
-    {
-     "rowId": "skeleton:page-terms:Indus Foods Website v2/646",
-     "key": "Indus Foods Website v2/646",
-     "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "195fe3df",
-      "parentTags": [
-       "main",
-       "section",
-       "div",
-       "div",
-       "div",
-       "div"
-      ],
-      "textHash": "596804",
-      "line": 920
-     },
-     "tag": "span",
-     "words": "01",
-     "block": "sgs/text",
-     "confidence": 1,
-     "low": false,
-     "reason": "7 copies of one template element",
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/text",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
-     "snippet": "<span style=\"color:#0A7EA8;margin-right:10px;\" data-dc-tpl=\"646\">{{ s.num }}</span>",
-     "parent": {
-      "draftId": "Indus Foods Website v2:645",
-      "tag": "div",
-      "block": "sgs/container"
-     },
-     "siblings": [],
-     "siblingCount": 0,
-     "boxes": [
-      {
-       "width": 1440,
-       "x": 118,
-       "y": 692.4,
-       "w": 14.9,
-       "h": 21
-      },
-      {
-       "width": 768,
-       "x": 50,
-       "y": 615.5,
-       "w": 14.9,
-       "h": 21
-      },
-      {
-       "width": 375,
-       "x": 38,
-       "y": 642,
-       "w": 14.9,
-       "h": 21
-      }
-     ],
-     "draftId": "Indus Foods Website v2:646",
-     "copies": 7,
-     "keys": [
-      "Indus Foods Website v2/646#0",
-      "Indus Foods Website v2/646#1",
-      "Indus Foods Website v2/646#2",
-      "Indus Foods Website v2/646#3",
-      "Indus Foods Website v2/646#4",
-      "Indus Foods Website v2/646#5",
-      "Indus Foods Website v2/646#6"
-     ],
-     "proposalReason": null,
-     "otherWords": [
-      "02",
-      "03",
-      "04"
+      "02Orders",
+      "03Pricing",
+      "04Delivery"
      ],
      "distinctWords": 7
     },
@@ -123958,7 +123822,7 @@
       {
        "draftId": "Indus Foods Website v2:643",
        "tag": "div",
-       "block": "sgs/container"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -124095,8 +123959,8 @@
      "proposalReason": null
     },
     {
-     "rowId": "skeleton:page-terms:Indus Foods Website v2/650=sgs/heading",
-     "key": "Indus Foods Website v2/650=sgs/heading",
+     "rowId": "skeleton:page-terms:Indus Foods Website v2/650",
+     "key": "Indus Foods Website v2/650",
      "fingerprint": {
       "tag": "h3",
       "cls": "",
@@ -124113,16 +123977,16 @@
       "line": 926
      },
      "tag": "h3",
-     "words": "Trade accounts",
+     "words": "01Trade accounts",
      "block": "sgs/heading",
-     "confidence": 1,
+     "confidence": 0.75,
      "low": false,
-     "reason": "1 copies of one template element",
+     "reason": "7 copies of one template element",
      "rule": null,
      "candidates": [
       {
        "block": "sgs/heading",
-       "score": 1,
+       "score": 0.75,
        "share": 1
       }
      ],
@@ -124165,90 +124029,9 @@
       }
      ],
      "draftId": "Indus Foods Website v2:650",
-     "copies": 1,
+     "copies": 7,
      "keys": [
-      "Indus Foods Website v2/650#0"
-     ],
-     "proposalReason": null,
-     "splitFrom": "Indus Foods Website v2/650",
-     "blocksAcrossCopies": {
-      "sgs/heading": 1,
-      "sgs/container": 6
-     }
-    },
-    {
-     "rowId": "skeleton:page-terms:Indus Foods Website v2/650=sgs/container",
-     "key": "Indus Foods Website v2/650=sgs/container",
-     "fingerprint": {
-      "tag": "h3",
-      "cls": "",
-      "styleHash": "48abd1d1",
-      "parentTags": [
-       "main",
-       "section",
-       "div",
-       "div",
-       "div",
-       "div"
-      ],
-      "textHash": "ac047198",
-      "line": 926
-     },
-     "tag": "h3",
-     "words": "Orders",
-     "block": "sgs/container",
-     "confidence": 0.75,
-     "low": false,
-     "reason": "6 copies of one template element",
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/container",
-       "score": 0.75,
-       "share": 1
-      }
-     ],
-     "action": null,
-     "snippet": "<h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;letter-spacing:-.015em;margin:0;\" data-dc-tpl=\"650\"><span style=\"color:#0A7EA8;fon",
-     "parent": {
-      "draftId": "Indus Foods Website v2:649",
-      "tag": "div",
-      "block": "sgs/container"
-     },
-     "siblings": [
-      {
-       "draftId": "Indus Foods Website v2:652",
-       "tag": "p",
-       "block": "sgs/text"
-      }
-     ],
-     "siblingCount": 1,
-     "boxes": [
-      {
-       "width": 1440,
-       "x": 668.4,
-       "y": 859.8,
-       "w": 671.6,
-       "h": 31
-      },
-      {
-       "width": 768,
-       "x": 32,
-       "y": 1096.2,
-       "w": 704,
-       "h": 31
-      },
-      {
-       "width": 375,
-       "x": 20,
-       "y": 1141.9,
-       "w": 335,
-       "h": 31
-      }
-     ],
-     "draftId": "Indus Foods Website v2:650",
-     "copies": 6,
-     "keys": [
+      "Indus Foods Website v2/650#0",
       "Indus Foods Website v2/650#1",
       "Indus Foods Website v2/650#2",
       "Indus Foods Website v2/650#3",
@@ -124258,191 +124041,11 @@
      ],
      "proposalReason": null,
      "otherWords": [
-      "Pricing",
-      "Delivery",
-      "Shortages, damage & returns"
+      "02Orders",
+      "03Pricing",
+      "04Delivery"
      ],
-     "distinctWords": 6,
-     "splitFrom": "Indus Foods Website v2/650",
-     "blocksAcrossCopies": {
-      "sgs/heading": 1,
-      "sgs/container": 6
-     }
-    },
-    {
-     "rowId": "skeleton:page-terms:Indus Foods Website v2/651=absorbed",
-     "key": "Indus Foods Website v2/651=absorbed",
-     "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "9af28eca",
-      "parentTags": [
-       "main",
-       "section",
-       "div",
-       "div",
-       "div",
-       "div",
-       "h3"
-      ],
-      "textHash": "596804",
-      "line": 926
-     },
-     "tag": "span",
-     "words": "01",
-     "block": null,
-     "confidence": 1,
-     "low": false,
-     "reason": "1 copies of one template element; drawn by sgs/heading: block_composition: sgs/heading is a leaf (no inner blocks)",
-     "rule": "drawsChildren",
-     "into": "Indus Foods Website v2/650#0",
-     "candidates": [],
-     "action": "absorbed",
-     "snippet": "<span style=\"color:#0A7EA8;font-size:14px;margin-right:12px;\" data-dc-tpl=\"651\">{{ s.num }}</span>",
-     "parent": {
-      "draftId": "Indus Foods Website v2:650",
-      "tag": "h3",
-      "block": "sgs/heading"
-     },
-     "siblings": [],
-     "siblingCount": 0,
-     "boxes": [
-      {
-       "width": 1440,
-       "x": 668.4,
-       "y": 719.4,
-       "w": 14.3,
-       "h": 18
-      },
-      {
-       "width": 768,
-       "x": 32,
-       "y": 955.8,
-       "w": 14.3,
-       "h": 18
-      },
-      {
-       "width": 375,
-       "x": 20,
-       "y": 974.3,
-       "w": 14.3,
-       "h": 18
-      }
-     ],
-     "draftId": "Indus Foods Website v2:651",
-     "copies": 1,
-     "keys": [
-      "Indus Foods Website v2/651#0"
-     ],
-     "proposalReason": "drawn by sgs/heading: block_composition: sgs/heading is a leaf (no inner blocks)",
-     "splitFrom": "Indus Foods Website v2/651",
-     "blocksAcrossCopies": {
-      "none": 1,
-      "sgs/text": 6
-     }
-    },
-    {
-     "rowId": "skeleton:page-terms:Indus Foods Website v2/651=sgs/text",
-     "key": "Indus Foods Website v2/651=sgs/text",
-     "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "9af28eca",
-      "parentTags": [
-       "main",
-       "section",
-       "div",
-       "div",
-       "div",
-       "div",
-       "h3"
-      ],
-      "textHash": "596807",
-      "line": 926
-     },
-     "tag": "span",
-     "words": "02",
-     "block": "sgs/text",
-     "confidence": 0.5,
-     "low": true,
-     "reason": "The section number inside each h3; on the first copy the h3 is sgs/heading and the number is absorbed into it, but the other six h3 copies are proposed as sgs/container, so removing the number here would lose it; the h3 block choice goes to Bean.",
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/text",
-       "score": 0.25,
-       "share": 1
-      }
-     ],
-     "action": null,
-     "snippet": "<span style=\"color:#0A7EA8;font-size:14px;margin-right:12px;\" data-dc-tpl=\"651\">{{ s.num }}</span>",
-     "parent": {
-      "draftId": "Indus Foods Website v2:650",
-      "tag": "h3",
-      "block": "sgs/container"
-     },
-     "siblings": [],
-     "siblingCount": 0,
-     "boxes": [
-      {
-       "width": 1440,
-       "x": 668.4,
-       "y": 867.8,
-       "w": 17.1,
-       "h": 18
-      },
-      {
-       "width": 768,
-       "x": 32,
-       "y": 1104.2,
-       "w": 17.1,
-       "h": 18
-      },
-      {
-       "width": 375,
-       "x": 20,
-       "y": 1149.9,
-       "w": 17.1,
-       "h": 18
-      }
-     ],
-     "draftId": "Indus Foods Website v2:651",
-     "copies": 6,
-     "keys": [
-      "Indus Foods Website v2/651#1",
-      "Indus Foods Website v2/651#2",
-      "Indus Foods Website v2/651#3",
-      "Indus Foods Website v2/651#4",
-      "Indus Foods Website v2/651#5",
-      "Indus Foods Website v2/651#6"
-     ],
-     "proposalReason": null,
-     "otherWords": [
-      "03",
-      "04",
-      "05"
-     ],
-     "distinctWords": 6,
-     "splitFrom": "Indus Foods Website v2/651",
-     "blocksAcrossCopies": {
-      "none": 1,
-      "sgs/text": 6
-     },
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": "6 copies of one template element",
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "distinctWords": 7
     },
     {
      "rowId": "skeleton:page-terms:Indus Foods Website v2/652",
@@ -124536,11 +124139,11 @@
    ],
    "counts": {
     "inventoryElements": 65,
-    "parts": 0,
-    "rows": 65,
-    "skeletonNodes": 69,
-    "expandedNodes": 69,
-    "low": 13,
+    "parts": 14,
+    "rows": 51,
+    "skeletonNodes": 36,
+    "expandedNodes": 36,
+    "low": 1,
     "removed": 10,
     "unresolved": 0,
     "byRule": {
@@ -124549,7 +124152,7 @@
      "decorativeShape": 1,
      "heroInner": 3,
      "dotMarker": 1,
-     "drawsChildren": 1
+     "listWrapper": 1
     }
    },
    "problems": []
@@ -132604,7 +132207,7 @@
       "line": 795
      },
      "tag": "span",
-     "words": "Full name",
+     "words": "Full name*",
      "block": null,
      "confidence": 1,
      "low": false,
@@ -132662,9 +132265,9 @@
      ],
      "proposalReason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
      "otherWords": [
-      "Email",
+      "Email*",
       "Phone",
-      "Team"
+      "Team*"
      ],
      "distinctWords": 7,
      "alsoIn": [
@@ -132678,83 +132281,6 @@
         "Indus Foods Website v2/556#4",
         "Indus Foods Website v2/556#5",
         "Indus Foods Website v2/556#6"
-       ]
-      }
-     ]
-    },
-    {
-     "rowId": "skeleton:inline-form-careers:Indus Foods Website v2/558",
-     "key": "Indus Foods Website v2/558",
-     "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "dd4f36a4",
-      "parentTags": [
-       "form",
-       "div",
-       "label",
-       "span"
-      ],
-      "textHash": "2b58f",
-      "line": 795
-     },
-     "tag": "span",
-     "words": "*",
-     "block": null,
-     "confidence": 1,
-     "low": false,
-     "reason": "8 copies of one template element on 2 surfaces; inside a removed element (Indus Foods Website v2/556#0)",
-     "rule": null,
-     "candidates": [],
-     "action": "remove",
-     "snippet": "<span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span>",
-     "parent": {
-      "draftId": "Indus Foods Website v2:556",
-      "tag": "span",
-      "block": null
-     },
-     "siblings": [],
-     "siblingCount": 0,
-     "boxes": [
-      {
-       "width": 1440,
-       "x": 199.3,
-       "y": 3238,
-       "w": 8.9,
-       "h": 19
-      },
-      {
-       "width": 768,
-       "x": 131.3,
-       "y": 3912.2,
-       "w": 8.9,
-       "h": 19
-      },
-      {
-       "width": 375,
-       "x": 103.3,
-       "y": 4404.4,
-       "w": 8.9,
-       "h": 19
-      }
-     ],
-     "draftId": "Indus Foods Website v2:558",
-     "copies": 8,
-     "keys": [
-      "Indus Foods Website v2/558#0",
-      "Indus Foods Website v2/558#1",
-      "Indus Foods Website v2/558#2"
-     ],
-     "proposalReason": "inside a removed element (Indus Foods Website v2/556#0)",
-     "alsoIn": [
-      {
-       "surface": "inline-form-catalogue",
-       "keys": [
-        "Indus Foods Website v2/558#0",
-        "Indus Foods Website v2/558#1",
-        "Indus Foods Website v2/558#2",
-        "Indus Foods Website v2/558#3",
-        "Indus Foods Website v2/558#4"
        ]
       }
      ]
@@ -133505,12 +133031,12 @@
    ],
    "counts": {
     "inventoryElements": 42,
-    "parts": 11,
-    "rows": 31,
+    "parts": 14,
+    "rows": 28,
     "skeletonNodes": 13,
     "expandedNodes": 13,
     "low": 0,
-    "removed": 18,
+    "removed": 15,
     "unresolved": 0,
     "byRule": {
      "formHost": 1,
@@ -133555,12 +133081,12 @@
    "rows": [],
    "counts": {
     "inventoryElements": 42,
-    "parts": 9,
-    "rows": 33,
+    "parts": 14,
+    "rows": 28,
     "skeletonNodes": 13,
     "expandedNodes": 13,
     "low": 0,
-    "removed": 20,
+    "removed": 15,
     "unresolved": 0,
     "byRule": {
      "formHost": 1,
@@ -138352,34 +137878,6 @@
   "prose": [],
   "blockedHosts": [
    {
-    "url": "https://images.unsplash.com/photo-1532336414038-cf19250c5757?w=1388&q=70&auto=format&fit=crop",
-    "host": "images.unsplash.com",
-    "reason": "replay-miss",
-    "draftId": null,
-    "draftIds": []
-   },
-   {
-    "url": "https://images.unsplash.com/photo-1532336414038-cf19250c5757?w=650&q=70&auto=format&fit=crop",
-    "host": "images.unsplash.com",
-    "reason": "replay-miss",
-    "draftId": null,
-    "draftIds": []
-   },
-   {
-    "url": "https://images.unsplash.com/photo-1601050690117-94f5f6fa8bd7?w=1388&q=70&auto=format&fit=crop",
-    "host": "images.unsplash.com",
-    "reason": "replay-miss",
-    "draftId": null,
-    "draftIds": []
-   },
-   {
-    "url": "https://images.unsplash.com/photo-1631515243349-e0cb75fb8d3a?w=1388&q=70&auto=format&fit=crop",
-    "host": "images.unsplash.com",
-    "reason": "replay-miss",
-    "draftId": null,
-    "draftIds": []
-   },
-   {
     "url": "https://maps.google.com/maps?q=55-58%20Stratford%20Street%20North%2C%20Birmingham%20B11%201BU&z=14&output=embed",
     "host": "maps.google.com",
     "reason": "unlisted-host",
@@ -139305,6 +138803,254 @@
    "carriedFrom": "2026-10-19T02:13:36.160Z"
   },
   {
+   "rowId": "palette:--brand-blue",
+   "rowType": "palette-role",
+   "contentHash": "2337be239d257e45bb3dbc0bfb798c6e4cc2d0c010757456b57be4d7bc696b97",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--brand-blue-hover",
+   "rowType": "palette-role",
+   "contentHash": "80dbb748a481eb3694781be04718c9853fbdf0c92d9f81190d4406c5a0078539",
+   "mark": "role:primary-dark",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--brand-blue-light",
+   "rowType": "palette-role",
+   "contentHash": "76aa8c756c4472a6b9c32f45126abce3323fa73d6b1c377bdb0133c8b028210b",
+   "mark": "role:custom-brand-blue-light",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--brand-gold",
+   "rowType": "palette-role",
+   "contentHash": "4b44fd9b35311d1ae688f8af28327c3af56f1a135bc0440e3e4be4762f4ecdfc",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--brand-gold-light",
+   "rowType": "palette-role",
+   "contentHash": "39bfee52d68e5cbb657ebd1c088cd561cf6798475a04d6ad46ba3f15a47f2631",
+   "mark": "role:accent-light",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--brand-gold-mid",
+   "rowType": "palette-role",
+   "contentHash": "d964811e2f79ba164689ffaab39c81631cea6fab6399e1f0921f578d938604d0",
+   "mark": "one-off",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--brand-gold-pale",
+   "rowType": "palette-role",
+   "contentHash": "de645306e89bbb871c27de8ab4486a7368a87d9ea99478d76da8f9557e4f8691",
+   "mark": "one-off",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--ink",
+   "rowType": "palette-role",
+   "contentHash": "147cebf2e0cbca3537cb3902c3241c387600834aa342d8789e6bac8b4bc50cc8",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--slate",
+   "rowType": "palette-role",
+   "contentHash": "83425484ac80bcec8881e1017327489554b7524b4fb85dd2b58332fbc15a8013",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--grey-body",
+   "rowType": "palette-role",
+   "contentHash": "45540e9ba749a4a8a348a4033d9eb82f724b7c5db9953df776d687463420124d",
+   "mark": "role:text",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--grey-muted",
+   "rowType": "palette-role",
+   "contentHash": "5fa7d426e21c75c648a4f085a579d6a06c0c85c2c0c9c749163384f3f0ae2ffa",
+   "mark": "one-off",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--surface-white",
+   "rowType": "palette-role",
+   "contentHash": "31110b1aae430925b1b3381f1acc5903297b92e0d4126152880a591199e2257b",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--surface-warm",
+   "rowType": "palette-role",
+   "contentHash": "c2b31c39153946017837d2632ba5f3ce74cd879dd4738cbbde9940456daa41f2",
+   "mark": "one-off",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--surface-cool",
+   "rowType": "palette-role",
+   "contentHash": "312d52b127037540b2233ecb9f8a8bcd1e2e3094a0ddff982c4025f991a4aca5",
+   "mark": "role:surface-alt",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--tint-on-blue",
+   "rowType": "palette-role",
+   "contentHash": "8a63a2f22bc3feb0ec2deb6a99aa5a48ca1ac8ec73033433e4820ba3a4ad8a20",
+   "mark": "role:custom-tint-on-blue",
+   "markedOn": "2026-10-28",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--social-linkedin",
+   "rowType": "palette-role",
+   "contentHash": "b3d2e65664acd2e97083c0e8062e5e2e5cd72824e35dc62944f4a75032b85373",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--social-facebook",
+   "rowType": "palette-role",
+   "contentHash": "8b66c8e8be28d45c93e8d026e2f0256dffec07ddb64956c6a0e13183fa6d9c21",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--social-google",
+   "rowType": "palette-role",
+   "contentHash": "38232f2dd223c977cd52b38635df20afacff453df8d3a4ac9004bc80ae4cf81b",
+   "mark": "one-off",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--whatsapp-green",
+   "rowType": "palette-role",
+   "contentHash": "5419b1b709677db8fc319badde334e53b5ab742c264447b5b7be854d23d78845",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--text-heading",
+   "rowType": "palette-role",
+   "contentHash": "ff1f299db04e54b2bd707b7e37e0ac99263f05fc02f3cda7bcc2e7d2bf87a5ed",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--text-body",
+   "rowType": "palette-role",
+   "contentHash": "02ca74ca5acde4e9ffc30cd322f4694642959c84afa497928747e0912100281e",
+   "mark": "role:text",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--text-muted",
+   "rowType": "palette-role",
+   "contentHash": "dd1c6c08e6b48f2b10c9157f59f7acc40b8543f4be28d7b455b364ceaaa8e1a7",
+   "mark": "role:text-muted",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--text-link",
+   "rowType": "palette-role",
+   "contentHash": "3f1255339dbc634b97408e1ce7e246873331df5419fab6c3aad508f15b9384ac",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--text-link-hover",
+   "rowType": "palette-role",
+   "contentHash": "f9b01cec04a20201ac576dae114429354e193c9f62e8a2b6ef8dc1dd8fc70acd",
+   "mark": "role:link-hover",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T15:06:37.428Z"
+  },
+  {
+   "rowId": "palette:--surface-header",
+   "rowType": "palette-role",
+   "contentHash": "9c53a3685f1af93e9882e92a7cdaf908781c34421bb290b62bfdb6ba9e3e8c64",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--surface-topbar",
+   "rowType": "palette-role",
+   "contentHash": "f8f134b06b6f354de10442da8d5c0e33cf0da7d7ccf23d45ed522917580c8298",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--surface-section-blue",
+   "rowType": "palette-role",
+   "contentHash": "b58d70b1bc62f76e1bdbc70476b11d4e88beddec0bc6ceeffb7ff48ff355d045",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--surface-section-gold",
+   "rowType": "palette-role",
+   "contentHash": "ed4ef7d3a26a3e7200f8d67dc17e2455c109438385fae903d28f5e59a0eb8c2e",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--border-accent",
+   "rowType": "palette-role",
+   "contentHash": "cf7052ef742f73ce248d301495537625e2c5c8ac693a18123a708cd6c8a679ee",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--selection-bg",
+   "rowType": "palette-role",
+   "contentHash": "9b05d2165a713f239601ded6fa8f8089287ee2708fdb1c7127e5c2f92b6733d2",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--selection-fg",
+   "rowType": "palette-role",
+   "contentHash": "3e9f15f5795db1072998f53bb1476ee15c01229613cf7812afc22abce9eacd43",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
    "rowId": "siteinfo:phone",
    "rowType": "site-info",
    "contentHash": "77ee8a8ea0d3c939f39570afc874fb54d2b460a47460383f999b2e58fa779f53",
@@ -140070,8 +139816,7 @@
    "contentHash": "239e5c9ce6f5a5bc45c391efbeed852a7e442677ff7c65ed7d3b719708ee7d06",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "effect:J-14",
@@ -140733,8 +140478,7 @@
    "contentHash": "3b41b9188aebd075b54ce29f5c8b60597339fe0ee4d3139a7b3425189448211a",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/115#0",
@@ -140766,8 +140510,7 @@
    "contentHash": "d889e95a42539114662c4573cd6d09fb97b1e3cfe01d88ba506c3e6eb768a3aa",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/119#0",
@@ -140775,8 +140518,7 @@
    "contentHash": "c33b3c2d1504f3eb5f986423f7a01e01d9bb9b513e6bd974bd45b99e42e80ebd",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/120#0",
@@ -140784,8 +140526,7 @@
    "contentHash": "ffd595cd8fbf4e84d96e46ee4c66394766e5ccdc8464872a207394402f51e314",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/121#0",
@@ -141444,8 +141185,7 @@
    "contentHash": "eab804f829bb77e672a6325ba94f28070ecdeeb6d9e069f461b0fed16575d9b7",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:footer:Indus Foods Website v2/729#0",
@@ -141891,8 +141631,7 @@
    "contentHash": "d1d7a1be22d16dec1be407fb8c0b6b89584cdafe230a9651718513a12b7c539e",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home:Indus Foods Website v2/261",
@@ -141900,8 +141639,7 @@
    "contentHash": "18072075bbbac7a772c84d53a0d28a419c86b31c908d9d245b7d2e1f4e0b8e32",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home:Indus Foods Website v2/262",
@@ -141909,8 +141647,7 @@
    "contentHash": "f2bd8b2ac2c96ac44817639f42ac9a0a3a8366dd9c9a1fa5d6796f6dd7d96012",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home:Indus Foods Website v2/263",
@@ -141918,8 +141655,7 @@
    "contentHash": "bf524a8cf492406d1ebde94e47e16822cb7b9d38abd81cd4162f92cd7a1f5459",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home:Indus Foods Website v2/264",
@@ -141927,8 +141663,7 @@
    "contentHash": "ea07ec5a39b33077bbd784702974c650b2e3902755b37100068498bbb4abaf3a",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home:Indus Foods Website v2/265#0",
@@ -142296,8 +142031,7 @@
    "contentHash": "20abb41043c73e61bfdf739339a8e0c88b0b96a746ed579a820a7faf18141404",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home:Indus Foods Website v2/314#0",
@@ -142305,8 +142039,7 @@
    "contentHash": "fabaf481cec2608905e1192ff3fe282280bf16b4835e5b17c62c15e4e63f690e",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/316#0",
@@ -142698,8 +142431,7 @@
    "contentHash": "3bfc87ed61d7ce64b64ed95733f95fc9438e897779d826592e04f87ab00afff7",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/447",
@@ -142707,8 +142439,7 @@
    "contentHash": "1608ec653ddc80ad6124344474abad0fa5327d9137c5e306cf590befdb4c8769",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/448",
@@ -142716,8 +142447,7 @@
    "contentHash": "2d1dde491ce0291b03e0c57e102e501ed93d468ba621a7c246e6ed3842833fe1",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/449",
@@ -142725,8 +142455,7 @@
    "contentHash": "774be29077c03483acee1f60cea1ebc5def6347db87b32600bdaecdc4fd3782a",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/450",
@@ -142734,8 +142463,7 @@
    "contentHash": "5b265c803a0010fa7bad8a98b7da47f35a37d2483232ff28e067e2f9b14155d9",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/451",
@@ -142743,8 +142471,7 @@
    "contentHash": "c9a8cdc3533067a109cf773da12fa4b5a27c5950c25761c1b43d604d843086f5",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/452",
@@ -142752,8 +142479,7 @@
    "contentHash": "73d067be79d38087da9319573e59ca3c9db7efca74b4935f88702782e2b5e3a7",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/479#0",
@@ -142911,9 +142637,9 @@
    "rowId": "skeleton:page-about:Indus Foods Website v2/524#0",
    "rowType": "skeleton-block",
    "contentHash": "0fa4ee874071a97d32f643dce7a717d4438166a9447b701da02e65cf50415e4f",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z"
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/525#0",
@@ -143054,26 +142780,26 @@
   {
    "rowId": "skeleton:page-our-story:Indus Foods Website v2/388#0",
    "rowType": "skeleton-block",
-   "contentHash": "69ec3c67bc30db21a2e5a53c592fae982252d36e565fb119006386995b8e3c78",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z"
+   "contentHash": "7fdc32308fd9ef88fb11bb331341819ffbbe3415fc95b26bd98074df42f8bb58",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-our-story:Indus Foods Website v2/390",
    "rowType": "skeleton-block",
-   "contentHash": "5d097d59e823890b3c3f0fe71458cd941196de65ac801595f8b909126ae41ac8",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z"
+   "contentHash": "cdf55103397876f4ae6873540c4c6fabce9c6faa45cc964aeffaa60047b79a4b",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-our-story:Indus Foods Website v2/391",
    "rowType": "skeleton-block",
-   "contentHash": "b0a091f694c22874e4966342efe3dd6bfe7180e315f3a7ce4216cbc081e90213",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z"
+   "contentHash": "55465e90eb8af3fd5970724e2b473cd501fbadc918783dc414eb6540010ba6f8",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-our-story:Indus Foods Website v2/393#0",
@@ -143382,18 +143108,11 @@
   {
    "rowId": "skeleton:page-careers:Indus Foods Website v2/556",
    "rowType": "skeleton-block",
-   "contentHash": "3d0729a8d52a95f215df18ddbe69a9bef272c328141204fd85f05d080fb18aed",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "skeleton:page-careers:Indus Foods Website v2/558",
-   "rowType": "skeleton-block",
-   "contentHash": "a88446c88cca1f459a9105589a4c7a0564490ef9e281cda0fa8738ece2482d40",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
+   "contentHash": "bef1d3a69ad05054c3b46940b4e3f540f19250f48a21ae53d7a41469611bb9d8",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-careers:Indus Foods Website v2/560",
@@ -143502,26 +143221,26 @@
   {
    "rowId": "skeleton:page-careers:Indus Foods Website v2/578#0",
    "rowType": "skeleton-block",
-   "contentHash": "c4b6fa77081c6762caf6b1b255ba1e8fc1584e4640069aa13831e99d4d0e2987",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z"
+   "contentHash": "efe6a542db57ecb598e77e883d5cb6adf2b085ee36fd38187b7e5b69c5c68b45",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-careers:Indus Foods Website v2/580",
    "rowType": "skeleton-block",
-   "contentHash": "de6ecbec04e4693f0fc4106248e92186a03c13af5e44f4be1650fdca819cb5ef",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z"
+   "contentHash": "615127e9057c140d781a6396eef68f99a47fc1b3ca8c4edf196895e1e66a910b",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-careers:Indus Foods Website v2/581",
    "rowType": "skeleton-block",
-   "contentHash": "4d5fa175f48c4e650e6ce4f101d2e9b78776deda3956f0a2404bd936bffb72d6",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z"
+   "contentHash": "069d9bd9b92e5b4b0faee37811bad3ff2ab9bede6d28f2332fa9acf53744116b",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-careers:Indus Foods Website v2/582#0",
@@ -143761,8 +143480,7 @@
    "contentHash": "836957a026f33fef3131d63308694766ef93296a95215ef65fd39cb6ff729ab5",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/7#0",
@@ -143770,8 +143488,7 @@
    "contentHash": "8df3fb8c79665db8282834656454b22989e1c098601255ed2421c5a394f21234",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/8#0",
@@ -143979,8 +143696,7 @@
    "contentHash": "0742e29e0cba6a2f6cfd1b41fbd31520779c9914a4963f095c3b563f82932285",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/87#0",
@@ -143988,8 +143704,7 @@
    "contentHash": "0e2f0715e08ffd6e2a239c742f89d8e1c73b1df4e82be54615f404c05d37159b",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/88#0",
@@ -143997,8 +143712,7 @@
    "contentHash": "65c8c84df77574283c0131bd72464eaca5087bd0ef0be6a6c68e49f480a3e095",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/89#0",
@@ -144006,8 +143720,7 @@
    "contentHash": "7414ac8e9e86a2bba4b54354b35366ac8777cb545ab3b7e103ff1591b4e344c7",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/91#0",
@@ -144023,8 +143736,7 @@
    "contentHash": "a685a013102b68c2eda573ca17a50522d3daab05ae611979b804f1f278987e3b",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/95",
@@ -144032,8 +143744,7 @@
    "contentHash": "7790519f0771969e7e6ffe2598a39fbdba7f510766b36f92de70fef06ad445f1",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/96",
@@ -144041,8 +143752,7 @@
    "contentHash": "7b562904150799fb0a71ba5fdaefadab7b21b8b4ceca6e605bc6dfc3d241d37e",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/98#0",
@@ -144050,8 +143760,7 @@
    "contentHash": "e7149349805f21971d90b2e51135dd67ebe786c4e06537daed0f4239f17ac6db",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/99#0",
@@ -144059,8 +143768,7 @@
    "contentHash": "eb49e0f4bd7617ebf3f64e727944674a082774be4fb30694cf77f7dc27a10b3f",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/100#0",
@@ -144068,8 +143776,7 @@
    "contentHash": "561caa35145cacdce4a9a4af868e0e8ae122451ec00853a9c6902c49c0cb5e75",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/101#0",
@@ -144077,8 +143784,7 @@
    "contentHash": "3fe4ef46a32ce978690d4e33652f7a9fe6d0296a57efe335981ac788b72aabb5",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/103#0",
@@ -144195,26 +143901,18 @@
   {
    "rowId": "skeleton:page-terms:Indus Foods Website v2/643#0",
    "rowType": "skeleton-block",
-   "contentHash": "ad22c90b5d4be19d49cea8513c5cd458c624b4a38bdbdc96523d3d788bccb13c",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z"
+   "contentHash": "c05fcb1f89d9876af6d003240b74d91619f77d2479c0eaa58950664f3f8b6f97",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-terms:Indus Foods Website v2/645",
    "rowType": "skeleton-block",
-   "contentHash": "fc504732f252171646da655544e19f1c09f5b4e877eb5a58c599e7469b0e0f78",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z"
-  },
-  {
-   "rowId": "skeleton:page-terms:Indus Foods Website v2/646",
-   "rowType": "skeleton-block",
-   "contentHash": "fec03a99d90206beeb780b0774f9d3d4e71b402f0e0cbacb816a9fcf99bba4c6",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z"
+   "contentHash": "b26d33932261324ebd423caff8f74474dabd63c8cd28ef351b0a0ac7099d2901",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-terms:Indus Foods Website v2/647#0",
@@ -144233,36 +143931,13 @@
    "carriedFrom": "2026-10-19T02:13:36.160Z"
   },
   {
-   "rowId": "skeleton:page-terms:Indus Foods Website v2/650=sgs/heading",
+   "rowId": "skeleton:page-terms:Indus Foods Website v2/650",
    "rowType": "skeleton-block",
-   "contentHash": "a470e9f6d65b0ad132d35e3d5ebfdb9bb46c222fc14af740303c6a5146000df2",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T04:18:38.803Z"
-  },
-  {
-   "rowId": "skeleton:page-terms:Indus Foods Website v2/650=sgs/container",
-   "rowType": "skeleton-block",
-   "contentHash": "deab9e470e0fdacebc2201f15dd52273844126217fd01cdcaef5d2420b76050b",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T04:18:38.803Z"
-  },
-  {
-   "rowId": "skeleton:page-terms:Indus Foods Website v2/651=absorbed",
-   "rowType": "skeleton-block",
-   "contentHash": "debcfdcfd451a201c86074d72f068d4e5951fadbf9238d288853b259ed625005",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T04:18:38.803Z"
-  },
-  {
-   "rowId": "skeleton:page-terms:Indus Foods Website v2/651=sgs/text",
-   "rowType": "skeleton-block",
-   "contentHash": "cc78fd29377b8e40f7dd470f478491157b03cbca919356c6aaf842ef0904c340",
+   "contentHash": "fe414db2d3812de3ce1fea8c200f86b1ea6a389a4683737da854679138f0e5d4",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-terms:Indus Foods Website v2/652",
@@ -144883,18 +144558,11 @@
   {
    "rowId": "skeleton:inline-form-careers:Indus Foods Website v2/556",
    "rowType": "skeleton-block",
-   "contentHash": "d21686d4d225677596230d83274e066e60cd0fdc4c35595a98987b78828c71a3",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "skeleton:inline-form-careers:Indus Foods Website v2/558",
-   "rowType": "skeleton-block",
-   "contentHash": "02d50f893c9530466d555430d93682e6812b053ca3aaf9e8c9231467615efac1",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
+   "contentHash": "55bd98a9caceaafcf80cd8d1da387e82716b183487a7c1b3718329b9119aa770",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:inline-form-careers:Indus Foods Website v2/560=sgs/form-field-text",
@@ -145158,8 +144826,7 @@
    "contentHash": "ecf16c31f705be2a1f29b65b58ca44e354ed1c5b2cf78be8513535a051b6d4ab",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466#0/87#0",
@@ -145167,8 +144834,7 @@
    "contentHash": "0acce49fa21435cdd4288a7e3dcd2ae79e6db19b2937785785921ab1807547ee",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466#0/88#0",
@@ -145176,8 +144842,7 @@
    "contentHash": "bb7d238f07d71a219f785866d6055df64de5be882c53bb3121959f03bb5d990a",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466#0/89#0",
@@ -145185,8 +144850,7 @@
    "contentHash": "55904bd78a339643ff94937258ae59016e67cf4d571e8554484757deded70aa6",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466#0/91#0",
@@ -145202,8 +144866,7 @@
    "contentHash": "c1928f7a0d2b9441e8bff6537907c5a7f26f60f3f65fb38baf76c6006bf813b6",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466/95",
@@ -145211,8 +144874,7 @@
    "contentHash": "2bc3b86a2e49d45132b4f2119053927a836e40c943d5af2c89b2db0cd0691add",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466/96",
@@ -145220,8 +144882,7 @@
    "contentHash": "46bdd7fd3e3a57197892c7719f516b807f155acf6dae67da791c4f7d89b955d0",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466#0/98#0",
@@ -145229,8 +144890,7 @@
    "contentHash": "ecdf078137b96bb4636cc6297f22d6cf99b80f35bff3708e65c6f77147663ef4",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466#0/99#0",
@@ -145238,8 +144898,7 @@
    "contentHash": "b6388107646762e09f311786e8c2bcd6045fdced94a66b93627c1f4430f5192b",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466#0/100#0",
@@ -145247,8 +144906,7 @@
    "contentHash": "97c4d7bf3f67d12f0202def0b9aeb6965b914b7aa2c6fbcaff4d02d3dcd06b09",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466#0/101#0",
@@ -145256,8 +144914,7 @@
    "contentHash": "8e975b8b619bcd80b6aa4956a54e9dc408a2460b523e098388386e9f9e28e74f",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466#0/103#0",
@@ -148916,132 +148573,12 @@
    "carriedFrom": "2026-10-19T02:13:36.160Z"
   },
   {
-   "rowId": "notice:host:images.unsplash.com",
-   "rowType": "notice",
-   "contentHash": "f1c7989249edb667721b4b2f3c895a247f662a3b506795861bd356122e6515ff",
-   "mark": "noted",
-   "markedOn": "2026-10-24",
-   "carriedFrom": "2026-10-23T23:58:47.556Z"
-  },
-  {
    "rowId": "notice:host:maps.google.com",
    "rowType": "notice",
    "contentHash": "8468beac1df51af71af136d077805f14abb78ec12cd0b0f7b2f85d8816b449b6",
    "mark": "noted",
    "markedOn": "2026-10-19",
    "carriedFrom": "2026-10-19T02:13:36.160Z"
-  },
-  {
-   "rowId": "palette:--brand-blue-hover",
-   "rowType": "palette-role",
-   "contentHash": "80dbb748a481eb3694781be04718c9853fbdf0c92d9f81190d4406c5a0078539",
-   "mark": "role:primary-dark",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--brand-blue-light",
-   "rowType": "palette-role",
-   "contentHash": "76aa8c756c4472a6b9c32f45126abce3323fa73d6b1c377bdb0133c8b028210b",
-   "mark": "role:custom-brand-blue-light",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--brand-gold-light",
-   "rowType": "palette-role",
-   "contentHash": "39bfee52d68e5cbb657ebd1c088cd561cf6798475a04d6ad46ba3f15a47f2631",
-   "mark": "role:accent-light",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--brand-gold-mid",
-   "rowType": "palette-role",
-   "contentHash": "d964811e2f79ba164689ffaab39c81631cea6fab6399e1f0921f578d938604d0",
-   "mark": "one-off",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--brand-gold-pale",
-   "rowType": "palette-role",
-   "contentHash": "de645306e89bbb871c27de8ab4486a7368a87d9ea99478d76da8f9557e4f8691",
-   "mark": "one-off",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--grey-body",
-   "rowType": "palette-role",
-   "contentHash": "45540e9ba749a4a8a348a4033d9eb82f724b7c5db9953df776d687463420124d",
-   "mark": "role:text",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--grey-muted",
-   "rowType": "palette-role",
-   "contentHash": "5fa7d426e21c75c648a4f085a579d6a06c0c85c2c0c9c749163384f3f0ae2ffa",
-   "mark": "one-off",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--surface-warm",
-   "rowType": "palette-role",
-   "contentHash": "c2b31c39153946017837d2632ba5f3ce74cd879dd4738cbbde9940456daa41f2",
-   "mark": "one-off",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--surface-cool",
-   "rowType": "palette-role",
-   "contentHash": "312d52b127037540b2233ecb9f8a8bcd1e2e3094a0ddff982c4025f991a4aca5",
-   "mark": "role:surface-alt",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--tint-on-blue",
-   "rowType": "palette-role",
-   "contentHash": "8a63a2f22bc3feb0ec2deb6a99aa5a48ca1ac8ec73033433e4820ba3a4ad8a20",
-   "mark": "role:custom-tint-on-blue",
-   "markedOn": "2026-10-28",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--social-google",
-   "rowType": "palette-role",
-   "contentHash": "38232f2dd223c977cd52b38635df20afacff453df8d3a4ac9004bc80ae4cf81b",
-   "mark": "one-off",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--text-body",
-   "rowType": "palette-role",
-   "contentHash": "02ca74ca5acde4e9ffc30cd322f4694642959c84afa497928747e0912100281e",
-   "mark": "role:text",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--text-muted",
-   "rowType": "palette-role",
-   "contentHash": "dd1c6c08e6b48f2b10c9157f59f7acc40b8543f4be28d7b455b364ceaaa8e1a7",
-   "mark": "role:text-muted",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
-  },
-  {
-   "rowId": "palette:--text-link-hover",
-   "rowType": "palette-role",
-   "contentHash": "f9b01cec04a20201ac576dae114429354e193c9f62e8a2b6ef8dc1dd8fc70acd",
-   "mark": "role:link-hover",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
   }
  ],
  "catalogue": {

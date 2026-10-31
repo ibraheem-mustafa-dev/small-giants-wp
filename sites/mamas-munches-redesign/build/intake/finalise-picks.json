@@ -525,6 +525,22 @@
    "attributes": {},
    "confidence": 0.7,
    "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
+  },
+  {
+   "key": "Home/192#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.9,
+   "reason": "Bean, 2026-10-31: a disclaimer paragraph"
+  },
+  {
+   "key": "Home/222#0",
+   "block": "sgs/trustpilot-reviews",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "Bean, 2026-10-31: the review loop sits under 4.3 stars and a link 8 on Trustpilot: the platform evidence picks the Trustpilot block"
   }
  ],
  "build-your-zookie": [
@@ -643,14 +659,6 @@
    "attributes": {},
    "confidence": 0.7,
    "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
-  },
-  {
-   "key": "Product/133",
-   "block": "sgs/text",
-   "remove": false,
-   "attributes": {},
-   "confidence": 0.7,
-   "reason": "The reviewer's name ({{ r.name }}) before the date in each review card; sgs/text."
   }
  ],
  "product-buy-box": [
@@ -1229,68 +1237,12 @@
    "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
   },
   {
-   "key": "Help/45#0",
-   "block": "sgs/text",
-   "remove": false,
-   "attributes": {},
-   "confidence": 0.75,
-   "reason": "A delivery option's name in the delivery table; sgs/text."
-  },
-  {
-   "key": "Help/47#0",
-   "block": "sgs/text",
-   "remove": false,
-   "attributes": {},
-   "confidence": 0.75,
-   "reason": "A delivery option's timing; sgs/text."
-  },
-  {
-   "key": "Help/50#0",
-   "block": "sgs/text",
-   "remove": false,
-   "attributes": {},
-   "confidence": 0.75,
-   "reason": "A delivery option's price note; sgs/text."
-  },
-  {
-   "key": "Help/53#0",
-   "block": "sgs/text",
-   "remove": false,
-   "attributes": {},
-   "confidence": 0.75,
-   "reason": "A delivery option's name; sgs/text."
-  },
-  {
-   "key": "Help/55#0",
-   "block": "sgs/text",
-   "remove": false,
-   "attributes": {},
-   "confidence": 0.75,
-   "reason": "A delivery option's timing; sgs/text."
-  },
-  {
    "key": "Help/56#0",
    "block": "sgs/text",
    "remove": false,
    "attributes": {},
    "confidence": 0.75,
    "reason": "A delivery option's price; sgs/text."
-  },
-  {
-   "key": "Help/59#0",
-   "block": "sgs/text",
-   "remove": false,
-   "attributes": {},
-   "confidence": 0.75,
-   "reason": "A delivery option's name; sgs/text."
-  },
-  {
-   "key": "Help/61#0",
-   "block": "sgs/text",
-   "remove": false,
-   "attributes": {},
-   "confidence": 0.75,
-   "reason": "A delivery option's note; sgs/text."
   },
   {
    "key": "Help/62#0",
@@ -1317,14 +1269,6 @@
    "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
   },
   {
-   "key": "Help/75#0",
-   "block": "sgs/text",
-   "remove": false,
-   "attributes": {},
-   "confidence": 0.55,
-   "reason": "The bold lead-in (Vegan base:) of a paragraph that was split into a container because it holds inline bold; text keeps the words."
-  },
-  {
    "key": "Help/79#0",
    "block": "sgs/heading",
    "remove": false,
@@ -1347,6 +1291,38 @@
    "attributes": {},
    "confidence": 0.6,
    "reason": "The card link's Young Serif 24px title; the script kicker before it (still stuck?) was made the heading by cardTitle, so the card holds two headings."
+  },
+  {
+   "key": "Help/44#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "Bean, 2026-10-31: each delivery option is a container of two text blocks: the name and detail at the left"
+  },
+  {
+   "key": "Help/48#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "Bean, 2026-10-31: each delivery option is a container of two text blocks: the price at the right"
+  },
+  {
+   "key": "Help/52#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "Bean, 2026-10-31: each delivery option is a container of two text blocks: the name and detail at the left"
+  },
+  {
+   "key": "Help/58#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "Bean, 2026-10-31: each delivery option is a container of two text blocks: the name and detail at the left"
   }
  ],
  "page-signin-dc-html": [
@@ -1405,6 +1381,14 @@
    "attributes": {},
    "confidence": 0.85,
    "reason": "Each benefit's description; sgs/text."
+  },
+  {
+   "key": "SignIn/104#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.9,
+   "reason": "Bean, 2026-10-31: a guest-checkout note"
   }
  ],
  "page-account-dc-html": [

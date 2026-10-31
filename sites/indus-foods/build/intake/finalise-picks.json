@@ -1,41 +1,158 @@
 {
  "sticky-header": [
-  {"key":"Indus Foods Website v2/39#0","block":"sgs/site-header","remove":false,"attributes":{},"confidence":0.92,"reason":"The surface-root sticky header spanning the full width at 1440, 768 and 375 is the site header shell; sgs/site-header is the top candidate and the hero reading is only a box-size match."},
-  {"key":"Indus Foods Website v2/11#0","block":"sgs/multi-button","remove":false,"attributes":{},"confidence":0.85,"reason":"The draft code holds three pill links in one flex row (apply, tel:, mailto:); sgs/multi-button is the framework's group of SGS Buttons and outranks a plain container."}
+  {
+   "key": "Indus Foods Website v2/39#0",
+   "block": "sgs/site-header",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.92,
+   "reason": "The surface-root sticky header spanning the full width at 1440, 768 and 375 is the site header shell; sgs/site-header is the top candidate and the hero reading is only a box-size match."
+  },
+  {
+   "key": "Indus Foods Website v2/11#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The draft code holds three pill links in one flex row (apply, tel:, mailto:); sgs/multi-button is the framework's group of SGS Buttons and outranks a plain container."
+  }
  ],
  "about-mega-menu": [
-  {"key":"Indus Foods Website v2/71","block":"sgs/text","remove":false,"attributes":{},"confidence":0.65,"reason":"A two-digit index number ({{ link.num }}) set beside each mega-menu link; no counter or list block owns it, so sgs/text, the only candidate."},
-  {"key":"Indus Foods Website v2/74","block":"sgs/text","remove":false,"attributes":{},"confidence":0.85,"reason":"Running description copy ({{ link.desc }}) under each link title with no link or heading role; sgs/text."},
-  {"key":"Indus Foods Website v2/81#0","block":"sgs/heading","remove":false,"attributes":{},"confidence":0.7,"reason":"The bold 22px title of the feature panel between its kicker (sgs/label) and its description and button; a title role, so sgs/heading (a real block, chosen over the sole text candidate)."},
-  {"key":"Indus Foods Website v2/82#0","block":"sgs/text","remove":false,"attributes":{},"confidence":0.85,"reason":"The feature panel's description sentence; sgs/text."}
+  {
+   "key": "Indus Foods Website v2/71",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.65,
+   "reason": "A two-digit index number ({{ link.num }}) set beside each mega-menu link; no counter or list block owns it, so sgs/text, the only candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/74",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "Running description copy ({{ link.desc }}) under each link title with no link or heading role; sgs/text."
+  },
+  {
+   "key": "Indus Foods Website v2/81#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The bold 22px title of the feature panel between its kicker (sgs/label) and its description and button; a title role, so sgs/heading (a real block, chosen over the sole text candidate)."
+  },
+  {
+   "key": "Indus Foods Website v2/82#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The feature panel's description sentence; sgs/text."
+  }
  ],
  "sectors-mega-menu": [
-  {"key":"Indus Foods Website v2/92","block":"sgs/text","remove":false,"attributes":{},"confidence":0.85,"reason":"Each sector card's description between its heading and button; sgs/text."}
+  {
+   "key": "Indus Foods Website v2/92",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "Each sector card's description between its heading and button; sgs/text."
+  }
  ],
  "brands-mega-menu": [
-  {"key":"Indus Foods Website v2/104#0","block":"sgs/text","remove":false,"attributes":{},"confidence":0.85,"reason":"The own-brands aside's description paragraph between its label and button; sgs/text."}
+  {
+   "key": "Indus Foods Website v2/104#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The own-brands aside's description paragraph between its label and button; sgs/text."
+  }
  ],
  "footer": [
-  {"key":"Indus Foods Website v2/712#0","block":"sgs/business-info","remove":false,"attributes":{},"confidence":0.75,"reason":"The iframe is a Google map of the business address; Site Info content reads Site Info, and sgs/business-info has the map display (mapSource, mapZoom, mapHeight in the DB), where sgs/media would hard-code the address URL."}
+  {
+   "key": "Indus Foods Website v2/712#0",
+   "block": "sgs/business-info",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "The iframe is a Google map of the business address; Site Info content reads Site Info, and sgs/business-info has the map display (mapSource, mapZoom, mapHeight in the DB), where sgs/media would hard-code the address URL."
+  }
  ],
  "page-home": [
-  {"key":"Indus Foods Website v2/312#0","block":"sgs/multi-button","remove":false,"attributes":{},"confidence":0.85,"reason":"A flex-wrap row of CTA links proposed as sgs/button; sgs/multi-button is the DB group for SGS Buttons."}
+  {
+   "key": "Indus Foods Website v2/312#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A flex-wrap row of CTA links proposed as sgs/button; sgs/multi-button is the DB group for SGS Buttons."
+  }
  ],
  "page-about": [
-  {"key":"Indus Foods Website v2/362=sgs/text","block":"sgs/counter","remove":false,"attributes":{},"confidence":0.8,"reason":"The same template element ({{ s.n }}) is sgs/counter on its 1962 copy; the stat list shares one block, and 5,000+ is a count with a suffix."},
-  {"key":"Indus Foods Website v2/363=sgs/text","block":null,"remove":true,"attributes":{},"confidence":0.8,"reason":"The stat caption ({{ s.l }}); its 'Family-run since' copy is absorbed into the counter (Bean, 2026-10-19), and sgs/counter carries a label attribute, so every copy folds into its counter."},
-  {"key":"Indus Foods Website v2/490=sgs/text","block":"sgs/heading","remove":false,"attributes":{},"confidence":0.8,"reason":"The card title ({{ c.title }}, 19px bold Montserrat) is sgs/heading on its other 44 copies; one repeated item keeps one block."}
+  {
+   "key": "Indus Foods Website v2/362=sgs/text",
+   "block": "sgs/counter",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "The same template element ({{ s.n }}) is sgs/counter on its 1962 copy; the stat list shares one block, and 5,000+ is a count with a suffix."
+  },
+  {
+   "key": "Indus Foods Website v2/363=sgs/text",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "The stat caption ({{ s.l }}); its 'Family-run since' copy is absorbed into the counter (Bean, 2026-10-19), and sgs/counter carries a label attribute, so every copy folds into its counter."
+  },
+  {
+   "key": "Indus Foods Website v2/490=sgs/text",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "The card title ({{ c.title }}, 19px bold Montserrat) is sgs/heading on its other 44 copies; one repeated item keeps one block."
+  },
+  {
+   "key": "Indus Foods Website v2/524#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.9,
+   "reason": "Bean, 2026-10-31: a wrapping row of two CTA links is a button group"
+  }
  ],
  "page-our-story": [
-  {"key":"Indus Foods Website v2/328#0","block":null,"remove":true,"attributes":{},"confidence":0.85,"reason":"The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."}
+  {
+   "key": "Indus Foods Website v2/328#0",
+   "block": null,
+   "remove": true,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
+  }
  ],
  "page-apply": [
-  {"key":"Indus Foods Website v2>TradeApplication@466#0/104#0","block":"sgs/text","remove":false,"attributes":{},"confidence":0.85,"reason":"A short prompt line beside the call button; plain copy, sgs/text."}
- ],
- "page-terms": [
-  {"key":"Indus Foods Website v2/651=sgs/text","block":"sgs/text","remove":false,"attributes":{},"confidence":0.5,"reason":"The section number inside each h3; on the first copy the h3 is sgs/heading and the number is absorbed into it, but the other six h3 copies are proposed as sgs/container, so removing the number here would lose it; the h3 block choice goes to Bean."}
+  {
+   "key": "Indus Foods Website v2>TradeApplication@466#0/104#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A short prompt line beside the call button; plain copy, sgs/text."
+  }
  ],
  "page-contact": [
-  {"key":"Indus Foods Website v2/538#0","block":"sgs/business-info","remove":false,"attributes":{},"confidence":0.75,"reason":"A Google map of the business address beside Get Directions; Site Info content reads Site Info through sgs/business-info's map display rather than a hard-coded sgs/media iframe."}
+  {
+   "key": "Indus Foods Website v2/538#0",
+   "block": "sgs/business-info",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A Google map of the business address beside Get Directions; Site Info content reads Site Info through sgs/business-info's map display rather than a hard-coded sgs/media iframe."
+  }
  ]
 }
