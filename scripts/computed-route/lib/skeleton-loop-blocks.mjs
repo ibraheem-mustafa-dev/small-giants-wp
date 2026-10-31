@@ -11,7 +11,13 @@
 //     least half of them, a quote (a text of the item's own, long enough to be one: a rating can stand alone) is the reviews block of the provider its links lead to (rules.loopReviews:
 //     a host pattern per provider); a loop with no provider link is left as the draft's own blocks, with a note, since the
 //     code names no source for the reviews, unless the loop's holder is a scroll track the draft's script drives (a timer,
-//     pointer drag or arrow controls: the `carousels` keys), which is the testimonial slider with a testimonial per card.
+//     pointer drag or arrow controls: the `carousels` keys), which is the testimonial slider with a testimonial per card;
+//   - testimonials (rules.loopTestimonials): a loop with no provider link and no script moving it whose cards each name the
+//     person who wrote them (a short line of a capitalised name or initials, or a name or handle with a date after a
+//     separator; never a heading) and show
+//     no price, each with a rating and a quote or with a quotation, is the testimonial slider in its still form (no autoplay,
+//     arrows or dots, the cards per row at 1440 visible), a testimonial per card; a team or blog grid shows no rating or
+//     quotation and a product grid a price, so neither is one.
 // Only shown elements count; a loop inside an overlay (a drawer or modal fixed at every width) belongs to that panel, and a
 // WooCommerce page's own commerce role (shop, cart, checkout, account) is placed by lib/skeleton-commerce-region.mjs.
 // Pure: the inventory model, the page map rows, the catalogue's brands and the rules in, the regions out.
@@ -84,13 +90,39 @@ export function loopBlocks( { m, rows = [], brands = [], carousels = new Set(), 
 		const rated = new RegExp( rule.reviews.rating, 'i' );
 		const quote = ( all ) => all.some( ( e ) => squash( m.words( e ) ).length >= rule.reviews.quoteLength );
 		const quoted = items.filter( ( it ) => quote( [ it, ...inside( it ) ] ) ).length;
-		if ( everyItem( ( it, all ) => rated.test( all.map( ( e ) => `${ text( e ) } ${ m.read.attr( e, 'aria-label' ) ?? '' }` ).join( ' ' ) ) ) && quoted * 2 >= items.length ) {
+		// Testimonials: a person's name, initials or handle on a line of its own in the card (rules.loopBlocks.testimonials.person:
+		// never a heading, never the quote, a few words at most, optionally followed by a date or place after a separator),
+		// and no price; a quotation (a blockquote or q element, or words or a glyph in quotation marks) stands for a rating.
+		const T = rule.testimonials;
+		const personLine = T && new RegExp( T.person, 'u' );
+		const quoteMark = T && new RegExp( T.quotation, 'u' );
+		const person = ( it, all ) => !! T && all.some( ( e ) => e !== it && ! /^h[1-6]$/.test( e.tag ) && squash( text( e ) ).length < rule.reviews.quoteLength && squash( text( e ) ).split( ' ' ).length <= T.personMaxWords && personLine.test( squash( text( e ) ) ) );
+		const quotation = ( all ) => !! T && all.some( ( e ) => [ 'blockquote', 'q' ].includes( e.tag ) || quoteMark.test( squash( m.words( e ) ) ) );
+		const priced = ( all ) => money.test( all.map( text ).join( ' ' ) );
+		const ratedItems = everyItem( ( it, all ) => rated.test( all.map( ( e ) => `${ text( e ) } ${ m.read.attr( e, 'aria-label' ) ?? '' }` ).join( ' ' ) ) ) && quoted * 2 >= items.length;
+		const quotedPeople = !! T && everyItem( ( it, all ) => quotation( all ) && quote( all ) && person( it, all ) && ! priced( all ) );
+		if ( ratedItems || quotedPeople ) {
 			const hrefs = items.flatMap( ( it ) => [ it, ...inside( it ) ] ).map( ( x ) => hrefOf( m.read, x ) ).filter( Boolean );
 			const hit = Object.entries( rule.reviews.providers ).find( ( [ , p ] ) => hrefs.some( ( h ) => new RegExp( p.host, 'i' ).test( h ) ) );
 			// A loop of review cards that is a scroll track the draft's script drives (a timer, pointer drag or arrow controls:
 			// lib/skeleton-rerun.mjs::carouselKeys) is the testimonial slider, each card a testimonial of it.
 			if ( ! hit && rule.carousel && carousels.has( templateKey( { dc: holder.template, tpl: holder.tpl } ) ) ) {
 				out.regions.push( { key: holder.key, kind: 'carousel', block: rule.carousel.block, attributes: { ...( rule.carousel.attributes || {} ) }, inner: null, item: null, absorb: false, cards: items.map( ( it ) => it.key ), cardBlock: rule.carousel.cardBlock, handover: null, reason: `${ rule.carousel.reason } (a loop of ${ items.length } review cards in a scroll track the draft's script steps)` } );
+				continue;
+			}
+			// A loop of review cards no script moves, each naming the person who wrote it, is the testimonial family in its still
+			// form: the slider with no autoplay, arrows or dots, as many cards visible as the draft lays side by side at the
+			// widest width; a holder whose cards overflow it on one row at some width is a track the visitor swipes.
+			if ( ! hit && T && everyItem( ( it, all ) => person( it, all ) && ! priced( all ) ) ) {
+				// Cards share a row when their boxes overlap by more than half the first one's height (a tilted card's box
+				// shifts a little); a track's cards run past the holder's right edge by more than a tenth of a card.
+				const sameRow = ( a, b ) => !! a && !! b && Math.min( a.y + a.h, b.y + b.h ) - Math.max( a.y, b.y ) > a.h / 2;
+				const row = items.filter( ( k ) => sameRow( items[ 0 ].box?.[ 1440 ], k.box?.[ 1440 ] ) ).length || items.length;
+				const track = Object.entries( holder.box || {} ).filter( ( [ , b ] ) => b ).map( ( [ w, hb ] ) => {
+					const bs = items.map( ( k ) => k.box?.[ w ] ).filter( Boolean );
+					return bs.length >= 2 && bs.every( ( b ) => sameRow( bs[ 0 ], b ) ) && Math.max( ...bs.map( ( b ) => b.x + b.w ) ) > hb.x + hb.w + bs[ 0 ].w / 10 ? w : null;
+				} ).filter( Boolean );
+				out.regions.push( { key: holder.key, kind: 'testimonials', block: rule.carousel.block, attributes: { ...( T.attributes || {} ), ...( T.perRowAttribute ? { [ T.perRowAttribute ]: row } : {} ) }, inner: null, item: null, absorb: false, cards: items.map( ( it ) => it.key ), cardBlock: rule.carousel.cardBlock, handover: null, reason: `${ T.reason } (a loop of ${ items.length } cards each naming its reviewer, ${ row } side by side at 1440${ track.length ? `, a swiped track at ${ track.join( ' and ' ) }` : '' })` } );
 				continue;
 			}
 			if ( ! hit ) {

@@ -74,6 +74,7 @@ function weightOf( v ) {
 }
 // One or more emoji (each optionally followed by a variation selector or a zero-width joiner), spaces removed first.
 const EMOJI = /^(?:\p{Extended_Pictographic}[\u{FE0F}\u{200D}]?)+$/u;
+const EMOJI_RUN = /(?:\p{Extended_Pictographic}[\u{FE0F}\u{200D}]?)+/gu;
 const HEADING = /^h[1-6]$/;
 
 // o: { m (lib/skeleton-model.mjs), facts (lib/skeleton-facts.mjs), surface: { slug, kind, name }, hooks: { siteInfoKinds,
@@ -665,10 +666,38 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	};
 	// A page wrapper that sits directly under the page's root, or inside another such wrapper.
 	const wrapperOfPage = ( e ) => pageWrapper( e ) && ( 1 === e.depth || ( !! m.byKey[ e.parentKey ] && wrapperOfPage( m.byKey[ e.parentKey ] ) ) );
-	// A block the database files as a section (`block_composition.container_kind`, as the hero and the trust bar) is only
-	// ever a page's own section: an element directly under a page surface's root, or directly inside a page wrapper (never the
-	// wrapper itself). Badges inside a section are labels.
-	const pageSection = ( e, block ) => 'section' !== facts.composition[ block ]?.container_kind || ( 'page' === surface.kind && ! pageWrapper( e ) && ( 1 === e.depth || ( !! m.byKey[ e.parentKey ] && wrapperOfPage( m.byKey[ e.parentKey ] ) ) ) );
+	// A block the database files as a section (`block_composition.container_kind`, as the hero and the trust bar) never sits
+	// inside another section, and sits only in a slot that gives it its full width. On a page that is a page's own section: an
+	// element directly under the page surface's root, or directly inside a page wrapper (never the wrapper itself). On any
+	// other surface (a header or footer row, a drawer, modal or mega panel body) it is an element no section block holds (a
+	// section root that holds only the slot blocks its allowed list names, as the site header holds its rows, is a frame of
+	// slots, not a section) and that the draft lays out as one full-width child at every width it shows, through every
+	// ancestor up to the surface root or that frame: it spans its parent's content box and no sibling sits beside it, so a
+	// footer column, or one of a row's columns, is never such a slot. Badges inside a section are labels.
+	const sectionKind = ( b ) => 'section' === facts.composition[ b ]?.container_kind;
+	const slotFrame = ( b ) => sectionKind( b ) && 'section-root' === facts.composition[ b ]?.composition_role && !! facts.composition[ b ]?.accepts;
+	const insideSection = ( e ) => ancestorBlocks( e ).some( ( a ) => a.key !== m.root.key && sectionKind( a.block ) && ! slotFrame( a.block ) );
+	const px = ( v ) => parseFloat( v ) || 0;
+	const fullWidthChild = ( c, parent ) => Object.entries( c.box || {} ).filter( ( [ , b ] ) => b ).every( ( [ w, b ] ) => {
+		const p = parent.box?.[ w ];
+		const pad = parent.resolved?.[ w ] || {};
+		const side = ( k ) => k !== c && ( k.box?.[ w ] ) && k.box[ w ].y < b.y + b.h - 1 && b.y < k.box[ w ].y + k.box[ w ].h - 1;
+		return ! p || ( b.w >= p.w - px( pad[ 'padding-left' ] ) - px( pad[ 'padding-right' ] ) - 1 && ! m.blockKids( parent ).some( side ) );
+	} );
+	const fullWidthSlot = ( e ) => {
+		for ( let c = e, parent = m.byKey[ e.parentKey ]; parent; c = parent, parent = m.byKey[ parent.parentKey ] ) {
+			if ( ! fullWidthChild( c, parent ) ) {
+				return false;
+			}
+			if ( parent === m.root || slotFrame( hooks.blockOfKey?.( parent.key ) ) ) {
+				return true;
+			}
+		}
+		return true;
+	};
+	const pageSection = ( e, block ) => ! sectionKind( block ) || ( 'page' === surface.kind
+		? ! pageWrapper( e ) && ( 1 === e.depth || ( !! m.byKey[ e.parentKey ] && wrapperOfPage( m.byKey[ e.parentKey ] ) ) )
+		: ! insideSection( e ) && fullWidthSlot( e ) );
 	const isMedia = ( k ) => 'img' === k.tag || ( k.tag.includes( '-' ) && !! specHit( R.mediaElement, k.tag ) );
 	// The element's own animation loops a translate for ever (the inventory's motion record): a marquee track.
 	const loops = ( e ) => motion.has( String( e.key ).replace( /#\d+$/, '' ) );
@@ -821,13 +850,25 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			if ( ! loops( e ) || ! kidsB.length ) {
 				return null;
 			}
-			const logos = desc( e ).some( isMedia );
-			// Labels that are not a page's own section cannot be the trust bar (a section block); the layout block that offers the
-			// marquee takes them as its text items, since the block a button group or a link run would pick offers none.
-			if ( ! logos && ! pageSection( e, R.marquee?.itemBlock ) ) {
+			// What the items show: an icon (an svg or a lone emoji glyph), an image, a label. Logos alone are the logo block's;
+			// items with an icon or an image beside a label are the item block's, chosen only when its item fields hold every
+			// kind the items show (`array_item_schema` roles) and the section block fits where the strip sits (pageSection).
+			const sub = ( k ) => m.kids( k ).flatMap( ( c ) => [ c, ...sub( c ) ] );
+			const shows = ( k ) => ( { icon: [ k, ...sub( k ) ].some( ( c ) => 'svg' === c.tag || emojiOnly( c ) ), image: [ k, ...sub( k ) ].some( isMedia ), label: !! all( k ).replace( EMOJI_RUN, '' ).trim() } );
+			const items = kidsB.map( shows );
+			const logos = items.every( ( x ) => x.image && ! x.label );
+			if ( logos ) {
+				return v( 'marquee', { block: R.marquee?.logoBlock, attributes: {}, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: 'the brand logos: add each logo image to the strip' } } );
+			}
+			const held = facts.itemKinds?.( R.marquee?.itemBlock ) ?? { icon: true, image: true, label: true };
+			const holds = items.every( ( x ) => ( ! x.icon || held.icon ) && ( ! x.image || held.image ) && ( ! x.label || held.label ) );
+			// A strip the section block cannot fill (inside another section, or in a slot that lays it out as one of several
+			// columns) takes the layout block that offers the marquee, its labels as text items, since the block a button group
+			// or a link run would pick offers none.
+			if ( ! holds || ! pageSection( e, R.marquee?.itemBlock ) ) {
 				return R.marquee?.textBlock ? v( 'marquee', { block: R.marquee.textBlock, attributes: { ...( R.marquee.textAttributes || {} ) }, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: 'the labels of this strip: add each as a brand name' } } ) : null;
 			}
-			return v( 'marquee', logos ? { block: R.marquee?.logoBlock, attributes: {}, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: 'the brand logos: add each logo image to the strip' } } : { block: R.marquee?.itemBlock, attributes: {}, absorb: true } );
+			return v( 'marquee', { block: R.marquee?.itemBlock, attributes: {}, absorb: true } );
 		},
 		// A row of short non-interactive labels, each with at most a glyph, is a trust bar (its badges are its items).
 		( { e, kidsB } ) => {

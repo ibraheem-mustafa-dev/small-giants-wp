@@ -33,10 +33,10 @@ export function motionDb( db ) {
 		targets.get( r.block_slug ).push( { target: r.target, cssElement: r.css_element, kind: r.kind, isWrapper: !! r.is_wrapper, support: parse( r.motion_support, null ) } );
 	}
 	const fields = new Map();
-	for ( const r of db.prepare( 'SELECT layer, field_path, field_type, per_device, unit FROM motion_fields' ).all() ) {
+	for ( const r of db.prepare( 'SELECT layer, field_path, field_type, per_device, unit, enum_json FROM motion_fields' ).all() ) {
 		const key = fieldKey( r.layer, r.field_path );
 		if ( key ) {
-			fields.set( `${ r.layer }|${ key.effect || '' }|${ key.path }`, { fieldType: r.field_type, perDevice: !! r.per_device, unit: r.unit } );
+			fields.set( `${ r.layer }|${ key.effect || '' }|${ key.path }`, { fieldType: r.field_type, perDevice: !! r.per_device, unit: r.unit, path: key.path, effect: key.effect || null, choices: parse( r.enum_json, null ) } );
 		}
 	}
 	const presets = db.prepare( 'SELECT slug, panel, effect, trigger, kind, values_json FROM motion_presets ORDER BY slug' ).all()
@@ -53,6 +53,9 @@ export function motionDb( db ) {
 		// The field a layer takes at `path` ('values.from.translateX'; a keyframe field as 'values.keyframes.opacity'),
 		// or null when the layer has no such field.
 		field: ( layer, path, effect = null ) => fields.get( `${ layer }|${ effect || '' }|${ path }` ) || null,
+		// The choice field of an effect that sets the widths it runs at: its choices are `always` and the device tiers it
+		// can run below (the marquee's belowBreakpoint), or null when the effect has none.
+		rangeField: ( layer, effect, tiers ) => [ ...fields.entries() ].filter( ( [ k ] ) => k.startsWith( `${ layer }|${ effect }|` ) ).map( ( [ , f ] ) => f ).find( ( f ) => 'choice' === f.fieldType && Array.isArray( f.choices ) && f.choices.includes( 'always' ) && f.choices.filter( ( c ) => 'always' !== c ).every( ( c ) => tiers.includes( c ) ) ) || null,
 		presets: ( panel ) => presets.filter( ( p ) => p.panel === panel ),
 		effect: ( slug ) => effects.get( slug ) || null,
 		effects: () => [ ...effects.keys() ],

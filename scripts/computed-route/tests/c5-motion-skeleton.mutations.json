@@ -13,14 +13,14 @@
 	},
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": "if ( ! logos && ! pageSection( e, R.marquee?.itemBlock ) ) {",
-		"replace": "if ( ! logos ) {",
+		"find": "if ( ! holds || ! pageSection( e, R.marquee?.itemBlock ) ) {",
+		"replace": "if ( true ) {",
 		"why": "a page-level strip of labels loses the trust bar"
 	},
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": "if ( ! loops( e ) || ! kidsB.length ) {\n\t\t\t\treturn null;\n\t\t\t}\n\t\t\tconst logos",
-		"replace": "if ( ! kidsB.length ) {\n\t\t\t\treturn null;\n\t\t\t}\n\t\t\tconst logos",
+		"find": "if ( ! loops( e ) || ! kidsB.length ) {\n\t\t\t\treturn null;\n\t\t\t}\n\t\t\t// What the items show",
+		"replace": "if ( ! kidsB.length ) {\n\t\t\t\treturn null;\n\t\t\t}\n\t\t\t// What the items show",
 		"why": "a strip nothing loops is a marquee"
 	},
 	{
@@ -67,8 +67,8 @@
 	},
 	{
 		"file": "lib/skeleton-loop-blocks.mjs",
-		"find": "cards: items.map( ( it ) => it.key ), cardBlock: rule.carousel.cardBlock,",
-		"replace": "cards: [], cardBlock: rule.carousel.cardBlock,",
+		"find": "cards: items.map( ( it ) => it.key ), cardBlock: rule.carousel.cardBlock, handover: null, reason: `${ rule.carousel.reason }",
+		"replace": "cards: [], cardBlock: rule.carousel.cardBlock, handover: null, reason: `${ rule.carousel.reason }",
 		"why": "no card is named"
 	},
 	{

@@ -67,8 +67,8 @@
 	},
 	{
 		"file": "lib/fill-motion-element.mjs",
-		"find": "only && out.effects.length && out.notes.push( only );",
-		"replace": "",
+		"find": "\tif ( below ) {\n\t\tfor ( const fx of out.effects ) {",
+		"replace": "\tif ( false ) {\n\t\tfor ( const fx of out.effects ) {",
 		"why": "the judged width is not stated"
 	},
 	{
@@ -235,8 +235,8 @@
 	},
 	{
 		"file": "lib/fill-motion-element.mjs",
-		"find": "const only = ranAt.length && ! ranAt.includes( 'desktop' ) ?",
-		"replace": "const only = ranAt.length ?",
+		"find": "const below = ranAt.length && ! ranAt.includes( 'desktop' );",
+		"replace": "const below = ranAt.length > 0;",
 		"why": "a loop that runs at desktop is called narrower-only"
 	},
 	{

@@ -2159,6 +2159,11 @@ def _blank_js_comment_or_string(match: "re.Match[str]") -> str:
     return " " if text.startswith("/") else text[0] * 2
 
 
+# A JS block or line comment; a quoted string is matched first and kept as it is (group 1), so the `//` of a URL inside a
+# string is never taken for a comment.
+_JS_COMMENT_RE = re.compile(r"""("(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*'|`(?:\\.|[^`\\])*`)|/\*[\s\S]*?\*/|//[^\n]*""")
+
+
 def scrape_allowed_blocks(edit_js_path: Path) -> list[str] | None:
     """Parse edit.js for a literal allowedBlocks / ALLOWED_BLOCKS array.
 
@@ -2178,6 +2183,10 @@ def scrape_allowed_blocks(edit_js_path: Path) -> list[str] | None:
         text = edit_source(edit_js_path.parent)
     except Exception:  # noqa: BLE001
         return _DYNAMIC_SKIP  # type: ignore[return-value]
+
+    # Comments are not declarations: a comment saying a block has "no allowedBlocks restriction" (sgs/site-header-row)
+    # must not make its list unknown and keep a stale stored value.
+    text = _JS_COMMENT_RE.sub(lambda m: m.group(1) or "", text)
 
     # Fast-path: no relevant keyword at all → absent (accepts any block)
     if "allowedBlocks" not in text and "ALLOWED_BLOCKS" not in text:

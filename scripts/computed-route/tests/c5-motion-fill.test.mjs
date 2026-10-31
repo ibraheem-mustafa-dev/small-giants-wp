@@ -19,7 +19,7 @@ const schema = loadMotionSchema();
 const FIELDS = enumerateFields( schema ).filter( ( f ) => /^(entrance\.base|effects)$/.test( f.layer ) ).map( ( f ) => ( {
 	def_name: f.node, field: f.path.split( '.' ).pop(), panel: f.layer.split( '.' )[ 0 ], layer: f.layer, effect: f.effect,
 	field_path: `elements.<target>.${ f.layer }${ f.effect ? `[effect=${ f.effect }]` : '' }.${ f.path.replace( '[]', '' ) }`,
-	field_type: f.fieldType, css_property: f.cssProperty, state: f.state, per_device: f.perDevice ? 1 : 0,
+	field_type: f.fieldType, css_property: f.cssProperty, state: f.state, per_device: f.perDevice ? 1 : 0, enum_json: f.enum ? JSON.stringify( f.enum ) : null,
 } ) );
 const fx = ( effect, triggers, channels ) => ( { effect, tier: 'vanilla', plugin_set: 'none', reduced_motion: 'off', editor_story: 'static', triggers, owned_properties: JSON.stringify( { channels, properties: [], slots: [] } ), panels: JSON.stringify( [ 'effects' ] ) } );
 const DB = fixtureDb( {
@@ -70,13 +70,28 @@ test( 'MUST FAIL (C5 fill 7): a loop the draft runs below a breakpoint only is j
 	const out = elementEffects( [ MARQUEE ], { mdb, loops: { 1440: still, 768: still, 375: running() } } );
 	assert.deepEqual( out.unmapped, [], JSON.stringify( out.unmapped ) );
 	assert.equal( out.effects[ 0 ].effect, 'marquee' );
-	assert.deepEqual( out.effects[ 0 ].values, { speed: 45, direction: 'left' } );
+	assert.deepEqual( out.effects[ 0 ].values, { speed: 45, direction: 'left', belowBreakpoint: 'mobile' } );
 	assert.deepEqual( out.effects[ 0 ].devices, {}, 'no wider width exists to override' );
 	assert.match( out.notes.join( ' ' ), /the render shows this endless animation at mobile only/ );
 	const tablet = elementEffects( [ MARQUEE ], { mdb, loops: { 1440: still, 768: running( 1700 ), 375: running( 850, 0.0225 ) } } );
 	assert.equal( tablet.effects[ 0 ].values.speed, 45 );
 	assert.deepEqual( tablet.effects[ 0 ].devices, { mobile: { speed: 22.5 } }, 'a narrower width overrides the tablet value' );
 	assert.match( tablet.notes.join( ' ' ), /tablet and mobile only/ );
+} );
+
+test( "MUST FAIL (marquee range): a loop the draft runs below a width only is written to run there through its effect's own range field (belowBreakpoint)", () => {
+	// Eye Care's header ticker: `mobile ? marquee : none` with mobile = effW < 768, so it runs at 375 only.
+	const mobile = elementEffects( [ MARQUEE ], { mdb, loops: { 1440: still, 768: still, 375: running() } } );
+	assert.equal( mobile.effects[ 0 ].values.belowBreakpoint, 'mobile', JSON.stringify( mobile.effects[ 0 ] ) );
+	assert.match( mobile.notes.join( ' ' ), /written to run at mobile width and below \(values\.belowBreakpoint\)/ );
+	const tablet = elementEffects( [ MARQUEE ], { mdb, loops: { 1440: still, 768: running(), 375: running() } } );
+	assert.equal( tablet.effects[ 0 ].values.belowBreakpoint, 'tablet' );
+	// Negative controls: a loop at desktop has no range; a loop at tablet but not mobile is no "below" range and runs everywhere.
+	const wide = elementEffects( [ MARQUEE ], { mdb, loops: { 1440: running(), 768: running(), 375: running() } } );
+	assert.equal( 'belowBreakpoint' in wide.effects[ 0 ].values, false );
+	const gap = elementEffects( [ MARQUEE ], { mdb, loops: { 1440: still, 768: running(), 375: still } } );
+	assert.equal( 'belowBreakpoint' in gap.effects[ 0 ].values, false );
+	assert.match( gap.notes.join( ' ' ), /runs at every width/ );
 } );
 
 test( 'MUST FAIL (C5 fill 7): a marquee tag the draft shows at one width only is judged at that width', () => {

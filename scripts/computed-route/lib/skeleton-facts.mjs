@@ -31,6 +31,10 @@ export function loadFacts( { db, client, repo = REPO, codeRepo = repo, siteName 
 	const attr = ( slug, name ) => q( 'SELECT attr_name, attr_type, default_value, enum_values, role, css_property FROM block_attributes WHERE block_slug = ? AND attr_name = ?', slug, name )[ 0 ] || null;
 	const attrsByRole = ( slug, role ) => q( 'SELECT attr_name, attr_type FROM block_attributes WHERE block_slug = ? AND role = ? AND css_property IS NULL', slug, role );
 	// The first (by declaration order) content setting of a role: a block's primary text and link settings.
+	// What a block's item fields can hold (the `array_item_schema` roles of its content arrays): an icon, an image, a label.
+	const itemKindsCache = {};
+	const itemKinds = ( slug ) => ( itemKindsCache[ slug ] ||= ( ( roles ) => ( { icon: roles.some( ( r ) => [ 'icon-slug', 'svg' ].includes( r ) ), image: roles.includes( 'image-object' ), label: roles.includes( 'text-content' ) } ) )(
+		slug ? q( "SELECT s.role FROM array_item_schema s JOIN block_attributes a ON a.block_slug = s.block_slug AND a.attr_name = s.array_attr AND a.role = 'content' WHERE s.block_slug = ?", slug ).map( ( r ) => r.role ) : [] ) );
 	const firstAttrByRole = ( slug, role ) => q( 'SELECT attr_name FROM block_attributes WHERE block_slug = ? AND role = ? AND css_property IS NULL ORDER BY rowid LIMIT 1', slug, role )[ 0 ]?.attr_name || null;
 	// The block's own accessible name: an a11y-text setting not tied to one of its parts (its canonical slot is empty or
 	// names the setting itself), before one that names a part (a button's iconTitle names its icon, slot `icon`).
@@ -51,7 +55,7 @@ export function loadFacts( { db, client, repo = REPO, codeRepo = repo, siteName 
 		listItem = { text: props.text ? 'text' : null, url: Object.keys( props ).find( ( k ) => 'url-href' === props[ k ].role ) || null, siteInfoSource: props.siteInfoSource ? 'siteInfoSource' : null, siteInfoLink: props.siteInfoLink ? 'siteInfoLink' : null, kinds };
 	}
 	return {
-		client, repo, codeRepo, decisions, placeholderMap, composition, tagMap, capsOf, blocksWithCap, attr, attrsByRole, firstAttrByRole, ownNameAttr, blocksWithDisplayType, enumOf, q,
+		client, repo, codeRepo, decisions, placeholderMap, composition, tagMap, capsOf, blocksWithCap, attr, attrsByRole, firstAttrByRole, itemKinds, ownNameAttr, blocksWithDisplayType, enumOf, q,
 		// SGS bans core blocks: each core block's SGS replacement, from blocks.replaces (a comma list per SGS block).
 		replacedBy: Object.fromEntries( q( "SELECT slug, replaces FROM blocks WHERE replaces IS NOT NULL AND replaces <> ''" ).flatMap( ( r ) => r.replaces.split( ',' ).map( ( c ) => [ c.trim(), r.slug ] ) ).filter( ( [ c ] ) => c ) ),
 		brands: brandRegistry(),
