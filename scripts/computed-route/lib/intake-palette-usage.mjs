@@ -80,7 +80,8 @@ export function usageRoles( groups, uses ) {
 		return hit?.[ 0 ] ?? null;
 	};
 	const flagged = uses.some( ( u ) => u.text );
-	const isText = ( u ) => 'color' === u.property && ( ! flagged || u.text );
+	// A run of glyphs only (a tick, an arrow) is an icon, never text evidence; a row without `words` (an older palette.json) counts as before.
+	const isText = ( u ) => 'color' === u.property && ( ! flagged || u.text ) && false !== u.words;
 	const tag = ( u ) => ( u.tag || '' ).toLowerCase();
 	const sum = ( m ) => [ ...m.values() ].reduce( ( s, n ) => s + n, 0 );
 
@@ -96,8 +97,8 @@ export function usageRoles( groups, uses ) {
 	give( 'footer-bg', best( tally( ( u ) => 'footer-ground' === u.property ) ), ( n ) => `the footer's ground on ${ n } page(s)` );
 	// Headings, links and muted text count on a light, opaque ground: on a strong ground they take that ground's text colour.
 	const light = ( hex ) => !! hex && 1 === hexToLab( hex ).alpha && lightness( hex ) >= LIGHT_L && ( chroma( hex ) <= SATURATED_C || lightness( hex ) >= PALE_L );
-	const heading = give( 'heading', best( tally( ( u ) => 'color' === u.property && HEADING_TAG.test( tag( u ) ) && ( ! u.ground || light( u.ground ) ) ) ), ( n ) => `the most used heading colour on light grounds (${ n } headings)` );
-	const links = tally( ( u ) => 'color' === u.property && 'a' === tag( u ) && ( ! u.ground || light( u.ground ) ) );
+	const heading = give( 'heading', best( tally( ( u ) => 'color' === u.property && false !== u.words && HEADING_TAG.test( tag( u ) ) && ( ! u.ground || light( u.ground ) ) ) ), ( n ) => `the most used heading colour on light grounds (${ n } headings)` );
+	const links = tally( ( u ) => 'color' === u.property && false !== u.words && 'a' === tag( u ) && ( ! u.ground || light( u.ground ) ) );
 	const linkTotal = sum( links );
 	give( 'link', best( links, ( g ) => g !== text && links.get( g ) * 10 >= linkTotal ) || best( links ),
 		( n ) => `the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (${ n } of ${ linkTotal } links)` );
