@@ -1,81 +1,58 @@
 {
   "_meta": {
-    "purpose": "Settings of plain-text-review.json's in-scope groups (sentences, interface strings, clickable labels, form controls) that stay plain on purpose, each with its reason, and the form settings whose text may hold a link. Read by scripts/check-authored-text-rich.py.",
-    "exceptions": "'<block>:<attr>' -> why it is not converted yet (a setting still plain). Every entry is a named gap, not a verdict: remove it when the setting converts. An exception naming no in-scope setting fails the check.",
+    "purpose": "Settings of plain-text-review.json's in-scope groups (sentences, interface strings, clickable labels, form controls) that cannot hold markup at all, each with the cited proof, plus the per-setting facts the check reads (noLink, linksAllowed, printPaths, controlFiles). Read by scripts/check-authored-text-rich.py.",
     "linksAllowed": "'<block>:<attr>' of the 'form controls' group whose text prints outside a label, button or link, so a link format may stay. Every other form-control and clickable-label setting takes the no-link list.",
-    "noLink": "'<block>:<attr>' of an interface string or sentence that prints inside a link, button or summary although its group does not say so: it takes the no-link list and prints with sgs_rich_text_kses( $v, false )."
+    "noLink": "'<block>:<attr>' of an interface string or sentence that prints inside a link, button or summary although its group does not say so: it takes the no-link list and prints with sgs_rich_text_kses( $v, false ).",
+    "printPaths": "'<block>:<attr>' -> PHP files (relative to the plugin) where the setting is printed when that is not the reader file or a file of the block: they must hold a sanitised print call.",
+    "controlFiles": "'<block>:<attr>' -> files outside the block folder that mount its rich control (a shared atom, its attribute named through a key lookup).",
+    "unconvertible": "'<block>:<attr>' -> why the setting cannot hold markup at all. A reason starts `cannot hold markup:` and cites the code (a src/ or includes/ path) that proves the value is only ever an attribute, a slug or structured data, never page text. Anything else left plain fails the check; there are no pending entries."
   },
-  "exceptions": {
-    "sgs/media:caption": "the control is the shared caption atom (src/components/media/atoms/caption.control.js) used by blocks with prefixed attributes; converting it needs each of those blocks' print path checked",
-    "sgs/buybox:soldOutLabel": "the value is passed to the buybox view script as data and to stock/notify helpers that print it as text; the script-side sanitised insert is not built",
-    "sgs/buybox:stockInStockLabel": "the value is passed to the buybox view script as data and to stock/notify helpers that print it as text; the script-side sanitised insert is not built",
-    "sgs/buybox:unavailableLabel": "the value is passed to the buybox view script as data and to stock/notify helpers that print it as text; the script-side sanitised insert is not built",
-    "sgs/card-grid:emptyMessage": "printed by the card-grid REST and results classes (includes/class-card-grid-*.php) and re-printed by the view script on filtering; the script-side sanitised insert is not built",
-    "sgs/card-grid:noImageLabel": "printed by the card-grid REST and results classes (includes/class-card-grid-*.php) and re-printed by the view script on filtering; the script-side sanitised insert is not built",
-    "sgs/card-grid:productEmptyMessage": "printed by the card-grid REST and results classes (includes/class-card-grid-*.php) and re-printed by the view script on filtering; the script-side sanitised insert is not built",
-    "sgs/cart:panelInstalmentsNote": "the value reaches the cart view script as JSON/data attributes and its panel template (includes/cart/), which insert it as text; the sanitised-HTML insert for each of those scripts is not built",
-    "sgs/choice-flow:pricePanelTitle": "the value is read by the choice-flow footer, chrome, summary and showcase helpers (includes/choice-flow-*.php) and its view script, several of which print it as text or into data attributes; not converted as one unit yet",
-    "sgs/choice-flow:skipPrompt": "the value is read by the choice-flow footer, chrome, summary and showcase helpers (includes/choice-flow-*.php) and its view script, several of which print it as text or into data attributes; not converted as one unit yet",
-    "sgs/choice-flow:stageNote": "the value is read by the choice-flow footer, chrome, summary and showcase helpers (includes/choice-flow-*.php) and its view script, several of which print it as text or into data attributes; not converted as one unit yet",
-    "sgs/choice-flow:summaryPendingLabel": "the value is read by the choice-flow footer, chrome, summary and showcase helpers (includes/choice-flow-*.php) and its view script, several of which print it as text or into data attributes; not converted as one unit yet",
-    "sgs/choice-flow:title": "the value is read by the choice-flow footer, chrome, summary and showcase helpers (includes/choice-flow-*.php) and its view script, several of which print it as text or into data attributes; not converted as one unit yet",
-    "sgs/choice-flow-result:emailLabel": "the value is read by the choice-flow footer, chrome, summary and showcase helpers (includes/choice-flow-*.php) and its view script, several of which print it as text or into data attributes; not converted as one unit yet",
-    "sgs/diagram-dimension:caption": "the print site was not converted in this pass",
-    "sgs/google-reviews:businessName": "printed by the shared reviews helpers (includes/helpers-reviews-inline.php) and the review card renderer, which also embed it in JSON for the slider script",
-    "sgs/icon:brandName": "the value passes through a helper that transforms it before printing (label roll, visible-label, word detection, schema or aria use); each helper needs a plain-text twin first",
-    "sgs/icon:labelText": "the value passes through a helper that transforms it before printing (label roll, visible-label, word detection, schema or aria use); each helper needs a plain-text twin first",
-    "sgs/language-switch:prefixLabel": "the value passes through a helper that transforms it before printing (label roll, visible-label, word detection, schema or aria use); each helper needs a plain-text twin first",
-    "sgs/nav-drawer:chromeSlotText": "the value feeds the nav label helpers (word detection, sgs_nav_label_is_word) and the burger/drawer view script; not converted yet",
-    "sgs/option-picker:label": "the value passes through a helper that transforms it before printing (label roll, visible-label, word detection, schema or aria use); each helper needs a plain-text twin first",
-    "sgs/product-card:attributeTagText": "printed by the built-in card renderer (includes/product-card-*.php), which is also called from card-grid and the editor canvas; the shared print path is not converted yet",
-    "sgs/product-card:featuredTag": "printed by the built-in card renderer (includes/product-card-*.php), which is also called from card-grid and the editor canvas; the shared print path is not converted yet",
-    "sgs/product-card:noImageLabel": "printed by the built-in card renderer (includes/product-card-*.php), which is also called from card-grid and the editor canvas; the shared print path is not converted yet",
-    "sgs/product-card:noReviewsText": "printed by the built-in card renderer (includes/product-card-*.php), which is also called from card-grid and the editor canvas; the shared print path is not converted yet",
-    "sgs/product-card:priceNote": "printed by the built-in card renderer (includes/product-card-*.php), which is also called from card-grid and the editor canvas; the shared print path is not converted yet",
-    "sgs/product-card:savingLabel": "printed by the built-in card renderer (includes/product-card-*.php), which is also called from card-grid and the editor canvas; the shared print path is not converted yet",
-    "sgs/product-card:trialTag": "printed by the built-in card renderer (includes/product-card-*.php), which is also called from card-grid and the editor canvas; the shared print path is not converted yet",
-    "sgs/testimonial:reviewDate": "the value passes through a helper that transforms it before printing (label roll, visible-label, word detection, schema or aria use); each helper needs a plain-text twin first",
-    "sgs/testimonial:sourcePlatform": "the value passes through a helper that transforms it before printing (label roll, visible-label, word detection, schema or aria use); each helper needs a plain-text twin first",
-    "sgs/buybox:addToCartLabel": "the value is passed to the buybox view script as data and to stock/notify helpers that print it as text; the script-side sanitised insert is not built",
-    "sgs/buybox:guidedNextLabel": "the value is passed to the buybox view script as data and to stock/notify helpers that print it as text; the script-side sanitised insert is not built",
-    "sgs/buybox:notifyMeLabel": "the value is passed to the buybox view script as data and to stock/notify helpers that print it as text; the script-side sanitised insert is not built",
-    "sgs/buybox:pickerLabelLinkText": "the value is passed to the buybox view script as data and to stock/notify helpers that print it as text; the script-side sanitised insert is not built",
-    "sgs/cart:itemRemoveLabel": "the value reaches the cart view script as JSON/data attributes and its panel template (includes/cart/), which insert it as text; the sanitised-HTML insert for each of those scripts is not built",
-    "sgs/choice-flow:closeLabel": "the value is read by the choice-flow footer, chrome, summary and showcase helpers (includes/choice-flow-*.php) and its view script, several of which print it as text or into data attributes; not converted as one unit yet",
-    "sgs/choice-flow:continueLabel": "the value is read by the choice-flow footer, chrome, summary and showcase helpers (includes/choice-flow-*.php) and its view script, several of which print it as text or into data attributes; not converted as one unit yet",
-    "sgs/choice-flow:skipLabel": "the value is read by the choice-flow footer, chrome, summary and showcase helpers (includes/choice-flow-*.php) and its view script, several of which print it as text or into data attributes; not converted as one unit yet",
-    "sgs/choice-flow-question:question": "the value is read by the choice-flow footer, chrome, summary and showcase helpers (includes/choice-flow-*.php) and its view script, several of which print it as text or into data attributes; not converted as one unit yet",
-    "sgs/choice-flow-result:submitLabel": "the value is read by the choice-flow footer, chrome, summary and showcase helpers (includes/choice-flow-*.php) and its view script, several of which print it as text or into data attributes; not converted as one unit yet",
-    "sgs/nav-bar-menu:triggerHoverLabel": "the value feeds the nav label helpers (word detection, sgs_nav_label_is_word) and the burger/drawer view script; not converted yet",
-    "sgs/nav-bar-menu:triggerOpenLabel": "the value feeds the nav label helpers (word detection, sgs_nav_label_is_word) and the burger/drawer view script; not converted yet",
-    "sgs/nav-drawer:closeLabel": "the value feeds the nav label helpers (word detection, sgs_nav_label_is_word) and the burger/drawer view script; not converted yet",
-    "sgs/post-grid:readMoreText": "the print site was not converted in this pass",
-    "sgs/product-card:cta2Text": "printed by the built-in card renderer (includes/product-card-*.php), which is also called from card-grid and the editor canvas; the shared print path is not converted yet",
-    "sgs/product-card:ctaText": "printed by the built-in card renderer (includes/product-card-*.php), which is also called from card-grid and the editor canvas; the shared print path is not converted yet",
-    "sgs/tab:label": "the label is printed by the parent sgs/tabs render into the tablist and into aria attributes; not converted yet",
-    "sgs/theme-toggle:label": "the value passes through a helper that transforms it before printing (label roll, visible-label, word detection, schema or aria use); each helper needs a plain-text twin first",
-    "sgs/form:nextLabel": "the label feeds the shared field_label helper, aria-label and for= wiring, validation messages, the review step and the submission email (includes/forms/); each needs a plain-text twin before the field can hold markup",
-    "sgs/form:prevLabel": "the label feeds the shared field_label helper, aria-label and for= wiring, validation messages, the review step and the submission email (includes/forms/); each needs a plain-text twin before the field can hold markup",
-    "sgs/form:savedProgressSavedLabel": "the label feeds the shared field_label helper, aria-label and for= wiring, validation messages, the review step and the submission email (includes/forms/); each needs a plain-text twin before the field can hold markup",
-    "sgs/form:submitLabel": "the label feeds the shared field_label helper, aria-label and for= wiring, validation messages, the review step and the submission email (includes/forms/); each needs a plain-text twin before the field can hold markup",
-    "sgs/form:successMessage": "the label feeds the shared field_label helper, aria-label and for= wiring, validation messages, the review step and the submission email (includes/forms/); each needs a plain-text twin before the field can hold markup",
-    "sgs/form-field-address:label": "the label feeds the shared field_label helper, aria-label and for= wiring, validation messages, the review step and the submission email (includes/forms/); each needs a plain-text twin before the field can hold markup",
-    "sgs/form-field-checkbox:label": "the label feeds the shared field_label helper, aria-label and for= wiring, validation messages, the review step and the submission email (includes/forms/); each needs a plain-text twin before the field can hold markup",
-    "sgs/form-field-consent:label": "the label feeds the shared field_label helper, aria-label and for= wiring, validation messages, the review step and the submission email (includes/forms/); each needs a plain-text twin before the field can hold markup",
-    "sgs/form-field-date:label": "the label feeds the shared field_label helper, aria-label and for= wiring, validation messages, the review step and the submission email (includes/forms/); each needs a plain-text twin before the field can hold markup",
-    "sgs/form-field-email:label": "the label feeds the shared field_label helper, aria-label and for= wiring, validation messages, the review step and the submission email (includes/forms/); each needs a plain-text twin before the field can hold markup",
-    "sgs/form-field-file:buttonLabel": "the label feeds the shared field_label helper, aria-label and for= wiring, validation messages, the review step and the submission email (includes/forms/); each needs a plain-text twin before the field can hold markup",
-    "sgs/form-field-file:label": "the label feeds the shared field_label helper, aria-label and for= wiring, validation messages, the review step and the submission email (includes/forms/); each needs a plain-text twin before the field can hold markup",
-    "sgs/form-field-file:uploadText": "the label feeds the shared field_label helper, aria-label and for= wiring, validation messages, the review step and the submission email (includes/forms/); each needs a plain-text twin before the field can hold markup",
-    "sgs/form-field-number:columnHeading": "the label feeds the shared field_label helper, aria-label and for= wiring, validation messages, the review step and the submission email (includes/forms/); each needs a plain-text twin before the field can hold markup",
-    "sgs/form-field-number:label": "the label feeds the shared field_label helper, aria-label and for= wiring, validation messages, the review step and the submission email (includes/forms/); each needs a plain-text twin before the field can hold markup",
-    "sgs/form-field-phone:label": "the label feeds the shared field_label helper, aria-label and for= wiring, validation messages, the review step and the submission email (includes/forms/); each needs a plain-text twin before the field can hold markup",
-    "sgs/form-field-radio:label": "the label feeds the shared field_label helper, aria-label and for= wiring, validation messages, the review step and the submission email (includes/forms/); each needs a plain-text twin before the field can hold markup",
-    "sgs/form-field-select:label": "the label feeds the shared field_label helper, aria-label and for= wiring, validation messages, the review step and the submission email (includes/forms/); each needs a plain-text twin before the field can hold markup",
-    "sgs/form-field-text:label": "the label feeds the shared field_label helper, aria-label and for= wiring, validation messages, the review step and the submission email (includes/forms/); each needs a plain-text twin before the field can hold markup",
-    "sgs/form-field-textarea:label": "the label feeds the shared field_label helper, aria-label and for= wiring, validation messages, the review step and the submission email (includes/forms/); each needs a plain-text twin before the field can hold markup",
-    "sgs/form-field-tiles:label": "the label feeds the shared field_label helper, aria-label and for= wiring, validation messages, the review step and the submission email (includes/forms/); each needs a plain-text twin before the field can hold markup"
+  "linksAllowed": [
+    "sgs/form:successMessage",
+    "sgs/form-review:heading",
+    "sgs/form-review:intro"
+  ],
+  "noLink": [
+    "sgs/breadcrumbs:homeLabel",
+    "sgs/button:note",
+    "sgs/card-grid:noImageLabel",
+    "sgs/cart:itemRemoveLabel",
+    "sgs/choice-flow:stageNote",
+    "sgs/diagram-dimension:caption",
+    "sgs/icon:labelText",
+    "sgs/language-switch:prefixLabel",
+    "sgs/option-picker:label",
+    "sgs/product-card:attributeTagText",
+    "sgs/product-card:featuredTag",
+    "sgs/product-card:noImageLabel",
+    "sgs/product-card:noReviewsText",
+    "sgs/product-card:priceNote",
+    "sgs/product-card:savingLabel",
+    "sgs/product-card:trialTag",
+    "sgs/table-of-contents:title",
+    "sgs/testimonial:reviewDate",
+    "sgs/testimonial:sourcePlatform",
+    "sgs/theme-toggle:label"
+  ],
+  "printPaths": {
+    "sgs/nav-bar-menu:triggerHoverLabel": [
+      "includes/nav-menu-markup.php"
+    ],
+    "sgs/nav-bar-menu:triggerOpenLabel": [
+      "includes/nav-menu-markup.php"
+    ]
   },
-  "linksAllowed": [ "sgs/form:successMessage", "sgs/form-review:heading", "sgs/form-review:intro" ],
-  "noLink": [ "sgs/button:note", "sgs/breadcrumbs:homeLabel", "sgs/table-of-contents:title" ]
+  "controlFiles": {
+    "sgs/media:caption": [
+      "src/components/media/atoms/caption.control.js"
+    ]
+  },
+  "unconvertible": {
+    "sgs/buybox:soldOutLabel": "cannot hold markup: the value is only ever an attribute. render.php passes it in the block context (`soldOutLabel`) and src/blocks/product-card/view.js::updateAvailability writes it with `input.setAttribute( 'aria-label', term.label + ' ' + ctx.soldOutLabel )`; no element prints it as page text.",
+    "sgs/buybox:unavailableLabel": "cannot hold markup: only ever an attribute. render.php passes it in the block context (`unavailableLabel`) and src/blocks/product-card/view.js writes it with `input.setAttribute( 'aria-label', term.label + ' ' + ctx.unavailableLabel )`; no element prints it as page text.",
+    "sgs/choice-flow:title": "cannot hold markup: only ever an attribute. src/blocks/choice-flow/render.php reads it as `$flow_title` and writes it as `$wrapper_args['aria-label']`; no element prints it as page text.",
+    "sgs/google-reviews:businessName": "cannot hold markup: it only feeds the structured data. includes/helpers-reviews-inline.php::sgs_reviews_inline_data stores it as `displayName.text` and src/blocks/google-reviews/render.php writes it as the JSON-LD `name` (`'name' => $business_name`); no element prints it, and JSON-LD names are plain strings.",
+    "sgs/icon:brandName": "cannot hold markup: it is a registry slug, not words. src/blocks/icon/render.php reads it as `$brand_name = preg_replace( '/[^a-z0-9-]/', '', strtolower( ... ) )` and looks the glyph up with sgs_brand_by_slug( $brand_name ); any markup would be stripped to its letters.",
+    "sgs/form-field-consent:label": "cannot hold markup: src/blocks/form-field-consent/render.php never prints `label` (the visible words are `consentText`, already rich); `label` only feeds includes/forms/field-render-helpers.php::field_submission_name (a slug) and field_open's no-label class, and the block has no inspector control for it."
+  }
 }

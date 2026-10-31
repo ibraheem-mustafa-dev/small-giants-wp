@@ -10,7 +10,13 @@
     "src/components/SgsFreeTextField.js": { "html || ''": "RICH_TEXT_FREE_TEXT", "htmlText || ''": "RICH_TEXT_FREE_TEXT_NO_LINK" },
     "src/blocks/accordion-item/edit.js": { "title": "RICH_TEXT_BODY_NO_LINK" },
     "src/blocks/button/edit.js": { "label": "RICH_TEXT_EMPHASIS", "note": "RICH_TEXT_FREE_TEXT_NO_LINK" },
-    "src/blocks/choice-flow-result/edit.js": { "heading": "RICH_TEXT_FREE_TEXT", "body": "RICH_TEXT_BODY", "successMessage": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/choice-flow-result/edit.js": {
+      "heading": "RICH_TEXT_FREE_TEXT",
+      "body": "RICH_TEXT_BODY",
+      "successMessage": "RICH_TEXT_FREE_TEXT",
+      "emailLabel": "RICH_TEXT_FREE_TEXT",
+      "submitLabel": "RICH_TEXT_FREE_TEXT_NO_LINK"
+    },
     "src/blocks/collapsible-text/edit.js": { "text": "RICH_TEXT_BODY" },
     "src/blocks/counter/edit.js": { "label": "RICH_TEXT_BODY" },
     "src/blocks/form-field-consent/edit.js": { "consentText": "RICH_TEXT_BODY" },
@@ -25,7 +31,18 @@
       "billingToggleMonthlyLabel": "RICH_TEXT_FREE_TEXT_NO_LINK",
       "billingToggleYearlyLabel": "RICH_TEXT_FREE_TEXT_NO_LINK"
     },
-    "src/blocks/product-card/edit.js": { "productName || ''": "RICH_TEXT_PLAIN", "description || ''": "RICH_TEXT_BODY" },
+    "src/blocks/product-card/edit.js": {
+      "productName || ''": "RICH_TEXT_PLAIN",
+      "description || ''": "RICH_TEXT_BODY",
+      "attributeTagText": "RICH_TEXT_FREE_TEXT_NO_LINK",
+      "featuredTag": "RICH_TEXT_FREE_TEXT_NO_LINK",
+      "noReviewsText": "RICH_TEXT_FREE_TEXT_NO_LINK",
+      "priceNote": "RICH_TEXT_FREE_TEXT_NO_LINK",
+      "savingLabel": "RICH_TEXT_FREE_TEXT_NO_LINK",
+      "trialTag": "RICH_TEXT_FREE_TEXT_NO_LINK",
+      "cta2Text": "RICH_TEXT_FREE_TEXT_NO_LINK",
+      "ctaText": "RICH_TEXT_FREE_TEXT_NO_LINK"
+    },
     "src/blocks/product-faq/edit.js": { "heading": "RICH_TEXT_FREE_TEXT_NO_LINK" },
     "src/blocks/product-faq-item/edit.js": { "question": "RICH_TEXT_FREE_TEXT_NO_LINK" },
     "src/blocks/quote/edit.js": { "attribution": "RICH_TEXT_BODY" },
@@ -35,7 +52,9 @@
       "summaryPhrase": "RICH_TEXT_EMPHASIS",
       "reviewerName": "RICH_TEXT_PLAIN",
       "reviewerRole": "RICH_TEXT_FREE_TEXT",
-      "orgName": "RICH_TEXT_FREE_TEXT"
+      "orgName": "RICH_TEXT_FREE_TEXT",
+      "reviewDate": "RICH_TEXT_FREE_TEXT_NO_LINK",
+      "sourcePlatform": "RICH_TEXT_FREE_TEXT_NO_LINK"
     },
     "src/blocks/text/edit.js": { "text": "RICH_TEXT_BODY" },
     "src/blocks/timeline/edit.js": { "entry.description || ''": "RICH_TEXT_BODY" },
@@ -93,12 +112,78 @@
       "emptyCartCtaLabel": "RICH_TEXT_FREE_TEXT_NO_LINK",
       "viewCartLabel": "RICH_TEXT_FREE_TEXT_NO_LINK"
     },
-    "src/blocks/cart/PanelContentControls.js": { "panelTaxNote": "RICH_TEXT_FREE_TEXT" }
+    "src/blocks/cart/PanelContentControls.js": {
+      "panelTaxNote": "RICH_TEXT_FREE_TEXT",
+      "itemRemoveLabel": "RICH_TEXT_FREE_TEXT_NO_LINK",
+      "panelInstalmentsNote": "RICH_TEXT_FREE_TEXT"
+    },
+    "src/blocks/form/ButtonLabelControls.js": {
+      "submitLabel": "RICH_TEXT_FREE_TEXT_NO_LINK",
+      "nextLabel": "RICH_TEXT_FREE_TEXT_NO_LINK",
+      "prevLabel": "RICH_TEXT_FREE_TEXT_NO_LINK"
+    },
+    "src/blocks/form/SavedProgressPanel.js": { "savedProgressSavedLabel": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/form/edit.js": { "successMessage": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/form-field-address/edit.js": { "label": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/form-field-date/edit.js": { "label": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/form-field-email/edit.js": { "label": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/form-field-file/ZonePanel.js": { "buttonLabel": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/form-field-file/edit.js": { "label": "RICH_TEXT_FREE_TEXT_NO_LINK", "uploadText": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/form-field-number/edit.js": {
+      "label": "RICH_TEXT_FREE_TEXT_NO_LINK",
+      "columnHeading": "RICH_TEXT_FREE_TEXT_NO_LINK",
+      "rowHeading": "RICH_TEXT_FREE_TEXT_NO_LINK"
+    },
+    "src/blocks/form-field-phone/edit.js": { "label": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/form-field-text/edit.js": { "label": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/form-field-textarea/edit.js": { "label": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/form-field-checkbox/edit.js": { "label": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/form-field-radio/edit.js": { "label": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/form-field-select/edit.js": { "label": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/form-field-tiles/edit.js": { "label": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/choice-flow/PricingSettingsPanel.js": { "pricePanelTitle": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/choice-flow/SummaryPanel.js": { "stageNote": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/choice-flow/ChromePanel.js": { "closeLabel": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/choice-flow/FlowNavigationPanel.js": { "continueLabel": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/choice-flow-question/edit.js": { "question": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/choice-flow/ShowcasePanel.js": {
+      "skipPrompt": "RICH_TEXT_FREE_TEXT",
+      "skipLabel": "RICH_TEXT_FREE_TEXT_NO_LINK",
+      "summaryPendingLabel": "RICH_TEXT_FREE_TEXT_NO_LINK"
+    },
+    "src/blocks/buybox/edit.js": { "addToCartLabel": "RICH_TEXT_FREE_TEXT_NO_LINK", "notifyMeLabel": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/buybox/inspector-extra-2.js": { "stockInStockLabel": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/buybox/GuidedPanel.js": { "guidedNextLabel": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/buybox/inspector-extra-4.js": { "pickerLabelLinkText": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/card-grid/components/collection-panel.js": { "emptyMessage": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/card-grid/components/GlyphOverlayPanels.js": { "noImageLabel": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/card-grid/components/ProductsToolsPanel.js": { "productEmptyMessage": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/post-grid/components/ContentPanel.js": { "readMoreText": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/icon/inspector-label.js": { "labelText": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/language-switch/edit.js": { "prefixLabel": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/nav-drawer/ChromeSlotControls.js": { "chromeSlotText": "RICH_TEXT_FREE_TEXT" },
+    "src/blocks/option-picker/edit.js": { "label": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/product-card/listing-panels.js": { "noImageLabel": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/nav-bar-menu/BurgerPanel.js": {
+      "triggerHoverLabel": "RICH_TEXT_FREE_TEXT_NO_LINK",
+      "triggerOpenLabel": "RICH_TEXT_FREE_TEXT_NO_LINK"
+    },
+    "src/blocks/nav-drawer/edit.js": { "closeLabel": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/theme-toggle/edit.js": { "label": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/tab/edit.js": { "label": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/diagram-dimension/edit.js": { "caption": "RICH_TEXT_FREE_TEXT_NO_LINK" },
+    "src/blocks/media/edit.js": { "caption": "RICH_TEXT_FREE_TEXT" }
   },
   "undecided": {},
   "render": {
     "src/blocks/accordion-item/render.php": { "$sgs_title": "rich-text" },
-    "src/blocks/choice-flow-result/render.php": { "$heading": "rich-text", "$body": "rich-text", "$success_message": "rich-text" },
+    "src/blocks/choice-flow-result/render.php": {
+      "$heading": "rich-text",
+      "$body": "rich-text",
+      "$success_message": "rich-text",
+      "$email_label, false": "rich-text",
+      "$submit_label, false": "rich-text"
+    },
     "src/blocks/collapsible-text/render.php": { "$text": "rich-text" },
     "src/blocks/counter/render.php": { "$label": "rich-text" },
     "src/blocks/form-field-consent/render.php": { "$text": "rich-text" },
@@ -107,7 +192,14 @@
     "src/blocks/product-card/render.php": {
       "$sgs_resolved_desc": "rich-text",
       "$data['price_from_html']": "WooCommerce price markup (wc_price), not RichText",
-      "$data['price_html']": "WooCommerce price markup (get_price_html), not RichText"
+      "$data['price_html']": "WooCommerce price markup (get_price_html), not RichText",
+      "$sgs_badge_overlay, false": "rich-text",
+      "$sgs_badge_inbody, false": "rich-text",
+      "$ro_cta_label, false": "rich-text",
+      "$sgs_cta_label, false": "rich-text",
+      "$sgs_cta2_text, false": "rich-text",
+      "$sgs_nv_cta_label, false": "rich-text",
+      "$sgs_nv_cta2_text, false": "rich-text"
     },
     "src/blocks/product-faq-item/render.php": { "$question, false": "rich-text" },
     "src/blocks/quote/render.php": { "$attribution": "rich-text" },
@@ -116,13 +208,16 @@
       "$summary_phrase": "rich-text",
       "$quote": "rich-text",
       "$reviewer_role": "rich-text",
-      "$org_name": "rich-text"
+      "$org_name": "rich-text",
+      "$source_platform, false": "rich-text",
+      "$review_date, false": "rich-text"
     },
     "src/blocks/text/render.php": { "$text": "rich-text" },
     "src/blocks/timeline/render.php": { "$description": "rich-text" },
     "src/blocks/trust-bar/render.php": { "$block_title": "rich-text" },
     "src/blocks/whatsapp-cta/variant-render.php": { "$title": "rich-text", "$subline": "rich-text" },
-    "src/blocks/product-faq/render.php": { "$heading, false": "rich-text" }
+    "src/blocks/product-faq/render.php": { "$heading, false": "rich-text" },
+    "src/blocks/product-card/attribute-tag.php": { "$text, false": "rich-text" }
   },
   "allowlist": {
     "button": "The label keeps its own narrower wp_kses() allowlist (no link, no style) in render.php.",
