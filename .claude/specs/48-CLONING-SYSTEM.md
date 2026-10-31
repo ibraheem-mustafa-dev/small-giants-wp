@@ -1065,6 +1065,8 @@ Status: the snap and write are built (`lib/normalise.mjs`, `lib/resolve.mjs`). D
 
 Status: per-element literal writing is built (Fill). Binding grouping is built (2026-10-22): Fill lists each written setting that one `{{ }}` style binding feeds the same value on two or more elements as one group, and a binding written different values as a split, never a group (`scripts/computed-route/lib/fill-binding-group.mjs::groupBindings`, run by `fill.mjs` into `binding-groups.json`, each grouped write marked `group`; `scripts/computed-route/tests/fill-binding-group.test.mjs`). The group is the one shared setting; creating its token in the snapshot waits on the per-tier section padding and gutter tokens, a Spec 32 hand-off (§16). A binding is read from the fact record's holes (`elements[<component>/<n>].template.holes`, a hole whose place is `style:<property>`) and matched to its elements by the node's tpl finder, not to the individual property it feeds; with no fact record nothing is grouped.
 
+Token references (Spec 32 FR-32-29, built 2026-10-31): before a written result is applied, `scripts/computed-route/lib/fill-token-ref.mjs::tokenWrites` traces the draft token the element's declared value uses at each width (never by value) and writes the spacing or font-size preset reference of the slot that carries it, the shade slug for colour; a default token or a literal stays as the resolver wrote it. Each width's outcome is a row in the run's `tokenRefs`.
+
 ### FR-48-42 — Row 6, layout
 **Read:** the declared form (`display`, `grid-template-columns: repeat(...)`, `flex-direction`, `flex-wrap`).
 
