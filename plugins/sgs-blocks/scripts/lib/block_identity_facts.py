@@ -69,7 +69,7 @@ CONTENT_EVIDENCE = "content a setting holds"
 def _own(evidence: str) -> bool:
     """Whether a fact comes from the block's own structure: not content a setting holds, not an inner block's."""
     return CONTENT_EVIDENCE not in evidence and not evidence.startswith("inner block")
-_TRACK = re.compile(r"(?<!window)(?<!documentElement)\.(?:scrollTo|scrollBy)\s*\(|\.scrollLeft\s*[+\-]?=(?!=)|\.style\.transform\s*=|"
+_TRACK = re.compile(r"(?<!window)(?<!documentElement)\.(?:scrollTo|scrollBy|scrollIntoView)\s*\(|\.scrollLeft\s*[+\-]?=(?!=)|\.style\.transform\s*=|"
                     r"setProperty\(\s*'(--[\w-]*(?:offset|translate|slide|index|track|shift)[\w-]*)'")
 _HANDLER = re.compile(r"addEventListener\(\s*'(?:click|keydown|pointerdown|pointerup)'")
 _PAGE_SCROLL = re.compile(r"(?:window|document)\.addEventListener\(\s*'scroll'")
@@ -182,13 +182,19 @@ class Rows:
     # -- self-moving ---------------------------------------------------------------------------------------------------
     def _track(self, js: str):
         """The first write in the view code that moves a track. A `scrollTo` / `scrollBy` whose options name only `top`
-        scrolls a panel, not a track; a custom property moves one only when a declaration consumes it along the inline
-        axis (`identity_editor.StyleIndex.moves`; a property with no consumer found keeps counting)."""
+        scrolls a panel, not a track; a `scrollIntoView` moves one only when its options name the `inline` axis (one with
+        only `block`, or none, brings a form or a list option into view); a custom property moves one only when a
+        declaration consumes it along the inline axis (`identity_editor.StyleIndex.moves`; a property with no consumer
+        found keeps counting)."""
         for t in _TRACK.finditer(js):
             if t.group(1):
                 if self._styles is None:
                     self._styles = StyleIndex([self.x.p.blocks.parent, *self.x.p.php_roots])
                 if self._styles.moves(t.group(1)) is False:
+                    continue
+            elif "scrollIntoView" in t.group(0):
+                arg = js[t.end():t.end() + 200].lstrip()
+                if not re.match(r"\{[^{}]*(?<![\w-])inline\s*:", arg):
                     continue
             elif "scroll" in t.group(0):
                 arg = js[t.end():t.end() + 200].lstrip()

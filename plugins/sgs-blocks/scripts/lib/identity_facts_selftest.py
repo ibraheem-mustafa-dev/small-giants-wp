@@ -34,7 +34,8 @@ A throwaway repo tree is written to a temp folder and read by the real extractor
   value neither prints stays no (table); sgs/fx-box accepts any block with no template (table unknown, its own div yes);
 - editor-side audit shapes (each MUST FAIL before the fix): sgs/fx-drawer sets a custom property only `top` consumes
   from a click and a page scroll listener (no track: none yes), sgs/fx-slide one a transform consumes (timer yes, the
-  positive control), sgs/fx-vscroll a `scrollTo( { top } )` (no track); sgs/fx-pick mounts an IconPicker with no
+  positive control), sgs/fx-vscroll a `scrollTo( { top } )` (no track); sgs/fx-snap a click-driven `scrollIntoView( { inline } )` (a track) and
+  sgs/fx-formscroll one naming only `block` (no track); sgs/fx-pick mounts an IconPicker with no
   `sources` prop on a setting with no icon role (every non-opt-in kind yes), sgs/fx-pick-lucide one restricted to lucide
   on an icon-slug item field (lucide yes, emoji unknown), sgs/fx-pick-role one on an icon-lucide field (emoji yes);
 - comment-annotated dynamic imports (MUST FAIL before the import reader skips bundler comments; the lottie player
@@ -170,6 +171,12 @@ btn.addEventListener( 'click', () => { drawer.style.setProperty( '--fx-drawer-he
 """),
     "fx-vscroll": ({"supports": {}}, "<?php echo '<div class=\"s\"></div>';",
                    """btn.addEventListener( 'click', () => { scroller.scrollTo( { top, behavior: 'smooth' } ); } );
+"""),
+    "fx-snap": ({"supports": {}}, "<?php echo '<div class=\"g\"></div>';",
+                """next.addEventListener( 'click', () => { items[ i ].scrollIntoView( { behavior: 'smooth', block: 'nearest', inline: 'start' } ); } );
+"""),
+    "fx-formscroll": ({"supports": {}}, "<?php echo '<form></form>';",
+                      """form.addEventListener( 'click', () => { form.scrollIntoView( { behavior: 'smooth', block: 'start' } ); } );
 """),
     "fx-pick": ({"supports": {}, "_edit": """export default function Edit() {
 	return <IconPicker value={ v } onChange={ ( { source, name } ) => setAttributes( { iconSource: source, iconName: name } ) } />;
@@ -361,6 +368,8 @@ def run() -> int:
             ("sgs/fx-drawer", "self-moving", "scroll", "no", "a page scroll listener setting a header offset moves no track"),
             ("sgs/fx-drawer", "self-moving", "controls", "no", "a click setting a header offset moves no track"),
             ("sgs/fx-slide", "self-moving", "timer", "yes", "a custom property consumed by transform moves a track (testimonial slider)"),
+            ("sgs/fx-snap", "self-moving", "controls", "yes", "a click that scrollIntoViews an item along the inline axis moves a track (gallery, post-grid carousel)"),
+            ("sgs/fx-formscroll", "self-moving", "controls", "no", "a scrollIntoView naming only the block axis brings a form into view, not a track"),
             ("sgs/fx-vscroll", "self-moving", "none", "yes", "a scrollTo naming only top scrolls a panel, not a track (nav-drawer-menu)"),
             ("sgs/fx-pick", "accepts-kind", "*=icon:emoji", "yes", "an IconPicker with no sources prop offers every source that is not opt-in"),
             ("sgs/fx-pick", "accepts-kind", "iconName=icon:lucide", "yes", "the setting the IconPicker writes holds its kinds"),

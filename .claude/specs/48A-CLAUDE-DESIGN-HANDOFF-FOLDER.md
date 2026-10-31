@@ -99,6 +99,11 @@ All of these are optional, so an earlier export still validates. The handoff nev
 
 Status: schema, method, prompt and `CLAUDE.md` updated 2026-10-29. The route reads `setState` and `storeCalls` before the prose (`lib/intake-reach-calls.mjs::structuredReach`, used by `lib/state-openers.mjs::stateWays`, `lib/intake-store-calls.mjs::preconditionWays` and `lib/intake-pagemap-flow-openers.mjs::openingWrites`) and `breakpoint` before the prose threshold (`lib/skeleton-child-slots.mjs::collapsePoint`). `event`, `state_key_sources` and `data-part` are recorded for the reader and not yet consumed by the route. No export made after the update exists yet.
 
+### FR-48A-14 -- What the clone reads from text and widgets
+- Inline formatting inside a text element is kept: bold (`strong`, `b`), italic (`em`, `i`), strikethrough (`s`, `del`), links (`a`) and line breaks (`br`) land in the matching block setting as rich text. Write them as ordinary phrasing content inside the element; do not flatten them to plain text or split a sentence across elements to fake them.
+- Lists, tabs, accordions and breadcrumbs are read by their meaning (ARIA roles, states and behaviour such as `role="tablist"`, `aria-expanded`, `<nav aria-label>` with an ordered list), not by tag names or class names. Give each widget its correct ARIA role and state attributes; a class called `tabs` on a plain `div` is not a tab set.
+- Per-pattern block tags in a draft (`data-sgs-block`) are not used. The draft's natural names (`data-part` ids, class names, headings) serve as guidance only; tags may come later (Bean, 2026-10-30).
+
 ## 3. Readers
 
 Every kind of data in the folder has a named reader, and every stage takes a fact from the reader of the file that states it; the render confirms (Spec 48 R-47-4). The readers join into one fact record per draft element (Spec 48 FR-48-7). The full register, with each kind's values on the three exports, the stages that could use it and its use by agents, is `.claude/reports/2026-10-21-handoff-data-register.md`. "Built" means the reader exists today.
