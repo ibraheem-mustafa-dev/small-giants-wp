@@ -2215,7 +2215,7 @@ body.woocommerce-cart .with-empty-cart-icon,
 .sgs-shop-filters__group-count {
 	margin-left: auto;
 	font-size: var(--wp--preset--font-size--x-small, 0.8125rem);
-	color: var(--wp--preset--color--text-label, var(--wp--preset--color--text-muted));
+	color: var(--wp--preset--color--text-muted);
 }
 
 /* The sgs/filter-search block's box inside a filter group: the panel's own line
@@ -2493,7 +2493,7 @@ body.sgs-shop-filters-plain .sgs-shop-filters:modal {
 
 .sgs-shop-filters-plain .wc-block-product-filter-checkbox-list__count > span {
 	font-size: var(--wp--preset--font-size--x-small, 0.8125rem);
-	color: var(--wp--preset--color--text-label, var(--wp--preset--color--text-muted));
+	color: var(--wp--preset--color--text-muted);
 }
 
 .sgs-shop-filters-plain .sgs-shop-filters__bool-filter {
@@ -3132,7 +3132,7 @@ body.sgs-shop-sort-native .wp-block-woocommerce-product-sort-select select {
 .sgs-shop-price-thin .sgs-shop-filters .wc-block-product-filter-price-slider__left,
 .sgs-shop-price-thin .sgs-shop-filters .wc-block-product-filter-price-slider__right {
 	font-size: 12px;
-	color: var(--wp--preset--color--text-label, var(--wp--preset--color--text));
+	color: var(--wp--preset--color--text);
 }
 
 /* A checkbox-list option's name follows the list's text size (WooCommerce's inline

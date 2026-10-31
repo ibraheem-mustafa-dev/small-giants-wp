@@ -13,7 +13,7 @@ sgs-theme/
 ├── style.css                 # Theme metadata header (required by WP)
 ├── theme.json                # Design tokens, settings, styles (v3)
 ├── functions.php             # Theme setup, font preloading, enqueuing, pattern categories
-├── inc/                      # PHP modules required by functions.php (colour helpers, font preloading, core block styles, shop filter and toolbar settings)
+├── inc/                      # PHP modules required by functions.php (colour helpers, colour-role pointers, font preloading, core block styles, shop filter and toolbar settings)
 ├── templates/                # Block templates:
 │   │                         #   index, page, single, archive, home, front-page, 404, search
 │   │                         #   archive-product, single-product, product-search-results,

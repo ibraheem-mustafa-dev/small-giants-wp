@@ -28,6 +28,7 @@ require_once __DIR__ . '/inc/shop-controls-look-settings.php';
 require_once __DIR__ . '/inc/shop-chosen-filters.php';
 require_once __DIR__ . '/inc/core-block-styles.php';
 require_once __DIR__ . '/inc/selection.php';
+require_once __DIR__ . '/inc/colour-roles.php';
 
 // Header behaviour system (sticky, transparent, smart-reveal, shrink).
 // Header behaviour is owned by the sgs-blocks plugin (Spec 37 FR-37-13, D330):
