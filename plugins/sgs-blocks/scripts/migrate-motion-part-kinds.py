@@ -53,7 +53,7 @@ MEDIA_TAGS = {'img', 'video', 'picture'}
 TEXT_TAGS = {'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'blockquote', 'figcaption', 'cite', 'q'}
 # Tags that hold a text attribute's printed value; 'unknown' is a class printed through a helper.
 TEXT_HOLDER_TAGS = TEXT_TAGS | {'span', 'div', 'strong', 'em', 'b', 'i', 'small', 'time', 'label', 'a', 'unknown'}
-TEXT_ROLES = ('text-content', 'content')
+TEXT_ROLES = ('text-content', 'content', 'glyph')
 TEXT_ATTR_TYPES = ('string', 'rich-text')
 LAYER_TAGS = {'div', 'span'}
 BG_KEY = re.compile(r'(^|[-_])(bg|background|backdrop)($|[-_])')
@@ -80,7 +80,7 @@ CONFIRMED = {
 # Text parts the DB gives no evidence for, each read by hand and pinned by patterns that must still match the block's
 # render source, or --check fails: `block:part` -> (patterns, reason).
 CONFIRMED_TEXT = {
-    'icon:label': ((r"'<span class=\"sgs-icon__label-text\">'\s*\.\s*esc_html\(\s*\$label_text\s*\)",),
+    'icon:label': ((r"'<span class=\"sgs-icon__label-text\">'\s*\.\s*sgs_rich_text_kses\(\s*\$label_text\b",),
                    'labelText is printed into the visible label span (the DB row names the hidden accessible-name span)'),
 }
 # Text evidence the DB gives but the render source contradicts, each read by hand and pinned by patterns that must still
