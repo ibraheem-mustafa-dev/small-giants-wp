@@ -4,7 +4,7 @@ Taken on 2026-10-31T00:37:56.626Z; manifest 1.0, files hash d5ed630059b071ef.
 
 How to mark: put x in a section's `Accept all: [ ]` box to give every row the section's first mark; to mark one row differently, write its mark in that row's Mark cell (a row's own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review mamas-munches-redesign`.
 
-Rows: 1603; 839 need reading, 764 are confident proposals that Accept all covers (skeleton block choices 739, missing features 25).
+Rows: 1600; 720 need reading, 880 are confident proposals that Accept all covers (skeleton block choices 853, missing features 27).
 
 Not defects counted, not listed: breakpoint 6, reached-when-forced 204, render-wins 713.
 
@@ -50,13 +50,10 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `catalogue-gap:*:facet:1` | gap (facet) * | recorded, not built | the filter on "occ" meets "hospital" on products, which the filter's own list offers no choice for; it is not written as terms |  |
-| `catalogue-gap:giftcard:no-variesby:4` | gap (no-variesby) giftcard | recorded, not built | no choice that creates variations ("amount") is one of Google's variesBy axes (color, size, material, pattern, suggestedAge, suggestedGender), and SGS's product preflight publishes a variable product only when one of its variation terms maps to one (no_variesby); the product is made and kept a draft |  |
-| `catalogue-gap:giftcard:open-amount:3` | gap (open-amount) giftcard | recorded, not built | the shopper picks the amount paid (£15, £25, £40): sold as one variation per amount; redeeming it later as store credit needs a gift-card plugin, which WooCommerce core does not have |  |
-| `catalogue-gap:zookies:switch:2` | gap (switch) zookies | recorded, not built | choice "sub" is an on/off switch that multiplies the price by 0.9; when on, the shopper also picks "freq" (2, 4): WooCommerce core holds no recurring or price-changing switch (a recurring order needs WooCommerce Subscriptions or an equivalent plugin); recorded, not built |  |
+| `catalogue:giftcard` | **changed** Baby Shower Gift Card (gift-card, from £15) | /product/baby-shower-gift-card/ |  |  |
+| `catalogue-gap:zookies:switch:1` | gap (switch) zookies | recorded, not built | choice "sub" is an on/off switch that multiplies the price by 0.9; when on, the shopper also picks "freq" (2, 4): WooCommerce core holds no recurring or price-changing switch (a recurring order needs WooCommerce Subscriptions or an equivalent plugin); recorded, not built |  |
 | `catalogue:care40` | 40-Day Care Bundle (simple, from £42) | /product/40-day-care-bundle/ |  | accept |
 | `catalogue:giftbox` | New Baby Gift Box (simple, from £15) | /product/new-baby-gift-box/ |  | accept |
-| `catalogue:giftcard` | Baby Shower Gift Card (variable, from £15, 3 variations) | /product/baby-shower-gift-card/ |  | accept |
 | `catalogue:trial` | Taster Trio (simple, from £5) | /product/taster-trio/ |  | accept |
 | `catalogue:zookies` | Zookies (variable, from £9.5, 3 variations) | /product/zookies/ |  |  |
 
@@ -133,8 +130,6 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `missing:coverage:html:fieldset` | **changed** html:fieldset seen 4 times in the draft: seen but unsupported | gap:shop, forms and data | html:fieldset has no clone path yet (has nothing; wave shop, forms and data) |  |
-| `missing:coverage:html:legend` | **changed** html:legend seen 4 times in the draft: seen but unsupported | gap:shop, forms and data | html:legend has no clone path yet (has nothing; wave shop, forms and data) |  |
 | `missing:handler@Home:132/template:onPointerMove` | Home: an element that reacts to the pointer position (onPointerMove) | no block proposed | pointer-tracking: no block capability or fx effect named for it in the framework database | difference |
 | `missing:handler@Home:222/template:onPointerMove` | Home: an element that reacts to the pointer position (onPointerMove) | no block proposed | pointer-tracking: no block capability or fx effect named for it in the framework database | gap:behaviour |
 
@@ -165,6 +160,8 @@ Accept all: [ ]
 | `missing:coverage:html-attr:global.inputmode` | html-attr:global.inputmode seen 3 times in the draft: seen but unsupported | gap:shop, forms and data | html-attr:global.inputmode has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
 | `missing:coverage:html-attr:input.checked` | html-attr:input.checked seen 6 times in the draft: seen but unsupported | gap:shop, forms and data | html-attr:input.checked has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
 | `missing:coverage:html-attr:input.minlength` | html-attr:input.minlength seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | html-attr:input.minlength has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
+| `missing:coverage:html:fieldset` | html:fieldset seen 4 times in the draft: seen but unsupported | gap:shop, forms and data | html:fieldset has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:html:legend` | html:legend seen 4 times in the draft: seen but unsupported | gap:shop, forms and data | html:legend has no clone path yet (has nothing; wave shop, forms and data) |  |
 | `missing:coverage:input-type:date` | input-type:date seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | input-type:date has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
 | `missing:coverage:input-type:password` | input-type:password seen 7 times in the draft: seen but unsupported | gap:shop, forms and data | input-type:password has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
 
@@ -180,122 +177,6 @@ Accept all: [ ]
 ## Skeleton block choices (skeleton-block)
 
 Accept all: [ ]
-
-### Changed since the last export (111)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:account-details-change-password:Account/180#0` | **changed** account-details-change-password Account/180#0 <h2> "Account details" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details-change-password:Account/181#0` | **changed** account-details-change-password Account/181#0 <form> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details-change-password:Account/182#0` | **changed** account-details-change-password Account/182#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details-change-password:Account/183#0` | **changed** account-details-change-password Account/183#0 <label> "First name" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details-change-password:Account/184#0` | **changed** account-details-change-password Account/184#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details-change-password:Account/185#0` | **changed** account-details-change-password Account/185#0 <label> "Last name" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details-change-password:Account/186#0` | **changed** account-details-change-password Account/186#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details-change-password:Account/187#0` | **changed** account-details-change-password Account/187#0 <label> "Email" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details-change-password:Account/188#0` | **changed** account-details-change-password Account/188#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details-change-password:Account/189#0` | **changed** account-details-change-password Account/189#0 <label> "Mobile (optional)" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details-change-password:Account/190#0` | **changed** account-details-change-password Account/190#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details-change-password:Account/191#0` | **changed** account-details-change-password Account/191#0 <label> "Email me about new flavours and bake days" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details-change-password:Account/192#0` | **changed** account-details-change-password Account/192#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details-change-password:Account/195#0` | **changed** account-details-change-password Account/195#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details-change-password:Account/196#0` | **changed** account-details-change-password Account/196#0 <button> "Save changes" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details-change-password:Account/199#0` | **changed** account-details-change-password Account/199#0 <form> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details-change-password:Account/200#0` | **changed** account-details-change-password Account/200#0 <div> "Change password" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details-change-password:Account/201#0` | **changed** account-details-change-password Account/201#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details-change-password:Account/202#0` | **changed** account-details-change-password Account/202#0 <label> "Current password" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details-change-password:Account/203#0` | **changed** account-details-change-password Account/203#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details-change-password:Account/204#0` | **changed** account-details-change-password Account/204#0 <label> "New password" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details-change-password:Account/205#0` | **changed** account-details-change-password Account/205#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details-change-password:Account/208#0` | **changed** account-details-change-password Account/208#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details-change-password:Account/209#0` | **changed** account-details-change-password Account/209#0 <button> "Update password" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details-change-password:Account/32#0` | **changed** account-details-change-password Account/32#0 <div> | block:sgs/account | 1: the page map holds this surface as a part of a WooCommerce row, so the row's WooCommerce piece (rules.commerceRegion.roles, the role's owner block, else its block) draws it: the piece is the root and every element in it is absorbed, never cloned as its own form or blocks (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Account details + change password" of the my-account row (owner woocommerce) |  |
-| `skeleton:address-form-add-edit:Account/161#0` | **changed** address-form-add-edit Account/161#0 <form> | block:sgs/account | 1: the page map holds this surface as a part of a WooCommerce row, so the row's WooCommerce piece (rules.commerceRegion.roles, the role's owner block, else its block) draws it: the piece is the root and every element in it is absorbed, never cloned as its own form or blocks (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Address form (add / edit)" of the my-account row (owner woocommerce) |  |
-| `skeleton:address-form-add-edit:Account/162#0` | **changed** address-form-add-edit Account/162#0 <div> "Add an address" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:address-form-add-edit:Account/163#0` | **changed** address-form-add-edit Account/163#0 <label> "Full name" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:address-form-add-edit:Account/164#0` | **changed** address-form-add-edit Account/164#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:address-form-add-edit:Account/165#0` | **changed** address-form-add-edit Account/165#0 <label> "Address line 1" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:address-form-add-edit:Account/166#0` | **changed** address-form-add-edit Account/166#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:address-form-add-edit:Account/167#0` | **changed** address-form-add-edit Account/167#0 <label> "Address line 2 (optional)" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:address-form-add-edit:Account/168#0` | **changed** address-form-add-edit Account/168#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:address-form-add-edit:Account/169#0` | **changed** address-form-add-edit Account/169#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:address-form-add-edit:Account/170#0` | **changed** address-form-add-edit Account/170#0 <label> "Town or city" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:address-form-add-edit:Account/171#0` | **changed** address-form-add-edit Account/171#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:address-form-add-edit:Account/172#0` | **changed** address-form-add-edit Account/172#0 <label> "Postcode" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:address-form-add-edit:Account/173#0` | **changed** address-form-add-edit Account/173#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:address-form-add-edit:Account/176#0` | **changed** address-form-add-edit Account/176#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:address-form-add-edit:Account/177#0` | **changed** address-form-add-edit Account/177#0 <button> "Save address" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:address-form-add-edit:Account/178#0` | **changed** address-form-add-edit Account/178#0 <button> "Cancel" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:basket-drawer-right:Home>SiteHeader@7#0/130#0` | **changed** basket-drawer-right Home>SiteHeader@7#0/130#0 <div> "Your basket (0)" | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart |  |
-| `skeleton:basket-gift-note-upsell:Basket/48#0` | **changed** basket-gift-note-upsell Basket/48#0 <textarea> | remove | 1: the page map holds this surface as a part of another row with no row of its own, so that row's own surface builds it and this surface places nothing (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Basket gift note + upsell" of the cart row (owner draft-notes) |  |
-| `skeleton:cancel-subscription-confirm:Account/130#0` | **changed** cancel-subscription-confirm Account/130#0 <div> | remove | 1: the page map holds this surface as a part of another row with no row of its own, so that row's own surface builds it and this surface places nothing (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the modal part "Cancel subscription confirm" of the my-account row (owner draft-notes) |  |
-| `skeleton:cancel-subscription-confirm:Account/131#0` | **changed** cancel-subscription-confirm Account/131#0 <div> "Cancel this subscription?" | remove | 1: inside a removed element (Account/130#0) |  |
-| `skeleton:cancel-subscription-confirm:Account/132#0` | **changed** cancel-subscription-confirm Account/132#0 <div> "You’ll lose 10% off and your guaranteed slot in every bake. Pausing keeps both." | remove | 1: inside a removed element (Account/130#0) |  |
-| `skeleton:cancel-subscription-confirm:Account/133#0` | **changed** cancel-subscription-confirm Account/133#0 <div> | remove | 1: inside a removed element (Account/130#0) |  |
-| `skeleton:cancel-subscription-confirm:Account/134#0` | **changed** cancel-subscription-confirm Account/134#0 <button> "Keep it" | remove | 1: inside a removed element (Account/130#0) |  |
-| `skeleton:cancel-subscription-confirm:Account/135#0` | **changed** cancel-subscription-confirm Account/135#0 <button> "Yes, cancel" | remove | 1: inside a removed element (Account/130#0) |  |
-| `skeleton:checkout-form:Checkout/31#0` | **changed** checkout-form Checkout/31#0 <form> | block:core/post-content | 1: the page map holds this surface as a part of a WooCommerce row, so the row's WooCommerce piece (rules.commerceRegion.roles, the role's owner block, else its block) draws it: the piece is the root and every element in it is absorbed, never cloned as its own form or blocks (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Checkout form" of the checkout row (owner woocommerce) |  |
-| `skeleton:create-account:SignIn/40#0` | **changed** create-account SignIn/40#0 <form> | block:sgs/account | 1: the page map holds this surface as a part of a WooCommerce row, so the row's WooCommerce piece (rules.commerceRegion.roles, the role's owner block, else its block) draws it: the piece is the root and every element in it is absorbed, never cloned as its own form or blocks (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Create account" of the my-account row (owner woocommerce) |  |
-| `skeleton:create-account:SignIn/41#0` | **changed** create-account SignIn/41#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:create-account:SignIn/42#0` | **changed** create-account SignIn/42#0 <label> "First name" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:create-account:SignIn/43#0` | **changed** create-account SignIn/43#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:create-account:SignIn/44#0` | **changed** create-account SignIn/44#0 <label> "Last name" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:create-account:SignIn/45#0` | **changed** create-account SignIn/45#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:create-account:SignIn/48#0` | **changed** create-account SignIn/48#0 <label> "Email" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:create-account:SignIn/49#0` | **changed** create-account SignIn/49#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:create-account:SignIn/52#0` | **changed** create-account SignIn/52#0 <label> "Choose a password" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:create-account:SignIn/53#0` | **changed** create-account SignIn/53#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:create-account:SignIn/56#0` | **changed** create-account SignIn/56#0 <label> "Email me about new flavours and bake days (optional)" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:create-account:SignIn/57#0` | **changed** create-account SignIn/57#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:create-account:SignIn/58#0` | **changed** create-account SignIn/58#0 <button> "Create account →" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:forgotten-password-flow:SignIn/60#0` | **changed** forgotten-password-flow SignIn/60#0 <form> | block:sgs/account | 1: the page map holds this surface as a part of a WooCommerce row, so the row's WooCommerce piece (rules.commerceRegion.roles, the role's owner block, else its block) draws it: the piece is the root and every element in it is absorbed, never cloned as its own form or blocks (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Forgotten password flow" of the my-account row (owner woocommerce) |  |
-| `skeleton:forgotten-password-flow:SignIn/61#0` | **changed** forgotten-password-flow SignIn/61#0 <button> "← Back to sign in" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:forgotten-password-flow:SignIn/62#0` | **changed** forgotten-password-flow SignIn/62#0 <h2> "Forgotten your password?" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:forgotten-password-flow:SignIn/63#0` | **changed** forgotten-password-flow SignIn/63#0 <p> "Pop in the email you signed up with and we’ll send you a link to choose a new one." | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:forgotten-password-flow:SignIn/64#0` | **changed** forgotten-password-flow SignIn/64#0 <label> "Email" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:forgotten-password-flow:SignIn/65#0` | **changed** forgotten-password-flow SignIn/65#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:forgotten-password-flow:SignIn/68#0` | **changed** forgotten-password-flow SignIn/68#0 <button> "Send reset link" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:page-checkout-dc-html:Checkout/115#0` | **changed** page-checkout-dc-html Checkout/115#0 <div> "Contains oats (gluten), eggs, milk and fenugreek unless you chose the vegan base. Made in a kitchen that handles tree nuts. Full allergen info" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by core/post-content: rule commerceRegion |  |
-| `skeleton:page-checkout-dc-html:Checkout/118#0` | **changed** page-checkout-dc-html Checkout/118#0 <div> "By placing your order you agree to our terms." | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by core/post-content: rule commerceRegion |  |
-| `skeleton:page-checkout-dc-html:Checkout/50#0` | **changed** page-checkout-dc-html Checkout/50#0 <div> "Checking out as a guest. Have an account? Sign in" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by core/post-content: rule commerceRegion |  |
-| `skeleton:page-help-dc-html:Help/26` | **changed** page-help-dc-html Help/26 <div> | block:sgs/accordion-item | 1: 12 copies of one template element; one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6) |  |
-| `skeleton:page-help-dc-html:Help/27` | **changed** page-help-dc-html Help/27 <button> | absorbed | 1: 12 copies of one template element; drawn by sgs/accordion-item: rule accordionItem |  |
-| `skeleton:page-help-dc-html:Help/28` | **changed** page-help-dc-html Help/28 <span> | absorbed | 1: 12 copies of one template element; drawn by sgs/accordion-item: rule accordionItem |  |
-| `skeleton:page-help-dc-html:Help/29` | **changed** page-help-dc-html Help/29 <span> "Ordering & delivery" | absorbed | 1: 12 copies of one template element; drawn by sgs/accordion-item: rule accordionItem |  |
-| `skeleton:page-help-dc-html:Help/30` | **changed** page-help-dc-html Help/30 <span> "When will my order arrive?" | absorbed | 1: 12 copies of one template element; drawn by sgs/accordion-item: rule accordionItem |  |
-| `skeleton:page-help-dc-html:Help/31` | **changed** page-help-dc-html Help/31 <span> "+" | absorbed | 1: 12 copies of one template element; drawn by sgs/accordion-item: rule accordionItem |  |
-| `skeleton:page-help-dc-html:Help/33#0` | **changed** page-help-dc-html Help/33#0 <p> "Zainab bakes every order fresh when it comes in, then posts it with Royal Mail Tracked. Most orders are with you in 3–5 days." | absorbed | 1: drawn by sgs/accordion-item: rule accordionItem |  |
-| `skeleton:page-help-dc-html:Help/74#0` | **changed** page-help-dc-html Help/74#0 <p> "Vegan base: no eggs or dairy. Still contains oats, flaxseed and fenugreek, and the same tree nut advice applies. Some flavours and chips may add allergens; each is listed on the product page." | block:sgs/text | 0.75 |  |
-| `skeleton:page-home-dc-html:Home/219#0` | **changed** page-home-dc-html Home/219#0 <div> | absorbed | 1: the block's own parts stand beside the element it was placed on, so it is placed over the smallest element holding them: sgs/testimonial-slider placed on Home/222#0 draws its own parts beside it (shows-part arrow, shows-part dot; at Home/219#0, Home/233#0): drawn by sgs/testimonial-slider |  |
-| `skeleton:page-home-dc-html:Home/220#0` | **changed** page-home-dc-html Home/220#0 <button> "←" | absorbed | 1: drawn by the element before it: the block's own parts stand beside the element it was placed on, so it is placed over the smallest element holding them: sgs/testimonial-slider placed on Home/222#0 draws its own parts beside it (shows-part arrow, shows-part dot; at Home/219#0, Home/233#0): drawn by sgs/testimonial-slider |  |
-| `skeleton:page-home-dc-html:Home/221#0` | **changed** page-home-dc-html Home/221#0 <button> "→" | absorbed | 1: drawn by the element before it: the block's own parts stand beside the element it was placed on, so it is placed over the smallest element holding them: sgs/testimonial-slider placed on Home/222#0 draws its own parts beside it (shows-part arrow, shows-part dot; at Home/219#0, Home/233#0): drawn by sgs/testimonial-slider |  |
-| `skeleton:page-home-dc-html:Home/233#0` | **changed** page-home-dc-html Home/233#0 <div> | absorbed | 1: the block's own parts stand beside the element it was placed on, so it is placed over the smallest element holding them: sgs/testimonial-slider placed on Home/222#0 draws its own parts beside it (shows-part arrow, shows-part dot; at Home/219#0, Home/233#0): drawn by sgs/testimonial-slider |  |
-| `skeleton:page-home-dc-html:Home/235` | **changed** page-home-dc-html Home/235 <button> | absorbed | 1: 6 copies of one template element; drawn by the element before it: the block's own parts stand beside the element it was placed on, so it is placed over the smallest element holding them: sgs/testimonial-slider placed on Home/222#0 draws its own parts beside it (shows-part arrow, shows-part dot; at Home/219#0, Home/233#0): drawn by sgs/testimonial-slider |  |
-| `skeleton:page-home-dc-html:Home/241#0` | **changed** page-home-dc-html Home/241#0 <p> "Can’t see yours? Message Zainab on WhatsApp, or read the full Help & FAQs." | block:sgs/text | 0.75 |  |
-| `skeleton:page-product-dc-html-id-zookies:Product/10#0` | **changed** page-product-dc-html-id-zookies Product/10#0 <a> "Home" | absorbed | 1: drawn by sgs/breadcrumbs: rule identity |  |
-| `skeleton:page-product-dc-html-id-zookies:Product/11#0` | **changed** page-product-dc-html-id-zookies Product/11#0 <span> "/" | absorbed | 1: drawn by sgs/breadcrumbs: rule identity |  |
-| `skeleton:page-product-dc-html-id-zookies:Product/12#0` | **changed** page-product-dc-html-id-zookies Product/12#0 <a> "Shop" | absorbed | 1: drawn by sgs/breadcrumbs: rule identity |  |
-| `skeleton:page-product-dc-html-id-zookies:Product/13#0` | **changed** page-product-dc-html-id-zookies Product/13#0 <span> "/" | absorbed | 1: drawn by sgs/breadcrumbs: rule identity |  |
-| `skeleton:page-product-dc-html-id-zookies:Product/14#0` | **changed** page-product-dc-html-id-zookies Product/14#0 <span> "Zookies" | absorbed | 1: drawn by sgs/breadcrumbs: rule identity |  |
-| `skeleton:page-product-dc-html-id-zookies:Product/9#0` | **changed** page-product-dc-html-id-zookies Product/9#0 <nav> | block:sgs/breadcrumbs | 1: identified by elimination over the framework DB's block_identity_facts: each fact the draft region shows rules out the blocks that never show it, and the facts few blocks share rank the survivors: sgs/breadcrumbs shows accepts-value /; the next, sgs/container, shows 0 |  |
-| `skeleton:page-shop-dc-html:Shop/27#0` | **changed** page-shop-dc-html Shop/27#0 <div> "5 treats to choose from" | absorbed | 1: the draft's sort control and result count are WooCommerce's catalog-sorting and product-results-count in a toolbar row at the top of the product collection, as the theme's archive-product copy composes them (the count reads its query from the collection around it); found by the shop parts record's stamps, never by words (FR-48-61, FR-48-87) |  |
-| `skeleton:page-signin-dc-html:SignIn/15#0` | **changed** page-signin-dc-html SignIn/15#0 <div> | block:sgs/account | 1: the account page is an ordinary page (Bean, 2026-10-26; the hand-built reference shop's account page is the theme's page with WooCommerce's account output in it): its sign-in and account forms region is sgs/account, WooCommerce's account piece, which draws the forms, the menu and the dashboard (1 password field(s)) |  |
-| `skeleton:page-signin-dc-html:SignIn/23#0` | **changed** page-signin-dc-html SignIn/23#0 <div> | absorbed | 1: drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-signin-dc-html:SignIn/24#0` | **changed** page-signin-dc-html SignIn/24#0 <button> "Sign in" | absorbed | 1: drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-signin-dc-html:SignIn/25#0` | **changed** page-signin-dc-html SignIn/25#0 <button> "Create account" | absorbed | 1: drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-signin-dc-html:SignIn/27#0` | **changed** page-signin-dc-html SignIn/27#0 <form> | absorbed | 1: drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-signin-dc-html:SignIn/28#0` | **changed** page-signin-dc-html SignIn/28#0 <label> "Email" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-signin-dc-html:SignIn/29#0` | **changed** page-signin-dc-html SignIn/29#0 <input> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-signin-dc-html:SignIn/32#0` | **changed** page-signin-dc-html SignIn/32#0 <label> "Password" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-signin-dc-html:SignIn/33#0` | **changed** page-signin-dc-html SignIn/33#0 <input> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-signin-dc-html:SignIn/36#0` | **changed** page-signin-dc-html SignIn/36#0 <div> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-signin-dc-html:SignIn/37#0` | **changed** page-signin-dc-html SignIn/37#0 <button> "Sign in →" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-signin-dc-html:SignIn/38#0` | **changed** page-signin-dc-html SignIn/38#0 <button> "Forgotten your password?" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:product-gift-note:Product/100#0` | **changed** product-gift-note Product/100#0 <textarea> | remove | 1: inside a removed element (Product/93#0) |  |
-| `skeleton:product-gift-note:Product/93#0` | **changed** product-gift-note Product/93#0 <div> | remove | 1: the page map holds this surface as a part of another row with no row of its own, so that row's own surface builds it and this surface places nothing (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Product gift note" of the product row (owner draft-notes) |  |
-| `skeleton:product-gift-note:Product/94#0` | **changed** product-gift-note Product/94#0 <label> | remove | 1: inside a removed element (Product/93#0) |  |
-| `skeleton:product-gift-note:Product/95#0` | **changed** product-gift-note Product/95#0 <input> | remove | 1: inside a removed element (Product/93#0) |  |
-| `skeleton:shop-filter-sort:Shop/21#0` | **changed** shop-filter-sort Shop/21#0 <div> | remove | 1: the page map holds this surface as a part of another row with no row of its own, so that row's own surface builds it and this surface places nothing (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Shop filter + sort" of the shop row (owner draft-notes) |  |
 
 ### Needs a decision (agent-pick): block:sgs/business-info (1)
 
@@ -468,18 +349,10 @@ Accept all: [ ]
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/12#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/12#0 <span> "Free UK delivery over £35" | block:sgs/text | agent pick 0.75: An announcement-strip message between typed dot separators; plain copy, sgs/text.; was block:sgs/text 0.25 |  |
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/7#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/7#0 <span> "✦ Baked fresh when you order" | block:sgs/text | agent pick 0.75: An announcement-strip message between typed dot separators; plain copy, sgs/text.; was block:sgs/text 0.25 |  |
 
-### Needs a decision (agent-pick): block:sgs/trustpilot-reviews (1)
+### Needs a decision (agent-pick): remove (3)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:page-home-dc-html:Home/222#0` | page-home-dc-html Home/222#0 <div> | block:sgs/trustpilot-reviews | agent pick 0.85: Bean, 2026-10-31: the review loop sits under 4.3 stars and a link 8 on Trustpilot: the platform evidence picks the Trustpilot block; was block:sgs/testimonial-slider 0.4 |  |
-
-### Needs a decision (agent-pick): remove (5)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:page-gifts-dc-html:Gifts/16#0` | page-gifts-dc-html Gifts/16#0 <div> "What’s the moment?" | remove | agent pick 0.75: The title above the moment option picker; sgs/option-picker draws its own label (label in the DB).; was block:sgs/text 0.25 |  |
-| `skeleton:page-gifts-dc-html:Gifts/20#0` | page-gifts-dc-html Gifts/20#0 <div> "Budget" | remove | agent pick 0.75: The title above the budget option picker; sgs/option-picker draws its own label (label in the DB).; was block:sgs/text 0.25 |  |
 | `skeleton:page-help-dc-html:Help/63#0` | page-help-dc-html Help/63#0 <div> "Prices and timings to be confirmed by Zainab." | remove | agent pick 0.8: A brief note to the client (Prices and timings to be confirmed by Zainab.), not design; a brief-only line is removed.; was block:sgs/text 0.25 |  |
 | `skeleton:page-home-dc-html:Home/146#0` | page-home-dc-html Home/146#0 <div> | remove | agent pick 0.5: The gift carousel's dots (375 only) step a scroll track over the product collection; no block in the DB draws carousel controls for woocommerce/product-collection, and copied buttons would be dead, so they go.; was block:sgs/multi-button 0.51 |  |
 | `skeleton:page-home-dc-html:Home/149#0` | page-home-dc-html Home/149#0 <div> | remove | agent pick 0.5: The gift carousel's previous and next buttons (375 only) step a scroll track over the product collection; no block draws them for woocommerce/product-collection, and copied buttons would be dead, so they go.; was block:sgs/multi-button 0.51 |  |
@@ -490,10 +363,17 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:page-home-dc-html:Home/243#0` | page-home-dc-html Home/243#0 <div> | block:sgs/accordion | 1: a loop whose items each hold a control that writes a state the item's own conditional panel reads is the accordion, read from the fact record and the logic's syntax tree with aria-expanded as the rendered confirmation, never from words or a surface kind (Spec 48 §3.4, RC6) (a loop of 4 items whose control writes "faq", which the item's own panel reads; one item open at a time) |  |
 
-### Settled by rule accordionItem: one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6) (4)
+### Settled by rule accordionItem: one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6) (11)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `skeleton:page-help-dc-html:Help/26` | page-help-dc-html Help/26 <div> | block:sgs/accordion-item | 1: 12 copies of one template element; one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6) |  |
+| `skeleton:page-help-dc-html:Help/27` | page-help-dc-html Help/27 <button> | absorbed | 1: 12 copies of one template element; drawn by sgs/accordion-item: rule accordionItem |  |
+| `skeleton:page-help-dc-html:Help/28` | page-help-dc-html Help/28 <span> | absorbed | 1: 12 copies of one template element; drawn by sgs/accordion-item: rule accordionItem |  |
+| `skeleton:page-help-dc-html:Help/29` | page-help-dc-html Help/29 <span> "Ordering & delivery" | absorbed | 1: 12 copies of one template element; drawn by sgs/accordion-item: rule accordionItem |  |
+| `skeleton:page-help-dc-html:Help/30` | page-help-dc-html Help/30 <span> "When will my order arrive?" | absorbed | 1: 12 copies of one template element; drawn by sgs/accordion-item: rule accordionItem |  |
+| `skeleton:page-help-dc-html:Help/31` | page-help-dc-html Help/31 <span> "+" | absorbed | 1: 12 copies of one template element; drawn by sgs/accordion-item: rule accordionItem |  |
+| `skeleton:page-help-dc-html:Help/33#0` | page-help-dc-html Help/33#0 <p> "Zainab bakes every order fresh when it comes in, then posts it with Royal Mail Tracked. Most orders are with you in 3–5 days." | absorbed | 1: drawn by sgs/accordion-item: rule accordionItem |  |
 | `skeleton:page-home-dc-html:Home/245` | page-home-dc-html Home/245 <div> | block:sgs/accordion-item | 1: 4 copies of one template element; one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6) |  |
 | `skeleton:page-home-dc-html:Home/246` | page-home-dc-html Home/246 <button> "When will my order arrive?" | absorbed | 1: 4 copies of one template element; drawn by sgs/accordion-item: rule accordionItem |  |
 | `skeleton:page-home-dc-html:Home/247` | page-home-dc-html Home/247 <span> "+" | absorbed | 1: 4 copies of one template element; drawn by sgs/accordion-item: rule accordionItem |  |
@@ -515,12 +395,13 @@ Accept all: [ ]
 | `skeleton:page-shop-dc-html:Shop/25#0` | page-shop-dc-html Shop/25#0 <section> | unwrap | 1: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) | accept |
 | `skeleton:page-signin-dc-html:SignIn/13#0` | page-signin-dc-html SignIn/13#0 <section> | unwrap | 1: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) | accept |
 
-### Settled by rule blockOwnedPart: the cart page's bag drawer is the cart block's own drawer (sgs/cart displayMode drawer draws its heading, lines, totals, empty message and checkout button: Spec 27, FR-48-87); the page map holds this surface as the drawer part "Basket" of the cart row (9)
+### Settled by rule blockOwnedPart: the cart page's bag drawer is the cart block's own drawer (sgs/cart displayMode drawer draws its heading, lines, totals, empty message and checkout button: Spec 27, FR-48-87); the page map holds this surface as the drawer part "Basket" of the cart row (10)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:basket-drawer-right:Home>SiteHeader@7#0/128#0` | basket-drawer-right Home>SiteHeader@7#0/128#0 <aside> | block:sgs/cart | 1: the cart page's bag drawer is the cart block's own drawer (sgs/cart displayMode drawer draws its heading, lines, totals, empty message and checkout button: Spec 27, FR-48-87); the page map holds this surface as the drawer part "Basket" of the cart row | accept |
 | `skeleton:basket-drawer-right:Home>SiteHeader@7#0/129#0` | basket-drawer-right Home>SiteHeader@7#0/129#0 <div> | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart | accept |
+| `skeleton:basket-drawer-right:Home>SiteHeader@7#0/130#0` | basket-drawer-right Home>SiteHeader@7#0/130#0 <div> "Your basket (0)" | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart |  |
 | `skeleton:basket-drawer-right:Home>SiteHeader@7#0/132#0` | basket-drawer-right Home>SiteHeader@7#0/132#0 <button> "×" | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart | accept |
 | `skeleton:basket-drawer-right:Home>SiteHeader@7#0/176#0` | basket-drawer-right Home>SiteHeader@7#0/176#0 <div> | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart | accept |
 | `skeleton:basket-drawer-right:Home>SiteHeader@7#0/177#0` | basket-drawer-right Home>SiteHeader@7#0/177#0 <img> | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart | accept |
@@ -581,7 +462,7 @@ Accept all: [ ]
 | `skeleton:build-your-zookie:Home/63#0` | build-your-zookie Home/63#0 <section> | block:sgs/choice-flow | 1: a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow the words the flow holds no setting for are ordinary blocks beside it in its post (the linked flow renders every top-level block, FR-43-6), and only a control none of these holds is a gap row | accept |
 | `skeleton:build-your-zookie:Home/64#0` | build-your-zookie Home/64#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow | accept |
 
-### Settled by rule commerceRegion: WooCommerce's product collection draws the shop's products, each in the site's own sgs/product-card, as the hand-built reference shop's archive-product copy has them; its column count is the draft's cards per row at 1440 (a loop of 5 mounted cards showing a price) (210)
+### Settled by rule commerceRegion: WooCommerce's product collection draws the shop's products, each in the site's own sgs/product-card, as the hand-built reference shop's archive-product copy has them; its column count is the draft's cards per row at 1440 (a loop of 5 mounted cards showing a price) (225)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -647,7 +528,9 @@ Accept all: [ ]
 | `skeleton:page-checkout-dc-html:Checkout/112#0` | page-checkout-dc-html Checkout/112#0 <input> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by core/post-content: rule commerceRegion |  |
 | `skeleton:page-checkout-dc-html:Checkout/113#0` | page-checkout-dc-html Checkout/113#0 <label> "Security code" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by core/post-content: rule commerceRegion |  |
 | `skeleton:page-checkout-dc-html:Checkout/114#0` | page-checkout-dc-html Checkout/114#0 <input> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by core/post-content: rule commerceRegion |  |
+| `skeleton:page-checkout-dc-html:Checkout/115#0` | page-checkout-dc-html Checkout/115#0 <div> "Contains oats (gluten), eggs, milk and fenugreek unless you chose the vegan base. Made in a kitchen that handles tree nuts. Full allergen info" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by core/post-content: rule commerceRegion |  |
 | `skeleton:page-checkout-dc-html:Checkout/117#0` | page-checkout-dc-html Checkout/117#0 <button> "Pay £30.45" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by core/post-content: rule commerceRegion |  |
+| `skeleton:page-checkout-dc-html:Checkout/118#0` | page-checkout-dc-html Checkout/118#0 <div> "By placing your order you agree to our terms." | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by core/post-content: rule commerceRegion |  |
 | `skeleton:page-checkout-dc-html:Checkout/121#0` | page-checkout-dc-html Checkout/121#0 <aside> | absorbed | 1: drawn by core/post-content: rule commerceRegion |  |
 | `skeleton:page-checkout-dc-html:Checkout/122#0` | page-checkout-dc-html Checkout/122#0 <div> "Your order" | absorbed | 1: drawn by core/post-content: rule commerceRegion |  |
 | `skeleton:page-checkout-dc-html:Checkout/124` | page-checkout-dc-html Checkout/124 <div> | absorbed | 1: 2 copies of one template element; drawn by core/post-content: rule commerceRegion |  |
@@ -687,6 +570,7 @@ Accept all: [ ]
 | `skeleton:page-checkout-dc-html:Checkout/41#0` | page-checkout-dc-html Checkout/41#0 <span> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by core/post-content: rule commerceRegion |  |
 | `skeleton:page-checkout-dc-html:Checkout/42#0` | page-checkout-dc-html Checkout/42#0 <fieldset> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by core/post-content: rule commerceRegion |  |
 | `skeleton:page-checkout-dc-html:Checkout/43#0` | page-checkout-dc-html Checkout/43#0 <legend> "1 · Your details" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by core/post-content: rule commerceRegion |  |
+| `skeleton:page-checkout-dc-html:Checkout/50#0` | page-checkout-dc-html Checkout/50#0 <div> "Checking out as a guest. Have an account? Sign in" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by core/post-content: rule commerceRegion |  |
 | `skeleton:page-checkout-dc-html:Checkout/52#0` | page-checkout-dc-html Checkout/52#0 <label> "Email" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by core/post-content: rule commerceRegion |  |
 | `skeleton:page-checkout-dc-html:Checkout/53#0` | page-checkout-dc-html Checkout/53#0 <input> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by core/post-content: rule commerceRegion |  |
 | `skeleton:page-checkout-dc-html:Checkout/54#0` | page-checkout-dc-html Checkout/54#0 <label> "Mobile, for delivery updates (optional)" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by core/post-content: rule commerceRegion |  |
@@ -795,6 +679,18 @@ Accept all: [ ]
 | `skeleton:page-shop-dc-html:Shop>ProductCard@31/7` | page-shop-dc-html Shop>ProductCard@31/7 <p> "Our giant lactation cookie, baked to order in the flavour you pick." | absorbed | 1: 12 copies of one template element on 3 surfaces; drawn by woocommerce/product-collection: rule commerceRegion |  |
 | `skeleton:page-shop-dc-html:Shop>ProductCard@31/8` | page-shop-dc-html Shop>ProductCard@31/8 <div> | absorbed | 1: 12 copies of one template element on 3 surfaces; drawn by woocommerce/product-collection: rule commerceRegion |  |
 | `skeleton:page-shop-dc-html:Shop>ProductCard@31/9` | page-shop-dc-html Shop>ProductCard@31/9 <span> "from £9.50" | absorbed | 1: 12 copies of one template element on 3 surfaces; drawn by woocommerce/product-collection: rule commerceRegion |  |
+| `skeleton:page-signin-dc-html:SignIn/15#0` | page-signin-dc-html SignIn/15#0 <div> | block:sgs/account | 1: the account page is an ordinary page (Bean, 2026-10-26; the hand-built reference shop's account page is the theme's page with WooCommerce's account output in it): its sign-in and account forms region is sgs/account, WooCommerce's account piece, which draws the forms, the menu and the dashboard (1 password field(s)) |  |
+| `skeleton:page-signin-dc-html:SignIn/23#0` | page-signin-dc-html SignIn/23#0 <div> | absorbed | 1: drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-signin-dc-html:SignIn/24#0` | page-signin-dc-html SignIn/24#0 <button> "Sign in" | absorbed | 1: drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-signin-dc-html:SignIn/25#0` | page-signin-dc-html SignIn/25#0 <button> "Create account" | absorbed | 1: drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-signin-dc-html:SignIn/27#0` | page-signin-dc-html SignIn/27#0 <form> | absorbed | 1: drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-signin-dc-html:SignIn/28#0` | page-signin-dc-html SignIn/28#0 <label> "Email" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-signin-dc-html:SignIn/29#0` | page-signin-dc-html SignIn/29#0 <input> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-signin-dc-html:SignIn/32#0` | page-signin-dc-html SignIn/32#0 <label> "Password" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-signin-dc-html:SignIn/33#0` | page-signin-dc-html SignIn/33#0 <input> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-signin-dc-html:SignIn/36#0` | page-signin-dc-html SignIn/36#0 <div> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-signin-dc-html:SignIn/37#0` | page-signin-dc-html SignIn/37#0 <button> "Sign in →" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-signin-dc-html:SignIn/38#0` | page-signin-dc-html SignIn/38#0 <button> "Forgotten your password?" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/account: rule commerceRegion |  |
 
 ### Settled by rule decorationLayer: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in (7)
 
@@ -836,6 +732,19 @@ Accept all: [ ]
 | `skeleton:nav-drawer-left:Home>SiteHeader@7#0/87#0` | nav-drawer-left Home>SiteHeader@7#0/87#0 <span> "→" | absorbed | 1: drawn by sgs/icon-list: the list item's marker | accept |
 | `skeleton:site-footer:Home>SiteFooter@250#0/45#0` | site-footer Home>SiteFooter@250#0/45#0 <a> | block:sgs/icon | 0.9: drawn by sgs/social-icons: Fill generates its icons from the Site Info row | accept |
 | `skeleton:site-footer:Home>SiteFooter@250#0/50#0` | site-footer Home>SiteFooter@250#0/50#0 <a> | block:sgs/icon | 0.75: drawn by sgs/social-icons: Fill generates its icons from the Site Info row | accept |
+
+### Settled by rule filterRail: the draft's filter rail on the shop template is the framework's working filter: WooCommerce's product filters inside the theme's #sgs-shop-filters aside, one heading and filter per group, as archive-product.html composes it and the theme's filter drawer builds its groups from (Spec 48 FR-48-61); found by structure from the catalogue's facets (lib/skeleton-filter-rail.mjs), never by words (2 group(s): What’s the moment? (attribute what-s-the-moment), Budget (price)) (8)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-gifts-dc-html:Gifts/15#0` | page-gifts-dc-html Gifts/15#0 <div> | block:sgs/container | 1: the draft's filter rail on the shop template is the framework's working filter: WooCommerce's product filters inside the theme's #sgs-shop-filters aside, one heading and filter per group, as archive-product.html composes it and the theme's filter drawer builds its groups from (Spec 48 FR-48-61); found by structure from the catalogue's facets (lib/skeleton-filter-rail.mjs), never by words (2 group(s): What’s the moment? (attribute what-s-the-moment), Budget (price)) |  |
+| `skeleton:page-gifts-dc-html:Gifts/16#0` | page-gifts-dc-html Gifts/16#0 <div> "What’s the moment?" | absorbed | 1: drawn by sgs/container: rule filterRail |  |
+| `skeleton:page-gifts-dc-html:Gifts/17#0` | page-gifts-dc-html Gifts/17#0 <div> | absorbed | 1: drawn by sgs/container: rule filterRail |  |
+| `skeleton:page-gifts-dc-html:Gifts/19` | page-gifts-dc-html Gifts/19 <button> "Baby shower" | absorbed | 1: 4 copies of one template element; drawn by sgs/container: rule filterRail | accept |
+| `skeleton:page-gifts-dc-html:Gifts/20#0` | page-gifts-dc-html Gifts/20#0 <div> "Budget" | absorbed | 1: drawn by sgs/container: rule filterRail |  |
+| `skeleton:page-gifts-dc-html:Gifts/21#0` | page-gifts-dc-html Gifts/21#0 <div> | absorbed | 1: drawn by sgs/container: rule filterRail |  |
+| `skeleton:page-gifts-dc-html:Gifts/23` | page-gifts-dc-html Gifts/23 <button> "Any" | absorbed | 1: 3 copies of one template element; drawn by sgs/container: rule filterRail | accept |
+| `skeleton:page-gifts-dc-html:Gifts/24#0` | page-gifts-dc-html Gifts/24#0 <a> "Show 4 gifts ↓" | absorbed | 1: drawn by sgs/container: rule filterRail |  |
 
 ### Settled by rule footerSlots: the columns row of the footer (1)
 
@@ -958,7 +867,7 @@ Accept all: [ ]
 | `skeleton:page-shop-dc-html:Shop/9#0` | page-shop-dc-html Shop/9#0 <section> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) | accept |
 | `skeleton:page-signin-dc-html:SignIn/9#0` | page-signin-dc-html SignIn/9#0 <section> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) | accept |
 
-### Settled by rule heroInner: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays (22)
+### Settled by rule heroInner: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays (21)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -967,7 +876,6 @@ Accept all: [ ]
 | `skeleton:page-contact-dc-html:Contact/11#0` | page-contact-dc-html Contact/11#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
 | `skeleton:page-contact-dc-html:Contact/15#0` | page-contact-dc-html Contact/15#0 <img> | absorbed | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
 | `skeleton:page-gifts-dc-html:Gifts/11#0` | page-gifts-dc-html Gifts/11#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
-| `skeleton:page-gifts-dc-html:Gifts/15#0` | page-gifts-dc-html Gifts/15#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
 | `skeleton:page-help-dc-html:Help/10#0` | page-help-dc-html Help/10#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
 | `skeleton:page-home-dc-html:Home/10#0` | page-home-dc-html Home/10#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
 | `skeleton:page-home-dc-html:Home/11#0` | page-home-dc-html Home/11#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
@@ -984,6 +892,22 @@ Accept all: [ ]
 | `skeleton:page-product-dc-html-id-zookies:Product/17#0` | page-product-dc-html-id-zookies Product/17#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
 | `skeleton:page-shop-dc-html:Shop/11#0` | page-shop-dc-html Shop/11#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
 | `skeleton:page-signin-dc-html:SignIn/10#0` | page-signin-dc-html SignIn/10#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
+
+### Settled by rule identity: the block's own parts stand beside the element it was placed on, so it is placed over the smallest element holding them: sgs/testimonial-slider placed on Home/222#0 draws its own parts beside it (shows-part arrow, shows-part dot; at Home/219#0, Home/233#0): drawn by sgs/testimonial-slider (11)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-home-dc-html:Home/219#0` | page-home-dc-html Home/219#0 <div> | absorbed | 1: the block's own parts stand beside the element it was placed on, so it is placed over the smallest element holding them: sgs/testimonial-slider placed on Home/222#0 draws its own parts beside it (shows-part arrow, shows-part dot; at Home/219#0, Home/233#0): drawn by sgs/testimonial-slider |  |
+| `skeleton:page-home-dc-html:Home/220#0` | page-home-dc-html Home/220#0 <button> "←" | absorbed | 1: drawn by the element before it: the block's own parts stand beside the element it was placed on, so it is placed over the smallest element holding them: sgs/testimonial-slider placed on Home/222#0 draws its own parts beside it (shows-part arrow, shows-part dot; at Home/219#0, Home/233#0): drawn by sgs/testimonial-slider |  |
+| `skeleton:page-home-dc-html:Home/221#0` | page-home-dc-html Home/221#0 <button> "→" | absorbed | 1: drawn by the element before it: the block's own parts stand beside the element it was placed on, so it is placed over the smallest element holding them: sgs/testimonial-slider placed on Home/222#0 draws its own parts beside it (shows-part arrow, shows-part dot; at Home/219#0, Home/233#0): drawn by sgs/testimonial-slider |  |
+| `skeleton:page-home-dc-html:Home/233#0` | page-home-dc-html Home/233#0 <div> | absorbed | 1: the block's own parts stand beside the element it was placed on, so it is placed over the smallest element holding them: sgs/testimonial-slider placed on Home/222#0 draws its own parts beside it (shows-part arrow, shows-part dot; at Home/219#0, Home/233#0): drawn by sgs/testimonial-slider |  |
+| `skeleton:page-home-dc-html:Home/235` | page-home-dc-html Home/235 <button> | absorbed | 1: 6 copies of one template element; drawn by the element before it: the block's own parts stand beside the element it was placed on, so it is placed over the smallest element holding them: sgs/testimonial-slider placed on Home/222#0 draws its own parts beside it (shows-part arrow, shows-part dot; at Home/219#0, Home/233#0): drawn by sgs/testimonial-slider |  |
+| `skeleton:page-product-dc-html-id-zookies:Product/10#0` | page-product-dc-html-id-zookies Product/10#0 <a> "Home" | absorbed | 1: drawn by sgs/breadcrumbs: rule identity |  |
+| `skeleton:page-product-dc-html-id-zookies:Product/11#0` | page-product-dc-html-id-zookies Product/11#0 <span> "/" | absorbed | 1: drawn by sgs/breadcrumbs: rule identity |  |
+| `skeleton:page-product-dc-html-id-zookies:Product/12#0` | page-product-dc-html-id-zookies Product/12#0 <a> "Shop" | absorbed | 1: drawn by sgs/breadcrumbs: rule identity |  |
+| `skeleton:page-product-dc-html-id-zookies:Product/13#0` | page-product-dc-html-id-zookies Product/13#0 <span> "/" | absorbed | 1: drawn by sgs/breadcrumbs: rule identity |  |
+| `skeleton:page-product-dc-html-id-zookies:Product/14#0` | page-product-dc-html-id-zookies Product/14#0 <span> "Zookies" | absorbed | 1: drawn by sgs/breadcrumbs: rule identity |  |
+| `skeleton:page-product-dc-html-id-zookies:Product/9#0` | page-product-dc-html-id-zookies Product/9#0 <nav> | block:sgs/breadcrumbs | 1: identified by elimination over the framework DB's block_identity_facts: each fact the draft region shows rules out the blocks that never show it, and the facts few blocks share rank the survivors: sgs/breadcrumbs shows accepts-value /; the next, sgs/container, shows 0 |  |
 
 ### Settled by rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number (11)
 
@@ -1017,7 +941,7 @@ Accept all: [ ]
 | `skeleton:site-footer:Home>SiteFooter@250/16` | site-footer Home>SiteFooter@250/16 <a> | absorbed | 1: 6 copies of one template element; drawn by sgs/gallery: rule logoGrid | accept |
 | `skeleton:site-footer:Home>SiteFooter@250/17` | site-footer Home>SiteFooter@250/17 <img> | absorbed | 1: 6 copies of one template element; drawn by sgs/gallery: rule logoGrid | accept |
 
-### Settled by rule loopBlocks: a loop of items that show a price and link to a product page is the site's product collection, the block the shop region uses, with its own query (FR-48-83, Spec 27 FR-24-4) (a loop of 4 items showing a price and linking to a product page) (32)
+### Settled by rule loopBlocks: a loop of items that show a price and link to a product page is the site's product collection, the block the shop region uses, with its own query (FR-48-83, Spec 27 FR-24-4) (a loop of 4 items showing a price and linking to a product page) (33)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -1035,6 +959,7 @@ Accept all: [ ]
 | `skeleton:page-home-dc-html:Home/141` | page-home-dc-html Home/141 <span> | absorbed | 1: 4 copies of one template element; drawn by woocommerce/product-collection: rule loopBlocks |  |
 | `skeleton:page-home-dc-html:Home/142` | page-home-dc-html Home/142 <span> "£15" | absorbed | 1: 4 copies of one template element; drawn by woocommerce/product-collection: rule loopBlocks |  |
 | `skeleton:page-home-dc-html:Home/143` | page-home-dc-html Home/143 <span> "→" | absorbed | 1: 4 copies of one template element; drawn by woocommerce/product-collection: rule loopBlocks |  |
+| `skeleton:page-home-dc-html:Home/222#0` | page-home-dc-html Home/222#0 <div> | block:sgs/testimonial-slider | 1: a loop of review cards whose holder is a scroll track the draft's script steps (a timer, pointer drag or arrow controls, never a name) is the testimonial slider, each card one of its testimonials (Spec 48 FR-48-77, register row C5) (a loop of 6 review cards in a scroll track the draft's script steps) |  |
 | `skeleton:page-home-dc-html:Home/224` | page-home-dc-html Home/224 <article> | block:sgs/testimonial | 1: 6 copies of one template element; a loop of review cards whose holder is a scroll track the draft's script steps (a timer, pointer drag or arrow controls, never a name) is the testimonial slider, each card one of its testimonials (Spec 48 FR-48-77, register row C5) (a loop of 6 review cards in a scroll track the draft's script steps) |  |
 | `skeleton:page-home-dc-html:Home/225` | page-home-dc-html Home/225 <div> | absorbed | 1: 6 copies of one template element; drawn by sgs/testimonial: rule loopBlocks |  |
 | `skeleton:page-home-dc-html:Home/226` | page-home-dc-html Home/226 <span> "★★★★★" | absorbed | 1: 6 copies of one template element; drawn by sgs/testimonial: rule loopBlocks |  |
@@ -1072,14 +997,10 @@ Accept all: [ ]
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/42#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/42#0 <a> "Help" | absorbed | 1: drawn by sgs/nav-bar-menu: rule navigation | accept |
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/43#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/43#0 <a> "Contact" | absorbed | 1: drawn by sgs/nav-bar-menu: rule navigation | accept |
 
-### Settled by rule optionSetFilter: a group of pressable chips whose choice narrows a list on the same surface stays the option picker and hands the filter wiring to the site build (Bean, 2026-10-21) (6)
+### Settled by rule optionSetFilter: a group of pressable chips whose choice narrows a list on the same surface stays the option picker and hands the filter wiring to the site build (Bean, 2026-10-21) (2)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:page-gifts-dc-html:Gifts/17#0` | page-gifts-dc-html Gifts/17#0 <div> | block:sgs/option-picker | 1: a group of pressable chips whose choice narrows a list on the same surface stays the option picker and hands the filter wiring to the site build (Bean, 2026-10-21) | accept |
-| `skeleton:page-gifts-dc-html:Gifts/19` | page-gifts-dc-html Gifts/19 <button> "Baby shower" | absorbed | 1: 4 copies of one template element; drawn by sgs/option-picker: rule optionSetFilter | accept |
-| `skeleton:page-gifts-dc-html:Gifts/21#0` | page-gifts-dc-html Gifts/21#0 <div> | block:sgs/option-picker | 1: a group of pressable chips whose choice narrows a list on the same surface stays the option picker and hands the filter wiring to the site build (Bean, 2026-10-21) | accept |
-| `skeleton:page-gifts-dc-html:Gifts/23` | page-gifts-dc-html Gifts/23 <button> "Any" | absorbed | 1: 3 copies of one template element; drawn by sgs/option-picker: rule optionSetFilter | accept |
 | `skeleton:page-help-dc-html:Help/19#0` | page-help-dc-html Help/19#0 <div> | block:sgs/option-picker | 1: a group of pressable chips whose choice narrows a list on the same surface stays the option picker and hands the filter wiring to the site build (Bean, 2026-10-21) | accept |
 | `skeleton:page-help-dc-html:Help/21` | page-help-dc-html Help/21 <button> "All" | absorbed | 1: 6 copies of one template element; drawn by sgs/option-picker: rule optionSetFilter | accept |
 
@@ -1089,14 +1010,80 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:contact-form:Contact/48#0` | contact-form Contact/48#0 <div> | block:sgs/form-field-tiles | 1: a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21) | accept |
 
-### Settled by rule ownedPart: the page map holds this surface as a part of another row with no row of its own, so that row's own surface builds it and this surface places nothing (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Product buy box" of the product row (owner draft-notes) (5)
+### Settled by rule ownedPart: the page map holds this surface as a part of another row with no row of its own, so that row's own surface builds it and this surface places nothing (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Shop filter + sort" of the shop row (owner draft-notes) (71)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `skeleton:account-details-change-password:Account/180#0` | account-details-change-password Account/180#0 <h2> "Account details" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details-change-password:Account/181#0` | account-details-change-password Account/181#0 <form> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details-change-password:Account/182#0` | account-details-change-password Account/182#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details-change-password:Account/183#0` | account-details-change-password Account/183#0 <label> "First name" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details-change-password:Account/184#0` | account-details-change-password Account/184#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details-change-password:Account/185#0` | account-details-change-password Account/185#0 <label> "Last name" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details-change-password:Account/186#0` | account-details-change-password Account/186#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details-change-password:Account/187#0` | account-details-change-password Account/187#0 <label> "Email" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details-change-password:Account/188#0` | account-details-change-password Account/188#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details-change-password:Account/189#0` | account-details-change-password Account/189#0 <label> "Mobile (optional)" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details-change-password:Account/190#0` | account-details-change-password Account/190#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details-change-password:Account/191#0` | account-details-change-password Account/191#0 <label> "Email me about new flavours and bake days" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details-change-password:Account/192#0` | account-details-change-password Account/192#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details-change-password:Account/195#0` | account-details-change-password Account/195#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details-change-password:Account/196#0` | account-details-change-password Account/196#0 <button> "Save changes" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details-change-password:Account/199#0` | account-details-change-password Account/199#0 <form> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details-change-password:Account/200#0` | account-details-change-password Account/200#0 <div> "Change password" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details-change-password:Account/201#0` | account-details-change-password Account/201#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details-change-password:Account/202#0` | account-details-change-password Account/202#0 <label> "Current password" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details-change-password:Account/203#0` | account-details-change-password Account/203#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details-change-password:Account/204#0` | account-details-change-password Account/204#0 <label> "New password" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details-change-password:Account/205#0` | account-details-change-password Account/205#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details-change-password:Account/208#0` | account-details-change-password Account/208#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details-change-password:Account/209#0` | account-details-change-password Account/209#0 <button> "Update password" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details-change-password:Account/32#0` | account-details-change-password Account/32#0 <div> | block:sgs/account | 1: the page map holds this surface as a part of a WooCommerce row, so the row's WooCommerce piece (rules.commerceRegion.roles, the role's owner block, else its block) draws it: the piece is the root and every element in it is absorbed, never cloned as its own form or blocks (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Account details + change password" of the my-account row (owner woocommerce) |  |
+| `skeleton:address-form-add-edit:Account/161#0` | address-form-add-edit Account/161#0 <form> | block:sgs/account | 1: the page map holds this surface as a part of a WooCommerce row, so the row's WooCommerce piece (rules.commerceRegion.roles, the role's owner block, else its block) draws it: the piece is the root and every element in it is absorbed, never cloned as its own form or blocks (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Address form (add / edit)" of the my-account row (owner woocommerce) |  |
+| `skeleton:address-form-add-edit:Account/162#0` | address-form-add-edit Account/162#0 <div> "Add an address" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:address-form-add-edit:Account/163#0` | address-form-add-edit Account/163#0 <label> "Full name" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:address-form-add-edit:Account/164#0` | address-form-add-edit Account/164#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:address-form-add-edit:Account/165#0` | address-form-add-edit Account/165#0 <label> "Address line 1" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:address-form-add-edit:Account/166#0` | address-form-add-edit Account/166#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:address-form-add-edit:Account/167#0` | address-form-add-edit Account/167#0 <label> "Address line 2 (optional)" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:address-form-add-edit:Account/168#0` | address-form-add-edit Account/168#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:address-form-add-edit:Account/169#0` | address-form-add-edit Account/169#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:address-form-add-edit:Account/170#0` | address-form-add-edit Account/170#0 <label> "Town or city" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:address-form-add-edit:Account/171#0` | address-form-add-edit Account/171#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:address-form-add-edit:Account/172#0` | address-form-add-edit Account/172#0 <label> "Postcode" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:address-form-add-edit:Account/173#0` | address-form-add-edit Account/173#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:address-form-add-edit:Account/176#0` | address-form-add-edit Account/176#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:address-form-add-edit:Account/177#0` | address-form-add-edit Account/177#0 <button> "Save address" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:address-form-add-edit:Account/178#0` | address-form-add-edit Account/178#0 <button> "Cancel" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:basket-gift-note-upsell:Basket/48#0` | basket-gift-note-upsell Basket/48#0 <textarea> | remove | 1: the page map holds this surface as a part of another row with no row of its own, so that row's own surface builds it and this surface places nothing (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Basket gift note + upsell" of the cart row (owner draft-notes) |  |
+| `skeleton:cancel-subscription-confirm:Account/130#0` | cancel-subscription-confirm Account/130#0 <div> | remove | 1: the page map holds this surface as a part of another row with no row of its own, so that row's own surface builds it and this surface places nothing (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the modal part "Cancel subscription confirm" of the my-account row (owner draft-notes) |  |
+| `skeleton:checkout-form:Checkout/31#0` | checkout-form Checkout/31#0 <form> | block:core/post-content | 1: the page map holds this surface as a part of a WooCommerce row, so the row's WooCommerce piece (rules.commerceRegion.roles, the role's owner block, else its block) draws it: the piece is the root and every element in it is absorbed, never cloned as its own form or blocks (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Checkout form" of the checkout row (owner woocommerce) |  |
+| `skeleton:create-account:SignIn/40#0` | create-account SignIn/40#0 <form> | block:sgs/account | 1: the page map holds this surface as a part of a WooCommerce row, so the row's WooCommerce piece (rules.commerceRegion.roles, the role's owner block, else its block) draws it: the piece is the root and every element in it is absorbed, never cloned as its own form or blocks (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Create account" of the my-account row (owner woocommerce) |  |
+| `skeleton:create-account:SignIn/41#0` | create-account SignIn/41#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:create-account:SignIn/42#0` | create-account SignIn/42#0 <label> "First name" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:create-account:SignIn/43#0` | create-account SignIn/43#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:create-account:SignIn/44#0` | create-account SignIn/44#0 <label> "Last name" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:create-account:SignIn/45#0` | create-account SignIn/45#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:create-account:SignIn/48#0` | create-account SignIn/48#0 <label> "Email" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:create-account:SignIn/49#0` | create-account SignIn/49#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:create-account:SignIn/52#0` | create-account SignIn/52#0 <label> "Choose a password" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:create-account:SignIn/53#0` | create-account SignIn/53#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:create-account:SignIn/56#0` | create-account SignIn/56#0 <label> "Email me about new flavours and bake days (optional)" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:create-account:SignIn/57#0` | create-account SignIn/57#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:create-account:SignIn/58#0` | create-account SignIn/58#0 <button> "Create account →" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:forgotten-password-flow:SignIn/60#0` | forgotten-password-flow SignIn/60#0 <form> | block:sgs/account | 1: the page map holds this surface as a part of a WooCommerce row, so the row's WooCommerce piece (rules.commerceRegion.roles, the role's owner block, else its block) draws it: the piece is the root and every element in it is absorbed, never cloned as its own form or blocks (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Forgotten password flow" of the my-account row (owner woocommerce) |  |
+| `skeleton:forgotten-password-flow:SignIn/61#0` | forgotten-password-flow SignIn/61#0 <button> "← Back to sign in" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:forgotten-password-flow:SignIn/62#0` | forgotten-password-flow SignIn/62#0 <h2> "Forgotten your password?" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:forgotten-password-flow:SignIn/63#0` | forgotten-password-flow SignIn/63#0 <p> "Pop in the email you signed up with and we’ll send you a link to choose a new one." | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:forgotten-password-flow:SignIn/64#0` | forgotten-password-flow SignIn/64#0 <label> "Email" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:forgotten-password-flow:SignIn/65#0` | forgotten-password-flow SignIn/65#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:forgotten-password-flow:SignIn/68#0` | forgotten-password-flow SignIn/68#0 <button> "Send reset link" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
 | `skeleton:gift-finder:Gifts/15#0` | gift-finder Gifts/15#0 <div> | remove | 1: the page map holds this surface as a part of another row with no row of its own, so that row's own surface builds it and this surface places nothing (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Gift finder" of the gifts row (owner draft-notes) |  |
 | `skeleton:gift-note-preview:Gifts/60#0` | gift-note-preview Gifts/60#0 <label> "To" | remove | 1: the page map holds this surface as a part of another row with no row of its own, so that row's own surface builds it and this surface places nothing (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Gift note preview" of the gifts row (owner draft-notes) |  |
 | `skeleton:help-search-category-chips:Help/13#0` | help-search-category-chips Help/13#0 <label> | remove | 1: the page map holds this surface as a part of another row with no row of its own, so that row's own surface builds it and this surface places nothing (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Help search + category chips" of the help row (owner draft-notes) |  |
 | `skeleton:product-buy-box:Product/102#0` | product-buy-box Product/102#0 <div> | remove | 1: the page map holds this surface as a part of another row with no row of its own, so that row's own surface builds it and this surface places nothing (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Product buy box" of the product row (owner draft-notes) |  |
+| `skeleton:product-gift-note:Product/93#0` | product-gift-note Product/93#0 <div> | remove | 1: the page map holds this surface as a part of another row with no row of its own, so that row's own surface builds it and this surface places nothing (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Product gift note" of the product row (owner draft-notes) |  |
+| `skeleton:shop-filter-sort:Shop/21#0` | shop-filter-sort Shop/21#0 <div> | remove | 1: the page map holds this surface as a part of another row with no row of its own, so that row's own surface builds it and this surface places nothing (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Shop filter + sort" of the shop row (owner draft-notes) |  |
 | `skeleton:sign-in:SignIn/27#0` | sign-in SignIn/27#0 <form> | block:sgs/account | 1: the page map holds this surface as a part of a WooCommerce row, so the row's WooCommerce piece (rules.commerceRegion.roles, the role's owner block, else its block) draws it: the piece is the root and every element in it is absorbed, never cloned as its own form or blocks (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Sign in" of the my-account row (owner woocommerce) |  |
 
 ### Settled by rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link (10)
@@ -1114,13 +1101,14 @@ Accept all: [ ]
 | `skeleton:site-footer:Home>SiteFooter@250#0/24#0` | site-footer Home>SiteFooter@250#0/24#0 <a> "Build your box" | block:sgs/button | 1: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link | accept |
 | `skeleton:site-footer:Home>SiteFooter@250#0/25#0` | site-footer Home>SiteFooter@250#0/25#0 <span> "→" | absorbed | 1: drawn by sgs/button: rule pillButton | accept |
 
-### Settled by rule shopToolbar: the draft's sort control and result count are WooCommerce's catalog-sorting and product-results-count in a toolbar row at the top of the product collection, as the theme's archive-product copy composes them (the count reads its query from the collection around it); found by the shop parts record's stamps, never by words (FR-48-61, FR-48-87) (3)
+### Settled by rule shopToolbar: the draft's sort control and result count are WooCommerce's catalog-sorting and product-results-count in a toolbar row at the top of the product collection, as the theme's archive-product copy composes them (the count reads its query from the collection around it); found by the shop parts record's stamps, never by words (FR-48-61, FR-48-87) (4)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:page-shop-dc-html:Shop/15#0` | page-shop-dc-html Shop/15#0 <label> | absorbed | 1: the draft's sort control and result count are WooCommerce's catalog-sorting and product-results-count in a toolbar row at the top of the product collection, as the theme's archive-product copy composes them (the count reads its query from the collection around it); found by the shop parts record's stamps, never by words (FR-48-61, FR-48-87) |  |
 | `skeleton:page-shop-dc-html:Shop/16#0` | page-shop-dc-html Shop/16#0 <span> "Sort" | absorbed | 1: drawn by the element before it: the draft's sort control and result count are WooCommerce's catalog-sorting and product-results-count in a toolbar row at the top of the product collection, as the theme's archive-product copy composes them (the count reads its query from the collection around it); found by the shop parts record's stamps, never by words (FR-48-61, FR-48-87) |  |
 | `skeleton:page-shop-dc-html:Shop/17#0` | page-shop-dc-html Shop/17#0 <select> | absorbed | 1: drawn by the element before it: the draft's sort control and result count are WooCommerce's catalog-sorting and product-results-count in a toolbar row at the top of the product collection, as the theme's archive-product copy composes them (the count reads its query from the collection around it); found by the shop parts record's stamps, never by words (FR-48-61, FR-48-87) |  |
+| `skeleton:page-shop-dc-html:Shop/27#0` | page-shop-dc-html Shop/27#0 <div> "5 treats to choose from" | absorbed | 1: the draft's sort control and result count are WooCommerce's catalog-sorting and product-results-count in a toolbar row at the top of the product collection, as the theme's archive-product copy composes them (the count reads its query from the collection around it); found by the shop parts record's stamps, never by words (FR-48-61, FR-48-87) |  |
 
 ### Settled by rule siteInfoLink: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself (1)
 
@@ -1177,13 +1165,18 @@ Accept all: [ ]
 | `skeleton:site-footer:Home>SiteFooter@250#0/20#0` | site-footer Home>SiteFooter@250#0/20#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there | accept |
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/6#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/6#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there | accept |
 
-### Confident proposals (Accept all covers these) (231)
+### Confident proposals (Accept all covers these) (240)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:build-your-zookie:Home/66#0` | build-your-zookie Home/66#0 <div> | block:sgs/container | 0.75 | accept |
 | `skeleton:build-your-zookie:Home/68#0` | build-your-zookie Home/68#0 <h2> "Build your Zookie" | block:sgs/heading | 0.75 | accept |
 | `skeleton:build-your-zookie:Home/69#0` | build-your-zookie Home/69#0 <p> "Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh." | block:sgs/text | 0.75 | accept |
+| `skeleton:cancel-subscription-confirm:Account/131#0` | cancel-subscription-confirm Account/131#0 <div> "Cancel this subscription?" | remove | 1: inside a removed element (Account/130#0) |  |
+| `skeleton:cancel-subscription-confirm:Account/132#0` | cancel-subscription-confirm Account/132#0 <div> "You’ll lose 10% off and your guaranteed slot in every bake. Pausing keeps both." | remove | 1: inside a removed element (Account/130#0) |  |
+| `skeleton:cancel-subscription-confirm:Account/133#0` | cancel-subscription-confirm Account/133#0 <div> | remove | 1: inside a removed element (Account/130#0) |  |
+| `skeleton:cancel-subscription-confirm:Account/134#0` | cancel-subscription-confirm Account/134#0 <button> "Keep it" | remove | 1: inside a removed element (Account/130#0) |  |
+| `skeleton:cancel-subscription-confirm:Account/135#0` | cancel-subscription-confirm Account/135#0 <button> "Yes, cancel" | remove | 1: inside a removed element (Account/130#0) |  |
 | `skeleton:checkout-header:Checkout/10#0` | checkout-header Checkout/10#0 <a> | block:sgs/container | 0.75 |  |
 | `skeleton:checkout-header:Checkout/8#0` | checkout-header Checkout/8#0 <div> | block:sgs/site-header-row | 1 |  |
 | `skeleton:checkout-header:Checkout/9#0` | checkout-header Checkout/9#0 <a> "← Basket" | block:sgs/button | 0.75 |  |
@@ -1239,7 +1232,6 @@ Accept all: [ ]
 | `skeleton:page-gifts-dc-html:Gifts/10#0` | page-gifts-dc-html Gifts/10#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:page-gifts-dc-html:Gifts/13#0` | page-gifts-dc-html Gifts/13#0 <h1> "Gifts she’ll actually eat" | block:sgs/heading | 0.75 | accept |
 | `skeleton:page-gifts-dc-html:Gifts/14#0` | page-gifts-dc-html Gifts/14#0 <p> "Baked fresh when you order and sent with your note. We always leave the prices off." | block:sgs/text | 0.75 | accept |
-| `skeleton:page-gifts-dc-html:Gifts/24#0` | page-gifts-dc-html Gifts/24#0 <a> "Show 4 gifts ↓" | block:sgs/button | 0.75 | accept |
 | `skeleton:page-gifts-dc-html:Gifts/25#0` | page-gifts-dc-html Gifts/25#0 <div> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-gifts-dc-html:Gifts/26#0` | page-gifts-dc-html Gifts/26#0 <div> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-gifts-dc-html:Gifts/27#0` | page-gifts-dc-html Gifts/27#0 <div> | block:sgs/media | 1 | accept |
@@ -1275,6 +1267,7 @@ Accept all: [ ]
 | `skeleton:page-help-dc-html:Help/67#0` | page-help-dc-html Help/67#0 <h2> "Ingredients & allergens" | block:sgs/heading | 0.75 | accept |
 | `skeleton:page-help-dc-html:Help/68#0` | page-help-dc-html Help/68#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:page-help-dc-html:Help/73#0` | page-help-dc-html Help/73#0 <p> "Fenugreek may cross-react with peanut and soy allergies in sensitive people. Made in a kitchen that also handles tree nuts, so not suitable for anyone with a tree nut allergy." | block:sgs/text | 0.75 | accept |
+| `skeleton:page-help-dc-html:Help/74#0` | page-help-dc-html Help/74#0 <p> "Vegan base: no eggs or dairy. Still contains oats, flaxseed and fenugreek, and the same tree nut advice applies. Some flavours and chips may add allergens; each is listed on the product page." | block:sgs/text | 0.75 |  |
 | `skeleton:page-help-dc-html:Help/76#0` | page-help-dc-html Help/76#0 <section> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-help-dc-html:Help/77#0` | page-help-dc-html Help/77#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:page-help-dc-html:Help/78#0` | page-help-dc-html Help/78#0 <div> | block:sgs/container | 0.75 | accept |
@@ -1332,6 +1325,7 @@ Accept all: [ ]
 | `skeleton:page-home-dc-html:Home/237#0` | page-home-dc-html Home/237#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:page-home-dc-html:Home/238#0` | page-home-dc-html Home/238#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:page-home-dc-html:Home/240#0` | page-home-dc-html Home/240#0 <h2> "Questions mums ask" | block:sgs/heading | 0.75 | accept |
+| `skeleton:page-home-dc-html:Home/241#0` | page-home-dc-html Home/241#0 <p> "Can’t see yours? Message Zainab on WhatsApp, or read the full Help & FAQs." | block:sgs/text | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/27#0` | page-home-dc-html Home/27#0 <a> "New? Taster Trio, 3 for £5 →" | block:sgs/button | 0.75 | accept |
 | `skeleton:page-home-dc-html:Home/38#0` | page-home-dc-html Home/38#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:page-home-dc-html:Home/44#0` | page-home-dc-html Home/44#0 <div> | block:sgs/container | 0.75 | accept |
@@ -1368,7 +1362,10 @@ Accept all: [ ]
 | `skeleton:page-signin-dc-html:SignIn/97#0` | page-signin-dc-html SignIn/97#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:page-signin-dc-html:SignIn/99` | page-signin-dc-html SignIn/99 <div> | block:sgs/container | 1: 3 copies of one template element | accept |
 | `skeleton:product-buy-box:Product/108#0` | product-buy-box Product/108#0 <button> "Add to basket · £21.50" | remove | 1: inside a removed element (Product/102#0) |  |
+| `skeleton:product-gift-note:Product/100#0` | product-gift-note Product/100#0 <textarea> | remove | 1: inside a removed element (Product/93#0) |  |
 | `skeleton:product-gift-note:Product/101#0` | product-gift-note Product/101#0 <div> "200 characters left" | remove | 1: inside a removed element (Product/93#0) |  |
+| `skeleton:product-gift-note:Product/94#0` | product-gift-note Product/94#0 <label> | remove | 1: inside a removed element (Product/93#0) |  |
+| `skeleton:product-gift-note:Product/95#0` | product-gift-note Product/95#0 <input> | remove | 1: inside a removed element (Product/93#0) |  |
 | `skeleton:product-gift-note:Product/96#0` | product-gift-note Product/96#0 <span> | remove | 1: inside a removed element (Product/93#0) | accept |
 | `skeleton:product-gift-note:Product/97#0` | product-gift-note Product/97#0 <span> "Send it as a gift" | remove | 1: inside a removed element (Product/93#0) | accept |
 | `skeleton:product-gift-note:Product/98#0` | product-gift-note Product/98#0 <span> "Add a note. We’ll leave the prices off." | remove | 1: inside a removed element (Product/93#0) | accept |

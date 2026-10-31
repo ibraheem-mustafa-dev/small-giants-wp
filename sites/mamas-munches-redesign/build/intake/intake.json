@@ -98901,21 +98901,16 @@
      },
      "tag": "div",
      "words": "",
-     "block": "sgs/trustpilot-reviews",
-     "confidence": 0.85,
+     "block": "sgs/testimonial-slider",
+     "confidence": 1,
      "low": false,
-     "reason": "Bean, 2026-10-31: the review loop sits under 4.3 stars and a link 8 on Trustpilot: the platform evidence picks the Trustpilot block",
+     "reason": "a loop of review cards whose holder is a scroll track the draft's script steps (a timer, pointer drag or arrow controls, never a name) is the testimonial slider, each card one of its testimonials (Spec 48 FR-48-77, register row C5) (a loop of 6 review cards in a scroll track the draft's script steps)",
      "rule": "loopBlocks",
      "candidates": [
       {
        "block": "sgs/testimonial-slider",
        "score": 1,
        "share": 1
-      },
-      {
-       "block": "sgs/trustpilot-reviews",
-       "score": 0,
-       "share": 0
       }
      ],
      "action": null,
@@ -98961,27 +98956,7 @@
        "h": 424.5
       }
      ],
-     "draftId": "Home:222",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/testimonial-slider",
-      "action": null,
-      "confidence": 0.4,
-      "low": true,
-      "reason": "a loop of review cards whose holder is a scroll track the draft's script steps (a timer, pointer drag or arrow controls, never a name) is the testimonial slider, each card one of its testimonials (Spec 48 FR-48-77, register row C5) (a loop of 6 review cards in a scroll track the draft's script steps); the element's facts rule out the standing rule's block, so the row keeps it at low confidence for the review: the region names trustpilot (Home/232#0, Home/232#1, Home/232#2 (+3)), the platform of sgs/trustpilot-reviews, which shows the same facts (self-moving timer); sgs/testimonial-slider belongs to no platform",
-      "candidates": [
-       {
-        "block": "sgs/testimonial-slider",
-        "score": 1,
-        "share": 1
-       },
-       {
-        "block": "sgs/trustpilot-reviews",
-        "score": 0,
-        "share": 0
-       }
-      ]
-     }
+     "draftId": "Home:222"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/224",
@@ -100764,7 +100739,7 @@
     "rows": 370,
     "skeletonNodes": 149,
     "expandedNodes": 149,
-    "low": 43,
+    "low": 42,
     "removed": 233,
     "unresolved": 0,
     "byRule": {
@@ -113708,7 +113683,7 @@
       {
        "draftId": "Gifts:15",
        "tag": "div",
-       "block": null
+       "block": "sgs/container"
       }
      ],
      "siblingCount": 3,
@@ -113803,7 +113778,7 @@
       {
        "draftId": "Gifts:15",
        "tag": "div",
-       "block": null
+       "block": "sgs/container"
       }
      ],
      "siblingCount": 3,
@@ -113883,7 +113858,7 @@
       {
        "draftId": "Gifts:15",
        "tag": "div",
-       "block": null
+       "block": "sgs/container"
       }
      ],
      "siblingCount": 3,
@@ -113930,13 +113905,19 @@
      },
      "tag": "div",
      "words": "",
-     "block": null,
+     "block": "sgs/container",
      "confidence": 1,
      "low": false,
-     "reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
-     "rule": "heroInner",
-     "candidates": [],
-     "action": "unwrap",
+     "reason": "the draft's filter rail on the shop template is the framework's working filter: WooCommerce's product filters inside the theme's #sgs-shop-filters aside, one heading and filter per group, as archive-product.html composes it and the theme's filter drawer builds its groups from (Spec 48 FR-48-61); found by structure from the catalogue's facets (lib/skeleton-filter-rail.mjs), never by words (2 group(s): What’s the moment? (attribute what-s-the-moment), Budget (price))",
+     "rule": "filterRail",
+     "candidates": [
+      {
+       "block": "sgs/container",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
      "snippet": "<div data-reveal=\"\" style=\"background:#FFFAF0;border:2px solid #3A2A22;border-radius:26px;padding:20px;display:flex;flex-direction:column;gap:14px;box-shadow:6p",
      "parent": {
       "draftId": "Gifts:11",
@@ -114006,44 +113987,39 @@
      "tag": "div",
      "words": "What’s the moment?",
      "block": null,
-     "confidence": 0.75,
+     "confidence": 1,
      "low": false,
-     "reason": "The title above the moment option picker; sgs/option-picker draws its own label (label in the DB).",
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/text",
-       "score": 0.25,
-       "share": 1
-      }
-     ],
-     "action": "remove",
+     "reason": "drawn by sgs/container: rule filterRail",
+     "rule": "filterRail",
+     "into": "Gifts/15#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<div style=\"font-family:'Young Serif',serif;font-size:21px\" data-dc-tpl=\"16\">What’s the moment?</div>",
      "parent": {
       "draftId": "Gifts:15",
       "tag": "div",
-      "block": null
+      "block": "sgs/container"
      },
      "siblings": [
       {
        "draftId": "Gifts:17",
        "tag": "div",
-       "block": "sgs/option-picker"
+       "block": null
       },
       {
        "draftId": "Gifts:20",
        "tag": "div",
-       "block": "sgs/text"
+       "block": null
       },
       {
        "draftId": "Gifts:21",
        "tag": "div",
-       "block": "sgs/option-picker"
+       "block": null
       },
       {
        "draftId": "Gifts:24",
        "tag": "a",
-       "block": "sgs/button"
+       "block": null
       }
      ],
      "siblingCount": 4,
@@ -114070,22 +114046,7 @@
        "h": 30
       }
      ],
-     "draftId": "Gifts:16",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Gifts:16"
     },
     {
      "rowId": "skeleton:page-gifts-dc-html:Gifts/17#0",
@@ -114106,50 +114067,40 @@
      },
      "tag": "div",
      "words": "",
-     "block": "sgs/option-picker",
+     "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "a group of pressable chips whose choice narrows a list on the same surface stays the option picker and hands the filter wiring to the site build (Bean, 2026-10-21)",
-     "rule": "optionSetFilter",
-     "handover": {
-      "owner": "behaviour",
-      "kind": "behaviour",
-      "detail": "the choice narrows a list on this page: wire it to the list's filter"
-     },
-     "candidates": [
-      {
-       "block": "sgs/option-picker",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "drawn by sgs/container: rule filterRail",
+     "rule": "filterRail",
+     "into": "Gifts/15#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:8px\" data-dc-tpl=\"17\"><sc-for list=\"{{ occ }}\" as=\"o\" hint-placeholder-count=\"0\" data-dc-tpl=\"18\"><button sc-camel-o",
      "parent": {
       "draftId": "Gifts:15",
       "tag": "div",
-      "block": null
+      "block": "sgs/container"
      },
      "siblings": [
       {
        "draftId": "Gifts:16",
        "tag": "div",
-       "block": "sgs/text"
+       "block": null
       },
       {
        "draftId": "Gifts:20",
        "tag": "div",
-       "block": "sgs/text"
+       "block": null
       },
       {
        "draftId": "Gifts:21",
        "tag": "div",
-       "block": "sgs/option-picker"
+       "block": null
       },
       {
        "draftId": "Gifts:24",
        "tag": "a",
-       "block": "sgs/button"
+       "block": null
       }
      ],
      "siblingCount": 4,
@@ -114201,16 +114152,16 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "4 copies of one template element; drawn by sgs/option-picker: rule optionSetFilter",
-     "rule": "optionSetFilter",
-     "into": "Gifts/17#0",
+     "reason": "4 copies of one template element; drawn by sgs/container: rule filterRail",
+     "rule": "filterRail",
+     "into": "Gifts/15#0",
      "candidates": [],
      "action": "absorbed",
      "snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3A2A22;background",
      "parent": {
       "draftId": "Gifts:17",
       "tag": "div",
-      "block": "sgs/option-picker"
+      "block": null
      },
      "siblings": [
       {
@@ -114261,7 +114212,7 @@
       "Gifts/19#2",
       "Gifts/19#3"
      ],
-     "proposalReason": "drawn by sgs/option-picker: rule optionSetFilter",
+     "proposalReason": "drawn by sgs/container: rule filterRail",
      "otherWords": [
       "Just had a baby",
       "Sending love from afar",
@@ -114289,44 +114240,39 @@
      "tag": "div",
      "words": "Budget",
      "block": null,
-     "confidence": 0.75,
+     "confidence": 1,
      "low": false,
-     "reason": "The title above the budget option picker; sgs/option-picker draws its own label (label in the DB).",
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/text",
-       "score": 0.25,
-       "share": 1
-      }
-     ],
-     "action": "remove",
+     "reason": "drawn by sgs/container: rule filterRail",
+     "rule": "filterRail",
+     "into": "Gifts/15#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<div style=\"font-family:'Young Serif',serif;font-size:21px\" data-dc-tpl=\"20\">Budget</div>",
      "parent": {
       "draftId": "Gifts:15",
       "tag": "div",
-      "block": null
+      "block": "sgs/container"
      },
      "siblings": [
       {
        "draftId": "Gifts:16",
        "tag": "div",
-       "block": "sgs/text"
+       "block": null
       },
       {
        "draftId": "Gifts:17",
        "tag": "div",
-       "block": "sgs/option-picker"
+       "block": null
       },
       {
        "draftId": "Gifts:21",
        "tag": "div",
-       "block": "sgs/option-picker"
+       "block": null
       },
       {
        "draftId": "Gifts:24",
        "tag": "a",
-       "block": "sgs/button"
+       "block": null
       }
      ],
      "siblingCount": 4,
@@ -114353,22 +114299,7 @@
        "h": 30
       }
      ],
-     "draftId": "Gifts:20",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Gifts:20"
     },
     {
      "rowId": "skeleton:page-gifts-dc-html:Gifts/21#0",
@@ -114389,50 +114320,40 @@
      },
      "tag": "div",
      "words": "",
-     "block": "sgs/option-picker",
+     "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "a group of pressable chips whose choice narrows a list on the same surface stays the option picker and hands the filter wiring to the site build (Bean, 2026-10-21)",
-     "rule": "optionSetFilter",
-     "handover": {
-      "owner": "behaviour",
-      "kind": "behaviour",
-      "detail": "the choice narrows a list on this page: wire it to the list's filter"
-     },
-     "candidates": [
-      {
-       "block": "sgs/option-picker",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "drawn by sgs/container: rule filterRail",
+     "rule": "filterRail",
+     "into": "Gifts/15#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:8px\" data-dc-tpl=\"21\"><sc-for list=\"{{ budgets }}\" as=\"o\" hint-placeholder-count=\"0\" data-dc-tpl=\"22\"><button sc-cam",
      "parent": {
       "draftId": "Gifts:15",
       "tag": "div",
-      "block": null
+      "block": "sgs/container"
      },
      "siblings": [
       {
        "draftId": "Gifts:16",
        "tag": "div",
-       "block": "sgs/text"
+       "block": null
       },
       {
        "draftId": "Gifts:17",
        "tag": "div",
-       "block": "sgs/option-picker"
+       "block": null
       },
       {
        "draftId": "Gifts:20",
        "tag": "div",
-       "block": "sgs/text"
+       "block": null
       },
       {
        "draftId": "Gifts:24",
        "tag": "a",
-       "block": "sgs/button"
+       "block": null
       }
      ],
      "siblingCount": 4,
@@ -114484,16 +114405,16 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "3 copies of one template element; drawn by sgs/option-picker: rule optionSetFilter",
-     "rule": "optionSetFilter",
-     "into": "Gifts/21#0",
+     "reason": "3 copies of one template element; drawn by sgs/container: rule filterRail",
+     "rule": "filterRail",
+     "into": "Gifts/15#0",
      "candidates": [],
      "action": "absorbed",
      "snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3A2A22;background",
      "parent": {
       "draftId": "Gifts:21",
       "tag": "div",
-      "block": "sgs/option-picker"
+      "block": null
      },
      "siblings": [
       {
@@ -114538,7 +114459,7 @@
       "Gifts/23#1",
       "Gifts/23#2"
      ],
-     "proposalReason": "drawn by sgs/option-picker: rule optionSetFilter",
+     "proposalReason": "drawn by sgs/container: rule filterRail",
      "otherWords": [
       "Under £20",
       "£20 and up"
@@ -114564,45 +114485,40 @@
      },
      "tag": "a",
      "words": "Show 4 gifts ↓",
-     "block": "sgs/button",
-     "confidence": 0.75,
+     "block": null,
+     "confidence": 1,
      "low": false,
-     "reason": null,
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/button",
-       "score": 0.75,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "drawn by sgs/container: rule filterRail",
+     "rule": "filterRail",
+     "into": "Gifts/15#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<a href=\"#results\" style=\"height:56px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;font-size:17px;display:flex;",
      "parent": {
       "draftId": "Gifts:15",
       "tag": "div",
-      "block": null
+      "block": "sgs/container"
      },
      "siblings": [
       {
        "draftId": "Gifts:16",
        "tag": "div",
-       "block": "sgs/text"
+       "block": null
       },
       {
        "draftId": "Gifts:17",
        "tag": "div",
-       "block": "sgs/option-picker"
+       "block": null
       },
       {
        "draftId": "Gifts:20",
        "tag": "div",
-       "block": "sgs/text"
+       "block": null
       },
       {
        "draftId": "Gifts:21",
        "tag": "div",
-       "block": "sgs/option-picker"
+       "block": null
       }
      ],
      "siblingCount": 4,
@@ -118946,15 +118862,15 @@
     "inventoryElements": 127,
     "parts": 0,
     "rows": 127,
-    "skeletonNodes": 65,
-    "expandedNodes": 65,
-    "low": 25,
-    "removed": 64,
+    "skeletonNodes": 72,
+    "expandedNodes": 72,
+    "low": 23,
+    "removed": 68,
     "unresolved": 0,
     "byRule": {
      "hero": 1,
-     "heroInner": 2,
-     "optionSetFilter": 9,
+     "heroInner": 1,
+     "filterRail": 13,
      "decorationLayer": 2,
      "loopBlocks": 49,
      "alignWrapper": 2,
@@ -118965,7 +118881,9 @@
      "cardAction": 1
     }
    },
-   "problems": []
+   "problems": [
+    "Gifts/15#0: the filter for facet what-s-the-moment carries no attributeId: catalogue.json records no attributes for local-mamas or mamas-test (run site-build.mjs --catalogue --apply on it)"
+   ]
   },
   "gift-finder": {
    "id": "S-20",
@@ -150477,39 +150395,16 @@
   {
    "rowId": "catalogue:giftcard",
    "rowType": "catalogue",
-   "contentHash": "459ce2e5b8efb0f6d19c55a863301c633852a5fa4c9af3681a1c0d87f223201b",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:34:36.289Z"
-  },
-  {
-   "rowId": "catalogue-gap:*:facet:1",
-   "rowType": "catalogue",
-   "contentHash": "ac0265a0db9a61d46aa079dade82b56ae65a2bdf0fe5ac0f9741e0a79ebd79a5",
+   "contentHash": "b9b2d9f8353fab521f7e9f44c5bc92b36fe93d454c4a694b4d105ea3a5d94327",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null
+   "carriedFrom": null,
+   "changed": true
   },
   {
-   "rowId": "catalogue-gap:zookies:switch:2",
+   "rowId": "catalogue-gap:zookies:switch:1",
    "rowType": "catalogue",
    "contentHash": "3bfd68576f42f94c41a7c25bfd665ea987eed8385a5a47778daef46b8a4d85fd",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
-  },
-  {
-   "rowId": "catalogue-gap:giftcard:open-amount:3",
-   "rowType": "catalogue",
-   "contentHash": "5c7e01ad948deb9f16becb1f1f88fbf5b7a571b818a02c3ddf639d7aa1a9d081",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
-  },
-  {
-   "rowId": "catalogue-gap:giftcard:no-variesby:4",
-   "rowType": "catalogue",
-   "contentHash": "2a60a60cc4e0ef829f8fbfa0e3bbc68256461ee16c146cfce84e06c9cdeed4c5",
    "mark": null,
    "markedOn": null,
    "carriedFrom": null
@@ -151048,8 +150943,7 @@
    "contentHash": "a4cc0a29f0a4e7c8fb5a368ae3f83e1ee6e8e05eb74a7bc0c1cae7567f54258e",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "missing:coverage:html:legend",
@@ -151057,8 +150951,7 @@
    "contentHash": "d0067ed5f6859b00619e23e4842e7cd266fb5a22b7c5296dcd6861c5c447d582",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "missing:coverage:html-attr:input.minlength",
@@ -151802,8 +151695,7 @@
    "contentHash": "38c410c8dc07a514aef5fd5bbe3d32a975909edd68296b09532d3ee512bd82f1",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:basket-drawer-right:Home>SiteHeader@7#0/132#0",
@@ -153835,8 +153727,7 @@
    "contentHash": "c23e17f51dcad2492121af392c3f9b0284d2ebfaa7c28b22ea3b0d4143105dea",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/220#0",
@@ -153844,8 +153735,7 @@
    "contentHash": "2e647c48f657054b3390e92239ccfc276dee72a49c1bca67e1ef6a724160ce02",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/221#0",
@@ -153853,13 +153743,12 @@
    "contentHash": "dd47902e07e9962228e15df8a81e45ed9422e60948bf4cc87dac47a2d417bf12",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/222#0",
    "rowType": "skeleton-block",
-   "contentHash": "b6403bfc45dbcaf156d9b04a6eb27fd025c296640639968bc7543871ea7fe8a8",
+   "contentHash": "600599f34ea1c04962315ef0f460cc1145600d4e270553190c22c210d360b92e",
    "mark": null,
    "markedOn": null,
    "carriedFrom": null
@@ -153942,8 +153831,7 @@
    "contentHash": "871de291a602f56ffe58341f6348ba4480568510acc7101d1d5287ffefd1cf1d",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/235",
@@ -153951,8 +153839,7 @@
    "contentHash": "3b3b766b6a3e857b479bf6aea35e4cf87b21bfc25860f49784988c9618dec2ab",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/236#0",
@@ -154000,8 +153887,7 @@
    "contentHash": "de123538c74c3f0d6d880e43377f2a82c0b7b7198fb2d5f43212983571ffacda",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/243#0",
@@ -154217,8 +154103,7 @@
    "contentHash": "0d2de5fe219d3cb5305aeba5f9bfbe5213b390fae46b45e6c5591066a038e0d9",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-shop-dc-html:Shop/28#0",
@@ -154482,8 +154367,7 @@
    "contentHash": "977ae1d5f0479faaaec9efbdfcd46df724f35c95463cc7297bfb2b2a7a6ebf70",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:shop-filter-sort:Shop/23",
@@ -154523,8 +154407,7 @@
    "contentHash": "6d1989d6a5907cdd47cb5910d3080dbf9a8d894f3412a03442c50cb915a9acc9",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/10#0",
@@ -154532,8 +154415,7 @@
    "contentHash": "4ac7f4cef40f7371d870b48f638d368586f6344c780e3aca6736c52f30573111",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/11#0",
@@ -154541,8 +154423,7 @@
    "contentHash": "b0c680cb0f2522aec746054dcfe0726e7d535e875f7b19329dd55704a5f058f3",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/12#0",
@@ -154550,8 +154431,7 @@
    "contentHash": "d971413b3eeb50dfb2960d27a585c3a59053ff12ddc65ea33a58743a92f44de7",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/13#0",
@@ -154559,8 +154439,7 @@
    "contentHash": "d6324597e3c0d5ab54b95e45aef7c8c81a3c297cc01c42dab551a57b79dd021d",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/14#0",
@@ -154568,8 +154447,7 @@
    "contentHash": "2b8ba01267be692210b0e19b320017d3942d886a974ef50cb830736a63a98e32",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/15#0",
@@ -155273,8 +155151,7 @@
    "contentHash": "4e92c9b895bf82121aaf8edf46ddca86bff8e4999ce94cc4cbf4a7eeca340a0c",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:product-gift-note:Product/94#0",
@@ -155282,8 +155159,7 @@
    "contentHash": "3ba052e0ef63d38a33820670639cd00876f408dd45e23264782f96d431653d4e",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:product-gift-note:Product/95#0",
@@ -155291,8 +155167,7 @@
    "contentHash": "bc22af24584c57a39564e7ae6f452b74cfac61c02aede365ca19b880d8cab8dd",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:product-gift-note:Product/96#0",
@@ -155324,8 +155199,7 @@
    "contentHash": "5c4d8a8a68103ce2ad542881f6a785e0ae97b35c3091b537b258270384b4906f",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:product-gift-note:Product/101#0",
@@ -155394,15 +155268,15 @@
   {
    "rowId": "skeleton:page-gifts-dc-html:Gifts/15#0",
    "rowType": "skeleton-block",
-   "contentHash": "4aa6dc95fc96b3164fd21589e1676711c6328d26d02abf3617d942eb7e67765e",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:34:36.289Z"
+   "contentHash": "ea680a194cd0f1e52d81e4713de88460bb137397d1d29edaf23ee6d629a57306",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-gifts-dc-html:Gifts/16#0",
    "rowType": "skeleton-block",
-   "contentHash": "f11457e86b9e50ec5e08cf26b2f144e26d6b80ca265f8cbc832f95407371c8f5",
+   "contentHash": "f9988cf73c60852c6ce9772569a31e055e0366b05266a02008291f404bcd160d",
    "mark": null,
    "markedOn": null,
    "carriedFrom": null
@@ -155410,10 +155284,10 @@
   {
    "rowId": "skeleton:page-gifts-dc-html:Gifts/17#0",
    "rowType": "skeleton-block",
-   "contentHash": "faa77451235d1fef9c7337f2dc213b237cb735f4790c73227e33762bde598536",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:34:36.289Z"
+   "contentHash": "0e97eb3a97b6821d7a667164e55d4fd4c71ce59a018d4638508cd907307dd972",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-gifts-dc-html:Gifts/19",
@@ -155426,7 +155300,7 @@
   {
    "rowId": "skeleton:page-gifts-dc-html:Gifts/20#0",
    "rowType": "skeleton-block",
-   "contentHash": "b45ca0dc845545822d4353b7a9c0e8331d08fa4f1523fb7f4e05a16c53a5c939",
+   "contentHash": "0da0dd83ea35c62efa90983176933f64ae93eeb62db8cfea0bfcf2cd5659c25f",
    "mark": null,
    "markedOn": null,
    "carriedFrom": null
@@ -155434,10 +155308,10 @@
   {
    "rowId": "skeleton:page-gifts-dc-html:Gifts/21#0",
    "rowType": "skeleton-block",
-   "contentHash": "1d73f36e16169eea4f3553182a1b65da029c1c2c3ceba9a983db18ec3e3c4f60",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:34:36.289Z"
+   "contentHash": "53cebdde63ccf30a9fc67e11055c700d4b725aa43ff6e760da7c7d71fadfc8c9",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-gifts-dc-html:Gifts/23",
@@ -155450,10 +155324,10 @@
   {
    "rowId": "skeleton:page-gifts-dc-html:Gifts/24#0",
    "rowType": "skeleton-block",
-   "contentHash": "e45e4a5fd00f39022f40de51aeac272726c7aec31e1f378c5b903b1f9861b688",
-   "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:34:36.289Z"
+   "contentHash": "24987f83f76eb529cacf665e2b2850a0b9b365e556b883d5d38607339789420b",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-gifts-dc-html:Gifts/25#0",
@@ -156333,8 +156207,7 @@
    "contentHash": "de3b2d8bddc37c5cd6b5ac275e0c111ff9e685eb6da8b40c1102b701e3cd15fa",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-checkout-dc-html:Checkout/16#0",
@@ -156462,8 +156335,7 @@
    "contentHash": "efe9647ce6353c81f17bf8de8e9d459815f2403e63b51668ec37aa0b6284fed9",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-checkout-dc-html:Checkout/52#0",
@@ -156839,8 +156711,7 @@
    "contentHash": "e0933dc966b5faa68a6262f1121ebb0c94a2c34d75f8478924c0e65f041fe4db",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-checkout-dc-html:Checkout/117#0",
@@ -156856,8 +156727,7 @@
    "contentHash": "d11b23801b131e4912d58cad1709ccccdc5c1f5cfb3d55a10b826ea2d4475254",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-checkout-dc-html:Checkout/121#0",
@@ -157065,8 +156935,7 @@
    "contentHash": "5ea9234d399a5c775f3466a9d7b3388abe78a6f8c31e0bea7c5fb0ced891fb56",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-contact-dc-html:Contact/8#0",
@@ -157658,8 +157527,7 @@
    "contentHash": "1144e66cf5fd055c3139151ed9afe709eb3a28be5a5d00a6984d7735e77c9413",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-help-dc-html:Help/27",
@@ -157667,8 +157535,7 @@
    "contentHash": "fd74be8a3caef0a52b1972f6785713610293372c3f9f919204f6dd823c44ed58",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-help-dc-html:Help/28",
@@ -157676,8 +157543,7 @@
    "contentHash": "bd17c0b703b97a099b168c6aaec49f9b7e42d5e43a021e794bef1f4944359224",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-help-dc-html:Help/29",
@@ -157685,8 +157551,7 @@
    "contentHash": "ac7dc05d60b94a83d93c2969b420f69dfbf33b435f9a251d07e533bb46304bb9",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-help-dc-html:Help/30",
@@ -157694,8 +157559,7 @@
    "contentHash": "c1f323b20b9b4345868a16bcbb9867c44607e7a6515a53b318afbddfd42bf5d0",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-help-dc-html:Help/31",
@@ -157703,8 +157567,7 @@
    "contentHash": "848428b93665e335fa768824edf74dc1c7d8b28985cf73ab7d25ec277ba65820",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-help-dc-html:Help/33#0",
@@ -157712,8 +157575,7 @@
    "contentHash": "81e4a265e57585e335461e6003a783bbfef6bacad87e2f017e3041ad80d10135",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-help-dc-html:Help/37#0",
@@ -157929,8 +157791,7 @@
    "contentHash": "e013531b36eb402d582dd2f7de99905709b5f0bd68956b900849cec578092a2a",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-help-dc-html:Help/76#0",
@@ -158122,8 +157983,7 @@
    "contentHash": "e7385816fb0e0e57091519b179a831c1770a822d4bf486bd2a131ffdf1ab43ba",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-signin-dc-html:SignIn/23#0",
@@ -158131,8 +157991,7 @@
    "contentHash": "f9079bd7379b8bf90c981273fe5a538c350ac2f6296641328ef89a75cfa86c58",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-signin-dc-html:SignIn/24#0",
@@ -158140,8 +157999,7 @@
    "contentHash": "d836cf622f702305b5cf2b2c865b1aeca40eaa75e5f1d0c01221c17ea0cf5c25",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-signin-dc-html:SignIn/25#0",
@@ -158149,8 +158007,7 @@
    "contentHash": "8c818d41d04feb0f755ab920ab200157bc042817dfce535e7b2b912038a2284b",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-signin-dc-html:SignIn/27#0",
@@ -158158,8 +158015,7 @@
    "contentHash": "3eb772ab9668c0af42d05ec8fe9439d1b8d626171817358e856d86c85beea90f",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-signin-dc-html:SignIn/28#0",
@@ -158167,8 +158023,7 @@
    "contentHash": "6aaf7d89ffa474bb8dbb47c92cdf47aba4b0240ec468a1f748fc3ee987e14488",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-signin-dc-html:SignIn/29#0",
@@ -158176,8 +158031,7 @@
    "contentHash": "95eb6d6a2dec4190731dfaa06c5434f78527f099792dd1af7a3895ff88a7fc71",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-signin-dc-html:SignIn/32#0",
@@ -158185,8 +158039,7 @@
    "contentHash": "89d91ba54441abeb5ea68e7360828f0600a7bc1e7deb3d78fc821012c5f7efc1",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-signin-dc-html:SignIn/33#0",
@@ -158194,8 +158047,7 @@
    "contentHash": "5e78f151f20267327fa2652e7aec9a010aafc455ac5ca0a9b5cdaff945a4652e",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-signin-dc-html:SignIn/36#0",
@@ -158203,8 +158055,7 @@
    "contentHash": "5b67c8d0f55b8e4e7cc55eda5268d7a48ce12ada4b534f5fd66690af3843abf8",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-signin-dc-html:SignIn/37#0",
@@ -158212,8 +158063,7 @@
    "contentHash": "420c1881413af725a33e72b49a134ca9b3dc3e63a37f6b72d2cdbb6187e3ef8d",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-signin-dc-html:SignIn/38#0",
@@ -158221,8 +158071,7 @@
    "contentHash": "21397787b8ac425e472b0756d7abe983cdbb704735f330b118ba9bc98f155fb9",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-signin-dc-html:SignIn/95#0",
@@ -158310,8 +158159,7 @@
    "contentHash": "da7f5758fff6a5242a1958d51f6f39eb8f905cfb3c7db52a4a24cdba54c921bf",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:create-account:SignIn/41#0",
@@ -158319,8 +158167,7 @@
    "contentHash": "68661ad5c3f0e6e0eeae9a2d33a58df83c50497dad434e41402af7743ab44b15",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:create-account:SignIn/42#0",
@@ -158328,8 +158175,7 @@
    "contentHash": "1b4a4b249c1b87503b1a1208433515089586d6a4eea80260dc6e08c627f7223f",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:create-account:SignIn/43#0",
@@ -158337,8 +158183,7 @@
    "contentHash": "27a3e75a20fe30270498fa279753fcbf57ad9940cae975f4d69e9bebca464402",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:create-account:SignIn/44#0",
@@ -158346,8 +158191,7 @@
    "contentHash": "1b60e3022c60b0972bf7c23f0dc168b9bb4f070f86c9bd5da80c25052f319526",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:create-account:SignIn/45#0",
@@ -158355,8 +158199,7 @@
    "contentHash": "86a5da09acd3419fb249adab46b162ea246f475f5f51c24a734fa4a3beccc33e",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:create-account:SignIn/48#0",
@@ -158364,8 +158207,7 @@
    "contentHash": "3b98c09e215b791045a8146dbe3420da93ca3a3e9064240bda632abeff7e7831",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:create-account:SignIn/49#0",
@@ -158373,8 +158215,7 @@
    "contentHash": "39dc1cf6ce748e7b8e7f1f5e1aa53f09870c68a8620e21dc376f653a353529d3",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:create-account:SignIn/52#0",
@@ -158382,8 +158223,7 @@
    "contentHash": "ddffdee2e38cf5280dba3eeb62ad9331c490041efd5aae7c57c7e04fd6f06498",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:create-account:SignIn/53#0",
@@ -158391,8 +158231,7 @@
    "contentHash": "dd5696e230187ab6d4047a871b68976dbb913d787f7e8737482e602ea6be13e9",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:create-account:SignIn/56#0",
@@ -158400,8 +158239,7 @@
    "contentHash": "abab992a35afeeaaef2ec529d9c158b92d25a4a5480881e79960848bf118fa81",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:create-account:SignIn/57#0",
@@ -158409,8 +158247,7 @@
    "contentHash": "927c595a7a9e28d88fe024a294892e4ed9a786ddfa5ebba55bf820fd385de0ed",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:create-account:SignIn/58#0",
@@ -158418,8 +158255,7 @@
    "contentHash": "81e4c0990bc1f69479ef27389d32a334179d9d58e9529ea99b4f2705d5c155e7",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:forgotten-password-flow:SignIn/60#0",
@@ -158427,8 +158263,7 @@
    "contentHash": "008e9bc6d93268cc23d164936730b41c8fd832421a10d33b1f9cded965df50bb",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:forgotten-password-flow:SignIn/61#0",
@@ -158436,8 +158271,7 @@
    "contentHash": "5d915a5de131cde4392711257b83233f3134a5e732b7ab4431838a71a8eae250",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:forgotten-password-flow:SignIn/62#0",
@@ -158445,8 +158279,7 @@
    "contentHash": "3b8dcaed81c6dd32d1d1d0cb8955f909727e45012a96548c840995173f102d55",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:forgotten-password-flow:SignIn/63#0",
@@ -158454,8 +158287,7 @@
    "contentHash": "63cb6b9b1eecfbade5bc08994b73b19be608a97c53b2f91b284a1a24e2d50901",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:forgotten-password-flow:SignIn/64#0",
@@ -158463,8 +158295,7 @@
    "contentHash": "8badd36e25290475deb250751823027173f3b9adb6b48b25fbedb605f4f8d79c",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:forgotten-password-flow:SignIn/65#0",
@@ -158472,8 +158303,7 @@
    "contentHash": "37d33ec3abb5f151fc90b28b828f7435e0004a3f4e3a6e8a4cb37453ebf3d41e",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:forgotten-password-flow:SignIn/68#0",
@@ -158481,8 +158311,7 @@
    "contentHash": "3d5e64efe10a3ac5f0b19ed07d752e8a81d290575ea69df4da1d0f024e810f37",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-account-dc-html:Account/8#0",
@@ -158594,8 +158423,7 @@
    "contentHash": "f03816e458980f1746d47d76deb4caf17603a1060b061050336067dbf93c1e8c",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:cancel-subscription-confirm:Account/131#0",
@@ -158603,8 +158431,7 @@
    "contentHash": "6d6b26a84348e5dfabad1c899086a7b2a75abc2011f7a1b0f6154584200007a7",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:cancel-subscription-confirm:Account/132#0",
@@ -158612,8 +158439,7 @@
    "contentHash": "450c053cee76634c74d1bbd5784e6a1e541da8a39003e9cd4f49784f6690128d",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:cancel-subscription-confirm:Account/133#0",
@@ -158621,8 +158447,7 @@
    "contentHash": "ea07d91fd181c9f6b5ba5024a3e0a5458fa0dd8029e97aa638d8faa105213ece",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:cancel-subscription-confirm:Account/134#0",
@@ -158630,8 +158455,7 @@
    "contentHash": "89340916692a138d9adf4192af919ac7444fafbd461fef84be7d085771583fde",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:cancel-subscription-confirm:Account/135#0",
@@ -158639,8 +158463,7 @@
    "contentHash": "b77557eb3ce18aed783ea9d28ec9ddf09fca9b5478cdf7ad259dc4d9aeb44403",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:address-form-add-edit:Account/161#0",
@@ -158648,8 +158471,7 @@
    "contentHash": "2e9e42387a4bbd18a218769655c32e10bd6ddcb61909de3dc40df40c2f492b72",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:address-form-add-edit:Account/162#0",
@@ -158657,8 +158479,7 @@
    "contentHash": "37fb6749962e4ce66d20172baa876b706777bb5439c563145d382e10e9380681",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:address-form-add-edit:Account/163#0",
@@ -158666,8 +158487,7 @@
    "contentHash": "2cf619f18f610fe4a3790a8499c03b5066c0df990b674a288ee1ae42d8528a84",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:address-form-add-edit:Account/164#0",
@@ -158675,8 +158495,7 @@
    "contentHash": "dddaff30f434afe397b20dd406f95ae50dd24b2ac0c804be714886154d2aa4ec",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:address-form-add-edit:Account/165#0",
@@ -158684,8 +158503,7 @@
    "contentHash": "d00d40bf31d0c9ba54c6fd61d39313d6c978f26412e72c96b45396573cb33c28",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:address-form-add-edit:Account/166#0",
@@ -158693,8 +158511,7 @@
    "contentHash": "6fabfd00531f06edc811da32422f48aaf729ee6ff207c5e5cc9b814d17662a1d",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:address-form-add-edit:Account/167#0",
@@ -158702,8 +158519,7 @@
    "contentHash": "d566440a7970a06efe3bcd174ab4247099d3c5356910fc3c3b9ca13f5591a4f4",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:address-form-add-edit:Account/168#0",
@@ -158711,8 +158527,7 @@
    "contentHash": "d75c423c021decd96044af8ba725c4e5cdec22e0f88a51a7d4d6bdbf77c85897",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:address-form-add-edit:Account/169#0",
@@ -158720,8 +158535,7 @@
    "contentHash": "a8e91a17d781ca45bd0bcc6bfe4790a68f7962c264333fc2e2069fff5a4163a4",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:address-form-add-edit:Account/170#0",
@@ -158729,8 +158543,7 @@
    "contentHash": "a9775eae2eebe35fbad29598ae43dcf1deeb663e9af7c8d1101dcd0ec833bf81",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:address-form-add-edit:Account/171#0",
@@ -158738,8 +158551,7 @@
    "contentHash": "881694e9b093844aaefd302b7fc0e9fc61a59c48f2d89e822be0ed23a155a496",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:address-form-add-edit:Account/172#0",
@@ -158747,8 +158559,7 @@
    "contentHash": "9330e2e43c98d2170001a33b4a650d4702daa96dad8e18abe8943ae7fb06c5f4",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:address-form-add-edit:Account/173#0",
@@ -158756,8 +158567,7 @@
    "contentHash": "eac41ad5512e6df89388836856e50b5cb5cf05a1edfc1b1b40d4e0925aa630d9",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:address-form-add-edit:Account/176#0",
@@ -158765,8 +158575,7 @@
    "contentHash": "06259907ad6f23b57af3d8a3129dbad7bea618a8c86c15478fec81e4ad867660",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:address-form-add-edit:Account/177#0",
@@ -158774,8 +158583,7 @@
    "contentHash": "4b9c59998aa090a218c3f084f5b456e46b25608706f3ffaface383e874eecb90",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:address-form-add-edit:Account/178#0",
@@ -158783,8 +158591,7 @@
    "contentHash": "d8e72e9e490bb77e691e60d4a1f149f57dfa9b0b40bff1e820627215fad10832",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/32#0",
@@ -158792,8 +158599,7 @@
    "contentHash": "dc9639a44c61fed8e6835dac02f4069cb93e44a45cecdd289fc9a5994560825c",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/180#0",
@@ -158801,8 +158607,7 @@
    "contentHash": "e7eaa7e28cb57b5f4f854890fb172895d4c53cd6db13502e792b1129051094a3",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/181#0",
@@ -158810,8 +158615,7 @@
    "contentHash": "f9d57ec7c6b617d3071108095919c2227f8ed25a21d4c0ddfb2c02a604a04366",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/182#0",
@@ -158819,8 +158623,7 @@
    "contentHash": "c942e1db7de26db2b0b59ff9aca26536d395624b5b56362c2d7a072841ba7bc9",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/183#0",
@@ -158828,8 +158631,7 @@
    "contentHash": "bcf77133005e6b4fc22f9dae32545c56d9cffe87f9a27e1c092eb2e01f377f40",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/184#0",
@@ -158837,8 +158639,7 @@
    "contentHash": "d8f6723866e854da9f4ba3434abd780af7f3e07b0d6b1a2303336b60e4ab763e",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/185#0",
@@ -158846,8 +158647,7 @@
    "contentHash": "8d85c78a5d19c79621d0fff49d57d570a8a703283f41ab3668de7042e8ab8c0c",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/186#0",
@@ -158855,8 +158655,7 @@
    "contentHash": "7be30b10d194fa91b157b572a3c9c229aff11d1c77f93f7c2ab8c62177c3d92b",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/187#0",
@@ -158864,8 +158663,7 @@
    "contentHash": "0a8c001e518cfe97640e8e9a46c047881c7dff2457d0276b4bd849b9e599bc6a",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/188#0",
@@ -158873,8 +158671,7 @@
    "contentHash": "e6008452981afd9a8708cc87f834509d920eca384f944f02ef2fbbb384d208f2",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/189#0",
@@ -158882,8 +158679,7 @@
    "contentHash": "0fc988aed1a1c4461b587a085184aacc009e0e0b2471e4453ccdf5bedad54b35",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/190#0",
@@ -158891,8 +158687,7 @@
    "contentHash": "0d100dfa1efc55e0c7df717e6dff2999b39318e6a042ad9e1bb12047d531898c",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/191#0",
@@ -158900,8 +158695,7 @@
    "contentHash": "cae7a7ebd3882f1d5b7ae327309d4b4244bf2c5b91ba201aee12a5f98c8e02a0",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/192#0",
@@ -158909,8 +158703,7 @@
    "contentHash": "e43597de52a1d4b02aedd3a4022194a972a06ef47625c1fc2d3330cec6243c2a",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/195#0",
@@ -158918,8 +158711,7 @@
    "contentHash": "a9fbdc91f4b6882de7b5ffda38c6c48f99d7b1a4b5b376c979e94dc75bff0a83",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/196#0",
@@ -158927,8 +158719,7 @@
    "contentHash": "61413eb792499ee9bfe30d5dffdf7ac852ee3fb6b012a4455c8fd08350f94a06",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/199#0",
@@ -158936,8 +158727,7 @@
    "contentHash": "a958ed1746480b0188890e78e96a3a21c1d2b78fe8eaaaf74ed0923801eca026",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/200#0",
@@ -158945,8 +158735,7 @@
    "contentHash": "fd1eae37ee41e01c1e53b72eb23e0c025acbe02933ed96bbab438130caf86cd1",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/201#0",
@@ -158954,8 +158743,7 @@
    "contentHash": "128ff9e4e37b9d5a8889d6b983630b75a437961e53f6ddb133830f6e1869e922",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/202#0",
@@ -158963,8 +158751,7 @@
    "contentHash": "ee84c3476ed215522821eb5a7b2c212e8cd7668af2142d9fe13bbdc9a2502043",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/203#0",
@@ -158972,8 +158759,7 @@
    "contentHash": "c5024bd51a5aa4e8788a51a21785ce3aed66bc82e700fcd89c4f4d4d7b663e0b",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/204#0",
@@ -158981,8 +158767,7 @@
    "contentHash": "5afe8270b9e892050cf3b26fa1bb2fda71a59fe618d9836155a600c2081eb9dd",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/205#0",
@@ -158990,8 +158775,7 @@
    "contentHash": "c43063b773822799ff5ece3d725f6f7a54cb8c8be43563ec6a7fe4e52fdb823f",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/208#0",
@@ -158999,8 +158783,7 @@
    "contentHash": "ecef1cccdbf1e9b98bc8b1da5356ddafec852b78e8f3da5cdcfedb3bb84099b5",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:account-details-change-password:Account/209#0",
@@ -159008,8 +158791,7 @@
    "contentHash": "ca2b285001b9e507be0b4da4a7e0548a010ea81d504cf0e25601fc13489e1c58",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:checkout-header:Checkout/7#0",
@@ -163301,33 +163083,18 @@
    {
     "draftId": "giftcard",
     "name": "Baby Shower Gift Card",
-    "type": "variable",
+    "type": "gift-card",
     "price": 15,
-    "variations": 3,
+    "variations": 0,
     "address": "/product/baby-shower-gift-card/",
     "image": true
    }
   ],
   "gaps": [
    {
-    "draftId": "*",
-    "kind": "facet",
-    "detail": "the filter on \"occ\" meets \"hospital\" on products, which the filter's own list offers no choice for; it is not written as terms"
-   },
-   {
     "draftId": "zookies",
     "kind": "switch",
     "detail": "choice \"sub\" is an on/off switch that multiplies the price by 0.9; when on, the shopper also picks \"freq\" (2, 4): WooCommerce core holds no recurring or price-changing switch (a recurring order needs WooCommerce Subscriptions or an equivalent plugin); recorded, not built"
-   },
-   {
-    "draftId": "giftcard",
-    "kind": "open-amount",
-    "detail": "the shopper picks the amount paid (£15, £25, £40): sold as one variation per amount; redeeming it later as store credit needs a gift-card plugin, which WooCommerce core does not have"
-   },
-   {
-    "draftId": "giftcard",
-    "kind": "no-variesby",
-    "detail": "no choice that creates variations (\"amount\") is one of Google's variesBy axes (color, size, material, pattern, suggestedAge, suggestedGender), and SGS's product preflight publishes a variable product only when one of its variation terms maps to one (no_variesby); the product is made and kept a draft"
    }
   ],
   "notes": []

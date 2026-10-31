@@ -402,7 +402,7 @@
       "sku": "sgs-draft-giftcard",
       "slug": "baby-shower-gift-card",
       "name": "Baby Shower Gift Card",
-      "type": "variable",
+      "type": "gift-card",
       "price": 15,
       "rrp": null,
       "shortDescription": "Give it at the shower. She redeems it once baby arrives, so every cookie is fresh.",
@@ -423,85 +423,22 @@
           "Baby shower"
         ]
       },
-      "attributes": [
-        {
-          "key": "amount",
-          "label": "Amount",
-          "slug": "amount",
-          "packSize": false,
-          "variesBy": null,
-          "variation": true,
-          "options": [
-            {
-              "value": 15,
-              "term": "15",
-              "price": 15,
-              "swatch": null,
-              "badge": null
-            },
-            {
-              "value": 25,
-              "term": "25",
-              "price": 25,
-              "swatch": null,
-              "badge": null
-            },
-            {
-              "value": 40,
-              "term": "40",
-              "price": 40,
-              "swatch": null,
-              "badge": null
-            }
-          ],
-          "default": "25"
-        }
-      ],
-      "variations": [
-        {
-          "sku": "sgs-draft-giftcard-15",
-          "options": {
-            "amount": "15"
-          },
-          "price": 15
-        },
-        {
-          "sku": "sgs-draft-giftcard-25",
-          "options": {
-            "amount": "25"
-          },
-          "price": 25
-        },
-        {
-          "sku": "sgs-draft-giftcard-40",
-          "options": {
-            "amount": "40"
-          },
-          "price": 40
-        }
-      ]
+      "attributes": [],
+      "variations": [],
+      "giftCard": {
+        "amounts": [
+          15,
+          25,
+          40
+        ]
+      }
     }
   ],
   "gaps": [
     {
-      "draftId": "*",
-      "kind": "facet",
-      "detail": "the filter on \"occ\" meets \"hospital\" on products, which the filter's own list offers no choice for; it is not written as terms"
-    },
-    {
       "draftId": "zookies",
       "kind": "switch",
       "detail": "choice \"sub\" is an on/off switch that multiplies the price by 0.9; when on, the shopper also picks \"freq\" (2, 4): WooCommerce core holds no recurring or price-changing switch (a recurring order needs WooCommerce Subscriptions or an equivalent plugin); recorded, not built"
-    },
-    {
-      "draftId": "giftcard",
-      "kind": "open-amount",
-      "detail": "the shopper picks the amount paid (£15, £25, £40): sold as one variation per amount; redeeming it later as store credit needs a gift-card plugin, which WooCommerce core does not have"
-    },
-    {
-      "draftId": "giftcard",
-      "kind": "no-variesby",
-      "detail": "no choice that creates variations (\"amount\") is one of Google's variesBy axes (color, size, material, pattern, suggestedAge, suggestedGender), and SGS's product preflight publishes a variable product only when one of its variation terms maps to one (no_variesby); the product is made and kept a draft"
     }
   ],
   "sites": {
