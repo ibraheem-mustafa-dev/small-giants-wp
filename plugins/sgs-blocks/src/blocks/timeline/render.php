@@ -322,23 +322,17 @@ if ( '' !== $bg_paint_decl ) {
 // --- Text colour trio (Task 1, 2026-09-07) — base + gradient + hover, routed
 // via custom properties. Gradient sibling wins over flat; hover chain falls back
 // to resting → CSS default, matching before-after/post-grid precedent. ---
-$text_colour_flat = sgs_resolve_text_colour_or_gradient( $style_color_text, sgs_css_gradient_value( $text_colour_gradient ) );
-if ( '' !== $text_colour_flat || '' !== sgs_css_gradient_value( $text_colour_gradient ) ) {
-	$text_decl = sgs_text_colour_decl( $text_colour_flat );
-	if ( '' !== $text_decl ) {
-		$scoped_css[] = "{$root_sel}{" . $text_decl . ';}';
-		// Fallback for browsers without background-clip:text support.
-		$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel, $text_colour_flat );
-	}
-	// Hover state.
-	$text_colour_hover_flat = sgs_resolve_text_colour_or_gradient( $text_colour_hover, sgs_css_gradient_value( $text_colour_hover_gradient ) );
-	if ( '' !== $text_colour_hover_flat || '' !== sgs_css_gradient_value( $text_colour_hover_gradient ) ) {
-		$text_hover_decl = sgs_text_colour_decl( $text_colour_hover_flat );
-		if ( '' !== $text_hover_decl ) {
-			$scoped_css[] = sgs_hover_state_rules( $root_sel, $text_hover_decl );
-		}
-	}
-}
+// The entry title and description paint their own `color` in style.scss, so the
+// colour set on the root never reaches them: the control is applied to each text
+// element directly (title and description; the date has its own dateColour
+// control). Hover is independent of the resting colour, keyed on the root being
+// hovered or focused so it reaches the children.
+$text_colour_flat       = sgs_resolve_text_colour_or_gradient( $style_color_text, sgs_css_gradient_value( $text_colour_gradient ) );
+$text_colour_hover_flat = sgs_resolve_text_colour_or_gradient( $text_colour_hover, sgs_css_gradient_value( $text_colour_hover_gradient ) );
+$scoped_css = array_merge(
+	$scoped_css,
+	sgs_text_colour_child_rules( $root_sel, array( '', ' .sgs-timeline__title', ' .sgs-timeline__description' ), $text_colour_flat, $text_colour_hover_flat )
+);
 
 // Two-state link colour (Task 3, 2026-09-07) — the per-entry description
 // field permits `core/link`, so a linked selection needs its own colour.

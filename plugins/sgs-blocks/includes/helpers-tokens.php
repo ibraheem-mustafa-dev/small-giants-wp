@@ -1227,6 +1227,41 @@ function sgs_text_colour_gradient_fallback_rule( string $selector, ?string $valu
 }
 
 /**
+ * Rules that carry a block's text colour (resting and hover, flat or gradient) onto the
+ * text elements inside it that paint their own `color`.
+ *
+ * A wrapper colour reaches a child only through inheritance, so a child that a stylesheet
+ * gives its own `color` ignores it. This prints the same declarations on each child
+ * (`$root_sel . $suffix`) so the control governs them; hover is keyed on the root being
+ * hovered or focused and does not need a resting colour.
+ *
+ * @param string   $root_sel      Scoped root selector (uid-prefixed).
+ * @param string[] $child_suffixes Selector suffixes with a leading space, e.g. ' .sgs-x__title'.
+ * @param string   $normal_value  Resolved resting value (flat colour or gradient), '' for none.
+ * @param string   $hover_value   Resolved hover value (flat colour or gradient), '' for none.
+ * @return string[] CSS rules, in cascade order.
+ */
+function sgs_text_colour_child_rules( string $root_sel, array $child_suffixes, string $normal_value, string $hover_value ): array {
+	$rules       = array();
+	$normal_decl = sgs_text_colour_decl( $normal_value );
+	$hover_decl  = sgs_text_colour_decl( $hover_value );
+
+	foreach ( $child_suffixes as $suffix ) {
+		$child_sel = $root_sel . $suffix;
+		if ( '' !== $normal_decl ) {
+			$rules[] = "{$child_sel}{" . $normal_decl . ';}';
+			$rules[] = sgs_text_colour_gradient_fallback_rule( $child_sel, $normal_value );
+		}
+		if ( '' !== $hover_decl ) {
+			$rules[] = sgs_hover_state_rules( $root_sel, $hover_decl, ':focus-visible', $suffix );
+			$rules[] = sgs_text_colour_gradient_fallback_rule( $root_sel . ':hover' . $suffix, $hover_value );
+		}
+	}
+
+	return array_values( array_filter( $rules ) );
+}
+
+/**
  * Resolve which of a text-colour attribute's two SIBLING values should be
  * used — the flat colour attribute, or its `{attr}Gradient` sibling.
  *

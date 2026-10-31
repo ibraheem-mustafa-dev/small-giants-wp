@@ -583,6 +583,12 @@ if ( '' !== $sgs_tm_text_hover_resolved && $sgs_tm_text_hover_resolved !== $sgs_
 	}
 }
 
+// The bio paints its own colour in the stylesheet, so the wrapper colour is carried onto it (the name and role have their own controls).
+$scoped_css = array_merge(
+	$scoped_css,
+	sgs_text_colour_child_rules( $root_sel, array( ' .sgs-team-member__bio' ), $sgs_tm_text_normal_resolved, $sgs_tm_text_hover_resolved )
+);
+
 // --- maxWidth (kept-scalar family, contract §C). ---
 if ( $max_width ) {
 	$mw_safe = sgs_css_length_value( $max_width );
