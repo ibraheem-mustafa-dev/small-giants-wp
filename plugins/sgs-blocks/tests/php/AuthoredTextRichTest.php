@@ -99,4 +99,37 @@ final class AuthoredTextRichTest extends TestCase {
 		$this->assertStringContainsString( 'Find <strong>it</strong>', $html );
 		$this->assertStringNotContainsString( '&lt;strong&gt;', $html );
 	}
+
+	public function test_form_field_label_keeps_markup_and_names_the_field_from_its_words(): void {
+		$html = $this->render_block( 'sgs/form-field-text', array( 'label' => 'Your <strong>name</strong>', 'fieldName' => '' ) )['html'];
+		$this->assertStringContainsString( 'Your <strong>name</strong>', $html );
+		$this->assertStringNotContainsString( '&lt;strong&gt;', $html );
+		$this->assertMatchesRegularExpression( '/name="your-name[^"]*"/', $html, 'the submission name is slugged from the words, not the markup' );
+	}
+
+	public function test_icon_label_keeps_markup(): void {
+		$html = $this->render_block( 'sgs/icon', array( 'iconName' => 'star', 'showLabel' => true, 'labelText' => 'Five <strong>stars</strong>' ) )['html'];
+		$this->assertStringContainsString( 'Five <strong>stars</strong>', $html );
+		$this->assertStringNotContainsString( '&lt;strong&gt;', $html );
+	}
+
+	public function test_media_caption_aria_name_for_a_video_is_plain_words(): void {
+		$html = $this->render_block( 'sgs/media', array( 'mediaType' => 'video', 'videoUrl' => 'https://example.test/v.mp4', 'caption' => 'A <strong>short</strong> film' ) )['html'];
+		$this->assertStringContainsString( 'A <strong>short</strong> film', $html );
+		$this->assertStringNotContainsString( 'aria-label="A <', $html );
+	}
+
+	public function test_an_image_and_a_highlight_survive_only_in_a_setting_that_holds_those_formats(): void {
+		if ( ! function_exists( 'wp_kses_allowed_html' ) ) {
+			$this->markTestSkipped( 'needs the allowlist stub' );
+		}
+		$html = 'Hi <img src="https://example.test/a.jpg" alt="a"> <span class="sgs-highlight sgs-highlight--accent">hot</span>';
+		$free = sgs_rich_text_kses( $html );
+		$this->assertStringNotContainsString( '<img', $free, 'a free-text setting strips the photo' );
+		$this->assertStringNotContainsString( 'sgs-highlight', $free, 'and the highlight class' );
+		$this->assertStringContainsString( 'hot', $free );
+		$body = sgs_rich_text_kses( $html, true, 'body' );
+		$this->assertStringContainsString( '<img', $body, 'a body setting (RICH_TEXT_BODY) keeps the photo' );
+		// (The body highlight span is kept by WordPress's real kses; this test's stub allowlist has no such span.)
+	}
 }

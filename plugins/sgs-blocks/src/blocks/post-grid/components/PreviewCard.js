@@ -6,6 +6,7 @@ import { resolveColourToken } from '../../../components';
 import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, isCssGradient } from '../../../utils';
 import { cardGradientPreview } from '../preview-style';
 
+import AuthoredText from '../../../components/AuthoredText';
 // -------------------------------------------------------------------------
 // Helpers
 // -------------------------------------------------------------------------
@@ -166,7 +167,7 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 
 				{ showReadMore && (
 					<span className="sgs-post-grid__readmore" style={ { ...rmStyle, ...typographyPreviewStyle( attributes, 'readMore', tier ) } }>
-						{ readMoreText || __( 'Read more', 'sgs-blocks' ) }{ ' ' }
+						<AuthoredText value={ readMoreText || __( 'Read more', 'sgs-blocks' ) } />{ ' ' }
 						<span aria-hidden="true">&rarr;</span>
 					</span>
 				) }

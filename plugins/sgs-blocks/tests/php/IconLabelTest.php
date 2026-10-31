@@ -2,7 +2,7 @@
 /**
  * sgs/icon visible label (showLabel) and the sgs/social-icons group label defaults: the label is real text inside the
  * link and so the link's name, the visually hidden name is not printed as well, " (opens in new tab)" stays visually
- * hidden, the position classes, hostile label text is escaped, the label colours and gap print only when set, and the
+ * hidden, the position classes, the label is rich text, the label colours and gap print only when set, and the
  * row's switch, position, colours and typography reach the children (an icon's own value wins).
  *
  * Renders run in child processes (tests/php/fixtures/icon-render-child.php and social-icons-render-child.php) like
@@ -229,17 +229,19 @@ final class IconLabelTest extends TestCase {
 		$this->assertStringNotContainsString( 'sgs-icon--label-', $this->root_classes( $this->icon( $base + array( 'labelPosition' => 'sideways"><script>' ) ) ) );
 	}
 
-	public function test_hostile_label_text_is_escaped(): void {
+	public function test_label_text_is_rich_text_printed_through_the_shared_sanitiser(): void {
+		// The label is typed rich text (bold, italic, strikethrough, line break): it prints as markup, not as escaped
+		// text. Script, event handlers and style are removed by sgs_rich_text_kses() (WordPress's kses, proved on a
+		// WordPress install; the harness stubs wp_kses as a pass-through, so hostile input cannot be asserted here).
 		$html = $this->icon(
 			array(
 				'showLabel' => true,
-				'labelText' => '<img src=x onerror=alert(1)>"</span><script>alert(2)</script>',
+				'labelText' => 'Call <strong>us</strong><br>today',
 				'linkUrl'   => 'https://example.test/',
 			)
 		);
-		$this->assertStringNotContainsString( '<img', $html );
-		$this->assertStringNotContainsString( '<script', $html );
-		$this->assertStringContainsString( '&lt;img src=x onerror=alert(1)&gt;', $html );
+		$this->assertStringContainsString( 'Call <strong>us</strong><br>today', $html );
+		$this->assertStringNotContainsString( '&lt;strong&gt;', $html );
 	}
 
 	public function test_unlinked_label_is_text_not_an_image(): void {

@@ -25,7 +25,13 @@ export function isSafeHref( href ) {
 	return /^(https?:|mailto:|tel:)/i.test( value ) || /^\/(?!\/)/.test( value );
 }
 
-function copyInto( target, source, links ) {
+const PHOTO = 'sgs/inline-photo';
+const HIGHLIGHT = 'sgs/highlight';
+
+// A highlight's class tokens: only `sgs-highlight` ones survive.
+const highlightClass = ( node ) => String( node.getAttribute( 'class' ) || '' ).split( /\s+/ ).filter( ( t ) => /^sgs-highlight/.test( t ) ).join( ' ' );
+
+function copyInto( target, source, links, formats ) {
 	const doc = target.ownerDocument;
 	source.childNodes.forEach( ( node ) => {
 		if ( 3 === node.nodeType ) {
@@ -43,14 +49,22 @@ function copyInto( target, source, links ) {
 			target.appendChild( doc.createElement( 'br' ) );
 			return;
 		}
+		if ( 'img' === tag && formats.includes( PHOTO ) && /^(https?:|\/(?!\/))/i.test( String( node.getAttribute( 'src' ) || '' ).trim() ) ) {
+			const img = target.appendChild( doc.createElement( 'img' ) );
+			[ 'src', 'alt', 'width', 'height' ].forEach( ( a ) => node.hasAttribute( a ) && img.setAttribute( a, node.getAttribute( a ) ) );
+			return;
+		}
 		let host = target;
-		if ( FORMAT_TAGS[ tag ] ) {
+		if ( 'span' === tag && formats.includes( HIGHLIGHT ) && highlightClass( node ) ) {
+			host = target.appendChild( doc.createElement( 'span' ) );
+			host.setAttribute( 'class', highlightClass( node ) );
+		} else if ( FORMAT_TAGS[ tag ] ) {
 			host = target.appendChild( doc.createElement( FORMAT_TAGS[ tag ] ) );
 		} else if ( 'a' === tag && links && isSafeHref( node.getAttribute( 'href' ) ) ) {
 			host = target.appendChild( doc.createElement( 'a' ) );
 			host.setAttribute( 'href', node.getAttribute( 'href' ).trim() );
 		}
-		copyInto( host, node, links );
+		copyInto( host, node, links, formats );
 	} );
 }
 
@@ -61,12 +75,13 @@ function copyInto( target, source, links ) {
  * @param {*}       value   The typed value (HTML string or plain text).
  * @param {Object}  [opts]
  * @param {boolean} [opts.links=true] Whether a link may stay (false inside a link, button or summary).
+ * @param {string[]} [opts.formats] The setting's extra formats (`sgs/inline-photo`, `sgs/highlight`): kept only where the setting's editor holds them.
  * @return {Element} The element.
  */
-export function appendAuthoredText( element, value, { links = true } = {} ) {
+export function appendAuthoredText( element, value, { links = true, formats = [] } = {} ) {
 	const parsed = new window.DOMParser().parseFromString( '<!doctype html><body>' + String( value ?? '' ), 'text/html' );
 	element.textContent = '';
-	copyInto( element, parsed.body, links );
+	copyInto( element, parsed.body, links, formats );
 	return element;
 }
 

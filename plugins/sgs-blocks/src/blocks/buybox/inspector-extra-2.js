@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl, TextControl, RangeControl, SelectControl } from '@wordpress/components';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 const STOCK_LINE_POSITION_OPTIONS = [
 	{ value: 'below', label: __( 'Below the pickers (today)', 'sgs-blocks' ) },
 	{ value: 'above', label: __( 'Above the pickers', 'sgs-blocks' ) },
@@ -115,7 +116,7 @@ export function BuyboxExtraSettingsPanels2( { attributes, setAttributes } ) {
 				title={ __( 'Stock wording', 'sgs-blocks' ) }
 				initialOpen={ false }
 			>
-				<TextControl
+				<SgsFreeTextField type="rich"
 					label={ __( 'In-stock label', 'sgs-blocks' ) }
 					value={ stockInStockLabel || '' }
 					onChange={ ( val ) =>
@@ -125,8 +126,6 @@ export function BuyboxExtraSettingsPanels2( { attributes, setAttributes } ) {
 						'Replaces the in-stock label text only, e.g. "In stock — dispatched next working day". Empty = WooCommerce\'s own text. Low-stock and out-of-stock wording are unchanged.',
 						'sgs-blocks'
 					) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
 				/>
 				<SelectControl
 					label={ __( 'Stock line position', 'sgs-blocks' ) }

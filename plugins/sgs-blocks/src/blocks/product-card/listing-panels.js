@@ -15,6 +15,7 @@ import { FlexWrapControl, MEDIA_SIZING_RATIO_OPTIONS, SgsBoxControl, SgsLengthCo
 import { SGS_LENGTH_UNITS, sgsNormaliseLength } from '../../utils';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
  * Connected-product panel: which elements a live card shows and where its
  * RRP and colour dots come from.
@@ -155,7 +156,7 @@ export function ListingShapePanel( { attributes, setAttributes } ) {
 				onChange={ ( v ) => setAttributes( { showShadow: v } ) }
 				__nextHasNoMarginBottom
 			/>
-			<TextControl
+			<SgsFreeTextField type="rich" noLink
 				label={ __( 'No-photo label', 'sgs-blocks' ) }
 				help={ __(
 					'Shown in the photo box of a product with no photo (or the shop’s placeholder image), e.g. “Photo to come”. Empty shows a picture icon. Its size and spacing are in Typography.',
@@ -163,8 +164,6 @@ export function ListingShapePanel( { attributes, setAttributes } ) {
 				) }
 				value={ noImageLabel || '' }
 				onChange={ ( v ) => setAttributes( { noImageLabel: v } ) }
-				__next40pxDefaultSize
-				__nextHasNoMarginBottom
 			/>
 			<SgsLengthControl
 				label={ __( 'Space above the price', 'sgs-blocks' ) }

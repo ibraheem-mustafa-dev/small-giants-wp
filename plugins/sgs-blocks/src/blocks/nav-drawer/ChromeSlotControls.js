@@ -10,7 +10,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { SelectControl, TextControl } from '@wordpress/components';
+import { SelectControl } from '@wordpress/components';
 import {
 	SgsBorderControl,
 	SgsBoxControl,
@@ -22,6 +22,7 @@ import { TierShow } from './chrome-tier-controls';
 import ChromeRatingControls from './ChromeRatingControls';
 import ChromeIconsSlotNotice from './ChromeIconsSlotNotice';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 const TYPE_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: '' },
 	{ label: __( 'Heading', 'sgs-blocks' ), value: 'heading' },
@@ -81,12 +82,10 @@ export default function ChromeSlotControls( { attributes, setAttributes, clientI
 			{ isIcons && <ChromeIconsSlotNotice clientId={ clientId } /> }
 			{ '' !== type && (
 				<>
-					{ ! isIcons && <TextControl
+					{ ! isIcons && <SgsFreeTextField type="rich"
 						label={ isButton ? __( 'Button label', 'sgs-blocks' ) : __( 'Words', 'sgs-blocks' ) }
 						value={ chromeSlotText || '' }
 						onChange={ ( value ) => setAttributes( { chromeSlotText: value } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/> }
 					{ 'heading' === type && (
 						<SelectControl

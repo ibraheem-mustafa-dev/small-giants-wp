@@ -14,6 +14,7 @@ import {
 import { glyphSizePx } from '../../../utils/font-size-preset';
 import ProductTemplateCanvas from './ProductTemplateCanvas';
 
+import AuthoredText from '../../../components/AuthoredText';
 /**
  * A card's image, video or empty placeholder for the canvas.
  *
@@ -317,7 +318,7 @@ export default function CardGridCanvas( {
 															) || undefined,
 													} }
 												>
-													{ noImageLabel }
+													<AuthoredText value={ noImageLabel } />
 												</span>
 											) }
 											{ glyphNode && ! glyphInCaption

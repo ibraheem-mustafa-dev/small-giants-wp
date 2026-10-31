@@ -95,7 +95,7 @@ $sgs_dd_paths = sgs_diagram_dimension_paths(
 
 // ── Caption and value ───────────────────────────────────────────────────────
 $sgs_dd_kses      = sgs_diagram_dimension_text_kses();
-$sgs_dd_caption   = wp_kses( (string) ( $attributes['caption'] ?? '' ), $sgs_dd_kses );
+$sgs_dd_caption   = sgs_rich_text_kses( (string) ( $attributes['caption'] ?? '' ), false ); // The shared allowlist keeps everything the diagram's narrow list did (checked against core kses).
 $sgs_dd_value     = wp_kses( (string) ( $attributes['value'] ?? '' ), $sgs_dd_kses );
 $sgs_dd_is_bound  = isset( $attributes['metadata']['bindings']['value'] );
 $sgs_dd_marker    = '';

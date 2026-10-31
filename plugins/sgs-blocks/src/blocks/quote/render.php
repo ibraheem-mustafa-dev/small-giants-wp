@@ -508,7 +508,7 @@ if ( $has_attribution ) {
 	$blockquote_inner  .= sprintf(
 		'<%1$s class="wp-block-sgs-quote__attribution">%2$s</%1$s>',
 		$attrib_tag_escaped, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		sgs_rich_text_kses( $attribution )
+		sgs_rich_text_kses( $attribution, true, 'body' )
 	);
 }
 

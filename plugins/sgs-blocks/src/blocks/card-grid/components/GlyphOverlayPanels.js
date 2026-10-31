@@ -3,17 +3,12 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import {
-	PanelBody,
-	SelectControl,
-	RangeControl,
-	TextControl,
-	ToggleControl,
-} from '@wordpress/components';
+import { PanelBody, SelectControl, RangeControl, ToggleControl } from '@wordpress/components';
 import { SgsLengthControl } from '../../../components';
 import { SGS_LENGTH_UNITS, sgsNormaliseLength } from '../../../utils';
 import { OVERLAY_BLEND_MODE_OPTIONS } from './card-grid-options';
 
+import SgsFreeTextField from '../../../components/SgsFreeTextField';
 export default function GlyphOverlayPanels( { attributes, setAttributes } ) {
 	const {
 		glyphSize,
@@ -70,7 +65,7 @@ export default function GlyphOverlayPanels( { attributes, setAttributes } ) {
 					__nextHasNoMarginBottom
 				/>
 				{ imageFallback && (
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Label on a fallback tile', 'sgs-blocks' ) }
 						help={ __(
 							'Shown across the top of a card with no image, e.g. “Photo to come”. Empty shows no label. Its type is under Text Styling, its colour under Colours.',
@@ -80,8 +75,6 @@ export default function GlyphOverlayPanels( { attributes, setAttributes } ) {
 						onChange={ ( val ) =>
 							setAttributes( { noImageLabel: val } )
 						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 				) }
 			</PanelBody>

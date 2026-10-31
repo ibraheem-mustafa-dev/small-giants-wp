@@ -123,17 +123,17 @@ if ( ! function_exists( 'sgs_label_roll_markup' ) ) {
 	function sgs_label_roll_markup( string $text, string $roll, string $alt_hover = '', string $alt_open = '', bool $with_hover = true, string $open_state = '' ): string {
 		$roll = sgs_label_roll_value( $roll );
 		if ( '' === $roll ) {
-			return esc_html( $text );
+			return sgs_rich_text_kses( $text, false );
 		}
 		$swap   = '' !== $alt_open && '' !== $open_state;
 		$bind_a = $swap ? ' data-wp-bind--aria-hidden="' . esc_attr( $open_state ) . '"' : '';
-		$html   = '<span class="sgs-roll sgs-roll--' . esc_attr( $roll ) . '"><span class="sgs-roll__a"' . $bind_a . '>' . esc_html( $text ) . '</span>';
+		$html   = '<span class="sgs-roll sgs-roll--' . esc_attr( $roll ) . '"><span class="sgs-roll__a"' . $bind_a . '>' . sgs_rich_text_kses( $text, false ) . '</span>';
 		if ( $with_hover ) {
-			$html .= '<span class="sgs-roll__b" aria-hidden="true">' . esc_html( '' !== $alt_hover ? $alt_hover : $text ) . '</span>';
+			$html .= '<span class="sgs-roll__b" aria-hidden="true">' . sgs_rich_text_kses( '' !== $alt_hover ? $alt_hover : $text, false ) . '</span>';
 		}
 		if ( '' !== $alt_open ) {
 			$bind_c = $swap ? ' data-wp-bind--aria-hidden="!' . esc_attr( $open_state ) . '"' : '';
-			$html  .= '<span class="sgs-roll__c" aria-hidden="true"' . $bind_c . '>' . esc_html( $alt_open ) . '</span>';
+			$html  .= '<span class="sgs-roll__c" aria-hidden="true"' . $bind_c . '>' . sgs_rich_text_kses( $alt_open, false ) . '</span>';
 		}
 		return $html . '</span>';
 	}

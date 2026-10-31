@@ -1153,7 +1153,7 @@ $sgs_nd_close_icon      = $sgs_nd_close_icon_tags && $sgs_nd_close_icon_tags->ne
 $sgs_nd_close_text = sprintf(
 	'<span class="sgs-nav-drawer__close-text">%s</span>',
 	'' !== $sgs_nd_close_label
-		? esc_html( $sgs_nd_close_label )
+		? sgs_rich_text_kses( $sgs_nd_close_label, false )
 		: esc_html__( 'Close', 'sgs-blocks' )
 );
 
@@ -1243,8 +1243,8 @@ if ( 1 === count( $sgs_nd_distinct_render_styles ) ) {
  * symbols (`×`): it is not a word, so it cannot name the button
  * (sgs_nav_label_is_word()); the glyph stays visible and the name is "Close menu".
  */
-$sgs_nd_close_visible_word = $sgs_nd_close_any_text_bearing && sgs_nav_label_is_word( $sgs_nd_close_label )
-	? $sgs_nd_close_label
+$sgs_nd_close_visible_word = $sgs_nd_close_any_text_bearing && sgs_nav_label_is_word( sgs_authored_text_plain( $sgs_nd_close_label ) )
+	? sgs_authored_text_plain( $sgs_nd_close_label )
 	: '';
 $sgs_nd_close_aria_attr    = '' !== $sgs_nd_close_visible_word
 	? sprintf( ' aria-label="%s"', esc_attr( $sgs_nd_close_visible_word ) )

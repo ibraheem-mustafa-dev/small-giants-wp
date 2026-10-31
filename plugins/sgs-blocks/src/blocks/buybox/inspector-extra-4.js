@@ -7,6 +7,7 @@ import {
 } from '../../components/primitives';
 import { SgsLengthControl } from '../../components';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
  * Settings-tab (default InspectorControls group) extra panels for
  * sgs/buybox, size-band tiles (F1), a picker-label link
@@ -108,15 +109,13 @@ export function BuyboxExtraSettingsPanels3( { attributes, setAttributes } ) {
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
-				<TextControl
+				<SgsFreeTextField type="rich" noLink
 					label={ __( 'Link text', 'sgs-blocks' ) }
 					value={ pickerLabelLinkText || '' }
 					onChange={ ( val ) =>
 						setAttributes( { pickerLabelLinkText: val } )
 					}
 					placeholder={ __( 'Which size am I?', 'sgs-blocks' ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
 				/>
 				<TextControl
 					label={ __( 'Link URL', 'sgs-blocks' ) }

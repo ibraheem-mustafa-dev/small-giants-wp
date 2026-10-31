@@ -100,7 +100,10 @@ def value_expr(tag_text):
 
 def binds(tag_text, attr):
     expr = value_expr(tag_text)
-    return bool(expr) and re.search(r"(?<![\w$])" + re.escape(attr) + r"(?![\w$])", expr) is not None
+    if not expr:
+        return False
+    # The setting itself: a bare name or `attributes.<name>`; `option.label` is another record's field.
+    return re.search(r"(?:(?<![\w$.])|(?<=attributes\.))" + re.escape(attr) + r"(?![\w$])", expr) is not None
 
 
 def block_files(slug, suffix=".js"):
@@ -133,7 +136,7 @@ def roles_has(roles, slug, attr):
     return None
 
 
-def print_ok(reader):
+def print_ok(reader, block_slug=None, extra=()):
     path = reader.split("::")[0].strip()
     f = PLUGIN / path
     if not path.endswith(".php") or not f.exists():
@@ -142,14 +145,24 @@ def print_ok(reader):
     m = re.match(r"src/blocks/([^/]+)/", path)
     if m:
         files += sorted((PLUGIN / "src/blocks" / m.group(1)).glob("*.php"))
-    return any("sgs_rich_text_kses(" in read(x) or "sgs_authored_text_plain(" in read(x) for x in files)
+    slug = m.group(1) if m else block_slug
+    if slug and not m:
+        files += sorted((PLUGIN / "src/blocks" / slug).glob("*.php"))
+    if slug:
+        files += sorted((PLUGIN / "includes").glob(slug + "*.php")) + sorted((PLUGIN / "includes" / slug).glob("**/*.php") if (PLUGIN / "includes" / slug).is_dir() else [])
+    files += [PLUGIN / e for e in extra if (PLUGIN / e).exists()]
+    printers = ("sgs_rich_text_kses(", "sgs_authored_text_plain(", "sgs_label_roll_markup(")  # the last prints its label through sgs_rich_text_kses
+    return any(any(fn in read(x) for fn in printers) for x in files)
 
 
-def state_of(group, block, attr, reader, roles, exceptions):
+def state_of(group, block, attr, reader, roles, exceptions, print_paths=None, control_files=None):
     slug = block.split("/")[1]
     if f"{block}:{attr}" in exceptions:
         return {"state": "exception", "why": exceptions[f"{block}:{attr}"]}
     mounts = mounts_for(slug, attr)
+    for rel in (control_files or {}).get(f"{block}:{attr}", []):
+        f = PLUGIN / rel
+        mounts += [(f, name, st, en, text) for name, st, en, text in opening_tags(read(f)) if is_rich_mount(name, text)]
     rich = [m for m in mounts if is_rich_mount(m[1], m[4])]
     raw = [m for m in mounts if m[1] in RAW]
     problems = []
@@ -157,7 +170,7 @@ def state_of(group, block, attr, reader, roles, exceptions):
         problems.append("control is plain" if raw else "no control found")
     if not roles_has(roles, slug, attr):
         problems.append("not in rich-text-format-roles.json")
-    if not print_ok(reader):
+    if not print_ok(reader, slug, (print_paths or {}).get(f"{block}:{attr}", ())):
         problems.append("reader does not print through sgs_rich_text_kses / sgs_authored_text_plain")
     return {"state": "rich" if not problems else "plain", "problems": problems, "raw": [(str(m[0].relative_to(PLUGIN)), m[1]) for m in raw]}
 
@@ -199,16 +212,26 @@ def dump_roles(d):
 
 def survey():
     review, roles, data = load()
-    exceptions = data.get("exceptions", {})
+    exceptions = data.get("unconvertible", {})
     rows = []
     for group, block, attr, reader in settings(review, data):
-        rows.append((group, block, attr, state_of(group, block, attr, reader, roles, exceptions)))
+        rows.append((group, block, attr, state_of(group, block, attr, reader, roles, exceptions, data.get("printPaths"), data.get("controlFiles"))))
     return rows, exceptions
+
+
+def reason_ok(reason):
+    """A proof: it says the setting cannot hold markup and cites a source file of the plugin that exists."""
+    if not str(reason).startswith("cannot hold markup:"):
+        return False
+    cited = re.findall(r"((?:src|includes)/[\w./-]+\.(?:php|js))", str(reason))
+    return bool(cited) and all((PLUGIN / c).exists() for c in cited)
 
 
 def check_exceptions(rows, exceptions):
     names = {f"{b}:{a}" for _, b, a, _ in rows}
-    return [f"exception {k} names no in-scope setting" for k in exceptions if k not in names]
+    bad = [f"unconvertible {k} names no in-scope setting" for k in exceptions if k not in names]
+    bad += [f"unconvertible {k}: the reason must start 'cannot hold markup:' and cite existing code (src/ or includes/ path)" for k, v in exceptions.items() if not reason_ok(v)]
+    return bad
 
 
 def cmd_survey(as_json):
@@ -270,13 +293,13 @@ def import_line(file):
 
 def cmd_fix(apply):
     review, roles, data = load()
-    exceptions = data.get("exceptions", {})
+    exceptions = data.get("unconvertible", {})
     allowed_links = set(data.get("linksAllowed", []))
     edits = {}
     new_roles = []
     for group, block, attr, reader in settings(review, data):
         slug = block.split("/")[1]
-        st = state_of(group, block, attr, reader, roles, exceptions)
+        st = state_of(group, block, attr, reader, roles, exceptions, data.get("printPaths"), data.get("controlFiles"))
         if st["state"] != "plain" or "control is plain" not in st["problems"]:
             continue
         raw = [m for m in mounts_for(slug, attr) if m[1] in RAW]
@@ -343,7 +366,7 @@ def php_uses(src, attr):
 
 def cmd_php(apply):
     review, roles, data = load()
-    exceptions = data.get("exceptions", {})
+    exceptions = data.get("unconvertible", {})
     allowed_links = set(data.get("linksAllowed", []))
     for group, block, attr, reader in settings(review, data):
         if f"{block}:{attr}" in exceptions:
@@ -413,7 +436,9 @@ def self_test():
     expect(is_rich_mount("SgsFreeTextField", swapped) and not is_rich_mount("TextControl", raw) and not is_rich_mount("SgsFreeTextField", '<SgsFreeTextField label="a" />'), "only type=rich counts as a rich mount")
     expect(roles_has({"fields": {"src/blocks/a/edit.js": {"label": "RICH_TEXT_FREE_TEXT"}}}, "a", "label") == "src/blocks/a/edit.js", "a roles entry with a format list counts")
     expect(roles_has({"fields": {"src/blocks/a/edit.js": {"label": "RICH_TEXT_PLAIN"}}}, "a", "label") is None, "RICH_TEXT_PLAIN (no formats) does not count")
-    expect(check_exceptions([("g", "sgs/a", "x", {})], {"sgs/a:x": "r", "sgs/b:y": "r"}) == ["exception sgs/b:y names no in-scope setting"], "an exception naming no in-scope setting fails")
+    bad = check_exceptions([("g", "sgs/a", "x", {})], {"sgs/a:x": "pending", "sgs/b:y": "cannot hold markup: src/blocks/form/render.php"})
+    expect(bad == ["unconvertible sgs/b:y names no in-scope setting", "unconvertible sgs/a:x: the reason must start 'cannot hold markup:' and cite existing code (src/ or includes/ path)"], "an entry naming no in-scope setting, or giving a reason with no cited code, fails")
+    expect(reason_ok("cannot hold markup: src/blocks/choice-flow/render.php writes it as aria-label") and not reason_ok("not converted yet") and not reason_ok("cannot hold markup: src/blocks/nope/none.php"), "a proof cites code that exists")
     sample = json.loads(read(ROLES))
     expect(dump_roles(sample) == read(ROLES), "dump_roles reproduces the roles file byte for byte (a write changes only its entries)")
     print("self-test:", "FAILED" if fails else "passed")

@@ -31,11 +31,17 @@ if ( ! function_exists( 'sgs_rich_text_kses' ) ) {
 	 * Pass `$links = false` for text printed inside an `<a>`, `<button>` or `<summary>`: a nested link is invalid HTML,
 	 * so `<a>` is dropped and its words stay.
 	 *
-	 * @param mixed $html  RichText markup; anything that is not a scalar sanitises to ''.
-	 * @param bool  $links Whether a link may stay (default true).
+	 * `$formats` is the format list the setting's editor offers (src/utils/rich-text-formats.js): 'free' (default: bold,
+	 * italic, strikethrough, link, line break: an `<img>` and a highlight class are stripped to their words) or 'body'
+	 * (RICH_TEXT_BODY: the free formats plus the inline photo and the highlight). A setting keeps the photo or the
+	 * highlight only where its editor holds that format.
+	 *
+	 * @param mixed  $html    RichText markup; anything that is not a scalar sanitises to ''.
+	 * @param bool   $links   Whether a link may stay (default true).
+	 * @param string $formats 'free' or 'body'.
 	 * @return string Sanitised markup.
 	 */
-	function sgs_rich_text_kses( $html, bool $links = true ): string {
+	function sgs_rich_text_kses( $html, bool $links = true, string $formats = 'free' ): string {
 		static $allowed = null;
 		$html           = is_scalar( $html ) ? (string) $html : '';
 		if ( null === $allowed ) {
@@ -63,7 +69,13 @@ if ( ! function_exists( 'sgs_rich_text_kses' ) ) {
 		if ( ! $links ) {
 			$html = preg_replace( '#</?a(?:\s[^>]*)?>#i', '', $html ) ?? '';
 		}
-		return wp_kses( $html, $allowed );
+		$set = $allowed;
+		if ( 'body' !== $formats ) {
+			// The setting holds neither the inline photo nor the highlight: no image, no highlight class.
+			unset( $set['img'] );
+			$html = preg_replace( '#\s+class\s*=\s*(?:"[^"]*sgs-highlight[^"]*"|\x27[^\x27]*sgs-highlight[^\x27]*\x27)#i', '', $html ) ?? '';
+		}
+		return wp_kses( $html, $set );
 	}
 }
 
@@ -80,6 +92,18 @@ if ( ! function_exists( 'sgs_authored_text_plain' ) ) {
 		$text = preg_replace( '#<br\s*/?>#i', ' ', $text ) ?? '';
 		$text = html_entity_decode( wp_strip_all_tags( $text ), ENT_QUOTES, 'UTF-8' );
 		return trim( (string) preg_replace( '/\s+/u', ' ', $text ) );
+	}
+}
+
+if ( ! function_exists( 'sgs_rich_text_sanitise_param' ) ) {
+	/**
+	 * A REST argument sanitiser for typed rich text that prints inside a link or button: the sanitised markup, no link.
+	 *
+	 * @param mixed $value The request value.
+	 * @return string Sanitised markup.
+	 */
+	function sgs_rich_text_sanitise_param( $value ): string {
+		return sgs_rich_text_kses( $value, false );
 	}
 }
 

@@ -19,6 +19,7 @@ import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl, SelectControl, TextControl } from '@wordpress/components';
 import { SITE_INFO_LINK_SOURCE_OPTIONS, LINK_SOURCE_HELP } from '../../shared/link-source-options';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
  * @param {Object}   props
  * @param {boolean}  props.showPricePanel   Current `showPricePanel` attribute (Pricing panel's own toggle).
@@ -84,7 +85,7 @@ export default function SummaryPanel( {
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
-			<TextControl
+			<SgsFreeTextField type="rich" noLink
 				label={ __( 'Help note', 'sgs-blocks' ) }
 				value={ stageNote || '' }
 				onChange={ ( val ) => setAttributes( { stageNote: val } ) }
@@ -92,8 +93,6 @@ export default function SummaryPanel( {
 					'FR-43-24: shown in the full-screen "showcase" stage, e.g. "Not sure which to pick? Message me". Leave blank for none.',
 					'sgs-blocks'
 				) }
-				__nextHasNoMarginBottom
-				__next40pxDefaultSize
 			/>
 			{ stageNote && (
 				<>

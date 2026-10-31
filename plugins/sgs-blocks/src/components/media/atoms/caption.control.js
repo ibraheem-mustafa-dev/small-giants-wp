@@ -7,7 +7,8 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { SelectControl, TextControl } from '@wordpress/components';
+import { SelectControl } from '@wordpress/components';
+import SgsFreeTextField from '../../SgsFreeTextField';
 
 import { attrKeys, validateTag } from './caption.js';
 
@@ -26,13 +27,12 @@ export function control( { attributes, setAttributes, prefix = '', blockSlug = '
 	const keys = attrKeys( prefix, blockSlug );
 
 	return [
-		<TextControl
+		<SgsFreeTextField
 			key="caption-text"
+			type="rich"
 			label={ __( 'Caption', 'sgs-blocks' ) }
 			value={ attributes[ keys.caption ] || '' }
 			onChange={ ( value ) => setAttributes( { [ keys.caption ]: value } ) }
-			__nextHasNoMarginBottom
-			__next40pxDefaultSize
 		/>,
 		<SelectControl
 			key="caption-tag"

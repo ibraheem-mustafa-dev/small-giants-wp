@@ -172,7 +172,7 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_slot_html' ) ) {
 				esc_attr( $class ),
 				$url,
 				( $new_tab ? ' target="_blank" rel="noopener"' : '' ) . sgs_link_source_attrs_html( $source ),
-				esc_html( $text ),
+				sgs_rich_text_kses( $text, false ),
 				$new_tab ? '<span class="screen-reader-text"> ' . esc_html__( '(opens in a new tab)', 'sgs-blocks' ) . '</span>' : ''
 			);
 		}
@@ -186,7 +186,7 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_slot_html' ) ) {
 			$level = (string) ( $attributes['chromeSlotHeadingLevel'] ?? 'h2' );
 			$tag   = in_array( $level, array( 'h2', 'h3', 'h4', 'p' ), true ) ? $level : 'h2';
 		}
-		return sprintf( '<%1$s class="%2$s">%3$s</%1$s>', $tag, esc_attr( $class ), esc_html( $text ) );
+		return sprintf( '<%1$s class="%2$s">%3$s</%1$s>', $tag, esc_attr( $class ), sgs_rich_text_kses( $text, false ) );
 	}
 }
 

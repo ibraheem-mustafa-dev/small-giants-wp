@@ -104,7 +104,7 @@ if ( ! function_exists( 'sgs_choice_flow_chrome_header_html' ) ) {
 		$logo_alt = isset( $logo['alt'] ) ? sanitize_text_field( (string) $logo['alt'] ) : '';
 
 		$close_label_raw = isset( $attributes['closeLabel'] ) ? trim( (string) $attributes['closeLabel'] ) : '';
-		$close_label     = '' !== $close_label_raw ? sanitize_text_field( $close_label_raw ) : __( 'Close', 'sgs-blocks' );
+		$close_label     = '' !== $close_label_raw ? $close_label_raw : __( 'Close', 'sgs-blocks' );
 		$close_style     = isset( $attributes['closeStyle'] ) && 'text' === $attributes['closeStyle'] ? 'text' : 'icon';
 
 		$initial_eyebrow = $step_count > 0
@@ -126,11 +126,11 @@ if ( ! function_exists( 'sgs_choice_flow_chrome_header_html' ) ) {
 
 		$html .= '<button type="button" class="sgs-choice-flow__chrome-close sgs-choice-flow__chrome-close--' . esc_attr( $close_style ) . '">';
 		if ( 'text' === $close_style ) {
-			$html .= '<span class="sgs-choice-flow__chrome-close-text">' . esc_html( $close_label ) . '</span>';
+			$html .= '<span class="sgs-choice-flow__chrome-close-text">' . sgs_rich_text_kses( $close_label, false ) . '</span>';
 			$html .= '<span class="sgs-choice-flow__chrome-close-glyph" aria-hidden="true">&times;</span>';
 		} else {
 			$html .= '<svg class="sgs-choice-flow__chrome-close-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
-			$html .= '<span class="sgs-choice-flow__chrome-close-label">' . esc_html( $close_label ) . '</span>';
+			$html .= '<span class="sgs-choice-flow__chrome-close-label">' . sgs_rich_text_kses( $close_label, false ) . '</span>';
 		}
 		$html .= '</button>';
 

@@ -13,6 +13,7 @@ import { Fragment } from '@wordpress/element';
 import { colourVar } from '../../utils';
 import { firstQuestionProgress } from './preview-style';
 
+import AuthoredText from '../../components/AuthoredText';
 /**
  * @param {Object} props               Component props.
  * @param {Object} props.attributes    Block attributes.
@@ -76,7 +77,7 @@ export default function ChromePreview( { attributes, questionTotal } ) {
 					<span className="sgs-choice-flow__chrome-eyebrow">{ eyebrowText }</span>
 					{ 'text' === closeStyle ? (
 						<span className="sgs-choice-flow__chrome-close sgs-choice-flow__chrome-close--text">
-							<span className="sgs-choice-flow__chrome-close-text">{ closeText }</span>
+							<AuthoredText className="sgs-choice-flow__chrome-close-text" value={ closeText } />
 							<span className="sgs-choice-flow__chrome-close-glyph" aria-hidden="true">
 								&times;
 							</span>
@@ -112,7 +113,7 @@ export default function ChromePreview( { attributes, questionTotal } ) {
 			</div>
 			{ noteText && ( showPricePanel || showcase ) && (
 				<p className="sgs-choice-flow__summary-note sgs-choice-flow__summary-note--stage">
-					<span className="sgs-choice-flow__summary-note-text">{ noteText }</span>
+					<AuthoredText className="sgs-choice-flow__summary-note-text" value={ noteText } />
 				</p>
 			) }
 		</>

@@ -111,7 +111,7 @@ if ( ! function_exists( 'sgs_product_card_attribute_tag_resolve_text' ) ) {
 			return '';
 		}
 
-		$custom_text = sanitize_text_field( (string) ( $attributes['attributeTagText'] ?? '' ) );
+		$custom_text = trim( (string) ( $attributes['attributeTagText'] ?? '' ) );
 		if ( '' !== $custom_text ) {
 			return $custom_text;
 		}
@@ -136,7 +136,7 @@ if ( ! function_exists( 'sgs_product_card_attribute_tag_markup' ) ) {
 		if ( '' === $text ) {
 			return '';
 		}
-		return '<span class="sgs-product-card__attribute-tag">' . esc_html( $text ) . '</span>';
+		return '<span class="sgs-product-card__attribute-tag">' . sgs_rich_text_kses( $text, false ) . '</span>';
 	}
 }
 

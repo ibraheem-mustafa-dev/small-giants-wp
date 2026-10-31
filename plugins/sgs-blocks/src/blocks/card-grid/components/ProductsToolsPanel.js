@@ -3,11 +3,12 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { SelectControl, RangeControl, TextControl } from '@wordpress/components';
+import { SelectControl, RangeControl } from '@wordpress/components';
 import { ToolsPanel, ToolsPanelItem } from '../../../components/primitives';
 import { ProductTaxonomyChecklist, ProductHandpickPanel } from './product-panels';
 import { PRODUCT_COLLECTION_OPTIONS } from './card-grid-options';
 
+import SgsFreeTextField from '../../../components/SgsFreeTextField';
 export default function ProductsToolsPanel( { attributes, setAttributes, isWcProductMode } ) {
 	const {
 		productSource,
@@ -195,13 +196,11 @@ export default function ProductsToolsPanel( { attributes, setAttributes, isWcPro
 							hasValue={ () => productEmptyMessage !== '' }
 							onDeselect={ () => setAttributes( { productEmptyMessage: '' } ) }
 						>
-							<TextControl
+							<SgsFreeTextField type="rich"
 								label={ __( 'Empty state message', 'sgs-blocks' ) }
 								value={ productEmptyMessage || '' }
 								onChange={ ( val ) => setAttributes( { productEmptyMessage: val } ) }
 								help={ __( 'Shown on the live site when no products match. Leave empty to show nothing; the editor shows a notice instead.', 'sgs-blocks' ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 					</ToolsPanel>

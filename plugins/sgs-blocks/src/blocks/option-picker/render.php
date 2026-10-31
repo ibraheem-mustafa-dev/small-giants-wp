@@ -710,13 +710,13 @@ if ( $show_label ) {
 	$legend_html = sprintf(
 		'<legend id="%s" class="sgs-option-picker__label">%s</legend>',
 		esc_attr( $legend_id ),
-		esc_html( $label )
+		sgs_rich_text_kses( (string) $label, false )
 	);
 } else {
 	$legend_html = sprintf(
 		'<legend id="%s" class="sgs-sr-only">%s</legend>',
 		esc_attr( $legend_id ),
-		esc_html( $label )
+		sgs_rich_text_kses( (string) $label, false )
 	);
 }
 

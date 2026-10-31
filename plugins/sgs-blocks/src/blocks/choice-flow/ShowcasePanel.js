@@ -17,6 +17,7 @@ import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, RangeControl, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
 import OptionCardsPanel from './OptionCardsPanel';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
  * @param {Object}   o
  * @param {Object}   o.attributes    Block attributes.
@@ -65,16 +66,20 @@ export default function ShowcasePanel( { attributes, setAttributes } ) {
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
-				{ text(
-					'skipPrompt',
-					__( 'Skip link lead-in', 'sgs-blocks' ),
-					__( 'Shown before the skip link on the first question, e.g. "Frame only?".', 'sgs-blocks' )
-				) }
-				{ text(
-					'skipLabel',
-					__( 'Skip link', 'sgs-blocks' ),
-					__( 'e.g. "Skip the lenses". It takes the route of the option set to add to the bag with no add-ons; with no such option it does not show. Leave blank for none.', 'sgs-blocks' )
-				) }
+				<SgsFreeTextField
+	type="rich"
+	label={ __( 'Skip link lead-in', 'sgs-blocks' ) }
+	help={ __( 'Shown before the skip link on the first question, e.g. "Frame only?".', 'sgs-blocks' ) }
+	value={ attributes.skipPrompt || '' }
+	onChange={ ( val ) => setAttributes( { skipPrompt: val } ) }
+/>
+				<SgsFreeTextField
+	type="rich" noLink
+	label={ __( 'Skip link', 'sgs-blocks' ) }
+	help={ __( 'e.g. "Skip the lenses". It takes the route of the option set to add to the bag with no add-ons; with no such option it does not show. Leave blank for none.', 'sgs-blocks' ) }
+	value={ attributes.skipLabel || '' }
+	onChange={ ( val ) => setAttributes( { skipLabel: val } ) }
+/>
 				<ToggleControl
 					label={ __( 'Skip adds the frame to the bag', 'sgs-blocks' ) }
 					checked={ !! skipAddsToBag }
@@ -85,11 +90,13 @@ export default function ShowcasePanel( { attributes, setAttributes } ) {
 			</PanelBody>
 
 			<PanelBody title={ __( 'Stage', 'sgs-blocks' ) } initialOpen={ false }>
-				{ text(
-					'summaryPendingLabel',
-					__( 'Placeholder line', 'sgs-blocks' ),
-					__( 'Shown until the first priced choice, e.g. "Lenses". Leave blank for none.', 'sgs-blocks' )
-				) }
+				<SgsFreeTextField
+	type="rich" noLink
+	label={ __( 'Placeholder line', 'sgs-blocks' ) }
+	help={ __( 'Shown until the first priced choice, e.g. "Lenses". Leave blank for none.', 'sgs-blocks' ) }
+	value={ attributes.summaryPendingLabel || '' }
+	onChange={ ( val ) => setAttributes( { summaryPendingLabel: val } ) }
+/>
 				{ summaryPendingLabel && text( 'summaryPendingText', __( 'Placeholder value', 'sgs-blocks' ), '' ) }
 				<SelectControl
 					label={ __( 'Help note icon', 'sgs-blocks' ) }

@@ -85,6 +85,7 @@ import { useDrawerPreviewToggle, LogicalAlignControl, ResponsiveControl, Respons
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTextColourPreviewStyle, typographyPreviewStyle, resolveShadowPreviewComposed, surfaceToneClass, resolveTier, flattenPresetSetting, tierBoxLonghands, tierLengthPreview } from '../../utils';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
  * Content template: the menu ONLY. templateLock:false. The logo and the one
  * extra item (heading, label, text or button) are the chrome row's, set in the
@@ -1308,7 +1309,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							   accessible name when the word is empty, because an
 							   aria-label="" is an EMPTY accessible name, which is strictly
 							   worse than a mismatched one. */ }
-							<TextControl
+							<SgsFreeTextField type="rich" noLink
 								label={ __( 'Label', 'sgs-blocks' ) }
 								value={ closeLabel ?? 'Close' }
 								onChange={ ( value ) => setAttributes( { closeLabel: value } ) }
@@ -1316,8 +1317,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 									'The word shown on the button. It is also what a screen reader announces — leave it empty and the button falls back to “Close menu”.',
 									'sgs-blocks'
 								) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 					) }

@@ -10,6 +10,8 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import FieldLabelLayoutPanel from '../../components/FieldLabelLayoutPanel';
 import ZonePanel from './ZonePanel';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
+import AuthoredText from '../../components/AuthoredText';
 const WIDTH_OPTIONS = [
 	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
 	{ label: __( 'Half width', 'sgs-blocks' ), value: 'half' },
@@ -92,12 +94,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						onDeselect={ () => setAttributes( { label: '' } ) }
 						isShownByDefault
 					>
-						<TextControl
+						<SgsFreeTextField type="rich" noLink
 							label={ __( 'Label', 'sgs-blocks' ) }
 							value={ label }
 							onChange={ ( val ) => setAttributes( { label: val } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
@@ -135,7 +135,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						hasValue={ () => uploadText !== '' }
 						onDeselect={ () => setAttributes( { uploadText: '' } ) }
 					>
-						<TextControl
+						<SgsFreeTextField type="rich" noLink
 							label={ __( 'Drop-zone text', 'sgs-blocks' ) }
 							value={ uploadText }
 							onChange={ ( val ) =>
@@ -149,8 +149,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								'Leave blank to use the default drop-zone copy.',
 								'sgs-blocks'
 							) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
@@ -221,7 +219,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						className={ 'hidden' === attributes.labelStyle ? 'sgs-form-field__label sgs-sr-only' : 'sgs-form-field__label' }
 						style={ 'hidden' === attributes.labelStyle ? SR_ONLY : undefined }
 					>
-						{ label }
+						<AuthoredText value={ label } />
 						{ required && (
 							<span className="sgs-form-field__required">
 								*
@@ -241,10 +239,9 @@ export default function Edit( { attributes, setAttributes } ) {
 				>
 					<div className="sgs-form-field__file-label" style={ isPanel ? undefined : { border: 'none', padding: 0 } }>
 						<span>
-							{ uploadText || __(
-								'Drag a file here or click to browse',
-								'sgs-blocks'
-							) }
+							<AuthoredText
+								value={ uploadText || __( 'Drag a file here or click to browse', 'sgs-blocks' ) }
+							/>
 						</span>
 						<span
 							className="sgs-form-field__file-hint"

@@ -197,7 +197,8 @@ export function itemRowHtml( item, totals, opts = {} ) {
 		'text' === removeStyle
 			? `<button type="button" class="sgs-cart__item-remove sgs-cart__item-remove--text sgs-cart__item-action" data-key="${ key }" ` +
 			  `aria-label="${ escapeHtml( removeLabelText ) }">` +
-			  escapeHtml( removeLabel || 'Remove' ) +
+			  // The label is typed rich text: panel-render.js fills this placeholder with DOM nodes (authored-text-dom).
+			  '<span data-sgs-rich-remove></span>' +
 			  '</button>'
 			: '';
 

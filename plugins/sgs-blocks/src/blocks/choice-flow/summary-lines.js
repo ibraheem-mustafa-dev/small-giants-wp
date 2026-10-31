@@ -111,7 +111,7 @@ export function buildSummary( flowRoot, panelEl, pricing ) {
 		.forEach( ( answer ) => lines.push( { label: answer.stageLabel, value: answer.stageValue, muted: true } ) );
 	const pendingLabel = panelEl.getAttribute( 'data-pending-label' ) || '';
 	if ( ! priced.length && pendingLabel ) {
-		lines.push( { label: pendingLabel, value: panelEl.getAttribute( 'data-pending-text' ) || '', muted: true } );
+		lines.push( { label: pendingLabel, value: panelEl.getAttribute( 'data-pending-text' ) || '', muted: true, rich: true } );
 	}
 
 	const withEffect = [ ...priced, ...plain ]

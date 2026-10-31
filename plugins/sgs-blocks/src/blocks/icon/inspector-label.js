@@ -6,10 +6,11 @@
  */
 
 import { __, sprintf } from '@wordpress/i18n';
-import { PanelBody, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
+import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
 import { ResponsiveControl, SgsLengthControl, TypographyControls } from '../../components';
 import { patchTier } from '../../utils';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 const POSITION_OPTIONS = [
 	{ label: __( 'After the icon', 'sgs-blocks' ), value: 'end' },
 	{ label: __( 'Before the icon', 'sgs-blocks' ), value: 'start' },
@@ -50,7 +51,7 @@ export default function IconLabelPanel( { attributes, setAttributes, state } ) {
 			/>
 			{ labelOn && (
 				<>
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Label text', 'sgs-blocks' ) }
 						help={
 							defaultLabel
@@ -63,8 +64,6 @@ export default function IconLabelPanel( { attributes, setAttributes, state } ) {
 						}
 						value={ labelText }
 						onChange={ ( value ) => setAttributes( { labelText: value } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Position', 'sgs-blocks' ) }

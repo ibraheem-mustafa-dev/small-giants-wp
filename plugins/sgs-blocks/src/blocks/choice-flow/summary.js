@@ -13,6 +13,7 @@
  */
 
 import { buildSummary, formatMinor as formatTotal } from './summary-lines.js';
+import { appendAuthoredText } from '../../utils/authored-text-dom';
 
 export { formatMinor } from './summary-lines.js';
 
@@ -124,15 +125,20 @@ function updateOptionPhotos( flowRoot, src ) {
  * @param {string}  label Left cell text.
  * @param {string}  value Right cell text.
  * @param {boolean} muted A secondary line (an unpriced answer, the placeholder).
+ * @param {boolean} rich  The label is typed rich text (inserted as DOM nodes through authored-text-dom).
  * @return {HTMLLIElement} A line with both cells.
  */
-function buildLine( label, value, muted ) {
+function buildLine( label, value, muted, rich = false ) {
 	const lineEl = document.createElement( 'li' );
 	if ( muted ) {
 		lineEl.className = 'is-muted';
 	}
 	const labelEl = document.createElement( 'span' );
-	labelEl.textContent = label;
+	if ( rich ) {
+		appendAuthoredText( labelEl, label, { links: false } );
+	} else {
+		labelEl.textContent = label;
+	}
 	const valueEl = document.createElement( 'span' );
 	valueEl.textContent = value;
 	lineEl.appendChild( labelEl );
@@ -198,7 +204,7 @@ export function renderSummaryPanel( flowRoot, pricing ) {
 	const linesEl = panelEl.querySelector( LINES_SELECTOR );
 	if ( linesEl ) {
 		linesEl.innerHTML = '';
-		summary.lines.forEach( ( line ) => linesEl.appendChild( buildLine( line.label, line.value, line.muted ) ) );
+		summary.lines.forEach( ( line ) => linesEl.appendChild( buildLine( line.label, line.value, line.muted, line.rich ) ) );
 	}
 
 	const total = summary.totalMinor !== null ? formatTotal( summary.totalMinor, base.decimals, trimZeros ) : '—';

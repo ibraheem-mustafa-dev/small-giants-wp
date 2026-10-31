@@ -74,7 +74,7 @@ function SampleItem( { attrs, s } ) {
 						) }
 						{ removeText && (
 							<span className="sgs-cart__item-remove sgs-cart__item-remove--text sgs-cart__item-action" style={ { ...s.action, ...s.removeText } }>
-								{ attrs.itemRemoveLabel || __( 'Remove', 'sgs-blocks' ) }
+								<AuthoredText value={ attrs.itemRemoveLabel || __( 'Remove', 'sgs-blocks' ) } />
 							</span>
 						) }
 					</div>
@@ -185,7 +185,7 @@ export default function PanelPreview( { attributes, displayMode, tier, palette, 
 									<span className="sgs-cart__panel-checkout" style={ s.checkout }><AuthoredText value={ attributes.checkoutLabel } /></span>
 								</div>
 								{ '' !== note && (
-									<p className="sgs-cart__panel-note" style={ s.note }>{ note.replace( '%s', '£4.00' ) }</p>
+									<AuthoredText as="p" className="sgs-cart__panel-note" style={ s.note } value={ note.replace( '%s', '£4.00' ) } />
 								) }
 							</div>
 						</>

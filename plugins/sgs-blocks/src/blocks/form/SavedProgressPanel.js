@@ -8,6 +8,7 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
  * @param {Object}   props               Props.
  * @param {Object}   props.attributes    Block attributes.
@@ -38,12 +39,10 @@ export default function SavedProgressPanel( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Notice once progress is saved', 'sgs-blocks' ) }
 						value={ savedProgressSavedLabel }
 						onChange={ ( value ) => setAttributes( { savedProgressSavedLabel: value } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 				</>
 			) }

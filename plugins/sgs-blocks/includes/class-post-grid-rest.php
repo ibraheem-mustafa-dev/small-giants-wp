@@ -164,7 +164,7 @@ class Post_Grid_REST {
 			'readMoreText'         => [
 				'type'              => 'string',
 				'default'           => 'Read more',
-				'sanitize_callback' => 'sanitize_text_field',
+				'sanitize_callback' => 'sgs_rich_text_sanitise_param',
 			],
 			'aspectRatio'          => [
 				'type'              => 'string',
@@ -379,7 +379,7 @@ class Post_Grid_REST {
 		$show_author   = isset( $params['showAuthor'] ) ? (bool) $params['showAuthor'] : false;
 		$show_category = isset( $params['showCategory'] ) ? (bool) $params['showCategory'] : true;
 		$show_readmore = isset( $params['showReadMore'] ) ? (bool) $params['showReadMore'] : true;
-		$readmore_text = isset( $params['readMoreText'] ) ? sanitize_text_field( $params['readMoreText'] ) : 'Read more';
+		$readmore_text = isset( $params['readMoreText'] ) ? sgs_rich_text_kses( (string) $params['readMoreText'], false ) : 'Read more';
 		$excerpt_len   = isset( $params['excerptLength'] ) ? absint( $params['excerptLength'] ) : 20;
 		$image_size    = isset( $params['imageSize'] ) ? sanitize_key( $params['imageSize'] ) : 'medium_large';
 		$aspect_ratio  = isset( $params['aspectRatio'] ) ? sanitize_text_field( $params['aspectRatio'] ) : '16/10';
@@ -539,7 +539,7 @@ class Post_Grid_REST {
 				'<a href="%s" class="sgs-post-grid__readmore"%s>%s <span aria-hidden="true">&rarr;</span></a>',
 				$permalink,
 				$readmore_style,
-				esc_html( $readmore_text )
+				sgs_rich_text_kses( $readmore_text, false )
 			);
 		}
 

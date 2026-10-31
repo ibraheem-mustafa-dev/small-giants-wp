@@ -1079,8 +1079,8 @@ $sgs_resolved_img_alt = $sgs_img_override ? (string) ( $attributes['imageAlt'] ?
 // Badge: bound branches have no live badge — live value is '' (override OFF or
 // empty typed value = no badge, matching pre-override bound output).
 $sgs_badge_typed    = 'trial' === $variant_style
-	? ( isset( $attributes['trialTag'] ) ? sanitize_text_field( (string) $attributes['trialTag'] ) : '' )
-	: ( 'featured' === $variant_style ? ( isset( $attributes['featuredTag'] ) ? sanitize_text_field( (string) $attributes['featuredTag'] ) : '' ) : '' );
+	? ( isset( $attributes['trialTag'] ) ? (string) $attributes['trialTag'] : '' )
+	: ( 'featured' === $variant_style ? ( isset( $attributes['featuredTag'] ) ? (string) $attributes['featuredTag'] : '' ) : '' );
 $sgs_resolved_badge = sgs_product_card_resolve_element( $attributes, 'badge', $sgs_badge_typed, '' );
 
 // F7 (visual-polish): the FEATURED badge overlays the media area (overlay CSS is
@@ -1123,16 +1123,16 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 			echo sgs_product_card_wishlist_markup( $attributes );
 			?>
 			<?php if ( '' !== $sgs_badge_overlay ) : ?>
-				<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo esc_html( $sgs_badge_overlay ); ?></span>
+				<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo sgs_rich_text_kses( $sgs_badge_overlay, false ); ?></span>
 			<?php endif; ?>
 		</div>
 	<?php endif; ?>
 	<div class="product-card-body sgs-product-card__body">
 		<?php if ( '' !== $sgs_badge_inbody ) : ?>
-			<span class="sgs-product-card__tag sgs-product-card__tag--<?php echo esc_attr( $variant_style ); ?>"><?php echo esc_html( $sgs_badge_inbody ); ?></span>
+			<span class="sgs-product-card__tag sgs-product-card__tag--<?php echo esc_attr( $variant_style ); ?>"><?php echo sgs_rich_text_kses( $sgs_badge_inbody, false ); ?></span>
 		<?php elseif ( '' !== $sgs_badge_overlay && '' === $sgs_resolved_img ) : ?>
 			<?php // Image-less featured card — in-body fallback (overlay CSS is media-scoped, so this stays in flow). ?>
-			<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo esc_html( $sgs_badge_overlay ); ?></span>
+			<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo sgs_rich_text_kses( $sgs_badge_overlay, false ); ?></span>
 		<?php endif; ?>
 		<div class="sgs-product-card__title-row">
 			<h3 class="sgs-product-card__title"><?php echo esc_html( $sgs_resolved_title ); ?></h3>
@@ -1142,7 +1142,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 			?>
 		</div>
 		<?php if ( '' !== $sgs_resolved_desc ) : ?>
-			<div class="product-desc sgs-product-card__description"><?php echo sgs_rich_text_kses( $sgs_resolved_desc ); ?></div>
+			<div class="product-desc sgs-product-card__description"><?php echo sgs_rich_text_kses( $sgs_resolved_desc, true, 'body' ); ?></div>
 		<?php endif; ?>
 		<?php
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
@@ -1173,7 +1173,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 			$ro_cta_label = sgs_product_card_resolve_element( $attributes, 'cta', $attributes['ctaText'] ?? '', __( 'View product', 'sgs-blocks' ) );
 			$ro_cta_href  = esc_url( sgs_product_card_resolve_element( $attributes, 'cta', $attributes['ctaUrl'] ?? '', get_permalink( $data['wc_id'] ) ) );
 			?>
-			<a class="sgs-button sgs-button--primary product-card__view sgs-product-card__cta--primary" href="<?php echo $ro_cta_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $ro_cta_label ); ?></a>
+			<a class="sgs-button sgs-button--primary product-card__view sgs-product-card__cta--primary" href="<?php echo $ro_cta_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo sgs_rich_text_kses( $ro_cta_label, false ); ?></a>
 		<?php endif; ?>
 	</div>
 	<?php
@@ -1558,7 +1558,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			?>
 			<?php if ( '' !== $sgs_badge_overlay ) : ?>
 				<?php // F7: featured badge overlays the media box (position:relative already on .product-card__media). ?>
-				<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo esc_html( $sgs_badge_overlay ); ?></span>
+				<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo sgs_rich_text_kses( $sgs_badge_overlay, false ); ?></span>
 			<?php endif; ?>
 			</div><?php // end .product-card__media (image only — the aspect-ratio/overflow:hidden box must NOT wrap the thumbnails or they get clipped). ?>
 
@@ -1599,7 +1599,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			<div class="product-card-body sgs-product-card__body">
 				<?php // FP-H: in-body badge (trial only — F7 moved the featured badge into the media box above). ?>
 				<?php if ( '' !== $sgs_badge_inbody ) : ?>
-					<span class="sgs-product-card__tag sgs-product-card__tag--<?php echo esc_attr( $variant_style ); ?>"><?php echo esc_html( $sgs_badge_inbody ); ?></span>
+					<span class="sgs-product-card__tag sgs-product-card__tag--<?php echo esc_attr( $variant_style ); ?>"><?php echo sgs_rich_text_kses( $sgs_badge_inbody, false ); ?></span>
 				<?php endif; ?>
 				<?php
 				// FP-H: heading tag from headingLevel (allowlisted string — injection-safe); title via override helper.
@@ -1622,7 +1622,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 
 				<?php if ( '' !== $sgs_resolved_desc ) : ?>
 				<div class="product-desc sgs-product-card__description">
-					<?php echo sgs_rich_text_kses( $sgs_resolved_desc ); ?>
+					<?php echo sgs_rich_text_kses( $sgs_resolved_desc, true, 'body' ); ?>
 				</div>
 				<?php endif; ?>
 
@@ -1787,7 +1787,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 						class="sgs-button sgs-button--primary product-card__add-to-cart sgs-product-card__cta--primary"
 						href="<?php echo $sgs_cta_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"
 					>
-						<span class="product-card__cart-label"><?php echo esc_html( $sgs_cta_label ); ?></span>
+						<span class="product-card__cart-label"><?php echo sgs_rich_text_kses( $sgs_cta_label, false ); ?></span>
 					</a>
 					<?php else : // 'add-to-basket' or 'buy-now' — proxy form path. ?>
 					<form
@@ -1804,7 +1804,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 							data-wp-bind--aria-busy="context.pending"
 						>
 							<svg class="product-card__cart-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-							<span class="product-card__cart-label"><?php echo esc_html( $sgs_cta_label ); ?></span>
+							<span class="product-card__cart-label"><?php echo sgs_rich_text_kses( $sgs_cta_label, false ); ?></span>
 						</button>
 					</form>
 					<?php endif; ?>
@@ -1818,7 +1818,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					 * never needs it — the secondary is always a plain anchor).
 					 * URL fallback: empty cta2Url → the bound product's permalink.
 					 */
-					$sgs_cta2_text = isset( $attributes['cta2Text'] ) ? sanitize_text_field( (string) $attributes['cta2Text'] ) : '';
+					$sgs_cta2_text = isset( $attributes['cta2Text'] ) ? (string) $attributes['cta2Text'] : '';
 					if ( '' !== $sgs_cta2_text ) :
 						$sgs_cta2_url_raw = isset( $attributes['cta2Url'] ) ? (string) $attributes['cta2Url'] : '';
 						$sgs_cta2_href    = '' !== $sgs_cta2_url_raw ? esc_url( $sgs_cta2_url_raw ) : $product_permalink;
@@ -1830,7 +1830,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					<a
 						class="sgs-button sgs-button--<?php echo esc_attr( $sgs_cta2_style ); ?> product-card__cta-secondary sgs-product-card__cta--secondary"
 						href="<?php echo $sgs_cta2_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- both ternary arms esc_url'd above. ?>"
-					><?php echo esc_html( $sgs_cta2_text ); ?></a>
+					><?php echo sgs_rich_text_kses( $sgs_cta2_text, false ); ?></a>
 					<?php endif; ?>
 				<?php endif; ?>
 			</div>
@@ -1981,14 +1981,14 @@ echo sgs_product_card_saving_badge_markup( $attributes );
 echo sgs_product_card_wishlist_markup( $attributes );
 ?>
 <?php if ( '' !== $sgs_badge_overlay ) : ?>
-	<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo esc_html( $sgs_badge_overlay ); ?></span>
+	<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo sgs_rich_text_kses( $sgs_badge_overlay, false ); ?></span>
 <?php endif; ?>
 </div>
 
 <div class="product-card-body sgs-product-card__body">
 	<?php // FP-H: in-body badge (trial only — F7 moved the featured badge into the media wrap above). ?>
 	<?php if ( '' !== $sgs_badge_inbody ) : ?>
-		<span class="sgs-product-card__tag sgs-product-card__tag--<?php echo esc_attr( $variant_style ); ?>"><?php echo esc_html( $sgs_badge_inbody ); ?></span>
+		<span class="sgs-product-card__tag sgs-product-card__tag--<?php echo esc_attr( $variant_style ); ?>"><?php echo sgs_rich_text_kses( $sgs_badge_inbody, false ); ?></span>
 	<?php endif; ?>
 	<?php // FP-H: heading tag from headingLevel (allowlisted string — injection-safe); title via override helper. D649: class carries the styling — see the sibling site above. ?>
 	<div class="sgs-product-card__title-row">
@@ -2007,7 +2007,7 @@ echo sgs_product_card_wishlist_markup( $attributes );
 
 	<?php if ( '' !== $sgs_resolved_desc ) : ?>
 		<div class="product-desc sgs-product-card__description">
-			<?php echo sgs_rich_text_kses( $sgs_resolved_desc ); ?>
+			<?php echo sgs_rich_text_kses( $sgs_resolved_desc, true, 'body' ); ?>
 		</div>
 	<?php endif; ?>
 
@@ -2148,7 +2148,7 @@ echo sgs_product_card_wishlist_markup( $attributes );
 			class="sgs-button sgs-button--primary product-card__add-to-cart sgs-product-card__cta--primary"
 			href="<?php echo $sgs_nv_cta_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"
 		>
-			<span class="product-card__cart-label"><?php echo esc_html( $sgs_nv_cta_label ); ?></span>
+			<span class="product-card__cart-label"><?php echo sgs_rich_text_kses( $sgs_nv_cta_label, false ); ?></span>
 		</a>
 		<?php else : ?>
 		<form
@@ -2165,7 +2165,7 @@ echo sgs_product_card_wishlist_markup( $attributes );
 				data-wp-bind--aria-busy="context.pending"
 			>
 				<svg class="product-card__cart-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-				<span class="product-card__cart-label"><?php echo esc_html( $sgs_nv_cta_label ); ?></span>
+				<span class="product-card__cart-label"><?php echo sgs_rich_text_kses( $sgs_nv_cta_label, false ); ?></span>
 			</button>
 		</form>
 		<?php endif; ?>
@@ -2179,7 +2179,7 @@ echo sgs_product_card_wishlist_markup( $attributes );
 		 * never needs it — the secondary is always a plain anchor).
 		 * URL fallback: empty cta2Url → the bound product's permalink.
 		 */
-		$sgs_nv_cta2_text = isset( $attributes['cta2Text'] ) ? sanitize_text_field( (string) $attributes['cta2Text'] ) : '';
+		$sgs_nv_cta2_text = isset( $attributes['cta2Text'] ) ? (string) $attributes['cta2Text'] : '';
 		if ( '' !== $sgs_nv_cta2_text ) :
 			$sgs_nv_cta2_url_raw = isset( $attributes['cta2Url'] ) ? (string) $attributes['cta2Url'] : '';
 			$sgs_nv_cta2_href    = '' !== $sgs_nv_cta2_url_raw ? esc_url( $sgs_nv_cta2_url_raw ) : $product_permalink;
@@ -2191,7 +2191,7 @@ echo sgs_product_card_wishlist_markup( $attributes );
 		<a
 			class="sgs-button sgs-button--<?php echo esc_attr( $sgs_nv_cta2_style ); ?> product-card__cta-secondary sgs-product-card__cta--secondary"
 			href="<?php echo $sgs_nv_cta2_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- both ternary arms esc_url'd above. ?>"
-		><?php echo esc_html( $sgs_nv_cta2_text ); ?></a>
+		><?php echo sgs_rich_text_kses( $sgs_nv_cta2_text, false ); ?></a>
 		<?php endif; ?>
 	<?php endif; ?>
 </div>

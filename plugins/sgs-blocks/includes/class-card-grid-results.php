@@ -52,11 +52,11 @@ final class Card_Grid_Results {
 	 *
 	 * @param array<string,mixed> $attributes The grid's attributes.
 	 * @param bool                $frontend   The page (true) or the editor (false).
-	 * @return string Plain text; the caller escapes it.
+	 * @return string Typed rich text (inline markup); the caller prints it through sgs_rich_text_kses().
 	 */
 	public static function empty_message( array $attributes, bool $frontend ): string {
 		$key     = 'cpt-collection' === ( $attributes['source'] ?? '' ) ? 'emptyMessage' : 'productEmptyMessage';
-		$message = trim( \sanitize_text_field( (string) ( $attributes[ $key ] ?? '' ) ) );
+		$message = trim( (string) ( $attributes[ $key ] ?? '' ) );
 		if ( '' === $message && ! $frontend ) {
 			return \__( 'Nothing to show yet. Visitors see nothing here unless you set an empty-state message.', 'sgs-blocks' );
 		}

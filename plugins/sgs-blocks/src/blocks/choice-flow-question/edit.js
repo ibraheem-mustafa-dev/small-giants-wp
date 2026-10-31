@@ -19,6 +19,7 @@ import VariationCoverageNotice from './VariationCoverageNotice';
 import OptionPolishFields, { OptionDescriptionPanel, optionDescriptionColourRows, optionBadgeColourRows } from './OptionPolishFields';
 import { SgsColourPanel } from '../../components';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 // Reserved sentinel (FR-43-2 / spec brief) — "jump straight to whichever
 // result step is reachable" rather than a specific sibling sgs/form-step.
 const TERMINAL_SENTINEL = '__terminal__';
@@ -367,14 +368,12 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 				<VariationCoverageNotice attributes={ attributes } clientId={ clientId } context={ context } />
 				<QuestionPreview attributes={ attributes } />
 				<OptionDescriptionStyle attributes={ attributes } clientId={ clientId } />
-				<TextControl
+				<SgsFreeTextField type="rich" noLink
 					label={ __( 'Question', 'sgs-blocks' ) }
 					value={ question }
 					onChange={ ( val ) => setAttributes( { question: val } ) }
 					placeholder={ __( 'Which service suits you?', 'sgs-blocks' ) }
 					className="sgs-choice-flow-question__title-input"
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
 				/>
 				<ul
 					className={ `sgs-choice-flow-question__options-preview sgs-choice-flow-question__options-preview--${ layout || 'grid' }` }

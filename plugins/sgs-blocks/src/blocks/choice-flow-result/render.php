@@ -116,7 +116,7 @@ if ( '' !== trim( wp_strip_all_tags( $heading ) ) ) {
 }
 
 if ( '' !== trim( wp_strip_all_tags( $body ) ) ) {
-	echo '<div class="sgs-choice-flow-result__body">' . sgs_rich_text_kses( $body ) . '</div>';
+	echo '<div class="sgs-choice-flow-result__body">' . sgs_rich_text_kses( $body, true, 'body' ) . '</div>';
 }
 
 if ( 'add-to-bag' === $result_action ) {
@@ -142,7 +142,7 @@ if ( 'email' === $result_action ) {
 
 	echo '<form class="sgs-choice-flow-result__email-form" novalidate>';
 	echo '<div class="sgs-choice-flow-result__email-field">';
-	echo '<label class="sgs-choice-flow-result__email-label" for="' . esc_attr( $field_uid ) . '">' . esc_html( $email_label ) . '</label>';
+	echo '<label class="sgs-choice-flow-result__email-label" for="' . esc_attr( $field_uid ) . '">' . sgs_rich_text_kses( $email_label, false ) . '</label>';
 	echo '<input type="email" id="' . esc_attr( $field_uid ) . '" class="sgs-choice-flow-result__email-input" autocomplete="email" required />';
 	echo '</div>';
 	// No-inline (Spec 32): off-screen honeypot positioning lives in style.css's
@@ -155,7 +155,7 @@ if ( 'email' === $result_action ) {
 	echo ' data-nonce="' . esc_attr( wp_create_nonce( 'wp_rest' ) ) . '"';
 	echo ' data-endpoint="' . esc_url( rest_url( 'sgs/v1/choice-flow/submit' ) ) . '"';
 	echo ' data-flow-ref="' . esc_attr( $flow_ref ) . '"';
-	echo '>' . esc_html( $submit_label ) . '</button>';
+	echo '>' . sgs_rich_text_kses( $submit_label, false ) . '</button>';
 	echo '<div class="sgs-choice-flow-result__email-status" role="status" aria-live="polite"></div>';
 	echo '</form>';
 	echo '<div class="sgs-choice-flow-result__email-success" hidden>' . sgs_rich_text_kses( $success_message ) . '</div>';

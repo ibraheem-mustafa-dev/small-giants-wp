@@ -41,7 +41,7 @@ if ( $msg_attrs ) {
 }
 echo ' aria-describedby="' . esc_attr( $fid ) . '-error"';
 echo ' />';
-echo '<span class="sgs-form-field__consent-text">' . sgs_rich_text_kses( $text ) . '</span>';
+echo '<span class="sgs-form-field__consent-text">' . sgs_rich_text_kses( $text, true, 'body' ) . '</span>';
 echo '</label>';
 
 echo field_error( $fid );

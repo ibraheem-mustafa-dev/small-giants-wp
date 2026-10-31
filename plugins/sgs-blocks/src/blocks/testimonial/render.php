@@ -758,10 +758,10 @@ if ( $verified ) {
 	$meta_parts[] = '<span class="sgs-testimonial__verified"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2" /></svg>' . esc_html__( 'Verified', 'sgs-blocks' ) . '</span>';
 }
 if ( '' !== $source_platform ) {
-	$meta_parts[] = '<span class="sgs-testimonial__source">' . esc_html( $source_platform ) . '</span>';
+	$meta_parts[] = '<span class="sgs-testimonial__source">' . sgs_rich_text_kses( $source_platform, false ) . '</span>';
 }
 if ( '' !== $review_date ) {
-	$meta_parts[] = '<span class="sgs-testimonial__date">' . esc_html( $review_date ) . '</span>';
+	$meta_parts[] = '<span class="sgs-testimonial__date">' . sgs_rich_text_kses( $review_date, false ) . '</span>';
 }
 if ( ! empty( $meta_parts ) ) {
 	$rating_meta = '<div class="sgs-testimonial__rating-meta">' . implode( '', $meta_parts ) . '</div>';
@@ -909,12 +909,12 @@ if ( class_exists( 'SGS_Media_Element' ) ) {
 // in the scoped <style> block built above (contract §A). ───────────────────
 $summary_html = '';
 if ( '' !== $summary_phrase ) {
-	$summary_html = '<p class="sgs-testimonial__summary">' . sgs_rich_text_kses( $summary_phrase ) . '</p>';
+	$summary_html = '<p class="sgs-testimonial__summary">' . sgs_rich_text_kses( $summary_phrase, true, 'body' ) . '</p>';
 }
 
 $quote_html = '';
 if ( '' !== $quote ) {
-	$quote_html = '<blockquote class="sgs-testimonial__quote">' . sgs_rich_text_kses( $quote ) . '</blockquote>';
+	$quote_html = '<blockquote class="sgs-testimonial__quote">' . sgs_rich_text_kses( $quote, true, 'body' ) . '</blockquote>';
 }
 
 // Attribution: name / role / org — each gated, only emit the cite block if any present.

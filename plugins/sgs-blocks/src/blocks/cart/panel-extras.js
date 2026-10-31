@@ -11,6 +11,7 @@
 
 import { formatMoney } from './store-api';
 
+import { appendAuthoredText } from '../../utils/authored-text-dom';
 /**
  * Update the "(N)" after the panel heading and the instalments note.
  *
@@ -36,8 +37,8 @@ export function updatePanelExtras( panelRoot, cart ) {
 		return;
 	}
 	const amount = formatMoney( Math.round( total / parts ), cart.totals );
-	noteEl.textContent = template.includes( '%s' )
-		? template.replace( '%s', amount )
-		: `${ template } ${ amount }`;
+	// The note is typed rich text with a %s for the amount: the amount goes in as text, the note as DOM nodes.
+	const safeAmount = String( amount ).replace( /&/g, '&amp;' ).replace( /</g, '&lt;' );
+	appendAuthoredText( noteEl, template.includes( '%s' ) ? template.replace( '%s', () => safeAmount ) : `${ template } ${ safeAmount }` );
 	noteEl.hidden = false;
 }

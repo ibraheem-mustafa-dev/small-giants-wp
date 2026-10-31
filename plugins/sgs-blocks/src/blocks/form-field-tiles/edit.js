@@ -29,6 +29,8 @@ import {
 	RADIUS_STYLE_KEYS,
 } from '../../utils';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
+import AuthoredText from '../../components/AuthoredText';
 // Wrapper declarations that belong to the field root (the border and radius), not to
 // the tile grid element the shared wrapper lays out.
 const ROOT_BORDER_KEYS = [ 'borderWidth', 'borderStyle', 'borderColor', 'borderImage', ...RADIUS_STYLE_KEYS ];
@@ -236,12 +238,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							onDeselect={ () => setAttributes( { label: '' } ) }
 							isShownByDefault
 						>
-							<TextControl
+							<SgsFreeTextField type="rich" noLink
 								label={ __( 'Label', 'sgs-blocks' ) }
 								value={ label }
 								onChange={ ( val ) => setAttributes( { label: val } ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -500,7 +500,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				{ tileTextPreviewCss && <style>{ tileTextPreviewCss }</style> }
 				{ label && (
 					<label className="sgs-form-field__label">
-						{ label }
+						<AuthoredText value={ label } />
 						{ required && (
 							<span className="sgs-form-field__required">
 								*

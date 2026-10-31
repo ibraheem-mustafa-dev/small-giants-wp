@@ -436,7 +436,7 @@ if ( '' !== $caption && in_array( $media_type, array( 'image', 'video' ), true )
 	$caption_html        = sprintf(
 		'<%1$s class="sgs-media__caption">%2$s</%1$s>',
 		$caption_tag_escaped,
-		wp_kses_post( $caption )
+		sgs_rich_text_kses( $caption )
 	);
 }
 
@@ -1018,7 +1018,7 @@ if ( 'video' === $media_type ) {
 			$poster_attr,
 			$tier_data_attrs, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built exclusively from sgs_media_tier_data_attrs(), which only ever emits the fixed literal strings 'data-{name}-tablet="1"'/'"0"' — no attribute-derived text passes through unescaped.
 			$sgs_video_tier_attrs( 'file', $resolved_video_url ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every value inside is passed through esc_url()/esc_attr() by the closure.
-			' aria-label="' . esc_attr( '' !== $caption ? $caption : __( 'Video', 'sgs-blocks' ) ) . '"',
+			' aria-label="' . esc_attr( '' !== sgs_authored_text_plain( $caption ) ? sgs_authored_text_plain( $caption ) : __( 'Video', 'sgs-blocks' ) ) . '"',
 			esc_url( $resolved_video_url ),
 			esc_attr( $resolved_video_mime ),
 			$track_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled immediately above from esc_url()/esc_attr() only; srclang is additionally validated against a BCP 47 subtag pattern.

@@ -66,7 +66,7 @@ if ( ! function_exists( 'sgs_product_card_builtin_render' ) ) {
 		$sgs_pcard_feat    = isset( $attributes['featuredTag'] ) ? sanitize_text_field( (string) $attributes['featuredTag'] ) : '';
 		$sgs_pcard_sizes   = isset( $attributes['packSizes'] ) && is_array( $attributes['packSizes'] ) ? $attributes['packSizes'] : array();
 		$sgs_pcard_price   = isset( $attributes['priceLarge'] ) ? sanitize_text_field( (string) $attributes['priceLarge'] ) : '';
-		$sgs_pcard_note    = isset( $attributes['priceNote'] ) ? sanitize_text_field( (string) $attributes['priceNote'] ) : '';
+		$sgs_pcard_note    = isset( $attributes['priceNote'] ) ? (string) $attributes['priceNote'] : '';
 		$sgs_pcard_cta     = isset( $attributes['ctaText'] ) ? sanitize_text_field( (string) $attributes['ctaText'] ) : '';
 		$sgs_pcard_cta_url = isset( $attributes['ctaUrl'] ) ? (string) $attributes['ctaUrl'] : '';
 		$sgs_pcard_cta2    = isset( $attributes['cta2Text'] ) ? sanitize_text_field( (string) $attributes['cta2Text'] ) : '';
@@ -249,7 +249,7 @@ if ( ! function_exists( 'sgs_product_card_builtin_render' ) ) {
 						<span class="sgs-product-card__price"><?php echo esc_html( $sgs_pcard_price ); ?></span>
 					<?php endif; ?>
 					<?php if ( '' !== $sgs_pcard_note ) : ?>
-						<span class="sgs-product-card__price-note"><?php echo esc_html( $sgs_pcard_note ); ?></span>
+						<span class="sgs-product-card__price-note"><?php echo sgs_rich_text_kses( $sgs_pcard_note, false ); ?></span>
 					<?php endif; ?>
 					</div>
 					<?php
@@ -371,7 +371,7 @@ if ( ! function_exists( 'sgs_product_card_rating_markup' ) ) {
 				return '';
 			}
 			return '<div class="sgs-product-card__rating sgs-product-card__rating--empty">'
-				. '<span class="sgs-product-card__rating-empty-text">' . esc_html( $no_reviews_text ) . '</span>'
+				. '<span class="sgs-product-card__rating-empty-text">' . sgs_rich_text_kses( $no_reviews_text, false ) . '</span>'
 				. '</div>';
 		}
 
@@ -475,7 +475,7 @@ if ( ! function_exists( 'sgs_product_card_saving_badge_markup' ) ) {
 		if ( empty( $attributes['showSavingBadge'] ) ) {
 			return '';
 		}
-		$label = isset( $attributes['savingLabel'] ) ? sanitize_text_field( (string) $attributes['savingLabel'] ) : '';
+		$label = isset( $attributes['savingLabel'] ) ? (string) $attributes['savingLabel'] : '';
 		if ( '' === $label ) {
 			return '';
 		}
@@ -484,7 +484,7 @@ if ( ! function_exists( 'sgs_product_card_saving_badge_markup' ) ) {
 		if ( ! in_array( $position, $allowed_positions, true ) ) {
 			$position = 'bottom-left';
 		}
-		return '<span class="sgs-product-card__saving-badge sgs-product-card__saving-badge--' . esc_attr( $position ) . '">' . esc_html( $label ) . '</span>';
+		return '<span class="sgs-product-card__saving-badge sgs-product-card__saving-badge--' . esc_attr( $position ) . '">' . sgs_rich_text_kses( $label, false ) . '</span>';
 	}
 }
 

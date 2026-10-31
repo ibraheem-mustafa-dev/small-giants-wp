@@ -291,7 +291,7 @@ if ( '' !== $photo_img ) {
 				'<div class="sgs-team-member__photo sgs-team-member__photo--%s sgs-team-member__photo--has-overlay" aria-hidden="true">%s<div class="sgs-team-member__overlay" aria-hidden="true"><div class="sgs-team-member__overlay-bio">%s</div></div></div>',
 				esc_attr( $photo_shape ),
 				$photo_img,
-				sgs_rich_text_kses( $bio )
+				sgs_rich_text_kses( $bio, true, 'body' )
 			);
 		} else {
 			$photo_html = sprintf(
@@ -299,7 +299,7 @@ if ( '' !== $photo_img ) {
 				esc_attr( $photo_shape ),
 				esc_attr( $name ),
 				$photo_img,
-				sgs_rich_text_kses( $bio )
+				sgs_rich_text_kses( $bio, true, 'body' )
 			);
 		}
 	} else {
@@ -317,9 +317,9 @@ if ( '' !== $photo_img ) {
 // nameColour/roleColour declarations move to the scoped <style> below,
 // keyed on the element's class inside the root scope.
 // ---------------------------------------------------------------------------
-$name_html = $name ? sprintf( '<%1$s class="sgs-team-member__name">%2$s</%1$s>', esc_attr( $heading_level ), sgs_rich_text_kses( $name ) ) : '';
-$role_html = $sgs_role ? sprintf( '<p class="sgs-team-member__role">%s</p>', sgs_rich_text_kses( $sgs_role ) ) : '';
-$bio_html  = ( $bio && ! $is_compact ) ? sprintf( '<p class="sgs-team-member__bio">%s</p>', sgs_rich_text_kses( $bio ) ) : '';
+$name_html = $name ? sprintf( '<%1$s class="sgs-team-member__name">%2$s</%1$s>', esc_attr( $heading_level ), sgs_rich_text_kses( $name, true, 'body' ) ) : '';
+$role_html = $sgs_role ? sprintf( '<p class="sgs-team-member__role">%s</p>', sgs_rich_text_kses( $sgs_role, true, 'body' ) ) : '';
+$bio_html  = ( $bio && ! $is_compact ) ? sprintf( '<p class="sgs-team-member__bio">%s</p>', sgs_rich_text_kses( $bio, true, 'body' ) ) : '';
 
 // ---------------------------------------------------------------------------
 // 9. Social links — rendered as nested elements from the socialLinks scalar

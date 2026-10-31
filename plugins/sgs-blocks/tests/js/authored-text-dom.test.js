@@ -35,4 +35,11 @@ describe( 'appendAuthoredText', () => {
 	test( 'authoredPlain gives the words only', () => {
 		expect( authoredPlain( 'Save <strong>20%</strong><br>now<script>x()</script>' ) ).toBe( 'Save 20% now' );
 	} );
+
+	test( 'MUST FAIL: an <img> and a highlight class survive only in a setting that holds those formats', () => {
+		const html = '<img src="/a.jpg" alt="a" onerror="x()">Hi <span class="sgs-highlight">hot</span>';
+		expect( fill( html ) ).toBe( 'Hi hot' );
+		expect( fill( html, { formats: [ 'sgs/inline-photo' ] } ) ).toBe( '<img src="/a.jpg" alt="a">Hi hot' );
+		expect( fill( html, { formats: [ 'sgs/highlight' ] } ) ).toBe( 'Hi <span class="sgs-highlight">hot</span>' );
+	} );
 } );

@@ -238,7 +238,7 @@ echo '<fieldset class="sgs-form-field__group">';
 
 if ( ! empty( $attributes['label'] ?? '' ) ) {
 	echo '<legend class="sgs-form-field__label">';
-	echo esc_html( $attributes['label'] );
+	echo sgs_rich_text_kses( (string) $attributes['label'], false );
 	if ( $required ) {
 		echo ' <span class="sgs-form-field__required" aria-hidden="true">*</span>';
 	}

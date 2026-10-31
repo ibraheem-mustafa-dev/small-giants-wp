@@ -16,6 +16,7 @@ import { BuyboxExtraSettingsPanels3 } from './inspector-extra-4';
 import ButtonActionPanel from './ButtonActionPanel';
 import GuidedPanel, { guidedColourRows } from './GuidedPanel';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 // Curated extras for below the add-to-cart form (any block can still be inserted from the list view).
 const BUYBOX_EXTRAS_ALLOWED_BLOCKS = [ 'sgs/button', 'sgs/whatsapp-cta', 'sgs/icon-list' ];
 
@@ -120,7 +121,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 			<InspectorControls>
 				<PanelBody title={ __( 'Buybox labels', 'sgs-blocks' ) }>
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Add to Cart label', 'sgs-blocks' ) }
 						value={ addToCartLabel }
 						onChange={ ( val ) =>
@@ -131,8 +132,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'Empty = the default translated label.',
 							'sgs-blocks'
 						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Per-unit denomination', 'sgs-blocks' ) }
@@ -186,7 +185,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						) }
 						__nextHasNoMarginBottom
 					/>
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Notify-me label', 'sgs-blocks' ) }
 						value={ notifyMeLabel }
 						onChange={ ( val ) =>
@@ -196,8 +195,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'Heading shown above the email form when a variation is out of stock.',
 							'sgs-blocks'
 						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 				</PanelBody>
 				<PanelBody

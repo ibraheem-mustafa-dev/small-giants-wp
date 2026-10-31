@@ -27,6 +27,7 @@ import {
 	resolveResponsiveTier,
 } from '../../utils';
 
+import AuthoredText from '../../components/AuthoredText';
 const PICKER_STYLES = [ 'outlined', 'filled', 'ghost', 'tile' ];
 const BADGE_POSITIONS = [ 'top-right', 'top-left', 'bottom-right', 'bottom-left' ];
 const METER_STYLES = [ 'segments', 'bar', 'dots' ];
@@ -294,7 +295,7 @@ function SampleValueLadder( { attributes, tier } ) {
 function SampleNotifyForm( { attributes } ) {
 	return (
 		<div className="sgs-buybox__notify" aria-hidden="true">
-			<p className="sgs-buybox__notify-heading">{ attributes.notifyMeLabel || __( 'Notify me', 'sgs-blocks' ) }</p>
+			<AuthoredText as="p" className="sgs-buybox__notify-heading" value={ attributes.notifyMeLabel || __( 'Notify me', 'sgs-blocks' ) } />
 			<div className="sgs-buybox__notify-form">
 				<div className="sgs-buybox__notify-field">
 					<span className="sgs-buybox__notify-label">{ __( 'Email address', 'sgs-blocks' ) }</span>
@@ -304,7 +305,7 @@ function SampleNotifyForm( { attributes } ) {
 					<input type="checkbox" className="sgs-buybox__notify-consent" readOnly tabIndex={ -1 } />
 					<span className="sgs-buybox__notify-consent-label">{ __( 'Email me once when this is back in stock.', 'sgs-blocks' ) }</span>
 				</div>
-				<span className="wp-element-button sgs-buybox__notify-submit">{ attributes.notifyMeLabel || __( 'Notify me', 'sgs-blocks' ) }</span>
+				<AuthoredText className="wp-element-button sgs-buybox__notify-submit" value={ attributes.notifyMeLabel || __( 'Notify me', 'sgs-blocks' ) } />
 				<p className="sgs-buybox__notify-status" data-status="success">{ __( 'Thanks, we will email you when it is back.', 'sgs-blocks' ) }</p>
 			</div>
 		</div>
@@ -341,7 +342,7 @@ function SampleStickyBar( { attributes, palette, cartVariant } ) {
 				<span className="sgs-buybox__bar-variant">{ `${ SAMPLE.colours[ 0 ] } / ${ SAMPLE.sizes[ 1 ] }` }</span>
 			</div>
 			<span className={ `wp-element-button buybox__add-to-cart${ cartVariant }` }>
-				{ attributes.addToCartLabel || __( 'Add to Cart', 'sgs-blocks' ) }
+				<AuthoredText value={ attributes.addToCartLabel || __( 'Add to Cart', 'sgs-blocks' ) } />
 			</span>
 		</div>
 	);
@@ -386,7 +387,7 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 	const stockLine = (
 		<p className="buybox__stock buybox__stock--status buybox__stock--in-stock">
 			<span className="buybox__stock-dot" aria-hidden="true"></span>
-			{ attributes.stockInStockLabel || __( 'In stock', 'sgs-blocks' ) }
+			<AuthoredText value={ attributes.stockInStockLabel || __( 'In stock', 'sgs-blocks' ) } />
 		</p>
 	);
 	const meterStyle = METER_STYLES.includes( attributes.guidedMeterStyle ) ? attributes.guidedMeterStyle : 'segments';
@@ -441,7 +442,7 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 						<SampleOptionGroup label={ __( 'Colour', 'sgs-blocks' ) } options={ SAMPLE.colours } pillStyle={ attributes.pickerSwatchStyle } showTick={ showTick } labelStyle={ labelStyle } valueStyle={ valueStyle } showSelectedValue={ showSelectedValue } />
 						<div className="sgs-buybox-guided__nav" style={ attributes.navFlexWrap ? { flexWrap: attributes.navFlexWrap } : undefined }>
 							<span className="sgs-buybox-guided__nav-btn sgs-buybox-guided__nav-btn--back">{ attributes.guidedBackLabel || __( 'Back', 'sgs-blocks' ) }</span>
-							<span className="sgs-buybox-guided__nav-btn sgs-buybox-guided__nav-btn--next">{ attributes.guidedNextLabel || __( 'Next', 'sgs-blocks' ) }</span>
+							<AuthoredText className="sgs-buybox-guided__nav-btn sgs-buybox-guided__nav-btn--next" value={ attributes.guidedNextLabel || __( 'Next', 'sgs-blocks' ) } />
 						</div>
 					</div>
 				) : (
@@ -452,7 +453,7 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 				) }
 				<div className="buybox__cart-form">
 					<span className={ `wp-element-button buybox__add-to-cart${ cartVariant }` } style={ cartStyle }>
-						{ attributes.addToCartLabel || __( 'Add to Cart', 'sgs-blocks' ) }
+						<AuthoredText value={ attributes.addToCartLabel || __( 'Add to Cart', 'sgs-blocks' ) } />
 					</span>
 				</div>
 				{ false !== attributes.notifyEnabled && <SampleNotifyForm attributes={ attributes } /> }

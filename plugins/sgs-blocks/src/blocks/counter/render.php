@@ -379,6 +379,6 @@ $scoped_css = array_merge( $scoped_css, $border['rules'] );
 		echo esc_html( $prefix . $formatted_number . $suffix );
 	?>
 	</span>
-	<p class="sgs-counter__label" aria-hidden="true"><?php echo sgs_rich_text_kses( $label ); ?></p>
+	<p class="sgs-counter__label" aria-hidden="true"><?php echo sgs_rich_text_kses( $label, true, 'body' ); ?></p>
 </div>
 <?php

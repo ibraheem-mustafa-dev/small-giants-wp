@@ -201,7 +201,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 );
 
 $prefix_html = '' !== $prefix_label
-	? '<span class="sgs-language-switch__prefix">' . esc_html( $prefix_label ) . '</span>'
+	? '<span class="sgs-language-switch__prefix">' . sgs_rich_text_kses( $prefix_label, false ) . '</span>'
 	: '';
 
 // wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving CSS
@@ -262,7 +262,7 @@ if ( 'single-link' === $display ) {
 			class="sgs-language-switch__trigger"
 			aria-expanded="true"
 			aria-controls="<?php echo esc_attr( $list_id ); ?>"
-		><?php echo esc_html( $trigger_label ); ?></button>
+		><?php echo sgs_rich_text_kses( $trigger_label, false ); ?></button>
 		<div class="sgs-language-switch__panel">
 			<ul id="<?php echo esc_attr( $list_id ); ?>" class="sgs-language-switch__list">
 				<?php foreach ( $items as $item ) : ?>
