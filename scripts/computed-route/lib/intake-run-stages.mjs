@@ -149,6 +149,7 @@ export const STAGES = [
 		const records = [];
 		const grounds = new Map();
 		const texts = new Map();
+		const words = new Map();
 		const channels = new Map();
 		const probeRows = [];
 		const gaps = [];
@@ -168,13 +169,14 @@ export const STAGES = [
 				blocked.push( ...read.blocked );
 				Object.entries( read.probed?.grounds ?? {} ).forEach( ( [ p, g ] ) => grounds.set( `${ v.key }\u0000${ p }`, g ) );
 				Object.entries( read.probed?.texts ?? {} ).forEach( ( [ p, n ] ) => texts.set( `${ v.key }\u0000${ p }`, n ) );
+				Object.keys( read.probed?.words ?? {} ).forEach( ( p ) => words.set( `${ v.key } ${ p }`, true ) );
 				Object.entries( read.probed?.channels ?? {} ).forEach( ( [ p, href ] ) => channelOfAddress( href ) && channels.set( `${ v.key }\u0000${ p }`, channelOfAddress( href ) ) );
 				probeRows.push( ...groundUsage( read.probed, v.key ) );
 			} else {
 				gaps.push( gap( 'palette-usage', `${ v.file }${ v.hash ? `#${ v.hash }` : '' }`, `the 1440 rest reading failed: ${ error.message.split( '\n' )[ 0 ] }` ) );
 			}
 		} );
-		const usage = [ ...paletteUsage( records, grounds, texts, channels ), ...probeRows, ...statusUsage( job.folder ) ];
+		const usage = [ ...paletteUsage( records, grounds, texts, channels, words ), ...probeRows, ...statusUsage( job.folder ) ];
 		const p = proposePalette( { tokens: t.tokens, usage, slugs: loadPaletteSlugs(), problems: t.problems, folder: job.folder } );
 		gaps.push( ...p.problems.map( ( x ) => gap( `palette:${ x.kind ?? 'token' }`, x.draftId ?? x.name ?? x.token ?? 'tokens', x.error ?? x.message ?? JSON.stringify( x ) ) ) );
 		return {
