@@ -7,7 +7,7 @@
 	{ "file": "lib/shop-parts-read.mjs", "find": "while ( n && FLOW.has( n.tag ) ) {", "replace": "while ( false ) {", "why": "a text run inside sc-if is located by the sc-if, which renders no element" },
 	{ "file": "lib/shop-parts-read.mjs", "find": "tpl: stampOf( c.tag ? c : node ),", "replace": "tpl: stampOf( node ),", "why": "a control is located by the element around it, not itself" },
 	{ "file": "lib/shop-parts-read.mjs", "find": "unitsOf( r, { file, dc: rec.dc, L,", "replace": "unitsOf( r, { file, L,", "why": "the units carry no draft component, so no part has a locator" },
-	{ "file": "lib/shop-parts.mjs", "find": "file: u.file, dc: u.dc, tpl: u.tpl } );", "replace": "file: u.file } );", "why": "the part drops its units' stamps" },
+	{ "file": "lib/shop-parts.mjs", "find": "file: u.file, dc: u.dc, tpl: u.tpl, perUnit: u.facts?.perUnit || null } );", "replace": "file: u.file, perUnit: u.facts?.perUnit || null } );", "why": "the part drops its units' stamps" },
 	{ "file": "lib/shop-parts.mjs", "find": "locators: locatorsOf( p.units ),", "replace": "", "why": "the record carries no locator" },
 	{ "file": "lib/shop-parts.mjs", "find": ".sort( ( a, b ) => a.tpl - b.tpl )", "replace": "", "why": "the locators are not in stamp order" },
 	{ "file": "lib/shop-parts.mjs", "find": "const locatorsOf = ( units ) => [ ...new Set(", "replace": "const locatorsOf = ( units ) => [ ...(", "why": "an element two units were found on is listed twice" }
