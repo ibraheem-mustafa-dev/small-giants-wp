@@ -1,0 +1,116 @@
+[
+	{
+		"file": "lib/fill-custom-css.mjs",
+		"find": "const NO_HOLDER = [ 'no-setting', 'shape', 'unmapped-element' ];",
+		"replace": "const NO_HOLDER = [];",
+		"why": "the old behaviour: a declaration no setting holds stays a row and is never written"
+	},
+	{
+		"file": "lib/fill-custom-css.mjs",
+		"find": "const NO_HOLDER = [ 'no-setting', 'shape', 'unmapped-element' ];",
+		"replace": "const NO_HOLDER = [ 'no-setting', 'shape' ];",
+		"why": "a pseudo-element under a state with no calibrated part would stay a row"
+	},
+	{
+		"file": "lib/fill-custom-css.mjs",
+		"find": "\t\tif ( last && last.value === byTier[ t ] && last.range[ 1 ] === TIER_RANGES[ t ][ 0 ] ) {",
+		"replace": "\t\tif ( false ) {",
+		"why": "tiers of one value would not join into one rule"
+	},
+	{
+		"file": "lib/fill-custom-css.mjs",
+		"find": "const wrap = ( range, body ) => ( 0 === range[ 0 ] && Infinity === range[ 1 ] ? body : mediaRule( range, body ) );",
+		"replace": "const wrap = ( range, body ) => body;",
+		"why": "a per-width value would lose its @media rule"
+	},
+	{
+		"file": "lib/fill-custom-css.mjs",
+		"find": "\t\t\tout.push( { range: [ ...TIER_RANGES[ t ] ], value: byTier[ t ] } );",
+		"replace": "\t\t\tout.push( { range: [ 0, Infinity ], value: byTier[ t ] } );",
+		"why": "every tier's value would paint at every width"
+	},
+	{
+		"file": "lib/fill-custom-css.mjs",
+		"find": "\tconst at = `${ PSEUDO_CLASS[ state ] || '' }${ m[ 2 ] }`;",
+		"replace": "\tconst at = `${ m[ 2 ] }${ PSEUDO_CLASS[ state ] || '' }`;",
+		"why": "the state would follow the pseudo-element, which matches nothing"
+	},
+	{
+		"file": "lib/fill-custom-css.mjs",
+		"find": "\treturn base ? `& ${ base }${ at }` : `&${ at }`;",
+		"replace": "\treturn `& ${ base }${ at }`;",
+		"why": "a root state or pseudo-element would become a descendant selector"
+	},
+	{
+		"file": "lib/fill-custom-css.mjs",
+		"find": "\t\tif ( null === why || painted( writes, row ) ) {",
+		"replace": "\t\tif ( null === why ) {",
+		"why": "a property a write already paints would be painted twice"
+	},
+	{
+		"file": "lib/fill-custom-css.mjs",
+		"find": "( w.prop === row.property || longhandsOf( w.prop ).includes( row.property ) )",
+		"replace": "w.prop === row.property",
+		"why": "a longhand a written shorthand paints would be painted twice"
+	},
+	{
+		"file": "lib/fill-custom-css.mjs",
+		"find": "\t\tif ( refused ) {",
+		"replace": "\t\tif ( false ) {",
+		"why": "a rule the scoper refuses would be written (and the box's writer would then drop the whole node's rules)"
+	},
+	{
+		"file": "lib/fill-custom-css.mjs",
+		"find": "\t\tif ( ranges.some( ( r ) => UNSAFE_VALUE.test( r.value ) ) ) {",
+		"replace": "\t\tif ( false ) {",
+		"why": "a value carrying a declaration break would reach the box"
+	},
+	{
+		"file": "lib/fill-custom-css.mjs",
+		"find": "&& ! /^held:/.test( row.code || '' );",
+		"replace": ";",
+		"why": "a value the element already paints would be written again"
+	},
+	{
+		"file": "lib/fill-custom-css.mjs",
+		"find": "\tif ( row.state && ! PSEUDO_CLASS[ row.state ] ) {",
+		"replace": "\tif ( false ) {",
+		"why": "a state no pseudo-class names would be written as a resting rule"
+	},
+	{
+		"file": "lib/custom-css-writer.mjs",
+		"find": "\tif ( refused.length ) {",
+		"replace": "\tif ( false ) {",
+		"why": "the shared writer would write a rule the scoper refuses"
+	},
+	{
+		"file": "lib/custom-css-writer.mjs",
+		"find": "const labelled = ( label ) => ( String( label ).startsWith( ROUTE_LABEL ) ? label : `${ ROUTE_LABEL }: ${ label }` );",
+		"replace": "const labelled = ( label ) => label;",
+		"why": "a rule would not say the route wrote it"
+	},
+	{
+		"file": "lib/fill-width-gate.mjs",
+		"find": "export const scopedCssPuts = ( node, { css, label, index, why } ) => customCssPuts( node, { css, label, why, key: `wgate${ index }` } );",
+		"replace": "export const scopedCssPuts = ( node, { css, label, index, why } ) => [ { attr: 'sgsCustomCss', value: css, prop: why }, { attr: 'sgsCustomCssId', value: `wgate${ index }`, prop: why }, { attr: 'sgsCustomCssNote', value: label, prop: why } ];",
+		"why": "the width gate would keep its own writer"
+	},
+	{
+		"file": "lib/fill-report.mjs",
+		"find": "\t\t...table( [ 'Node', 'Block', 'Pass', 'Rule', 'Label' ], cssRules.map( ( c ) => [ c.node, c.block, c.how, c.css, c.label ] ) ),",
+		"replace": "",
+		"why": "the surface report would not list the route-written rules"
+	},
+	{
+		"file": "lib/fill-custom-css.mjs",
+		"find": "\t\t\treturn { ...row, appliedCss: css, reason: `${ row.reason }; applied through ${ rec.name }'s Custom CSS until a setting holds it: ${ css }` };",
+		"replace": "\t\t\treturn row;",
+		"why": "a written row would not say the CSS applies it, so the gap list would read as unbuilt"
+	},
+	{
+		"file": "lib/fill-report.mjs",
+		"find": "...( u.appliedCss ? { appliedCss: u.appliedCss } : {} ),",
+		"replace": "",
+		"why": "unmapped.json would drop the applied CSS"
+	}
+]

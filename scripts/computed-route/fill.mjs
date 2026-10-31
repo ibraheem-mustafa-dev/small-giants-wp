@@ -37,6 +37,7 @@ import { imageRecords } from './lib/fill-media.mjs';
 import { logoSizeWrites } from './lib/fill-logo-size.mjs';
 import { widthLadderWrites } from './lib/fill-width-ladder.mjs';
 import { stepRungWrites } from './lib/fill-step-rungs.mjs';
+import { customCssWrites } from './lib/fill-custom-css.mjs';
 import { dimensionWrites } from './lib/fill-dimensions.mjs';
 import { scrollbarPatch, mergePatch } from './lib/fill-scrollbar.mjs';
 import { motionWrites } from './lib/fill-motion.mjs';
@@ -241,7 +242,7 @@ export async function fillSurface( o ) {
 		result.writes.push( ...stepRungs.writes );
 		result.notes.push( ...stepRungs.notes );
 		// FR-48-86: each custom-CSS rule's gaps row (the native control it could become), carried in fill-report.json.
-		result.customCssGaps = stepRungs.gaps;
+		result.customCssGaps = [ ...stepRungs.gaps ];
 		// FR-48-50: content the draft's logic shows or hides by width, written as hiding settings (lib/fill-width-gate.mjs); a snapped
 		// threshold's `breakpoint-snap` entry is added to the client's divergence ledger (the file Fill reads), once.
 		const gates = widthGateWrites( { nodes, flat, refOf, facts, db, scope: o.surface, entries: loadLedger( ledgerFile ), rootComponent: intakeParts.rootComponent } );
@@ -328,11 +329,17 @@ export async function fillSurface( o ) {
 		result.notes.push( ...bound.groups.map( ( g ) => `binding ${ g.binding } sets ${ g.attr } to ${ JSON.stringify( g.value ) } on ${ g.members.length } elements in ${ g.sections } sections: one shared setting` ), ...bound.split.map( ( x ) => `binding ${ x.binding } sets ${ x.attr } to ${ x.values.length } different values: not grouped` ) );
 		// Rows the element already renders (lib/fill-held.mjs) leave UNMAPPED and are listed under their reason in the report.
 		Object.assign( result, result.settleHeld( result ) );
+		// Every draft declaration no setting of its block holds, applied through that block's Custom CSS as a scoped rule and kept as its gap row (lib/fill-custom-css.mjs).
+		const customCss = customCssWrites( { unmapped: result.unmapped, writes: result.writes, nodes, flat, refOf } );
+		result.writes.push( ...customCss.writes );
+		result.unmapped = customCss.unmapped;
+		result.customCssGaps.push( ...customCss.gaps );
+		result.notes.push( ...customCss.notes );
 		// R7: a declared read that failed is an UNMAPPED row with its reason, never only a log line.
 		result.unmapped.push( ...readFailureRows( { reads, nodes, flat, refOf } ) );
 		// FR-48-8: every written style value against what the draft's code declares, at each read width.
 		// A state write is judged by the state check (lib/state-check.mjs), never against the resting read.
-		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => ! [ 'motion', 'width-gate', 'preset', 'width-ladder', 'dimension' ].includes( w.how ) && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent, calFor, palette: snapshot.palette } );
+		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => ! [ 'motion', 'width-gate', 'preset', 'width-ladder', 'dimension', 'custom-css' ].includes( w.how ) && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent, calFor, palette: snapshot.palette } );
 		// FR-48-8: a declaration that asks the device safe-area inset is named once per element and property.
 		result.notes.push( ...[ ...new Set( result.confirm.filter( ( r ) => r.safeArea ).map( ( r ) => `${ r.node } ${ r.block } ${ r.property }: ${ r.safeArea.note }` ) ) ] );
 		result.confirm.push( ...imageRecords( { images: result.images } ) );

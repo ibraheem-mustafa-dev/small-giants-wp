@@ -50,11 +50,16 @@ const ASSET = /\.(?:svg|css)$/i;
 // A usage tally: id → { count, draftId (the first place it was seen), props? (a CSS property group's properties the
 // draft used, by their standard names) }.
 export const tally = () => new Map();
-const note = ( t, id, draftId, prop = null ) => {
+// A tally that also keeps every sighting, in reading order: `instances` [ { id, draftId, state?, selector?, property?,
+// value? } ], where the declaration the sighting sits in is known (the per-occurrence list of
+// tools/unsupported-css-instances.mjs). The counts are the plain tally's.
+export const instanceTally = () => Object.assign( new Map(), { instances: [] } );
+const note = ( t, id, draftId, prop = null, at = null ) => {
 	const u = t.get( id ) || { count: 0, draftId: String( draftId ) };
 	u.count++;
 	prop && ( u.props = new Set( [ ...( u.props || [] ), prop ] ) );
 	t.set( id, u );
+	t.instances?.push( { id, draftId: String( draftId ), ...( at || {} ) } );
 };
 
 // The spec a URL names: its first path segment without a level (`drafts.csswg.org/css-text-4/#…` → css-text,
@@ -114,7 +119,7 @@ export function standardName( prop ) {
 }
 
 // Notes a CSS property's capability IDs, recording the property itself on each property group it counts toward.
-const noteProperty = ( t, prop, draftId ) => propertyIds( prop ).forEach( ( id ) => note( t, id, draftId, id.startsWith( 'css-group:' ) ? standardName( prop ) : null ) );
+const noteProperty = ( t, prop, draftId, at = null ) => propertyIds( prop ).forEach( ( id ) => note( t, id, draftId, id.startsWith( 'css-group:' ) ? standardName( prop ) : null, { property: prop, ...( at || {} ) } ) );
 
 // The pseudo-class or pseudo-element ID of a selector name: a legacy one-colon pseudo-element (`:before`), or a name
 // the inventory holds only as a pseudo-element, is the pseudo-element.
@@ -124,7 +129,7 @@ const pseudoId = ( name, known ) => ( LEGACY_PSEUDO_ELEMENTS.has( name ) || ( ! 
 // property groups, pseudo-classes and pseudo-elements, functions and units (custom property values parsed too, since
 // a token file is mostly custom properties). `context` is css-tree's: 'stylesheet', or 'value' for a bare value a
 // binding writes. Returns the parse problems, each naming `draftId`.
-export function cssUsage( text, t, draftId, known = new Set(), context = 'stylesheet' ) {
+export function cssUsage( text, t, draftId, known = new Set(), context = 'stylesheet', where = null ) {
 	const problems = [];
 	let ast;
 	try {
@@ -134,8 +139,19 @@ export function cssUsage( text, t, draftId, known = new Set(), context = 'styles
 	}
 	const inMedia = [];
 	const reduced = [];
+	// Where a sighting sits, for an instance tally: the rule's selector (none for a declaration list, read as `x{…}`) and
+	// the declaration, or the bare value.
+	const rules = [];
+	let decl = null;
+	const rule = () => ( rules.length && 'x' !== rules.at( -1 ).selector ? rules.at( -1 ) : null );
+	const at = () => ( t.instances ? { ...( where || {} ), ...( rule() ? { selector: rule().selector } : {} ), ...( decl || ( rule() ? { declarations: rule().body } : 'value' === context ? { value: String( text ) } : {} ) ) } : null );
 	csstree.walk( ast, {
 		enter( n ) {
+			if ( t.instances && 'Rule' === n.type ) {
+				rules.push( { selector: n.prelude ? csstree.generate( n.prelude ) : '', body: n.block ? csstree.generate( n.block ).replace( /^\{|\}$/g, '' ) : '' } );
+			} else if ( t.instances && 'Declaration' === n.type ) {
+				decl = { property: n.property, value: n.value ? csstree.generate( n.value ) : '' };
+			}
 			if ( 'Atrule' === n.type ) {
 				// A `@media (prefers-reduced-motion: reduce)` block, and the pseudo-elements inside it, are covered by SGS's own
 				// reduced-motion handling (`fx_effects.reduced_motion`), so they are not capabilities the draft asks for.
@@ -150,22 +166,27 @@ export function cssUsage( text, t, draftId, known = new Set(), context = 'styles
 			} else if ( 'FeatureRange' === n.type && inMedia.at( -1 ) && 'Identifier' === n.left?.type ) {
 				note( t, `css-media-feature:${ n.left.name.toLowerCase() }`, draftId );
 			} else if ( 'Declaration' === n.type ) {
-				noteProperty( t, n.property, draftId );
+				noteProperty( t, n.property, draftId, at() );
 			} else if ( 'PseudoClassSelector' === n.type ) {
-				note( t, pseudoId( n.name.toLowerCase(), known ), draftId );
+				note( t, pseudoId( n.name.toLowerCase(), known ), draftId, null, at() );
 			} else if ( 'PseudoElementSelector' === n.type ) {
 				if ( ! reduced.includes( true ) ) {
-					note( t, `css-pseudo-element:${ n.name.toLowerCase() }`, draftId );
+					note( t, `css-pseudo-element:${ n.name.toLowerCase() }`, draftId, null, at() );
 				}
 			} else if ( 'Function' === n.type ) {
-				note( t, `css-function:${ n.name.toLowerCase() }`, draftId );
+				note( t, `css-function:${ n.name.toLowerCase() }`, draftId, null, at() );
 			} else if ( 'Dimension' === n.type ) {
-				note( t, `css-unit:${ n.unit.toLowerCase() }`, draftId );
+				note( t, `css-unit:${ n.unit.toLowerCase() }`, draftId, null, at() );
 			} else if ( 'Percentage' === n.type ) {
-				note( t, 'css-unit:percent', draftId );
+				note( t, 'css-unit:percent', draftId, null, at() );
 			}
 		},
 		leave( n ) {
+			if ( t.instances && 'Rule' === n.type ) {
+				rules.pop();
+			} else if ( t.instances && 'Declaration' === n.type ) {
+				decl = null;
+			}
 			if ( 'Atrule' === n.type ) {
 				reduced.pop();
 				inMedia.pop();
@@ -198,20 +219,20 @@ export function embedId( url, known = new Set() ) {
 
 // Every capability a declaration list uses (an inline style or a state style). A declaration whose value is bound
 // (`{{ }}`) names its property only: the value is the logic's, read there (codeUsage). Returns parse problems.
-export function declarationsUsage( text, t, draftId, known = new Set() ) {
+export function declarationsUsage( text, t, draftId, known = new Set(), where = null ) {
 	const problems = [];
 	const fixed = [];
 	for ( const d of String( text || '' ).split( /;(?![^{]*\}\})/ ) ) {
 		const at = d.indexOf( ':' );
 		const prop = at > 0 ? d.slice( 0, at ).trim() : '';
 		if ( d.includes( '{{' ) && /^-{0,2}[a-z][a-z0-9-]*$/i.test( prop ) ) {
-			noteProperty( t, prop, draftId );
+			noteProperty( t, prop, draftId, { ...( where || {} ), value: d.slice( at + 1 ).trim() } );
 		} else if ( d.trim() ) {
 			fixed.push( d );
 		}
 	}
 	if ( fixed.length ) {
-		problems.push( ...cssUsage( `x{${ fixed.join( ';' ) }}`, t, draftId, known ) );
+		problems.push( ...cssUsage( `x{${ fixed.join( ';' ) }}`, t, draftId, known, 'stylesheet', where ) );
 	}
 	return problems;
 }
@@ -257,8 +278,8 @@ export function elementUsage( { tag, attrs = [], svg = null }, t, draftId, known
 			continue;
 		}
 		if ( a.startsWith( 'style-' ) ) {
-			note( t, pseudoId( a.slice( 6 ), known ), draftId );
-			problems.push( ...declarationsUsage( value, t, draftId, known ) );
+			note( t, pseudoId( a.slice( 6 ), known ), draftId, null, { state: a.slice( 6 ) } );
+			problems.push( ...declarationsUsage( value, t, draftId, known, { state: a.slice( 6 ) } ) );
 			continue;
 		}
 		if ( 'style' === a ) {
@@ -484,9 +505,8 @@ function exportFiles( folder ) {
 }
 
 // The file read: everything listed at the top of this file. `sources` is the census's (draftSources). Returns
-// { usage, problems }.
-export function draftUsage( { sources = [], folder = null, known = new Set() } ) {
-	const t = tally();
+// { usage, problems }. `t`: the tally to read into (instanceTally to keep every sighting).
+export function draftUsage( { sources = [], folder = null, known = new Set(), t = tally() } ) {
 	const problems = [];
 	const linked = new Set();
 	const said = [];

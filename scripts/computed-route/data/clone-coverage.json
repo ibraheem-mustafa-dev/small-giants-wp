@@ -3585,11 +3585,11 @@
 			"test": "scripts/computed-route/tests/css-functions.test.mjs"
 		},
 		"css-function:brightness": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "brightness(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-custom-css.mjs#customCssWrites",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/fill-custom-css.test.mjs",
+			"note": "brightness(): read inside the computed value of the property that uses it (filter), per width; a value no block setting holds is applied through the block's Custom CSS (lib/fill-custom-css.mjs) and kept as its gap row until a setting exists"
 		},
 		"css-function:calc": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -3755,11 +3755,11 @@
 			"note": "hsla(): its result is a computed colour or value Fill reads per width and resolves to a token or literal"
 		},
 		"css-function:hue-rotate": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "hue-rotate(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-custom-css.mjs#customCssWrites",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/fill-custom-css.test.mjs",
+			"note": "hue-rotate(): read inside the computed value of the property that uses it (filter), per width; a value no block setting holds is applied through the block's Custom CSS (lib/fill-custom-css.mjs) and kept as its gap row until a setting exists"
 		},
 		"css-function:hwb": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -3957,11 +3957,11 @@
 			"note": "perspective() first in the list is the element's one perspective (100 to 5000px; out of range is noted, a perspective later in the list is reported); checked as part of the from transform, whose matrix in the code's own order is compared with the matrix the render drew (lib/motion-check.mjs::entranceCheck, lib/css-matrix.mjs)"
 		},
 		"css-function:polygon": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "polygon(): the drafts' one use is the tilted tag's cut end, built as sgs/label's end shapes (Spec 02 FR-2-2, .claude/plans/archive/2026-10-19-control-gaps-build.md); as a clip-path it is reported (tests/css-functions.test.mjs)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-custom-css.mjs#customCssWrites",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/fill-custom-css.test.mjs",
+			"note": "polygon(): read inside the computed value of the property that uses it (clip-path), per width; a value no block setting holds is applied through the block's Custom CSS (lib/fill-custom-css.mjs) and kept as its gap row until a setting exists"
 		},
 		"css-function:pow": {
 			"recognise": null,
@@ -4084,11 +4084,11 @@
 			"note": "round(): Fill reads the computed result at 375, 768 and 1440, so a fluid value becomes three steps (FR-48-44, fluid values, not built)"
 		},
 		"css-function:saturate": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "saturate(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-custom-css.mjs#customCssWrites",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/fill-custom-css.test.mjs",
+			"note": "saturate(): read inside the computed value of the property that uses it (filter), per width; a value no block setting holds is applied through the block's Custom CSS (lib/fill-custom-css.mjs) and kept as its gap row until a setting exists"
 		},
 		"css-function:scale": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
@@ -4142,11 +4142,11 @@
 			"note": "selector(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
 		},
 		"css-function:sepia": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "sepia(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-custom-css.mjs#customCssWrites",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/fill-custom-css.test.mjs",
+			"note": "sepia(): read inside the computed value of the property that uses it (filter), per width; a value no block setting holds is applied through the block's Custom CSS (lib/fill-custom-css.mjs) and kept as its gap row until a setting exists"
 		},
 		"css-function:shape": {
 			"recognise": null,
@@ -4366,11 +4366,11 @@
 			"test": "scripts/computed-route/tests/fill-css-groups.test.mjs#css-group:backgrounds-and-borders"
 		},
 		"css-group:basic-user-interface": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "No setting paints accent-color, appearance, caret-color, cursor, outline, outline-color, outline-offset, outline-style, outline-width, pointer-events, resize or user-select, so a draft value for them is an unmapped row, not a write (focus outlines go to the theme focus ring, lib/fill-state-tokens.mjs). Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps)."
+			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
+			"write": "scripts/computed-route/lib/fill-custom-css.mjs#customCssWrites",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/fill-custom-css.test.mjs",
+			"note": "No setting paints accent-color, appearance, caret-color, cursor, outline, outline-color, outline-offset, outline-style, outline-width, pointer-events, resize or user-select, so a draft value for them is an unmapped row, not a write (focus outlines go to the theme focus ring, lib/fill-state-tokens.mjs). Fill reads every longhand the draft declares on a measured element (lib/fill-declared.mjs#extraProps); a value no block setting holds (an unmapped no-setting or shape row) is applied through that block's Custom CSS as a scoped rule, a per-width value as scoped @media rules, a state as its pseudo-class (lib/fill-custom-css.mjs), and kept as its gap row until a setting exists. An element the skeleton absorbs into another block is not measured, so its declarations are not read."
 		},
 		"css-group:box-alignment": {
 			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
@@ -4485,11 +4485,11 @@
 			"test": "scripts/computed-route/tests/fill-css-groups.test.mjs#css-group:grid-layout"
 		},
 		"css-group:images": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
+			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
+			"write": "scripts/computed-route/lib/fill-custom-css.mjs#customCssWrites",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/fill-custom-css.test.mjs",
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group Fill reads every longhand the draft declares on a measured element (lib/fill-declared.mjs#extraProps); a value no block setting holds (an unmapped no-setting or shape row) is applied through that block's Custom CSS as a scoped rule, a per-width value as scoped @media rules, a state as its pseudo-class (lib/fill-custom-css.mjs), and kept as its gap row until a setting exists. An element the skeleton absorbs into another block is not measured, so its declarations are not read."
 		},
 		"css-group:inline": {
 			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
@@ -4499,25 +4499,25 @@
 			"test": "scripts/computed-route/tests/fill-prop.test.mjs#css-group:"
 		},
 		"css-group:lists-and-counters": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
+			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
+			"write": "scripts/computed-route/lib/fill-custom-css.mjs#customCssWrites",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/fill-custom-css.test.mjs",
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group Fill reads every longhand the draft declares on a measured element (lib/fill-declared.mjs#extraProps); a value no block setting holds (an unmapped no-setting or shape row) is applied through that block's Custom CSS as a scoped rule, a per-width value as scoped @media rules, a state as its pseudo-class (lib/fill-custom-css.mjs), and kept as its gap row until a setting exists. An element the skeleton absorbs into another block is not measured, so its declarations are not read."
 		},
 		"css-group:logical-properties-and-values": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "Settings exist only under the shorthands margin-block and padding-block (sgs/mega-panel) and, in states, padding-inline-start; Fill reads the longhands (a shorthand is read through them, lib/fill-declared.mjs#extraProps) and the resolver matches a setting by its exact property, so a draft margin-block-start, margin-block-end, padding-block-start, padding-block-end, padding-inline-end, block-size, inline-size or inset-block is an unmapped row. Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps)."
+			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
+			"write": "scripts/computed-route/lib/fill-custom-css.mjs#customCssWrites",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/fill-custom-css.test.mjs",
+			"note": "Settings exist only under the shorthands margin-block and padding-block (sgs/mega-panel) and, in states, padding-inline-start; Fill reads the longhands (a shorthand is read through them, lib/fill-declared.mjs#extraProps) and the resolver matches a setting by its exact property, so a draft margin-block-start, margin-block-end, padding-block-start, padding-block-end, padding-inline-end, block-size, inline-size or inset-block is an unmapped row. Fill reads every longhand the draft declares on a measured element (lib/fill-declared.mjs#extraProps); a value no block setting holds (an unmapped no-setting or shape row) is applied through that block's Custom CSS as a scoped rule, a per-width value as scoped @media rules, a state as its pseudo-class (lib/fill-custom-css.mjs), and kept as its gap row until a setting exists. An element the skeleton absorbs into another block is not measured, so its declarations are not read."
 		},
 		"css-group:masking": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "The only setting is sgs/hero splitMediaShape for clip-path, a fixed set of named shapes (none, rounded, circle, square), so a draft clip-path of any other value is a shape row. No setting paints clip, mask, mask-image, mask-size, mask-position, mask-repeat, mask-mode, mask-clip, mask-composite, mask-origin, mask-type or clip-rule. Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps)."
+			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
+			"write": "scripts/computed-route/lib/fill-custom-css.mjs#customCssWrites",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/fill-custom-css.test.mjs",
+			"note": "The only setting is sgs/hero splitMediaShape for clip-path, a fixed set of named shapes (none, rounded, circle, square), so a draft clip-path of any other value is a shape row. No setting paints clip, mask, mask-image, mask-size, mask-position, mask-repeat, mask-mode, mask-clip, mask-composite, mask-origin, mask-type or clip-rule. Fill reads every longhand the draft declares on a measured element (lib/fill-declared.mjs#extraProps); a value no block setting holds (an unmapped no-setting or shape row) is applied through that block's Custom CSS as a scoped rule, a per-width value as scoped @media rules, a state as its pseudo-class (lib/fill-custom-css.mjs), and kept as its gap row until a setting exists. An element the skeleton absorbs into another block is not measured, so its declarations are not read."
 		},
 		"css-group:mathml": {
 			"excluded": {
@@ -4562,11 +4562,11 @@
 			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:overflow": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "Settings exist under the shorthand overflow (sgs/decorative-image and sgs/container, fixed sets of keywords), under overflow-x (sgs/container scrollSideways, its horizontal scroll mode) and -webkit-line-clamp; the resolver matches a setting by its exact property, so a draft overflow-y, overflow-block, overflow-inline, text-overflow, scroll-behavior or scrollbar-gutter is an unmapped row. Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps)."
+			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
+			"write": "scripts/computed-route/lib/fill-custom-css.mjs#customCssWrites",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/fill-custom-css.test.mjs",
+			"note": "Settings exist under the shorthand overflow (sgs/decorative-image and sgs/container, fixed sets of keywords), under overflow-x (sgs/container scrollSideways, its horizontal scroll mode) and -webkit-line-clamp; the resolver matches a setting by its exact property, so a draft overflow-y, overflow-block, overflow-inline, text-overflow, scroll-behavior or scrollbar-gutter is an unmapped row. Fill reads every longhand the draft declares on a measured element (lib/fill-declared.mjs#extraProps); a value no block setting holds (an unmapped no-setting or shape row) is applied through that block's Custom CSS as a scoped rule, a per-width value as scoped @media rules, a state as its pseudo-class (lib/fill-custom-css.mjs), and kept as its gap row until a setting exists. An element the skeleton absorbs into another block is not measured, so its declarations are not read."
 		},
 		"css-group:overscroll-behavior": {
 			"recognise": null,
@@ -4632,11 +4632,11 @@
 			"note": "a scroll- or view-timeline animation is a scrub (an effect in proportion to scroll progress, FR-48-77); the writer writes the scrub effect through writeEffect once it is recognised"
 		},
 		"css-group:scroll-snap": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "No setting paints scroll-margin, scroll-padding, scroll-snap-align or scroll-snap-type (or their longhands), so a draft value is an unmapped row. Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps)."
+			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
+			"write": "scripts/computed-route/lib/fill-custom-css.mjs#customCssWrites",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/fill-custom-css.test.mjs",
+			"note": "No setting paints scroll-margin, scroll-padding, scroll-snap-align or scroll-snap-type (or their longhands), so a draft value is an unmapped row. Fill reads every longhand the draft declares on a measured element (lib/fill-declared.mjs#extraProps); a value no block setting holds (an unmapped no-setting or shape row) is applied through that block's Custom CSS as a scoped rule, a per-width value as scoped @media rules, a state as its pseudo-class (lib/fill-custom-css.mjs), and kept as its gap row until a setting exists. An element the skeleton absorbs into another block is not measured, so its declarations are not read."
 		},
 		"css-group:scrollbars-styling": {
 			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
@@ -4681,11 +4681,11 @@
 			"test": "scripts/computed-route/tests/fill-css-groups.test.mjs#css-group:text-decoration"
 		},
 		"css-group:transforms": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "The resting transform settings are sgs/decorative-image rotation (degrees) and sgs/icon iconRotate (the `rotate` property on its shape); the hover scales go through the states path (lib/fill-state.mjs), so any other resting transform is a shape row. No setting paints scale, perspective, perspective-origin, transform-origin, transform-style, transform-box or backface-visibility. Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps)."
+			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
+			"write": "scripts/computed-route/lib/fill-custom-css.mjs#customCssWrites",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/fill-custom-css.test.mjs",
+			"note": "The resting transform settings are sgs/decorative-image rotation (degrees) and sgs/icon iconRotate (the `rotate` property on its shape); the hover scales go through the states path (lib/fill-state.mjs), so any other resting transform is a shape row. No setting paints scale, perspective, perspective-origin, transform-origin, transform-style, transform-box or backface-visibility. Fill reads every longhand the draft declares on a measured element (lib/fill-declared.mjs#extraProps); a value no block setting holds (an unmapped no-setting or shape row) is applied through that block's Custom CSS as a scoped rule, a per-width value as scoped @media rules, a state as its pseudo-class (lib/fill-custom-css.mjs), and kept as its gap row until a setting exists. An element the skeleton absorbs into another block is not measured, so its declarations are not read."
 		},
 		"css-group:transitions": {
 			"recognise": "construct:transition",
@@ -6706,7 +6706,7 @@
 			"write": null,
 			"check": null,
 			"wave": "modes and values with no CSS property",
-			"note": "::placeholder: a styled part; no writer"
+			"note": "::placeholder: the drafts' ::placeholder rule styles form inputs and textareas across pages (Mama's `input::placeholder, textarea::placeholder`); Fill reads no ::placeholder layer at rest, so the Custom CSS pass never sees it; its home is the form fields' placeholder look"
 		},
 		"css-pseudo-element:scroll-button": {
 			"recognise": null,
@@ -6741,7 +6741,7 @@
 			"write": null,
 			"check": null,
 			"wave": "modes and values with no CSS property",
-			"note": "::selection: a styled part; no writer"
+			"note": "::selection: the drafts' ::selection rules are page-wide (`::selection { background; color }` on every element), so their home is the theme's site-wide selection look, not one block's Custom CSS; Fill reads no ::selection layer and nothing writes the theme rule"
 		},
 		"css-pseudo-element:slotted": {
 			"recognise": null,
@@ -6814,11 +6814,11 @@
 			"note": "cap: not read as itself (print, resolution, frequency, font-relative and grid units)"
 		},
 		"css-unit:ch": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "ch: not read as itself (print, resolution, frequency, font-relative and grid units)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-custom-css.mjs#customCssWrites",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/fill-custom-css.test.mjs",
+			"note": "ch: read as the computed length it resolves to at each read width (the unit itself is not kept); a length no block setting holds is applied through the block's Custom CSS per device tier (lib/fill-custom-css.mjs) and kept as its gap row until a setting exists"
 		},
 		"css-unit:cm": {
 			"recognise": null,
@@ -7042,11 +7042,11 @@
 			"note": "lvw: a viewport unit; Fill reads the computed px per width, so it becomes three steps (FR-48-44)"
 		},
 		"css-unit:mm": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "mm: not read as itself (print, resolution, frequency, font-relative and grid units)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-custom-css.mjs#customCssWrites",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/fill-custom-css.test.mjs",
+			"note": "mm: read as the computed length it resolves to at each read width (the unit itself is not kept); a length no block setting holds is applied through the block's Custom CSS per device tier (lib/fill-custom-css.mjs) and kept as its gap row until a setting exists"
 		},
 		"css-unit:ms": {
 			"recognise": "scripts/computed-route/lib/motion-tokens.mjs#msOf",
