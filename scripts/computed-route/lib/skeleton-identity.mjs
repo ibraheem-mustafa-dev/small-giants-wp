@@ -81,6 +81,10 @@ export function makeIdentity( { m, facts, surface = {}, logicOf = () => null, ca
 	const shownBy = ( block, f ) => ( pool.has( block ) ? yesTo( f ).has( block ) : 'yes' === table.state( block, f.fact, f.value ) );
 	const matched = ( block, e ) => {
 		let list = listOf( e ).filter( ( f ) => naming( f ) && shownBy( block, f ) );
+		// A tab set's panel is one with its open state: a block draws that panel only when it also holds the tab set's state.
+		if ( list.some( ( f ) => 'has-part' === f.fact && 'panel' === f.value ) && ! list.some( ( f ) => 'open-state' === f.fact ) ) {
+			list = list.filter( ( f ) => ! ( 'has-part' === f.fact && 'panel' === f.value ) );
+		}
 		// A value a setting may hold (a separator glyph) says what a block can show, never what it is: it counts only beside the
 		// element's own meaning (its role, written or implied by its tag) shown by the same block.
 		if ( list.some( ( f ) => 'accepts-value' === f.fact ) && ! listOf( e ).some( ( f ) => [ 'renders-role', 'implied-role' ].includes( f.fact ) && f.at.has( e.key ) && 'yes' === table.state( block, f.fact, f.value ) ) ) {

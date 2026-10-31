@@ -268,7 +268,10 @@ export function makeDraftFacts( { m, read, logicOf = () => null, brands = [], pl
 		// item field takes (`[]=<kind>`), as a repeating field holds it.
 		for ( const f of [ ...out.values() ].filter( ( x ) => 'accepts-kind' === x.fact && /^\*=/.test( x.value ) ) ) {
 			const rows = new Set( [ ...f.at ].map( ( k ) => chain( m.byKey[ k ] ).find( ( a ) => a.parentKey === e.key )?.key ).filter( Boolean ) );
-			rows.size >= 2 && add( out, 'accepts-kind', f.value.replace( /^\*=/, '[]=' ), f.at );
+			// Each such row holds the marker and one piece of text beside it, as one item's icon and text: a row holding a title and
+			// a description is more than an item field holds.
+			const texts = ( r ) => m.els.filter( ( x ) => ! f.at.has( x.key ) && chain( x ).includes( m.byKey[ r ] ) && m.words( x ).trim() && ! m.blockKids( x ).some( ( c ) => m.words( c ).trim() ) ).length;
+			rows.size >= 2 && [ ...rows ].every( ( r ) => texts( r ) <= 1 ) && add( out, 'accepts-kind', f.value.replace( /^\*=/, '[]=' ), f.at );
 		}
 		memo.set( e.key, out );
 		return out;
