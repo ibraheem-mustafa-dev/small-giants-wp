@@ -93893,7 +93893,7 @@
      "block": "sgs/google-reviews",
      "confidence": 1,
      "low": false,
-     "reason": "a loop of items that each show a rating and a quote, linking to a review provider, is that provider's reviews block (FR-48-83) (google: a loop of 13 items with a rating and a quote, linking to the provider); the block's own parts stand beside the element it was placed on, so it is placed over the smallest element holding them: sgs/google-reviews placed on Eye Care Birmingham/189#0 draws its own parts beside it (shows-part count, shows-part arrow, shows-part average, shows-part star, shows-part aggregate-star, shows-part see-all, shows-part write-review, self-moving controls, platform google; at Eye Care Birmingham/205#0, Eye Care Birmingham/175#0)",
+     "reason": "a loop of items that each show a rating and a quote, linking to a review provider, is that provider's reviews block (FR-48-83) (google: a loop of 13 items with a rating and a quote, linking to the provider, 14 elements painted in google's own colours (Eye Care Birmingham/200#0 #FBBC04, sgs/google-reviews style.css --sgs-gr-star; Eye Care Birmingham/204#0 #1A73E8, sgs/google-reviews style.css --sgs-gr-blue)); the block's own parts stand beside the element it was placed on, so it is placed over the smallest element holding them: sgs/google-reviews placed on Eye Care Birmingham/189#0 draws its own parts beside it (shows-part count, shows-part arrow, shows-part average, shows-part star, shows-part aggregate-star, shows-part see-all, shows-part write-review, self-moving controls, platform google; at Eye Care Birmingham/205#0, Eye Care Birmingham/175#0)",
      "rule": "loopBlocks",
      "handover": {
       "owner": "content-page",

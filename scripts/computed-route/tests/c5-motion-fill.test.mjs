@@ -238,3 +238,18 @@ test( 'MUST FAIL (C5 fill 6): a write another record\'s setting holds, with no t
 	assert.ok( ! out.unmapped.some( ( u ) => 'J-01' === u.value || 'J-03' === u.value ), 'held, so no row' );
 	assert.ok( out.unmapped.some( ( u ) => 'J-07' === u.value ), 'the timer record itself has no slider on this surface, so it is a row' );
 } );
+
+test( "MUST FAIL (client motion decision): the client's own choice for a marquee's range setting replaces the one the draft's widths give (Eye Care's trust bar ticks on tablet too, Bean 2026-10-31)", () => {
+	const mobileOnly = { loops: { 1440: still, 768: still, 375: running() } };
+	assert.equal( elementEffects( [ MARQUEE ], { mdb, ...mobileOnly } ).effects[ 0 ].values.belowBreakpoint, 'mobile', 'without a decision the draft decides' );
+	const decided = elementEffects( [ MARQUEE ], { mdb, ...mobileOnly, decided: { marquee: { belowBreakpoint: 'tablet' } } } );
+	assert.equal( decided.effects[ 0 ].values.belowBreakpoint, 'tablet', JSON.stringify( decided.effects[ 0 ] ) );
+	assert.match( decided.notes.join( ' ' ), /marquee belowBreakpoint is tablet: the client's own decision/ );
+	// Negative controls: a choice the setting does not offer and a field it does not hold are refused, nothing written.
+	const bad = elementEffects( [ MARQUEE ], { mdb, ...mobileOnly, decided: { marquee: { belowBreakpoint: 'desktop', speed: 99 } } } );
+	assert.equal( bad.effects[ 0 ].values.belowBreakpoint, 'mobile' );
+	assert.equal( bad.effects[ 0 ].values.speed, 45 );
+	assert.equal( bad.unmapped.length, 2 );
+	// A decision for another effect changes nothing.
+	assert.equal( elementEffects( [ MARQUEE ], { mdb, ...mobileOnly, decided: { shimmer: { belowBreakpoint: 'tablet' } } } ).effects[ 0 ].values.belowBreakpoint, 'mobile' );
+} );

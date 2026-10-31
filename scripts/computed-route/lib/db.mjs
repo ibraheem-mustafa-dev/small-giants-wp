@@ -121,10 +121,15 @@ export function statesVocabulary( db ) {
 	return { rows: db.prepare( 'SELECT state, family, kind, token, reach, call, note FROM states ORDER BY id' ).all().map( plain ), missing: null };
 }
 
+// The suffix a per-device sibling setting carries for each narrower device (backgroundImageTablet, svgContentMobile), and a
+// setting's base name without it.
+export const DEVICE_SUFFIX = Object.freeze( { tablet: 'Tablet', mobile: 'Mobile' } );
+export const deviceBase = ( attr ) => String( attr ).replace( new RegExp( `(${ Object.values( DEVICE_SUFFIX ).join( '|' ) })$` ), '' );
+
 // The other rows sharing a flat_sibling base name (backgroundImage, backgroundImageTablet, backgroundImageMobile).
 export function siblings( db, block, attr ) {
-	const base = attr.replace( /(Tablet|Mobile)$/, '' );
-	return attrsFor( db, block ).filter( ( r ) => 'flat_sibling' === r.tier_shape && r.attr_name.replace( /(Tablet|Mobile)$/, '' ) === base );
+	const base = deviceBase( attr );
+	return attrsFor( db, block ).filter( ( r ) => 'flat_sibling' === r.tier_shape && deviceBase( r.attr_name ) === base );
 }
 
 // One setting's row whatever its source (lint: is this attribute native_wp or a core style?).

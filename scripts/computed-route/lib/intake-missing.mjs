@@ -9,7 +9,8 @@
 //         ("lands with", "not built", an FR or an Appendix B step) is a reader not yet written, not a missing feature.
 //      b. a handler whose code implements a pointer or hover behaviour (BEHAVIOURS: its event, plus what the handler's
 //         body reads or writes in the syntax tree), when the framework database holds no capability or effect named
-//         by that behaviour's keywords. A matching capability or effect puts the row in `held` (with the candidates),
+//         by that behaviour's keywords (or, for a hover that moves, scales or rotates, a `motion_fields` hover-state field
+//         for each transform it writes). A matching capability, effect or field puts the row in `held` (with the candidates),
 //         never in the list. Click, change and submit handlers are never listed here: menus, forms and toggles are
 //         held by SGS blocks and reach this list only through rule 1.
 //   3. Seen but unsupported (clone coverage plan Phase 1, steps 1.2 and 1.6): every HTML element (from the skeleton
@@ -53,13 +54,15 @@ const POINTER_READS = new Set( [ 'clientX', 'clientY', 'pageX', 'pageY', 'offset
 const MOTION_WRITES = new Set( [ 'transform', 'translate', 'rotate', 'scale', 'playbackRate', 'animationDuration', 'animationPlayState', 'updatePlaybackRate', 'animate' ] );
 const POINTER_EVENTS = [ 'mousemove', 'pointermove', 'touchmove', 'deviceorientation', 'wheel' ];
 const HOVER_EVENTS = [ 'mouseenter', 'mouseleave', 'mouseover', 'mouseout', 'pointerenter', 'pointerleave' ];
-// Behaviours by event and body evidence: `rotate`/`translate` are words the handler's string literals hold.
+// Behaviours by event and body evidence: `rotate`/`translate` are words the handler's string literals hold. A behaviour
+// with `fields` is held by the framework DB's motion fields of that layer and state (`motion_fields`) that name a transform
+// the handler writes (heldBy).
 export const BEHAVIOURS = [
 	{ id: 'pointer-tilt', line: 'tilts with the pointer', events: POINTER_EVENTS, reads: true, words: /rotate|perspective/, keywords: [ 'tilt' ] },
 	{ id: 'pointer-follow', line: 'follows the pointer (a magnetic or cursor-led element)', events: POINTER_EVENTS, reads: true, words: /translate/, keywords: [ 'magnet', 'cursor' ] },
 	{ id: 'pointer-tracking', line: 'reacts to the pointer position', events: POINTER_EVENTS, reads: true, keywords: [] },
 	{ id: 'hover-speed', line: 'changes an animation\'s speed on hover', events: HOVER_EVENTS, writes: [ 'playbackRate', 'updatePlaybackRate', 'animationDuration', 'animationPlayState' ], keywords: [ 'marquee' ] },
-	{ id: 'hover-motion', line: 'animates from code on hover', events: HOVER_EVENTS, writes: [ 'animate', 'transform', 'translate', 'rotate', 'scale' ], keywords: [] },
+	{ id: 'hover-motion', line: 'animates from code on hover', events: HOVER_EVENTS, writes: [ 'animate', 'transform', 'translate', 'rotate', 'scale' ], keywords: [], fields: { layer: 'hover.state', state: 'hover' } },
 ];
 const FLOWS = [
 	[ 'buy', /\b(?:basket|cart|checkout|buy|add to (?:basket|cart|bag)|purchase|payment|place order|order now)\b/i ],
@@ -153,15 +156,42 @@ export function behaviourOf( source, row, ctx = null ) {
 		return null;
 	}
 	const ev = bodyEvidence( body );
-	return fits.find( ( b ) => ( ! b.reads || ev.reads.size ) && ( ! b.writes || b.writes.some( ( w ) => ev.writes.has( w ) ) ) && ( ! b.words || b.words.test( ev.words ) ) ) || null;
+	const b = fits.find( ( x ) => ( ! x.reads || ev.reads.size ) && ( ! x.writes || x.writes.some( ( w ) => ev.writes.has( w ) ) ) && ( ! x.words || x.words.test( ev.words ) ) ) || null;
+	return b && { ...b, evidence: ev };
 }
 
-// The framework features named by a behaviour's keywords: block capabilities and fx effects (read-only queries).
-export function heldBy( facts, behaviour ) {
-	if ( ! facts?.q || ! behaviour.keywords.length ) {
+// The transforms a handler body writes: the transform properties it sets (`translate`, `rotate`, `scale`) and the
+// transform functions its strings name (`translateY(-2px)`, `scale(1.14)`), as written.
+export function transformsOf( ev ) {
+	const out = new Set( [ ...( ev?.writes || [] ) ].filter( ( w ) => /^(?:translate|rotate|scale)$/.test( w ) ) );
+	const FUNCTION = /(?:^|[^\w$])((?:translate|rotate|scale)(?:[XYZ]|3d)?)\s*\(/g;
+	for ( const m of String( ev?.words || '' ).matchAll( FUNCTION ) ) {
+		out.add( m[ 1 ] );
+	}
+	return [ ...out ];
+}
+
+// The framework features named by a behaviour's keywords: block capabilities and fx effects; and for a behaviour with
+// `fields`, the motion fields of that layer and state naming a transform the handler writes (the field of that name, or
+// each axis field of a transform with no field of its own: a bare `translate` is translateX and translateY). A leave
+// handler that writes a transform and names none (`transform = ''`) puts the pose back: the layer's own return to rest,
+// held by the same layer (`event`: the row's event). Read-only queries.
+export function heldBy( facts, behaviour, { event = '' } = {} ) {
+	if ( ! facts?.q ) {
 		return [];
 	}
 	const out = [];
+	if ( behaviour.fields ) {
+		for ( const t of transformsOf( behaviour.evidence ) ) {
+			const sql = ( match ) => `SELECT def_name, field, field_path FROM motion_fields WHERE layer = ? AND state = ? AND field ${ match } ? ORDER BY field`;
+			const own = facts.q( sql( '=' ), behaviour.fields.layer, behaviour.fields.state, t );
+			( own.length ? own : facts.q( sql( 'GLOB' ), behaviour.fields.layer, behaviour.fields.state, `${ t }[XYZ]` ) ).forEach( ( r ) => out.push( `motion field ${ r.def_name }.${ r.field } (${ r.field_path })` ) );
+		}
+		const leave = /(?:leave|out)$/.test( String( event ).replace( /^on/i, '' ).toLowerCase() );
+		if ( leave && ! out.length && behaviour.evidence?.writes?.has( 'transform' ) && ! transformsOf( behaviour.evidence ).length ) {
+			facts.q( 'SELECT DISTINCT def_name FROM motion_fields WHERE layer = ? AND state = ?', behaviour.fields.layer, behaviour.fields.state ).forEach( ( r ) => out.push( `motion layer ${ behaviour.fields.layer } (${ r.def_name }): the hovered pose returns to rest when the pointer leaves` ) );
+		}
+	}
 	for ( const k of behaviour.keywords ) {
 		facts.q( 'SELECT DISTINCT block_slug, capability FROM block_capabilities WHERE capability LIKE ?', `%${ k }%` ).forEach( ( r ) => out.push( `${ r.block_slug } (capability ${ r.capability })` ) );
 		facts.q( 'SELECT effect FROM fx_effects WHERE effect LIKE ?', `%${ k }%` ).forEach( ( r ) => out.push( `fx ${ r.effect }` ) );
@@ -189,12 +219,12 @@ export function censusMissing( census, { facts = null, registry = loadRegistry()
 		if ( ! b ) {
 			continue;
 		}
-		const candidates = heldBy( facts, b );
+		const candidates = heldBy( facts, b, { event: r.detail.event } );
 		const row = { rowId: `missing:${ r.id || r.draftId }`, draftId: r.draftId, construct: `handler ${ r.detail.event } (${ b.id })`, from: 'census', censusId: r.id, line: `${ r.component }: an element that ${ b.line } (${ r.detail.event }${ r.detail.method ? ` → ${ r.detail.method }` : '' })`, mainFlow: null };
 		if ( candidates.length ) {
-			held.push( { ...row, candidates, why: `the framework holds a feature named by ${ b.keywords.join( '/' ) }` } );
+			held.push( { ...row, candidates, why: b.fields && ! b.keywords.length ? `the framework's ${ b.fields.layer } motion fields hold the transforms it writes (${ transformsOf( b.evidence ).join( ', ' ) || 'the pose put back on leave' })` : `the framework holds a feature named by ${ b.keywords.join( '/' ) }` } );
 		} else {
-			rows.push( { ...row, why: `${ b.id }: no block capability or fx effect named ${ b.keywords.length ? b.keywords.join( '/' ) : 'for it' } in the framework database` } );
+			rows.push( { ...row, why: `${ b.id }: no block capability or fx effect named ${ b.keywords.length ? b.keywords.join( '/' ) : 'for it' }${ b.fields ? `, and no ${ b.fields.layer } motion field for what it writes` : '' } in the framework database` } );
 		}
 	}
 	return { rows, held };

@@ -56,15 +56,23 @@ const brands = ( names = [ 'Acme', 'Bolt', 'Crest', 'Acme', 'Bolt', 'Crest' ], t
 	el( 'Root/20#0', 'Root/1#0', 'div', '', { depth: 1 } ),
 	...names.map( ( n, i ) => el( `Root/21#${ i }`, 'Root/20#0', tag, n, { depth: 2, loop: 21, attrs: 'a' === tag ? { href: '#' } : {}, keep: true } ) ),
 ];
-const reviews = ( o = {} ) => [
-	el( 'Root/30#0', 'Root/1#0', 'div', '', { depth: 1 } ),
-	...[ 0, 1, 2 ].flatMap( ( i ) => [
-		el( `Root/31#${ i }`, 'Root/30#0', 'figure', '', { depth: 2, loop: 31 } ),
-		el( `Root/32#${ i }`, `Root/31#${ i }`, 'div', o.rating ?? '★★★★★ 2 years ago', { depth: 3, loop: 31 } ),
-		el( `Root/33#${ i }`, `Root/31#${ i }`, 'blockquote', o.quote ?? 'Had a lovely experience taking my daughter here, very friendly and helpful.', { depth: 3, loop: 31 } ),
-		...( false === o.link ? [] : [ el( `Root/34#${ i }`, `Root/31#${ i }`, 'a', 'Read on the provider', { depth: 3, loop: 31, attrs: { href: o.href ?? 'https://share.google/abc' }, keep: true } ) ] ),
-	] ),
-];
+// Review cards, painted by default in Google's own look (its star yellow and blue, the colours sgs/google-reviews locks):
+// `paint: { star, link }` repaints the stars and the link.
+const GOOGLE_LOOK = { star: '#fbbc04', link: '#1a73e8' };
+const reviews = ( o = {} ) => {
+	const paint = o.paint ?? GOOGLE_LOOK;
+	const style = ( c ) => ( c ? { attrs: { style: `color: ${ c }` }, keep: true } : {} );
+	return [
+		el( 'Root/30#0', 'Root/1#0', 'div', '', { depth: 1 } ),
+		...[ 0, 1, 2 ].flatMap( ( i ) => [
+			el( `Root/31#${ i }`, 'Root/30#0', 'figure', '', { depth: 2, loop: 31, box: place( i * 320, 200 ) } ),
+			el( `Root/32#${ i }`, `Root/31#${ i }`, 'div', o.rating ?? '★★★★★ 2 years ago', { depth: 3, loop: 31, ...style( paint.star ) } ),
+			el( `Root/33#${ i }`, `Root/31#${ i }`, 'blockquote', o.quote ?? 'Had a lovely experience taking my daughter here, very friendly and helpful.', { depth: 3, loop: 31 } ),
+			...( o.person ? [ el( `Root/35#${ i }`, `Root/31#${ i }`, 'div', [ 'KA · June 2026', 'Sarah M.', 'Jo B.' ][ i ], { depth: 3, loop: 31 } ) ] : [] ),
+			...( false === o.link ? [] : [ el( `Root/34#${ i }`, `Root/31#${ i }`, 'a', 'Read on the provider', { depth: 3, loop: 31, attrs: { href: o.href ?? 'https://share.google/abc', ...( paint.link ? { style: `color: ${ paint.link }` } : {} ) }, keep: true } ) ] ),
+		] ),
+	];
+};
 
 test( 'MUST FAIL: a loop of items showing a price and linking to a product page is the product collection with its own query, whatever the heading says', () => {
 	const { skeleton, proposal, problems } = run( [ ...ROOT, ...cards() ] );
@@ -107,8 +115,28 @@ test( 'MUST FAIL: a loop of ratings and quotes linking to a provider is that pro
 	assert.equal( block.attributes.maxReviews, 3 );
 	const row = proposal.rows.find( ( r ) => 'loopBlocks' === r.rule && 'sgs/google-reviews' === r.block );
 	assert.deepEqual( [ row.handover.owner, row.handover.kind ], [ 'content-page', 'presence' ] );
-	const tp = run( [ ...ROOT, ...reviews( { href: 'https://uk.trustpilot.com/review/x' } ) ] );
-	assert.ok( find( tp.skeleton, 'sgs/trustpilot-reviews' ), 'a Trustpilot link makes the Trustpilot block' );
+	assert.match( row.reason, /painted in google's own colours/ );
+	const tp = run( [ ...ROOT, ...reviews( { href: 'https://uk.trustpilot.com/review/x', paint: { star: '#00B67A' } } ) ] );
+	assert.ok( find( tp.skeleton, 'sgs/trustpilot-reviews' ), "a Trustpilot link on cards with Trustpilot's green stars makes the Trustpilot block" );
+} );
+
+test( "MUST FAIL: a loop linking to a review platform but painted in the client's own colours is the testimonial family, never the platform's block (Bean 2026-10-31)", () => {
+	const own = { star: '#3a2a22', link: '#e86a75' };
+	for ( const [ href, platform ] of [ [ 'https://share.google/abc', 'sgs/google-reviews' ], [ 'https://uk.trustpilot.com/review/x', 'sgs/trustpilot-reviews' ] ] ) {
+		const still = run( [ ...ROOT, ...reviews( { href, paint: own } ) ] );
+		assert.equal( find( still.skeleton, platform ), null, `${ platform }: the client's own style` );
+		const slider = find( still.skeleton, 'sgs/testimonial-slider' );
+		assert.ok( slider, `${ href }: the still testimonial slider` );
+		assert.equal( slider.innerBlocks.filter( ( n ) => 'sgs/testimonial' === n.name ).length, 3, 'one testimonial per card' );
+		assert.match( still.proposal.rows.find( ( r ) => 'Root/30#0' === r.key ).reason, /links to (google|trustpilot), and the region names a review platform but is painted in the client's own colours/ );
+		const moving = run( [ ...ROOT, ...reviews( { href, paint: own } ) ], { loops: { ...LOOPS, carousels: new Set( [ 'Root/30' ] ) } } );
+		assert.equal( find( moving.skeleton, 'sgs/testimonial-slider' )?.attributes.autoplay, undefined, 'a script-moved track is the carousel form' );
+		assert.equal( find( moving.skeleton, platform ), null );
+	}
+	// Negative controls: a gold star alone is many clients' own (one of Google's two colours is no Google look); Google's
+	// star and blue are, with or without a named reviewer.
+	assert.equal( find( run( [ ...ROOT, ...reviews( { paint: { star: '#fbbc04', link: '#3a2a22' } } ) ] ).skeleton, 'sgs/google-reviews' ), null, 'one Google colour' );
+	assert.ok( find( run( [ ...ROOT, ...reviews( { person: true } ) ] ).skeleton, 'sgs/google-reviews' ), "Google's look with reviewer names stays Google" );
 } );
 
 test( 'negative control: items without a price or a product link, a drawer, a commerce page or an unnamed source place nothing', () => {

@@ -5,7 +5,8 @@
 // subtree and its fact-record entries, read against the client's committed draft): Eye Care's product tab list is sgs/tabs
 // and its trail sgs/breadcrumbs, Mama's product trail sgs/breadcrumbs, Mama's Help FAQ and Eye Care's "Good to know" an
 // sgs/accordion beside the heading or count line their holder also holds, Eye Care's Google reviews region absorbs its
-// summary and arrows, and Mama's review slider, whose cards name Trustpilot, is a review row naming the Trustpilot block.
+// summary and arrows, and Mama's review slider, whose cards name Trustpilot in the client's own colours, stays the
+// testimonial slider (a review row naming the Trustpilot block only when its stars are painted in Trustpilot's green).
 // Negative controls on the same slices: category chips (aria-pressed), the account side tabs (aria-current), a frame-card
 // grid with its link rows and swatch buttons, and a button row stay as they were. Synthetic planted-row cases: a tie and no
 // survivor become review rows; an unknown never rules out; a platform word outside a family changes nothing.
@@ -100,18 +101,24 @@ test( 'MUST FAIL: Eye Care\'s Google reviews block stands over its summary, its 
 	assert.equal( rowOf( before, `${ EC }/175#0` ).block, 'sgs/container', 'before: the summary was cloned outside it' );
 } );
 
-test( 'MUST FAIL: a review slider whose cards name Trustpilot is a review row naming the Trustpilot block; without the name it stays the slider', () => {
+test( "MUST FAIL: Mama's review slider, whose cards name Trustpilot in the client's own colours, stays the testimonial slider; painted in Trustpilot's green it is a review row naming the Trustpilot block", () => {
 	const fix = fixture( 'mama-reviews' );
 	const loops = { rows: [], brands: [], carousels: new Set( [ 'Home/222' ] ) };
 	const r = propose( fix, { loops } );
 	const row = rowOf( r, 'Home/222#0' );
-	assert.equal( row.block, 'sgs/testimonial-slider', 'the standing rule keeps its block (never a silent swap)' );
-	assert.ok( row.confidence < 0.7, 'the platform proves it wrong: a review row' );
-	assert.match( row.reason, /names trustpilot .* the platform of sgs\/trustpilot-reviews/ );
-	assert.ok( row.candidates.some( ( c ) => 'sgs/trustpilot-reviews' === c.block ), 'the Trustpilot block is a candidate' );
-	const plain = { ...fix.inventory, elements: fix.inventory.elements.map( ( e ) => ( /trustpilot/i.test( `${ e.words } ${ e.attrs?.alt ?? '' } ${ e.attrs?.srcBasename ?? '' } ${ e.attrs?.href ?? '' }` ) ? { ...e, words: '', allText: '', attrs: {} } : e ) ) };
-	const neutral = propose( fix, { loops, inventory: plain } );
-	assert.equal( rowOf( neutral, 'Home/222#0' ).confidence, 1, 'negative control: no platform named, the slider stands' );
+	assert.deepEqual( [ row.block, row.confidence ], [ 'sgs/testimonial-slider', 1 ], `Bean 2026-10-31: cards in the client's own style are the testimonial family (${ row.reason })` );
+	assert.equal( nodeOf( r, 'sgs/trustpilot-reviews' ), null, 'no Trustpilot block' );
+	assert.equal( rowOf( r, 'Home/216#0' ).block, 'sgs/heading', 'the platform summary (the 4.3 score) stays its own block beside the slider' );
+	// Negative control: the same cards with their stars in Trustpilot's own green (the colour sgs/trustpilot-reviews locks).
+	const green = { ...fix, record: structuredClone( fix.record ) };
+	green.record[ 'Home/226' ].template.style.static.push( [ 'color', '#00B67A' ] );
+	const tp = rowOf( propose( green, { loops } ), 'Home/222#0' );
+	assert.equal( tp.block, 'sgs/testimonial-slider', 'the standing rule keeps its block (never a silent swap)' );
+	assert.ok( tp.confidence < 0.7, 'the platform and its look prove it wrong: a review row' );
+	assert.match( tp.reason, /names trustpilot .* painted in its own look .*#00B67A.* the platform of sgs\/trustpilot-reviews/ );
+	assert.ok( tp.candidates.some( ( c ) => 'sgs/trustpilot-reviews' === c.block ), 'the Trustpilot block is a candidate' );
+	const plain = { ...green.inventory, elements: green.inventory.elements.map( ( e ) => ( /trustpilot/i.test( `${ e.words } ${ e.attrs?.alt ?? '' } ${ e.attrs?.srcBasename ?? '' } ${ e.attrs?.href ?? '' }` ) ? { ...e, words: '', allText: '', attrs: {} } : e ) ) };
+	assert.equal( rowOf( propose( green, { loops, inventory: plain } ), 'Home/222#0' ).confidence, 1, 'negative control: green stars with no platform named, the slider stands' );
 } );
 
 test( 'negative controls: the account side tabs (aria-current), a frame-card grid with link rows and swatches, and a button row stay as they were', () => {

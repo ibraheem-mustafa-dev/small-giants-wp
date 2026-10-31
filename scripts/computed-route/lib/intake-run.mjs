@@ -17,7 +17,7 @@ import { loadAjv, schemaProblems } from './handoff.mjs';
 import { pageMapProblems } from './intake-pagemap.mjs';
 import { renderReview, applyReview, carryOver, reviewRows, isoDay, ROW_TYPES } from './intake-review.mjs';
 import { withUnappliedMarks, writeProposedPageMap, writeConfirmedPageMap } from './intake-review-carry.mjs';
-import { carryIds, lostIds } from './intake-pagemap-regen.mjs';
+import { carryIds, lostIds, leavingRows } from './intake-pagemap-regen.mjs';
 import { mergeBlocked } from './intake-run-collapse.mjs';
 import { reviewDecisions, recordReviewDecisions, decisionsFile, dbKnownBlock } from './intake-run-finalise.mjs';
 import { sourcesOf } from './freshness.mjs';
@@ -244,6 +244,10 @@ export async function runIntake( o, { log = ( l ) => process.stderr.write( `${ l
 		return 1;
 	}
 	record.catalogue = cat.summary;
+	// The written map's rows holding a WordPress id this proposal no longer has: listed in the review for a `drop` mark.
+	const written = fs.existsSync( at.pageMap ) ? readJson( at.pageMap ) : [];
+	const leaving = Array.isArray( written ) ? leavingRows( written, carryIds( record.pageMap, written ) ) : [];
+	leaving.length && ( record.pageMapLeaving = leaving );
 	const carried = carryOver( previous, record );
 	record.review = carried.review;
 	carried.realigned.length && say( `review: ${ carried.realigned.length } mark(s) followed their element to a renumbered row: ${ carried.realigned.slice( 0, 5 ).join( '; ' ) }${ carried.realigned.length > 5 ? '; ...' : '' }` );

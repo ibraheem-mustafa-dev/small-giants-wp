@@ -92,7 +92,7 @@ foreach ( $in as $p ) {
 		}
 		$cats = wp_get_object_terms( $id, 'product_cat', array( 'fields' => 'names' ) );
 		$brand = taxonomy_exists( 'product_brand' ) ? wp_get_object_terms( $id, 'product_brand', array( 'fields' => 'names' ) ) : array();
-		$row += array( 'fixture' => $sgs_is_fixture( $id ), 'type' => $wc ? $wc->get_type() : get_post_type( $id ), 'status' => get_post_status( $id ), 'sku' => (string) get_post_meta( $id, '_sku', true ),
+		$row += array( 'fixture' => $sgs_is_fixture( $id ), 'type' => $wc ? $wc->get_type() : get_post_type( $id ), 'giftAmounts' => $wc && 'sgs_gift_card' === $wc->get_type() ? array_map( 'intval', (array) $wc->get_meta( '_sgs_gift_card_amounts', true ) ) : null, 'status' => get_post_status( $id ), 'sku' => (string) get_post_meta( $id, '_sku', true ),
 			'price' => $wc ? (string) $wc->get_regular_price() : '', 'image' => (int) get_post_thumbnail_id( $id ), 'gallery' => $wc ? count( $wc->get_gallery_image_ids() ) : 0,
 			'categories' => is_wp_error( $cats ) ? array() : $cats, 'brand' => is_wp_error( $brand ) ? array() : $brand, 'rrp' => (string) get_post_meta( $id, '_sgs_rrp', true ),
 			'draftMeta' => (string) get_post_meta( $id, '_sgs_draft_product', true ), 'photoToCome' => '' !== (string) get_post_meta( $id, '_sgs_photo_to_come', true ), 'attributes' => $attrs, 'attributeDetail' => (object) $detail, 'variesBy' => (object) $vb, 'variations' => $vars, 'variationPrices' => (object) $var_prices, 'permalink' => (string) get_permalink( $id ) );
@@ -186,7 +186,8 @@ foreach ( $steps as $s ) {
 	list( $id ) = $sgs_find( $p );
 	if ( $id && $sgs_is_fixture( $id ) ) { $issues[] = $p['draftId'] . ': matches fixture product ' . $id . ', left'; continue; }
 	$ours = ! $id || (string) get_post_meta( $id, '_sku', true ) === $p['sku'];
-	$wc = $id ? wc_get_product( $id ) : ( 'variable' === $p['type'] ? new WC_Product_Variable() : new WC_Product_Simple() );
+	$wc = $id ? wc_get_product( $id ) : ( 'variable' === $p['type'] ? new WC_Product_Variable() : ( 'gift-card' === $p['type'] && class_exists( 'SGS\\Blocks\\Gift_Card\\Gift_Card_Product' ) ? new \\SGS\\Blocks\\Gift_Card\\Gift_Card_Product() : new WC_Product_Simple() ) );
+	if ( 'gift-card' === $p['type'] && ! $id && 'sgs_gift_card' !== $wc->get_type() ) { $issues[] = $p['draftId'] . ': the gift-card product type is not loaded on this site, so a simple product is made'; }
 	if ( ! $id ) {
 		$wc->set_name( $p['name'] );
 		$wc->set_slug( $p['slug'] );
@@ -227,6 +228,9 @@ foreach ( $steps as $s ) {
 		}
 		$wc->set_attributes( $list );
 		$wc->set_default_attributes( $defaults );
+	}
+	if ( 'gift-card' === $p['type'] && 'sgs_gift_card' === $wc->get_type() && $ours ) {
+		$wc->update_meta_data( '_sgs_gift_card_amounts', array_map( function ( $a ) { return (int) round( $a * 100 ); }, $p['giftCard']['amounts'] ) );
 	}
 	$id = $wc->save();
 	if ( ! $ours ) {

@@ -459,6 +459,14 @@
 			"ruleReason": "the element's facts rule out the standing rule's block, so the row keeps it at low confidence for the review",
 			"regionReason": "the block's own parts stand beside the element it was placed on, so it is placed over the smallest element holding them"
 		},
+		"platformLook": {
+			"minChroma": 20,
+			"maxDeltaE": 1,
+			"minColours": 2,
+			"properties": "^(?:color|fill|stroke|background(?:-color|-image)?|border(?:-(?:top|right|bottom|left))?(?:-color)?|outline(?:-color)?)$",
+			"confirm": "Bean, 2026-10-31: a platform block (sgs/trustpilot-reviews, sgs/google-reviews) paints the platform's own interface with its brand colours locked, so platform evidence (a name, a link, a labelled image) picks it only where the draft's cards are painted in that platform's own colours; cards in the client's own style are the testimonial family, and the platform summary (score, stars, the platform link) stays its own blocks beside them",
+			"reason": "the region names a review platform but is painted in the client's own colours, not the platform's own, so the testimonial family stands and the platform summary stays its own blocks"
+		},
 		"ruleConflict": {
 			"minConfidence": 0.7,
 			"maxRuleShare": 0.2,
