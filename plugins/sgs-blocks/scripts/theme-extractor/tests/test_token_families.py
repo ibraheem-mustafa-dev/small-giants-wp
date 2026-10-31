@@ -63,7 +63,10 @@ def test_seven_font_size_tokens_leave_no_framework_value_in_the_six_slots(tmp_pa
     snap, _, _ = run(tmp_path, ":root{--gap-1:8px}", typo)
     carried = snap["settings"]["custom"]["presetTokens"]["fontSizes"]
     assert set(carried) == {"small", "regular", "large", "x-large", "xx-large", "hero"}
-    assert carried["hero"] == "fs-h1" and carried["regular"] == "fs-body" and len(set(carried.values())) == 6
+    assert carried["hero"] == "fs-h1" and carried["regular"] == "fs-body" and None in carried.values()
+    got = sizes(snap, "fontSizes")
+    values = [float(got[s_]["size"][:-2]) for s_ in ("small", "regular", "large", "x-large") if got[s_]["size"].endswith("px")]
+    assert values == sorted(values) and len(set(values)) == len(values)  # no slot smaller than the one before it
 
 
 def test_the_default_timing_is_the_most_used_across_every_element(tmp_path):
@@ -157,7 +160,28 @@ def test_every_draft_token_is_a_default_a_preset_or_a_literal_exactly_once(clien
     expected = {r["token"] for rows in parsed["families"].values() for r in rows} | set(parsed["skipped"])
     assert set(where) == expected and expected
     assert all(w["where"] in ("default", "preset", "literal") for w in where.values())
-    carried = [t for m in snap["settings"]["custom"]["presetTokens"].values() for t in m.values()]
+    carried = [t for m in snap["settings"]["custom"]["presetTokens"].values() for t in m.values() if t]
     assert len(carried) == len(set(carried))
-    assert not roster.problems(snap) and all(t in where for t in carried)
+    assert not roster.problems(snap) and all(t in where for t in carried if t)
     assert snap["settings"]["custom"]["defaultTokens"] == sorted(t for t, w in where.items() if w["where"] == "default")
+
+
+def test_the_font_scale_ascends_strictly_with_hero_the_largest_heading_and_a_literal_filling_a_gap(tmp_path):
+    """Seven tokens, only two of them above the body size besides hero: the third middle slot takes the draft's most used literal size."""
+    typo = (":root{--fs-body:19px;--fs-mono:12px;--fs-nav:17px;--fs-card:22px;--fs-h2:clamp(28px,3.4vw,40px);--fs-h1:clamp(36px,5vw,62px)}"
+            + chr(10) + "body{font-size:var(--fs-body)}")
+    html = "<p style='font-size:20px'></p>" * 3 + "<p style='font-size:12px'></p>"
+    snap, _, _ = run(tmp_path, ":root{--x-unused:1px}", typo, html=html)
+    got = sizes(snap, "fontSizes")
+    order = ["small", "regular", "large", "x-large", "xx-large", "hero"]
+    assert [got[s]["size"] for s in order] == ["12px", "19px", "20px", "22px", "clamp(28px,3.4vw,40px)", "clamp(36px,5vw,62px)"]
+    carried = snap["settings"]["custom"]["presetTokens"]["fontSizes"]
+    assert carried["large"] is None and carried["hero"] == "fs-h1" and carried["regular"] == "fs-body"
+    assert not roster.problems(snap, {"fontSizes": order, "spacing": []})
+
+
+def test_negative_control_a_slot_smaller_than_the_one_before_it_fails_the_gate(tmp_path):
+    typo = ":root{--fs-body:19px;--fs-mono:12px}" + chr(10) + "body{font-size:var(--fs-body)}"
+    snap, _, _ = run(tmp_path, ":root{--gap-1:8px}", typo)
+    snap["settings"]["typography"]["fontSizes"][2]["size"] = "10px"
+    assert any("not larger than the slot before it" in p for p in roster.problems(snap, {"fontSizes": ["small", "regular", "large"], "spacing": []}))

@@ -272,18 +272,18 @@
         },
         {
           "slug": "large",
-          "name": "Size 12",
-          "size": "12px"
+          "name": "Size 17",
+          "size": "17px"
         },
         {
           "slug": "x-large",
-          "name": "Size 13",
-          "size": "13px"
+          "name": "Size Display 22",
+          "size": "22px"
         },
         {
           "slug": "xx-large",
-          "name": "Size 15",
-          "size": "15px"
+          "name": "Size Lens H2 Mobile",
+          "size": "28px"
         },
         {
           "slug": "hero",
@@ -646,9 +646,9 @@
         "fontSizes": {
           "small": "size-9-5",
           "regular": "text-base",
-          "large": "size-12",
-          "x-large": "size-13",
-          "xx-large": "size-15",
+          "large": "size-17",
+          "x-large": "size-display-22",
+          "xx-large": "size-lens-h2-mobile",
           "hero": "size-hero"
         },
         "spacing": {

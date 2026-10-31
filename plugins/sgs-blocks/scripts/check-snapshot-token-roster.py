@@ -83,6 +83,11 @@ def run_self_test() -> int:
 
     check("a snapshot with no presetTokens (a starter) is not measured", not roster.problems({"settings": {}}, slots))
     check("a complete snapshot passes", not roster.problems(base, slots) and not roster.draft_problems(base, tokens))
+    check("a scale that does not ascend strictly FAILS", bool(roster.problems(mutate(lambda s: s["spacing"]["spacingSizes"][1].update(size="6px")), slots)))
+    check("a smaller slot after a larger one FAILS (large below regular)",
+          bool(roster.problems(mutate(lambda s: s["typography"]["fontSizes"][0].update(size="20px")), slots)))
+    check("a null presetTokens entry (a literal-valued slot) is allowed",
+          not roster.problems(mutate(lambda s: s["custom"]["presetTokens"]["spacing"].update({"20": None})), slots))
     check("a missing framework slot FAILS", bool(roster.problems(mutate(lambda s: s["spacing"]["spacingSizes"].pop()), slots)))
     check("a leftover tokenRoles FAILS",
           bool(roster.problems(mutate(lambda s: s["custom"].update(tokenRoles={"spacing": {"10": "x"}})), slots)))

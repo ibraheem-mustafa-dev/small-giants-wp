@@ -10,6 +10,7 @@ One importable home for the rule, shared by the completeness gate (`check-snapsh
   * `settings.custom.presetTokens.<fontSizes|spacing>.<slot>` names the draft token a slot carries: a framework slot, an entry
     that exists, one slot per token; with a draft, the token exists and its value is the entry's value;
   * `settings.custom.defaultTokens` lists draft tokens that became job defaults; with a draft each is a token of the draft;
+  * each scale ascends strictly in slot order (`large` is larger than `regular`, SGS block defaults read the slugs by meaning);
   * the hidden-pointer key `settings.custom.tokenRoles` no longer exists.
 
 The rule binds a snapshot whose scale was valued from a draft (it carries `presetTokens`); a starter or hand-built snapshot with
@@ -50,6 +51,16 @@ def _custom(snapshot: dict) -> dict:
     return (snapshot.get("settings") or {}).get("custom") or {}
 
 
+def _magnitude(size) -> float | None:
+    """A comparable px number for a size: ``rem`` and ``em`` at 16px, a ``clamp()`` or ``min()`` at its largest px."""
+    text = str(size or "").strip().lower()
+    m = re.match(r"^(-?\d*\.?\d+)(px|rem|em)?$", text)
+    if m:
+        return float(m.group(1)) * (16.0 if m.group(2) in ("rem", "em") else 1.0)
+    found = [float(x) * (16.0 if u in ("rem", "em") else 1.0) for x, u in re.findall(r"(-?\d*\.?\d+)(px|rem|em)", text)]
+    return max(found) if found else None
+
+
 def problems(snapshot: dict, slots: dict[str, list[str]] | None = None) -> list[str]:
     """One message per breach of the rule that needs no draft (the push guard's share)."""
     slots = slots or framework_slots()
@@ -63,6 +74,14 @@ def problems(snapshot: dict, slots: dict[str, list[str]] | None = None) -> list[
         total = len(((snapshot.get("settings") or {}).get(a) or {}).get(b) or [])
         if total > MAX_ENTRIES[family]:
             out.append(f"{a}.{b} has {total} entries; the picker shows at most {MAX_ENTRIES[family]} as buttons or a slider")
+    for family, names in slots.items():
+        entries = _entries(snapshot, family)
+        values = [(slot, _magnitude(entries[slot].get("size"))) for slot in names if slot in entries]
+        for (a_slot, a), (b_slot, b) in zip(values, values[1:]):
+            if a is None or b is None:
+                out.append(f"{family}: slot {a_slot} or {b_slot} has no readable size")
+            elif not b > a:
+                out.append(f"{family}: slot {b_slot} ({entries[b_slot].get('size')}) is not larger than the slot before it, {a_slot} ({entries[a_slot].get('size')})")
     custom = _custom(snapshot)
     if "tokenRoles" in custom:
         out.append("custom.tokenRoles is obsolete: framework slots stay entries valued from the draft's scale (FR-32-29)")
@@ -80,6 +99,8 @@ def problems(snapshot: dict, slots: dict[str, list[str]] | None = None) -> list[
                 out.append(f"custom.presetTokens.{family}.{slot} is not a framework slot")
             elif slot not in entries:
                 out.append(f"custom.presetTokens.{family}.{slot} names a slot with no entry")
+            if token is None:
+                continue  # a value-only slot: the draft's most used literal size, no token
             if not isinstance(token, str) or not _SLUG.match(token):
                 out.append(f"custom.presetTokens.{family}.{slot} is not a token name")
             elif (family, token) in seen:
@@ -102,6 +123,8 @@ def draft_problems(snapshot: dict, tokens: dict[str, str]) -> list[str]:
             continue
         entries = _entries(snapshot, family)
         for slot, token in mapping.items():
+            if token is None:
+                continue
             if token not in tokens:
                 out.append(f"custom.presetTokens.{family}.{slot} names {token}, which the draft does not declare")
             elif slot in entries and re.sub(r"\s+", "", str(entries[slot].get("size", "")).lower()) != re.sub(r"\s+", "", tokens[token].lower()):

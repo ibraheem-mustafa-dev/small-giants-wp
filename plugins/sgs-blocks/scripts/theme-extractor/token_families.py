@@ -246,6 +246,86 @@ def pick_scale(family: str, rows: list[dict], slots: list[tuple[str, float]], us
     return placed
 
 
+def literal_sizes(draft_dir) -> dict[str, int]:
+    """``{"20px": uses}``: the px sizes the draft's own ``font-size`` declarations state, most used first."""
+    folder = pathlib.Path(draft_dir)
+    text = "".join(p.read_text(encoding="utf-8", errors="replace") for p in sorted(folder.glob("*.html")))
+    counts: dict[str, int] = {}
+    for m in re.finditer(r"font-size\s*:\s*(\d*\.?\d+)px", text, re.I):
+        key = f"{float(m.group(1)):g}px"
+        counts[key] = counts.get(key, 0) + 1
+    return counts
+
+
+def pick_font_scale(rows: list[dict], slots: list[str], usage: dict[str, int], body: dict | None,
+                    literals: dict[str, int]) -> dict[str, dict]:
+    """``{slot: row}`` for the font sizes, ascending strictly in slot order (SGS block defaults read the slugs by meaning).
+
+    ``regular`` is the body token. ``small`` is the smallest token in use below body. The slots above body ascend and ``hero``
+    is the largest heading token (else the largest token); the ones between take the most used tokens above body, and when the
+    draft has fewer distinct tokens there than slots the draft's most used literal sizes between the neighbours (a row with
+    ``token`` None, recorded as null in ``presetTokens``)."""
+    def val(r: dict) -> float:
+        return _scalar(r["value"], "fontSizes") or 0.0
+
+    order = {r["token"]: i for i, r in enumerate(rows)}
+    names = list(slots)
+    out: dict[str, dict] = {}
+    if body is None or "regular" not in names:
+        return pick_scale("fontSizes", rows, [(sl, 1.0 + i) for i, sl in enumerate(names)], usage, None)
+    cut = names.index("regular")
+    out["regular"] = body
+    b = val(body)
+    below = [r for r in rows if val(r) < b and r["token"] != body["token"]]
+    if below and cut:
+        in_use = [r for r in below if usage.get(r["token"], 0) > 0] or below
+        out[names[0]] = min(in_use, key=lambda r: (val(r), order[r["token"]]))
+    if names[0] not in out and cut:
+        text = next((t for t, _ in sorted(literals.items(), key=lambda kv: (-kv[1], kv[0])) if float(t[:-2]) < b), f"{max(round(b * 0.75), 1):g}px")
+        out[names[0]] = {"token": None, "value": text, "name": "Size " + text[:-2]}
+    above_slots = names[cut + 1:]
+    above = [r for r in rows if val(r) > b]
+    widest = set(_heading_tokens(rows).values())
+    heads = [r for r in above if r["token"] in widest or (
+        "hero" in _words(r["token"]) and not set(_words(r["token"])) & {"sub", "mobile", "m", "t", "tablet"})]
+    hero = max(heads or above, key=lambda r: (val(r), -order[r["token"]])) if above and above_slots else None
+    taken = {b} | ({val(hero)} if hero else set())
+    middle: list[dict] = []
+    for r in sorted((r for r in above if r is not hero), key=lambda r: (-usage.get(r["token"], 0), order[r["token"]])):
+        if len(middle) >= len(above_slots) - (1 if hero else 0):
+            break
+        if val(r) not in taken and (not hero or val(r) < val(hero)):
+            middle.append(r)
+            taken.add(val(r))
+    need = len(above_slots) - (1 if hero else 0) - len(middle)
+    top = val(hero) if hero else b + 4.0 * (len(above_slots) + 1)
+    for text, _count in sorted(literals.items(), key=lambda kv: (-kv[1], float(kv[0][:-2]))):
+        if need <= 0:
+            break
+        v = float(text[:-2])
+        if b < v < top and v not in taken:
+            middle.append({"token": None, "value": text, "name": "Size " + text[:-2]})
+            taken.add(v)
+            need -= 1
+    step = 1
+    while need > 0 and top > b + 1:
+        v = float(round(b + (top - b) * step / (need + step + 1)))
+        text = f"{v:g}px"
+        if b < v < top and v not in taken:
+            middle.append({"token": None, "value": text, "name": "Size " + text[:-2]})
+            taken.add(v)
+            need -= 1
+        else:
+            step += 1
+            if step > 50:
+                break
+    middle.sort(key=val)
+    chain = middle + ([hero] if hero else [])
+    for slot, row in zip(above_slots[len(above_slots) - len(chain):], chain):
+        out[slot] = row
+    return out
+
+
 def _widest_headings_only(rows: list[dict]) -> list[dict]:
     """Drop a heading level's narrower-width tokens: they are that level's per-width defaults, the widest is its scale entry."""
     keep = set(_heading_tokens(rows).values())
@@ -327,7 +407,10 @@ def apply_scales(snap: dict, baseline: dict, families: dict, draft_dir, trace: l
             row = next((r for r in rows if r["token"] == body), None)
             if row is not None and any(s == "regular" for s, _ in slots):
                 pinned = {"slot": "regular", "row": row}
-        chosen = pick_scale(family, rows, slots, usage, pinned)
+        if family == "fontSizes":
+            chosen = pick_font_scale(rows, [sl for sl, _ in slots], usage, pinned["row"] if pinned else None, literal_sizes(draft_dir))
+        else:
+            chosen = pick_scale(family, rows, slots, usage, pinned)
         existing = {e["slug"]: e for e in (settings.get(a) or {}).get(b) or [] if isinstance(e, dict) and isinstance(e.get("slug"), str)}
         out = []
         for e in base_rows:
@@ -336,7 +419,8 @@ def apply_scales(snap: dict, baseline: dict, families: dict, draft_dir, trace: l
                 out.append({"slug": slot, "name": chosen[slot]["name"], key: chosen[slot]["value"]})
                 carried.setdefault(family, {})[slot] = chosen[slot]["token"]
                 trace_row(trace, "token", f"{a}.{b}.{slot}",
-                          f"the draft's scale token (used {usage.get(chosen[slot]['token'], 0)} time(s))", chosen[slot]["token"])
+                          (f"the draft's scale token (used {usage.get(chosen[slot]['token'], 0)} time(s))" if chosen[slot]["token"]
+                           else "no draft token fits: the draft's most used literal size between its neighbours"), chosen[slot]["token"])
             else:
                 out.append(e)
         framework = {e["slug"] for e in base_rows}
@@ -460,7 +544,7 @@ def accounting(snap: dict, tokens: dict | None, draft_dir) -> dict[str, dict]:
         for r in parsed["families"].get(family) or []:
             if value is not None and r["value"] == value:
                 defaults.setdefault(r["token"], []).append(f"settings.custom.{family}.{slot}")
-    carried = {t: f"{fam}.{slot}" for fam, m in (custom.get("presetTokens") or {}).items() for slot, t in m.items()}
+    carried = {t: f"{fam}.{slot}" for fam, m in (custom.get("presetTokens") or {}).items() for slot, t in m.items() if t}
     out: dict[str, dict] = {}
     for name in sorted(names):
         if name in defaults:

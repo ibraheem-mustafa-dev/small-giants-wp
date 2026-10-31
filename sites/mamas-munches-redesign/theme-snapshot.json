@@ -284,18 +284,18 @@
         },
         {
           "slug": "large",
-          "name": "Size 14",
-          "size": "14px"
+          "name": "Lead M",
+          "size": "17px"
         },
         {
           "slug": "x-large",
-          "name": "Size 15",
-          "size": "15px"
+          "name": "Size 22",
+          "size": "22px"
         },
         {
           "slug": "xx-large",
-          "name": "Lead M",
-          "size": "17px"
+          "name": "Size 24",
+          "size": "24px"
         },
         {
           "slug": "hero",
@@ -556,7 +556,7 @@
       },
       "hover": {
         "duration": "var(--wp--custom--duration--fast)",
-        "easing": "var(--wp--custom--easing--spring)"
+        "easing": "var(--wp--custom--easing--default)"
       },
       "duration": {
         "instant": "60ms",
@@ -638,9 +638,9 @@
         "fontSizes": {
           "small": "mm-size-11",
           "regular": "mm-size-16",
-          "large": "mm-size-14",
-          "x-large": "mm-size-15",
-          "xx-large": "mm-lead-m",
+          "large": "mm-lead-m",
+          "x-large": "mm-size-22",
+          "xx-large": "mm-size-24",
           "hero": "mm-h1-d"
         },
         "spacing": {
