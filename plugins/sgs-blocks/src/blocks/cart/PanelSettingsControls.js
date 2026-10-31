@@ -6,6 +6,7 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
  * SGS Cart — FR-36-19 inspector controls: display mode + the
  * mini-cart panel's own settings. Split out of edit.js to keep the file
@@ -78,50 +79,40 @@ export default function PanelSettingsControls( {
 					title={ __( 'Mini-cart panel', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<TextControl
+					<SgsFreeTextField type="rich"
 						label={ __( 'Panel heading', 'sgs-blocks' ) }
 						value={ panelHeading }
 						onChange={ ( val ) =>
 							setAttributes( { panelHeading: val } )
 						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
-					<TextControl
+					<SgsFreeTextField type="rich"
 						label={ __( 'Empty-cart message', 'sgs-blocks' ) }
 						value={ emptyCartMessage }
 						onChange={ ( val ) =>
 							setAttributes( { emptyCartMessage: val } )
 						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Empty-cart button text', 'sgs-blocks' ) }
 						value={ emptyCartCtaLabel }
 						onChange={ ( val ) =>
 							setAttributes( { emptyCartCtaLabel: val } )
 						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( '"View cart" button text', 'sgs-blocks' ) }
 						value={ viewCartLabel }
 						onChange={ ( val ) =>
 							setAttributes( { viewCartLabel: val } )
 						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( '"Checkout" button text', 'sgs-blocks' ) }
 						value={ checkoutLabel }
 						onChange={ ( val ) =>
 							setAttributes( { checkoutLabel: val } )
 						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 					<ToggleControl
 						label={ __(

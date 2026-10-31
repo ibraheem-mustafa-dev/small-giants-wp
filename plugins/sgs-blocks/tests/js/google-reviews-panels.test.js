@@ -56,6 +56,13 @@ jest.mock( '@wordpress/components', () => {
 	};
 } );
 
+// The rich free-text control needs RichText and BaseControl, which this suite's lightweight mocks do not carry: a plain input stands in.
+jest.mock( '../../src/components/SgsFreeTextField', () => ( {
+	__esModule: true,
+	default: ( { label, value, onChange } ) =>
+		require( 'react' ).createElement( 'input', { 'aria-label': label, type: 'text', value: value ?? '', onChange: ( e ) => onChange( e.target.value ) } ),
+} ) );
+
 jest.mock( '@wordpress/block-editor', () => ( {
 	__esModule: true,
 	InspectorControls: ( { group, children } ) => require( 'react' ).createElement( 'div', { 'data-inspector-group': group }, children ),

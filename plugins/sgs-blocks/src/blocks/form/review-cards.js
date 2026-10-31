@@ -6,6 +6,7 @@
  *
  * @package SGS\Blocks
  */
+import { appendAuthoredText } from '../../utils/authored-text-dom';
 
 let cardCounter = 0;
 const wired = new WeakSet();
@@ -176,7 +177,8 @@ export function populateReview( formRoot, review ) {
 		const titleId = `sgs-form-review-card-${ cardCounter }`;
 		const card = el( 'section', 'sgs-form-review__card' );
 		const head = el( 'div', 'sgs-form-review__card-head' );
-		const title = el( 'p', 'sgs-form-review__card-title', section.title );
+		const title = el( 'p', 'sgs-form-review__card-title' );
+		appendAuthoredText( title, section.title, { links: false } );
 		title.id = titleId;
 		if ( section.title ) {
 			card.setAttribute( 'aria-labelledby', titleId );

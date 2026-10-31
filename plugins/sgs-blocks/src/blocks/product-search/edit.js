@@ -19,6 +19,8 @@ import {
 	sgsBorderPreview,
 } from '../../utils';
 
+import { authoredTextPlain } from '../../utils/authored-text';
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 // NumberControl is experimental — fall back gracefully to TextControl if absent.
 let NumberControl;
 try {
@@ -333,7 +335,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 						__next40pxDefaultSize
 					/>
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Button label', 'sgs-blocks' ) }
 						value={ buttonLabel }
 						onChange={ ( value ) =>
@@ -343,7 +345,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							'Accessible label for the search button (screen readers).',
 							'sgs-blocks'
 						) }
-						__next40pxDefaultSize
 					/>
 					{ /*
 					  `maxResults` is a TIER OBJECT — ONE attr
@@ -541,7 +542,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							className="sgs-product-search__submit"
 							disabled
 							aria-label={
-								buttonLabel ||
+								authoredTextPlain( buttonLabel ) ||
 								__( 'Search products', 'sgs-blocks' )
 							}
 							style={ { minWidth: '44px', minHeight: '44px' } }
@@ -595,7 +596,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								className="sgs-product-search__submit"
 								disabled
 								aria-label={
-									buttonLabel || __( 'Search', 'sgs-blocks' )
+									authoredTextPlain( buttonLabel ) || __( 'Search', 'sgs-blocks' )
 								}
 							>
 								<svg

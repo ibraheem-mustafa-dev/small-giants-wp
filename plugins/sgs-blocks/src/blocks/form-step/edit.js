@@ -5,7 +5,7 @@ import {
 	InspectorControls,
 	useSettings,
 } from '@wordpress/block-editor';
-import { PanelBody, TextControl } from '@wordpress/components';
+import { PanelBody } from '@wordpress/components';
 // WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { SgsColourPanel, fillRow, textRow,
@@ -20,6 +20,8 @@ import {
 	wrapperPreview,
 } from '../../utils';
 
+import AuthoredText from '../../components/AuthoredText';
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 export default function Edit( { attributes, setAttributes } ) {
 	const { label, backgroundColour, backgroundColourGradient, textColour, textColourGradient } = attributes;
 
@@ -88,7 +90,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Step Settings', 'sgs-blocks' ) }>
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Step Label', 'sgs-blocks' ) }
 						value={ label }
 						onChange={ ( value ) =>
@@ -98,8 +100,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							'Label shown in the progress bar.',
 							'sgs-blocks'
 						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 				</PanelBody>
 				{ /* Width / spacing (WS-4 container wrapper) */ }
@@ -138,7 +138,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			<div { ...blockProps }>
 				<BandWrap hasBandProps={ wrapper.hasBandProps } bandStyle={ wrapper.bandStyle }>
 					<div className="sgs-form-step__header">
-						<strong>{ label }</strong>
+						<strong><AuthoredText value={ label } /></strong>
 					</div>
 					<div { ...innerBlocksProps } />
 				</BandWrap>

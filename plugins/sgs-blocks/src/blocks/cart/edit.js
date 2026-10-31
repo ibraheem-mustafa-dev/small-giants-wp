@@ -15,6 +15,7 @@ import PanelDesignControls from './PanelDesignControls';
 import PanelPreview from './PanelPreview';
 import { triggerStyles } from './panel-preview-style';
 
+import AuthoredText from '../../components/AuthoredText';
 /**
  * SGS Cart — block editor component.
  *
@@ -338,7 +339,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				>
 					{ hasPill ? (
 						<span className="sgs-cart__pill-label" style={ parts.pillLabel }>
-							{ pillLabel || __( 'Cart', 'sgs-blocks' ) }
+							<AuthoredText value={ pillLabel || __( 'Cart', 'sgs-blocks' ) } />
 						</span>
 					) : (
 						<span className="sgs-cart__icon" aria-hidden="true">

@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 import {
 	PanelBody,
 	RangeControl,
@@ -72,7 +73,13 @@ export default function PanelContentControls( { attributes, setAttributes, hasPa
 			/>
 			{ isTextRemove && text( 'itemRemoveLabel', __( 'Remove link text', 'sgs-blocks' ) ) }
 			{ toggle( 'panelShowViewCart', __( 'Show the "View cart" button', 'sgs-blocks' ), undefined, true ) }
-			{ text( 'panelTaxNote', __( 'Note under the subtotal', 'sgs-blocks' ), __( 'Leave empty to hide it.', 'sgs-blocks' ) ) }
+			<SgsFreeTextField
+				type="rich"
+				label={ __( 'Note under the subtotal', 'sgs-blocks' ) }
+				help={ __( 'Leave empty to hide it.', 'sgs-blocks' ) }
+				value={ attributes.panelTaxNote ?? '' }
+				onChange={ ( val ) => setAttributes( { panelTaxNote: val } ) }
+			/>
 			{ text(
 				'panelInstalmentsNote',
 				__( 'Note under Checkout', 'sgs-blocks' ),

@@ -34,11 +34,11 @@ if ( '' !== $gr_see_all_url || ! empty( $review_request_url ) ) {
 	$gr_actions_html = '<div class="sgs-google-reviews__cta">';
 	if ( '' !== $gr_see_all_url ) {
 		$gr_actions_html .= '<a href="' . esc_url( $gr_see_all_url ) . '" class="sgs-google-reviews__see-all" target="_blank" rel="noopener">'
-			. esc_html( '' !== $gr_see_all_label ? $gr_see_all_label : __( 'See all reviews', 'sgs-blocks' ) ) . '</a>';
+			. sgs_rich_text_kses( '' !== $gr_see_all_label ? $gr_see_all_label : __( 'See all reviews', 'sgs-blocks' ), false ) . '</a>';
 	}
 	if ( ! empty( $review_request_url ) ) {
 		$gr_actions_html .= '<a href="' . esc_url( $review_request_url ) . '" class="sgs-google-reviews__write-review" target="_blank" rel="noopener">'
-			. esc_html( '' !== $gr_write_label ? $gr_write_label : __( 'Write a review', 'sgs-blocks' ) ) . '</a>';
+			. sgs_rich_text_kses( '' !== $gr_write_label ? $gr_write_label : __( 'Write a review', 'sgs-blocks' ), false ) . '</a>';
 	}
 	$gr_actions_html .= '</div>';
 }
@@ -316,7 +316,7 @@ ob_start();
 				<?php endif; ?>
 
 				<?php if ( $gr_show_review_link && '' !== $review_url ) : ?>
-					<a href="<?php echo esc_url( $review_url ); ?>" class="sgs-google-reviews__review-link" target="_blank" rel="noopener"><?php echo esc_html( '' !== $gr_review_link_text ? $gr_review_link_text : __( 'Read the full review', 'sgs-blocks' ) ); ?></a>
+					<a href="<?php echo esc_url( $review_url ); ?>" class="sgs-google-reviews__review-link" target="_blank" rel="noopener"><?php echo sgs_rich_text_kses( '' !== $gr_review_link_text ? $gr_review_link_text : __( 'Read the full review', 'sgs-blocks' ), false ); ?></a>
 				<?php endif; ?>
 			</div>
 		</article>

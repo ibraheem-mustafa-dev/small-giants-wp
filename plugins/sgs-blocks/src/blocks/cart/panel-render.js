@@ -22,6 +22,7 @@ import {
 	updateFreeDeliveryProgress,
 } from './free-delivery';
 import { addWishlistId } from '../../shared/wishlist-store';
+import { appendAuthoredText } from '../../utils/authored-text-dom';
 import { updatePanelExtras } from './panel-extras';
 
 /**
@@ -88,15 +89,18 @@ export function initPanel( panelRoot, { onCartUpdated, freeDelivery } = {} ) {
 	 */
 	function renderEmpty() {
 		itemsEl.removeAttribute( 'aria-busy' );
-		itemsEl.innerHTML =
-			'<div class="sgs-cart__panel-empty">' +
-			`<p class="sgs-cart__panel-empty-message">${ escapeHtml(
-				emptyMessage
-			) }</p>` +
-			`<a class="sgs-cart__panel-empty-cta" href="${ escapeHtml(
-				shopUrl
-			) }">${ escapeHtml( emptyCtaLabel ) }</a>` +
-			'</div>';
+		// The typed wording is markup: inserted as DOM nodes through the one sanitised path, never as an HTML string.
+		const wrap = document.createElement( 'div' );
+		wrap.className = 'sgs-cart__panel-empty';
+		const message = document.createElement( 'p' );
+		message.className = 'sgs-cart__panel-empty-message';
+		appendAuthoredText( message, emptyMessage );
+		const cta = document.createElement( 'a' );
+		cta.className = 'sgs-cart__panel-empty-cta';
+		cta.setAttribute( 'href', shopUrl );
+		appendAuthoredText( cta, emptyCtaLabel, { links: false } );
+		wrap.append( message, cta );
+		itemsEl.replaceChildren( wrap );
 		if ( footerEl ) {
 			footerEl.hidden = true;
 		}

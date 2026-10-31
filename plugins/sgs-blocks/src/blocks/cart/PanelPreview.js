@@ -15,6 +15,7 @@ import { Button } from '@wordpress/components';
 import { separatorsLineCss, tierLengthPreview } from '../../utils';
 import { panelElementStyles, panelRootStyle, scrimPreviewStyle } from './panel-preview-style';
 
+import AuthoredText from '../../components/AuthoredText';
 /** The lucide "x" glyph, as the live close button and the remove control draw it. */
 function CloseGlyph() {
 	return (
@@ -138,7 +139,7 @@ export default function PanelPreview( { attributes, displayMode, tier, palette, 
 				<div className="sgs-cart__panel-inner">
 					<div className="sgs-cart__panel-header" style={ s.header }>
 						<h2 className="sgs-cart__panel-heading" style={ s.heading }>
-							{ attributes.panelHeading }
+							<AuthoredText value={ attributes.panelHeading } />
 							{ attributes.panelShowCount && (
 								<>
 									{ ' ' }
@@ -153,8 +154,8 @@ export default function PanelPreview( { attributes, displayMode, tier, palette, 
 					{ showEmpty ? (
 						<div className="sgs-cart__panel-items" style={ s.items }>
 							<div className="sgs-cart__panel-empty" style={ { ...s.empty } }>
-								<p className="sgs-cart__panel-empty-message" style={ s.emptyMessage }>{ attributes.emptyCartMessage }</p>
-								<span className="sgs-cart__panel-empty-cta" style={ s.emptyCta }>{ attributes.emptyCartCtaLabel }</span>
+								<p className="sgs-cart__panel-empty-message" style={ s.emptyMessage }><AuthoredText value={ attributes.emptyCartMessage } /></p>
+								<span className="sgs-cart__panel-empty-cta" style={ s.emptyCta }><AuthoredText value={ attributes.emptyCartCtaLabel } /></span>
 							</div>
 						</div>
 					) : (
@@ -176,12 +177,12 @@ export default function PanelPreview( { attributes, displayMode, tier, palette, 
 									<span className="sgs-cart__panel-subtotal-label">{ __( 'Subtotal', 'sgs-blocks' ) }</span>
 									<span className="sgs-cart__panel-subtotal-value" style={ s.subtotalValue }>{ '£12.00' }</span>
 								</div>
-								{ '' !== taxNote && <p className="sgs-cart__panel-tax-note">{ taxNote }</p> }
+								{ '' !== taxNote && <AuthoredText as="p" className="sgs-cart__panel-tax-note" value={ taxNote } /> }
 								<div className="sgs-cart__panel-actions" style={ attributes.panelActionsFlexWrap ? { flexWrap: attributes.panelActionsFlexWrap } : undefined }>
 									{ false !== attributes.panelShowViewCart && (
-										<span className="sgs-cart__panel-view" style={ s.view }>{ attributes.viewCartLabel }</span>
+										<span className="sgs-cart__panel-view" style={ s.view }><AuthoredText value={ attributes.viewCartLabel } /></span>
 									) }
-									<span className="sgs-cart__panel-checkout" style={ s.checkout }>{ attributes.checkoutLabel }</span>
+									<span className="sgs-cart__panel-checkout" style={ s.checkout }><AuthoredText value={ attributes.checkoutLabel } /></span>
 								</div>
 								{ '' !== note && (
 									<p className="sgs-cart__panel-note" style={ s.note }>{ note.replace( '%s', '£4.00' ) }</p>
