@@ -12,8 +12,9 @@
 //      `rules.identity.maxShare` of the blocks with rows), and only when the element is the smallest one holding all of
 //      that block's matched facts; then by the database scoring;
 //   4. a platform separates only a look-alike family: the leaders whose matched facts are the same and of which one at
-//      least belongs to a platform. The region's platform keeps the members of that platform, or with none named the members
-//      of no platform;
+//      least belongs to a platform. The region's platform keeps the members of that platform when the region is painted in
+//      that platform's own look (lib/platform-look.mjs: its brand colours, Bean 2026-10-31); a region that names a platform
+//      in the client's own colours, or names none, keeps the members of no platform;
 //   5. one clear leader (more matched facts than the next) wins; leaders the facts cannot separate fall to the scoring, and a
 //      review row only when the scoring cannot separate them either (`rules.identity.reviewConfidence`) or when the scoring's
 //      own pick was ruled out and nothing is left. Facts several blocks share equally never displace the scoring's pick.
@@ -22,6 +23,7 @@
 import { identityTable } from './skeleton-identity-table.mjs';
 import { makeDraftFacts, RANKING_FACTS } from './skeleton-identity-draft.mjs';
 import { paletteBrands } from './brand-registry.mjs';
+import { platformLookOf } from './platform-look.mjs';
 
 // The facts that rule a block out: a meaning (a role, written or implied by the tag) or an aria state or property the block
 // can never show (Bean 2026-10-30), and a kind of value (an emoji, a stroke-drawn icon) no field of a restricted block accepts;
@@ -110,6 +112,10 @@ export function makeIdentity( { m, facts, surface = {}, logicOf = () => null, ca
 	// element that is the author's own list.
 	const rankable = ( e ) => new Set( [ ...listOf( e ).filter( naming ).flatMap( ( f ) => [ ...yesTo( f ) ] ), ...( listOf( e ).some( ( f ) => 'implied-role' === f.fact && 'list' === f.value && f.at.has( e.key ) ) && tagBlock( e.tag ) ? [ tagBlock( e.tag ) ] : [] ) ] );
 	const regionPlatforms = ( e ) => [ ...draft.region( e ).values() ].filter( ( f ) => 'platform' === f.fact );
+	// Whether the region is painted in a platform's own look (no look rule: every named platform counts).
+	const look = platformLookOf( { read: m.read, facts } );
+	const subtree = ( e ) => [ e, ...m.kids( e ).flatMap( subtree ) ];
+	const drawnIn = ( e, p ) => ( look ? look.drawn( subtree( e ), p ) : { why: '' } );
 
 	// A look-alike family among the leaders (same matched facts, one at least bound to a platform), decided by the platform.
 	const byPlatform = ( e, leaders ) => {
@@ -120,10 +126,18 @@ export function makeIdentity( { m, facts, surface = {}, logicOf = () => null, ca
 		}
 		const shownP = regionPlatforms( e );
 		const names = shownP.map( ( f ) => f.value );
-		const own = family.filter( ( x ) => table.platformsOf( x.block ).some( ( p ) => names.includes( p ) ) );
+		const drawn = new Map( names.map( ( p ) => [ p, drawnIn( e, p ) ] ).filter( ( [ , d ] ) => d ) );
+		const own = family.filter( ( x ) => table.platformsOf( x.block ).some( ( p ) => drawn.has( p ) ) );
 		const neutral = family.filter( ( x ) => ! table.platformsOf( x.block ).length );
-		const keep = names.length && own.length ? own : neutral.length ? neutral : family;
-		const out = family.filter( ( x ) => ! keep.includes( x ) ).map( ( x ) => ( { block: x.block, fact: 'platform', why: names.length ? `${ x.block } belongs to ${ table.platformsOf( x.block ).join( ', ' ) }, and the region names ${ names.join( ', ' ) } (${ shownP.map( at ).join( '; ' ) })` : `${ x.block } belongs to ${ table.platformsOf( x.block ).join( ', ' ) }, and the region names no platform (its words, links and image labels)` } ) );
+		const keep = own.length ? own : neutral.length ? neutral : family;
+		const whyOut = ( x ) => {
+			if ( ! names.length ) {
+				return `${ x.block } belongs to ${ table.platformsOf( x.block ).join( ', ' ) }, and the region names no platform (its words, links and image labels)`;
+			}
+			const mine = table.platformsOf( x.block ).filter( ( p ) => names.includes( p ) );
+			return mine.length ? `${ x.block } belongs to ${ mine.join( ', ' ) }, which the region names (${ shownP.map( at ).join( '; ' ) }) but is not painted in: ${ look.reason }` : `${ x.block } belongs to ${ table.platformsOf( x.block ).join( ', ' ) }, and the region names ${ names.join( ', ' ) } (${ shownP.map( at ).join( '; ' ) })`;
+		};
+		const out = family.filter( ( x ) => ! keep.includes( x ) ).map( ( x ) => ( { block: x.block, fact: 'platform', why: whyOut( x ) } ) );
 		return { kept: leaders.filter( ( x ) => ! out.some( ( o ) => o.block === x.block ) ), out };
 	};
 
@@ -212,7 +226,7 @@ export function makeIdentity( { m, facts, surface = {}, logicOf = () => null, ca
 
 	// A standing rule's block the facts rule out keeps its block as a low-confidence review row with the evidence. So does one
 	// the region's platform proves wrong inside its look-alike family: another block showing the same ranking facts in the
-	// region (one at least) belongs to the platform the region names, and the rule's block does not.
+	// region (one at least) belongs to the platform the region names and is painted in, and the rule's block does not.
 	const shows = ( block, e ) => listOf( e ).filter( ( f ) => naming( f ) && 'yes' === table.state( block, f.fact, f.value ) ).map( fmt ).sort().join( '|' );
 	const check = ( e, result ) => {
 		const block = result.candidates?.[ 0 ]?.block;
@@ -223,8 +237,10 @@ export function makeIdentity( { m, facts, surface = {}, logicOf = () => null, ca
 		const shownP = regionPlatforms( e );
 		const names = shownP.map( ( f ) => f.value );
 		const sig = why || ! names.length || table.platformsOf( block ).some( ( p ) => names.includes( p ) ) ? '' : shows( block, e );
-		const rival = sig ? candidates.find( ( c ) => c !== block && table.platformsOf( c ).some( ( p ) => names.includes( p ) ) && shows( c, e ) === sig && ! ruledOut( c, e ) ) : null;
-		rival && ( why = `the region names ${ names.join( ', ' ) } (${ shownP.map( ( f ) => at( f ) ).join( '; ' ) }), the platform of ${ rival }, which shows the same facts (${ sig.split( '|' ).join( ', ' ) }); ${ block } belongs to ${ table.platformsOf( block ).join( ', ' ) || 'no platform' }` );
+		const painted = sig ? names.map( ( p ) => [ p, drawnIn( e, p ) ] ).filter( ( [ , d ] ) => d ) : [];
+		const rival = painted.length ? candidates.find( ( c ) => c !== block && table.platformsOf( c ).some( ( p ) => painted.some( ( [ q ] ) => q === p ) ) && shows( c, e ) === sig && ! ruledOut( c, e ) ) : null;
+		const paint = rival ? painted.find( ( [ p ] ) => table.platformsOf( rival ).includes( p ) )[ 1 ].why : '';
+		rival && ( why = `the region names ${ names.join( ', ' ) } (${ shownP.map( ( f ) => at( f ) ).join( '; ' ) })${ paint ? ` and is painted in its own look (${ paint })` : '' }, the platform of ${ rival }, which shows the same facts (${ sig.split( '|' ).join( ', ' ) }); ${ block } belongs to ${ table.platformsOf( block ).join( ', ' ) || 'no platform' }` );
 		return why ? { ...result, confidence: Math.min( result.confidence ?? 1, R.reviewConfidence ), identity: { ruleBlock: block, why, ...( rival ? { rival } : {} ) }, reason: `${ result.reason }; ${ R.ruleReason }: ${ why }`, ...( rival && ! ( result.candidates || [] ).some( ( c ) => c.block === rival ) ? { candidates: [ ...result.candidates, { block: rival, score: 0, share: 0, evidence: [ { kind: 'identity', w: 0, text: why } ] } ] } : {} ) } : result;
 	};
 	return { region: draft.region, tabSets: draft.tabSets, holderOf: draft.holderOf, ruledOut, matched, match, check, table, naming, regionPlatforms };

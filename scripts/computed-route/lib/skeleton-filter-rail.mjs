@@ -9,8 +9,12 @@
 //     which the theme's boolean toggle draws) is found as the shown element outside the product listing whose own words are
 //     its label; a label shown more than once, or nowhere, places no group for that facet;
 //   - the rail is the branch beside the product listing holding every found label: the child, holding them all, of the
-//     lowest element holding them and the listing (the shop's commerce region, lib/skeleton-commerce-region.mjs);
-//   - a facet's group is its label's highest ancestor below the rail holding no other facet's label; the groups' parent
+//     lowest element holding them and the listing (the shop's commerce region, lib/skeleton-commerce-region.mjs, or on any
+//     other page the product collection a loop places, lib/skeleton-loop-blocks.mjs); a rail holds filter controls only,
+//     so a branch holding the page's h1, or a picture outside the child holding every label, narrows to that child (a gift
+//     finder in a page's hero, narrowing the product listing below it);
+//   - a facet's group is its label's highest ancestor below the rail holding no other facet's label, and a group drawn as a
+//     caption alone takes the row of controls beside it after it as its body (a label above its chips); the groups' parent
 //     holds the draft's other groups, each placed when the catalogue says what it filters: a price range (its text shows a
 //     currency amount), brands (it names two or more of the catalogue's brands) or categories (two or more of its
 //     categories); any other group (an on-off switch row, a group the catalogue holds nothing for) is listed in the notes;
@@ -22,6 +26,7 @@
 
 const squash = ( s ) => String( s ?? '' ).replace( /\s+/g, ' ' ).trim();
 const shown = ( e ) => Object.values( e.visible || {} ).some( Boolean );
+const MEDIA = new Set( [ 'img', 'picture', 'video', 'canvas', 'iframe' ] );
 // An attribute as the draft writes it, through the one element-facts reader (`read`, lib/element-facts.mjs).
 const attr = ( read, e, name ) => String( read.attr( e, name ) ?? '' );
 
@@ -64,7 +69,16 @@ export function filterRail( { m, region, filters, rule, money } ) {
 	const first = ancestors( found[ 0 ].label );
 	const top = first.find( ( a ) => under( listing, a ) && found.every( ( x ) => under( x.label, a ) ) );
 	const branches = new Set( found.map( ( x ) => ancestors( x.label ).find( ( a ) => a.parentKey === top?.key )?.key ) );
-	const rail = 1 === branches.size ? m.byKey[ [ ...branches ][ 0 ] ] : null;
+	let rail = 1 === branches.size ? m.byKey[ [ ...branches ][ 0 ] ] : null;
+	// A rail holds filter controls only, never the page's own heading or a picture: a branch holding the page's h1, or a
+	// picture beside the child that holds every label (a hero whose finder narrows the product listing below it), narrows to
+	// that child.
+	const holds = ( a, test ) => m.els.some( ( e ) => shown( e ) && e !== a && under( e, a ) && test( e ) );
+	for ( let next = rail; next; ) {
+		const holder = m.els.find( ( c ) => c.parentKey === next.key && shown( c ) && found.every( ( x ) => x.label === c || under( x.label, c ) ) );
+		next = holder && ! found.some( ( x ) => x.label === holder ) && ( holds( next, ( e ) => 'h1' === e.tag ) || holds( next, ( e ) => MEDIA.has( e.tag ) && ! under( e, holder ) ) ) ? holder : null;
+		next && ( rail = next );
+	}
 	if ( ! rail ) {
 		return { note: `the facet labels (${ found.map( ( x ) => x.label.key ).join( ', ' ) }) sit in ${ branches.size } branches beside the product listing, so no filter rail is placed` };
 	}
@@ -79,21 +93,28 @@ export function filterRail( { m, region, filters, rule, money } ) {
 	const amount = new RegExp( money );
 	const named = ( text, list ) => ( list || [] ).filter( ( n ) => n && text.includes( n ) ).length >= 2;
 	const groups = [];
-	for ( const g of parent ? m.els.filter( ( e ) => e.parentKey === parent.key && shown( e ) ) : m.els.filter( ( e ) => found.some( ( x ) => x.group === e ) ) ) {
+	// A label drawn on its own, its controls the next element beside it (a caption above a row of chips), is one group with
+	// that row: the row is the group's body and is never a group of its own.
+	const controls = ( e ) => m.els.some( ( c ) => shown( c ) && ( c === e || under( c, e ) ) && ( [ 'button', 'input', 'select' ].includes( c.tag ) || !! m.read.handler( c ) ) );
+	const bodyOf = new Map();
+	const kids = parent ? m.els.filter( ( e ) => e.parentKey === parent.key && shown( e ) ) : m.els.filter( ( e ) => found.some( ( x ) => x.group === e ) );
+	kids.forEach( ( g, i ) => squash( m.words( g ) ) && ! controls( g ) && kids[ i + 1 ] && controls( kids[ i + 1 ] ) && ! found.some( ( x ) => x.group === kids[ i + 1 ] ) && bodyOf.set( g, kids[ i + 1 ] ) );
+	const bodies = new Set( bodyOf.values() );
+	for ( const g of kids.filter( ( e ) => ! bodies.has( e ) ) ) {
 		const hit = found.find( ( x ) => x.group === g );
 		if ( hit ) {
-			groups.push( { kind: 'facet', group: g, label: hit.label, facet: hit.facet } );
+			groups.push( { kind: 'facet', group: g, label: hit.label, facet: hit.facet, ...( bodyOf.has( g ) ? { body: bodyOf.get( g ) } : {} ) } );
 			continue;
 		}
 		// Another group of the rail: its label is its first shown element (in the draft's order) with words of its own.
 		const label = m.els.find( ( e ) => shown( e ) && squash( m.words( e ) ) && ( e === g || under( e, g ) ) );
-		const text = String( g.allText ?? '' );
+		const text = `${ g.allText ?? '' } ${ bodyOf.get( g )?.allText ?? '' }`;
 		const kind = amount.test( text ) ? 'price' : named( text, filters.brands ) ? 'brand' : named( text, filters.categories ) ? 'category' : null;
-		kind ? groups.push( { kind, group: g, label } ) : notes.push( `the rail's group ${ g.key }${ label ? ` "${ squash( m.words( label ) ) }"` : '' } filters nothing the catalogue holds, so it is not placed` );
+		kind ? groups.push( { kind, group: g, label, ...( bodyOf.has( g ) ? { body: bodyOf.get( g ) } : {} ) } ) : notes.push( `the rail's group ${ g.key }${ label ? ` "${ squash( m.words( label ) ) }"` : '' } filters nothing the catalogue holds, so it is not placed` );
 	}
 	// A group is open when it shows anything beside the child holding its label.
-	const open = ( x ) => m.els.some( ( c ) => c.parentKey === x.group.key && shown( c ) && ! ( c === x.label || under( x.label, c ) ) );
-	const checkboxes = ( x ) => m.els.some( ( c ) => shown( c ) && under( c, x.group ) && 'input' === c.tag && 'checkbox' === attr( m.read, c, 'type' ).toLowerCase() );
+	const open = ( x ) => !! x.body || m.els.some( ( c ) => c.parentKey === x.group.key && shown( c ) && ! ( c === x.label || under( x.label, c ) ) );
+	const checkboxes = ( x ) => m.els.some( ( c ) => shown( c ) && [ x.group, x.body ].some( ( g ) => g && under( c, g ) ) && 'input' === c.tag && 'checkbox' === attr( m.read, c, 'type' ).toLowerCase() );
 	const copy = ( n ) => ( { name: n.name, attributes: { ...( n.attributes || {} ) }, innerBlocks: ( n.innerBlocks || [] ).map( copy ) } );
 	const heading = ( x, swatches ) => ( {
 		name: rule.heading.block,

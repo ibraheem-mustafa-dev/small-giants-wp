@@ -239,3 +239,53 @@ test( 'MUST FAIL: the committed Eye Care shop inventory places its rail: eight f
 	assert.deepEqual( attrs, [ 'gender', 'size-filter', 'colour', 'style', 'material', 'frame-type', 'hinge', 'nose-pads' ].map( ( s ) => ids[ s ] ) );
 	assert.equal( find( skeleton, ( n ) => 'sgs-shop-filters' === n.attributes?.anchor ).name, 'sgs/container' );
 } );
+
+// A page that is no shop: its hero holds the h1, a photo and a finder of facet chips and price chips above a product loop
+// the finder narrows (Mama's Gifts page, Bean 2026-10-31: a shop page with filters, never a choice flow).
+const FINDER_PAGE = ( o = {} ) => [
+	el( 'Root/1#0', null, 'div', '', { depth: 0 } ),
+	el( 'Root/40#0', 'Root/1#0', 'section', '', { depth: 1 } ),
+	el( 'Root/41#0', 'Root/40#0', 'div', '', { depth: 2 } ),
+	el( 'Root/42#0', 'Root/41#0', 'div', '', { depth: 3 } ),
+	el( 'Root/43#0', 'Root/42#0', 'h1', 'Gifts she will love' ),
+	el( 'Root/44#0', 'Root/42#0', 'div', '', { depth: 4, all: `${ o.label ?? 'Moment' } Baby shower Just had a baby Budget Any Under £20` } ),
+	el( 'Root/45#0', 'Root/44#0', 'div', o.label ?? 'Moment', { depth: 5 } ),
+	el( 'Root/46#0', 'Root/44#0', 'div', '', { depth: 5, all: 'Baby shower Just had a baby' } ),
+	el( 'Root/47#0', 'Root/46#0', 'button', 'Baby shower', { depth: 6 } ),
+	el( 'Root/47#1', 'Root/46#0', 'button', 'Just had a baby', { depth: 6 } ),
+	el( 'Root/48#0', 'Root/44#0', 'div', 'Budget', { depth: 5 } ),
+	el( 'Root/49#0', 'Root/44#0', 'div', '', { depth: 5, all: 'Any Under £20' } ),
+	el( 'Root/50#0', 'Root/49#0', 'button', 'Any', { depth: 6 } ),
+	el( 'Root/50#1', 'Root/49#0', 'button', 'Under £20', { depth: 6 } ),
+	el( 'Root/51#0', 'Root/41#0', 'div', '', { depth: 3 } ),
+	el( 'Root/52#0', 'Root/51#0', 'img', '', { depth: 4, attrs: { src: 'gift.jpg', alt: 'A gift box' }, keep: true } ),
+	el( 'Root/60#0', 'Root/1#0', 'section', '', { depth: 1 } ),
+	el( 'Root/61#0', 'Root/60#0', 'div', '', { depth: 2 } ),
+	...( false === o.products ? [] : [ 0, 1, 2 ].flatMap( ( i ) => [
+		el( `Root/62#${ i }`, 'Root/61#0', 'div', '', { depth: 3, loop: 62, all: `Box ${ i } £15.00`, box: place( i * 300, 900 ) } ),
+		el( `Root>Card@62#${ i }/2#0`, `Root/62#${ i }`, 'span', '£15.00', { depth: 4, template: 'Card', imported: true } ),
+		el( `Root>Card@62#${ i }/3#0`, `Root/62#${ i }`, 'a', 'Gift box', { depth: 4, template: 'Card', imported: true, attrs: { href: `Product.dc.html?id=p${ i }` }, keep: true } ),
+	] ) ),
+];
+const FINDER_FILTERS = { facets: [ facet( 'moment', 'Moment', 'value', { terms: [ { name: 'Baby shower', swatch: null }, { name: 'Just had a baby', swatch: null } ] } ) ], brands: [], categories: [] };
+const onPage = ( elements, filters = FINDER_FILTERS ) => proposeSkeleton( { inventory: inv( elements ), facts: facts(), surface: 'test', commerce: null, filters, carried: CARRIED( { moment: 31 } ), loops: { rows: [ { slug: 'product', route: 'Product.dc.html', template: 'single-product' } ], brands: [], carousels: new Set() }, db } );
+
+test( 'MUST FAIL: a finder of catalogue facet chips narrowing the product collection on a page that is no shop is that collection\'s working filter, placed at the finder, never the hero holding it', () => {
+	const r = onPage( FINDER_PAGE() );
+	assert.deepEqual( r.problems, [] );
+	assert.ok( find( r.skeleton, named( 'woocommerce/product-collection' ) ), 'the loop is the product collection' );
+	const rail = r.proposal.rows.find( ( x ) => 'filterRail' === x.rule && 'absorbed' !== x.action );
+	assert.equal( rail?.key, 'Root/44#0', 'the rail is the finder, the child holding every label' );
+	const pf = find( r.skeleton, named( 'woocommerce/product-filters' ) );
+	assert.deepEqual( groupsOf( pf ), [ 'h:Moment', 'attribute#31', 'h:Budget', 'price' ] );
+	for ( const k of [ 'Root/43#0', 'Root/52#0' ] ) {
+		assert.notEqual( r.proposal.rows.find( ( x ) => x.key === k )?.action, 'absorbed', `${ k }: the page's heading and photo stay its own` );
+	}
+	assert.equal( r.proposal.rows.find( ( x ) => 'Root/46#0' === x.key )?.block ?? null, null, 'the chips are the filter\'s, no option picker' );
+} );
+
+test( 'negative control: chips with no product loop, or labelled with no catalogue facet, place no rail on a page that is no shop', () => {
+	assert.equal( find( onPage( FINDER_PAGE( { products: false } ) ).skeleton, named( 'woocommerce/product-filters' ) ), null, 'no listing to narrow' );
+	assert.equal( find( onPage( FINDER_PAGE( { label: 'Colour' } ) ).skeleton, named( 'woocommerce/product-filters' ) ), null, 'no facet of the catalogue' );
+	assert.equal( find( onPage( FINDER_PAGE(), null ).skeleton, named( 'woocommerce/product-filters' ) ), null, 'no catalogue' );
+} );

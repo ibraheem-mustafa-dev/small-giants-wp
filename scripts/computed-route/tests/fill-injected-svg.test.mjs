@@ -12,8 +12,13 @@ import { fixtureDb } from './fixtures/framework-db.mjs';
 import { injectedSvgWrites, svgMarkup } from '../lib/fill-injected-svg.mjs';
 
 const DB = openDb( fixtureDb( {
-	blocks: [ { slug: 'sgs/container', title: 'Container', category: 'sgs', type: 'dynamic' }, { slug: 'sgs/responsive-logo', title: 'Logo', category: 'sgs', type: 'dynamic' }, { slug: 'sgs/text', title: 'Text', category: 'sgs', type: 'dynamic' } ],
+	blocks: [ { slug: 'sgs/container', title: 'Container', category: 'sgs', type: 'dynamic' }, { slug: 'sgs/responsive-logo', title: 'Logo', category: 'sgs', type: 'dynamic' }, { slug: 'sgs/text', title: 'Text', category: 'sgs', type: 'dynamic' }, { slug: 'sgs/media', title: 'Media', category: 'sgs', type: 'dynamic' }, { slug: 'sgs/before-after', title: 'Before after', category: 'sgs', type: 'dynamic' } ],
 	block_attributes: [
+		{ block_slug: 'sgs/media', attr_name: 'svgContent', attr_type: 'string', role: 'svg', is_responsive: 1 },
+		{ block_slug: 'sgs/media', attr_name: 'svgContentTablet', attr_type: 'string', role: 'svg', is_responsive: 1 },
+		{ block_slug: 'sgs/media', attr_name: 'svgContentMobile', attr_type: 'string', role: 'svg', is_responsive: 1 },
+		{ block_slug: 'sgs/before-after', attr_name: 'afterSvgContent', attr_type: 'string', role: 'svg' },
+		{ block_slug: 'sgs/before-after', attr_name: 'beforeSvgContent', attr_type: 'string', role: 'svg' },
 		{ block_slug: 'sgs/container', attr_name: 'anchor', attr_type: 'string', role: 'content' },
 		{ block_slug: 'sgs/container', attr_name: 'bgSvgContent', attr_type: 'string', role: 'svg' },
 		{ block_slug: 'sgs/responsive-logo', attr_name: 'alignWide', attr_type: 'boolean', role: 'layout' },
@@ -25,6 +30,8 @@ const DB = openDb( fixtureDb( {
 const FOLDER = fs.mkdtempSync( path.join( os.tmpdir(), 'injected-svg-' ) );
 fs.mkdirSync( path.join( FOLDER, 'assets' ) );
 fs.writeFileSync( path.join( FOLDER, 'assets', 'hero-desktop.svg' ), '<?xml version="1.0"?>\n<!-- editor -->\n<svg viewBox="0 0 2100 1000"><metadata>m</metadata><g id="sunrays_spin"/></svg>' );
+fs.writeFileSync( path.join( FOLDER, 'assets', 'hero-tablet.svg' ), '<svg viewBox="0 0 1200 900"><g id="t"/></svg>' );
+fs.writeFileSync( path.join( FOLDER, 'assets', 'hero-mobile.svg' ), '<svg viewBox="0 0 600 900"><g id="m"/></svg>' );
 const at = ( src ) => ( src ? { tag: 'svg', viewBox: '0 0 1 1', source: src } : null );
 const HERO = { key: 'Site/321#0', parentKey: 'Site/316#0', tag: 'div', injected: { 375: at( 'assets/hero-mobile.svg' ), 768: at( 'assets/hero-tablet.svg' ), 1440: at( 'assets/hero-desktop.svg' ) } };
 const SECTION = { key: 'Site/316#0', parentKey: null, tag: 'section' };
@@ -52,4 +59,21 @@ test( 'negative control: an element with no injected SVG writes nothing; a block
 	const none = run( [], [ LOGO ] );
 	assert.match( none.out.unmapped[ 0 ].reason, /no block of this surface holds that element/ );
 	assert.equal( svgMarkup( '<?xml x?><svg><!-- c --><metadata>a</metadata><path/></svg>' ), '<svg><path/></svg>' );
+} );
+
+test( "MUST FAIL: a block with per-device SVG settings (sgs/media svgContent, svgContentTablet, svgContentMobile) takes each width's own file, with no one-SVG row", () => {
+	const { out, flat } = run( [ node( 0, 'sgs/media', 'Site/321#0' ) ], [ HERO ] );
+	assert.deepEqual( flat[ 0 ].attributes, { svgContent: '<svg viewBox="0 0 2100 1000"><g id="sunrays_spin"/></svg>', svgContentTablet: '<svg viewBox="0 0 1200 900"><g id="t"/></svg>', svgContentMobile: '<svg viewBox="0 0 600 900"><g id="m"/></svg>' } );
+	assert.deepEqual( out.writes.map( ( w ) => [ w.attr, w.widths ] ), [ [ 'svgContent', [ 1440 ] ], [ 'svgContentTablet', [ 768 ] ], [ 'svgContentMobile', [ 375 ] ] ] );
+	assert.deepEqual( out.unmapped, [] );
+} );
+
+test( 'negative controls: a device setting is written only where its width shows another file than the next wider one; a block with SVG settings of two names is a named row', () => {
+	const same = run( [ node( 0, 'sgs/media', 'Site/321#0' ) ], [ { ...HERO, injected: { 375: at( 'assets/hero-desktop.svg' ), 768: at( 'assets/hero-desktop.svg' ), 1440: at( 'assets/hero-desktop.svg' ) } } ] );
+	assert.deepEqual( Object.keys( same.flat[ 0 ].attributes ), [ 'svgContent' ], 'one file at every width: the empty tiers fall back to it' );
+	const mobileOnly = run( [ node( 0, 'sgs/media', 'Site/321#0' ) ], [ { ...HERO, injected: { 375: at( 'assets/hero-mobile.svg' ), 768: at( 'assets/hero-desktop.svg' ), 1440: at( 'assets/hero-desktop.svg' ) } } ] );
+	assert.deepEqual( Object.keys( mobileOnly.flat[ 0 ].attributes ), [ 'svgContent', 'svgContentMobile' ] );
+	const twoNames = run( [ node( 0, 'sgs/before-after', 'Site/321#0' ) ], [ HERO ] );
+	assert.deepEqual( twoNames.flat[ 0 ].attributes, {} );
+	assert.match( twoNames.out.unmapped[ 0 ].reason, /sgs\/before-after holds several SVG settings, none of which the draft names/ );
 } );

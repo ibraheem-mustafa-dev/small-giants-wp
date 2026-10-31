@@ -4,7 +4,9 @@
 // row, `edit:<field>=<value>` sets one of the EDITABLE fields), then the ids of the current map by row key
 // (lib/site-build-map.mjs::rowKey), is validated against data/page-map.schema.json, and replaces the map; every added,
 // removed or changed row is printed. A row of the current map holding a WordPress id that the new map would lose is
-// refused unless Bean's review dropped it. The saved intake record takes the same proposal as its `pageMap` and review.md
+// refused unless Bean's review dropped it: the refusal records those rows as the intake record's `pageMapLeaving`, which
+// review.md lists as "(leaves the map)" page-map rows for a `drop` mark (a mark written in review.md counts at the next
+// run, before --apply-review). The saved intake record takes the same proposal as its `pageMap` and review.md
 // is rendered again from it (syncIntake), so `--apply-review` confirms the regenerated map, never the one it replaced.
 import fs from 'fs';
 import path from 'path';
@@ -67,6 +69,13 @@ export function lostIds( current, rows, marks ) {
 		.map( ( r ) => `${ rowKey( r ) } (id ${ r.id })` );
 }
 
+// The rows of the current map holding a WordPress id that the new map loses (its row key gone, or the id not carried),
+// whatever the marks: the record's `pageMapLeaving`, listed in the review for a `drop` mark.
+export function leavingRows( current, rows ) {
+	const now = new Map( rows.map( ( r ) => [ rowKey( r ), r.id ] ) );
+	return current.filter( ( r ) => null !== r.id && undefined !== r.id && now.get( rowKey( r ) ) !== r.id );
+}
+
 // The rows with each current row's id carried by row key (a row whose key is new keeps id null).
 export const carryIds = ( rows, current ) => {
 	const ids = new Map( current.map( ( r ) => [ rowKey( r ), r.id ] ) );
@@ -123,12 +132,23 @@ export function runPageMap( o, { log = ( l ) => process.stderr.write( `${ l }\n`
 	const current = fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ) : [];
 	const intake = fs.existsSync( intakeFile ) ? JSON.parse( fs.readFileSync( intakeFile, 'utf8' ) ) : null;
 	const proposal = proposePageMap( { folder } );
-	const marks = pageMapMarks( intake );
+	const reviewFile = path.join( path.dirname( intakeFile ), 'review.md' );
+	const hasReview = fs.existsSync( reviewFile );
+	const reviewText = hasReview ? fs.readFileSync( reviewFile, 'utf8' ) : null;
+	const day = hasReview ? fs.statSync( reviewFile ).mtime.toISOString().slice( 0, 10 ) : undefined;
+	// The marks Bean wrote in review.md and not yet applied count too (a `drop` on a row leaving the map included).
+	const marks = pageMapMarks( null === reviewText ? intake : withUnappliedMarks( intake, reviewText, day ? { day } : {} ).intake );
 	const marked = applyMarks( proposal.rows, marks );
 	const rows = carryIds( marked.rows, current );
 	const gone = lostIds( current, rows, marks );
 	if ( gone.length ) {
-		say( `the regenerated map loses rows that hold a WordPress id, nothing written (mark each \`drop\` in the review to remove it):\n${ gone.map( ( g ) => `  - ${ g }` ).join( '\n' ) }` );
+		// The record lists the rows leaving the map, so review.md shows each for a `drop` mark; the map stays as it is.
+		const listed = syncIntake( intake && { ...intake, pageMapLeaving: leavingRows( current, rows ) }, proposal.rows, { reviewText, day } );
+		if ( listed.record && ! listed.problems.length ) {
+			fs.writeFileSync( intakeFile, `${ JSON.stringify( listed.record, null, 1 ) }\n` );
+			fs.writeFileSync( reviewFile, renderReview( listed.record ) );
+		}
+		say( `the regenerated map loses rows that hold a WordPress id, nothing written to the map (review.md's Page map section lists each as "(leaves the map)": mark it \`drop\` to remove it, then run --page-map again):\n${ gone.map( ( g ) => `  - ${ g }` ).join( '\n' ) }` );
 		return 1;
 	}
 	const problems = pageMapProblems( rows, loadAjv() );
@@ -136,13 +156,15 @@ export function runPageMap( o, { log = ( l ) => process.stderr.write( `${ l }\n`
 		say( `the regenerated map does not validate, nothing written:\n${ problems.map( ( p ) => `  - ${ p }` ).join( '\n' ) }` );
 		return 1;
 	}
-	const reviewFile = path.join( path.dirname( intakeFile ), 'review.md' );
-	const hasReview = fs.existsSync( reviewFile );
-	const synced = syncIntake( intake, proposal.rows, { reviewText: hasReview ? fs.readFileSync( reviewFile, 'utf8' ) : null, day: hasReview ? fs.statSync( reviewFile ).mtime.toISOString().slice( 0, 10 ) : undefined } );
+	// Every leaving row is dropped or carried now, so the record lists none.
+	const synced = syncIntake( intake && Object.fromEntries( Object.entries( intake ).filter( ( [ k ] ) => 'pageMapLeaving' !== k ) ), proposal.rows, { reviewText, day } );
 	if ( synced.problems.length ) {
 		say( `intake.json with the regenerated page map does not validate, nothing written:\n${ synced.problems.map( ( p ) => `  - ${ p }` ).join( '\n' ) }` );
 		return 1;
 	}
+	// The leaving rows Bean dropped: their marks reach no row of the new map by design.
+	const dropped = leavingRows( current, carryIds( proposal.rows, current ) ).filter( ( r ) => 'drop' === marks.get( rowIdOf( r ) ) ).map( ( r ) => ( { id: rowIdOf( r ), wp: r.id } ) );
+	const isDropped = ( line ) => dropped.some( ( d ) => line === d.id || line.startsWith( `${ d.id }:` ) );
 	const changes = mapChanges( current, rows );
 	fs.mkdirSync( path.dirname( file ), { recursive: true } );
 	fs.writeFileSync( file, `${ JSON.stringify( rows, null, 2 ) }\n` );
@@ -150,10 +172,11 @@ export function runPageMap( o, { log = ( l ) => process.stderr.write( `${ l }\n`
 		fs.writeFileSync( intakeFile, `${ JSON.stringify( synced.record, null, 1 ) }\n` );
 		fs.writeFileSync( reviewFile, renderReview( synced.record ) );
 		say( `${ path.relative( o.repo, intakeFile ) } takes the regenerated page map (${ proposal.rows.length } proposed rows) and review.md is rendered again from it` );
-		synced.refused.forEach( ( r ) => say( `review: mark NOT carried: ${ r }` ) );
+		synced.refused.filter( ( r ) => ! isDropped( r ) ).forEach( ( r ) => say( `review: mark NOT carried: ${ r }` ) );
 	}
 	say( `${ o.client }: ${ rows.length } rows (${ intake ? `${ marked.applied } review marks matched` : 'no intake record, no review marks' }); ${ changes.length } changes${ changes.length ? `:\n${ changes.map( ( c ) => `  - ${ c }` ).join( '\n' ) }` : '' }` );
-	marked.unapplied.forEach( ( id ) => say( `review mark for ${ id } names no row of the new proposal (not applied)` ) );
+	dropped.forEach( ( d ) => say( `dropped ${ d.id } (WordPress id ${ d.wp }) by Bean's review mark: it leaves the map` ) );
+	marked.unapplied.filter( ( id ) => ! isDropped( id ) ).forEach( ( id ) => say( `review mark for ${ id } names no row of the new proposal (not applied)` ) );
 	marked.refused.forEach( ( m ) => say( `review mark ${ m } edits a field a mark may not set (only ${ [ ...EDITABLE ].join( ', ' ) }; not applied)` ) );
 	marked.lost.forEach( ( l ) => say( `dropped row ${ l.rowId } held ${ l.parts.length } part(s), now in no row: ${ l.parts.map( ( p ) => `${ p.kind } "${ p.label }"` ).join( ', ' ) }` ) );
 	return 0;

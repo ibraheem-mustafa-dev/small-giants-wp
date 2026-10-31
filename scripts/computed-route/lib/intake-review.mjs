@@ -199,6 +199,11 @@ export function reviewRows( intake ) {
 		`${ r.route ?? '(no route)' } → ${ r.title } (${ r.postType }, ${ r.collection }${ r.template ? `, ${ r.template }` : '' })`,
 		`${ r.parent ? `${ r.parent }/` : '' }${ r.slug }`,
 		[ ...( r.menus || [] ).map( ( m ) => `${ m.menu } #${ m.position }` ), ...( r.flags || [] ) ].join( ', ' ) ) );
+	// A row of the written page map holding a WordPress id that the proposal no longer has (`pageMapLeaving`): listed so
+	// Bean can mark it `drop`, which removes it from the map; Accept all never covers it (a post is never dropped unread).
+	unique( ( intake.pageMapLeaving || [] ).map( ( r ) => ( { ...r, rowId: `page:${ r.postType }:${ r.slug }` } ) ) ).forEach( ( r ) => add( 'page-map', r, r.route ?? r.slug,
+		`(leaves the map) ${ r.route ?? '(no route)' } → ${ r.title } (${ r.postType }, WordPress id ${ r.id })`, 'drop',
+		'the written page map holds this row, but the draft no longer proposes it: mark drop to remove it from the map', null ) );
 	// FR-48-92: one row per draft catalogue product and one per catalogue gap.
 	( intake.catalogue?.products || [] ).forEach( ( r ) => add( 'catalogue', { ...r, rowId: `catalogue:${ r.draftId }` }, r.draftId, `${ r.name } (${ r.type }, from £${ r.price }${ r.variations ? `, ${ r.variations } variations` : '' }${ r.image ? '' : ', no image' })`, r.address ) );
 	( intake.catalogue?.gaps || [] ).forEach( ( g, i ) => add( 'catalogue', { ...g, rowId: `catalogue-gap:${ g.draftId }:${ g.kind }:${ i + 1 }` }, g.draftId, `gap (${ g.kind }) ${ g.draftId }`, 'recorded, not built', g.detail ) );

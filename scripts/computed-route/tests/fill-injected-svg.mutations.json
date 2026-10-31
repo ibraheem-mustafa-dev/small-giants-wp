@@ -46,5 +46,17 @@
 		"find": "injected: ( e, w ) => e?.injected?.[ w ] ?? null,",
 		"replace": "injected: ( e, w ) => null,",
 		"why": "the injected SVG is never read"
+	},
+	{
+		"file": "lib/fill-injected-svg.mjs",
+		"find": "if ( attr && by[ w ].source !== shown && write( attr, by[ w ].source, [ w ] ) ) {",
+		"replace": "if ( attr && false ) {",
+		"why": "a narrower width's own file never reaches its device setting"
+	},
+	{
+		"file": "lib/fill-injected-svg.mjs",
+		"find": "const content = 1 === bases.length && rows.some( ( r ) => r.attr_name === bases[ 0 ] ) ? bases[ 0 ] : null;",
+		"replace": "const content = rows[ 0 ]?.attr_name ?? null;",
+		"why": "a block with two SVG setting names writes the first"
 	}
 ]

@@ -77,3 +77,21 @@ test( 'MUST FAIL: a row holding a WordPress id that the new map loses is refused
 	assert.equal( runPageMap( { client: 'c', repo: dropped.root }, { log: ( l ) => said.push( l ) } ), 0 );
 	assert.match( said.join( '\n' ), /edit:menus=\[\] edits a field a mark may not set/ );
 } );
+
+test( 'MUST FAIL: a row leaving the map is listed in the review for a drop mark, never covered by Accept all, and a drop written in review.md removes it at the next run', async () => {
+	const { leavingRows, pageMapMarks } = await import( '../lib/intake-pagemap-regen.mjs' );
+	const { reviewRows, renderReview } = await import( '../lib/intake-review.mjs' );
+	const { withUnappliedMarks } = await import( '../lib/intake-review-carry.mjs' );
+	const current = [ rowOf( 'shop', { postType: 'shop', id: 6 } ), rowOf( 'gift-finder', { postType: 'sgs_choice_flow', id: 159 } ), rowOf( 'loose' ) ];
+	const rows = carryIds( [ rowOf( 'shop', { postType: 'shop' } ) ], current );
+	assert.deepEqual( leavingRows( current, rows ).map( ( r ) => r.slug ), [ 'gift-finder' ], 'only a row holding a WordPress id leaves' );
+	const intake = { client: 'c', pageMap: rows, pageMapLeaving: leavingRows( current, rows ), review: [] };
+	const listed = reviewRows( intake ).find( ( r ) => 'page:sgs_choice_flow:gift-finder' === r.rowId );
+	assert.ok( listed, 'the review lists the leaving row' );
+	assert.deepEqual( [ listed.rowType, listed.proposed, listed.acceptAll ], [ 'page-map', 'drop', null ] );
+	assert.match( listed.shows, /\(leaves the map\).*WordPress id 159/ );
+	const review = reviewRows( intake ).map( ( r ) => ( { rowId: r.rowId, rowType: r.rowType, contentHash: r.contentHash, mark: null, markedOn: null, carriedFrom: null } ) );
+	const md = renderReview( { ...intake, review } ).replace( /(\| `page:sgs_choice_flow:gift-finder` \|.*\| )\s*\|$/m, '$1drop |' );
+	const marks = pageMapMarks( withUnappliedMarks( { ...intake, review }, md, { day: '2026-10-31' } ).intake );
+	assert.equal( marks.get( 'page:sgs_choice_flow:gift-finder' ), 'drop', "Bean's drop in review.md is read" );
+} );

@@ -88,6 +88,6 @@ export function elementFacts( view = EMPTY ) {
 		textLeads: ( e ) => false !== e?.textLeads,
 		// The content the draft's code injected into the element at one width (lib/skeleton-inventory.mjs::injectedContent:
 		// { tag, viewBox, source }), or null.
-		injected: ( e, w ) => e?.injected?.[ w ] ?? null,
+		injected: ( e, w ) => null,
 	} ).get( view ) );
 }

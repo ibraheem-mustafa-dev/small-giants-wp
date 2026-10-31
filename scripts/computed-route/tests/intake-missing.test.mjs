@@ -87,3 +87,42 @@ test( 'registry: an instrument-debt gap is never listed; a feature gap is', () =
 	const rows = proposeMissingFeatures( { census: { ...CENSUS, rows: [ CENSUS.rows[ 5 ] ] }, facts, registry: featureGap } ).rows;
 	assert.deepEqual( rows.map( ( r ) => r.rowId ), [ 'missing:link@Home:6/#/' ] );
 } );
+
+// A hover that moves, scales or rotates an element from code (Indus's button lift, `btnEnter`: translateY(-2px); its
+// image pop: scale(1.14) rotate(25deg)) is held by the framework DB's hover-state motion fields (`motion_fields` layer
+// hover.state, HoverStateValues translateY, scale, rotate), never a framework gap row (Bean 2026-10-31).
+const HOVER_LOGIC = `class Component extends DCLogic {
+  lift = ( e ) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 20px #0003'; };
+  pop = ( e ) => { e.currentTarget.animate( [ { transform: 'scale(1) rotate(0deg)' }, { transform: 'scale(1.14) rotate(25deg)' } ], { duration: 300, fill: 'forwards' } ); };
+  shout( e ) { e.currentTarget.style.color = 'red'; }
+  renderVals() { return { lift: this.lift, pop: this.pop, shout: this.shout }; }
+}`;
+const HOVER_SOURCE = { component: 'Home', logic: HOVER_LOGIC, logicLine: 1, logicColumn: 0, scripts: [] };
+const HOVER_CENSUS = { sources: [ HOVER_SOURCE ], rows: [ handler( 21, 'onMouseEnter', 'lift' ), handler( 22, 'onMouseEnter', 'pop' ), handler( 23, 'onMouseEnter', 'shout' ) ] };
+
+test( 'MUST FAIL (census): a hover that moves, scales or rotates an element from code is held by the hover-state motion fields, never a gap row', () => {
+	const res = proposeMissingFeatures( { skeletonRows: [], census: HOVER_CENSUS, facts } );
+	assert.deepEqual( res.rows.filter( ( r ) => /hover-motion/.test( r.construct ) ).map( ( r ) => r.draftId ), [], res.rows.map( ( r ) => r.why ).join( '; ' ) );
+	const lift = res.held.find( ( r ) => 'Home:21' === r.draftId );
+	assert.deepEqual( lift.candidates, [ 'motion field HoverStateValues.translateY (elements.<target>.hover.state.values.translateY)' ] );
+	assert.match( lift.why, /hover\.state motion fields hold the transforms it writes \(translateY\)/ );
+	const pop = res.held.find( ( r ) => 'Home:22' === r.draftId );
+	assert.deepEqual( pop.candidates.map( ( c ) => /HoverStateValues\.(\w+)/.exec( c )[ 1 ] ), [ 'scale', 'rotate' ] );
+} );
+
+test( 'negative controls (census): a hover that only recolours is no motion, and a hover-motion handler whose transform no hover-state field holds stays a gap row', () => {
+	assert.equal( behaviourOf( HOVER_SOURCE, HOVER_CENSUS.rows[ 2 ] ), null, 'a colour write is no hover motion' );
+	const skew = { ...HOVER_SOURCE, logic: HOVER_LOGIC.replace( "'translateY(-2px)'", "'skewX(12deg)'" ) };
+	const res = proposeMissingFeatures( { skeletonRows: [], census: { sources: [ skew ], rows: [ HOVER_CENSUS.rows[ 0 ] ] }, facts } );
+	assert.equal( res.held.length, 0 );
+	assert.match( res.rows[ 0 ].why, /hover-motion: no block capability or fx effect named for it, and no hover\.state motion field for what it writes/ );
+} );
+
+test( "MUST FAIL (census): a leave handler that clears the transform its enter handler set (Indus's btnLeave) is the hover pose's own return, held by the same layer", () => {
+	const logic = HOVER_LOGIC.replace( '  shout(', "  drop = ( e ) => { e.currentTarget.style.transform = ''; };\n  shout(" ).replace( 'shout: this.shout', 'shout: this.shout, drop: this.drop' );
+	const res = proposeMissingFeatures( { skeletonRows: [], census: { sources: [ { ...HOVER_SOURCE, logic } ], rows: [ handler( 24, 'onMouseLeave', 'drop' ) ] }, facts } );
+	assert.deepEqual( res.rows.filter( ( r ) => /hover-motion/.test( r.construct ) ), [] );
+	assert.deepEqual( res.held[ 0 ].candidates, [ 'motion layer hover.state (HoverStateValues): the hovered pose returns to rest when the pointer leaves' ] );
+	const enter = proposeMissingFeatures( { skeletonRows: [], census: { sources: [ { ...HOVER_SOURCE, logic } ], rows: [ handler( 24, 'onMouseEnter', 'drop' ) ] }, facts } );
+	assert.equal( enter.held.length, 0, 'negative control: an enter handler that clears a transform poses nothing' );
+} );
