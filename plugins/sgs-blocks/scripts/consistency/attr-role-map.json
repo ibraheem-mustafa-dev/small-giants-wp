@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 9454,
+    "row_count": 9462,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -8963,6 +8963,10 @@
     "sgs/timeline::descriptionLinkUnderlineColourHover": "color",
     "sgs/timeline::descriptionLinkUnderlineOffset": "typography",
     "sgs/timeline::descriptionLinkUnderlineThickness": "typography",
+    "sgs/timeline::descriptionTextColour": "color",
+    "sgs/timeline::descriptionTextColourGradient": "colour-gradient",
+    "sgs/timeline::descriptionTextColourHover": "color",
+    "sgs/timeline::descriptionTextColourHoverGradient": "colour-gradient",
     "sgs/timeline::entries": "content",
     "sgs/timeline::entryGap": "layout",
     "sgs/timeline::headingLevel": "enum-mode",
@@ -9013,6 +9017,10 @@
     "sgs/timeline::textColourGradient": "colour-gradient",
     "sgs/timeline::textColourHover": "color",
     "sgs/timeline::textColourHoverGradient": "colour-gradient",
+    "sgs/timeline::titleColour": "color",
+    "sgs/timeline::titleColourGradient": "colour-gradient",
+    "sgs/timeline::titleColourHover": "color",
+    "sgs/timeline::titleColourHoverGradient": "colour-gradient",
     "sgs/timeline::titleFontFamily": "typography",
     "sgs/timeline::titleFontSize": "typography",
     "sgs/timeline::titleFontSizeUnit": "typography",

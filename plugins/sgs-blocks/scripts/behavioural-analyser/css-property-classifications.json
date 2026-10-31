@@ -41690,6 +41690,42 @@
     },
     {
       "slug": "sgs/timeline",
+      "attr": "descriptionTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "description-text"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "descriptionTextColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "description-text"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "descriptionTextColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "description-text",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "descriptionTextColourHoverGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "description-text",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
       "attr": "headingLevel",
       "fields": {
         "css_property": "tag",
@@ -41710,6 +41746,42 @@
       "fields": {
         "css_property": "color-gradient",
         "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "titleColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "titleColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "titleColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "title",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "titleColourHoverGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "title",
         "css_state": "hover"
       }
     },

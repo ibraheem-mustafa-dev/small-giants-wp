@@ -1,8 +1,8 @@
-# Stage 3 Style Variation Sync — 2026-10-31 18:41:41 UTC
+# Stage 3 Style Variation Sync — 2026-10-31 21:40:15 UTC
 
 Phase 5a shipped. DB writes active.
 
-Snapshots found: 9 | Missing: 4 | Inserted: 55 | Skipped: 244 | Conflicts: 188
+Snapshots found: 9 | Missing: 4 | Inserted: 15 | Skipped: 277 | Conflicts: 208
 
 ## Per-client results
 
@@ -12,19 +12,26 @@ _(theme-snapshot.json not found)_
 
 ### eye-care-ward-end
 
-Inserted: 18 | Skipped: 23 | Conflicts: 13
+Inserted: 3 | Skipped: 33 | Conflicts: 20
 
 - CONFLICT: color-border-warm (framework='#DAAA92', client='#D5CCBD') → inserted as eye-care-ward-end-color-border-warm
 - CONFLICT: color-success (framework='#2e7d4f', client='#1B7F43') → inserted as eye-care-ward-end-color-success
+- CONFLICT: font-size-small (framework='14px', client='9.5px') → inserted as eye-care-ward-end-font-size-small
+- CONFLICT: font-size-large (framework='20px', client='17px') → inserted as eye-care-ward-end-font-size-large
+- CONFLICT: font-size-x-large (framework='24px', client='22px') → inserted as eye-care-ward-end-font-size-x-large
+- CONFLICT: font-size-xx-large (framework='36px', client='28px') → inserted as eye-care-ward-end-font-size-xx-large
+- CONFLICT: font-size-hero (framework='50px', client='clamp(42px,4.4vw,72px)') → inserted as eye-care-ward-end-font-size-hero
 - CONFLICT: font-family-body (framework="'DM Sans', system-ui, sans-serif", client='Outfit, system-ui, sans-serif') → inserted as eye-care-ward-end-font-family-body
 - CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client='"Playfair Display", serif') → inserted as eye-care-ward-end-font-family-heading
 - CONFLICT: font-family-display (framework="Fraunces, 'DM Serif Display', Georgia, serif", client='"Playfair Display", serif') → inserted as eye-care-ward-end-font-family-display
-- CONFLICT: spacing-30 (framework='0.75rem', client='1rem') → inserted as eye-care-ward-end-spacing-30
-- CONFLICT: spacing-40 (framework='1rem', client='1.5rem') → inserted as eye-care-ward-end-spacing-40
-- CONFLICT: spacing-50 (framework='1.5rem', client='2rem') → inserted as eye-care-ward-end-spacing-50
-- CONFLICT: spacing-60 (framework='2rem', client='3rem') → inserted as eye-care-ward-end-spacing-60
-- CONFLICT: spacing-70 (framework='3rem', client='5rem') → inserted as eye-care-ward-end-spacing-70
-- CONFLICT: spacing-80 (framework='4rem', client='8rem') → inserted as eye-care-ward-end-spacing-80
+- CONFLICT: spacing-10 (framework='0.25rem', client='1px') → inserted as eye-care-ward-end-spacing-10
+- CONFLICT: spacing-20 (framework='0.5rem', client='6px') → inserted as eye-care-ward-end-spacing-20
+- CONFLICT: spacing-30 (framework='0.75rem', client='8px') → inserted as eye-care-ward-end-spacing-30
+- CONFLICT: spacing-40 (framework='1rem', client='10px') → inserted as eye-care-ward-end-spacing-40
+- CONFLICT: spacing-50 (framework='1.5rem', client='14px') → inserted as eye-care-ward-end-spacing-50
+- CONFLICT: spacing-60 (framework='2rem', client='16px') → inserted as eye-care-ward-end-spacing-60
+- CONFLICT: spacing-70 (framework='3rem', client='20px') → inserted as eye-care-ward-end-spacing-70
+- CONFLICT: spacing-80 (framework='4rem', client='64px') → inserted as eye-care-ward-end-spacing-80
 - CONFLICT: shadow-floating (framework='0 8px 30px rgba(0,0,0,0.12)', client='0px 2px 4px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 4%, transparent), 0px 8px 16px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent), 0px 24px 48px -8px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent), 0px 48px 96px -16px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)') → inserted as eye-care-ward-end-shadow-floating
 - CONFLICT: shadow-glow (framework='0 0 20px rgba(248,122,31,0.3)', client='0px 0px 16px 0px color-mix(in srgb, var(--wp--preset--color--primary) 55%, transparent), 0px 0px 40px 0px color-mix(in srgb, var(--wp--preset--color--primary) 28%, transparent)') → inserted as eye-care-ward-end-shadow-glow
 
@@ -58,19 +65,25 @@ Inserted: 0 | Skipped: 18 | Conflicts: 23
 
 ### indus-foods
 
-Inserted: 15 | Skipped: 21 | Conflicts: 13
+Inserted: 5 | Skipped: 29 | Conflicts: 19
 
 - CONFLICT: color-ink (framework='#141414', client='#1E2A3C') → inserted as indus-foods-color-ink
+- CONFLICT: font-size-small (framework='14px', client='12px') → inserted as indus-foods-font-size-small
 - CONFLICT: font-size-regular (framework='16px', client='19px') → inserted as indus-foods-font-size-regular
+- CONFLICT: font-size-x-large (framework='24px', client='22px') → inserted as indus-foods-font-size-x-large
+- CONFLICT: font-size-xx-large (framework='36px', client='clamp(28px,3.4vw,40px)') → inserted as indus-foods-font-size-xx-large
+- CONFLICT: font-size-hero (framework='50px', client='clamp(36px,5vw,62px)') → inserted as indus-foods-font-size-hero
 - CONFLICT: font-family-body (framework="'DM Sans', system-ui, sans-serif", client='"Source Sans 3", "Source Sans Pro", system-ui, sans-serif') → inserted as indus-foods-font-family-body
 - CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client='Montserrat, sans-serif') → inserted as indus-foods-font-family-heading
 - CONFLICT: font-family-display (framework="Fraunces, 'DM Serif Display', Georgia, serif", client='Montserrat, sans-serif') → inserted as indus-foods-font-family-display
-- CONFLICT: spacing-30 (framework='0.75rem', client='1rem') → inserted as indus-foods-spacing-30
-- CONFLICT: spacing-40 (framework='1rem', client='1.5rem') → inserted as indus-foods-spacing-40
-- CONFLICT: spacing-50 (framework='1.5rem', client='2rem') → inserted as indus-foods-spacing-50
-- CONFLICT: spacing-60 (framework='2rem', client='3rem') → inserted as indus-foods-spacing-60
-- CONFLICT: spacing-70 (framework='3rem', client='5rem') → inserted as indus-foods-spacing-70
-- CONFLICT: spacing-80 (framework='4rem', client='8rem') → inserted as indus-foods-spacing-80
+- CONFLICT: spacing-10 (framework='0.25rem', client='8px') → inserted as indus-foods-spacing-10
+- CONFLICT: spacing-20 (framework='0.5rem', client='10px') → inserted as indus-foods-spacing-20
+- CONFLICT: spacing-30 (framework='0.75rem', client='14px') → inserted as indus-foods-spacing-30
+- CONFLICT: spacing-40 (framework='1rem', client='18px') → inserted as indus-foods-spacing-40
+- CONFLICT: spacing-50 (framework='1.5rem', client='22px') → inserted as indus-foods-spacing-50
+- CONFLICT: spacing-60 (framework='2rem', client='28px') → inserted as indus-foods-spacing-60
+- CONFLICT: spacing-70 (framework='3rem', client='40px') → inserted as indus-foods-spacing-70
+- CONFLICT: spacing-80 (framework='4rem', client='64px') → inserted as indus-foods-spacing-80
 - CONFLICT: shadow-floating (framework='0 8px 30px rgba(0,0,0,0.12)', client='0px 2px 4px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 4%, transparent), 0px 8px 16px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent), 0px 24px 48px -8px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent), 0px 48px 96px -16px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)') → inserted as indus-foods-shadow-floating
 - CONFLICT: shadow-glow (framework='0 0 20px rgba(248,122,31,0.3)', client='0px 0px 16px 0px color-mix(in srgb, var(--wp--preset--color--primary) 55%, transparent), 0px 0px 40px 0px color-mix(in srgb, var(--wp--preset--color--primary) 28%, transparent)') → inserted as indus-foods-shadow-glow
 
@@ -112,17 +125,24 @@ Inserted: 0 | Skipped: 33 | Conflicts: 31
 
 ### mamas-munches-redesign
 
-Inserted: 22 | Skipped: 22 | Conflicts: 11
+Inserted: 7 | Skipped: 37 | Conflicts: 18
 
+- CONFLICT: font-size-small (framework='14px', client='11px') → inserted as mamas-munches-redesign-font-size-small
+- CONFLICT: font-size-large (framework='20px', client='17px') → inserted as mamas-munches-redesign-font-size-large
+- CONFLICT: font-size-x-large (framework='24px', client='22px') → inserted as mamas-munches-redesign-font-size-x-large
+- CONFLICT: font-size-xx-large (framework='36px', client='24px') → inserted as mamas-munches-redesign-font-size-xx-large
+- CONFLICT: font-size-hero (framework='50px', client='82px') → inserted as mamas-munches-redesign-font-size-hero
 - CONFLICT: font-family-body (framework="'DM Sans', system-ui, sans-serif", client='Karla, system-ui, sans-serif') → inserted as mamas-munches-redesign-font-family-body
 - CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client='"Young Serif", Georgia, serif') → inserted as mamas-munches-redesign-font-family-heading
 - CONFLICT: font-family-display (framework="Fraunces, 'DM Serif Display', Georgia, serif", client='"Young Serif", Georgia, serif') → inserted as mamas-munches-redesign-font-family-display
-- CONFLICT: spacing-30 (framework='0.75rem', client='1rem') → inserted as mamas-munches-redesign-spacing-30
-- CONFLICT: spacing-40 (framework='1rem', client='1.5rem') → inserted as mamas-munches-redesign-spacing-40
-- CONFLICT: spacing-50 (framework='1.5rem', client='2rem') → inserted as mamas-munches-redesign-spacing-50
-- CONFLICT: spacing-60 (framework='2rem', client='3rem') → inserted as mamas-munches-redesign-spacing-60
-- CONFLICT: spacing-70 (framework='3rem', client='5rem') → inserted as mamas-munches-redesign-spacing-70
-- CONFLICT: spacing-80 (framework='4rem', client='8rem') → inserted as mamas-munches-redesign-spacing-80
+- CONFLICT: spacing-10 (framework='0.25rem', client='2px') → inserted as mamas-munches-redesign-spacing-10
+- CONFLICT: spacing-20 (framework='0.5rem', client='6px') → inserted as mamas-munches-redesign-spacing-20
+- CONFLICT: spacing-30 (framework='0.75rem', client='8px') → inserted as mamas-munches-redesign-spacing-30
+- CONFLICT: spacing-40 (framework='1rem', client='10px') → inserted as mamas-munches-redesign-spacing-40
+- CONFLICT: spacing-50 (framework='1.5rem', client='12px') → inserted as mamas-munches-redesign-spacing-50
+- CONFLICT: spacing-60 (framework='2rem', client='14px') → inserted as mamas-munches-redesign-spacing-60
+- CONFLICT: spacing-70 (framework='3rem', client='16px') → inserted as mamas-munches-redesign-spacing-70
+- CONFLICT: spacing-80 (framework='4rem', client='28px') → inserted as mamas-munches-redesign-spacing-80
 - CONFLICT: shadow-floating (framework='0 8px 30px rgba(0,0,0,0.12)', client='0px 2px 4px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 4%, transparent), 0px 8px 16px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent), 0px 24px 48px -8px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent), 0px 48px 96px -16px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)') → inserted as mamas-munches-redesign-shadow-floating
 - CONFLICT: shadow-glow (framework='0 0 20px rgba(248,122,31,0.3)', client='0px 0px 16px 0px color-mix(in srgb, var(--wp--preset--color--primary) 55%, transparent), 0px 0px 40px 0px color-mix(in srgb, var(--wp--preset--color--primary) 28%, transparent)') → inserted as mamas-munches-redesign-shadow-glow
 
