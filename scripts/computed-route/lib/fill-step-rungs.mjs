@@ -12,12 +12,12 @@ import { setAttr } from './tree.mjs';
 import { breakpointSteps } from './fill-values.mjs';
 import { mediaRule, scopedCssPuts, snapThreshold, snapEntry, TIER_RANGES } from './fill-width-gate.mjs';
 import { rowTarget } from './fill-regap.mjs';
+import { SAFE_SLOT } from './custom-css-writer.mjs';
 
 // The writes whose value a read width stands for: a per-device or single value written from the tier reads.
 const READ_HOW = [ 'tiers', 'single' ];
 const TIER_READ = { mobile: 375, tablet: 768, desktop: 1440 };
 const SAFE_VALUE = /^[\w\s#%.,()+/"'-]*$/;
-const SAFE_SLOT = /^[\w\s.#>:()+~[\]="'*-]*$/;
 
 const tierOf = ( w ) => Object.keys( TIER_RANGES ).find( ( t ) => TIER_RANGES[ t ][ 0 ] <= w && w < TIER_RANGES[ t ][ 1 ] );
 const px = ( v ) => ( /^-?[\d.]+px$/.test( String( v ) ) ? parseFloat( v ) : null );

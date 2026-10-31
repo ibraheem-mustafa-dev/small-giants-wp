@@ -136,7 +136,8 @@ test( 'MUST FAIL, end to end: a code value its render overrides is written as re
 	const recs = result.confirm.filter( ( c ) => 'color' === c.property && 'sgs/heading' === c.block );
 	assert.deepEqual( recs.map( ( c ) => [ c.width, c.verdict ] ), [ [ 375, 'render-wins' ], [ 768, 'render-wins' ], [ 1440, 'render-wins' ] ] );
 	assert.equal( recs[ 0 ].declared, 'rgb(255, 0, 0)' );
-	for ( const w of result.writes.filter( ( x ) => ! x.prop.startsWith( '(' ) && 'motion' !== x.how ) ) {
+	// A Custom CSS rule for a declaration no setting holds stays a gap row the walker judges, so it has no confirm record.
+	for ( const w of result.writes.filter( ( x ) => ! x.prop.startsWith( '(' ) && ! [ 'motion', 'custom-css' ].includes( x.how ) ) ) {
 		assert.ok( result.confirm.some( ( c ) => c.node === w.node && c.attribute === w.attr && c.property === w.prop ), `${ w.node } ${ w.attr } (${ w.prop }) has a confirm record` );
 	}
 } );

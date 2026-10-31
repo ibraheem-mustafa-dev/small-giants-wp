@@ -2,6 +2,7 @@
 // framework work for the surface, known before the first build; the handover list is Solve's shape (§3.3).
 import { handoverCounts, HANDOVER_OWNERS } from './fill-handover.mjs';
 import { HELD_REASONS, heldCounts } from './fill-held.mjs';
+import { routeWrittenRules } from './custom-css-writer.mjs';
 
 // Why a value Fill read ends with nothing written and nothing unwritten (lib/fill-resolve-element.mjs::settled): `equal`, the
 // element already shows it; `already-set`, the tree already holds the setting's value; `used-size`, the rendered value is a
@@ -38,7 +39,7 @@ const table = ( head, rows ) => ( rows.length ? [ `| ${ head.join( ' | ' ) } |`,
 // row was read in, null at rest, which lib/confirm-live.mjs::judgeUnmapped judges by). A `no-setting` row keeps the `code`,
 // `checks` and `unchecked` fields the resolver recorded (lib/fill-resolve-element.mjs::checksRan): lib/gap-classes.mjs::mapResolverGap
 // classes the row from them.
-export const unmappedList = ( unmapped ) => unmapped.map( ( u ) => ( { property: u.property, value: u.value, node: u.node, reason: u.reason, block: u.block, slot: u.slot ?? '', state: u.state ?? null, ...( u.nodes?.length > 1 ? { nodes: u.nodes } : {} ), ...( u.code ? { code: u.code } : {} ), ...( u.checks ? { checks: u.checks } : {} ), ...( u.unchecked ? { unchecked: u.unchecked } : {} ) } ) );
+export const unmappedList = ( unmapped ) => unmapped.map( ( u ) => ( { property: u.property, value: u.value, node: u.node, reason: u.reason, block: u.block, slot: u.slot ?? '', state: u.state ?? null, ...( u.nodes?.length > 1 ? { nodes: u.nodes } : {} ), ...( u.code ? { code: u.code } : {} ), ...( u.appliedCss ? { appliedCss: u.appliedCss } : {} ), ...( u.checks ? { checks: u.checks } : {} ), ...( u.unchecked ? { unchecked: u.unchecked } : {} ) } ) );
 
 // The property an UNMAPPED row names for a draft read that failed: no one property was read.
 export const READ_FAILED = '(declared read)';
@@ -86,7 +87,7 @@ export function supersededWrites( writes ) {
 
 // r: { client, surface, draft (the page or folder read), nodes (count), targets (count), writes, unmapped, notes,
 // handover, spacing, fluid, held, snaps, steps (breakpoint log), entrances: [{ node, block, measured | null }],
-// customCssGaps (lib/fill-step-rungs.mjs `gaps`), scale?: the sweep was skipped }. Returns { markdown, json }. A write a later
+// customCssGaps (lib/fill-step-rungs.mjs and lib/fill-custom-css.mjs `gaps`), scale?: the sweep was skipped }. Returns { markdown, json }. A write a later
 // write replaced (supersededWrites) stays in `writes` marked `supersededBy` (the later write's index) and is not counted.
 export function fillReport( r ) {
 	const replaced = supersededWrites( r.writes );
@@ -98,16 +99,18 @@ export function fillReport( r ) {
 	const heldBy = heldCounts( held );
 	const settled = r.settled || [];
 	const settledBy = settledCounts( settled );
+	const cssRules = routeWrittenRules( writes );
 	const json = {
 		client: r.client, surface: r.surface, draft: r.draft, nodes: r.nodes, targets: r.targets,
-		counts: { writes: live, superseded: replaced.size, customCssGaps: gaps.length, unmapped: r.unmapped.length, handover: r.handover.length, notes: r.notes.length, fluid: r.fluid.length, breakpointSteps: r.steps.length, ledgerHeld: r.held.length, alreadyHeld: { total: held.length, ...heldBy }, patchKeys: ( r.snapshotPatch?.entries || [] ).length, unread: ( r.unread || [] ).length, settled: { total: settled.length, ...settledBy }, confirm: ( r.confirm || [] ).length },
-		writes, customCssGaps: gaps, unmapped: unmappedList( r.unmapped ), alreadyHeld: held.map( ( h ) => ( { property: h.property, value: h.value, node: h.node, block: h.block, slot: h.slot ?? '', state: h.state ?? null, reason: h.heldReason, detail: h.heldDetail } ) ), handover: r.handover, handoverByOwner: counts, spacing: r.spacing, fluid: r.fluid, breakpoints: r.steps, entrances: r.entrances, ledger: r.held, snaps: r.snaps, notes: r.notes, snapshotPatch: r.snapshotPatch || { file: null, entries: [] }, unread: r.unread || [], settled, confirm: r.confirm || [],
+		counts: { writes: live, superseded: replaced.size, customCssRules: cssRules.length, customCssGaps: gaps.length, unmapped: r.unmapped.length, handover: r.handover.length, notes: r.notes.length, fluid: r.fluid.length, breakpointSteps: r.steps.length, ledgerHeld: r.held.length, alreadyHeld: { total: held.length, ...heldBy }, patchKeys: ( r.snapshotPatch?.entries || [] ).length, unread: ( r.unread || [] ).length, settled: { total: settled.length, ...settledBy }, confirm: ( r.confirm || [] ).length },
+		writes, customCssRules: cssRules, customCssGaps: gaps, unmapped: unmappedList( r.unmapped ), alreadyHeld: held.map( ( h ) => ( { property: h.property, value: h.value, node: h.node, block: h.block, slot: h.slot ?? '', state: h.state ?? null, reason: h.heldReason, detail: h.heldDetail } ) ), handover: r.handover, handoverByOwner: counts, spacing: r.spacing, fluid: r.fluid, breakpoints: r.steps, entrances: r.entrances, ledger: r.held, snaps: r.snaps, notes: r.notes, snapshotPatch: r.snapshotPatch || { file: null, entries: [] }, unread: r.unread || [], settled, confirm: r.confirm || [],
 	};
 	const L = [
 		`# Fill: ${ r.surface }`, '',
 		`Client ${ r.client }. Draft: ${ r.draft }. ${ r.nodes } nodes, ${ r.targets } measured elements (draftRef and draftSlots). Fill writes rest-state styles, spacing, presence, words, links and motion (each node's sgsMotion: entrances and hover moves) in one root-down pass; hover, focus and active colour states are Solve's.`, '',
 		'| What | Count |', '|---|---|',
 		`| Settings written | ${ live } (and ${ replaced.size } a later write on the same setting replaced, marked \`supersededBy\`) |`,
+		`| Custom CSS the route wrote (each block's scoped rules, by pass) | ${ cssRules.length } |`,
 		`| Custom-CSS rules with a gaps row (the native control each could become) | ${ gaps.length } |`,
 		`| UNMAPPED (framework work, known before the first build) | ${ r.unmapped.length } |`,
 		`| Handover (content outside the tree) | ${ r.handover.length } (${ HANDOVER_OWNERS.map( ( o ) => `${ o } ${ counts[ o ] }` ).join( ', ' ) }) |`,
@@ -134,6 +137,9 @@ export function fillReport( r ) {
 		...table( [ 'Owner', 'Kind', 'Node', 'Element', 'Evidence', 'Reason' ], r.handover.map( ( h ) => [ h.owner, h.kind, h.node, h.slot, h.evidence, h.reason ] ) ),
 		'## Settings written', '',
 		...table( [ 'Node', 'Block', 'Element', 'Property', 'Setting', 'Before', 'After', 'Tiers', 'How' ], writes.map( ( w, i ) => [ w.node, w.block, w.slot, w.prop, w.attr, w.before, w.after, w.widths.join( ',' ), `${ w.read ? `${ w.how } (read ${ w.read }: the render did not confirm it)` : w.how }${ replaced.has( i ) ? ` (superseded by write ${ replaced.get( i ) })` : '' }` ] ) ),
+		'## Route-written Custom CSS', '',
+		'Every rule the route wrote into a block\'s Custom CSS box (`sgsCustomCss`, scoped to the instance, labelled in `sgsCustomCssNote`), whichever pass wrote it: `custom-css` a draft declaration no setting holds, `width-gate` a width gate, width ladder or step ladder, `motion-css` an endless loop.', '',
+		...table( [ 'Node', 'Block', 'Pass', 'Rule', 'Label' ], cssRules.map( ( c ) => [ c.node, c.block, c.how, c.css, c.label ] ) ),
 			'## Custom-CSS gaps', '',
 			...table( [ 'Node', 'Block', 'Element', 'Properties', 'Native control', 'Rule' ], gaps.map( ( g ) => [ g.node, g.block, g.slot, g.properties.join( ', ' ), g.control, g.css ] ) ),
 		'## Theme snapshot patch', '',

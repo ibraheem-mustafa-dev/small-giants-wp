@@ -18,6 +18,7 @@ import { openWords } from './motion-states.mjs';
 import { setRecord } from './motion-set.mjs';
 import { stateRows } from './state-vocab.mjs';
 import { setAttr } from './tree.mjs';
+import { customCssPuts } from './custom-css-writer.mjs';
 import { templateKey, templateKeyOf } from './fact-key.mjs';
 import { staggerPlans, applyStagger } from './fill-motion-stagger.mjs';
 import { positionsByTemplate } from './motion-behaviour-settings.mjs';
@@ -209,23 +210,24 @@ export function writeNode( n, doc, pending, { flat, ref, schema, out, reads } ) 
 }
 
 // Writes a node's endless-loop CSS into its Additional CSS box (`sgsCustomCss`, scoped to the block instance by
-// includes/custom-css.php): appended to what the box holds, with the scope key and the note naming each record.
+// includes/custom-css.php) through the one Custom CSS writer (lib/custom-css-writer.mjs::customCssPuts): appended to what
+// the box holds, with the scope key and a route-written label naming each record. A loop the scoper refuses is a row.
 function writeLoopCss( n, items, { flat, ref, out } ) {
 	const node = flat[ n.index ];
-	const had = ( a ) => node.attributes?.[ a ] || '';
 	// A loop the box already holds (a re-run over a written tree) is not added again.
-	const fresh = items.filter( ( i ) => ! had( 'sgsCustomCss' ).includes( i.css ) );
+	const fresh = items.filter( ( i ) => ! ( node.attributes?.sgsCustomCss || '' ).includes( i.css ) );
 	if ( ! fresh.length ) {
 		return;
 	}
-	const css = [ had( 'sgsCustomCss' ), ...fresh.map( ( i ) => i.css ) ].filter( Boolean ).join( ' ' );
-	const note = [ had( 'sgsCustomCssNote' ), ...fresh.map( ( i ) => `Loop ${ i.record.id }: ${ i.record.name }` ) ].filter( Boolean ).join( '; ' );
-	// The scope key includes/custom-css.php::sgs_custom_css_uid accepts: 4 to 16 lowercase letters and digits.
-	const id = `loop${ String( fresh[ 0 ].record.id ).toLowerCase().replace( /[^a-z0-9]/g, '' ) }`.slice( 0, 16 );
-	const values = { sgsCustomCss: css, sgsCustomCssId: had( 'sgsCustomCssId' ) || id, sgsCustomCssNote: note };
-	for ( const [ attr, value ] of Object.entries( values ) ) {
+	const ids = items.map( ( i ) => i.record.id ).join( ', ' );
+	const puts = customCssPuts( node, { css: fresh.map( ( i ) => i.css ).join( ' ' ), label: fresh.map( ( i ) => `Loop ${ i.record.id }: ${ i.record.name }` ).join( '; ' ), key: `loop${ fresh[ 0 ].record.id }`, why: `loop css ${ ids }` } );
+	if ( puts.refused ) {
+		out.unmapped.push( { node: ref, block: n.name, slot: '', property: 'motion', value: ids, reason: `custom-css-refused: the Custom CSS scoper refuses the loop CSS: ${ puts.refused.join( '; ' ) }` } );
+		return;
+	}
+	for ( const { attr, value } of puts ) {
 		const { before, after } = setAttr( node, { attr, value } );
-		out.writes.push( { node: ref, block: n.name, slot: '', prop: `loop css ${ items.map( ( i ) => i.record.id ).join( ', ' ) }`, attr, before, after, widths: [], how: 'motion-css' } );
+		out.writes.push( { node: ref, block: n.name, slot: '', prop: `loop css ${ ids }`, attr, before, after, widths: [], how: 'motion-css' } );
 	}
 }
 

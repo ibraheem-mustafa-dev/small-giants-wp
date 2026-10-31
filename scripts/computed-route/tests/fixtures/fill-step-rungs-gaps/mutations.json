@@ -4,5 +4,5 @@
 	{"file": "lib/fill-step-rungs.mjs", "find": "rule.props.includes( m.g.prop ) || rule.props.push( m.g.prop );", "replace": "", "why": "the row would name no property"},
 	{"file": "lib/fill-step-rungs.mjs", "find": "const edges = r.range.filter( ( e ) => 0 !== e && Infinity !== e && ! tiers.includes( e ) );", "replace": "const edges = r.range.filter( ( e ) => 0 !== e && Infinity !== e );", "why": "the control would ask for a step at a tier boundary the setting already holds"},
 	{"file": "lib/fill-step-rungs.mjs", "find": "g.attrs.includes( w.attr ) || g.attrs.push( w.attr );", "replace": "", "why": "the row would name no native control"},
-	{"file": "lib/fill-report.mjs", "find": "writes, customCssGaps: gaps, unmapped:", "replace": "writes, unmapped:", "why": "the run report would drop the gaps rows"}
+	{"file": "lib/fill-report.mjs", "find": "customCssGaps: gaps, unmapped:", "replace": "unmapped:", "why": "the run report would drop the gaps rows"}
 ]

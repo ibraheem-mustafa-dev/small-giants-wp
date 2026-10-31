@@ -38,14 +38,16 @@ const KNOWN = new Set( allEntries( readInventoryFile() ).map( ( e ) => e.id ) );
 const snapshot = { palette: [ { slug: 'primary', colour: parseColour( '#0a7ea8' ) } ], spacing: [], fontSizes: [] };
 
 // One rule per covered CSS group, each on a property a setting paints (tests/fill-css-groups.test.mjs holds the group list),
-// and two groups kept as gaps (their properties have no setting) so the planted draft also shows them still raised.
+// and one group kept as a gap (their properties have no setting) so the planted draft also shows them still raised.
 const GROUP_CSS = {
 	'css-group:backgrounds-and-borders': 'background-repeat:no-repeat', 'css-group:box-sizing': 'max-width:1200px', 'css-group:display': 'order:2',
 	'css-group:filter-effects': 'backdrop-filter:blur(8px)', 'css-group:flexible-box-layout': 'flex-direction:column', 'css-group:grid-layout': 'grid-template-columns:100px 100px 100px',
 	'css-group:positioned-layout': 'top:10px', 'css-group:scalable-vector-graphics': 'stroke-width:2px', 'css-group:scrollbars-styling': 'scrollbar-width:thin',
 	'css-group:text-decoration': 'text-decoration-thickness:2px', 'css-group:webkit-extensions': '-webkit-text-stroke-width:2px',
+	// Closed by the Custom CSS writer (lib/fill-custom-css.mjs::COVERAGE_WRITES): no setting holds them, the scoped rule does.
+	'css-group:overflow': 'overflow-x:hidden', 'css-group:basic-user-interface': 'cursor:pointer',
 };
-const KEPT_GAPS = { 'css-group:overflow': 'overflow-x:hidden', 'css-group:basic-user-interface': 'cursor:pointer', 'css-group:overscroll-behavior': 'overscroll-behavior-x:contain' };
+const KEPT_GAPS = { 'css-group:overscroll-behavior': 'overscroll-behavior-x:contain' };
 const RULES = { ...GROUP_CSS, ...KEPT_GAPS };
 const CSS = Object.values( RULES ).map( ( d, i ) => `.g${ i }{${ d }}` ).join( '\n' );
 const SOURCES = [ { component: 'Page', stamped: { elements: [ { n: '1', tag: 'style', attrs: [], body: CSS }, ...Object.keys( RULES ).map( ( _, i ) => ( { n: String( i + 2 ), tag: 'div', attrs: [ [ 'class', `g${ i }` ] ] } ) ) ] } } ];

@@ -42,6 +42,7 @@ import { partStateSlots } from './fill-state-parts.mjs';
 import { partPresent } from './fill-part-present.mjs';
 import { createPatch, tokenRoute, pickValue, pressVariant, ownedBySetting, applyTokenLooks, conflictRow, ringLook, restShadow } from './fill-state-tokens.mjs';
 import { focusSharesHover, settleFocusRests } from './fill-state-focus.mjs';
+import { STATE_UNHELD } from './fill-custom-css.mjs';
 
 export { focusSharesHover };
 
@@ -236,7 +237,7 @@ export function holdDefaults( { node, ref, rec, target, cal, db, snapshot, reads
 	// A text colour and its ground, held together.
 	const ground = groundOf( rest );
 	const PAIR = [ 'color', ground ];
-	const gapRow = ( prop, state, why ) => ( { node: ref, block: rec.name, slot: target.slot, property: prop, state, value: JSON.stringify( rest[ prop ] || {} ), reason: `default-state: ${ rec.name } changes ${ prop } on ${ state } by itself and the draft does not, and nothing holds it (${ why })` } );
+	const gapRow = ( prop, state, why ) => ( { node: ref, block: rec.name, slot: target.slot, property: prop, state, value: JSON.stringify( rest[ prop ] || {} ), code: STATE_UNHELD, reason: `default-state: ${ rec.name } changes ${ prop } on ${ state } by itself and the draft does not, and nothing holds it (${ why })` } );
 	for ( const state of interaction ) {
 		const look = defaultStateLook( cal, state, rest, ctx.at );
 		const plan = [];
