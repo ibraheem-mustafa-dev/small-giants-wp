@@ -144,7 +144,7 @@ const LINE_LENGTH = {
 // (`channel: 'whatsapp'`). A background on an element at least nine tenths of the reading's width is a band (`band:
 // true`), and a painted line sums the pixels it draws (`length`: the box width for a top or bottom border, its height
 // for a side, its perimeter for an outline).
-export function paletteUsage( records, grounds = new Map(), texts = new Map(), channels = new Map() ) {
+export function paletteUsage( records, grounds = new Map(), texts = new Map(), channels = new Map(), words = null ) {
 	const counts = new Map();
 	for ( const r of records ) {
 		const c = r.computed || {};
@@ -159,9 +159,10 @@ export function paletteUsage( records, grounds = new Map(), texts = new Map(), c
 			const ground = 'color' === property ? colourHex( grounds.get( at ) ) : null;
 			const text = 'color' === property && texts.has( at );
 			const channel = channels.get( at ) ?? null;
+			const wordy = text && words ? words.has( at ) : null;
 			const band = 'background-color' === property && ( r.box?.w ?? 0 ) >= 0.9 * ( r.width || 1440 );
-			const k = [ hex, property, draftId, tag, ground, text, channel, band ].join( '\u0000' );
-			const u = counts.get( k ) || { hex, property, draftId, count: 0, ...( tag ? { tag } : {} ), ...( ground ? { ground } : {} ), ...( text ? { text } : {} ),
+			const k = [ hex, property, draftId, tag, ground, text, wordy, channel, band ].join( '\u0000' );
+			const u = counts.get( k ) || { hex, property, draftId, count: 0, ...( tag ? { tag } : {} ), ...( ground ? { ground } : {} ), ...( text ? { text } : {} ), ...( null !== wordy ? { words: wordy } : {} ),
 				...( channel ? { channel } : {} ), ...( band ? { band } : {} ) };
 			u.count++;
 			if ( text ) {

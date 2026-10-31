@@ -14,7 +14,7 @@ import path from 'path';
 import { colourHex } from './tokens.mjs';
 
 // In-page. in: [ rootSelector ]. { page: { ground, text, htmlBg, bodyBg }, grounds: { [path]: colour }, texts: { [path]:
-// characters }, channels: { [path]: the address of the link the element sits in }, footers: [{ path, ground, own }] } with raw computed colour strings;
+// characters }, words: { [path]: true when the element's own text holds a letter or digit, not only a glyph }, channels: { [path]: the address of the link the element sits in }, footers: [{ path, ground, own }] } with raw computed colour strings;
 // `path` is the reading record's path for the same element.
 export function readGrounds( [ rootSelector ] ) {
 	const painted = ( c ) => !! c && 'transparent' !== c && ! /^rgba\([^)]*,\s*0\)$/.test( c );
@@ -51,6 +51,7 @@ export function readGrounds( [ rootSelector ] ) {
 	const linkOf = ( e ) => { const a = e.closest( 'a[href]' ); return a ? a.getAttribute( 'href' ).trim() : ''; };
 	const grounds = {};
 	const texts = {};
+	const words = {};
 	const channels = {};
 	if ( root ) {
 		for ( const e of [ root, ...root.querySelectorAll( '[data-dc-tpl]' ) ] ) {
@@ -59,6 +60,7 @@ export function readGrounds( [ rootSelector ] ) {
 				grounds[ at ] = groundOf( e );
 				const n = ownText( e );
 				n && ( texts[ at ] = n );
+				n && /[\p{L}\p{N}]/u.test( [ ...e.childNodes ].filter( ( c ) => 3 === c.nodeType ).map( ( c ) => c.textContent ).join( ' ' ) ) && ( words[ at ] = true );
 				linkOf( e ) && ( channels[ at ] = linkOf( e ) );
 			}
 		}
@@ -66,7 +68,7 @@ export function readGrounds( [ rootSelector ] ) {
 	const marks = [ ...document.querySelectorAll( 'footer, [role="contentinfo"]' ) ];
 	const footers = marks.filter( ( f ) => ! marks.some( ( o ) => o !== f && o.contains( f ) ) ).filter( ( f ) => f.getClientRects().length > 0 )
 		.map( ( f ) => ( { path: root && root.contains( f ) ? pathOf( f ) : f.tagName.toLowerCase(), ground: groundOf( f ), own: painted( bg( f ) ) } ) );
-	return { page: { ground, text: body ? getComputedStyle( body ).color : getComputedStyle( html ).color, htmlBg: bg( html ), bodyBg: body ? bg( body ) : null }, grounds, texts, channels, footers };
+	return { page: { ground, text: body ? getComputedStyle( body ).color : getComputedStyle( html ).color, htmlBg: bg( html ), bodyBg: body ? bg( body ) : null }, grounds, texts, words, channels, footers };
 }
 
 // The colours the draft's code gives its live status messages, painted or not at rest: an element whose markup is a
