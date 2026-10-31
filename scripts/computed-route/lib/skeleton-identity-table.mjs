@@ -163,11 +163,6 @@ export function identityTable( query, codeRepo = null ) {
 			roleShare.has( k ) || roleShare.set( k, [ ...known ].filter( ( b ) => 'yes' === state( b, f, value ) ).length / Math.max( 1, known.size ) );
 			return roleShare.get( k );
 		}
-		if ( 'renders-role' === fact ) {
-			const k = K( 'renders-role', value );
-			roleShare.has( k ) || roleShare.set( k, [ ...known ].filter( ( b ) => 'yes' === state( b, 'renders-role', value ) ).length / Math.max( 1, known.size ) );
-			return roleShare.get( k );
-		}
 		return ( yesBlocks.get( K( fact, value ) )?.size ?? 0 ) / Math.max( 1, factBlocks.get( fact )?.size ?? 0 );
 	};
 	// The platforms a block belongs to (its `platform` rows at yes).
