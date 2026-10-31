@@ -1168,7 +1168,7 @@ function sgs_overlay_decls( ?string $colour, ?string $gradient, $opacity = null,
  *                `background-image:linear-gradient(...);-webkit-background-clip:text;background-clip:text;color:transparent`),
  *                or an empty string if $value is empty or an invalid gradient.
  */
-function sgs_text_colour_decl( ?string $value ): string {
+function sgs_text_colour_decl( ?string $value, bool $localise = false, string $align = '' ): string {
 	$value = trim( (string) $value );
 
 	if ( '' === $value ) {
@@ -1185,7 +1185,43 @@ function sgs_text_colour_decl( ?string $value ): string {
 		return '';
 	}
 
-	return 'background-image:' . $gradient . ';-webkit-background-clip:text;background-clip:text;color:transparent';
+	$decl = 'background-image:' . $gradient . ';-webkit-background-clip:text;background-clip:text;color:transparent';
+	if ( $localise ) {
+		$decl .= ';' . sgs_text_gradient_box_decls( $align );
+	}
+
+	return $decl;
+}
+
+/**
+ * Declarations that make a text-gradient element paint its own full gradient over its own text.
+ *
+ * A block-level element is as wide as its container, so a `background-clip:text` gradient is
+ * stretched across that width and the text shows only a slice of it. Sizing the element to its
+ * text (`width:fit-content;max-width:100%`) gives each element its own gradient box, and
+ * `box-decoration-break:clone` repaints it on every wrapped line. Shrinking the box would move
+ * centred or right-aligned text, so the inline margins carry the alignment: from `$align`
+ * (left/start none, center auto both sides, right/end auto at the start) or, when `$align` is
+ * 'inherit' or empty, from `--sgs-text-ms` / `--sgs-text-me`, which a stylesheet sets where it
+ * sets `text-align`.
+ *
+ * @param string $align left, start, center, right, end, or '' / 'inherit' to read the custom properties.
+ * @return string Declarations without a trailing semicolon.
+ */
+function sgs_text_gradient_box_decls( string $align = '' ): string {
+	$box = 'width:fit-content;max-width:100%;-webkit-box-decoration-break:clone;box-decoration-break:clone';
+	switch ( strtolower( trim( $align ) ) ) {
+		case 'left':
+		case 'start':
+			return $box . ';margin-inline:0';
+		case 'center':
+			return $box . ';margin-inline:auto';
+		case 'right':
+		case 'end':
+			return $box . ';margin-inline-start:auto;margin-inline-end:0';
+		default:
+			return $box . ';margin-inline-start:var(--sgs-text-ms,0);margin-inline-end:var(--sgs-text-me,0)';
+	}
 }
 
 /**
@@ -1224,6 +1260,43 @@ function sgs_text_colour_gradient_fallback_rule( string $selector, ?string $valu
 	}
 
 	return '@supports not ((background-clip:text) or (-webkit-background-clip:text)){' . $selector . '{background-image:none;color:' . esc_attr( $fallback_colour ) . ';}}';
+}
+
+/**
+ * Rules that carry a block's text colour (resting and hover, flat or gradient) onto the
+ * text elements inside it that paint their own `color`.
+ *
+ * A wrapper colour reaches a child only through inheritance, so a child that a stylesheet
+ * gives its own `color` ignores it. This prints the same declarations on each child
+ * (`$root_sel . $suffix`) so the control governs them; hover is keyed on the root being
+ * hovered or focused and does not need a resting colour.
+ *
+ * @param string   $root_sel      Scoped root selector (uid-prefixed).
+ * @param string[] $child_suffixes Selector suffixes with a leading space, e.g. ' .sgs-x__title'.
+ * @param string   $normal_value  Resolved resting value (flat colour or gradient), '' for none.
+ * @param string   $hover_value   Resolved hover value (flat colour or gradient), '' for none.
+ * @param bool     $localise      Give each gradient child its own gradient box (sgs_text_gradient_box_decls()); the '' suffix (the root) is never resized.
+ * @param string   $align         The children's text-align for sgs_text_gradient_box_decls().
+ * @return string[] CSS rules, in cascade order.
+ */
+function sgs_text_colour_child_rules( string $root_sel, array $child_suffixes, string $normal_value, string $hover_value, bool $localise = false, string $align = '' ): array {
+	$rules       = array();
+	foreach ( $child_suffixes as $suffix ) {
+		$box         = $localise && '' !== $suffix;
+		$normal_decl = sgs_text_colour_decl( $normal_value, $box, $align );
+		$hover_decl  = sgs_text_colour_decl( $hover_value, $box, $align );
+		$child_sel   = $root_sel . $suffix;
+		if ( '' !== $normal_decl ) {
+			$rules[] = "{$child_sel}{" . $normal_decl . ';}';
+			$rules[] = sgs_text_colour_gradient_fallback_rule( $child_sel, $normal_value );
+		}
+		if ( '' !== $hover_decl ) {
+			$rules[] = sgs_hover_state_rules( $root_sel, $hover_decl, ':focus-visible', $suffix );
+			$rules[] = sgs_text_colour_gradient_fallback_rule( $root_sel . ':hover' . $suffix, $hover_value );
+		}
+	}
+
+	return array_values( array_filter( $rules ) );
 }
 
 /**

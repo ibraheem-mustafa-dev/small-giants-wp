@@ -103,13 +103,17 @@
 						"css:font-style": "titleFontStyle",
 						"tag": "headingLevel",
 						"css:-webkit-text-stroke-width": "titleTextStrokeWidth",
-						"css:-webkit-text-stroke-color": "titleTextStrokeColour"
+						"css:-webkit-text-stroke-color": "titleTextStrokeColour",
+						"css:color": "titleColour",
+						"css:color-gradient": "titleColourGradient"
 					},
 					"_note": "Typography full-replacement migration (D971/D972, 2026-09-06) — the WP-native `supports.typography` support (fontSize/lineHeight/fontWeight/fontStyle) that used to paint this element via the declared `selectors.typography: '.sgs-timeline__title'` is REMOVED; replaced by the shared `TypographyControls` component (edit.js) + `sgs_typography_css_rule()` helper (render.php), scoped to `.sgs-timeline__title` exactly as the old native selector was. `letterSpacing`/`textTransform`/`textAlign` were also native sub-flags on this block's old `supports.typography` and have NO shared-component equivalent (mirrors sgs/accordion's own declared gaps for letterSpacing/textTransform/fontFamily) — dropped as honest gaps, not carried forward. No independent title colour control exists (colour is the shared wrapper `color.text`) — pre-existing honest gap. `attrMap.tag` — `headingLevel` sets the rendered tag on this element (render.php) and this element has an explicit `prefix`, but `tag` is not a CSS property so it still needs its own map entry.",
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:-webkit-text-stroke-color": "titleTextStrokeColourHover"
+								"css:-webkit-text-stroke-color": "titleTextStrokeColourHover",
+								"css:color": "titleColourHover",
+								"css:color-gradient": "titleColourHoverGradient"
 							}
 						}
 					}
@@ -180,6 +184,28 @@
 						}
 					},
 					"_note": "dateColour drives `--sgs-date-colour`, applied via a `:not([style*='color'])` CSS fallback on `.sgs-timeline__date` (style.scss:358-360) so an inline colour override always wins. Resolves via default convention (`date`+`Colour`). dateColourGradient/Hover/HoverGradient (2026-09-07, colour-conformance TEXT closeout, corrected same session) are routed through the standard text-colour trio in render.php, scoped to `.sgs-timeline__date` directly — NOT the sgs_custom_property_gradient_decls() background-image chain a first pass mistakenly copied from connectorColour (a FILL/background attribute) — dateColour paints text (color:), which that mechanism cannot express."
+				},
+				"description-text": {
+					"selector": ".sgs-timeline__description",
+					"motion": false,
+					"label": "Description",
+					"order": 1,
+					"clusters": [
+						"text"
+					],
+					"prefix": "descriptionText",
+					"attrMap": {
+						"css:color": "descriptionTextColour",
+						"css:color-gradient": "descriptionTextColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "descriptionTextColourHover",
+								"css:color-gradient": "descriptionTextColourHoverGradient"
+							}
+						}
+					}
 				},
 				"description": {
 					"selector": ".sgs-timeline__description a",
@@ -502,7 +528,8 @@
 		},
 		"dateColour": {
 			"type": "string",
-			"default": "accent"
+			"default": "",
+			"description": "Date text colour. Empty follows the generic text colour (textColour), then the inherited text colour."
 		},
 		"dateColourGradient": {
 			"type": "string",
@@ -518,6 +545,46 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the date text on :hover/:focus-visible via background-clip:text. Non-empty wins over dateColourHover; falls back to dateColourGradient, then none."
+		},
+		"titleColour": {
+			"type": "string",
+			"default": "",
+			"description": "Entry title text colour. Empty follows the generic text colour (textColour / textColourHover)."
+		},
+		"titleColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Entry title text gradient (CSS string, wins over the flat colour). Empty follows the generic text colour (textColour / textColourHover)."
+		},
+		"titleColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Entry title text colour on :hover/:focus-visible. Empty follows the generic text colour (textColour / textColourHover)."
+		},
+		"titleColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Entry title text gradient on :hover/:focus-visible. Empty follows the generic text colour (textColour / textColourHover)."
+		},
+		"descriptionTextColour": {
+			"type": "string",
+			"default": "",
+			"description": "Entry description text colour. Empty follows the generic text colour (textColour / textColourHover)."
+		},
+		"descriptionTextColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Entry description text gradient (CSS string, wins over the flat colour). Empty follows the generic text colour (textColour / textColourHover)."
+		},
+		"descriptionTextColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Entry description text colour on :hover/:focus-visible. Empty follows the generic text colour (textColour / textColourHover)."
+		},
+		"descriptionTextColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Entry description text gradient on :hover/:focus-visible. Empty follows the generic text colour (textColour / textColourHover)."
 		},
 		"descriptionLinkColour": {
 			"type": "string",

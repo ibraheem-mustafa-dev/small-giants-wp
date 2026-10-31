@@ -246,6 +246,11 @@ if ( '' !== $wrapper_text_hover_decl ) {
 	$scoped_css[] = sgs_hover_state_rules( $root_sel, $wrapper_text_hover_decl );
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel . ':hover', $wrapper_text_hover_value );
 }
+// The expired message paints its own colour in style.scss and has no colour control of its own, so the wrapper colour is carried onto it.
+$scoped_css = array_merge(
+	$scoped_css,
+	sgs_text_colour_child_rules( $root_sel, array( ' .sgs-countdown__expired' ), $wrapper_text_colour_value, $wrapper_text_hover_value, true, (string) ( $attributes['textAlign'] ?? '' ) )
+);
 if ( '' !== $wrapper_bg_paint_decl ) {
 	$scoped_css[] = sgs_block_background_layer_css( $root_sel, $wrapper_bg_paint_decl );
 }

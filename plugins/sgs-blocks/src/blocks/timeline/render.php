@@ -117,7 +117,7 @@ $connector_colour_gradient = $attributes['connectorColourGradient'] ?? '';
 // before-after's handleColour.
 $connector_colour_hover          = $attributes['connectorColourHover'] ?? '';
 $connector_colour_hover_gradient = $attributes['connectorColourHoverGradient'] ?? '';
-$date_colour                     = $attributes['dateColour'] ?? 'accent';
+$date_colour                     = $attributes['dateColour'] ?? '';
 // dateColourGradient/Hover(Gradient) (2026-09-07, colour-conformance TEXT closeout)
 // — same sgs_custom_property_gradient_decls() 5-arg form proven on textColour below.
 $date_colour_gradient       = $attributes['dateColourGradient'] ?? '';
@@ -322,22 +322,46 @@ if ( '' !== $bg_paint_decl ) {
 // --- Text colour trio (Task 1, 2026-09-07) — base + gradient + hover, routed
 // via custom properties. Gradient sibling wins over flat; hover chain falls back
 // to resting → CSS default, matching before-after/post-grid precedent. ---
-$text_colour_flat = sgs_resolve_text_colour_or_gradient( $style_color_text, sgs_css_gradient_value( $text_colour_gradient ) );
-if ( '' !== $text_colour_flat || '' !== sgs_css_gradient_value( $text_colour_gradient ) ) {
-	$text_decl = sgs_text_colour_decl( $text_colour_flat );
-	if ( '' !== $text_decl ) {
-		$scoped_css[] = "{$root_sel}{" . $text_decl . ';}';
-		// Fallback for browsers without background-clip:text support.
-		$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel, $text_colour_flat );
-	}
-	// Hover state.
-	$text_colour_hover_flat = sgs_resolve_text_colour_or_gradient( $text_colour_hover, sgs_css_gradient_value( $text_colour_hover_gradient ) );
-	if ( '' !== $text_colour_hover_flat || '' !== sgs_css_gradient_value( $text_colour_hover_gradient ) ) {
-		$text_hover_decl = sgs_text_colour_decl( $text_colour_hover_flat );
-		if ( '' !== $text_hover_decl ) {
-			$scoped_css[] = sgs_hover_state_rules( $root_sel, $text_hover_decl );
-		}
-	}
+// The generic text colour is the default for the entry title, date and description;
+// each one's own colour (flat or gradient, resting or hover) replaces it. The three
+// paint their own `color` in style.scss, so each gets its own scoped rule, and a
+// gradient is localised to the element so every one paints its full gradient. Hover
+// is independent of the resting colour, keyed on the root being hovered or focused.
+$text_colour_flat       = sgs_resolve_text_colour_or_gradient( $style_color_text, sgs_css_gradient_value( $text_colour_gradient ) );
+$text_colour_hover_flat = sgs_resolve_text_colour_or_gradient( $text_colour_hover, sgs_css_gradient_value( $text_colour_hover_gradient ) );
+$scoped_css             = array_merge( $scoped_css, sgs_text_colour_child_rules( $root_sel, array( '' ), $text_colour_flat, $text_colour_hover_flat ) );
+$text_targets           = array(
+	array(
+		' .sgs-timeline__title',
+		(string) ( $attributes['titleTextAlign'] ?? '' ),
+		sgs_resolve_text_colour_or_gradient( (string) ( $attributes['titleColour'] ?? '' ), sgs_css_gradient_value( (string) ( $attributes['titleColourGradient'] ?? '' ) ) ),
+		sgs_resolve_text_colour_or_gradient( (string) ( $attributes['titleColourHover'] ?? '' ), sgs_css_gradient_value( (string) ( $attributes['titleColourHoverGradient'] ?? '' ) ) ),
+	),
+	array(
+		' .sgs-timeline__date',
+		'',
+		sgs_resolve_text_colour_or_gradient( $date_colour, sgs_css_gradient_value( $date_colour_gradient ) ),
+		sgs_resolve_text_colour_or_gradient( $date_colour_hover, sgs_css_gradient_value( $date_colour_hover_gradient ) ),
+	),
+	array(
+		' .sgs-timeline__description',
+		'',
+		sgs_resolve_text_colour_or_gradient( (string) ( $attributes['descriptionTextColour'] ?? '' ), sgs_css_gradient_value( (string) ( $attributes['descriptionTextColourGradient'] ?? '' ) ) ),
+		sgs_resolve_text_colour_or_gradient( (string) ( $attributes['descriptionTextColourHover'] ?? '' ), sgs_css_gradient_value( (string) ( $attributes['descriptionTextColourHoverGradient'] ?? '' ) ) ),
+	),
+);
+foreach ( $text_targets as list( $text_suffix, $text_align, $own_normal, $own_hover ) ) {
+	$scoped_css = array_merge(
+		$scoped_css,
+		sgs_text_colour_child_rules(
+			$root_sel,
+			array( $text_suffix ),
+			'' !== $own_normal ? $own_normal : $text_colour_flat,
+			'' !== $own_hover ? $own_hover : $text_colour_hover_flat,
+			true,
+			$text_align
+		)
+	);
 }
 
 // Two-state link colour (Task 3, 2026-09-07) — the per-entry description
@@ -566,19 +590,6 @@ $wrapper_style_parts = array_merge(
 // stylesheet's flat `.sgs-timeline__date{color:var(--sgs-date-colour)}` rule.
 // Also gives dateColourHover a touch-safe hover pair via sgs_hover_state_rules()
 // instead of style.scss's raw (non-touch-guarded) `:hover` selector.
-$date_sel              = $root_sel . ' .sgs-timeline__date';
-$date_colour_effective = sgs_resolve_text_colour_or_gradient( $date_colour, $date_colour_gradient );
-$date_decl             = sgs_text_colour_decl( $date_colour_effective );
-if ( '' !== $date_decl ) {
-	$scoped_css[] = "{$date_sel}{" . $date_decl . ';}';
-	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $date_sel, $date_colour_effective );
-}
-$date_colour_hover_effective = sgs_resolve_text_colour_or_gradient( $date_colour_hover, $date_colour_hover_gradient );
-$date_hover_decl             = sgs_text_colour_decl( $date_colour_hover_effective );
-if ( '' !== $date_hover_decl ) {
-	$scoped_css[] = sgs_hover_state_rules( $date_sel, $date_hover_decl );
-	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $date_sel . ':hover', $date_colour_hover_effective );
-}
 if ( $progress_fill && $fill_colour ) {
 	$fill_colour_gradient = $attributes['connectorFillColourGradient'] ?? '';
 	// connectorFillColourHover/HoverGradient (colour-conformance FILL closeout,

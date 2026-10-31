@@ -27,7 +27,6 @@
 .sgs-timeline {
 	--sgs-connector-colour: var(--wp--preset--color--border, #0d5557);
 	--sgs-timeline-fill-colour: var(--wp--preset--color--accent, #f87a1f);
-	--sgs-date-colour: var(--wp--preset--color--accent, #f87a1f);
 	--sgs-node-size: 16px;
 	--sgs-connector-width: 2px;
 }
@@ -460,6 +459,8 @@
 	.sgs-timeline__date {
 		grid-column: 1;
 		text-align: right;
+		--sgs-text-ms: auto;
+		--sgs-text-me: 0;
 		padding-right: var(--wp--preset--spacing--20, 1rem);
 	}
 
@@ -472,6 +473,8 @@
 		grid-column: 3;
 		grid-row: 1;
 		text-align: left;
+		--sgs-text-ms: 0;
+		--sgs-text-me: 0;
 	}
 }
 
@@ -481,6 +484,8 @@
 		grid-column: 3;
 		grid-row: 1;
 		text-align: left;
+		--sgs-text-ms: 0;
+		--sgs-text-me: 0;
 		padding-left: var(--wp--preset--spacing--20, 1rem);
 	}
 
@@ -493,6 +498,8 @@
 		grid-column: 1;
 		grid-row: 1;
 		text-align: right;
+		--sgs-text-ms: auto;
+		--sgs-text-me: 0;
 	}
 }
 
@@ -514,6 +521,8 @@
 		grid-column: 1;
 		grid-row: 1;
 		text-align: right;
+		--sgs-text-ms: auto;
+		--sgs-text-me: 0;
 		padding-right: var(--wp--preset--spacing--20, 1rem);
 		padding-left: 0;
 	}
@@ -527,6 +536,8 @@
 		grid-column: 3;
 		grid-row: 1;
 		text-align: left;
+		--sgs-text-ms: 0;
+		--sgs-text-me: 0;
 	}
 }
 
@@ -538,6 +549,8 @@
 		grid-column: 3;
 		grid-row: 1;
 		text-align: left;
+		--sgs-text-ms: 0;
+		--sgs-text-me: 0;
 		padding-left: var(--wp--preset--spacing--20, 1rem);
 		padding-right: 0;
 	}
@@ -551,6 +564,8 @@
 		grid-column: 1;
 		grid-row: 1;
 		text-align: right;
+		--sgs-text-ms: auto;
+		--sgs-text-me: 0;
 	}
 }
 
@@ -592,6 +607,8 @@
 	.sgs-timeline__content {
 		grid-column: 2;
 		text-align: left;
+		--sgs-text-ms: 0;
+		--sgs-text-me: 0;
 	}
 
 	.sgs-timeline__date {
@@ -629,6 +646,8 @@
 			grid-column: 1;
 			grid-row: 1;
 			text-align: right;
+			--sgs-text-ms: auto;
+			--sgs-text-me: 0;
 			padding-left: 0;
 			padding-right: var(--wp--preset--spacing--20, 1rem);
 		}
@@ -642,6 +661,8 @@
 			grid-column: 3;
 			grid-row: 1;
 			text-align: left;
+			--sgs-text-ms: 0;
+			--sgs-text-me: 0;
 			padding-left: 0;
 		}
 	}
@@ -793,6 +814,8 @@
 	flex-direction: column;
 	align-items: center;
 	text-align: center;
+	--sgs-text-ms: auto;
+	--sgs-text-me: auto;
 	padding: 0 var(--wp--preset--spacing--20, 1rem);
 	scroll-snap-align: start;
 	list-style: none;
@@ -819,6 +842,8 @@
 .sgs-timeline--horizontal .sgs-timeline__content {
 	order: 3;
 	text-align: center;
+	--sgs-text-ms: auto;
+	--sgs-text-me: auto;
 }
 
 // =============================================================================
@@ -982,7 +1007,7 @@
  * operator's own `.{uid} .sgs-…` rule at (0,2,0), which is the
  * whole point of removing the old :not([style*=…]) guard. */
 .sgs-timeline__date {
-	color: var(--sgs-date-colour);
+	color: var(--sgs-date-colour, inherit);
 }
 
 // dateColourGradient/Hover(Gradient) (2026-09-07, colour-conformance TEXT
@@ -1131,6 +1156,8 @@
 		flex-direction: row;
 		align-items: flex-start;
 		text-align: left;
+		--sgs-text-ms: 0;
+		--sgs-text-me: 0;
 		gap: var(--wp--preset--spacing--20, 1rem);
 		padding: 0 0 var(--wp--preset--spacing--30, 1.5rem) 0;
 		scroll-snap-align: none;
@@ -1150,6 +1177,8 @@
 	.sgs-timeline--horizontal .sgs-timeline__content {
 		order: 2;
 		text-align: left;
+		--sgs-text-ms: 0;
+		--sgs-text-me: 0;
 		padding: 0;
 	}
 
@@ -1194,6 +1223,8 @@
 				grid-column: 2;
 				grid-row: 2;
 				text-align: left;
+				--sgs-text-ms: 0;
+				--sgs-text-me: 0;
 				padding: 0 0 0 var(--wp--preset--spacing--20, 1rem);
 			}
 
@@ -1206,6 +1237,8 @@
 				grid-column: 2;
 				grid-row: 1;
 				text-align: left;
+				--sgs-text-ms: 0;
+				--sgs-text-me: 0;
 				padding-left: var(--wp--preset--spacing--20, 1rem);
 			}
 		}
@@ -1678,6 +1711,8 @@
 			grid-column: auto;
 			grid-row: auto;
 			text-align: left;
+			--sgs-text-ms: 0;
+			--sgs-text-me: 0;
 			padding-left: 0;
 			padding-right: 0;
 		}
@@ -1709,6 +1744,8 @@
 	margin: 0;
 	font-variant-numeric: tabular-nums;
 	text-align: end;
+	--sgs-text-ms: auto;
+	--sgs-text-me: 0;
 }
 
 @media (min-width: 768px) {
