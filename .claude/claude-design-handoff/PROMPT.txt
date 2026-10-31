@@ -10,6 +10,11 @@ Prepare this project for handoff to Claude Code. Work through every step without
 8. Compare the handoff folder with the file map in CLAUDE.md. Remove anything the map doesn't allow (planning documents, earlier page versions, notes, skill folders, the trace harness) and add anything missing.
 9. Last, write MANIFEST.json in the handoff folder, valid against handoff-schema/manifest.schema.json: every file in the folder except MANIFEST.json, with its size and SHA-256, and entry_drafts naming the draft(s) a visitor starts from.
 
+While you work, check the drafts' text and widgets against how the clone reads them, and fix any draft that breaks these:
+- Inline formatting inside a text element is kept: write bold (strong, b), italic (em, i), strikethrough (s, del), links (a) and line breaks (br) as ordinary content inside the element. Never flatten them to plain text or split one sentence across several elements to fake them.
+- Lists, tabs, accordions and breadcrumbs are read by their meaning, not their tag or class names. Use real lists (ul, ol with li), give each widget its correct ARIA roles and states (role="tablist", "tab" and "tabpanel" with aria-selected; a button with aria-expanded and aria-controls for each accordion panel; a nav with an aria-label holding an ordered list for a breadcrumb, with aria-current on the current page), and make the behaviour match (one tab open at a time; panels that open and close). A class called "tabs" on a plain div is not a tab set.
+- Do not add data-sgs-block tags or any other SGS block names to the drafts. Natural names (data-part ids, class names, headings) are enough.
+
 Follow the rules in CLAUDE.md throughout. If I ask for any change after this, run this whole prompt again and I'll download the whole folder again.
 
 When done, reply briefly: record counts; the reconciled totals (.animate( sites, transitions, pseudo rules, routes, toggling sc-ifs); each unresolved item, phrased as a question when it needs my decision; and, last, the full list of file paths in the handoff folder. Don't paste the JSON.

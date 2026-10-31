@@ -141,6 +141,8 @@ A block whose stylesheet lays repeated items out as a flex row declares `css:fle
 
 Keyboard focus is one system (`theme/sgs-theme/assets/css/focus.css`, Spec 32 §14.5): `scripts/check-focus-system.js --check` fails any block rule that draws its own focus outline or box-shadow, suppresses one, or reads a retired focus token (blocks hand in `--sgs-focus-under` and `--sgs-focus-offset` instead). `scripts/check-snapshot-focus-tokens.py` (contrast as warnings only) is not wired into any gate tier: contrast never blocks or distracts a build (Bean, 2026-10-24).
 
+New authored text and repeater fields (Spec 02 §11 and §12): a new text setting whose words the author types is rich text unless proven otherwise (`<SgsFreeTextField type="rich" />` in the inspector, `sgs_rich_text_kses()` in the PHP print, `sgs_authored_text_plain()` in an attribute or JS string); a setting that cannot hold markup is listed in `scripts/data/authored-text-rich.json::unconvertible` with a cited proof. `scripts/check-authored-text-rich.py --check` (fast tier) refuses a plain authored setting without one. Every `items.properties.<field>` of a repeater declares a `role` from `scripts/data/roles.json` (`glyph` for a symbol copied verbatim); `scripts/check-item-field-roles.py --check` (fast tier) refuses a field without one. An item icon is drawn through `sgs_get_lucide_icon()`.
+
 ## Where the rest of this file moved
 
 Seven path-scoped rule files in `.claude/rules/` load when you touch their paths:

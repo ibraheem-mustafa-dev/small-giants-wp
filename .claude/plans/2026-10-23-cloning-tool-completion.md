@@ -59,7 +59,7 @@ This plan continues `plans/2026-10-21-handoff-readers.md` (its Track T next line
    - This plan's Status for the wave's items, the FR Status lines and `scripts/computed-route/README.md`.
    - Bean gets one line at each merge.
 
-**The queue file** (`.claude/queue.md`, append-only, committed and pushed with each line).
+**The queue file** (`.claude/queue.md`, each line committed and pushed as it is written; a `/handoff` deletes the finished start and end pairs).
 
 The handoff-readers plan's lines still apply:
 - `F reseed-start/done`
