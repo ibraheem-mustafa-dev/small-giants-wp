@@ -239,6 +239,24 @@ export default function Edit({ attributes, setAttributes }) {
         result = scrape_allowed_blocks(edit)
         assert result is None
 
+    def test_comment_mentioning_allowed_blocks_is_no_declaration(self, tmp_path: Path) -> None:
+        """MUST FAIL: a comment saying there is no allowedBlocks restriction is no declaration (sgs/site-header-row): None, never unknown."""
+        edit = _write_edit_js(tmp_path, """
+// No allowedBlocks restriction: the row accepts ANY block.
+/* allowedBlocks: [ 'core/group' ] was removed */
+const url = 'https://example.org/blocks';
+export default function Edit() { return null; }
+""")
+        assert scrape_allowed_blocks(edit) is None
+
+    def test_declaration_after_a_comment_is_still_read(self, tmp_path: Path) -> None:
+        """Negative control: a real declaration beside a comment is read as before."""
+        edit = _write_edit_js(tmp_path, """
+// allowedBlocks below
+const ALLOWED_BLOCKS = [ 'sgs/tab' ]; // only tabs
+""")
+        assert scrape_allowed_blocks(edit) == ["sgs/tab"]
+
     def test_empty_allowed_blocks_array_is_unknown(self, tmp_path: Path) -> None:
         """allowedBlocks: [] (empty array) is unknown, never "accepts any block"."""
         edit = _write_edit_js(tmp_path, """
