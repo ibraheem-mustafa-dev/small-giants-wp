@@ -466,6 +466,42 @@ def test_roster_guard_names_every_missing_slug(pts):
     assert pts.roster_guard(trimmed) == ["link-hover", "section"]
 
 
+def _shade_snap(pts):
+    """The complete snapshot turned into a cloned client's shape (FR-32-28): the palette holds three own shades and every
+    framework role is a `colourRoles` pointer (a status role a raw hex)."""
+    snap = _full_roster_snap(pts)
+    _pal(snap)[:] = [{"slug": "ink", "color": "#111111", "name": "Ink"}, {"slug": "paper", "color": "#FFFFFF", "name": "Paper"},
+                     {"slug": "sea", "color": "#0A5C7A", "name": "Sea"}]
+    roster = pts.palette_roster.framework_roster()
+    snap["settings"].setdefault("custom", {})["colourRoles"] = {
+        r: (("#2E7D4F" if r.startswith(("success", "error", "info")) else None) or
+            {"link": "sea", "link-hover": "sea", "surface": "paper", "section": "paper"}.get(r, "ink")) for r in roster}
+    return snap
+
+
+def test_roster_guard_accepts_roles_that_point_at_palette_shades(pts):
+    assert pts.roster_guard(_shade_snap(pts)) == []
+
+
+def test_roster_guard_refuses_a_role_naming_a_missing_shade(pts):
+    snap = _shade_snap(pts)
+    snap["settings"]["custom"]["colourRoles"]["link"] = "no-such-shade"
+    out = pts.roster_guard(snap)
+    assert "link" in out and any("no-such-shade" in x for x in out)
+
+
+def test_roster_guard_refuses_a_snapshot_missing_a_brand_role(pts):
+    snap = _shade_snap(pts)
+    del snap["settings"]["custom"]["colourRoles"]["accent-light"]
+    assert pts.roster_guard(snap) == ["accent-light"]
+
+
+def test_roster_guard_refuses_a_raw_hex_on_a_brand_role(pts):
+    snap = _shade_snap(pts)
+    snap["settings"]["custom"]["colourRoles"]["primary"] = "#123456"
+    assert any("raw hex" in x for x in pts.roster_guard(snap))
+
+
 def test_roster_guard_names_a_missing_layout_token(pts):
     trimmed = _full_roster_snap(pts)
     del trimmed["settings"]["custom"]["gutter"]["tablet"]

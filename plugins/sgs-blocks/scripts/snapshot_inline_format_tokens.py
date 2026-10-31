@@ -64,7 +64,7 @@ def check_snapshot(snapshot: dict) -> list[str]:
     """Problems with this snapshot's inline-format tokens (empty when it passes)."""
     missing = missing_inline_format_keys(snapshot)
     problems = [f"missing key {m}" for m in missing]
-    palette = roster.palette_map(snapshot)
+    palette = roster.effective_palette(snapshot)
     for group, keys in GROUPS.items():
         values = group_of(snapshot, group)
         for key in keys:

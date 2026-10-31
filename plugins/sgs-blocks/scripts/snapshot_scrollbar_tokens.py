@@ -40,7 +40,7 @@ def check_snapshot(snapshot: dict) -> list[str]:
     """Problems with this snapshot's scrollbar tokens (empty when it passes)."""
     problems = [f"missing key {k}" for k in missing_scrollbar_keys(snapshot)]
     absent = set(missing_scrollbar_keys(snapshot))
-    palette = roster.palette_map(snapshot)
+    palette = roster.effective_palette(snapshot)
     scrollbar = scrollbar_of(snapshot)
     grounds = ft.grounds(snapshot)
     for key, tone in THUMB_TONES.items():

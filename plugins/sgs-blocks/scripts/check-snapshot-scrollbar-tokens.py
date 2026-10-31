@@ -48,7 +48,7 @@ def fmt(r: float | None) -> str:
 def cmd_survey(only: list[str] | None) -> int:
     for name, path in targets(only):
         snap = read_json(path)
-        palette = roster.palette_map(snap)
+        palette = roster.effective_palette(snap)
         missing = st.missing_scrollbar_keys(snap)
         print(f"== {name} ({path.relative_to(REPO).as_posix()})")
         print(f"  keys present {len(st.SCROLLBAR_KEYS) - len(missing)}/{len(st.SCROLLBAR_KEYS)}"

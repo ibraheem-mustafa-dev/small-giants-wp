@@ -6,8 +6,9 @@ A snapshot replaces `theme.json` wholesale at push, so a palette slug the snapsh
 for that client. Two assertions, applied to every `sites/*/theme-snapshot.json` alike (no client is
 named or excluded):
 
-  1. Roster: the framework `theme/sgs-theme/theme.json` palette slugs are a subset of the snapshot's
-     slugs. Extra slugs are allowed.
+  1. Roster: every framework `theme/sgs-theme/theme.json` palette slug resolves in the snapshot, as a palette entry
+     or as a `settings.custom.colourRoles` key naming an existing palette slug (a status role may hold a raw hex;
+     FR-32-28). Extra slugs are allowed.
   2. Contrast, at least 4.5:1 per snapshot, on that snapshot's own resolved hex values:
      `section-text` on `section`, `link` on `surface`, `link-hover` on `surface`.
      An unresolvable value is reported as a failure, never skipped.
@@ -56,7 +57,8 @@ def evaluate(snapshot: dict, slugs: list[str]) -> dict:
     rows = roster.contrast_report(snapshot)
     # a pair whose slug is missing is already reported under `missing`
     bad = [r for r in rows if r["status"] in ("low", "unresolvable")]
-    return {"missing": missing, "rows": rows, "bad": bad, "shown": core_presets_shown(snapshot)}
+    return {"missing": missing, "invalid": roster.invalid_colour_roles(snapshot, slugs), "rows": rows, "bad": bad,
+            "shown": core_presets_shown(snapshot)}
 
 
 def scan(repo: Path) -> tuple[list[str], dict[str, dict]]:
@@ -66,7 +68,7 @@ def scan(repo: Path) -> tuple[list[str], dict[str, dict]]:
         label = path.parent.name
         out[label] = evaluate(json.loads(path.read_text(encoding="utf-8")), slugs)
     framework = json.loads(framework_file(repo).read_text(encoding="utf-8"))
-    out["(framework theme.json)"] = {"missing": [], "rows": [], "bad": [], "shown": core_presets_shown(framework)}
+    out["(framework theme.json)"] = {"missing": [], "invalid": [], "rows": [], "bad": [], "shown": core_presets_shown(framework)}
     return slugs, out
 
 
@@ -96,7 +98,10 @@ def run_check(repo: Path) -> int:
     for label, r in result.items():
         for s in r["missing"]:
             failures += 1
-            print("  %s: missing roster slug `%s`" % (label, s))
+            print("  %s: missing roster slug `%s` (neither a palette entry nor a colourRoles key)" % (label, s))
+        for problem in r["invalid"]:
+            failures += 1
+            print("  %s: %s" % (label, problem))
         for key in r["shown"]:
             failures += 1
             print("  %s: settings.color.%s is not false, so WordPress's demo presets are offered (run --fix)" % (label, key))
@@ -120,8 +125,8 @@ def run_survey(repo: Path) -> int:
     print("[check-snapshot-palette-roster] SURVEY\n")
     print("Framework roster (%d): %s\n" % (len(slugs), ", ".join(slugs)))
     for label, r in result.items():
-        print("%s   missing: %s   demo presets shown: %s" % (label, ", ".join(r["missing"]) or "none",
-                                                          ", ".join(r["shown"]) or "none"))
+        print("%s   missing: %s   invalid colourRoles: %s   demo presets shown: %s" % (
+            label, ", ".join(r["missing"]) or "none", "; ".join(r["invalid"]) or "none", ", ".join(r["shown"]) or "none"))
         for row in r["rows"]:
             print("    %-12s on %-8s %-9s on %-9s %s  %s" % (row["fg"], row["bg"], row["fg_hex"], row["bg_hex"],
                                                          row["ratio"], row["status"]))
@@ -167,6 +172,31 @@ def run_self_test() -> int:
                          ("link-hover", "#000066"), ("section", "#EEEEEE"), ("section-text", "#111111"),
                          ("surface", "#FFFFFF")]), slugs)
     assert_("a palette entry that references another slug is resolved", not ref["bad"])
+    # FR-32-28: a cloned client's roles are colourRoles pointers to its own shades
+    def shaded(roles, shades=(("ink", "#111111"), ("mist", "#EEEEEE"), ("sea", "#0000AA"), ("deep", "#000066"), ("white", "#FFFFFF"))):
+        data = snap(list(shades))
+        data["settings"]["custom"] = {"colourRoles": roles}
+        return data
+    pointers = {"heading": "ink", "link": "sea", "link-hover": "deep", "section": "mist", "section-text": "ink", "surface": "white"}
+    ok_roles = evaluate(shaded(pointers), slugs)
+    assert_("colourRoles pointers resolve every roster slug and the pairs are measured on the resolved shades",
+            not ok_roles["missing"] and not ok_roles["invalid"] and not ok_roles["bad"]
+            and [r["ratio"] for r in ok_roles["rows"]][1] > 4.5)
+    dangling = evaluate(shaded({**pointers, "link": "no-such-shade"}), slugs)
+    assert_("a colourRoles key naming a missing palette slug FAILS (and the role is unresolved)",
+            dangling["missing"] == ["link"] and any("no-such-shade" in p for p in dangling["invalid"]))
+    no_brand = {k: v for k, v in pointers.items() if k != "section-text"}
+    assert_("a brand role in neither the palette nor colourRoles FAILS", evaluate(shaded(no_brand), slugs)["missing"] == ["section-text"])
+    raw_brand = evaluate(shaded({**pointers, "link": "#0000AA"}), slugs)
+    assert_("a raw hex on a brand role FAILS", any("raw hex" in p for p in raw_brand["invalid"]))
+    status_slugs = ["success"]
+    raw_status = evaluate(shaded({"success": "#2E7D4F"}), status_slugs)
+    assert_("a raw hex on a status role resolves", not raw_status["missing"] and not raw_status["invalid"])
+    low_resolved = evaluate(shaded({**pointers, "link": "mist"}), slugs)
+    assert_("a pair below 4.5:1 on the resolved shades FAILS", [r["fg"] for r in low_resolved["bad"]] == ["link"])
+    own = evaluate(shaded({"link": "link"}, shades=(("link", "#0000AA"),)), ["link"])
+    assert_("a role pointing at itself FAILS", any("points at itself" in p for p in own["invalid"]))
+
     duo = snap(base)
     del duo["settings"]["color"]["defaultDuotone"]
     assert_("a snapshot that omits defaultDuotone FAILS and names it", evaluate(duo, slugs)["shown"] == ["defaultDuotone"])
