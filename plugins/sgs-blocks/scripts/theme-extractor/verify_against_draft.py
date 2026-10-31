@@ -27,6 +27,7 @@ if str(PKG) not in sys.path:
 
 import confirmed_palette  # noqa: E402
 import declared_tokens  # noqa: E402
+import token_files  # noqa: E402
 from colour import parse_colour  # noqa: E402
 
 REPO = PKG.parents[3]
@@ -49,7 +50,14 @@ def _preset(snap: dict, kind: str, slug: str):
     settings = snap.get("settings") or {}
     if kind == "color":
         rows = (settings.get("color") or {}).get("palette") or []
-        return next((e.get("color") for e in rows if e.get("slug") == slug), None)
+        own = next((e.get("color") for e in rows if e.get("slug") == slug), None)
+        if own is not None:
+            return own
+        # A framework role the palette does not carry points at a shade (or holds a raw hex) in settings.custom.colourRoles.
+        pointed = ((settings.get("custom") or {}).get("colourRoles") or {}).get(slug)
+        if isinstance(pointed, str) and not pointed.startswith("#"):
+            return next((e.get("color") for e in rows if e.get("slug") == pointed), None)
+        return pointed
     if kind == "font-size":
         rows = (settings.get("typography") or {}).get("fontSizes") or []
         return next((e.get("size") for e in rows if e.get("slug") == slug), None)
@@ -92,26 +100,34 @@ def same(expected, got) -> bool:
     return re.sub(r"\s+", "", e) == re.sub(r"\s+", "", g)
 
 
-def palette_expectations(intake: dict | None, baseline: dict) -> list[dict]:
+def palette_expectations(intake: dict | None, baseline: dict, handoff: pathlib.Path | None = None) -> list[dict]:
+    """One row per confirmed slug. A ``custom-<name>`` slug whose every token is an alias (``var(--x)``) is skipped: an
+    alias is no palette entry (FR-32-28), the shade it points at is the entry."""
     if not intake:
         return []
     framework = confirmed_palette.framework_slugs(baseline)
     confirmed, _unmarked = confirmed_palette.confirmed_map(intake, framework, confirmed_palette.framework_colours(baseline))
+    files = token_files.read_token_files(handoff) if handoff else None
+    aliases = {"--" + a for a in (files or {}).get("aliases", set())}
     return [{"role": "palette", "path": f"palette.{slug}", "value": row["hex"],
-             "source": "intake mark " + ", ".join(row.get("tokens") or [])} for slug, row in sorted(confirmed.items())]
+             "source": "intake mark " + ", ".join(row.get("tokens") or [])} for slug, row in sorted(confirmed.items())
+            if not (slug.startswith("custom-") and row.get("tokens") and all(t in aliases for t in row["tokens"]))]
 
 
 def _palette_value(snap: dict, slug: str):
     """A confirmed ``custom-<name>`` the client's snapshot already held as ``<name>`` keeps that slug."""
     got = _preset(snap, "color", slug)
     if got is None and slug.startswith("custom-"):
-        got = _preset(snap, "color", slug[len("custom-"):])
+        name = slug[len("custom-"):]
+        got = _preset(snap, "color", name)
+        if got is None:
+            got = _preset(snap, "color", name + "-shade")
     return got
 
 
 def compare(snap: dict, handoff: pathlib.Path, intake: dict | None, accepted: dict, baseline: dict) -> list[dict]:
     """One row per declared value: ``{role, path, expected, got, source, verdict}`` (match / mismatch / accepted)."""
-    rows = declared_tokens.expectations(declared_tokens.read_roles(handoff), snap) + palette_expectations(intake, baseline)
+    rows = declared_tokens.expectations(declared_tokens.read_roles(handoff), snap) + palette_expectations(intake, baseline, handoff)
     out = []
     for row in rows:
         path = row["path"]

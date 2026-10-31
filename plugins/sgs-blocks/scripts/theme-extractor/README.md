@@ -17,6 +17,10 @@ Add `--patch <file>` (repeatable) to lay Fill's snapshot-shaped `theme-snapshot.
 
 Measuring needs Playwright: from a worktree without `node_modules`, set `NODE_PATH` to the main checkout's `plugins/sgs-blocks/node_modules`.
 
+## The palette is the draft's own shades (Spec 32 FR-32-28)
+
+For an export with `tokens/colors.css`, `shade_palette.py::apply` runs last and replaces `settings.color.palette` with one entry per literal colour token (slug the exact token name, display name without the namespace word most tokens share, so `--mm-cocoa` is "Cocoa"), writes gradient tokens to `settings.color.gradients`, leaves out aliases (`var(--x)`), tokens named for a registry brand (`palette_vocab.py::brand_words`) and one-offs, and writes `settings.custom.colourRoles` (`{role: shade slug}`; a status role the draft has no shade for holds the framework hex). A role's shade comes, weakest first, from the usage proposals the run derived, the draft's alias tokens (`--text-body: var(--ink)` through any chain, named by `scripts/computed-route/data/palette-role-words.json`), then Bean's confirmed intake marks; a role nothing names follows its related role (`palette_vocab.py::ROLE_DEFAULT_TABLE`). A brand role with no shade is printed as `REVIEW:`, traced as `kind: review` and left out of the snapshot (the intake review lists it as a notice row). A shade whose name is also a role slug pointing elsewhere is suffixed `-shade`. A reference to a removed palette slug is renamed to the shade of the same colour. A draft with no colour token is untouched. The theme prints the pointers (`theme/sgs-theme/inc/colour-roles.php`).
+
 ## What wins
 
 1. The export's `tokens/*.css` (a Spec 48A handoff): palette colours through Bean's confirmed intake marks (`confirmed_palette.py`), easings (`motion_tokens.py`), and the typography, gutter and focus values each token's name states (`declared_tokens.py`).
@@ -32,7 +36,7 @@ Section padding is read from the token files but never written; the build route 
 python plugins/sgs-blocks/scripts/theme-extractor/verify_against_draft.py --client <slug> [--snapshot <file>]
 ```
 
-It compares every declared token value and every confirmed palette colour with the snapshot (preset references resolved) and exits 1 on a difference that `sites/<slug>/build/theme-verify-accepted.json` does not list with a reason. `extract.py` prints the same count after each run. A value no token declares comes from the render and is not checked here.
+It compares every declared token value and every confirmed palette colour with the snapshot (preset references resolved) and exits 1 on a difference that `sites/<slug>/build/theme-verify-accepted.json` does not list with a reason. `extract.py` prints the same count after each run. A confirmed `custom-<name>` slug whose tokens are all aliases is skipped (an alias is no palette entry), and a framework role resolves through its `colourRoles` pointer. A value no token declares comes from the render and is not checked here.
 
 ## Tests
 

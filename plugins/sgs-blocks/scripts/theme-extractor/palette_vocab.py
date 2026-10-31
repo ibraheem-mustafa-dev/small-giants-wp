@@ -7,7 +7,9 @@
 from __future__ import annotations
 
 import json
+import os
 import re
+import sqlite3
 from functools import lru_cache
 from pathlib import Path
 
@@ -29,6 +31,30 @@ def brands_with_colour() -> tuple:
 def brand_colours() -> frozenset:
     """Lower-case hex of every registry brand's colour."""
     return frozenset(b["colour"].lower() for b in brands_with_colour())
+
+
+def brand_words() -> frozenset:
+    """The words a colour token's name uses for a registry brand (FR-32-28 excludes such a token from the palette): each
+    brand's slug, the name inside its Site Info key, its label's words (at least three letters) and its aliases, plus the
+    brand of every ``sgs/<brand>-reviews`` block in the framework DB (opened read-only; absent DB adds none)."""
+    names: set = set()
+    for b in brands_with_colour():
+        key = re.match(r"^socials\.([a-z0-9-]+)$", str(b.get("siteInfoKey", "")), re.I)
+        own = [b.get("slug", ""), key.group(1) if key else ""]
+        names.update(str(n).lower() for n in own if len(str(n)) >= 3)
+        names.update(w for w in re.split(r"[^a-z0-9]+", str(b.get("label", "")).lower()) if len(w) >= 3)
+        names.update(str(n).lower() for n in b.get("aliases", []))
+    db = Path(os.environ.get("SGS_FRAMEWORK_DB") or Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db")
+    if db.is_file():
+        conn = sqlite3.connect(f"file:{db.as_posix()}?mode=ro", uri=True)
+        try:
+            for (slug,) in conn.execute("SELECT slug FROM blocks WHERE slug LIKE 'sgs/%-reviews'"):
+                m = re.fullmatch(r"sgs/([a-z0-9]+)-reviews", slug)
+                if m:
+                    names.add(m.group(1))
+        finally:
+            conn.close()
+    return frozenset(names)
 
 
 def brand_row_pattern() -> str:
@@ -108,6 +134,10 @@ ROLE_DEFAULT_TABLE = (
 ROLE_DEFAULT_GROUND = {"heading": "surface", "section-text": "section", "accent-text": "accent-light",
                        "primary-text": "primary", "link": "surface", "link-hover": "surface"}
 MIN_TEXT_CONTRAST = 4.5
+# The status roles: a draft with no shade for one keeps the framework value as raw hex in ``settings.custom.colourRoles``.
+STATUS_ROLE_RE = re.compile(r"^(?:success|error|info)(?:-light)?$")
+# Short words a token name abbreviates, expanded in a shade's display name (the slug stays the exact token name).
+DISPLAY_WORDS = {"acc": "accent", "bg": "background", "fg": "foreground", "wa": "whatsapp"}
 
 # --------------------------------------------------------------------------- shape
 
