@@ -102,6 +102,10 @@ const wrap = ( range, body ) => ( 0 === range[ 0 ] && Infinity === range[ 1 ] ? 
 // whose longhands include it.
 const painted = ( writes, row ) => writes.some( ( w ) => w.node === row.node && ( w.slot ?? '' ) === ( row.slot ?? '' ) && ( w.state ?? null ) === ( row.state ?? null ) && 'string' === typeof w.prop && ( w.prop === row.property || longhandsOf( w.prop ).includes( row.property ) ) );
 
+const escapeRe = ( s ) => String( s ).replace( /[.*+?^${}()|[\]\\]/g, '\\$&' );
+// Whether a Custom CSS text already holds `property: value` in a rule on this selector.
+export const holdsDeclaration = ( css, selector, property, value ) => new RegExp( `${ escapeRe( selector ) }\\s*\\{[^}]*(?:^|[\\s;{])${ escapeRe( property ) }\\s*:\\s*${ escapeRe( value ) }\\s*(?:;|\\})` ).test( css );
+
 // The reason a row is not written as CSS, or null when it can be.
 function refusal( row ) {
 	if ( row.state && ! PSEUDO_CLASS[ row.state ] ) {
@@ -150,6 +154,12 @@ export function customCssWrites( { unmapped, writes, nodes, flat, refOf } ) {
 		const refused = ranges.map( ( r ) => ( { r, why: scoperRefusals( css( r.range, r.value ) ) } ) ).find( ( x ) => x.why.length );
 		if ( refused ) {
 			out.unmapped.push( { ...row, reason: `custom-css-refused: the Custom CSS scoper refuses ${ css( refused.r.range, refused.r.value ) }: ${ refused.why.join( '; ' ) } (${ row.reason })` } );
+			continue;
+		}
+		// A declaration the box already holds (the author's text, or a rule another writer put there) is never written twice.
+		const held = flat[ rec.index ].attributes?.sgsCustomCss || '';
+		if ( ranges.every( ( r ) => holdsDeclaration( held, selector, row.property, r.value ) ) ) {
+			out.unmapped.push( row );
 			continue;
 		}
 		const byRule = rules.get( row.node ) || new Map();

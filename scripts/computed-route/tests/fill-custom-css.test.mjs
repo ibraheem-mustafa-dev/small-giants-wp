@@ -99,3 +99,16 @@ test( 'MUST FAIL: every Custom CSS writer shares one writer, so each rule is lab
 	assert.equal( report.json.counts.customCssRules, 1 );
 	assert.match( report.markdown, /## Route-written Custom CSS[\s\S]*\| n0 \| sgs\/container \| custom-css \| & \{ clip-path: circle\(50%\); \} \|/ );
 } );
+
+test( 'MUST FAIL: a declaration the box already holds is not written twice, and the author\'s text is kept beside a new rule', () => {
+	const authored = '& { clip-path: circle(50%); }';
+	const flat = tree();
+	flat[ 0 ].attributes.sgsCustomCss = authored;
+	const again = customCssWrites( { unmapped: [ row( { property: 'clip-path', value: 'circle(50%)' } ) ], writes: [], nodes: NODES, flat, refOf: ( n ) => n.ref } );
+	assert.equal( flat[ 0 ].attributes.sgsCustomCss, authored );
+	assert.deepEqual( [ again.writes, again.unmapped.length, again.unmapped[ 0 ].appliedCss ], [ [], 1, undefined ] );
+	// Look-alike: the same declaration on a different selector is a new rule, appended after the author's text.
+	const other = customCssWrites( { unmapped: [ row( { slot: '.sgs-x', property: 'clip-path', value: 'circle(50%)' } ) ], writes: [], nodes: NODES, flat, refOf: ( n ) => n.ref } );
+	assert.equal( flat[ 0 ].attributes.sgsCustomCss, `${ authored } & .sgs-x { clip-path: circle(50%); }` );
+	assert.equal( other.writes.length, 3 );
+} );
