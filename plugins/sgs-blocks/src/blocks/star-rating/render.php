@@ -238,7 +238,7 @@ if ( '' !== $wrapper_text_hover_decl ) {
 // The numeric score, label, value and count paint their own colour in the stylesheet, so the wrapper colour is carried onto them.
 $scoped_css = array_merge(
 	$scoped_css,
-	sgs_text_colour_child_rules( $root_sel, array( ' .sgs-star-rating__numeric', ' .sgs-star-rating__label', ' .sgs-star-rating__value', ' .sgs-star-rating__count' ), $wrapper_text_colour_value, $wrapper_text_colour_hover_value )
+	sgs_text_colour_child_rules( $root_sel, array( ' .sgs-star-rating__numeric', ' .sgs-star-rating__label', ' .sgs-star-rating__value', ' .sgs-star-rating__count' ), $wrapper_text_colour_value, $wrapper_text_colour_hover_value, true, (string) ( $attributes['textAlign'] ?? '' ) )
 );
 
 if ( '' !== $wrapper_bg_paint_decl ) {

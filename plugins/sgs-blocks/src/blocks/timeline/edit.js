@@ -356,7 +356,7 @@ function EntryEditor( { entry, onChange, onRemove } ) {
 					tagName="div"
 					value={ entry.description || '' }
 					onChange={ ( val ) => update( 'description', val ) }
-					placeholder={ __( 'Entry description…', 'sgs-blocks' ) }
+					placeholder={ __( 'Description…', 'sgs-blocks' ) }
 					allowedFormats={ RICH_TEXT_BODY }
 					style={ {
 						border: '1px solid #ddd',
@@ -534,6 +534,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		dateColourGradient,
 		dateColourHover,
 		dateColourHoverGradient,
+		titleTextAlign,
+		titleColour,
+		titleColourGradient,
+		titleColourHover,
+		titleColourHoverGradient,
+		descriptionTextColour,
+		descriptionTextColourGradient,
+		descriptionTextColourHover,
+		descriptionTextColourHoverGradient,
 		descriptionLinkColour,
 		descriptionLinkColourGradient,
 		descriptionLinkColourHover,
@@ -644,11 +653,36 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// text needs resolveTextColourPreviewStyle()'s inline-style object, applied
 	// directly to the <time> element, matching how textColour is previewed on
 	// the root above.
-	const dateColourStyle = resolveTextColourPreviewStyle(
-		dateColour,
-		dateColourGradient,
-		colourVar
-	);
+	// The generic text colour is the default for the title, date and description;
+	// each one's own colour (flat or gradient) replaces it. A gradient is sized
+	// to the element so each paints its own (textGradientBoxStyle()).
+	const elementTextStyle = ( ownFlat, ownGradient, align = '' ) =>
+		ownFlat || ownGradient
+			? resolveTextColourPreviewStyle( ownFlat, ownGradient, colourVar, true, align )
+			: resolveTextColourPreviewStyle( textColour, textColourGradient, colourVar, true, align );
+	const dateColourStyle = elementTextStyle( dateColour, dateColourGradient );
+	const titleColourStyle = elementTextStyle( titleColour, titleColourGradient, titleTextAlign );
+	const descriptionColourStyle = elementTextStyle( descriptionTextColour, descriptionTextColourGradient );
+
+	// Hover look for the same three elements, previewed in the canvas with a
+	// scoped rule (an inline style would pin the resting colour). Own hover
+	// colour first, then the generic hover colour; `!important` is editor-only
+	// because the resting colour is an inline style here.
+	const hoverTextRule = ( suffix, ownFlat, ownGradient, align = '' ) => {
+		const style =
+			ownFlat || ownGradient
+				? resolveTextColourPreviewStyle( ownFlat, ownGradient, colourVar, true, align )
+				: resolveTextColourPreviewStyle( textColourHover, textColourHoverGradient, colourVar, true, align );
+		const decls = Object.entries( style )
+			.map( ( [ prop, value ] ) => `${ prop.replace( /[A-Z]/g, ( c ) => `-${ c.toLowerCase() }` ).replace( /^webkit-/, '-webkit-' ) }:${ value } !important` )
+			.join( ';' );
+		return decls ? `#block-${ clientId }:hover .sgs-timeline__${ suffix }{${ decls }}` : '';
+	};
+	const hoverPreviewCss = [
+		hoverTextRule( 'title', titleColourHover, titleColourHoverGradient, titleTextAlign ),
+		hoverTextRule( 'date', dateColourHover, dateColourHoverGradient ),
+		hoverTextRule( 'description', descriptionTextColourHover, descriptionTextColourHoverGradient ),
+	].join( '' );
 
 	// Contract §A: the pre-existing --sgs-connector-colour / --sgs-date-colour
 	// custom-property VALUES stay inline (a `--var:value` is not a property
@@ -1063,9 +1097,77 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						],
 					},
 					{
+						key: 'title',
+						label: __( 'Title colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: titleColour,
+								onChange: ( val ) =>
+									setAttributes( { titleColour: val ?? '' } ),
+								linked: true,
+								gradientValue: titleColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										titleColourGradient: val ?? '',
+									} ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: titleColourHover,
+								onChange: ( val ) =>
+									setAttributes( {
+										titleColourHover: val ?? '',
+									} ),
+								gradientValue: titleColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										titleColourHoverGradient: val ?? '',
+									} ),
+							},
+						],
+					},
+					{
+						key: 'descriptionText',
+						label: __( 'Description colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: descriptionTextColour,
+								onChange: ( val ) =>
+									setAttributes( { descriptionTextColour: val ?? '' } ),
+								linked: true,
+								gradientValue: descriptionTextColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										descriptionTextColourGradient: val ?? '',
+									} ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: descriptionTextColourHover,
+								onChange: ( val ) =>
+									setAttributes( {
+										descriptionTextColourHover: val ?? '',
+									} ),
+								gradientValue: descriptionTextColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										descriptionTextColourHoverGradient: val ?? '',
+									} ),
+							},
+						],
+					},
+					{
 						key: 'descriptionLink',
 						label: __(
-							'Entry description link colour',
+							'Description link colour',
 							'sgs-blocks'
 						),
 						gradientCapable: true,
@@ -1633,6 +1735,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 
 			{ /* ── Editor preview ── */ }
+			{ hoverPreviewCss && <style>{ hoverPreviewCss }</style> }
 			<ol { ...blockProps }>
 				{ entries.map( ( entry, index ) => (
 					<li
@@ -1697,7 +1800,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							<RichText.Content
 								tagName={ HeadingTag }
 								className="sgs-timeline__title"
-								style={ titlePreviewStyle }
+								style={ { ...titlePreviewStyle, ...titleColourStyle } }
 								value={
 									entry.title ||
 									__( 'Entry title', 'sgs-blocks' )
@@ -1707,6 +1810,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								<RichText.Content
 									tagName="div"
 									className="sgs-timeline__description"
+									style={ descriptionColourStyle }
 									value={ entry.description }
 								/>
 							) }

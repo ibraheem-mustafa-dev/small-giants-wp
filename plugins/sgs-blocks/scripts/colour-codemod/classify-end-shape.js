@@ -292,8 +292,8 @@ function detectCurrentShape( php, attr, blockJson ) {
 	const hasResolve = hasResolveDirect || hasResolveViaVar;
 
 	// Pattern 1a: resolve + decl + fallback
-	if ( hasResolve && /sgs_text_colour_decl\(/.test( php ) ) {
-		const hasFallback = /sgs_text_colour_gradient_fallback_rule\(/.test( php );
+	if ( hasResolve && /sgs_text_colour_(?:decl|child_rules)\(/.test( php ) ) {
+		const hasFallback = /sgs_text_colour_(?:gradient_fallback_rule|child_rules)\(/.test( php );
 		return {
 			shape: END_SHAPES.TEXT_GRADIENT.key,
 			evidence: 'sgs_resolve_text_colour_or_gradient(...attributes[\'' + attr + '\']...)',
@@ -309,8 +309,8 @@ function detectCurrentShape( php, attr, blockJson ) {
 	//
 	// Check: do BOTH helpers exist in the file, AND is the attribute referenced
 	// (either directly or via a bound var) in a context where they're called?
-	const hasTextColourDecl = /sgs_text_colour_decl\(/.test( php );
-	const hasTextGradientFallback = /sgs_text_colour_gradient_fallback_rule\(/.test( php );
+	const hasTextColourDecl = /sgs_text_colour_(?:decl|child_rules)\(/.test( php );
+	const hasTextGradientFallback = /sgs_text_colour_(?:gradient_fallback_rule|child_rules)\(/.test( php );
 	if ( hasTextColourDecl && hasTextGradientFallback ) {
 		// Check if the attr is referenced in a binding or direct way that suggests
 		// it's wired to these helpers. Heuristic: if the attr appears anywhere as

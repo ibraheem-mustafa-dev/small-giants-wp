@@ -26,6 +26,7 @@ final class WrapperTextColourReachesChildrenTest extends TestCase {
 		return array(
 			'team-member' => array( 'sgs/team-member', array( 'name' => 'Ann', 'role' => 'CEO', 'bio' => 'Bio text' ), array( 'sgs-team-member__bio' ) ),
 			'star-rating' => array( 'sgs/star-rating', array( 'rating' => 4, 'displayMode' => 'stars', 'showNumeric' => true, 'showLabel' => true, 'label' => 'Great' ), array( 'sgs-star-rating__numeric', 'sgs-star-rating__label', 'sgs-star-rating__value', 'sgs-star-rating__count' ) ),
+			'countdown' => array( 'sgs/countdown-timer', array( 'targetDate' => '2099-01-01T00:00:00' ), array( 'sgs-countdown__expired' ) ),
 		);
 	}
 
@@ -40,9 +41,9 @@ final class WrapperTextColourReachesChildrenTest extends TestCase {
 
 		foreach ( $children as $child ) {
 			$this->assertMatchesRegularExpression( '/ \.' . $child . '\{color:#112233;\}/', $flat, "flat on $child" );
-			$this->assertMatchesRegularExpression( '/ \.' . $child . '\{background-image:linear-gradient\(90deg,#f00,#00f\);-webkit-background-clip:text;background-clip:text;color:transparent;\}/', $grad, "gradient on $child" );
+			$this->assertMatchesRegularExpression( '/ \.' . $child . '\{background-image:linear-gradient\(90deg,#f00,#00f\);-webkit-background-clip:text;background-clip:text;color:transparent;[^}]*\}/', $grad, "gradient on $child" );
 			$this->assertMatchesRegularExpression( '/:hover \.' . $child . '\{color:#445566\}/', $hov, "hover on $child" );
-			$this->assertMatchesRegularExpression( '/:hover \.' . $child . '\{background-image:linear-gradient\(90deg,#f00,#00f\);-webkit-background-clip:text;background-clip:text;color:transparent\}/', $hovg, "hover gradient on $child" );
+			$this->assertMatchesRegularExpression( '/:hover \.' . $child . '\{background-image:linear-gradient\(90deg,#f00,#00f\);-webkit-background-clip:text;background-clip:text;color:transparent[^}]*\}/', $hovg, "hover gradient on $child" );
 		}
 	}
 

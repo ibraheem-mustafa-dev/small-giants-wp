@@ -140,6 +140,33 @@ export function resolveShadowPreviewComposed( shape, colour ) {
 }
 
 /**
+ * Editor twin of `sgs_text_gradient_box_decls()`: sizes a text-gradient element to its text so it paints its own full gradient, and keeps its alignment through its inline margins.
+ *
+ * @param {string} [align] left, start, center, right, end, or '' to read `--sgs-text-ms` / `--sgs-text-me`.
+ * @return {Object} A style fragment.
+ */
+export function textGradientBoxStyle( align = '' ) {
+	const box = {
+		width: 'fit-content',
+		maxWidth: '100%',
+		WebkitBoxDecorationBreak: 'clone',
+		boxDecorationBreak: 'clone',
+	};
+	switch ( String( align ).toLowerCase() ) {
+		case 'left':
+		case 'start':
+			return { ...box, marginInline: 0 };
+		case 'center':
+			return { ...box, marginInline: 'auto' };
+		case 'right':
+		case 'end':
+			return { ...box, marginInlineStart: 'auto', marginInlineEnd: 0 };
+		default:
+			return { ...box, marginInlineStart: 'var(--sgs-text-ms, 0)', marginInlineEnd: 'var(--sgs-text-me, 0)' };
+	}
+}
+
+/**
  * Editor-canvas preview style for a text-colour attribute (D636 Task 1b —
  * the "text" gradient builder). Mirrors the PHP-side
  * `sgs_resolve_text_colour_or_gradient()` + `sgs_text_colour_decl()`
@@ -160,16 +187,19 @@ export function resolveShadowPreviewComposed( shape, colour ) {
  * @param {string}   flatValue      The flat-colour attribute's value — colour/slug/var(). Never a gradient.
  * @param {string}   gradientValue  The sibling `{attr}Gradient` attribute's value.
  * @param {Function} [resolveSolid] Resolver for the flat-colour case (e.g. `colourVar`). Identity if omitted.
+ * @param {boolean}  [localise]     Size a gradient element to its text (textGradientBoxStyle()).
+ * @param {string}   [align]        The element's text-align for textGradientBoxStyle().
  * @return {Object} A style fragment to spread into the element's inline style object.
  */
-export function resolveTextColourPreviewStyle( flatValue, gradientValue, resolveSolid ) {
+export function resolveTextColourPreviewStyle( flatValue, gradientValue, resolveSolid, localise = false, align = '' ) {
 	if ( gradientValue && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( gradientValue ) ) {
-		return {
+		const style = {
 			backgroundImage: gradientValue,
 			WebkitBackgroundClip: 'text',
 			backgroundClip: 'text',
 			color: 'transparent',
 		};
+		return localise ? { ...style, ...textGradientBoxStyle( align ) } : style;
 	}
 	if ( ! flatValue ) {
 		return {};
