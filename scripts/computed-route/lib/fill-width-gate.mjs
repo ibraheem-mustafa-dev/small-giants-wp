@@ -16,6 +16,7 @@
 // condition (`partial`) hides only where its width part is false.
 
 import { setAttr } from './tree.mjs';
+import { customCssPuts } from './custom-css-writer.mjs';
 import fs from 'node:fs';
 import { templateKeyOf, templateKeyOfSelector } from './fact-key.mjs';
 import { DECISIONS_FILE } from './skeleton-facts.mjs';
@@ -137,20 +138,10 @@ export function mediaRule( [ lo, hi ], body = '& { display: none; }' ) {
 	return `@media ${ cond } { ${ body } }`;
 }
 
-// The three settings that hold a scoped rule on a node (Additional CSS, its scope key and its label): [ { attr, value, prop } ]
-// to write, appending to what the node holds; empty when the node already holds the rule text. Every writer of a scoped
-// rule (the width gate, the width ladder) goes through this one function.
-export function scopedCssPuts( node, { css, label, index, why } ) {
-	const had = ( a ) => node.attributes?.[ a ] || '';
-	if ( had( 'sgsCustomCss' ).includes( css ) ) {
-		return [];
-	}
-	return [
-		{ attr: 'sgsCustomCss', value: [ had( 'sgsCustomCss' ), css ].filter( Boolean ).join( ' ' ), prop: `${ why }: scoped @media rule` },
-		{ attr: 'sgsCustomCssId', value: had( 'sgsCustomCssId' ) || `wgate${ index }`.slice( 0, 16 ), prop: `${ why }: scope key` },
-		{ attr: 'sgsCustomCssNote', value: [ had( 'sgsCustomCssNote' ), label ].filter( Boolean ).join( '; ' ), prop: `${ why }: label` },
-	];
-}
+// The three settings that hold a scoped rule on a node (Additional CSS, its scope key and its label), through the one
+// Custom CSS writer (lib/custom-css-writer.mjs::customCssPuts) with the scope key `wgate<index>`: [ { attr, value, prop } ]
+// to write, appending to what the node holds; empty when the node already holds the rule text or the scoper refuses it.
+export const scopedCssPuts = ( node, { css, label, index, why } ) => customCssPuts( node, { css, label, why, key: `wgate${ index }` } );
 
 // The setting each block draws its own alternative below (the nav's burger under its collapse point), as the skeleton
 // rules name it: data/skeleton-decisions.json `rules.navigation.collapseAttribute`, { block: attr }.

@@ -85,8 +85,9 @@ for ( const [ id, prop, value, baseline, other ] of GROUPS ) {
 	} );
 }
 
-// The groups kept as gaps: each property the coverage note names has no setting stored under that exact property (the
-// resolver matches a setting by its exact property), found by DB query.
+// The groups no setting paints: each property the coverage note names has no setting stored under that exact property (the
+// resolver matches a setting by its exact property), found by DB query. Every one but overscroll-behavior is applied
+// through the block's Custom CSS (lib/fill-custom-css.mjs, Bean 2026-10-31) and stays a gap row for a native setting.
 const GAPS = {
 	'basic-user-interface': [ 'accent-color', 'appearance', 'caret-color', 'cursor', 'outline', 'outline-color', 'outline-offset', 'outline-style', 'outline-width', 'pointer-events', 'resize', 'user-select' ],
 	'logical-properties-and-values': [ 'margin-block-start', 'margin-block-end', 'padding-block-start', 'padding-block-end', 'padding-inline-end', 'block-size', 'inline-size', 'inset-block' ],
@@ -97,10 +98,11 @@ const GAPS = {
 	transforms: [ 'scale', 'perspective', 'perspective-origin', 'transform-origin', 'transform-style', 'transform-box', 'backface-visibility' ],
 };
 
-test( 'the groups kept as gaps stay gaps, name only properties no setting is stored under, and their notes name them', () => {
+const CUSTOM_CSS = 'scripts/computed-route/lib/fill-custom-css.mjs#customCssWrites';
+test( 'the groups no setting paints are applied through Custom CSS (overscroll-behavior stays a gap), name only properties no setting is stored under, and their notes name them', () => {
 	for ( const [ group, props ] of Object.entries( GAPS ) ) {
 		const e = COVERAGE[ `css-group:${ group }` ];
-		assert.equal( e.write, null, `${ group } stays a gap` );
+		assert.equal( e.write, 'overscroll-behavior' === group ? null : CUSTOM_CSS, `${ group } is written by ${ 'overscroll-behavior' === group ? 'nothing' : 'the Custom CSS pass' }` );
 		for ( const p of props ) {
 			assert.equal( db.prepare( 'SELECT COUNT(*) n FROM block_attributes WHERE css_property = ?' ).get( p ).n, 0, `a setting is stored under ${ p }: ${ group } is not a gap for it` );
 			assert.ok( e.note.includes( p ), `${ group }'s note names ${ p }` );
