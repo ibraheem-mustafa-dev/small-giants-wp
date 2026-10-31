@@ -58,4 +58,18 @@ describe( 'AuthoredText', () => {
 		expect( render( 'Tom &amp; Jerry 5 < 6' ) ).toContain( 'Tom &amp; Jerry' );
 		expect( render( '<p>wrapped</p>' ) ).toBe( '<span>wrapped</span>' );
 	} );
+
+	test( 'MUST FAIL: an <img> is stripped in a setting without the photo format and stays where the setting holds it; a highlight class likewise', () => {
+		const html = '<img src="https://example.test/a.jpg" alt="a" onerror="x()">Hi <span class="sgs-highlight sgs-highlight--accent">hot</span>';
+		const plain = render( html );
+		expect( plain ).not.toContain( '<img' );
+		expect( plain ).not.toContain( 'sgs-highlight' );
+		expect( plain ).toContain( 'Hi hot' );
+		const photo = render( html, { formats: [ 'sgs/inline-photo' ] } );
+		expect( photo ).toContain( '<img src="https://example.test/a.jpg" alt="a">' );
+		expect( photo ).not.toContain( 'onerror' );
+		expect( photo ).not.toContain( 'sgs-highlight' );
+		expect( render( html, { formats: [ 'sgs/highlight' ] } ) ).toContain( '<span class="sgs-highlight sgs-highlight--accent">hot</span>' );
+		expect( render( '<img src="javascript:x()">', { formats: [ 'sgs/inline-photo' ] } ) ).not.toContain( '<img' );
+	} );
 } );

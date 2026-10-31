@@ -116,7 +116,7 @@ if ( '' !== trim( wp_strip_all_tags( $heading ) ) ) {
 }
 
 if ( '' !== trim( wp_strip_all_tags( $body ) ) ) {
-	echo '<div class="sgs-choice-flow-result__body">' . sgs_rich_text_kses( $body ) . '</div>';
+	echo '<div class="sgs-choice-flow-result__body">' . sgs_rich_text_kses( $body, true, 'body' ) . '</div>';
 }
 
 if ( 'add-to-bag' === $result_action ) {

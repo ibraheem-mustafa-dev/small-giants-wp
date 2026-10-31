@@ -874,7 +874,7 @@ $sgs_tl_loop_i     = 0;
 					<div class="sgs-timeline__content">
 						<<?php echo esc_attr( $heading_level ); ?> class="sgs-timeline__title"><?php echo esc_html( $entry_title ); ?></<?php echo esc_attr( $heading_level ); ?>>
 						<?php if ( $description ) : ?>
-							<div class="sgs-timeline__description"><?php echo sgs_rich_text_kses( $description ); ?></div>
+							<div class="sgs-timeline__description"><?php echo sgs_rich_text_kses( $description, true, 'body' ); ?></div>
 						<?php endif; ?>
 						<?php
 						// The per-entry image used to render HERE, inside the content

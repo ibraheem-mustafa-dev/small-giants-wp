@@ -22,7 +22,11 @@ export function isSafeHref( href ) {
 	return /^(https?:|mailto:|tel:)/i.test( value ) || ( /^\/(?!\/)/.test( value ) );
 }
 
-function build( node, links, key ) {
+const PHOTO = 'sgs/inline-photo';
+const HIGHLIGHT = 'sgs/highlight';
+const highlightClass = ( node ) => String( node.getAttribute( 'class' ) || '' ).split( /\s+/ ).filter( ( t ) => /^sgs-highlight/.test( t ) ).join( ' ' );
+
+function build( node, links, key, formats ) {
 	if ( 3 === node.nodeType ) {
 		return node.nodeValue;
 	}
@@ -36,7 +40,16 @@ function build( node, links, key ) {
 	if ( 'br' === tag ) {
 		return createElement( 'br', { key } );
 	}
-	const children = Array.from( node.childNodes ).map( ( child, i ) => build( child, links, i ) );
+	if ( 'img' === tag ) {
+		const src = String( node.getAttribute( 'src' ) || '' ).trim();
+		return formats.includes( PHOTO ) && /^(https?:|\/(?!\/))/i.test( src )
+			? createElement( 'img', { key, src, alt: node.getAttribute( 'alt' ) || '', width: node.getAttribute( 'width' ) || undefined, height: node.getAttribute( 'height' ) || undefined } )
+			: null;
+	}
+	const children = Array.from( node.childNodes ).map( ( child, i ) => build( child, links, i, formats ) );
+	if ( 'span' === tag && formats.includes( HIGHLIGHT ) && highlightClass( node ) ) {
+		return createElement( 'span', { key, className: highlightClass( node ) }, ...children );
+	}
 	if ( FORMAT_TAGS[ tag ] ) {
 		return createElement( FORMAT_TAGS[ tag ], { key }, ...children );
 	}
@@ -50,13 +63,14 @@ function build( node, links, key ) {
  * @param {*}       value   The typed value (HTML string or plain text).
  * @param {Object}  [opts]
  * @param {boolean} [opts.links=true] Whether a link may stay (false inside a link, button or summary).
+ * @param {string[]} [opts.formats] The setting's extra formats (`sgs/inline-photo`, `sgs/highlight`): kept only where its editor holds them.
  * @return {Array} React nodes.
  */
-export function authoredTextNodes( value, { links = true } = {} ) {
+export function authoredTextNodes( value, { links = true, formats = [] } = {} ) {
 	const html = String( value ?? '' );
 	if ( ! html.includes( '<' ) && ! html.includes( '&' ) ) {
 		return [ html ];
 	}
 	const doc = new window.DOMParser().parseFromString( '<!doctype html><body>' + html, 'text/html' );
-	return Array.from( doc.body.childNodes ).map( ( child, i ) => build( child, links, i ) );
+	return Array.from( doc.body.childNodes ).map( ( child, i ) => build( child, links, i, formats ) );
 }

@@ -160,7 +160,7 @@ if ( $inherit_style ) {
 		'<%1$s %2$s>%3$s</%1$s>',
 		tag_escape( $tag_name ),
 		$wrapper_attrs, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		sgs_rich_text_kses( $text )
+		sgs_rich_text_kses( $text, true, 'body' )
 	);
 	return;
 }
@@ -623,5 +623,5 @@ printf(
 	'<%1$s %2$s>%3$s</%1$s>',
 	tag_escape( $tag_name ),
 	$wrapper_attrs, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	sgs_rich_text_kses( $text )
+	sgs_rich_text_kses( $text, true, 'body' )
 );

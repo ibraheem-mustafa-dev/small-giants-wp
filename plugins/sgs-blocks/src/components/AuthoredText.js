@@ -16,9 +16,10 @@ import { authoredTextNodes } from '../utils/authored-text-nodes';
  * @param {*}       props.value   The typed value (HTML string or plain text).
  * @param {string}  [props.as]    The element to print inside (default `span`).
  * @param {boolean} [props.noLink] Drop links (the text prints inside a link or button).
+ * @param {string[]} [props.formats] The setting's extra formats (`sgs/inline-photo`, `sgs/highlight`); none by default.
  * @param {Object}  [props.rest]  Any other prop goes to that element.
  * @return {JSX.Element} The element holding the rebuilt nodes.
  */
-export default function AuthoredText( { value, as: Tag = 'span', noLink = false, ...rest } ) {
-	return createElement( Tag, rest, ...authoredTextNodes( value, { links: ! noLink } ) );
+export default function AuthoredText( { value, as: Tag = 'span', noLink = false, formats = [], ...rest } ) {
+	return createElement( Tag, rest, ...authoredTextNodes( value, { links: ! noLink, formats } ) );
 }

@@ -909,12 +909,12 @@ if ( class_exists( 'SGS_Media_Element' ) ) {
 // in the scoped <style> block built above (contract §A). ───────────────────
 $summary_html = '';
 if ( '' !== $summary_phrase ) {
-	$summary_html = '<p class="sgs-testimonial__summary">' . sgs_rich_text_kses( $summary_phrase ) . '</p>';
+	$summary_html = '<p class="sgs-testimonial__summary">' . sgs_rich_text_kses( $summary_phrase, true, 'body' ) . '</p>';
 }
 
 $quote_html = '';
 if ( '' !== $quote ) {
-	$quote_html = '<blockquote class="sgs-testimonial__quote">' . sgs_rich_text_kses( $quote ) . '</blockquote>';
+	$quote_html = '<blockquote class="sgs-testimonial__quote">' . sgs_rich_text_kses( $quote, true, 'body' ) . '</blockquote>';
 }
 
 // Attribution: name / role / org — each gated, only emit the cite block if any present.

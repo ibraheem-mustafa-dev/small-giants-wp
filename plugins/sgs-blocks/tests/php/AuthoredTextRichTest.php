@@ -118,4 +118,18 @@ final class AuthoredTextRichTest extends TestCase {
 		$this->assertStringContainsString( 'A <strong>short</strong> film', $html );
 		$this->assertStringNotContainsString( 'aria-label="A <', $html );
 	}
+
+	public function test_an_image_and_a_highlight_survive_only_in_a_setting_that_holds_those_formats(): void {
+		if ( ! function_exists( 'wp_kses_allowed_html' ) ) {
+			$this->markTestSkipped( 'needs the allowlist stub' );
+		}
+		$html = 'Hi <img src="https://example.test/a.jpg" alt="a"> <span class="sgs-highlight sgs-highlight--accent">hot</span>';
+		$free = sgs_rich_text_kses( $html );
+		$this->assertStringNotContainsString( '<img', $free, 'a free-text setting strips the photo' );
+		$this->assertStringNotContainsString( 'sgs-highlight', $free, 'and the highlight class' );
+		$this->assertStringContainsString( 'hot', $free );
+		$body = sgs_rich_text_kses( $html, true, 'body' );
+		$this->assertStringContainsString( '<img', $body, 'a body setting (RICH_TEXT_BODY) keeps the photo' );
+		// (The body highlight span is kept by WordPress's real kses; this test's stub allowlist has no such span.)
+	}
 }
