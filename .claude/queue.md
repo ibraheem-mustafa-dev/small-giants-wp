@@ -84,3 +84,5 @@ The signal between parallel sessions working the cloning tool plan (`.claude/pla
 - 2026-10-31 S intake-end indus-foods,mamas-munches-redesign,eye-care-ward-end (exit 0 each: Mama's 12 min, Eye Care 55, Indus 57; census pass)
 - 2026-10-31 S reseed-start (sgs-update-v2.py from main 72548bb4b: rich-text slice 4's printed markup)
 - 2026-10-31 S reseed-end (exit 0; identity and schema drift clean)
+- 2026-10-31 S reseed-start (sgs-update-v2.py from main: the allowed-blocks scraper fix)
+- 2026-10-31 S reseed-end (exit 0; site-header-row and site-footer-row accept any block; identity and schema drift clean)
