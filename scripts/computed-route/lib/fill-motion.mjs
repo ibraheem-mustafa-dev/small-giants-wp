@@ -255,7 +255,7 @@ export function sameTriggerResolved( records ) {
 // the entry draft's component (lib/fill-motion.mjs::elementKey); loops: sampleMotion()'s loops by target id; offers:
 // lib/motion-effects.mjs::loadEffectOffers; stateVocab: the `states` table rows that give the words meaning "open"
 // (default: the framework DB's). Returns { writes, unmapped, notes } in the shapes fill-resolve.mjs uses.
-export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null, template = null, draftCss = [], hasAttr: givenHasAttr = undefined, db = null, reads = null, calFor = null } ) {
+export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null, template = null, draftCss = [], hasAttr: givenHasAttr = undefined, db = null, reads = null, calFor = null, clientMotion = null } ) {
 	const out = { writes: [], unmapped: [], notes: [], site: [], handover: [] };
 	// Every settings write is checked against the framework DB's attributes: the handle given, else the framework DB itself.
 	const hasAttr = givenHasAttr ?? ( db ? hasAttrOf( db ) : undefined );
@@ -372,7 +372,7 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 				pending.push( target );
 			}
 			used.push( ...applyStagger( { plans: lists, doc, own: m.element, where, out, pending, emArgs: { mdb, ctx, offers: stateOffers } } ) );
-			const fx = elementEffects( own, { mdb, loops: loops[ t.id ] || null, runtimeLoops, cls } );
+			const fx = elementEffects( own, { mdb, loops: loops[ t.id ] || null, runtimeLoops, cls, decided: clientMotion?.[ key ] || null } );
 			used.push( ...fx.css.map( ( c ) => c.record.id ) );
 			out.notes.push( ...fx.notes.map( ( text ) => ( { ...where, text } ) ) );
 			out.unmapped.push( ...fx.unmapped.map( ( u ) => ( { ...where, property: 'motion', value: u.record, reason: u.reason } ) ) );

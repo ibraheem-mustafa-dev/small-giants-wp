@@ -25,7 +25,6 @@
 	{ "file": "lib/catalogue-facets.mjs", "find": "} else if ( raw.every( ( v ) => null == v || 'boolean' === typeof v ) && raw.some( ( v ) => true === v ) ) {", "replace": "} else if ( false ) {", "why": "a true/false field is a range gap" },
 	{ "file": "lib/catalogue-facets.mjs", "find": "\t\t\tkind = 'multi';", "replace": "\t\t\tkind = 'value';", "why": "a list field is called a single value" },
 	{ "file": "lib/catalogue-facets.mjs", "find": "\t\t\tgap( field, `compares its", "replace": "\t\t\tfalse && gap( field, `compares its", "why": "a range is silently dropped" },
-	{ "file": "lib/catalogue-facets.mjs", "find": "\t\t\tgap( field, `meets", "replace": "\t\t\tfalse && gap( field, `meets", "why": "a value the filter offers no choice for is silently dropped" },
 	{ "file": "lib/catalogue-facets.mjs", "find": "names = values.map( ( v ) => ( true === v ? [ name ] : [] ) );", "replace": "names = values.map( () => [ name ] );", "why": "every product carries the boolean term" },
 	{ "file": "lib/catalogue-facets.mjs", "find": "( v === wildcard ? entries.map( ( e ) => e.value ) : [ v ] )", "replace": "[ v ]", "why": "a match-every-choice product carries no term" },
 	{ "file": "lib/catalogue-facets.mjs", "find": "const label = 'boolean' === kind ? terms[ 0 ].name : label0;", "replace": "const label = label0;", "why": "a boolean attribute is named by its switch text" },

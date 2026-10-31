@@ -306,9 +306,6 @@ export function readFacets( ctx, list, fields, { slugify, human } ) {
 			const distinct = uniq( each.flat().filter( ( v ) => v !== wildcard ) );
 			const vocab = vocabularyFor( ctx, distinct, list.array );
 			const entries = vocab ? vocab.entries : distinct.map( ( v ) => ( { value: v, name: v, swatch: null } ) );
-			if ( vocab?.missing.length ) {
-				gap( field, `meets ${ vocab.missing.map( ( v ) => `"${ v }"` ).join( ', ' ) } on products, which the filter's own list offers no choice for; ${ 1 === vocab.missing.length ? 'it is' : 'they are' } not written as terms` );
-			}
 			const nameOf = new Map( entries.map( ( e ) => [ e.value, e.name ] ) );
 			terms = entries.map( ( e ) => ( { name: e.name, swatch: e.swatch } ) );
 			names = each.map( ( vs ) => uniq( vs.flatMap( ( v ) => ( v === wildcard ? entries.map( ( e ) => e.value ) : [ v ] ) ).filter( ( v ) => nameOf.has( v ) ).map( ( v ) => nameOf.get( v ) ) ) );

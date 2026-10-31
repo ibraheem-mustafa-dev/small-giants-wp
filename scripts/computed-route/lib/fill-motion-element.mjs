@@ -218,7 +218,12 @@ export function elementMotion( records, { mdb, ctx, sampled, runtime = [], offer
 // `loops` is the element's sampleMotion() loops by width. Returns { effects: [{ record, effect, values, devices,
 // trigger, notes }], css: [{ record, name, css }], unmapped: [{ record, reason }], notes }. An endless keyframe animation
 // no effect draws becomes `css` (the block's Additional CSS box, lib/motion-loop-css.mjs) when its values are literal.
-export function elementEffects( records, { mdb, loops = null, runtimeLoops = [], cls = {} } ) {
+//
+// `decided` is the client's own decision for this element (sites/<client>/build/skeleton/decisions.json `motion`):
+// { <effect>: { <field>: <value> } }. A field the effect's own range setting holds (the marquee's belowBreakpoint) takes
+// the decided choice in place of the one the draft's measured widths give; a decision naming any other field or a choice
+// the setting does not offer is refused in `unmapped`, never written.
+export function elementEffects( records, { mdb, loops = null, runtimeLoops = [], cls = {}, decided = null } ) {
 	const out = { effects: [], css: [], unmapped: [], notes: [] };
 	// A loop is judged at the widest width the render shows motion on this element at: a loop the draft runs below a breakpoint
 	// only (a mobile ticker) is not running at 1440, and a loop is not refused for not running where the draft never runs it.
@@ -273,6 +278,17 @@ export function elementEffects( records, { mdb, loops = null, runtimeLoops = [],
 				out.notes.push( `${ only }, and written to run at ${ value } width and below (${ range.path })` );
 			} else {
 				out.notes.push( `${ only }; the effect runs at every width (no per-width switch holds it)` );
+			}
+		}
+	}
+	for ( const fx of out.effects ) {
+		for ( const [ field, value ] of Object.entries( decided?.[ fx.effect ] || {} ) ) {
+			const range = mdb.rangeField?.( 'effects', fx.effect, Object.values( TIER ) );
+			if ( range && range.path === `values.${ field }` && range.choices.includes( value ) ) {
+				fx.values = { ...fx.values, [ field ]: value };
+				out.notes.push( `${ fx.effect } ${ field } is ${ value }: the client's own decision, whatever the draft's widths show` );
+			} else {
+				out.unmapped.push( { record: fx.record, reason: `the client's decision ${ fx.effect } ${ field } = ${ value } names no choice of the effect's range setting${ range ? ` (${ range.path }: ${ range.choices.join( ', ' ) })` : '' }` } );
 			}
 		}
 	}

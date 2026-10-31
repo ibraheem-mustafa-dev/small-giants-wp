@@ -80,11 +80,11 @@ test( 'with no group naming its key a facet takes the template text before its c
 	assert.equal( facet( read( edited( "group('tone', 'Shade', ", '(' ) ), 'tones' ).label, 'Tone' );
 } );
 
-test( 'terms are named by the filter\'s own list, never a product\'s values; a value the list lacks is left out and a gap row', () => {
+test( 'terms are named by the filter\'s own list, never a product\'s values; a value the list lacks is left out and no gap row (the filter offers what the shop offers; Bean 2026-10-31)', () => {
 	const cat = read();
 	assert.deepEqual( terms( facet( cat, 'theme' ) ), [ 'By the sea', 'Up the hill' ] );
 	assert.equal( byId( cat, '2' ).facets[ 'pick-a-theme' ], undefined );
-	assert.ok( cat.gaps.some( ( g ) => 'facet' === g.kind && /"theme" meets "dune"/.test( g.detail ) ) );
+	assert.ok( ! cat.gaps.some( ( g ) => /"dune"/.test( g.detail ) ), 'a product value the filter does not offer is no gap row' );
 } );
 
 test( 'a range and a condition on two fields are gap rows and no facet', () => {

@@ -74,15 +74,16 @@ test( 'a priced whole-number choice is a pack size; with a second choice no flow
 	assert.equal( jar.price, 4 );
 } );
 
-test( 'a multi-choice no flow asks, a switch with its price factor and gated choice, and an amount picked as the price are gap rows; the quantity is none', () => {
+test( 'a multi-choice no flow asks, a switch with its price factor and gated choice, and the quantity are none: an amount picked as the price is the gift-card product, no gap', () => {
 	const { catalogue } = read( 'shared', SHARED_ROWS );
 	const kinds = catalogue.gaps.filter( ( g ) => '*' !== g.draftId ).map( ( g ) => `${ g.draftId }:${ g.kind }` );
-	assert.deepEqual( kinds, [ 'jar:multi-choice', 'jar:switch', 'voucher:open-amount', 'voucher:no-variesby' ] );
+	assert.deepEqual( kinds, [ 'jar:multi-choice', 'jar:switch' ] );
 	const sw = catalogue.gaps.find( ( g ) => 'switch' === g.kind );
 	assert.match( sw.detail, /"gift".*multiplies the price by 0\.8.*"every" \(1, 2\)/ );
 	assert.match( catalogue.gaps.find( ( g ) => 'multi-choice' === g.kind ).detail, /Nuts, Seeds, Comb/ );
 	const voucher = byId( catalogue, 'voucher' );
-	assert.deepEqual( [ voucher.type, voucher.attributes[ 0 ].packSize, voucher.attributes[ 0 ].variation, voucher.variations.map( ( v ) => v.price ) ], [ 'variable', false, true, [ 10, 20 ] ] );
+	assert.deepEqual( [ voucher.type, voucher.attributes, voucher.variations, voucher.giftCard, voucher.price ], [ 'gift-card', [], [], { amounts: [ 10, 20 ] }, 10 ], 'MUST FAIL: the amount the shopper pays is the gift-card type holding the amounts, never a variation axis' );
+	assert.equal( byId( catalogue, 'jar' ).giftCard, undefined, 'negative control: a product whose amount-free choices make variations is no gift card' );
 	assert.equal( byId( catalogue, 'box' ).attributes.length, 0 );
 } );
 
@@ -168,13 +169,20 @@ test( 'the review lists a row per product and per gap; drop is a valid mark and 
 	assert.deepEqual( catalogueProblems( kept ), [] );
 } );
 
-test( 'variesBy: a pack size is size, a size or colour axis is named by its own words, an amount or a swatched recipe is none and its product is a no-variesby gap', () => {
+test( 'variesBy: a pack size is size, a size or colour axis is named by its own words, a swatched recipe is none and its product is a no-variesby gap; an amount is the gift-card product, never a variesBy gap', () => {
 	const shared = read( 'shared', SHARED_ROWS ).catalogue;
 	assert.deepEqual( byId( shared, 'jar' ).attributes.map( ( a ) => [ a.key, a.variesBy ] ), [ [ 'pack', 'size' ], [ 'grain', null ] ] );
-	assert.deepEqual( byId( shared, 'voucher' ).attributes.map( ( a ) => a.variesBy ), [ null ] );
-	const held = shared.gaps.filter( ( g ) => 'no-variesby' === g.kind );
-	assert.deepEqual( held.map( ( g ) => g.draftId ), [ 'voucher' ] );
-	assert.match( held[ 0 ].detail, /"amount".*color, size, material, pattern, suggestedAge, suggestedGender.*no_variesby/ );
+	assert.deepEqual( byId( shared, 'voucher' ).attributes, [] );
+	assert.deepEqual( shared.gaps.filter( ( g ) => 'no-variesby' === g.kind ), [], 'the jar has a size axis and the voucher no variation axis' );
+	// An amount beside another choice that creates variations is no gift card: it stays a variation axis with no variesBy.
+	const withGrainOnly = ( to ) => {
+		const item = path.join( to, 'Item.dc.html' );
+		fs.writeFileSync( item, fs.readFileSync( item, 'utf8' ).replace( "{ key: 'voucher-' + S.amount, id: 'voucher', price: S.amount }", "{ key: 'voucher-' + S.amount + S.grain, id: 'voucher', price: S.amount }" ) );
+	};
+	const beside = read( 'shared', SHARED_ROWS, withGrainOnly ).catalogue;
+	assert.equal( byId( beside, 'voucher' ).giftCard, undefined );
+	assert.deepEqual( beside.gaps.filter( ( g ) => 'no-variesby' === g.kind ).map( ( g ) => g.draftId ), [ 'voucher' ] );
+	assert.ok( beside.gaps.some( ( g ) => 'open-amount' === g.kind && 'voucher' === g.draftId ) );
 	const single = read( 'single', SINGLE_ROWS ).catalogue;
 	assert.deepEqual( single.products.map( ( p ) => p.attributes[ 0 ].variesBy ), [ 'size', 'size', 'size' ] );
 	assert.ok( ! single.gaps.some( ( g ) => 'no-variesby' === g.kind ) );
