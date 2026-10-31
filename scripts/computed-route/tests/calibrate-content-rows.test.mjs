@@ -30,7 +30,8 @@ test( 'the role query reads both roles of each pair, SGS-owned only', () => {
 		assert.ok( [ 'sgs', 'sgs-ext' ].includes( r.source ), `${ r.attr_name } is SGS-owned (R-47-10)` );
 	}
 	// Both halves of each role pair are in scope, so the larger half is never left unreachable.
-	assert.deepEqual( TEXT_ROLES.slice().sort(), [ 'content', 'text-content' ] );
+	// A glyph setting (a separator the clone copies verbatim) is read like text.
+	assert.deepEqual( TEXT_ROLES.slice().sort(), [ 'content', 'glyph', 'text-content' ] );
 	assert.deepEqual( LINK_ROLES.slice().sort(), [ 'link-content', 'link-href' ] );
 	assert.deepEqual( PRESENCE_ROLES.slice().sort(), [ 'boolean-visibility', 'presence-boolean' ] );
 } );
