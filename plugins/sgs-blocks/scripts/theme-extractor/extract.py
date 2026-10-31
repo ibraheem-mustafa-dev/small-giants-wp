@@ -870,12 +870,12 @@ def main(argv=None) -> int:
     # FR-32-28: the palette is the draft's own shades and the framework roles are hidden pointers to them. Last, so
     # every colour reference above finds the palette the roles were derived from; a draft with no colour token keeps
     # the roster as palette entries.
-    review_roles: list = []
+    unresolved_roles: list = []
     if draft_tokens is not None:
-        review_roles = shade_palette.apply(snap, draft_tokens, draft.parent, baseline, confirmed, trace)
-    for role in review_roles:
-        print(f"REVIEW: brand role {role} has no shade in the draft; the intake review asks which shade it points at "
-              "(no framework default is written)", file=sys.stderr)
+        unresolved_roles = shade_palette.apply(snap, draft_tokens, draft.parent, baseline, confirmed, trace)
+    for role in unresolved_roles:
+        print(f"WARNING: role {role} has no value (no alias, mark, reading or related role gives one); the roster gate "
+              "will refuse the snapshot", file=sys.stderr)
 
     ok, errors = validate_theme_json(snap)
     if not ok:

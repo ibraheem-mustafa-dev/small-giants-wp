@@ -238,9 +238,6 @@ export function reviewRows( intake ) {
 	( intake.inventory?.diff || [] ).forEach( ( r ) => add( 'inventory-diff', { ...r, rowId: r.rowId || `inventory:${ r.draftId }` }, r.draftId, describe( r ), 'ours', text( r.why ?? r.reason ) ) );
 	( intake.notices?.prose || [] ).forEach( ( r ) => add( 'notice', { kind: 'prose', file: r.file, text: r.text, rowId: `notice:${ r.rowId }` }, `${ r.file }:${ r.line }`, `${ r.file }:${ r.line } ${ r.text }`, 'noted', r.why || '' ) );
 	const hosts = new Map();
-	// FR-32-28: a brand role no palette token proposes has no shade to point at; Bean marks a token's palette row with that role.
-	( intake.palette?.roleGaps || [] ).forEach( ( role ) => add( 'notice', { kind: 'palette-role', text: role, rowId: `notice:palette-role:${ role }` }, role, `brand role ${ role } has no shade in the draft`, 'noted',
-		`no palette token proposes it: add ${ role } to the Mark of the palette row whose shade it should point at (role:<slugs>,${ role }), otherwise the snapshot lacks ${ role } and the push is refused` ) );
 	( intake.notices?.blockedHosts || [] ).forEach( ( b ) => {
 		const h = b.host || b.url;
 		hosts.set( h, [ ...( hosts.get( h ) || [] ), b ] );

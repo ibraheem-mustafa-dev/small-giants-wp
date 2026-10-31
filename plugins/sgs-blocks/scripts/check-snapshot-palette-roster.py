@@ -188,7 +188,9 @@ def run_self_test() -> int:
     no_brand = {k: v for k, v in pointers.items() if k != "section-text"}
     assert_("a brand role in neither the palette nor colourRoles FAILS", evaluate(shaded(no_brand), slugs)["missing"] == ["section-text"])
     raw_brand = evaluate(shaded({**pointers, "link": "#0000AA"}), slugs)
-    assert_("a raw hex on a brand role FAILS", any("raw hex" in p for p in raw_brand["invalid"]))
+    assert_("a raw hex on any role resolves (the draft's own colour with no token)", not raw_brand["missing"] and not raw_brand["invalid"] and not raw_brand["bad"])
+    bad_hex = evaluate(shaded({**pointers, "link": "#00AAZZ"}), slugs)
+    assert_("a malformed hex FAILS", any("not a hex colour" in p for p in bad_hex["invalid"]))
     status_slugs = ["success"]
     raw_status = evaluate(shaded({"success": "#2E7D4F"}), status_slugs)
     assert_("a raw hex on a status role resolves", not raw_status["missing"] and not raw_status["invalid"])

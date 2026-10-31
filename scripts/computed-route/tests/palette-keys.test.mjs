@@ -13,7 +13,6 @@ import { readTokens } from '../lib/tokens.mjs';
 import { proposePalette, loadPaletteSlugs } from '../lib/intake-palette.mjs';
 import { REPO, keyFile, derive } from '../tools/palette-keys.mjs';
 import { brandOfToken } from '../lib/brand-registry.mjs';
-import { reviewRows } from '../lib/intake-review.mjs';
 
 // Each answer key and its source (tools/palette-keys.mjs).
 const KEYS = { 'indus-foods': 'from-marks', 'eye-care-ward-end': 'ruled', 'mamas-munches-redesign': 'ruled' };
@@ -46,23 +45,6 @@ export function compareClient( client ) {
 	return { p, key, want, got, matched: slugs.filter( ( s ) => want[ s ] === got[ s ] ), differ: Object.fromEntries( slugs.filter( ( s ) => want[ s ] !== got[ s ] ).map( ( s ) => [ s, { key: want[ s ] ?? null, proposal: got[ s ] ?? null } ] ) ) };
 }
 
-for ( const client of Object.keys( KEYS ) ) {
-	test( `FR-32-28 MUST FAIL: the ${ client } proposal names every brand role no token proposes (the snapshot's review roles), and the intake review lists each as a notice row`, () => {
-		const { p } = compareClient( client );
-		assert.deepEqual( p.roleGaps, REVIEW_ROLES[ client ] );
-		const rows = reviewRows( { palette: p } ).filter( ( r ) => 'notice' === r.rowType && r.rowId.startsWith( 'notice:palette-role:' ) );
-		assert.deepEqual( rows.map( ( r ) => r.rowId ), REVIEW_ROLES[ client ].map( ( r ) => `notice:palette-role:${ r }` ) );
-		assert.ok( rows.every( ( r ) => /no palette token proposes it/.test( r.note ) && 'noted' === r.proposed ) );
-	} );
-}
-
-test( 'FR-32-28 negative control: a status role no token proposes is no review row, and a role a token proposes is none either', () => {
-	const { p } = compareClient( 'indus-foods' );
-	assert.ok( ! p.roleGaps.some( ( r ) => /^(?:success|error|info)(?:-light)?$/.test( r ) ), 'status roles keep the framework value' );
-	assert.ok( ! p.roleGaps.includes( 'primary' ) );
-	assert.equal( reviewRows( { palette: { rows: [], roleGaps: [] } } ).filter( ( r ) => r.rowId.startsWith( 'notice:palette-role:' ) ).length, 0 );
-} );
-
 // Slugs the proposal takes from a token name alone (row basis `by: 'name'`): matched or not, each is a review class.
 const HOVER = 'a hover or pressed shade the 1440 rest read never paints; the agent checks a hover rule in the draft uses this value';
 export const NAME_ONLY = {
@@ -84,13 +66,15 @@ export const KEY_ONLY = {
 // A client's palette holds one entry per literal colour token of its draft (slug the exact token name, a `-shade` suffix when
 // the name is also a framework role slug the role map points elsewhere); aliases, gradients, brand-named tokens and the
 // framework's own entries are not in it; `settings.custom.colourRoles` points each framework role at a shade (a status role
-// with no shade at its framework hex). A brand role the draft has no shade for is a review row: absent from both, listed here.
+// with no shade at its framework hex); a role the draft paints in a colour with no token holds that raw hex.
 const FRAMEWORK = JSON.parse( fs.readFileSync( path.join( REPO, 'theme', 'sgs-theme', 'theme.json' ), 'utf8' ) ).settings.color.palette;
 const ROLES = FRAMEWORK.map( ( e ) => e.slug );
-export const REVIEW_ROLES = {
-	'indus-foods': [ 'border', 'border-light' ],
-	'eye-care-ward-end': [ 'primary-dark', 'border-light' ],
-	'mamas-munches-redesign': [ 'primary-dark', 'accent-light' ],
+// The six roles no alias or mark named, each read from what the draft paints in that role's job (value and evidence in
+// shade_palette.py's trace: role_readings.py): [ role, the value the snapshot holds ]. A shade is its slug, a colour with no token is its raw hex.
+export const READ_ROLES = {
+	'indus-foods': { border: '#DCE3E9', 'border-light': '#EEF2F5' },
+	'eye-care-ward-end': { 'primary-dark': 'ink-hover', 'border-light': 'hairline' },
+	'mamas-munches-redesign': { 'primary-dark': 'mm-paper', 'accent-light': 'mm-pink-soft' },
 };
 
 export function snapshotOf( client ) {
@@ -136,7 +120,7 @@ for ( const client of Object.keys( KEYS ) ) {
 			assert.ok( tokenHexes.has( c.toUpperCase().slice( 0, 7 ) ), `${ client }: ${ c } is a token's colour, never a one-off or a framework default` );
 		}
 	} );
-	test( `FR-32-28 MUST FAIL: the ${ client } role map reproduces its answer key, and the roles with no shade are the listed review rows`, () => {
+	test( `FR-32-28 MUST FAIL: the ${ client } role map reproduces its answer key, every role resolves, and the six unnamed roles are read from the draft`, () => {
 		const { resolve, pointers, palette } = snapshotOf( client );
 		const key = JSON.parse( fs.readFileSync( keyFile( client ), 'utf8' ) );
 		const { hexOf } = draftTokens( client );
@@ -146,13 +130,12 @@ for ( const client of Object.keys( KEYS ) ) {
 		}
 		const differ = Object.entries( expected ).filter( ( [ r, hexes ] ) => ! hexes.has( ( resolve( r ) || '' ).toUpperCase() ) ).map( ( [ r, h ] ) => `${ r }: key ${ [ ...h ].join( ' ' ) }, snapshot ${ resolve( r ) }` );
 		assert.deepEqual( differ, [], `${ client }: role map differs from the answer key` );
-		const unresolved = ROLES.filter( ( r ) => null === resolve( r ) );
-		assert.deepEqual( unresolved, REVIEW_ROLES[ client ], `${ client }: roles with no shade (the intake review rows)` );
-		for ( const r of unresolved ) {
-			assert.ok( ! ( r in pointers ) && ! ( r in palette ), `${ client } ${ r }: a brand role with no shade is never written` );
+		assert.deepEqual( ROLES.filter( ( r ) => null === resolve( r ) ), [], `${ client }: every framework role resolves; no role is a review row` );
+		for ( const [ r, v ] of Object.entries( READ_ROLES[ client ] ) ) {
+			assert.equal( pointers[ r ], v, `${ client } ${ r } is read from the draft` );
 		}
 		for ( const [ r, v ] of Object.entries( pointers ) ) {
-			assert.ok( v in palette || ( /^#[0-9A-Fa-f]{6}$/.test( v ) && /^(?:success|error|info)(?:-light)?$/.test( r ) ), `${ client } colourRoles.${ r } -> ${ v }` );
+			assert.ok( v in palette || /^#[0-9A-Fa-f]{6}$/.test( v ), `${ client } colourRoles.${ r } -> ${ v }` );
 		}
 	} );
 }

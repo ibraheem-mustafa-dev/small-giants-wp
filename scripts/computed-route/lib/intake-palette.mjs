@@ -237,9 +237,6 @@ function evidence( s, role ) {
 // by, why }]). `usage` is [{ hex (any colour form), property, draftId, count, tag?, ground?, text? }] (lib/intake-run-
 // collapse.mjs::paletteUsage plus lib/intake-palette-grounds.mjs::groundUsage); `slugs` is [{ slug, name }] (theme.json's
 // by default); `problems` carries lib/tokens.mjs's problems through.
-// The status roles (success, error, info and their light tints): the snapshot keeps the framework value for one the draft has no shade for.
-export const STATUS_ROLE = /^(?:success|error|info)(?:-light)?$/;
-
 export function proposePalette( { tokens = [], usage = [], slugs = loadPaletteSlugs(), problems: carried = [], folder = null, brands = paletteBrands() } = {} ) {
 	const vocab = new Set( slugs.map( ( s ) => s.slug ) );
 	const problems = [ ...carried ];
@@ -411,9 +408,5 @@ export function proposePalette( { tokens = [], usage = [], slugs = loadPaletteSl
 		}
 		return o;
 	} );
-	// FR-32-28: a framework role no token proposes. A status role keeps its framework value; any other is a review row, because a
-	// brand role with no shade never takes a framework default.
-	const named = new Set( rows.flatMap( ( r ) => r.roles || [] ) );
-	const roleGaps = [ ...vocab ].filter( ( slug ) => ! named.has( slug ) && ! STATUS_ROLE.test( slug ) );
-	return { rows, unused: rows.filter( ( r ) => ! r.used ).map( ( r ) => r.token ), oneOff, merges, tokens, vocabulary: slugs.map( ( s ) => s.slug ), roleGaps, problems, disagreements };
+	return { rows, unused: rows.filter( ( r ) => ! r.used ).map( ( r ) => r.token ), oneOff, merges, tokens, vocabulary: slugs.map( ( s ) => s.slug ), problems, disagreements };
 }

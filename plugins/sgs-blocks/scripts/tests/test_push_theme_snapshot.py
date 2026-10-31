@@ -496,10 +496,12 @@ def test_roster_guard_refuses_a_snapshot_missing_a_brand_role(pts):
     assert pts.roster_guard(snap) == ["accent-light"]
 
 
-def test_roster_guard_refuses_a_raw_hex_on_a_brand_role(pts):
+def test_roster_guard_accepts_a_raw_hex_on_any_role_and_refuses_a_malformed_one(pts):
     snap = _shade_snap(pts)
-    snap["settings"]["custom"]["colourRoles"]["primary"] = "#123456"
-    assert any("raw hex" in x for x in pts.roster_guard(snap))
+    snap["settings"]["custom"]["colourRoles"]["border"] = "#DCE3E9"
+    assert pts.roster_guard(snap) == []
+    snap["settings"]["custom"]["colourRoles"]["border"] = "#DCE3ZZ"
+    assert any("not a hex colour" in x for x in pts.roster_guard(snap))
 
 
 def test_roster_guard_names_a_missing_layout_token(pts):

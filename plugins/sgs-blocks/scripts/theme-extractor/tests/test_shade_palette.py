@@ -94,12 +94,73 @@ def test_confirmed_mark_beats_alias_and_alias_beats_usage_proposal(tmp_path):
     assert snap["settings"]["custom"]["colourRoles"]["text"] == "zz-brand", "Bean's confirmed mark wins"
 
 
-def test_brand_role_with_no_shade_is_a_review_row_and_status_keeps_the_framework_hex(tmp_path):
-    snap, review, trace = run(tmp_path)
+def test_status_role_keeps_the_framework_hex_and_no_role_is_left_without_a_value(tmp_path):
+    snap, unresolved, trace = run(tmp_path)
     roles = snap["settings"]["custom"]["colourRoles"]
-    assert "border" in review and "border" not in roles, "never a framework default for a brand role"
     assert roles["success"] == "#2E7D4F" and roles["error-light"] == "#FEF2F2"
-    assert any(r["kind"] == "review" and r["what"] == "colourRoles.border" for r in trace)
+    assert unresolved == [] and "border" in roles, "a role nothing names still renders as the draft does"
+    assert not any(r["kind"] == "review" for r in trace), "no row ever asks anyone to pick a role"
+
+
+READ_CSS = ":root{--zz-ink:#141414;--zz-paper:#FAF8F5;--zz-brand:#0A7EA8;--zz-hover:#2A2A2A;--zz-pink:#EE8088;--zz-pink-soft:#F9D5D3;--zz-text:var(--zz-ink);--zz-surface-page:var(--zz-paper);--zz-cta:var(--zz-brand);--zz-accent:var(--zz-pink);}"
+
+
+def run_read(tmp_path, usage, presets=None, css=READ_CSS):
+    """A draft folder at ``<tmp>/handoff`` with the intake's recorded usage at ``<tmp>/build/intake/palette.json``."""
+    d = tmp_path / "handoff"
+    (d / "tokens").mkdir(parents=True)
+    (d / "tokens" / "colors.css").write_text(css, encoding="utf-8")
+    (tmp_path / "build" / "intake").mkdir(parents=True)
+    (tmp_path / "build" / "intake" / "palette.json").write_text(json.dumps({"usage": usage}), encoding="utf-8")
+    snap = {"settings": {"color": {"palette": []}, "custom": {"buttonPresets": presets or {}}}}
+    unresolved = sp.apply(snap, token_files.read_token_files(d), d, BASELINE, None, [])
+    return snap["settings"]["custom"]["colourRoles"], unresolved
+
+
+def row(hex_, prop, tag, count, length=0):
+    return {"hex": hex_, "property": prop, "tag": tag, "count": count, "length": length}
+
+
+def test_border_is_the_control_border_colour_and_border_light_the_lighter_divider():
+    """MUST FAIL if either role falls back to a related role or a framework hex instead of the draft's own colour."""
+    import tempfile
+    usage = [row("#DCE3E9", "border-top-color", "input", 28), row("#DCE3E9", "border-top-color", "select", 8), row("#1E2A3C33", "border-top-color", "input", 99),
+             row("#FFFFFF", "border-top-color", "div", 300, 90000), row("#EEF2F5", "border-top-color", "div", 2, 1952), row("#F3F4F6", "border-top-color", "figure", 52, 99999),
+             row("#E8EAED", "border-top-color", "figure", 52, 4000), row("#E8EAED", "border-top-color", "div", 1, 1282)]
+    with tempfile.TemporaryDirectory() as tmp:
+        roles, unresolved = run_read(pathlib.Path(tmp), usage)
+    assert roles["border"] == "#DCE3E9", "most used opaque control border; a translucent one never wins"
+    assert roles["border-light"] == "#EEF2F5", "white is no divider, a figure is no divider element, and a colour mostly carried by a card (one div among 52 figures) is that card's border"
+    assert unresolved == []
+
+
+def test_border_light_renders_as_border_when_the_draft_shows_no_lighter_divider():
+    import tempfile
+    usage = [row("#DCE3E9", "border-top-color", "input", 28), row("#CCCCCC", "border-top-color", "div", 40, 5000)]
+    with tempfile.TemporaryDirectory() as tmp:
+        roles, _u = run_read(pathlib.Path(tmp), usage)
+    assert roles["border-light"] == roles["border"] == "#DCE3E9"
+
+
+def test_primary_dark_is_the_primary_buttons_hover_fill_and_equals_primary_when_it_keeps_its_fill():
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmp:
+        roles, _u = run_read(pathlib.Path(tmp), [], {"primary": {"hover-background": "#2a2a2a"}})
+    assert roles["primary-dark"] == "zz-hover", "the hover fill is a token of the draft: the role points at its shade"
+    with tempfile.TemporaryDirectory() as tmp:
+        roles, _u = run_read(pathlib.Path(tmp), [], {"primary": {"hover-background": "var(--wp--preset--color--primary)"}})
+    assert roles["primary-dark"] == roles["primary"] == "zz-brand"
+    with tempfile.TemporaryDirectory() as tmp:
+        roles, _u = run_read(pathlib.Path(tmp), [], {"primary": {"hover-background": "#123456"}})
+    assert roles["primary-dark"] == "#123456", "a hover colour with no token holds the draft's raw hex"
+
+
+def test_accent_light_is_the_most_used_pale_fill_in_the_accents_hue():
+    import tempfile
+    usage = [row("#F9D5D3", "background-color", "section", 111), row("#FCEBBE", "background-color", "a", 400), row("#E8505B", "background-color", "a", 50)]
+    with tempfile.TemporaryDirectory() as tmp:
+        roles, _u = run_read(pathlib.Path(tmp), usage)
+    assert roles["accent-light"] == "zz-pink-soft", "a pale yellow in another hue and a darker pink do not qualify"
 
 
 def test_shade_sharing_a_role_slug_that_points_elsewhere_is_suffixed(tmp_path):

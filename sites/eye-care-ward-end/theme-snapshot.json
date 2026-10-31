@@ -649,6 +649,7 @@
       "colourRoles": {
         "primary": "ink",
         "primary-text": "paper",
+        "primary-dark": "ink-hover",
         "accent": "acc",
         "accent-text": "acc-ink",
         "accent-light": "acc-soft",
@@ -663,6 +664,7 @@
         "text-muted": "text-2",
         "text-inverse": "paper",
         "border": "hairline",
+        "border-light": "hairline",
         "footer-bg": "paper",
         "heading": "ink",
         "link": "ink",

@@ -640,8 +640,10 @@
       "colourRoles": {
         "primary": "mm-yellow",
         "primary-text": "mm-cocoa",
+        "primary-dark": "mm-paper",
         "accent": "mm-pink",
         "accent-text": "mm-cocoa",
+        "accent-light": "mm-pink-soft",
         "success": "#2E7D4F",
         "success-light": "#ECFDF5",
         "error": "#DC2626",

@@ -14,9 +14,12 @@ Two layers with two jobs, written from the export's ``tokens/colors.css``:
     proposals (``_source`` palette entries), the draft's own alias tokens (``--text-body: var(--ink)``, named by the role
     vocabulary ``scripts/computed-route/data/palette-role-words.json``) and Bean's confirmed intake marks, which win; a role
     none of them names follows its related role (``palette_vocab.ROLE_DEFAULT_TABLE``), and a status role takes a token of
-    its own name. A status role with no shade keeps the
-    framework value as raw hex. A brand role with no shade is returned as a review row and is not written: the intake
-    review asks Bean for it, never a framework default.
+    its own name. A role nothing names is read from what the draft paints in its job
+    (``role_readings.py``: the control-border colour for ``border``, the primary button's hover fill for ``primary-dark``,
+    and so on) and points at that colour's shade, or holds the draft's raw hex when the colour has no token; a role the
+    draft never shows takes the value of the role it renders as. A status role with no shade keeps the framework value as
+    raw hex. The role map is a reading of the draft: no role is ever a review row and no framework default is written
+    for a brand role.
 
 ``apply`` also rewrites every reference to a palette slug that no longer exists to the shade of the same colour.
 Nothing here names a client.
@@ -30,6 +33,7 @@ import re
 import sqlite3
 
 from colour import delta_e, parse_colour
+import role_readings
 from palette_vocab import (DISPLAY_WORDS, ROLE_DEFAULT_TABLE, STATUS_ROLE_RE, brand_words, trace_row)
 
 _SLUG = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
@@ -165,10 +169,19 @@ def alias_roles(raw: dict[str, str], shades: list[dict], ns: str | None, roles: 
     return out
 
 
+def _colour_of(value: str, shades: list[dict]) -> str | None:
+    """The colour a role value stands for: a raw hex as is, or the colour of the shade it names."""
+    if value.startswith("#"):
+        return value.upper()
+    return next((s["color"] for s in shades if s["token"] == value), None)
+
+
 def build_role_map(*, shades: list[dict], raw_aliases: dict[str, str], ns: str | None, palette_before: list[dict],
-                   confirmed: dict | None, roles: list[str], framework_hex: dict[str, str],
-                   trace: list) -> tuple[dict[str, str], list[str]]:
-    """``({role: shade slug | raw hex}, [review roles])`` (see the module docstring for the order of sources)."""
+                   confirmed: dict | None, roles: list[str], framework_hex: dict[str, str], usage: list[dict],
+                   button_presets: dict, trace: list) -> tuple[dict[str, str], list[str]]:
+    """``({role: shade slug | raw hex}, [roles nothing could give a value])`` (see the module docstring for the sources).
+
+    The second list is empty whenever the draft yields a reading or a related role; it exists so a failure is loud."""
     resolved: dict[str, tuple[str, str]] = {}
     own = {s["token"] for s in shades}
     for role in roles:
@@ -189,11 +202,42 @@ def build_role_map(*, shades: list[dict], raw_aliases: dict[str, str], ns: str |
         shade = by_token or _shade_for_hex(shades, info.get("hex"))
         if shade:
             resolved[role] = (shade, f"Bean's confirmed mark ({', '.join(info.get('tokens', []))})")
+
+    def hex_of(role: str) -> str | None:
+        return _colour_of(resolved[role][0], shades) if role in resolved else None
+
+    def preset_colour(ref: str) -> str | None:
+        m = re.match(r"^(?:var\(--wp--preset--color--([a-z0-9-]+)\)|var:preset\|color\|([a-z0-9-]+))$", ref.strip())
+        if m:
+            return hex_of(m.group(1) or m.group(2))
+        return ref.strip().upper() if re.match(r"^#[0-9A-Fa-f]{6}$", ref.strip()) else None
+
+    def settle(role: str, reading: tuple[str, str] | None) -> None:
+        if reading is None or role in resolved:
+            return
+        value, why = reading
+        # Exact colour only: a reading is the colour the draft paints, so a near-identical shade is not a stand-in for it.
+        exact = next((sh['token'] for sh in shades if sh['color'] == value.upper()), None)
+        resolved[role] = (exact or value.upper(), why)
+
+    settle("border", role_readings.read_border(usage))
+    settle("primary-dark", role_readings.read_primary_dark(button_presets, preset_colour))
+    taken = {c for c in (hex_of(r) for r in ("primary", "accent", "section")) if c}
+    settle("border-light", role_readings.read_border_light(usage, hex_of("border"), taken))
+    settle("accent-light", role_readings.read_accent_light(usage, hex_of("accent")))
     for role, follows in ROLE_DEFAULT_TABLE:
         if role not in resolved and follows in resolved:
             resolved[role] = (resolved[follows][0], f"follows {follows}")
+    changed = True
+    while changed:
+        changed = False
+        for role in roles:
+            follows = role_readings.FOLLOW_WHEN_ABSENT.get(role)
+            if role not in resolved and follows in resolved and not STATUS_ROLE_RE.match(role):
+                resolved[role] = (resolved[follows][0], f"the draft never shows it: it renders as {follows}")
+                changed = True
     out: dict[str, str] = {}
-    review: list[str] = []
+    unresolved: list[str] = []
     for role in roles:
         if role in resolved:
             out[role] = resolved[role][0]
@@ -202,9 +246,9 @@ def build_role_map(*, shades: list[dict], raw_aliases: dict[str, str], ns: str |
             out[role] = framework_hex[role]
             trace_row(trace, "role", f"colourRoles.{role}", "status role the draft has no shade for: the framework value", framework_hex[role])
         else:
-            review.append(role)
-            trace_row(trace, "review", f"colourRoles.{role}", "brand role with no shade in the draft: Bean names the shade in the intake review; no framework default is written")
-    return out, review
+            unresolved.append(role)
+            trace_row(trace, "gap", f"colourRoles.{role}", "no alias, mark, reading or related role gives this role a value")
+    return out, unresolved
 
 
 def _rewrite_refs(node, renames: dict[str, str]):
@@ -225,7 +269,8 @@ def _rewrite_refs(node, renames: dict[str, str]):
 def apply(snap: dict, tokens: dict, draft_dir, baseline: dict, confirmed: dict | None, trace: list) -> list[str]:
     """Replace the snapshot's palette with the draft's shades and write ``settings.custom.colourRoles``.
 
-    Returns the review roles (brand roles with no shade). A draft with no colour token leaves ``snap`` untouched."""
+    Returns the roles nothing gave a value (empty for any draft that paints its roles). A draft with no colour token
+    leaves ``snap`` untouched."""
     parsed = read_shades(tokens, trace)
     shades, gradients, ns = parsed["shades"], parsed["gradients"], parsed["ns"]
     if not shades:
@@ -236,8 +281,10 @@ def apply(snap: dict, tokens: dict, draft_dir, baseline: dict, confirmed: dict |
     color = snap.setdefault("settings", {}).setdefault("color", {})
     before = [e for e in (color.get("palette") or []) if isinstance(e, dict)]
     by_hex_old = {e["slug"]: e.get("color") for e in before if e.get("slug")}
-    role_map, review = build_role_map(shades=shades, raw_aliases=_raw_aliases(draft_dir), ns=ns, palette_before=before,
-                                      confirmed=confirmed, roles=roles, framework_hex=framework_hex, trace=trace)
+    role_map, unresolved = build_role_map(shades=shades, raw_aliases=_raw_aliases(draft_dir), ns=ns, palette_before=before,
+                                      confirmed=confirmed, roles=roles, framework_hex=framework_hex,
+                                      usage=role_readings.load_usage(draft_dir),
+                                      button_presets=(snap.get("settings", {}).get("custom") or {}).get("buttonPresets") or {}, trace=trace)
     shade_slug = {s["token"]: s["token"] for s in shades}
     for s in shades:
         if s["token"] in roles and role_map.get(s["token"]) not in (None, s["token"]):
@@ -266,4 +313,4 @@ def apply(snap: dict, tokens: dict, draft_dir, baseline: dict, confirmed: dict |
     for k, v in custom.items():
         if k != "colourRoles":
             custom[k] = _rewrite_refs(v, renames)
-    return review
+    return unresolved

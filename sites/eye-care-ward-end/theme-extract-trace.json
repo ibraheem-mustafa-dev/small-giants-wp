@@ -998,7 +998,7 @@
     "kind": "merge",
     "what": "settings.custom",
     "reason": "client keys the extractor does not derive are carried from the existing snapshot",
-    "keys_carried": "accentSets,borderRadius,distance,duration,easing,entrance,focus,gutter,hover,linkSweep,measuredDiagramPresets,transition"
+    "keys_carried": "accentSets,borderRadius,colourRoles,distance,duration,easing,entrance,focus,gutter,hover,linkSweep,measuredDiagramPresets,transition"
   },
   {
     "kind": "merge",
@@ -1036,7 +1036,7 @@
   },
   {
     "kind": "merge",
-    "reason": "additive merge onto existing snapshot: 14 extra palette slug(s) preserved + component css/blocks/patterns carried forward"
+    "reason": "additive merge onto existing snapshot: 19 extra palette slug(s) preserved + component css/blocks/patterns carried forward"
   },
   {
     "kind": "motion",
@@ -1067,80 +1067,52 @@
   },
   {
     "kind": "confirm",
-    "slug": "custom-surface-alt",
+    "slug": "ink",
     "action": "dropped",
-    "old": "#F3F0EB",
+    "old": "#141414",
     "reason": "proposed from a draft token that no confirmed intake row names"
   },
   {
     "kind": "confirm",
-    "slug": "custom-text-3",
+    "slug": "ink-hover",
     "action": "dropped",
-    "old": "#77716A",
-    "reason": "proposed from a draft token that no confirmed intake row names"
-  },
-  {
-    "kind": "confirm",
-    "slug": "custom-text-4",
-    "action": "dropped",
-    "old": "#8B8478",
-    "reason": "proposed from a draft token that no confirmed intake row names"
-  },
-  {
-    "kind": "confirm",
-    "slug": "custom-text-faint",
-    "action": "dropped",
-    "old": "#A39C90",
-    "reason": "proposed from a draft token that no confirmed intake row names"
-  },
-  {
-    "kind": "confirm",
-    "slug": "custom-text-muted",
-    "action": "dropped",
-    "old": "#6B655E",
-    "reason": "proposed from a draft token that no confirmed intake row names"
-  },
-  {
-    "kind": "confirm",
-    "slug": "custom-text-strong",
-    "action": "dropped",
-    "old": "#4A453E",
-    "reason": "proposed from a draft token that no confirmed intake row names"
-  },
-  {
-    "kind": "confirm",
-    "slug": "custom-wa-ink",
-    "action": "dropped",
-    "old": "#0B2B17",
-    "reason": "proposed from a draft token that no confirmed intake row names"
-  },
-  {
-    "kind": "confirm",
-    "slug": "primary-hover",
-    "action": "kept",
     "old": "#2A2A2A",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "paper",
+    "action": "dropped",
+    "old": "#FAF8F5",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "white",
+    "action": "dropped",
+    "old": "#FFFFFF",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "surface-alt-shade",
+    "action": "kept",
+    "old": "#F3F0EB",
     "reason": "not a slug of this draft's tokens: a client slug the snapshot already held"
   },
   {
     "kind": "confirm",
-    "slug": "text-label",
-    "action": "kept",
-    "old": "#77716A",
-    "reason": "not a slug of this draft's tokens: a client slug the snapshot already held"
+    "slug": "surface-soft",
+    "action": "dropped",
+    "old": "#F0EBE3",
+    "reason": "proposed from a draft token that no confirmed intake row names"
   },
   {
     "kind": "confirm",
-    "slug": "text-subtle",
-    "action": "kept",
-    "old": "#6B655E",
-    "reason": "not a slug of this draft's tokens: a client slug the snapshot already held"
-  },
-  {
-    "kind": "confirm",
-    "slug": "text-soft",
-    "action": "kept",
-    "old": "#4A453E",
-    "reason": "not a slug of this draft's tokens: a client slug the snapshot already held"
+    "slug": "hairline",
+    "action": "dropped",
+    "old": "#E6E1DA",
+    "reason": "proposed from a draft token that no confirmed intake row names"
   },
   {
     "kind": "confirm",
@@ -1151,17 +1123,80 @@
   },
   {
     "kind": "confirm",
-    "slug": "surface-stage",
+    "slug": "border-warm",
+    "action": "dropped",
+    "old": "#D5CCBD",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "control-off",
+    "action": "dropped",
+    "old": "#C9C2B8",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "text-strong",
+    "action": "dropped",
+    "old": "#4A453E",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "text-2",
+    "action": "dropped",
+    "old": "#5E584F",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "text-muted-shade",
     "action": "kept",
-    "old": "#F3F0EB",
+    "old": "#6B655E",
     "reason": "not a slug of this draft's tokens: a client slug the snapshot already held"
   },
   {
     "kind": "confirm",
-    "slug": "border-hover",
-    "action": "kept",
-    "old": "#CFC7BB",
-    "reason": "not a slug of this draft's tokens: a client slug the snapshot already held"
+    "slug": "text-3",
+    "action": "dropped",
+    "old": "#77716A",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "text-4",
+    "action": "dropped",
+    "old": "#8B8478",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "text-faint",
+    "action": "dropped",
+    "old": "#A39C90",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "acc",
+    "action": "dropped",
+    "old": "#9C8B78",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "acc-ink",
+    "action": "dropped",
+    "old": "#6F6152",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "acc-soft",
+    "action": "dropped",
+    "old": "#EFEAE2",
+    "reason": "proposed from a draft token that no confirmed intake row names"
   },
   {
     "kind": "declared",
@@ -1319,9 +1354,10 @@
     "reason": "Bean's confirmed mark (--paper, --surface-page, --button-primary-fg)"
   },
   {
-    "kind": "review",
+    "kind": "role",
     "what": "colourRoles.primary-dark",
-    "reason": "brand role with no shade in the draft: Bean names the shade in the intake review; no framework default is written"
+    "value": "ink-hover",
+    "reason": "the primary button's measured hover fill (#2a2a2a)"
   },
   {
     "kind": "role",
@@ -1414,9 +1450,10 @@
     "reason": "Bean's confirmed mark (--hairline, --border-default)"
   },
   {
-    "kind": "review",
+    "kind": "role",
     "what": "colourRoles.border-light",
-    "reason": "brand role with no shade in the draft: Bean names the shade in the intake review; no framework default is written"
+    "value": "hairline",
+    "reason": "the draft never shows it: it renders as border"
   },
   {
     "kind": "role",

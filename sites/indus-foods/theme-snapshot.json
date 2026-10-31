@@ -616,6 +616,8 @@
         "text": "grey-body",
         "text-muted": "grey-muted",
         "text-inverse": "surface-white",
+        "border": "#DCE3E9",
+        "border-light": "#EEF2F5",
         "footer-bg": "slate",
         "heading": "slate",
         "link": "brand-blue",

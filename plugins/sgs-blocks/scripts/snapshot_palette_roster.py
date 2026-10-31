@@ -7,7 +7,7 @@ migration (`migrate-palette-roster-slugs.py`):
   * the roster is the framework palette, read from `theme/sgs-theme/theme.json`;
   * every roster slug must resolve in every snapshot (extras are allowed), either as a palette entry or, for a cloned
     client whose palette is its draft's own shades (FR-32-28), as a `settings.custom.colourRoles` key naming an
-    existing palette slug; a status role (`success`, `error`, `info` and their `-light` tints) may instead hold a raw hex;
+    existing palette slug or holding a raw hex;
   * three colour pairs must reach WCAG 4.5:1 per snapshot, using that snapshot's own
     resolved values: `section-text` on `section`, `link` on `surface`, `link-hover` on `surface`.
 
@@ -22,7 +22,6 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[3]
 FRAMEWORK_THEME_JSON = REPO_ROOT / "theme" / "sgs-theme" / "theme.json"
 MIN_CONTRAST = 4.5
-STATUS_ROLE = re.compile(r"^(?:success|error|info)(?:-light)?$")
 # (foreground slug, background slug)
 CONTRAST_PAIRS = (("section-text", "section"), ("link", "surface"), ("link-hover", "surface"))
 
@@ -70,7 +69,7 @@ def effective_palette(theme: dict) -> dict[str, str]:
 
 def invalid_colour_roles(theme: dict, roster: list[str]) -> list[str]:
     """One message per `colourRoles` entry that cannot resolve: a key that is no framework role, a value naming a slug
-    the palette lacks (or the role itself), a malformed hex, or a raw hex on a role that is not a status role."""
+    the palette lacks (or the role itself), or a malformed hex."""
     palette = palette_map(theme)
     problems = []
     for role, value in colour_roles(theme).items():
@@ -81,8 +80,6 @@ def invalid_colour_roles(theme: dict, roster: list[str]) -> list[str]:
         elif value.startswith("#"):
             if not _HEX.match(value.strip()):
                 problems.append("colourRoles.%s holds %r, not a hex colour" % (role, value))
-            elif not STATUS_ROLE.match(role):
-                problems.append("colourRoles.%s holds the raw hex %s, but only a status role may; point it at a palette shade" % (role, value))
         elif value == role:
             problems.append("colourRoles.%s points at itself" % role)
         elif value not in palette:
