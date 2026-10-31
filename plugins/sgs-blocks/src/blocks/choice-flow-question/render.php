@@ -83,6 +83,7 @@ if ( '' !== $product_attribute && function_exists( 'wc_get_product' ) ) {
 		}
 	}
 }
+$answer_limits             = sgs_choice_flow_question_answer_limits( $attributes ); // FR-43-27.
 $is_product_attribute_step = '' !== $product_attribute && '' !== $attribute_mode && ! empty( $generated_options );
 
 // Option stagger (Spec 38A FR-38A-26): the options are array data (or generated from the product attribute), so the
@@ -238,6 +239,9 @@ if ( $is_product_attribute_step ) {
 		echo ' data-value="' . esc_attr( $value ) . '"';
 		echo ' data-next-step-id="' . esc_attr( $next_step_id ) . '"';
 		echo ' data-tags="' . esc_attr( implode( ',', $tags ) ) . '"';
+		if ( $answer_limits['max'] > 1 ) {
+			echo ' role="checkbox" aria-checked="false"'; // FR-43-27: a toggle, not a single choice.
+		}
 		if ( $add_to_bag_now ) {
 			echo ' data-add-to-bag-now="1"';
 		}
@@ -302,6 +306,7 @@ if ( $is_product_attribute_step ) {
 	echo '</ul>';
 }
 
+echo sgs_choice_flow_question_limit_message_html( $answer_limits ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper escapes internally.
 echo '</div>';
 
 $sgs_cfq_html   = ob_get_clean();

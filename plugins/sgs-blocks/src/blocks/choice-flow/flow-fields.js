@@ -10,6 +10,8 @@
  * @package SGS\Blocks
  */
 
+import { chosenButtons, joinAnswerLabels } from './flow-multi.js';
+
 /**
  * Unpriced answers per flow instance, in the order they were given. `label`
  * and `value` travel to the bag line; `stageLabel`/`stageValue` are the
@@ -30,10 +32,21 @@ const plainAnswers = new WeakMap();
  * @param {HTMLElement} buttonEl  The chosen option.
  */
 export function recordPlainAnswer( flowRoot, stepIndex, stepEl, buttonEl ) {
-	const labelEl = buttonEl.querySelector( '.sgs-choice-flow-question__option-label' );
-	const value = ( labelEl ? labelEl.textContent : buttonEl.getAttribute( 'data-value' ) || '' ).trim();
+	const optionLabel = ( el ) => {
+		const labelEl = el.querySelector( '.sgs-choice-flow-question__option-label' );
+		return ( labelEl ? labelEl.textContent : el.getAttribute( 'data-value' ) || '' ).trim();
+	};
+	// FR-43-27: a multi-answer question is one answer, its chosen labels joined in the order shown.
+	const chosen = chosenButtons( buttonEl );
+	const value = joinAnswerLabels( chosen.map( optionLabel ) );
 	const label = ( stepEl.getAttribute( 'data-step-label' ) || '' ).trim();
-	if ( ! label || ! value ) {
+	if ( ! label ) {
+		return;
+	}
+	const rest = ( plainAnswers.get( flowRoot ) || [] ).filter( ( entry ) => entry.stepIndex !== stepIndex );
+	if ( ! value ) {
+		// Every pick of a multi-answer question was toggled off.
+		plainAnswers.set( flowRoot, rest );
 		return;
 	}
 	const questionEl = buttonEl.closest( '.sgs-choice-flow-question' );
@@ -42,12 +55,11 @@ export function recordPlainAnswer( flowRoot, stepIndex, stepEl, buttonEl ) {
 		label,
 		value,
 		stageLabel: ( questionEl && questionEl.getAttribute( 'data-summary-label' ) ) || label,
-		stageValue: buttonEl.getAttribute( 'data-summary-text' ) || value,
+		stageValue: chosen.length > 1 ? value : buttonEl.getAttribute( 'data-summary-text' ) || value,
 		product: buttonEl.hasAttribute( 'data-product-attribute' ),
 		effect: buttonEl.getAttribute( 'data-stage-effect' ) || '',
 	};
-	const list = plainAnswers.get( flowRoot ) || [];
-	plainAnswers.set( flowRoot, [ ...list.filter( ( entry ) => entry.stepIndex !== stepIndex ), answer ] );
+	plainAnswers.set( flowRoot, [ ...rest, answer ] );
 }
 
 /**

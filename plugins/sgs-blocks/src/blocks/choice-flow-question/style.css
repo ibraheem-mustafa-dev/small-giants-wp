@@ -585,3 +585,13 @@
 		animation: none;
 	}
 }
+
+/* FR-43-27: the live region that names the limit on a multi-answer question; empty (no space) until a pick is refused. */
+.sgs-choice-flow-question__limit-message {
+	margin: 0.75rem 0 0;
+	font-size: 0.875rem;
+}
+
+.sgs-choice-flow-question__limit-message:empty {
+	display: none;
+}

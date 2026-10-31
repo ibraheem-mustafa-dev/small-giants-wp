@@ -93,6 +93,10 @@ namespace {
 	check( array() === $f( array( array( 'label' => 'Empty', 'value' => '  ' ) ), 'abc' ), 'an empty value is dropped, not stored' );
 	check( 'x' === $f( array( array( 'label' => 'Tag', 'value' => '<b>x</b>' ) ), 'abc' )[0]['value'], 'markup is stripped from values' );
 
+	// FR-43-27: a multi-answer question travels as ONE row, its picks joined in the order shown.
+	$multi = $f( array( array( 'label' => 'Flavour', 'value' => 'Chocolate chip, Biscoff, Oreo' ) ), 'abc' );
+	check( is_array( $multi ) && 1 === count( $multi ) && 'Flavour' === $multi[0]['label'] && 'Chocolate chip, Biscoff, Oreo' === $multi[0]['value'], 'a multi-answer value is one row with its joined labels intact' );
+
 	echo PHP_EOL, '==== ', ( 0 === $failures ? 'all passed' : "$failures failed" ), ' ====', PHP_EOL;
 	exit( 0 === $failures ? 0 : 1 );
 }

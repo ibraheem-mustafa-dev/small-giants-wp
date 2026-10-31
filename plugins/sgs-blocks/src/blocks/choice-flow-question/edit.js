@@ -13,6 +13,7 @@ import {
 import { VStack } from '../../components/primitives';
 import MediaPicker from '../../components/MediaPicker';
 import AddonPricingPanel from './AddonPricingPanel';
+import AnswersPanel from './AnswersPanel';
 import ProductAttributePanel from './ProductAttributePanel';
 import TitlePanel from './TitlePanel';
 import VariationCoverageNotice from './VariationCoverageNotice';
@@ -209,6 +210,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 					options={ options }
 					setAttributes={ setAttributes }
 				/>
+				<AnswersPanel attributes={ attributes } setAttributes={ setAttributes } />
 				<PanelBody title={ __( 'Options', 'sgs-blocks' ) } initialOpen={ true }>
 					<VStack spacing={ 4 }>
 						{ options.map( ( option, index ) => (
