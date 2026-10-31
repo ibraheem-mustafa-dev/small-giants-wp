@@ -5,167 +5,113 @@
     "color": {
       "palette": [
         {
-          "slug": "primary",
+          "slug": "brand-blue",
           "color": "#0A7EA8",
-          "name": "Primary",
-          "_source": "confirmed"
+          "name": "Brand Blue",
+          "_source": "declared"
         },
         {
-          "slug": "primary-text",
-          "name": "Text on Primary",
-          "color": "#FFFFFF",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "primary-dark",
+          "slug": "brand-blue-hover",
           "color": "#075E80",
-          "name": "Primary Dark",
-          "_source": "confirmed"
+          "name": "Brand Blue Hover",
+          "_source": "declared"
         },
         {
-          "slug": "accent",
-          "color": "#D8CA50",
-          "name": "Accent",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "accent-text",
-          "color": "#2C3E50",
-          "name": "Text on Accent",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "accent-light",
-          "color": "#E7D768",
-          "name": "Accent Light",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "success",
-          "color": "#2E7D4F",
-          "name": "Success"
-        },
-        {
-          "slug": "success-light",
-          "name": "Success Light",
-          "color": "#ECFDF5"
-        },
-        {
-          "slug": "error",
-          "color": "#DC2626",
-          "name": "Error"
-        },
-        {
-          "slug": "error-light",
-          "name": "Error Light",
-          "color": "#FEF2F2"
-        },
-        {
-          "slug": "info",
-          "name": "Info",
-          "color": "#3B82F6"
-        },
-        {
-          "slug": "info-light",
-          "name": "Info Light",
-          "color": "#EBF5FF"
-        },
-        {
-          "slug": "surface",
-          "color": "#FFFFFF",
-          "name": "Surface",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "surface-alt",
-          "color": "#F2F5F7",
-          "name": "Raised Background",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "text",
-          "color": "#4A5563",
-          "name": "Text",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "text-muted",
-          "color": "#68727C",
-          "name": "Text Muted",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "text-inverse",
-          "color": "#FFFFFF",
-          "name": "Text on Dark",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "border",
-          "color": "#D4DBE5",
-          "name": "Border"
-        },
-        {
-          "slug": "border-light",
-          "color": "#E5E7EB",
-          "name": "Border Light"
-        },
-        {
-          "slug": "footer-bg",
-          "color": "#2C3E50",
-          "name": "Footer Background",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "heading",
-          "color": "#2C3E50",
-          "name": "Heading Text",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "link",
-          "color": "#0A7EA8",
-          "name": "Link",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "link-hover",
-          "color": "#075E80",
-          "name": "Link Hover",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "section",
-          "color": "#D8CA50",
-          "name": "Section Background",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "section-text",
-          "color": "#2C3E50",
-          "name": "Section Text",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "custom-brand-blue-light",
+          "slug": "brand-blue-light",
           "color": "#2EADE2",
           "name": "Brand Blue Light",
-          "_source": "confirmed"
+          "_source": "declared"
         },
         {
-          "slug": "custom-ink",
+          "slug": "brand-gold",
+          "color": "#D8CA50",
+          "name": "Brand Gold",
+          "_source": "declared"
+        },
+        {
+          "slug": "brand-gold-light",
+          "color": "#E7D768",
+          "name": "Brand Gold Light",
+          "_source": "declared"
+        },
+        {
+          "slug": "brand-gold-mid",
+          "color": "#E3D35F",
+          "name": "Brand Gold Mid",
+          "_source": "declared"
+        },
+        {
+          "slug": "brand-gold-pale",
+          "color": "#EBDD78",
+          "name": "Brand Gold Pale",
+          "_source": "declared"
+        },
+        {
+          "slug": "ink",
           "color": "#1E2A3C",
           "name": "Ink",
-          "_source": "confirmed"
+          "_source": "declared"
         },
         {
-          "slug": "custom-tint-on-blue",
+          "slug": "slate",
+          "color": "#2C3E50",
+          "name": "Slate",
+          "_source": "declared"
+        },
+        {
+          "slug": "grey-body",
+          "color": "#4A5563",
+          "name": "Grey Body",
+          "_source": "declared"
+        },
+        {
+          "slug": "grey-muted",
+          "color": "#68727C",
+          "name": "Grey Muted",
+          "_source": "declared"
+        },
+        {
+          "slug": "surface-white",
+          "color": "#FFFFFF",
+          "name": "Surface White",
+          "_source": "declared"
+        },
+        {
+          "slug": "surface-warm",
+          "color": "#FAFAF8",
+          "name": "Surface Warm",
+          "_source": "declared"
+        },
+        {
+          "slug": "surface-cool",
+          "color": "#F2F5F7",
+          "name": "Surface Cool",
+          "_source": "declared"
+        },
+        {
+          "slug": "tint-on-blue",
           "color": "#E3EFF4",
           "name": "Tint On Blue",
-          "_source": "confirmed"
+          "_source": "declared"
         }
       ],
-      "gradients": [],
+      "gradients": [
+        {
+          "slug": "gradient-hero",
+          "name": "Gradient Hero",
+          "gradient": "linear-gradient(135deg,#EBDD78,#E3D35F,#D8CA50)"
+        },
+        {
+          "slug": "gradient-brand",
+          "name": "Gradient Brand",
+          "gradient": "linear-gradient(120deg,#E7D768 0%,#2EADE2 55%,#0A7EA8 100%)"
+        },
+        {
+          "slug": "gradient-progress",
+          "name": "Gradient Progress",
+          "gradient": "linear-gradient(90deg,#D8CA50,#2EADE2)"
+        }
+      ],
       "defaultPalette": false,
       "defaultGradients": false,
       "custom": true,
@@ -488,7 +434,7 @@
       "focus": {
         "width": "1px",
         "inner": "var(--wp--preset--color--surface)",
-        "ink": "var(--wp--preset--color--custom-ink)",
+        "ink": "var(--wp--preset--color--ink)",
         "ring": "#101010",
         "near": "var(--wp--preset--color--accent)",
         "far": "var(--wp--preset--color--accent)",
@@ -651,6 +597,31 @@
       "sgs": {
         "headerPattern": "sgs/framework-header-default",
         "footerPattern": "sgs/framework-footer-default"
+      },
+      "colourRoles": {
+        "primary": "brand-blue",
+        "primary-text": "surface-white",
+        "primary-dark": "brand-blue-hover",
+        "accent": "brand-gold",
+        "accent-text": "slate",
+        "accent-light": "brand-gold-light",
+        "success": "#2E7D4F",
+        "success-light": "#ECFDF5",
+        "error": "#DC2626",
+        "error-light": "#FEF2F2",
+        "info": "#3B82F6",
+        "info-light": "#EBF5FF",
+        "surface": "surface-white",
+        "surface-alt": "surface-cool",
+        "text": "grey-body",
+        "text-muted": "grey-muted",
+        "text-inverse": "surface-white",
+        "footer-bg": "slate",
+        "heading": "slate",
+        "link": "brand-blue",
+        "link-hover": "brand-blue-hover",
+        "section": "brand-gold",
+        "section-text": "slate"
       }
     },
     "appearanceTools": true,
