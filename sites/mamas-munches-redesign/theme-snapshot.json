@@ -274,39 +274,33 @@
       "fontSizes": [
         {
           "slug": "small",
-          "size": "14px",
-          "name": "Small",
-          "fluid": false
+          "name": "Size 15",
+          "size": "15px"
         },
         {
           "slug": "regular",
-          "size": "16px",
-          "name": "Regular",
-          "fluid": false
+          "name": "Size 16",
+          "size": "16px"
         },
         {
           "slug": "large",
-          "size": "20px",
-          "name": "Large",
-          "fluid": false
+          "name": "Lead M",
+          "size": "17px"
         },
         {
           "slug": "x-large",
-          "size": "24px",
-          "name": "XL",
-          "fluid": false
+          "name": "Size 22",
+          "size": "22px"
         },
         {
           "slug": "xx-large",
-          "size": "36px",
-          "name": "XXL",
-          "fluid": false
+          "name": "Size 24",
+          "size": "24px"
         },
         {
           "slug": "hero",
-          "size": "50px",
-          "name": "Hero",
-          "fluid": false
+          "name": "Size 28",
+          "size": "28px"
         }
       ],
       "defaultFontSizes": false
@@ -328,67 +322,43 @@
       "spacingSizes": [
         {
           "slug": "10",
-          "size": "0.25rem",
-          "name": "XXS"
+          "name": "Space 6",
+          "size": "6px"
         },
         {
           "slug": "20",
-          "size": "0.5rem",
-          "name": "XS"
+          "name": "Space 8",
+          "size": "8px"
         },
         {
           "slug": "30",
-          "size": "1rem",
-          "name": "S",
-          "fluid": {
-            "min": "0.75rem",
-            "max": "1rem"
-          }
+          "name": "Space 10",
+          "size": "10px"
         },
         {
           "slug": "40",
-          "size": "1.5rem",
-          "name": "M",
-          "fluid": {
-            "min": "1rem",
-            "max": "1.5rem"
-          }
+          "name": "Space 12",
+          "size": "12px"
         },
         {
           "slug": "50",
-          "size": "2rem",
-          "name": "L",
-          "fluid": {
-            "min": "1.25rem",
-            "max": "2rem"
-          }
+          "name": "Space 14",
+          "size": "14px"
         },
         {
           "slug": "60",
-          "size": "3rem",
-          "name": "XL",
-          "fluid": {
-            "min": "1.75rem",
-            "max": "3rem"
-          }
+          "name": "Space 16",
+          "size": "16px"
         },
         {
           "slug": "70",
-          "size": "5rem",
-          "name": "XXL",
-          "fluid": {
-            "min": "2.5rem",
-            "max": "5rem"
-          }
+          "name": "Space 18",
+          "size": "18px"
         },
         {
           "slug": "80",
-          "size": "8rem",
-          "name": "XXXL",
-          "fluid": {
-            "min": "4rem",
-            "max": "8rem"
-          }
+          "name": "Space 20",
+          "size": "20px"
         }
       ]
     },
@@ -576,9 +546,9 @@
       },
       "borderRadius": {
         "small": "4px",
-        "medium": "8px",
-        "large": "16px",
-        "pill": "9999px"
+        "medium": "20px",
+        "large": "36px",
+        "pill": "999px"
       },
       "transition": {
         "fast": "200ms cubic-bezier(0.25, 0.1, 0.25, 1)",
@@ -591,13 +561,13 @@
       "duration": {
         "instant": "60ms",
         "quick": "150ms",
-        "fast": "200ms",
+        "fast": ".2s",
         "medium": "300ms",
         "slow": "420ms",
         "extra-slow": "800ms"
       },
       "easing": {
-        "default": "cubic-bezier(0.25, 0.1, 0.25, 1)",
+        "default": "cubic-bezier(.3,1.6,.5,1)",
         "ease": "ease",
         "ease-in": "ease-in",
         "ease-out": "ease-out",
@@ -617,9 +587,9 @@
       },
       "section": {
         "padding": {
-          "mobile": "0",
-          "tablet": "0",
-          "desktop": "0"
+          "mobile": "64px",
+          "tablet": "80px",
+          "desktop": "112px"
         }
       },
       "gutter": {
@@ -663,7 +633,58 @@
         "link-hover": "mm-cocoa",
         "section": "mm-pink-soft",
         "section-text": "mm-cocoa"
-      }
+      },
+      "presetTokens": {
+        "fontSizes": {
+          "small": "mm-size-15",
+          "regular": "mm-size-16",
+          "large": "mm-lead-m",
+          "x-large": "mm-size-22",
+          "xx-large": "mm-size-24",
+          "hero": "mm-size-28"
+        },
+        "spacing": {
+          "10": "mm-space-6",
+          "20": "mm-space-8",
+          "30": "mm-space-10",
+          "40": "mm-space-12",
+          "50": "mm-space-14",
+          "60": "mm-space-16",
+          "70": "mm-space-18",
+          "80": "mm-space-20"
+        }
+      },
+      "defaultTokens": [
+        "mm-dur-press",
+        "mm-ease-spring",
+        "mm-focus-ring",
+        "mm-font-body",
+        "mm-font-display",
+        "mm-gutter-d",
+        "mm-gutter-m",
+        "mm-gutter-t",
+        "mm-h1-d",
+        "mm-h1-m",
+        "mm-h1-t",
+        "mm-h2-d",
+        "mm-h2-m",
+        "mm-h2-t",
+        "mm-h3-d",
+        "mm-h3-m",
+        "mm-h3-t",
+        "mm-leading-body",
+        "mm-leading-h1",
+        "mm-leading-heading",
+        "mm-radius-20",
+        "mm-radius-36",
+        "mm-radius-4",
+        "mm-radius-pill",
+        "mm-section-d",
+        "mm-section-m",
+        "mm-section-t",
+        "mm-track-h1",
+        "mm-track-h2"
+      ]
     },
     "appearanceTools": true,
     "useRootPaddingAwareAlignments": true,

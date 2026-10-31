@@ -81,6 +81,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from tls_urlopen import urlopen_tls  # noqa: E402
 import snapshot_palette_roster as palette_roster  # noqa: E402
 import snapshot_layout_tokens as layout_tokens  # noqa: E402
+import snapshot_token_roster as token_roster  # noqa: E402
 import snapshot_motion_tokens as motion_tokens  # noqa: E402
 import snapshot_focus_tokens as focus_tokens  # noqa: E402
 import snapshot_scrollbar_tokens as scrollbar_tokens  # noqa: E402
@@ -241,7 +242,7 @@ def roster_guard(snapshot: dict) -> list[str]:
     `colourRoles.<role> ...`; the functions the completeness gate check-snapshot-palette-roster.py uses) and the per-tier layout tokens under
     settings.custom.section and settings.custom.gutter (snapshot_layout_tokens.py), and the motion tokens the
     motion schema's x-sgs-tokens table names (snapshot_motion_tokens.py, Spec 38A section 7), named `custom.<path>`,
-    and the keyboard-focus keys under settings.custom.focus (snapshot_focus_tokens.py), named `custom.focus.<key>`,
+    and the picker scales and the tokens they carry (snapshot_token_roster.py, FR-32-29), and the keyboard-focus keys under settings.custom.focus (snapshot_focus_tokens.py), named `custom.focus.<key>`,
     and the scrollbar keys under settings.custom.scrollbar (snapshot_scrollbar_tokens.py), named `custom.scrollbar.<key>`,
     and the half of the optional selection pair a snapshot lacks (snapshot_selection_tokens.py), named
     `custom.selection.<key>`, and the highlight and inline-photo keys (snapshot_inline_format_tokens.py), named `custom.highlight.<key>` /
@@ -250,6 +251,7 @@ def roster_guard(snapshot: dict) -> list[str]:
     roster = palette_roster.framework_roster()
     missing = palette_roster.missing_roster_slugs(snapshot, roster)
     missing += palette_roster.invalid_colour_roles(snapshot, roster)
+    missing += token_roster.problems(snapshot)
     missing += ["custom." + path for path in layout_tokens.missing_layout_tokens(
         snapshot, layout_tokens.framework_layout_tokens())]
     missing += ["custom." + path for path in motion_tokens.missing_motion_tokens(

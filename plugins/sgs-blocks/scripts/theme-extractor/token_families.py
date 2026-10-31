@@ -1,33 +1,27 @@
-"""token_families.py: every draft token family mirrors the draft, wired the way colour is (Spec 32 FR-32-29).
+"""token_families.py: tokens are defaults, presets are the picker scale (Spec 32 FR-32-29).
 
-Written from the export's ``tokens/*.css`` (the same files ``shade_palette.py`` reads for colour). Each token whose value is
-a literal becomes exactly one entry under its exact name without the leading ``--``:
+Read from the export's ``tokens/*.css`` (the files ``shade_palette.py`` reads for colour). Each non-colour literal token ends
+in exactly one of three places:
 
-  * a preset-list entry where WordPress has a list for the family: ``settings.typography.fontSizes`` (``size``),
-    ``settings.spacing.spacingSizes`` (``size``), ``settings.typography.fontFamilies`` (the existing self-hosting entries
-    stay and carry the faces) and ``settings.shadow.presets`` (``shadow``);
-  * otherwise a key of ``settings.custom.<family>``: ``easing``, ``duration``, ``borderRadius``, ``fontWeight``,
-    ``lineHeight``, ``letterSpacing`` and ``distance`` (WordPress prints ``--wp--custom--<family-kebab>--<token>``).
-
-A per-width set (``--mm-h1-m``, ``-t``, ``-d``) is one entry per token. An alias (``var(--x)``), a colour or gradient (the
-palette's) and a compound value (``104px 52px``, ``translateY(-3px)``) is no entry. A token whose name is a framework slot
-of its own list is entered as ``<name>-token``.
-
-The framework slots SGS's own code reads (font sizes ``small`` to ``hero``, spacing ``10`` to ``80``, and the ``duration``,
-``easing``, ``borderRadius`` and ``distance`` keys) are hidden pointers: ``settings.custom.tokenRoles.<family>.<slot>`` names
-the token the slot stands for, and the theme prints ``--wp--preset--font-size--<slot>: var(--wp--preset--font-size--<token>)``
-(``theme/sgs-theme/inc/token-roles.php``). A slot is read from the job it does in the draft: ``regular`` is the token the
-``body`` rule (or the body-size name) uses, ``hero``, ``xx-large``, ``x-large`` and ``large`` are the heading levels h1 to h4
-at the draft's widest width, the ``gutter`` and ``section`` tokens answer spacing ``40``, ``70`` and ``80``, and the
-hover movement timing's duration and easing answer ``fast`` and ``default``. Any other slot points at the token whose
-value is nearest the slot's current value, provided it is close (``NEAR``); a slot with no close token (a ``linear`` easing
-beside a draft that has only eased curves) stays a real entry carrying its framework value, so a generic slot never turns
-into a different thing. The role map is a reading of the draft: no slot is ever a review row.
+  * a DEFAULT: the token has a job and its value becomes that job's default. ``declared_tokens.py`` writes body text, each
+    heading level (fluid per width), line heights, tracking, the gutters and the section padding per tier; this module writes
+    ``settings.custom.borderRadius`` (``pill`` the pill-shaped token, ``medium`` the token equal to the primary button's
+    radius, ``small`` and ``large`` the smallest and largest of the rest), ``settings.custom.duration.fast`` and
+    ``settings.custom.easing.default`` (the draft's button and link transition);
+  * a PRESET: the framework's picker slots stay, valued from the draft's own scale. Font sizes ``small`` to ``hero`` (at most
+    6, so the picker keeps its quick buttons) and spacing ``10`` to ``80`` (at most 8, so the picker keeps its slider) take
+    the draft's most used scale tokens (``var(--token)`` references across the export), in ascending order, each slot named
+    for the token it carries ("Gap 3"); the body size token is pinned to ``regular``. Which token each slot carries is
+    recorded in ``settings.custom.presetTokens.<family>.<slot>``, the key the clone reads to write a preset reference where
+    an element uses that token. A slot no token is assigned keeps its framework value;
+  * a LITERAL: every other token (a one-off size, a shadow, a hit target, an outline) stays out of the snapshot and the
+    clone writes its value where an element uses it.
 
 Nothing here names a client.
 """
 from __future__ import annotations
 
+import math
 import pathlib
 import re
 
@@ -52,16 +46,6 @@ _COMMENT = re.compile(r"/\*.*?\*/", re.S)
 
 # Where each preset-list family lives in a snapshot, and the entry's value key.
 LISTS = {"fontSizes": (("typography", "fontSizes"), "size"), "spacing": (("spacing", "spacingSizes"), "size")}
-FONT_FAMILIES = ("typography", "fontFamilies")
-SHADOWS = ("shadow", "presets")
-CUSTOM_FAMILIES = ("easing", "duration", "borderRadius", "fontWeight", "lineHeight", "letterSpacing", "distance")
-POINTER_FAMILIES = ("fontSizes", "spacing", "duration", "easing", "borderRadius", "distance")
-# The heading levels that answer the larger font-size slots, and the slots the section and gutter tokens answer.
-LEVEL_SLOTS = {"h1": "hero", "h2": "xx-large", "h3": "x-large", "h4": "large"}
-GUTTER_SLOT, SECTION_SLOTS = "40", ("70", "80")
-# How close a token must be to a slot's current value to stand in for it (when no job names it).
-NEAR_RATIO, NEAR_FLOOR = 0.34, {"fontSizes": 2.0, "spacing": 2.0, "borderRadius": 2.0, "distance": 2.0, "duration": 40.0}
-NEAR_EASING = 0.3
 _CANON_EASING = {"ease": (0.25, 0.1, 0.25, 1.0), "ease-in": (0.42, 0.0, 1.0, 1.0), "ease-out": (0.0, 0.0, 0.58, 1.0),
                  "ease-in-out": (0.42, 0.0, 0.58, 1.0), "linear": (0.0, 0.0, 1.0, 1.0)}
 
@@ -114,8 +98,11 @@ def read(tokens: dict | None) -> dict:
     if not tokens:
         return {"families": out, "skipped": skipped, "ns": None}
     rows = []
+    aliases = {a.lstrip("-").lower() for a in tokens.get("aliases") or ()}
     for raw, value in tokens["tokens"].items():
         name = raw.lstrip("-").lower()
+        if name in aliases:
+            continue
         family = classify(name, str(value))
         if family is None or not _SLUG.match(name):
             if parse_colour(str(value)) is None and not _GRADIENT.match(str(value).strip()) and not str(value).strip().lower().startswith("var("):
@@ -124,7 +111,8 @@ def read(tokens: dict | None) -> dict:
         rows.append((family, name, str(value).strip()))
     ns = namespace_of([n for _, n, _ in rows])
     for family, name, value in rows:
-        out.setdefault(family, []).append({"token": name, "value": value, "name": display_name(name, ns)})
+        label = display_name(name, ns)
+        out.setdefault(family, []).append({"token": name, "value": value, "name": display_name(name, None) if label.replace(" ", "").isdigit() else label})
     return {"families": out, "skipped": skipped, "ns": ns}
 
 
@@ -160,33 +148,124 @@ def _curve(value: str) -> tuple | None:
     return nums if len(nums) == 4 else None
 
 
-def _distance(family: str, a: str, b: str) -> float | None:
-    """How far apart two values are in the family's own measure; None when either has none."""
-    if family == "easing":
-        ca, cb = _curve(a), _curve(b)
-        return sum((x - y) ** 2 for x, y in zip(ca, cb)) ** 0.5 if ca and cb else None
-    sa, sb = _scalar(a, family), _scalar(b, family)
-    return abs(sa - sb) if sa is not None and sb is not None else None
+
+# --- scale presets -----------------------------------------------------------------------------------------
+
+SCALE_SIZE = {"fontSizes": 6, "spacing": 8}
+SPACING_WORDS = frozenset({"space", "gap"})
 
 
-def _near(family: str, want: str, got: str) -> bool:
-    d = _distance(family, want, got)
-    if d is None:
-        return False
-    if family == "easing":
-        return d <= NEAR_EASING
-    top = max(_scalar(want, family) or 0.0, _scalar(got, family) or 0.0)
-    return d <= max(NEAR_FLOOR[family], NEAR_RATIO * top)
+_DECL = re.compile(r"(font-size|(?:row-|column-)?gap|padding(?:-[a-z]+)?|margin(?:-[a-z]+)?)\s*:\s*([^;}\"'<]+)", re.I)
 
 
-def nearest(family: str, want: str, candidates: list[dict]) -> dict | None:
-    """The candidate closest to ``want`` that is also near it (ties go to the smaller value), else None."""
-    scored = [(d, _scalar(c["value"], family) or 0.0, i, c) for i, c in enumerate(candidates)
-              if (d := _distance(family, want, c["value"])) is not None and _near(family, want, c["value"])]
-    return min(scored, key=lambda s: (s[0], s[1], s[2]))[3] if scored else None
+def usage_counts(draft_dir, rows: list[dict]) -> dict[str, int]:
+    """``{token: uses}``: ``var(--token)`` references plus the declarations that state the token's own value
+    (a draft that does not load its tokens states the value: ``font-size:14px``, ``gap:14px``, ``padding:6px 12px``)."""
+    folder = pathlib.Path(draft_dir)
+    text = ""
+    for path in sorted(folder.glob("*.html")) + sorted((folder / dt.TOKENS_DIR).glob("*.css")):
+        text += path.read_text(encoding="utf-8", errors="replace")
+    stated: dict[tuple[str, str], int] = {}
+    for prop, value in _DECL.findall(text):
+        kind = "size" if prop.lower() == "font-size" else "space"
+        for part in re.split(r"\s+", value.strip().lower()):
+            stated[(kind, part)] = stated.get((kind, part), 0) + 1
+    out = {}
+    for r in rows:
+        kind = "size" if classify(r["token"], r["value"]) == "fontSizes" else "space"
+        refs = len(re.findall(r"var\(\s*--" + re.escape(r["token"]) + r"(?![\w-])", text))
+        out[r["token"]] = refs + stated.get((kind, r["value"].lower()), 0)
+    return out
 
 
-# --- job readings -------------------------------------------------------------------------------------------
+def _assign(slots: list[tuple[str, float]], rows: list[dict], family: str) -> dict[str, dict]:
+    """Ascending tokens onto ascending slots, injective, minimising the summed log ratio to the slot defaults."""
+    vals = sorted(((_scalar(r["value"], family) or 0.0, r) for r in rows), key=lambda v: v[0])
+    vals = vals[:len(slots)]
+    n, m = len(vals), len(slots)
+    if not n or not m:
+        return {}
+
+    def cost(i: int, j: int) -> float:
+        return abs(math.log((vals[i][0] + 1.0) / (slots[j][1] + 1.0)))
+
+    inf = float("inf")
+    dp = [[inf] * (m + 1) for _ in range(n + 1)]
+    for j in range(m + 1):
+        dp[0][j] = 0.0
+    for i in range(1, n + 1):
+        for j in range(i, m + 1):
+            dp[i][j] = min(dp[i][j - 1], dp[i - 1][j - 1] + cost(i - 1, j - 1))
+    out: dict[str, dict] = {}
+    i, j = n, m
+    while i > 0:
+        if j > i and dp[i][j] == dp[i][j - 1]:
+            j -= 1
+        else:
+            out[slots[j - 1][0]] = vals[i - 1][1]
+            i, j = i - 1, j - 1
+    return out
+
+
+def scale_tokens(family: str, rows: list[dict]) -> list[dict]:
+    """The scale candidates of a preset family: spacing keeps its ``space`` and ``gap`` tokens (the gutters and the
+    section padding are defaults)."""
+    if family == "spacing":
+        return [r for r in rows if set(_words(r["token"])) & SPACING_WORDS]
+    return rows
+
+
+def pick_scale(family: str, rows: list[dict], slots: list[tuple[str, float]], usage: dict[str, int],
+               pinned: dict | None = None) -> dict[str, dict]:
+    """``{slot: token row}``: the family's most used tokens (at most as many as the picker shows) placed on the slots."""
+    limit = min(SCALE_SIZE[family], len(slots))
+    order = {r["token"]: i for i, r in enumerate(rows)}
+    pool = [r for r in rows if not pinned or r["token"] != pinned["row"]["token"]]
+    pool.sort(key=lambda r: (-usage.get(r["token"], 0), order[r["token"]]))
+    if not pinned:
+        return _assign(slots, pool[:limit], family)
+    names = [s for s, _ in slots]
+    cut = names.index(pinned["slot"])
+    below, above = slots[:cut], slots[cut + 1:]
+    body = _scalar(pinned["row"]["value"], family) or 0.0
+    lo: list[dict] = []
+    hi: list[dict] = []
+    for r in pool:
+        if len(lo) + len(hi) >= limit - 1:
+            break
+        side, cap = (lo, len(below)) if (_scalar(r["value"], family) or 0.0) < body else (hi, len(above))
+        if len(side) < cap:
+            side.append(r)
+    return {**_assign(below, lo, family), pinned["slot"]: pinned["row"], **_assign(above, hi, family)}
+
+
+def _widest_headings_only(rows: list[dict]) -> list[dict]:
+    """Drop a heading level's narrower-width tokens: they are that level's per-width defaults, the widest is its scale entry."""
+    keep = set(_heading_tokens(rows).values())
+    return [r for r in rows if not dt.HEADING_SIZE_RE.match(r["token"]) or r["token"] in keep]
+
+
+def _heading_tokens(rows: list[dict]) -> dict[str, str]:
+    by_level: dict[str, dict] = {}
+    for row in rows:
+        m = dt.HEADING_SIZE_RE.match(row["token"])
+        if m:
+            by_level.setdefault("h" + m.group(1), {})[dt._TIER.get(m.group(2) or "", "default")] = row["token"]
+    return {lv: next(t[k] for k in ("desktop", "default", "tablet", "mobile") if k in t) for lv, t in by_level.items()}
+
+
+def _alias_target(draft_dir, tokens: dict | None) -> str | None:
+    """The literal token a body-size alias (``--text-body-size: var(--size-16)``) names."""
+    import shade_palette
+    raw = shade_palette._raw_aliases(draft_dir)
+    for alias, target in raw.items():
+        if dt.BODY_SIZE_RE.match(alias):
+            hops = 0
+            while target in raw and hops < 8:
+                target, hops = raw[target], hops + 1
+            return target
+    return None
+
 
 def _body_size_token(draft_dir) -> str | None:
     """The token the draft's ``body`` rule gives ``font-size`` (``body{font-size:var(--fs-body)}``)."""
@@ -200,234 +279,189 @@ def _body_size_token(draft_dir) -> str | None:
     return None
 
 
-def _heading_tokens(sizes: list[dict]) -> dict[str, str]:
-    """``{level: token}`` at the widest width the draft states (desktop, else the untiered token, tablet, mobile)."""
-    by_level: dict[str, dict] = {}
-    for row in sizes:
-        m = dt.HEADING_SIZE_RE.match(row["token"])
-        if m:
-            by_level.setdefault("h" + m.group(1), {})[dt._TIER.get(m.group(2) or "", "default")] = row["token"]
-    return {level: next(t[k] for k in ("desktop", "default", "tablet", "mobile") if k in t) for level, t in by_level.items()}
+def _body_pref(family: str, draft_dir, tokens: dict | None, rows: list[dict]) -> str | None:
+    """The token that is the draft's body text size: the body rule's, an alias's target, else a body-size name."""
+    if family != "fontSizes":
+        return None
+    return _body_size_token(draft_dir) or _alias_target(draft_dir, tokens) or next(
+        (r["token"] for r in rows if dt.BODY_SIZE_RE.match(r["token"])), None)
 
 
-def _tier_tokens(rows: list[dict], pattern: re.Pattern) -> dict[str, str]:
-    """``{tier: token}`` for the gutter or section tokens; an untiered token answers every tier the draft leaves unnamed."""
-    named: dict[str, str] = {}
-    for row in rows:
-        m = pattern.match(row["token"])
-        if m:
-            named[dt._TIER.get(m.group(1) or "", "default")] = row["token"]
-    if not named:
-        return {}
-    out, last = {}, None
-    for tier in dt.TIERS:
-        last = named.get(tier) or named.get("default") or last
-        out[tier] = last
-    first = next(out[t] for t in dt.TIERS if out[t])
-    return {t: v or first for t, v in out.items()}
+def _one_per_value(rows: list[dict], usage: dict[str, int], prefer: str | None) -> list[dict]:
+    """Two tokens with one value are one scale step: keep the preferred one, else the most used, else the first declared."""
+    best: dict[str, dict] = {}
+    for i, r in enumerate(rows):
+        key = re.sub(r"\s+", "", r["value"].lower())
+        held = best.get(key)
+        rank = (r["token"] == prefer, usage.get(r["token"], 0))
+        if held is None or rank > (held["token"] == prefer, usage.get(held["token"], 0)):
+            best[key] = r
+    keep = {id(r) for r in best.values()}
+    return [r for r in rows if id(r) in keep]
 
 
-def _slot_values(snap: dict, baseline: dict, family: str) -> dict[str, str]:
-    """``{slot: current value}``: the snapshot's own literal where it has one, else the framework's."""
-    out: dict[str, str] = {}
-    for source in (baseline, snap):
-        settings = source.get("settings") or {}
-        if family in LISTS:
-            (a, b), key = LISTS[family]
-            rows = (settings.get(a) or {}).get(b) or []
-            for e in rows:
-                if isinstance(e, dict) and isinstance(e.get("slug"), str) and isinstance(e.get(key), str):
-                    out[e["slug"]] = e[key]
-        else:
-            for k, v in ((settings.get("custom") or {}).get(family) or {}).items():
-                if isinstance(v, str) and not v.startswith("var("):
-                    out[k] = v
+def apply_scales(snap: dict, baseline: dict, families: dict, draft_dir, trace: list, tokens: dict | None = None) -> dict:
+    """Value the framework slots from the draft's scale; returns ``{family: {slot: token}}`` (stored as presetTokens)."""
+    carried: dict[str, dict[str, str]] = {}
+    settings = snap.setdefault("settings", {})
+    for family, ((a, b), key) in LISTS.items():
+        rows = scale_tokens(family, families.get(family) or [])
+        if family == "fontSizes":
+            rows = _widest_headings_only(rows)
+        if not rows:
+            continue
+        base_rows = [e for e in (((baseline.get("settings") or {}).get(a) or {}).get(b) or []) if isinstance(e, dict)]
+        slots = [(e["slug"], _scalar(e[key], family) or 1.0) for e in base_rows]
+        usage = usage_counts(draft_dir, rows)
+        body = _body_pref(family, draft_dir, tokens, rows)
+        rows = _one_per_value(rows, usage, body)
+        pinned = None
+        if family == "fontSizes":
+            row = next((r for r in rows if r["token"] == body), None)
+            if row is not None and any(s == "regular" for s, _ in slots):
+                pinned = {"slot": "regular", "row": row}
+        chosen = pick_scale(family, rows, slots, usage, pinned)
+        existing = {e["slug"]: e for e in (settings.get(a) or {}).get(b) or [] if isinstance(e, dict) and isinstance(e.get("slug"), str)}
+        out = []
+        for e in base_rows:
+            slot = e["slug"]
+            if slot in chosen:
+                out.append({"slug": slot, "name": chosen[slot]["name"], key: chosen[slot]["value"]})
+                carried.setdefault(family, {})[slot] = chosen[slot]["token"]
+                trace_row(trace, "token", f"{a}.{b}.{slot}",
+                          f"the draft's scale token (used {usage.get(chosen[slot]['token'], 0)} time(s))", chosen[slot]["token"])
+            else:
+                out.append(e)
+        framework = {e["slug"] for e in base_rows}
+        settings.setdefault(a, {})[b] = out + [e for s, e in existing.items() if s not in framework]
+    if carried:
+        settings.setdefault("custom", {})["presetTokens"] = carried
+    return carried
+
+
+# --- defaults ----------------------------------------------------------------------------------------------
+
+def _px(value: str) -> float | None:
+    return _scalar(value, "borderRadius")
+
+
+def read_radius_defaults(rows: list[dict], button_radius: str | None) -> dict[str, dict]:
+    """``{slot: token row}`` for ``custom.borderRadius`` (see the module docstring)."""
+    pills = [r for r in rows if r["value"].endswith("%") or (_px(r["value"]) or 0) >= 200]
+    rest = sorted((r for r in rows if r not in pills), key=lambda r: _px(r["value"]) or 0)
+    out: dict[str, dict] = {}
+    long_pills = [r for r in pills if (_px(r["value"]) or 0) >= 200]
+    if long_pills:
+        out["pill"] = max(long_pills, key=lambda r: _px(r["value"]) or 0)
+    if rest:
+        out["small"], out["large"] = rest[0], rest[-1]
+        want = _px(button_radius) if button_radius else None
+        out["medium"] = next((r for r in rest if want is not None and _px(r["value"]) == want), rest[len(rest) // 2])
     return out
 
 
-def framework_slots(baseline: dict, family: str) -> list[str]:
-    """The slots of ``family`` that the framework ``theme.json`` carries (file order)."""
-    settings = baseline.get("settings") or {}
-    if family in LISTS:
-        (a, b), _ = LISTS[family]
-        return [e["slug"] for e in (settings.get(a) or {}).get(b) or [] if isinstance(e, dict) and isinstance(e.get("slug"), str)]
-    return list(((settings.get("custom") or {}).get(family) or {}).keys())
+def apply_defaults(snap: dict, families: dict, movement: dict | None, trace: list) -> dict[str, list[str]]:
+    """Write the radius, duration and easing defaults; returns ``{token: [paths]}`` for the tokens it used."""
+    custom = snap.setdefault("settings", {}).setdefault("custom", {})
+    used: dict[str, list[str]] = {}
 
+    def put(path: tuple, row: dict, why: str) -> None:
+        node = custom
+        for k in path[:-1]:
+            node = node.setdefault(k, {})
+        node[path[-1]] = row["value"]
+        used.setdefault(row["token"], []).append("settings.custom." + ".".join(path))
+        trace_row(trace, "token", "settings.custom." + ".".join(path), why, row["token"])
 
-def read_roles(snap: dict, baseline: dict, families: dict, draft_dir, movement: dict | None, trace: list) -> dict:
-    """``{family: {slot: token}}`` for every pointer family the draft has tokens in (see the module docstring)."""
-    roles: dict[str, dict] = {}
-    for family in POINTER_FAMILIES:
-        rows = families.get(family) or []
-        if not rows:
-            continue
-        slots = framework_slots(baseline, family)
-        current = _slot_values(snap, baseline, family)
-        chosen: dict[str, tuple[str, str]] = {}
-        by_token = {r["token"]: r for r in rows}
-
-        def job(slot: str, token: str | None, why: str) -> None:
-            if token in by_token and slot in slots and slot not in chosen:
-                chosen[slot] = (token, why)
-
-        if family == "fontSizes":
-            body = _body_size_token(draft_dir)
-            if body is None:
-                body = next((r["token"] for r in rows if dt.BODY_SIZE_RE.match(r["token"])), None)
-            job("regular", body, "the draft's body text size")
-            for level, token in _heading_tokens(rows).items():
-                if level in LEVEL_SLOTS:
-                    job(LEVEL_SLOTS[level], token, f"the draft's {level} size at its widest width")
-        elif family == "spacing":
-            gutter = _tier_tokens(rows, dt.GUTTER_RE)
-            section = _tier_tokens(rows, dt.SECTION_RE)
-            if gutter:
-                job(GUTTER_SLOT, gutter["desktop"], "the draft's side gutter")
-            if section:
-                job(SECTION_SLOTS[0], section["mobile"], "the draft's section padding on mobile")
-                job(SECTION_SLOTS[1], section["desktop"], "the draft's section padding on desktop")
-        elif movement and family in ("duration", "easing"):
-            want = movement["duration_ms"] if family == "duration" else movement["easing"]
-            match = next((r["token"] for r in rows if (_scalar(r["value"], "duration") == float(want) if family == "duration"
-                                                       else _curve(r["value"]) is not None and _curve(r["value"]) == _curve(str(want)))), None)
-            job("fast" if family == "duration" else "default", match, "the draft's button and link transition")
-        for slot in slots:
-            if slot in chosen:
-                continue
-            hit = nearest(family, current.get(slot, ""), rows) if current.get(slot) else None
-            if hit is not None:
-                chosen[slot] = (hit["token"], f"nearest the slot's value {current[slot]}")
-        roles[family] = {}
-        for slot in slots:
-            if slot in chosen:
-                roles[family][slot] = _entry_slug(chosen[slot][0], set(slots))
-                trace_row(trace, "role", f"tokenRoles.{family}.{slot}", chosen[slot][1], chosen[slot][0])
-            else:
-                trace_row(trace, "gap", f"tokenRoles.{family}.{slot}", "no draft token is close to this slot: it stays a real entry", current.get(slot, ""))
-        if not roles[family]:
-            del roles[family]
-    return roles
-
-
-# --- writing ------------------------------------------------------------------------------------------------
-
-def _entry_slug(token: str, reserved: set[str]) -> str:
-    return token + "-token" if token in reserved else token
-
-
-def _px_key(value: str, family: str) -> float:
-    s = _scalar(value, family)
-    return s if s is not None else float("inf")
-
-
-def _rewrite(node, renames: dict[str, str]):
-    """Rename every ``--wp--custom--easing--<old>`` reference to the token that replaced the key."""
-    if isinstance(node, dict):
-        for k, v in node.items():
-            node[k] = _rewrite(v, renames)
-        return node
-    if isinstance(node, list):
-        return [_rewrite(v, renames) for v in node]
-    if isinstance(node, str) and "--wp--custom--easing--" in node:
-        return re.sub(r"(--wp--custom--easing--)([a-z0-9-]+)", lambda m: m.group(1) + renames.get(m.group(2), m.group(2)), node)
-    return node
-
-
-def _write_list(snap: dict, baseline: dict, family: str, rows: list[dict], pointed: dict[str, str]) -> None:
-    (a, b), key = LISTS[family]
-    settings = snap.setdefault("settings", {})
-    section = settings.setdefault(a, {})
-    framework = set(framework_slots(baseline, family))
-    existing = [e for e in section.get(b) or [] if isinstance(e, dict) and isinstance(e.get("slug"), str)]
-    tokens = {r["token"] for r in rows}
-    entries = [{"slug": _entry_slug(r["token"], framework), "name": r["name"], key: r["value"]}
-               for r in sorted(rows, key=lambda r: _px_key(r["value"], family))]
-    base_rows = {e["slug"]: e for e in (((baseline.get("settings") or {}).get(a) or {}).get(b) or []) if isinstance(e, dict)}
-    kept: list[dict] = []
-    seen = {e["slug"] for e in entries}
-    for slot in framework_slots(baseline, family):
-        if slot in pointed or slot in seen:
-            continue
-        kept.append(next((e for e in existing if e["slug"] == slot), base_rows[slot]))
-        seen.add(slot)
-    others = [e for e in existing if e["slug"] not in seen and e["slug"] not in framework and e["slug"] not in tokens]
-    section[b] = kept + others + entries
+    radius = families.get("borderRadius") or []
+    if radius:
+        button = ((custom.get("buttonPresets") or {}).get("primary") or {}).get("border-radius")
+        for slot, row in read_radius_defaults(radius, button if isinstance(button, str) else None).items():
+            put(("borderRadius", slot), row, "the draft's radius token for this role")
+    if movement:
+        dur = next((r for r in families.get("duration") or []
+                    if _scalar(r["value"], "duration") == float(movement["duration_ms"])), None)
+        if dur:
+            put(("duration", "fast"), dur, "the draft's button and link transition duration")
+        want = _curve(str(movement["easing"]))
+        ease = next((r for r in families.get("easing") or [] if want is not None and _curve(r["value"]) == want), None)
+        if ease:
+            put(("easing", "default"), ease, "the draft's button and link transition easing")
+    return used
 
 
 def apply(snap: dict, tokens: dict | None, draft_dir, baseline: dict, movement: dict | None, trace: list) -> dict:
-    """Write every draft token family and ``settings.custom.tokenRoles`` into ``snap``; returns ``read``'s result.
+    """Value the picker scales and write the defaults this module owns; returns ``read``'s result.
 
-    A draft with no token file leaves ``snap`` untouched (a starter keeps its generic slots as real entries)."""
+    A draft with no token file leaves ``snap`` untouched (a starter keeps its generic slots as they are)."""
     parsed = read(tokens)
-    families = parsed["families"]
-    if not families:
+    if not parsed["families"]:
         return parsed
-    settings = snap.setdefault("settings", {})
-    custom = settings.setdefault("custom", {})
-    roles = read_roles(snap, baseline, families, draft_dir, movement, trace)
-    for family in LISTS:
-        if families.get(family):
-            _write_list(snap, baseline, family, families[family], roles.get(family, {}))
-    if families.get("fontFamilies"):
-        section = settings.setdefault(FONT_FAMILIES[0], {})
-        have = {e.get("slug") for e in section.get(FONT_FAMILIES[1]) or [] if isinstance(e, dict)}
-        for r in families["fontFamilies"]:
-            slug = _entry_slug(r["token"], have)
-            section.setdefault(FONT_FAMILIES[1], []).append({"slug": slug, "name": r["name"], "fontFamily": r["value"]})
-            have.add(slug)
-    if families.get("shadow"):
-        section = settings.setdefault(SHADOWS[0], {})
-        have = {e.get("slug") for e in section.get(SHADOWS[1]) or [] if isinstance(e, dict)}
-        for r in families["shadow"]:
-            slug = _entry_slug(r["token"], have)
-            section.setdefault(SHADOWS[1], []).append({"slug": slug, "name": r["name"], "shadow": r["value"]})
-            have.add(slug)
-    renames: dict[str, str] = {}
-    for family in CUSTOM_FAMILIES:
-        rows = families.get(family) or []
-        if not rows:
-            continue
-        group = custom.setdefault(family, {})
-        framework = set(framework_slots(baseline, family))
-        for slot in roles.get(family, {}):
-            group.pop(slot, None)
-        if family == "easing":
-            for key in [k for k in group if k not in framework and any(_curve(group[k]) is not None and _curve(group[k]) == _curve(r["value"]) for r in rows)]:
-                renames[key] = next(r["token"] for r in rows if _curve(r["value"]) == _curve(group[key]))
-                del group[key]
-        for r in rows:
-            group[_entry_slug(r["token"], framework)] = r["value"]
-    if renames:
-        for k in [k for k in snap if k != "settings"]:
-            snap[k] = _rewrite(snap[k], renames)
-        for k in [k for k in settings if k != "custom"]:
-            settings[k] = _rewrite(settings[k], renames)
-        for k in [k for k in custom if k != "easing"]:
-            custom[k] = _rewrite(custom[k], renames)
-    custom["tokenRoles"] = roles
-    _reference_derived(snap, families, trace)
-    if not custom["tokenRoles"]:
-        custom.pop("tokenRoles")
+    custom = snap.setdefault("settings", {}).setdefault("custom", {})
+    custom.pop("tokenRoles", None)
+    apply_scales(snap, baseline, parsed["families"], draft_dir, trace, tokens)
+    apply_defaults(snap, parsed["families"], movement, trace)
+    where = accounting(snap, tokens, draft_dir)
+    custom["defaultTokens"] = sorted(t for t, w in where.items() if w["where"] == "default")
     return parsed
 
 
-def _reference_derived(snap: dict, families: dict, trace: list) -> None:
-    """Derived keys that state a token's own value reference the token: the gutter tiers and a heading size that is one token."""
-    spacing = families.get("spacing") or []
-    custom = snap["settings"]["custom"]
-    tiers = _tier_tokens(spacing, dt.GUTTER_RE)
-    for tier, token in tiers.items():
-        custom.setdefault("gutter", {})[tier] = f"var(--wp--preset--spacing--{token})"
-        trace_row(trace, "token", f"custom.gutter.{tier}", "the draft's gutter token", token)
-    sizes = families.get("fontSizes") or []
-    by_level: dict[str, list] = {}
-    for row in sizes:
-        m = dt.HEADING_SIZE_RE.match(row["token"])
-        if m:
-            by_level.setdefault("h" + m.group(1), []).append(row)
-    elements = (snap.get("styles") or {}).get("elements") or {}
-    for level, rows in by_level.items():
-        typo = (elements.get(level) or {}).get("typography")
-        if len(rows) == 1 and isinstance(typo, dict) and "fontSize" in typo:
-            typo["fontSize"] = f"var:preset|font-size|{rows[0]['token']}"
-            trace_row(trace, "token", f"styles.elements.{level}.typography.fontSize", "the draft's one token for this level", rows[0]["token"])
+# --- accounting --------------------------------------------------------------------------------------------
+
+_RULE = re.compile(r"([^{}]+)\{([^{}]*)\}")
+_VAR_REF = re.compile(r"var\(\s*--([\w-]+)")
+
+
+def rule_defaults(draft_dir) -> dict[str, list[str]]:
+    """``{token: [selector]}`` for tokens the token files' own ``body``, heading, ``a`` and ``button`` rules use."""
+    out: dict[str, list[str]] = {}
+    folder = pathlib.Path(draft_dir) / dt.TOKENS_DIR
+    for path in sorted(folder.glob("*.css")) if folder.is_dir() else []:
+        css = _COMMENT.sub("", path.read_text(encoding="utf-8", errors="replace"))
+        for m in _RULE.finditer(css):
+            selector = m.group(1).strip().lower()
+            if selector.startswith((":root", "@")):
+                continue
+            if any(p.strip() in ("body", "a", "a:hover", "button") or _LEVEL.match(p.strip()) for p in selector.split(",")):
+                for name in _VAR_REF.findall(m.group(2)):
+                    out.setdefault(name.lower(), []).append(selector)
+    return out
+
+
+def accounting(snap: dict, tokens: dict | None, draft_dir) -> dict[str, dict]:
+    """``{token: {"where": "default"|"preset"|"literal", ...}}`` for every non-colour literal token.
+
+    A default: ``declared_tokens`` reads it for a job (its source names the token), a token-file rule uses it, or it is the
+    value of a ``borderRadius``, ``duration`` or ``easing`` default this module wrote. A preset: ``presetTokens`` carries it
+    (a token that is both reports ``default`` and the slot). Otherwise a literal."""
+    parsed = read(tokens)
+    names = {r["token"] for rows in parsed["families"].values() for r in rows} | set(parsed["skipped"])
+    defaults: dict[str, list[str]] = {}
+    for row in dt.expectations(dt.read_roles(draft_dir), snap):
+        for name in re.findall(r"--([\w-]+)", row["source"]):
+            defaults.setdefault(name.lower(), []).append(row["path"])
+    for name, selectors in rule_defaults(draft_dir).items():
+        defaults.setdefault(name, []).extend("styles " + s for s in selectors)
+    custom = (snap.get("settings") or {}).get("custom") or {}
+    radius = parsed["families"].get("borderRadius") or []
+    if radius:
+        button = ((custom.get("buttonPresets") or {}).get("primary") or {}).get("border-radius")
+        for slot, r in read_radius_defaults(radius, button if isinstance(button, str) else None).items():
+            defaults.setdefault(r["token"], []).append(f"settings.custom.borderRadius.{slot}")
+    for family, slot in (("duration", "fast"), ("easing", "default")):
+        value = (custom.get(family) or {}).get(slot) if isinstance(custom.get(family), dict) else None
+        for r in parsed["families"].get(family) or []:
+            if value is not None and r["value"] == value:
+                defaults.setdefault(r["token"], []).append(f"settings.custom.{family}.{slot}")
+    carried = {t: f"{fam}.{slot}" for fam, m in (custom.get("presetTokens") or {}).items() for slot, t in m.items()}
+    out: dict[str, dict] = {}
+    for name in sorted(names):
+        if name in defaults:
+            out[name] = {"where": "default", "paths": sorted(set(defaults[name]))}
+            if name in carried:
+                out[name]["slot"] = carried[name]
+        elif name in carried:
+            out[name] = {"where": "preset", "slot": carried[name]}
+        else:
+            out[name] = {"where": "literal"}
+    return out

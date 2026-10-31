@@ -28,7 +28,9 @@ For an export with `tokens/colors.css`, `shade_palette.py::apply` runs last and 
 3. The client's existing snapshot (`merge.py::merge_onto`): every key this run did not derive.
 4. The framework `theme/sgs-theme/theme.json`: the rest.
 
-Section padding is read from the token files but never written; the build route writes each section's own padding.
+## Tokens are defaults, presets are the picker scale (Spec 32 FR-32-29)
+
+`token_families.py::apply` runs after the palette step and puts every non-colour literal token in exactly one place. A default: the token's value becomes its job's default (`declared_tokens.py` for body text, headings, line heights, tracking, gutters and the section padding per tier; `token_families.py::apply_defaults` for `settings.custom.borderRadius`, `duration.fast` and `easing.default`). A preset: font sizes `small` to `hero` (at most 6) and spacing `10` to `80` (at most 8) take the draft's most used scale tokens in ascending order, named for the token, with `settings.custom.presetTokens.<fontSizes|spacing>.<slot>` recording which; two tokens with one value are one step; a heading's narrower-width tokens stay defaults. Everything else is a literal the clone writes where an element uses it. `settings.custom.defaultTokens` lists the default tokens. `token_families.py::accounting` returns each token's place.
 
 ## Check a snapshot against its draft
 
