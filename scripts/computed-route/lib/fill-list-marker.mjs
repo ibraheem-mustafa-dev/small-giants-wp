@@ -25,7 +25,7 @@ import { partTree } from './skeleton-part-pairing.mjs';
 
 const NTH = /:nth-of-type\((\d+)\)/g;
 const LAST_NTH = /^\.[^ >]+:nth-of-type\((\d+)\)$/;
-const MARKERS = [ 'icon', 'emoji', 'bullet', 'numbered', 'none' ];
+export const MARKERS = [ 'icon', 'emoji', 'bullet', 'numbered', 'none' ];
 const ICON_NAME_ROLES = [ 'icon-slug', 'icon' ];
 // Glyphs that draw a dot or a bar: a bullet, whichever character draws it.
 const BULLET_GLYPHS = /^[•·‧∙●○◦▪▫■□◆◇‣⁃–—\-|*]$/u;
@@ -64,7 +64,7 @@ export function ordinal( words ) {
 }
 
 // What a glyph draws: numbered (with its number), bullet or emoji.
-const glyph = ( text ) => {
+export const glyph = ( text ) => {
 	const w = String( text ).trim();
 	const o = ordinal( w );
 	if ( o ) {
@@ -194,7 +194,12 @@ const parsed = ( v ) => {
 // The block's enum setting whose allowed values in the DB include at least three marker kinds, and the one (another)
 // whose values include `decimal`: { marker, number } (each { attr_name, values } or null).
 function markerSettings( db, block ) {
-	const rows = enumSettings( db, block ).map( ( r ) => {
+	return markerSettingsFrom( enumSettings( db, block ) );
+}
+
+// The same, from a block's enum setting rows (`{ attr_name, enum_values, default_value }`, any reader's).
+export function markerSettingsFrom( list ) {
+	const rows = list.map( ( r ) => {
 		try {
 			return { attr_name: r.attr_name, values: [].concat( JSON.parse( r.enum_values ) ), fallback: parsed( r.default_value ) };
 		} catch {

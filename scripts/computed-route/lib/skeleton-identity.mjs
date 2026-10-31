@@ -78,9 +78,19 @@ export function makeIdentity( { m, facts, surface = {}, logicOf = () => null, ca
 		return null;
 	};
 	// The ranking facts a block shows as yes at an element, when the element is the smallest one holding them all.
+	const tagBlock = ( tag ) => {
+		const core = facts.tagMap?.[ tag ]?.core_block_slug ?? null;
+		return core ? facts.replacedBy?.[ core ] ?? core : null;
+	};
 	const shownBy = ( block, f ) => ( pool.has( block ) ? yesTo( f ).has( block ) : 'yes' === table.state( block, f.fact, f.value ) );
 	const matched = ( block, e ) => {
 		let list = listOf( e ).filter( ( f ) => naming( f ) && shownBy( block, f ) );
+		// A `ul` or `ol` is the author's choice of a list: its implied `list` role on the element itself ranks the block the
+		// framework DB's tag map gives that tag (every other implied role only rules out), unless its rows hold controls (a
+		// group of buttons or form fields is no list).
+		const own = listOf( e ).find( ( f ) => 'implied-role' === f.fact && 'list' === f.value && f.at.has( e.key ) );
+		const controls = ( x ) => [ 'button', 'input', 'select', 'textarea', 'label', 'form' ].includes( x.tag ) || !! m.read.handler( x ) || m.kids( x ).some( controls );
+		own && block === tagBlock( e.tag ) && ! m.blockKids( e ).some( controls ) && list.push( own );
 		// A tab set's panel is one with its open state: a block draws that panel only when it also holds the tab set's state.
 		if ( list.some( ( f ) => 'has-part' === f.fact && 'panel' === f.value ) && ! list.some( ( f ) => 'open-state' === f.fact ) ) {
 			list = list.filter( ( f ) => ! ( 'has-part' === f.fact && 'panel' === f.value ) );
@@ -96,8 +106,9 @@ export function makeIdentity( { m, facts, surface = {}, logicOf = () => null, ca
 		const holder = draft.holderOf( [ ...new Set( list.flatMap( ( f ) => [ ...f.at ] ) ) ].map( ( k ) => m.byKey[ k ] ).filter( Boolean ) );
 		return holder === e ? list : [];
 	};
-	// The candidates showing a ranking fact at the element (only these can rank there).
-	const rankable = ( e ) => new Set( listOf( e ).filter( naming ).flatMap( ( f ) => [ ...yesTo( f ) ] ) );
+	// The candidates showing a ranking fact at the element (only these can rank there), and the tag map's block of an
+	// element that is the author's own list.
+	const rankable = ( e ) => new Set( [ ...listOf( e ).filter( naming ).flatMap( ( f ) => [ ...yesTo( f ) ] ), ...( listOf( e ).some( ( f ) => 'implied-role' === f.fact && 'list' === f.value && f.at.has( e.key ) ) && tagBlock( e.tag ) ? [ tagBlock( e.tag ) ] : [] ) ] );
 	const regionPlatforms = ( e ) => [ ...draft.region( e ).values() ].filter( ( f ) => 'platform' === f.fact );
 
 	// A look-alike family among the leaders (same matched facts, one at least bound to a platform), decided by the platform.

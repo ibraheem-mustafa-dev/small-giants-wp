@@ -239,8 +239,10 @@ test( 'MUST FAIL: rows marked with emoji are the list block that accepts that ki
 	const LIST = [ el( 'Root/1#0', null, 'div', '', { depth: 0 } ), el( 'Root/2#0', 'Root/1#0', 'div', '', { attrs: { role: 'list' } } ), ...rows ];
 	const r = run( LIST, real() );
 	const row = rowOf( r, 'Root/2#0' );
-	assert.deepEqual( [ row.block, row.rule ], [ 'sgs/icon-list', 'identity' ], 'a list whose markers are emoji is the block whose item icon accepts emoji' );
-	assert.match( row.reason, /accepts-kind \*=icon:emoji/ );
+	const list = flat( r.skeleton ).find( ( n ) => 'sgs/icon-list' === n.name );
+	assert.ok( list && 'unwrap' === row.action, 'a list whose markers are emoji is one list block (the list unit, lib/skeleton-write-units.mjs)' );
+	assert.equal( list.attributes.markerType, 'emoji' );
+	assert.deepEqual( list.attributes.items.map( ( it ) => it.text ), [ 1, 2, 3 ].map( ( n ) => `Benefit number ${ n } in words` ), 'each item is its text, the marker left out' );
 	assert.notEqual( rowOf( r, 'Root/5#0' ).identity?.why ?? '', /accepts-kind/, 'the words beside the marker keep their text block' );
 } );
 

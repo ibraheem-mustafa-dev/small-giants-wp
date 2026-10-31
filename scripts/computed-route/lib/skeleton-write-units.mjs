@@ -8,6 +8,7 @@
 import { brandOwnsAddress } from './brand-registry.mjs';
 import { linkWrite } from './draft-link.mjs';
 import { isMarker } from './skeleton-rules.mjs';
+import { ordinal, glyph, markerSettingsFrom } from './fill-list-marker.mjs';
 import { inlineText, inlineValue } from './inline-text.mjs';
 import { finish, W } from './skeleton-classify.mjs';
 import { specHit } from './skeleton-facts.mjs';
@@ -56,6 +57,86 @@ export function makeUnits( ctx ) {
 		const gridList = 'grid' === parent?.display && span.length === list.length;
 		return links.length >= minLinks && ( m.stacked( links ) || gridList ) && ! removedBy( span[ 0 ] ) ? span : [];
 	};
+	// ---- rows of text that are one list: each row one piece of text with at most one leading marker ----
+	const shownEl = ( k ) => Object.values( k.visible || {} ).some( Boolean );
+	const isControlEl = ( k ) => [ 'a', 'button', 'input', 'select', 'textarea', 'label', 'form' ].includes( k.tag ) || !! m.read.handler( k );
+	const under = ( x, top ) => {
+		for ( let p = x; p; p = m.byKey[ p.parentKey ] ) {
+			if ( p === top ) {
+				return true;
+			}
+		}
+		return false;
+	};
+	const squash = ( s ) => String( s ?? '' ).replace( /\s+/g, ' ' ).trim();
+	// The row's leading marker, or null: an svg or icon, an empty dot or bar (rules.dotMarker), or a typed glyph, emoji or
+	// ordinal (`1`, `01`, `1.`, `(1)`, `i.`, `a)`) standing before the row's text. `kind` is the list marker type it draws.
+	const leadingMarker = ( row ) => {
+		const first = m.kids( row ).filter( shownEl )[ 0 ];
+		if ( ! first ) {
+			return null;
+		}
+		if ( 'svg' === first.tag || ( 'img' === first.tag && m.isPart( first ) ) ) {
+			return { el: first, kind: 'icon', words: '' };
+		}
+		if ( isMarker( first, m, R.dotMarker ) ) {
+			return { el: first, kind: 'bullet', words: '' };
+		}
+		const w = squash( m.words( first ) );
+		if ( ! w || m.blockKids( first ).length || isControlEl( first ) ) {
+			return null;
+		}
+		const o = ordinal( w );
+		if ( o ) {
+			return { el: first, kind: 'numbered', words: w, ordinal: o };
+		}
+		const g = [ ...new Intl.Segmenter( undefined, { granularity: 'grapheme' } ).segment( w ) ];
+		return 1 === g.length && ! /[\p{L}\p{N}]/u.test( w ) ? { el: first, kind: glyph( w ).kind, words: w } : null;
+	};
+	// One row of a list: no control anywhere in it, and one piece of text (its own words, else its one text child) beside
+	// at most one leading marker; a row with no marker is an item only inside the author's own list (`ul`, `ol`).
+	const textItem = ( row, parent ) => {
+		if ( isControlEl( row ) || m.els.some( ( x ) => x !== row && under( x, row ) && isControlEl( x ) ) ) {
+			return null;
+		}
+		const marker = leadingMarker( row );
+		const rest = m.blockKids( row ).filter( ( k ) => k !== marker?.el );
+		let text = squash( m.words( row ) );
+		let textEl = row;
+		if ( marker && m.isPart( marker.el ) && marker.words && text.startsWith( marker.words ) ) {
+			text = squash( text.slice( marker.words.length ) );
+		}
+		if ( text && rest.length ) {
+			return null;
+		}
+		if ( ! text ) {
+			if ( 1 !== rest.length || m.blockKids( rest[ 0 ] ).some( ( k ) => squash( m.words( k ) ) ) ) {
+				return null;
+			}
+			textEl = rest[ 0 ];
+			text = squash( m.words( textEl ) );
+		}
+		if ( ! text || ( ! marker && ! [ 'ul', 'ol' ].includes( parent?.tag ) ) ) {
+			return null;
+		}
+		return { row, text, textEl, marker };
+	};
+	// A run of two or more such rows, stacked or laid out in a grid, whose markers are all of one kind (typed ordinals
+	// counting up from 1, as a list numbers itself).
+	const itemRun = ( list, i, parent = null ) => {
+		const run = [];
+		for ( let j = i; j < list.length; j++ ) {
+			const it = textItem( list[ j ], parent );
+			if ( ! it ) {
+				break;
+			}
+			run.push( it );
+		}
+		const kinds = new Set( run.map( ( it ) => it.marker?.kind ?? 'none' ) );
+		const counts = run.every( ( it, j ) => 'numbered' !== it.marker?.kind || [].concat( it.marker.ordinal.n ).includes( j + 1 ) );
+		const laid = m.stacked( run.map( ( it ) => it.row ) ) || 'grid' === parent?.display || [ 'ul', 'ol' ].includes( parent?.tag );
+		return run.length >= 2 && 1 === kinds.size && counts && laid ? run : [];
+	};
 	// The logo image among a typed brand name's siblings: an image whose file name, alt text or class says it is the brand mark
 	// (decisions.logoImage), or whose alt text is the site name. The image is the logo, so the words beside it are not one.
 	const logoImageAmong = ( list ) => list.find( ( k ) => 'img' === k.tag && ( specHit( facts.decisions.logoImage, `${ k.attrs?.srcBasename || '' } ${ k.attrs?.alt || '' } ${ k.attrs?.class || '' }` ) || ( k.attrs?.alt || '' ).trim().toLowerCase() === facts.siteName.toLowerCase() ) ) ?? null;
@@ -72,6 +153,7 @@ export function makeUnits( ctx ) {
 			const brand = typedBrandRun( list, i );
 			const icons = brand ? [] : cls.iconRun( list, i, e );
 			const run = brand || icons.length ? [] : linkRun( list, i, e );
+			const rows = brand || icons.length || run.length ? [] : itemRun( list, i, e );
 			if ( brand ) {
 				out.push( { type: 'brand', els: brand, logo: logoImageAmong( list ) } );
 				i += brand.length;
@@ -81,6 +163,9 @@ export function makeUnits( ctx ) {
 			} else if ( run.length ) {
 				out.push( { type: 'list', els: run } );
 				i += run.length;
+			} else if ( rows.length ) {
+				out.push( { type: 'list', els: rows.map( ( it ) => it.row ), rows } );
+				i += rows.length;
 			} else {
 				out.push( { type: 'single', els: [ list[ i ] ] } );
 				i++;
@@ -135,11 +220,19 @@ export function makeUnits( ctx ) {
 		const kinds = [ ...cls.siteInfoKinds( l ) ].filter( ( [ k ] ) => facts.listItem.kinds.includes( k ) ).sort( ( a, b ) => b[ 1 ].w - a[ 1 ].w );
 		return kinds[ 0 ]?.[ 0 ] || null;
 	};
-	function buildList( els ) {
+	function buildList( els, rows = null ) {
 		const slug = facts.listSlug;
 		const li = facts.listItem;
 		const handover = [];
+		const rowOf = new Map( ( rows || [] ).map( ( it ) => [ it.row, it ] ) );
 		const items = els.filter( ( l ) => ! removedBy( l ) ).map( ( l ) => {
+			// A row of text (not a link): its one piece of text, the marker the list draws for it left out.
+			const it = rowOf.get( l );
+			if ( it ) {
+				const rich = it.marker && m.isPart( it.marker.el ) ? null : inlineText( { m, e: it.textEl, block: slug, attr: `items.${ li.text }`, codeRepo: facts.codeRepo, siteLink, clickable: !! li.url } );
+				rich && handover.push( ...rich.handover );
+				return { [ li.text ]: rich ? rich.value : it.text };
+			}
 			const kind = kindOfLink( l );
 			const href = l.attrs?.href || '';
 			const real = href && '#' !== href;
@@ -163,11 +256,11 @@ export function makeUnits( ctx ) {
 		const ev = ( b, kind, w, text ) => ( C[ b ] ||= { block: b, evidence: [] } ).evidence.push( { kind, w, text } );
 		ev( slug, 'db', W.tag, `html_tag_to_core_block: ul -> ${ slug }: the database block for a list` );
 		capsOf( slug ).includes( 'list' ) && ev( slug, 'capability', W.capability, `block_capabilities: ${ slug } lists "list"` );
-		ev( slug, 'structure', W.structure, `${ items.length } bare text links, one above the next` );
+		ev( slug, 'structure', W.structure, rows ? `${ items.length } rows of one piece of text each${ rows[ 0 ].marker ? `, each after a ${ rows[ 0 ].marker.kind } marker` : '' }, one list` : `${ items.length } bare text links, one above the next` );
 		const own = facts.tagMap.a?.core_block_slug;
 		own && ev( own, 'db', W.tag, `html_tag_to_core_block: a -> ${ own } (each link on its own)` );
 		const r = finish( C );
-		const node = base( els.find( ( l ) => ! removedBy( l ) ), slug, { ...( ( enumOf( slug, 'markerType' ) || [] ).includes( 'none' ) ? { markerType: 'none' } : {} ), items } );
+		const node = base( els.find( ( l ) => ! removedBy( l ) ), slug, { ...markerAttrs( slug, rows ), items } );
 		handover.length && ( node.handover = handover );
 		// The list's items are the copies its repeated item part pairs with (lib/skeleton-part-pairing.mjs).
 		ctx.unitItems.set( node, els.filter( ( l ) => ! removedBy( l ) ) );
@@ -183,6 +276,20 @@ export function makeUnits( ctx ) {
 			return row;
 		} );
 		return node;
+	}
+	// The list's marker settings from the framework DB's enums (lib/fill-list-marker.mjs::markerSettingsFrom: the enum holding
+	// the marker kinds, the one holding `decimal`): the kind the rows' markers draw, `none` with no marker, and for typed
+	// ordinals the number style that prints them; a value the enum lacks is left to the block's default.
+	function markerAttrs( slug, rows ) {
+		const S = markerSettingsFrom( facts.q( "SELECT attr_name, enum_values, default_value FROM block_attributes WHERE block_slug = ? AND source IN ( 'sgs', 'sgs-ext' ) AND css_property IS NULL AND enum_values IS NOT NULL", slug ) );
+		const marker = rows?.[ 0 ]?.marker ?? null;
+		const kind = marker?.kind ?? 'none';
+		const out = {};
+		S.marker?.values.includes( kind ) && ( out[ S.marker.attr_name ] = kind );
+		const formats = 'numbered' === kind ? marker.ordinal.formats.filter( ( f ) => rows.every( ( it ) => it.marker.ordinal.formats.includes( f ) ) ) : [];
+		const format = formats.find( ( f ) => S.number?.values.includes( f ) );
+		format && ( out[ S.number.attr_name ] = format );
+		return out;
 	}
 	// The items of an accordion standing beside other content in their holder: one accordion node (no draft element of its
 	// own, so no draftRef) holding each item's node; the holder's row names it.
