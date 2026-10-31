@@ -255,7 +255,7 @@ function routeOf( href, sources ) {
 // item's own (`itemBound`), whether a condition inside the loop reads the item (`itemCond`: it shows on some items only),
 // and whether its handler leaves the surface for somewhere else (`leaves`: it sets to false a key the surface's handoff
 // record opens it with, `openKeys`, and sets another key besides).
-export function unitsOf( region, { file, dc = null, L = null, sources = {}, listingKeys = new Set(), addKeys = new Set(), openKeys = new Set() } ) {
+export function unitsOf( region, { file, dc = null, L = null, sources = {}, listingKeys = new Set(), addKeys = new Set(), openKeys = new Set(), perUnit = [] } ) {
 	const out = [];
 	const expanded = new Set( elements( region ).filter( ( e ) => e.attrs[ 'aria-expanded' ] ).map( ( e ) => stripExpr( e.attrs[ 'aria-expanded' ] ) ) );
 	const visit = ( node, ctx ) => {
@@ -267,7 +267,7 @@ export function unitsOf( region, { file, dc = null, L = null, sources = {}, list
 				const text = squash( c.text );
 				if ( /[A-Za-z0-9{]/.test( text ) ) {
 					const b = bindingsOf( text );
-					out.push( { ...base, kind: 'text', tag: '#text', parent: node.tag, text, facts: { ...facts, money: b.length > 0 && b.every( ( x ) => moneyBinding( L, x ) ), count: 1 === b.length && countBinding( L, b[ 0 ] ) } } );
+					out.push( { ...base, kind: 'text', tag: '#text', parent: node.tag, text, facts: { ...facts, money: b.length > 0 && b.every( ( x ) => moneyBinding( L, x ) ), count: 1 === b.length && countBinding( L, b[ 0 ] ), perUnit: perUnit.find( ( p ) => b.some( ( x ) => x.endsWith( `.${ p.field }` ) ) )?.word || null } } );
 				}
 				continue;
 			}
@@ -308,6 +308,7 @@ export function unitsOf( region, { file, dc = null, L = null, sources = {}, list
 					narrows: effect.sets.some( ( k ) => listingKeys.has( k ) ),
 					editsBasket: ! effect.appends && ( effect.writesStore || effect.sets.some( ( k ) => addKeys.has( k ) ) ),
 					money: bindingsOf( label ).some( ( x ) => moneyBinding( L, x ) ),
+					perUnit: perUnit.find( ( p ) => bindingsOf( label ).some( ( x ) => x.endsWith( `.${ p.field }` ) ) )?.word || null,
 					itemBound,
 					itemCond: !! ctx.itemCond,
 					leaves: effect.off.some( ( k ) => openKeys.has( k ) ) && effect.sets.some( ( k ) => ! openKeys.has( k ) ),
@@ -368,7 +369,7 @@ const openKeysOf = ( rec ) => new Set( ( rec.states || [] ).flatMap( ( st ) => O
 // Every shop surface of a draft: for each kind, the first name pattern that some handoff surface record matches picks
 // the draft file (`dc`) to read, and the region reader finds the surface in it. `sources` maps a draft file name to its
 // source. A kind with no matching record, no file or no region is returned with `problem` set and no units.
-export function readShopSurfaces( { records, sources } ) {
+export function readShopSurfaces( { records, sources, perUnit = [] } ) {
 	return SURFACE_KINDS.map( ( kind ) => {
 		const rec = NAMES[ kind ].map( ( rx ) => records.filter( ( r ) => rx.test( r.name || '' ) ) ).find( ( l ) => l.length )?.[ 0 ];
 		if ( ! rec ) {
@@ -387,7 +388,7 @@ export function readShopSurfaces( { records, sources } ) {
 		const listingKeys = 'filter' === kind ? listing( root, L )?.keys || new Set() : new Set();
 		const addKeys = basketKeys( root, L );
 		const openKeys = openKeysOf( rec );
-		const units = regions.flatMap( ( r ) => unitsOf( r, { file, dc: rec.dc, L, sources, listingKeys, addKeys, openKeys } ) );
+		const units = regions.flatMap( ( r ) => unitsOf( r, { file, dc: rec.dc, L, sources, listingKeys, addKeys, openKeys, perUnit } ) );
 		return { kind, record: rec.name, file, units: 'filter' === kind ? [ ...units, ...countUnits( root, regions, { file, dc: rec.dc, L } ) ] : units, problem: null };
 	} );
 }

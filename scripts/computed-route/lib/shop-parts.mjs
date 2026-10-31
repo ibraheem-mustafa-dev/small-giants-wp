@@ -32,6 +32,8 @@ export const RULES = {
 	price: ( u ) => text( u ) && u.facts.money && pureBinding( u ) && ! u.conds.length,
 	closes: ( u ) => control( u ) && fx( u ).closes && ! u.facts.loop,
 	count: ( u ) => text( u ) && u.facts.count,
+	// A text run bound to the draft's price per unit of a pack size (lib/shop-parts-per-unit.mjs).
+	'per-unit': ( u ) => !! u.facts.perUnit,
 	'line-edit': ( u ) => control( u ) && !! u.facts.loop && ! u.facts.stepper && u.facts.editsBasket,
 	// A line's own control shown on some lines only, that leaves the surface for somewhere else with that line's item (the
 	// item's product page, where its options open) without changing the basket.
@@ -156,7 +158,9 @@ export const locatorsOf = ( units ) => [ ...new Set( units.filter( ( u ) => u.dc
 // `unmatched` part per distinct label. Control-only surfaces drop a text run unless its entry claims text.
 export function matchSurface( kind, units, vocab ) {
 	const cfg = vocab.surfaces[ kind ];
-	const entries = vocab.entries.filter( ( e ) => e.surface === kind );
+	const every = vocab.entries.filter( ( e ) => e.surface === kind );
+	// An `alongside` entry names a part a unit also belongs to (a pack button's own per-unit price): it never takes the unit from its own part.
+	const entries = every.filter( ( e ) => ! e.alongside );
 	const placed = new Map();
 	for ( const u of units ) {
 		const e = entries.find( ( x ) => ruleHolds( x, u ) );
@@ -185,14 +189,20 @@ export function matchSurface( kind, units, vocab ) {
 		if ( ! parts.has( id ) ) {
 			parts.set( id, { id, surface: kind, ...make(), units: [], by: new Set() } );
 		}
-		parts.get( id ).units.push( { kind: u.kind, tag: u.tag, label: labelOf( u ), conds: u.conds, file: u.file, dc: u.dc, tpl: u.tpl } );
+		parts.get( id ).units.push( { kind: u.kind, tag: u.tag, label: labelOf( u ), conds: u.conds, file: u.file, dc: u.dc, tpl: u.tpl, perUnit: u.facts?.perUnit || null } );
+		for ( const e of every.filter( ( x ) => x.alongside && ruleHolds( x, u ) ) ) {
+			if ( ! parts.has( e.id ) ) {
+				parts.set( e.id, { id: e.id, surface: kind, label: e.label, home: e.home, units: [], by: new Set( [ 'structure' ] ) } );
+			}
+			parts.get( e.id ).units.push( { kind: u.kind, tag: u.tag, label: labelOf( u ), conds: u.conds, file: u.file, dc: u.dc, tpl: u.tpl, perUnit: u.facts.perUnit } );
+		}
 		if ( hit ) {
 			parts.get( id ).by.add( hit.by );
 		}
 	}
 	return [ ...parts.values() ].map( ( p ) => {
 		const h = p.home;
-		const value = 'setting' === h.type && 'text' === h.valueFrom ? literal( p.units.find( ( u ) => literal( u.label ) )?.label ) : null;
+		const value = 'setting' === h.type && 'text' === h.valueFrom ? literal( p.units.find( ( u ) => literal( u.label ) )?.label ) : 'setting' === h.type && 'perUnit' === h.valueFrom ? p.units.find( ( u ) => u.perUnit )?.perUnit || null : null;
 		return {
 			id: p.id,
 			label: p.label,

@@ -128,8 +128,11 @@ test( 'negative control (C5 skeleton 12): no stepped track, a provider link, a s
 	none( reviews( { rating: '2 years ago' } ), CAROUSEL );
 	none( reviews(), { rows: [], brands: [], carousels: new Set( [ 'Root/99' ] ) } );
 	const provider = run( reviews( { href: 'https://share.google/abc' } ), { loops: CAROUSEL } );
-	assert.ok( find( provider.skeleton, 'sgs/google-reviews' ), 'a provider the links name still wins' );
-	assert.equal( find( provider.skeleton, 'sgs/testimonial-slider' ), null );
+	// Bean 2026-10-31: a platform's block locks the platform's own look, so a link to the platform on cards the draft paints in
+	// no platform colours does not make the platform's block; the cards are the testimonial slider. The cards painted in the
+	// platform's colours stay the platform's block (tests/skeleton-loop-blocks.test.mjs, tests/skeleton-testimonials.test.mjs).
+	assert.equal( find( provider.skeleton, 'sgs/google-reviews' ), null );
+	assert.ok( find( provider.skeleton, 'sgs/testimonial-slider' ), 'a provider link on unpainted cards is the testimonial slider' );
 	const without = run( reviews(), { loops: CAROUSEL, facts: facts( ( f ) => { delete f.decisions.rules.loopBlocks.carousel; return f; } ) } );
 	assert.equal( find( without.skeleton, 'sgs/testimonial-slider' ), null, 'with no carousel decision the old outcome stands' );
 } );

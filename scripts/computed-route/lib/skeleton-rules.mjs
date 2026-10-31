@@ -19,6 +19,7 @@ import { sameNavLook } from './nav-link-look.mjs';
 import { makePanelRules } from './skeleton-panel-rules.mjs';
 import { commerceRegion, ownerBlockOf } from './skeleton-commerce-region.mjs';
 import { loopBlocks } from './skeleton-loop-blocks.mjs';
+import { platformLookOf } from './platform-look.mjs';
 import { filterRail, placeableFacets } from './skeleton-filter-rail.mjs';
 import { filterDrawer } from './skeleton-filter-drawer.mjs';
 import { linkWrite, siteLinkResolver } from './draft-link.mjs';
@@ -711,15 +712,18 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// The commerce region of a WooCommerce page surface (lib/skeleton-commerce-region.mjs), found once for the surface.
 	const region = commerceRegion( { m, commerce: surface.commerce, rule: R.commerceRegion, toolbarRule: R.shopToolbar } );
 	// A loop of products, brands or reviews on any page is the working block its items say (lib/skeleton-loop-blocks.mjs).
-	const loopResult = loopBlocks( { m, rows: surface.loops?.rows || [], brands: surface.loops?.brands || [], carousels: surface.loops?.carousels || new Set(), commerce: surface.commerce, rule: R.loopBlocks, money: R.commerceRegion?.money, shop: R.commerceRegion?.roles?.shop } );
+	const loopResult = loopBlocks( { m, rows: surface.loops?.rows || [], brands: surface.loops?.brands || [], carousels: surface.loops?.carousels || new Set(), commerce: surface.commerce, rule: R.loopBlocks, money: R.commerceRegion?.money, shop: R.commerceRegion?.roles?.shop, look: platformLookOf( { read, facts } ) } );
 	const loopRegions = new Map( loopResult.regions.map( ( x ) => [ x.key, x ] ) );
 	// The cards of a review carousel are its testimonials (each draws its own quote, name and rating).
 	const carouselCardOf = new Map( loopResult.regions.filter( ( x ) => x.cards ).flatMap( ( x ) => x.cards.map( ( k ) => [ k, x ] ) ) );
 	// A loop of disclosures is the accordion, each item one of its items (lib/skeleton-accordion.mjs).
 	const accordion = accordionLoops( { m, read, rich: richOf, rule: R.accordion, titleAttr: R.accordion && facts.firstAttrByRole( R.accordion.itemBlock, 'text-content' ), textAttr: R.accordion && facts.firstAttrByRole( R.accordion.panelBlock, 'text-content' ),
 		logicOf: ( component ) => ( facts.repo && facts.client ? draftLogicOf( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component } ) : null ) } );
-	// The shop's filter rail beside its product listing (lib/skeleton-filter-rail.mjs), from the draft catalogue's facets.
-	const rail = region?.key ? filterRail( { m, region, filters: surface.commerce.filters, rule: R.filterRail, money: R.commerceRegion.money } ) : null;
+	// The filter rail beside a product listing (lib/skeleton-filter-rail.mjs), from the draft catalogue's facets: the shop's
+	// commerce region, or on any other page the product collection a loop places (a gift finder narrowing a product loop is
+	// that collection with its working filters, Bean 2026-10-31).
+	const listing = region?.key ? region : loopResult.regions.find( ( x ) => 'products' === x.kind ) ?? null;
+	const rail = listing?.key ? filterRail( { m, region: listing, filters: surface.commerce?.filters ?? surface.filters, rule: R.filterRail, money: R.commerceRegion.money } ) : null;
 	// A drawer whose root holds the catalogue's filter groups is the shop filter's own narrow-width open state (lib/skeleton-filter-drawer.mjs).
 	const drawer = 'drawer' === surface.kind && R.filterDrawer ? filterDrawer( { m, filters: surface.filters ?? surface.commerce?.filters, rule: R.filterDrawer, placeable: placeableFacets } ) : null;
 	const drawerMissing = drawer ? drawer.notes.map( ( why ) => ( { key: m.root.key, line: 'The shop filter drawer: a full-viewport sheet, fade, locked page scroll and sticky footer', why } ) ) : [];

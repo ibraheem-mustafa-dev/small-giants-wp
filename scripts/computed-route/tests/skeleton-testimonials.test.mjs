@@ -5,7 +5,7 @@
 // MUST FAIL on the slice of Mama's real product page (tests/fixtures/skeleton-identity/mama-product-reviews.json: three
 // `article` cards each holding stars, a title, the quote and a reviewer line `KA · June 2026`, read against the committed
 // draft). Negative controls: a product grid with star ratings (a price), a team-member grid and a blog post grid (no rating
-// or quotation) stay as they were; a provider link still picks the provider's block.
+// or quotation) stay as they were; a provider link on cards in the client's own style is still the testimonial family.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import crypto from 'crypto';
@@ -66,7 +66,7 @@ test( 'MUST FAIL: a grid of rated or quoted cards each naming its reviewer (init
 	assert.ok( sliderOf( quoted ), 'a quotation stands for a rating' );
 } );
 
-test( 'negative control: a product grid with star ratings, a team-member grid, a blog post grid and unnamed reviews are not testimonials; a provider link still wins', () => {
+test( "negative control: a product grid with star ratings, a team-member grid, a blog post grid and unnamed reviews are not testimonials; a provider link on cards in the client's own style does not make the provider's block", () => {
 	const none = ( elements, why ) => {
 		const r = run( elements );
 		assert.equal( sliderOf( r ), null, why );
@@ -77,6 +77,6 @@ test( 'negative control: a product grid with star ratings, a team-member grid, a
 	none( grid( ( i ) => [ [ 'h3', 'How we bake our cookies' ], [ 'p', 'A look behind the scenes at the kitchen, the ovens and the people who bake them.' ], [ 'div', `By Jane Smith · June 202${ i }` ] ] ), 'a blog grid shows no rating or quotation' );
 	none( grid( () => [ [ 'span', '★★★★★' ], [ 'p', QUOTE ] ] ), 'reviews that name nobody keep their own blocks' );
 	const provider = run( grid( ( i ) => [ [ 'span', '★★★★★' ], [ 'p', QUOTE ], [ 'div', NAMES[ i ] ], [ 'a', 'Read on Google', { href: 'https://share.google/abc' } ] ] ) );
-	assert.ok( flat( provider.skeleton ).find( ( n ) => 'sgs/google-reviews' === n.name ), 'a provider link picks the provider block' );
-	assert.equal( sliderOf( provider ), null );
+	assert.equal( flat( provider.skeleton ).find( ( n ) => 'sgs/google-reviews' === n.name ), undefined, "Bean 2026-10-31: a provider link picks the provider's block only on cards painted in its own look (tests/skeleton-loop-blocks.test.mjs)" );
+	assert.ok( sliderOf( provider ), 'the testimonial family stands' );
 } );

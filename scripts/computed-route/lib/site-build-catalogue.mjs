@@ -69,6 +69,8 @@ export function catalogueImages( repo, catalogue ) {
 	return out;
 }
 
+// The WooCommerce type a catalogue product is made as (the gift card is the framework's `sgs_gift_card` type).
+export const siteTypeOf = ( p ) => ( 'gift-card' === p.type ? 'sgs_gift_card' : p.type );
 const keyOf = ( img ) => ( img ? img.url || img.asset : null );
 const attrSay = ( a ) => `${ a.label } (${ a.options.map( ( o ) => o.term ).join( '/' ) })`;
 
@@ -107,9 +109,12 @@ function missing( p, s, state, catalogue ) {
 	if ( s.draftMeta !== p.draftId ) {
 		out.push( 'its draft id' );
 	}
-	if ( 'variable' === p.type && s.type === p.type && ( ours || ! s.variations.length ) ) {
+	if ( 'variable' === p.type && s.type === siteTypeOf( p ) && ( ours || ! s.variations.length ) ) {
 		const lack = p.variations.filter( ( v ) => ! s.variations.includes( v.sku ) );
 		lack.length && out.push( `${ lack.length } of ${ p.variations.length } variations` );
+	}
+	if ( 'gift-card' === p.type && JSON.stringify( ( s.giftAmounts || [] ).map( Number ) ) !== JSON.stringify( p.giftCard.amounts.map( ( a ) => Math.round( a * 100 ) ) ) ) {
+		out.push( `gift-card amounts ${ p.giftCard.amounts.join( ', ' ) }` );
 	}
 	ours && out.push( ...reconcileLack( p, s, catalogue ) );
 	for ( const a of p.attributes.filter( ( x ) => x.variesBy ) ) {
@@ -147,7 +152,7 @@ function reconcileLack( p, s, catalogue ) {
 	}
 	const gone = Object.keys( detail ).filter( ( t ) => ! own.has( t ) && ! filters.has( t ) );
 	gone.length && out.push( `the removal of attribute${ gone.length > 1 ? 's' : '' } ${ gone.join( ', ' ) }` );
-	if ( 'variable' === p.type && s.type === p.type ) {
+	if ( 'variable' === p.type && s.type === siteTypeOf( p ) ) {
 		const extra = s.variations.filter( ( sku ) => ! p.variations.some( ( v ) => v.sku === sku ) );
 		extra.length && out.push( `the removal of ${ extra.length } variation(s) the record no longer has` );
 		const priced = p.variations.filter( ( v ) => undefined !== s.variationPrices?.[ v.sku ] && Number( s.variationPrices[ v.sku ] ) !== v.price );
@@ -182,7 +187,7 @@ export function planCatalogue( catalogue, state ) {
 			continue;
 		}
 		const lack = missing( p, s, state, catalogue );
-		if ( s.type !== p.type ) {
+		if ( s.type !== siteTypeOf( p ) ) {
 			notes.push( `${ p.draftId }: product ${ s.id } (found by ${ s.how }) is ${ s.type }, the catalogue's is ${ p.type }; its type is left` );
 		}
 		if ( s.permalink && ! s.permalink.endsWith( address ) && ! productBase ) {

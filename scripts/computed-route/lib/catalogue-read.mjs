@@ -189,8 +189,18 @@ function choicesOf( ctx, lines, list, record, draftId, asks, named ) {
 		gap( 'priced-choices', `${ priced.length } choices each carry a price (${ priced.map( ( a ) => a.key ).join( ', ' ) }) and the code's combined price is not read; the product is made with none of them` );
 		attributes = attributes.filter( ( a ) => ! a.priced );
 	}
-	for ( const a of attributes.filter( ( x ) => x.priced && ! x.packSize && x.options.every( ( o ) => o.price === o.value ) ) ) {
-		gap( 'open-amount', `the shopper picks the amount paid (${ a.options.map( ( o ) => money( o.price ) ).join( ', ' ) }): sold as one variation per amount; redeeming it later as store credit needs a gift-card plugin, which WooCommerce core does not have` );
+	// A priced choice whose options are the amounts paid, and the only choice that creates variations, is the framework's
+	// gift-card product type (Spec 27 Part 4, FR-27-GC1: fixed amounts, the price resolved server-side from the amount
+	// chosen, exempt from the variesBy rule), not a variable product. Beside other variation choices it stays a gap row.
+	const amountAxes = attributes.filter( ( x ) => x.priced && ! x.packSize && x.options.every( ( o ) => o.price === o.value ) );
+	let giftCard = null;
+	if ( 1 === amountAxes.length && 1 === attributes.filter( ( x ) => x.variation ).length ) {
+		giftCard = { amounts: amountAxes[ 0 ].options.map( ( o ) => o.price ) };
+		attributes = attributes.filter( ( x ) => x !== amountAxes[ 0 ] );
+	} else {
+		for ( const a of amountAxes ) {
+			gap( 'open-amount', `the shopper picks the amount paid (${ a.options.map( ( o ) => money( o.price ) ).join( ', ' ) }) beside another choice that creates variations: sold as one variation per amount; the gift-card product type holds a product whose only choice is the amount` );
+		}
 	}
 	const axes = () => attributes.filter( ( a ) => a.variation );
 	const count = axes().reduce( ( n, a ) => n * a.options.length, 1 );
@@ -201,7 +211,7 @@ function choicesOf( ctx, lines, list, record, draftId, asks, named ) {
 	if ( axes().length && ! axes().some( ( a ) => a.variesBy ) ) {
 		gap( 'no-variesby', `no choice that creates variations (${ axes().map( ( a ) => `"${ a.key }"` ).join( ', ' ) }) is one of Google's variesBy axes (${ VARIESBY_VALUES.join( ', ' ) }), and SGS's product preflight publishes a variable product only when one of its variation terms maps to one (no_variesby); the product is made and kept a draft` );
 	}
-	return { attributes, gaps };
+	return { attributes, gaps, giftCard };
 }
 
 // The asset path of an image value, repo-relative, or a web address.
@@ -279,15 +289,15 @@ export function readCatalogue( { repo, client, rows, facts = undefined } ) {
 		for ( const r of list.records ) {
 			const draftId = String( r[ list.key ] );
 			const asks = flows.flatMap( ( src ) => flowChoices( ctx, src, draftId ) );
-			const { attributes, gaps } = choicesOf( ctx, lines, list, r, draftId, asks, named );
+			const { attributes, gaps, giftCard } = choicesOf( ctx, lines, list, r, draftId, asks, named );
 			out.gaps.push( ...gaps );
 			const sku = skuOf( draftId );
 			const axes = attributes.filter( ( a ) => a.variation );
 			const variations = axes.length ? combinations( axes, r[ prices.price ] ).map( ( c ) => ( { sku: `${ sku }-${ c.parts.join( '-' ) }`, options: c.options, price: c.price } ) ) : [];
 			const name = r.name;
 			out.products.push( {
-				draftId, sku, slug: slugify( brandField ? `${ r[ brandField ] } ${ name }` : name ), name, type: variations.length ? 'variable' : 'simple',
-				price: variations.length ? Math.min( ...variations.map( ( v ) => v.price ) ) : r[ prices.price ], rrp: prices.rrp && 'number' === typeof r[ prices.rrp ] ? r[ prices.rrp ] : null,
+				draftId, sku, slug: slugify( brandField ? `${ r[ brandField ] } ${ name }` : name ), name, type: giftCard ? 'gift-card' : variations.length ? 'variable' : 'simple',
+				price: giftCard ? Math.min( ...giftCard.amounts ) : variations.length ? Math.min( ...variations.map( ( v ) => v.price ) ) : r[ prices.price ], rrp: prices.rrp && 'number' === typeof r[ prices.rrp ] ? r[ prices.rrp ] : null,
 				shortDescription: desc && 'string' === typeof r[ desc ] ? r[ desc ] : null,
 				image: imageOf( r[ img.image ], img, repo, folder ),
 				gallery: img.gallery && Array.isArray( r[ img.gallery ] ) ? r[ img.gallery ].map( ( g ) => imageOf( g, { table: null }, repo, folder ) ).filter( Boolean ) : [],
@@ -296,6 +306,7 @@ export function readCatalogue( { repo, client, rows, facts = undefined } ) {
 				facets: facetRead.termsOf( r ),
 				attributes: attributes.map( ( { priced, ...a } ) => a ),
 				variations,
+				...( giftCard ? { giftCard } : {} ),
 			} );
 		}
 	}

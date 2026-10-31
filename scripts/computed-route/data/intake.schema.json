@@ -309,6 +309,11 @@
         "$ref": "#/$defs/pageMapRow"
       }
     },
+    "pageMapLeaving": {
+      "description": "The rows of the written page-map.json holding a WordPress id that this record's page map no longer has (lib/intake-pagemap-regen.mjs::leavingRows): review.md lists each as a page-map row Bean marks drop to remove it; Accept all never covers one.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/pageMapRow" }
+    },
     "palette": {
       "type": "object",
       "required": [

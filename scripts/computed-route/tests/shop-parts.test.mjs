@@ -12,7 +12,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseTemplate, readShopSurfaces, unitsOf } from '../lib/shop-parts-read.mjs';
-import { ShopPartsError, buildRecord, loadVocab, locatorsOf, resolveVocab } from '../lib/shop-parts.mjs';
+import { catalogueSources } from '../lib/catalogue-source.mjs';
+import { perUnitFields } from '../lib/shop-parts-per-unit.mjs';
+import { ShopPartsError, buildRecord, loadVocab, locatorsOf, matchSurface, resolveVocab } from '../lib/shop-parts.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..', '..' );
 const vocabFile = loadVocab();
@@ -263,7 +265,7 @@ const clientSurfaces = ( client ) => {
 	const dir = path.join( REPO, 'sites', client, 'handoff' );
 	const records = JSON.parse( fs.readFileSync( path.join( dir, 'surfaces.json' ), 'utf8' ) ).records;
 	const sources = Object.fromEntries( fs.readdirSync( dir ).filter( ( f ) => f.endsWith( '.dc.html' ) ).map( ( f ) => [ f, fs.readFileSync( path.join( dir, f ), 'utf8' ) ] ) );
-	return readShopSurfaces( { records, sources } );
+	return readShopSurfaces( { records, sources, perUnit: perUnitFields( catalogueSources( dir ) ) } );
 };
 const shape = ( rec ) => ( { counts: rec.counts, parts: rec.surfaces.flatMap( ( s ) => s.parts.map( ( p ) => [ s.kind, p.id, p.home.type, p.units, p.by.join( '+' ), JSON.stringify( p.write ), p.locators.join( ' ' ) ] ) ) } );
 
@@ -283,4 +285,27 @@ test( 'MUST FAIL: the basket drawer\'s link to the basket page writes the draft\
 	const rec = buildRecord( { client: 'planted', surfaces: readShopSurfaces( { records: RECORDS, sources }, ), vocab: resolveVocab( vocabFile, envFor( vocabFile ) ) } );
 	assert.deepEqual( part( rec, 'drawer', 'drawer-view-basket' ).write, { panelShowViewCart: true, viewCartLabel: 'View full basket' } );
 	assert.equal( part( record(), 'drawer', 'drawer-view-basket' ), undefined, 'a drawer with no basket link has no such part' );
+} );
+
+// Spec 27 FR-27-B3: a price per unit of a pack size is read from the draft's data (a pack count, the pack's price and a text
+// holding price divided by count), and written to sgs/buybox perUnitDenomination with the draft's own unit word.
+test( 'MUST FAIL: a text in the pack records that is the pack price divided by its count is the per-unit price, its unit word the denomination; a text that is not per unit is none', async () => {
+	const { repoWith } = await import( './fixtures/catalogue/repo.mjs' );
+	const withPacks = ( rows ) => ( to ) => {
+		const file = path.join( to, 'data.js' );
+		fs.writeFileSync( file, `${ fs.readFileSync( file, 'utf8' ) }\nwindow.PACKS = [ ${ rows } ];\n` );
+	};
+	const fieldsOf = ( rows ) => perUnitFields( catalogueSources( path.join( repoWith( 'shared', withPacks( rows ) ), 'sites', 'demo', 'handoff' ) ) );
+	const right = fieldsOf( "{ n: 6, price: 9, each: '£1.50 each' }, { n: 12, price: 15, each: '£1.25 each' }" );
+	assert.deepEqual( right, [ { field: 'each', word: 'each', count: 'n', price: 'price' } ] );
+	assert.equal( fieldsOf( "{ n: 6, price: 9, each: '£1.50 per cookie' }, { n: 12, price: 15, each: '£1.25 per cookie' }" )[ 0 ].word, 'per cookie' );
+	// Negative controls: a saving, a was-price and mixed unit words are no per-unit line.
+	assert.deepEqual( fieldsOf( "{ n: 6, price: 9, save: '£2.00 off' }, { n: 12, price: 15, save: '£4.00 off' }" ), [] );
+	assert.deepEqual( fieldsOf( "{ n: 6, price: 9, each: '£1.50 each' }, { n: 12, price: 15, each: '£1.25 a piece' }" ), [] );
+	// The part: the pack button's own unit stays the option picker and the price line is also the per-unit part.
+	const unit = ( perUnit ) => ( { kind: 'control', tag: 'button', text: '{{ o.n }} {{ o.each }}', aria: '', placeholder: '', type: '', on: '', href: '', conds: [], file: 'P.dc.html', dc: 'P', tpl: 3, rowN: 1, facts: { loop: 'sizes', effect: { sets: [ 'size' ], writesStore: false }, pressed: true, perUnit } } );
+	const vocab = resolveVocab( vocabFile, envFor( vocabFile ) );
+	const parts = ( perUnit ) => matchSurface( 'buybox', [ unit( perUnit ) ], vocab ).filter( ( p ) => [ 'buybox-per-unit', 'buybox-option-picker' ].includes( p.id ) );
+	assert.deepEqual( parts( 'each' ).map( ( p ) => [ p.id, p.write ] ), [ [ 'buybox-option-picker', null ], [ 'buybox-per-unit', { perUnitDenomination: 'each' } ] ] );
+	assert.deepEqual( parts( null ).map( ( p ) => p.id ), [ 'buybox-option-picker' ] );
 } );

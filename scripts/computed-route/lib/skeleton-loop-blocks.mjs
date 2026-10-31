@@ -9,7 +9,10 @@
 //     product brands (rules.loopBrands): the items repeat for a marquee, so the count is the distinct labels;
 //   - reviews: a loop whose items each show a rating (a run of star glyphs, or a label stating a score out of five) and, in at
 //     least half of them, a quote (a text of the item's own, long enough to be one: a rating can stand alone) is the reviews block of the provider its links lead to (rules.loopReviews:
-//     a host pattern per provider); a loop with no provider link is left as the draft's own blocks, with a note, since the
+//     a host pattern per provider), only when the cards are painted in that provider's own look (lib/platform-look.mjs:
+//     its brand colours, Bean 2026-10-31); a provider-linked loop in the client's own style is the testimonial family
+//     (the carousel, or the still slider) and the provider's summary beside it stays its own blocks; a loop with no
+//     provider link is left as the draft's own blocks, with a note, since the
 //     code names no source for the reviews, unless the loop's holder is a scroll track the draft's script drives (a timer,
 //     pointer drag or arrow controls: the `carousels` keys), which is the testimonial slider with a testimonial per card;
 //   - testimonials (rules.loopTestimonials): a loop with no provider link and no script moving it whose cards each name the
@@ -35,9 +38,10 @@ const pagePath = ( href ) => ( href.startsWith( '#' ) ? href : href.split( /[?#]
 const COMMERCE_PAGES = new Set( [ 'shop', 'cart', 'checkout', 'account' ] );
 
 // o: { m, rows (the page map), brands (the catalogue's brand names), commerce, rule (rules.loopBlocks: { products, brands,
-// reviews }), money (rules.commerceRegion.money), shop (rules.commerceRegion.roles.shop) }. Returns [ { key, kind, block, attributes, inner, item,
+// reviews }), money (rules.commerceRegion.money), shop (rules.commerceRegion.roles.shop), look (lib/platform-look.mjs, or
+// null: a provider link then picks its block alone) }. Returns [ { key, kind, block, attributes, inner, item,
 // handover, reason } ] for the holders it places, and `notes` for a loop it recognises but cannot place.
-export function loopBlocks( { m, rows = [], brands = [], carousels = new Set(), commerce = null, rule, money: moneySource, shop } ) {
+export function loopBlocks( { m, rows = [], brands = [], carousels = new Set(), commerce = null, rule, money: moneySource, shop, look = null } ) {
 	const out = { regions: [], notes: [] };
 	if ( ! rule || ! moneySource || COMMERCE_PAGES.has( commerce?.role ) ) {
 		return out;
@@ -103,17 +107,22 @@ export function loopBlocks( { m, rows = [], brands = [], carousels = new Set(), 
 		const quotedPeople = !! T && everyItem( ( it, all ) => quotation( all ) && quote( all ) && person( it, all ) && ! priced( all ) );
 		if ( ratedItems || quotedPeople ) {
 			const hrefs = items.flatMap( ( it ) => [ it, ...inside( it ) ] ).map( ( x ) => hrefOf( m.read, x ) ).filter( Boolean );
-			const hit = Object.entries( rule.reviews.providers ).find( ( [ , p ] ) => hrefs.some( ( h ) => new RegExp( p.host, 'i' ).test( h ) ) );
+			const linked = Object.entries( rule.reviews.providers ).find( ( [ , p ] ) => hrefs.some( ( h ) => new RegExp( p.host, 'i' ).test( h ) ) );
+			// The provider's link picks its block only where the cards are painted in the provider's own look; cards in the
+			// client's own style are the testimonial family (Bean 2026-10-31).
+			const drawn = linked && look ? look.drawn( items.flatMap( ( it ) => [ it, ...inside( it ) ] ), linked[ 0 ] ) : null;
+			const hit = linked && ( ! look || drawn ) ? linked : null;
+			const styled = linked && ! hit ? `; it links to ${ linked[ 0 ] }, and ${ look.reason }` : '';
 			// A loop of review cards that is a scroll track the draft's script drives (a timer, pointer drag or arrow controls:
 			// lib/skeleton-rerun.mjs::carouselKeys) is the testimonial slider, each card a testimonial of it.
 			if ( ! hit && rule.carousel && carousels.has( templateKey( { dc: holder.template, tpl: holder.tpl } ) ) ) {
-				out.regions.push( { key: holder.key, kind: 'carousel', block: rule.carousel.block, attributes: { ...( rule.carousel.attributes || {} ) }, inner: null, item: null, absorb: false, cards: items.map( ( it ) => it.key ), cardBlock: rule.carousel.cardBlock, handover: null, reason: `${ rule.carousel.reason } (a loop of ${ items.length } review cards in a scroll track the draft's script steps)` } );
+				out.regions.push( { key: holder.key, kind: 'carousel', block: rule.carousel.block, attributes: { ...( rule.carousel.attributes || {} ) }, inner: null, item: null, absorb: false, cards: items.map( ( it ) => it.key ), cardBlock: rule.carousel.cardBlock, handover: null, reason: `${ rule.carousel.reason } (a loop of ${ items.length } review cards in a scroll track the draft's script steps)${ styled }` } );
 				continue;
 			}
 			// A loop of review cards no script moves, each naming the person who wrote it, is the testimonial family in its still
 			// form: the slider with no autoplay, arrows or dots, as many cards visible as the draft lays side by side at the
 			// widest width; a holder whose cards overflow it on one row at some width is a track the visitor swipes.
-			if ( ! hit && T && everyItem( ( it, all ) => person( it, all ) && ! priced( all ) ) ) {
+			if ( ! hit && T && ( styled || everyItem( ( it, all ) => person( it, all ) && ! priced( all ) ) ) ) {
 				// Cards share a row when their boxes overlap by more than half the first one's height (a tilted card's box
 				// shifts a little); a track's cards run past the holder's right edge by more than a tenth of a card.
 				const sameRow = ( a, b ) => !! a && !! b && Math.min( a.y + a.h, b.y + b.h ) - Math.max( a.y, b.y ) > a.h / 2;
@@ -122,7 +131,7 @@ export function loopBlocks( { m, rows = [], brands = [], carousels = new Set(), 
 					const bs = items.map( ( k ) => k.box?.[ w ] ).filter( Boolean );
 					return bs.length >= 2 && bs.every( ( b ) => sameRow( bs[ 0 ], b ) ) && Math.max( ...bs.map( ( b ) => b.x + b.w ) ) > hb.x + hb.w + bs[ 0 ].w / 10 ? w : null;
 				} ).filter( Boolean );
-				out.regions.push( { key: holder.key, kind: 'testimonials', block: rule.carousel.block, attributes: { ...( T.attributes || {} ), ...( T.perRowAttribute ? { [ T.perRowAttribute ]: row } : {} ) }, inner: null, item: null, absorb: false, cards: items.map( ( it ) => it.key ), cardBlock: rule.carousel.cardBlock, handover: null, reason: `${ T.reason } (a loop of ${ items.length } cards each naming its reviewer, ${ row } side by side at 1440${ track.length ? `, a swiped track at ${ track.join( ' and ' ) }` : '' })` } );
+				out.regions.push( { key: holder.key, kind: 'testimonials', block: rule.carousel.block, attributes: { ...( T.attributes || {} ), ...( T.perRowAttribute ? { [ T.perRowAttribute ]: row } : {} ) }, inner: null, item: null, absorb: false, cards: items.map( ( it ) => it.key ), cardBlock: rule.carousel.cardBlock, handover: null, reason: `${ T.reason } (a loop of ${ items.length } cards each naming its reviewer, ${ row } side by side at 1440${ track.length ? `, a swiped track at ${ track.join( ' and ' ) }` : '' })${ styled }` } );
 				continue;
 			}
 			if ( ! hit ) {
@@ -130,7 +139,7 @@ export function loopBlocks( { m, rows = [], brands = [], carousels = new Set(), 
 				continue;
 			}
 			const [ name, p ] = hit;
-			out.regions.push( { key: holder.key, kind: 'reviews', block: p.block, attributes: { ...( p.attributes || {} ), ...( p.countAttribute ? { [ p.countAttribute ]: items.length } : {} ) }, inner: null, item: null, handover: p.handover, reason: `${ rule.reviews.reason } (${ name }: a loop of ${ items.length } items with a rating and a quote, linking to the provider)` } );
+			out.regions.push( { key: holder.key, kind: 'reviews', block: p.block, attributes: { ...( p.attributes || {} ), ...( p.countAttribute ? { [ p.countAttribute ]: items.length } : {} ) }, inner: null, item: null, handover: p.handover, reason: `${ rule.reviews.reason } (${ name }: a loop of ${ items.length } items with a rating and a quote, linking to the provider${ drawn ? `, ${ drawn.why }` : '' })` } );
 		}
 	}
 	return out;

@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 27
-spec_version: 8
+spec_version: 8.1
 status: active
 title: "SGS Product & WooCommerce Layer"
 project: small-giants-wp
@@ -663,7 +663,7 @@ A product-page draft is a WooCommerce page TYPE, and every shop client needs the
 - **Rebuilding cart/checkout/gallery/collection blocks OR the shipped cart-write path**: core blocks + shipped machinery are the chassis, full stop.
 - **Food-domain vocabulary in the framework**: `allergen-*`, `topping-dairy`, `trial-note`, `ingredients-*` map to generic slots (`notice-banner`/`text`/`feature-grid`); they NEVER enter `slots.aliases`/`modifier_suffixes`. (The PDP template MUST still provide a generic content slot where a food client places statutory allergen information; see FR-30-2.)
 - **Abandoned-cart recovery emails**: out of scope ("later phase / extension territory").
-- **Subscriptions / subscribe-and-save / one-click reorder, build-a-box bundles, A/B price-display experiments**: parked as roadmap, not built (subscriptions are the food-DTC deal-winner; see Open questions).
+- **Subscriptions / subscribe-and-save / one-click reorder, build-a-box bundles, A/B price-display experiments**: not built. Subscribe-and-save is a post-launch build (Bean, 2026-10-31; Open questions 2 holds the decision); the rest stay roadmap.
 
 ### Hard constraints
 
@@ -840,7 +840,7 @@ Bean, 2026-10-26: WooCommerce's cart, checkout and account pages keep WooCommerc
 ### Open questions
 
 1. **B2B price display**: Indus Foods is B2B (trade buyers): ex-VAT display vs the consumer inc-VAT default. Needs a per-client display-context decision before Indus's shop build.
-2. **Subscriptions / reorder**: repeat purchase is THE food-DTC metric; WC Subscriptions is compose-not-build territory. Parked pending a scope decision and the extension licence. Sibling parked items: build-a-box bundles (a small FR-30-7 extension), A/B price-display hooks, GA4 funnel events on the configurator.
+2. **Subscriptions / reorder (decided 2026-10-31: post-launch build).** Repeat purchase is THE food-DTC metric. The build composes WooCommerce Subscriptions' own engine, which is GPL v3 and so usable without the paid licence (the synced public mirror `github.com/pronamic/woocommerce-subscriptions`, v9.3.0 on 2026-10-07; the earlier `Automattic/woocommerce-subscriptions-core` package was archived in May 2025), and adds one SGS part: a "subscribe or buy once" switch in `sgs/buybox` that adds a discounted subscription version of the chosen pack with a shopper-picked interval (Mama's draft: 10% off, every 2 or 4 weeks), renewing through the standard gateways' saved payment methods, with pause, skip and cancel in My Account. Until then the cloning route records the draft's switch as a gap (Mama's `catalogue-gap:zookies:switch`). Rejected after a test on a local mirror (2026-10-31): the free Sublium Lite plugin renews only through FunnelKit's own Stripe, PayPal and Square plugins (its gateway filter removes the official WooCommerce Stripe Gateway from a subscription cart), gates pause, skip, resume and change-frequency behind Pro, hooks its switch where `sgs/buybox` renders nothing, and charges a revenue fee set by a constant in its code (0% in 1.0.1) that the FunnelKit Stripe plugin deducts automatically; Flexible Subscriptions (WP Desk) and Subscriptions for WooCommerce (WP Swings) keep the buy-once-or-subscribe choice in paid add-ons. Sibling parked items: build-a-box bundles (a small FR-30-7 extension), A/B price-display hooks, GA4 funnel events on the configurator.
 
 ---
 

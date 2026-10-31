@@ -132,6 +132,30 @@
 					]
 				},
 				{
+					"id": "buybox-per-unit",
+					"label": "Price per unit of a pack size",
+					"home": {
+						"type": "setting",
+						"block": "sgs/buybox",
+						"settings": [
+							"perUnitDenomination"
+						]
+					},
+					"write": {
+						"perUnitDenomination": "each"
+					},
+					"by": [
+						"structure"
+					],
+					"units": 1,
+					"locators": [
+						"Product/37"
+					],
+					"sample": [
+						"{{ o.n }} {{ o.priceTxt }} {{ o.each }} {{ o.tag }}"
+					]
+				},
+				{
 					"id": "unmatched:buybox:2 · base",
 					"label": "2 · Base",
 					"home": {
@@ -1235,8 +1259,8 @@
 	],
 	"counts": {
 		"units": 77,
-		"parts": 45,
-		"mapped": 18,
+		"parts": 46,
+		"mapped": 19,
 		"missing": 26,
 		"elsewhere": 1,
 		"hinted": 8,

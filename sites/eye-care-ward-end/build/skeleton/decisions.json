@@ -304,5 +304,14 @@
 			}
 		}
 	},
-	"siteName": "Eye Care Birmingham"
+	"siteName": "Eye Care Birmingham",
+	"motion": {
+		"header": {
+			"Eye Care Birmingham/8": {
+				"marquee": {
+					"belowBreakpoint": "tablet"
+				}
+			}
+		}
+	}
 }
