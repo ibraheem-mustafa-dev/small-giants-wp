@@ -90,8 +90,8 @@ test( 'MUST FAIL: Eye Care\'s Google reviews block stands over its summary, its 
 	const r = propose( fixture( 'ec-google' ) );
 	const top = rowOf( r, `${ EC }/174#0` );
 	assert.deepEqual( [ top.block, top.rule ], [ 'sgs/google-reviews', 'loopBlocks' ] );
-	assert.match( top.reason, /platform google at .*175#0/, 'the summary is its part by the platform it names' );
-	assert.match( top.reason, /self-moving controls/, 'the arrows are its part by the track they scroll' );
+	assert.match( top.reason, /platform google.*; at .*175#0/, 'the summary is its part by the platform it names' );
+	assert.match( top.reason, /self-moving controls|shows-part arrow/, 'the arrows are its part by the track they scroll' );
 	assert.deepEqual( [ 175, 179, 186, 189, 205, 208 ].map( ( n ) => rowOf( r, `${ EC }/${ n }#0` ).action ), Array( 6 ).fill( 'absorbed' ) );
 	assert.equal( rowOf( r, `${ EC }/173#0` ).block, 'sgs/heading', 'the section heading is no part' );
 	assert.equal( flat( r.skeleton ).filter( ( n ) => 'sgs/google-reviews' === n.name ).length, 1 );
@@ -224,4 +224,72 @@ test( 'MUST FAIL: a block that prints its inner blocks with no allowed list acce
 	assert.equal( id.table.holds( 'sgs/form-step' ), 'any', 'its editor offers InnerBlocks and its render prints $content' );
 	assert.equal( id.ruledOut( 'sgs/form-step', m.byKey[ 'Root/2#0' ] ), null, 'an accept-any block is never ruled out by a missing fact' );
 	assert.match( id.ruledOut( 'sgs/multi-button', m.byKey[ 'Root/2#0' ] )?.why ?? '', /never shows renders-role tablist/, 'a restricted block (its allowed list) still is' );
+} );
+
+// ---- the kinds of value a region shows, and a placed block's named parts beside it ----
+const real = () => loadFacts( { db, client: 'eye-care-ward-end', repo: REPO, siteName: 'Acme' } );
+const lucide = ( key, parentKey, depth ) => ( { ...el( key, parentKey, 'svg', '', { depth, attrs: { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor' }, box: place( 0, 100, 18, 18 ) } ) } );
+
+test( 'MUST FAIL: rows marked with emoji are the list block that accepts that kind of marker; an emoji never rules out a block with a text setting', () => {
+	const rows = [ 0, 1, 2 ].flatMap( ( i ) => [
+		el( `Root/3#${ i }`, 'Root/2#0', 'div', '', { depth: 2, attrs: { role: 'listitem' }, box: place( 0, 100 + i * 40 ) } ),
+		el( `Root/4#${ i }`, `Root/3#${ i }`, 'span', '✓', { depth: 3, box: place( 0, 100 + i * 40, 16, 16 ) } ),
+		el( `Root/5#${ i }`, `Root/3#${ i }`, 'span', `Benefit number ${ i + 1 } in words`, { depth: 3, box: place( 24, 100 + i * 40, 200, 20 ) } ),
+	] );
+	const LIST = [ el( 'Root/1#0', null, 'div', '', { depth: 0 } ), el( 'Root/2#0', 'Root/1#0', 'div', '', { attrs: { role: 'list' } } ), ...rows ];
+	const r = run( LIST, real() );
+	const row = rowOf( r, 'Root/2#0' );
+	assert.deepEqual( [ row.block, row.rule ], [ 'sgs/icon-list', 'identity' ], 'a list whose markers are emoji is the block whose item icon accepts emoji' );
+	assert.match( row.reason, /accepts-kind \*=icon:emoji/ );
+	assert.notEqual( rowOf( r, 'Root/5#0' ).identity?.why ?? '', /accepts-kind/, 'the words beside the marker keep their text block' );
+} );
+
+test( 'MUST FAIL: a stroke-drawn icon beside words rules out a restricted block with no icon field (a review row), never an accept-any container', async () => {
+	const ELS = [ el( 'Root/1#0', null, 'div', '', { depth: 0 } ), el( 'Root/2#0', 'Root/1#0', 'div', 'Free delivery over £50', { all: 'Free delivery over £50' } ), lucide( 'Root/3#0', 'Root/2#0', 2 ) ];
+	const { makeIdentity } = await import( '../lib/skeleton-identity.mjs' );
+	const { fixtureModel } = await import( './fixtures/fixture-facts.mjs' );
+	const m = fixtureModel( inv( ELS ) );
+	const id = makeIdentity( { m, facts: real(), surface: { kind: 'page' } } );
+	const at = m.byKey[ 'Root/2#0' ];
+	assert.match( id.ruledOut( 'sgs/text', at )?.why ?? '', /accepts-kind \*=icon:lucide/, 'a text block holds no icon' );
+	assert.equal( id.ruledOut( 'sgs/container', at ), null, 'an accept-any container is never ruled out' );
+	assert.equal( id.ruledOut( 'sgs/icon', at ), null, 'the icon block, whose picker takes the icon library, stays' );
+	const inButton = [ el( 'Root/1#0', null, 'div', '', { depth: 0 } ), el( 'Root/2#0', 'Root/1#0', 'button', 'Next', { all: 'Next' } ), lucide( 'Root/3#0', 'Root/2#0', 2 ) ];
+	const mb = fixtureModel( inv( inButton ) );
+	assert.ok( ! [ ...makeIdentity( { m: mb, facts: real(), surface: { kind: 'page' } } ).region( mb.byKey[ 'Root/2#0' ] ).values() ].some( ( f ) => 'accepts-kind' === f.fact ), 'an icon inside a control is the control\'s own drawing, no value' );
+} );
+
+test( 'MUST FAIL: the Google reviews block names the summary parts it draws: stars, the 4.7 score, the review counts and both platform buttons', () => {
+	const r = propose( fixture( 'ec-google' ) );
+	const top = rowOf( r, `${ EC }/174#0` );
+	assert.equal( top.block, 'sgs/google-reviews' );
+	for ( const part of [ 'star', 'average', 'count', 'see-all', 'arrow' ] ) {
+		assert.match( top.reason, new RegExp( `shows-part ${ part }` ), `the ${ part } part is read from the draft` );
+	}
+	assert.deepEqual( [ 181, 183, 184, 186, 187, 206, 208 ].map( ( n ) => rowOf( r, `${ EC }/${ n }#0` ).action ), Array( 7 ).fill( 'absorbed' ) );
+} );
+
+test( 'MUST FAIL: a testimonial slider draws its arrows and dots beside it; its section heading and the platform summary it has no part for stay', () => {
+	const fix = fixture( 'mama-reviews' );
+	const r = propose( fix, { loops: { rows: [], brands: [], carousels: new Set( [ 'Home/222' ] ) } } );
+	assert.equal( rowOf( r, 'Home/222#0' ).block, 'sgs/testimonial-slider' );
+	assert.deepEqual( [ 'Home/219#0', 'Home/220#0', 'Home/233#0', 'Home/235#0' ].map( ( k ) => [ rowOf( r, k ).action, rowOf( r, k ).into ?? null ] ).map( ( [ a ] ) => a ), Array( 4 ).fill( 'absorbed' ), 'the prev and next arrows and the one-per-slide dots are the slider\'s' );
+	assert.match( rowOf( r, 'Home/219#0' ).reason, /shows-part (arrow|dot)/ );
+	assert.equal( rowOf( r, 'Home/213#0' ).block, 'sgs/heading', 'the section heading stays' );
+	assert.notEqual( rowOf( r, 'Home/214#0' ).action, 'absorbed', 'the Trustpilot score link is no part the slider draws' );
+} );
+
+test( 'negative control: a product card beside a review loop keeps its star rating and price', () => {
+	const google = 'https://www.google.com/maps/reviews';
+	const card = ( i ) => [
+		el( `Root/11#${ i }`, 'Root/10#0', 'figure', '', { depth: 2, loop: 11, all: `★★★★★ Great service number ${ i } from a real customer who wrote at length about it`, box: place( i * 300, 200 ) } ),
+		el( `Root/12#${ i }`, `Root/11#${ i }`, 'span', '★★★★★', { depth: 3, attrs: { 'aria-label': '5 out of 5' } } ),
+		el( `Root/13#${ i }`, `Root/11#${ i }`, 'blockquote', `Great service number ${ i } from a real customer who wrote at length about it`, { depth: 3 } ),
+		el( `Root/14#${ i }`, `Root/11#${ i }`, 'a', 'Read on Google', { depth: 3, attrs: { href: google } } ),
+	];
+	const loopEl = ( e ) => ( /Root\/1[1-4]#/.test( e.key ) ? { ...e, membership: [ { kind: 'sc-for', list: '{{ items }}', as: 'it', tpl: '11' } ] } : e );
+	const ELS = [ el( 'Root/1#0', null, 'div', '', { depth: 0 } ), el( 'Root/9#0', 'Root/1#0', 'div', '' ), el( 'Root/10#0', 'Root/9#0', 'div', '', { depth: 1 } ), ...[ 0, 1, 2 ].flatMap( card ),
+		el( 'Root/20#0', 'Root/9#0', 'a', '', { depth: 1, attrs: { href: '/product/x' } } ), el( 'Root/21#0', 'Root/20#0', 'span', '★★★★☆', { depth: 2, attrs: { 'aria-label': '4.2 out of 5' } } ), el( 'Root/22#0', 'Root/20#0', 'span', '£24.00', { depth: 2 } ) ].map( loopEl );
+	const r = proposeFixture( { inventory: inv( ELS ), facts: real(), surface: 'test', surfaceKind: 'page', db } );
+	assert.ok( [ 'Root/20#0', 'Root/21#0', 'Root/22#0' ].every( ( k ) => ! /^identity/.test( rowOf( r, k )?.rule ?? '' ) && rowOf( r, k )?.into !== 'Root/10#0' ), 'the card, its rating and its price are not the reviews block\'s parts' );
 } );

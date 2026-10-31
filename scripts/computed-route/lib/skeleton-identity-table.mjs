@@ -7,7 +7,7 @@
 //     its inner blocks (`printsInner`, whatever its container kind) holds any block, as WordPress lets any block in where no
 //     allowed list is set (Bean 2026-10-30: an unrestricted container); a block listing `accepts_allowed_blocks` holds those, followed through every
 //     block they hold; any other block holds none and draws everything it shows;
-//   - `block_attributes`: the values a block's text settings hold (`enum_values` of a `text-content` setting, such as the
+//   - `block_attributes`: the values a block's text and glyph settings hold (`enum_values` of a `text-content` or `glyph` setting, such as the
 //     breadcrumbs' separator glyphs), read as the `accepts-value` fact;
 //   - `motion_targets`: the parts a block draws (its `target` names), read as the `has-part` fact.
 // Roles are meanings (lib/skeleton-identity-roles.mjs): a block's state for a role joins its `renders-role` row with the
@@ -71,7 +71,7 @@ export function identityTable( query, codeRepo = null ) {
 	}
 	const composition = new Map( q( 'SELECT block_slug, composition_role, accepts_allowed_blocks, container_kind FROM block_composition' ).map( ( r ) => [ r.block_slug, r ] ) );
 	const valueBlocks = new Map();
-	for ( const r of q( "SELECT block_slug, enum_values FROM block_attributes WHERE role = 'text-content' AND css_property IS NULL AND enum_values LIKE '[%'" ) ) {
+	for ( const r of q( "SELECT block_slug, enum_values FROM block_attributes WHERE role IN ( 'text-content', 'glyph' ) AND css_property IS NULL AND enum_values LIKE '[%'" ) ) {
 		let list = [];
 		try {
 			list = JSON.parse( r.enum_values );
@@ -92,8 +92,13 @@ export function identityTable( query, codeRepo = null ) {
 		if ( 'accepts-value' === fact ) {
 			return valueBlocks.get( value )?.has( block ) ? 'yes' : 'unknown';
 		}
-		if ( 'has-part' === fact ) {
+		if ( 'has-part' === fact || 'shows-part' === fact ) {
 			return partBlocks.get( value )?.has( block ) ? 'yes' : 'unknown';
+		}
+		if ( 'accepts-kind' === fact && value.startsWith( '[]=' ) ) {
+			const kind = value.slice( 3 );
+			// Some item field (a field of a repeating list, `items.iconName`) of the block takes the kind.
+			return [ ...( rows.get( block ) || new Map() ) ].some( ( [ k, st ] ) => 'yes' === st && k.startsWith( K( 'accepts-kind', '' ) ) && k.endsWith( `=${ kind }` ) && k.slice( K( 'accepts-kind', '' ).length ).split( '=' )[ 0 ].includes( '.' ) ) ? 'yes' : 'unknown';
 		}
 		if ( 'renders-role' === fact || 'implied-role' === fact ) {
 			fact = 'renders-role';
@@ -149,10 +154,16 @@ export function identityTable( query, codeRepo = null ) {
 		if ( 'accepts-value' === fact ) {
 			return ( valueBlocks.get( value )?.size ?? 0 ) / Math.max( 1, known.size );
 		}
-		if ( 'has-part' === fact ) {
+		if ( 'has-part' === fact || 'shows-part' === fact ) {
 			return ( partBlocks.get( value )?.size ?? 0 ) / Math.max( 1, known.size );
 		}
-		if ( 'renders-role' === fact || 'implied-role' === fact ) {
+		if ( ( 'accepts-kind' === fact && value.startsWith( '[]=' ) ) || 'renders-role' === fact || 'implied-role' === fact ) {
+			const f = 'accepts-kind' === fact ? fact : 'renders-role';
+			const k = K( f, value );
+			roleShare.has( k ) || roleShare.set( k, [ ...known ].filter( ( b ) => 'yes' === state( b, f, value ) ).length / Math.max( 1, known.size ) );
+			return roleShare.get( k );
+		}
+		if ( 'renders-role' === fact ) {
 			const k = K( 'renders-role', value );
 			roleShare.has( k ) || roleShare.set( k, [ ...known ].filter( ( b ) => 'yes' === state( b, 'renders-role', value ) ).length / Math.max( 1, known.size ) );
 			return roleShare.get( k );
@@ -161,7 +172,11 @@ export function identityTable( query, codeRepo = null ) {
 	};
 	// The platforms a block belongs to (its `platform` rows at yes).
 	const platformsOf = ( block ) => platforms.filter( ( p ) => 'yes' === state( block, 'platform', p ) );
-	const out = { blocks: [ ...known ].sort(), state, holds, canShow, yesShare, platforms, platformsOf, composition };
+	// The kinds of value the DB records per block (`accepts-kind` `*=<kind>` rows), and the blocks with a text setting (a
+	// glyph is text such a block can print, so an emoji never rules it out).
+	const kinds = new Set( q( "SELECT DISTINCT value FROM block_identity_facts WHERE fact = 'accepts-kind' AND value LIKE '*=%'" ).map( ( r ) => r.value ) );
+	const texty = new Set( [ ...q( "SELECT DISTINCT block_slug FROM block_attributes WHERE role = 'text-content' AND css_property IS NULL" ), ...q( "SELECT DISTINCT block_slug FROM array_item_schema WHERE role = 'text-content'" ) ].map( ( r ) => r.block_slug ) );
+	const out = { kinds, hasText: ( b ) => texty.has( b ), blocks: [ ...known ].sort(), state, holds, canShow, yesShare, platforms, platformsOf, composition };
 	cache.set( query, out );
 	return out;
 }

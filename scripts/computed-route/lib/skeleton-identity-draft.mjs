@@ -12,6 +12,8 @@
 //   - `self-moving` `timer`: the element is a scroll track the draft's script steps on a timer (lib/skeleton-rerun.mjs::carouselKeys);
 //     `self-moving` `controls`: its click handler scrolls an element sideways (a previous or next arrow);
 //   - `accepts-value`: a typed divider between items (rules.typedDivider) is a value a block's text setting may hold;
+//   - `accepts-kind` and `shows-part`: the kind of value an element shows (an emoji, a stroke-drawn icon) and the named part
+//     it is (stars, a score, a count, a platform link, an arrow, a dot), read by lib/skeleton-identity-parts.mjs;
 //   - `open-state` `exactly-one` and `has-part` `panel`: a tab set, read from the logic's syntax tree: two or more controls whose
 //     handlers write one state key, and conditional panels (`sc-if`) whose conditions each compare that key with a different
 //     literal, so exactly one panel shows at a time. The fact sits on the smallest element holding the controls and the
@@ -26,8 +28,9 @@ import { patchProperties, handlerValue } from './skeleton-handler-opens.mjs';
 import { stateReads } from './skeleton-narrowing.mjs';
 import { keyName, resolveName, subtree, isThisMember, isFn } from './intake-ast.mjs';
 import { roleOf } from './skeleton-identity-roles.mjs';
+import { makePartReaders } from './skeleton-identity-parts.mjs';
 
-export const RANKING_FACTS = new Set( [ 'renders-role', 'renders-aria', 'open-state', 'self-moving', 'accepts-value', 'has-part', 'platform' ] );
+export const RANKING_FACTS = new Set( [ 'renders-role', 'renders-aria', 'open-state', 'self-moving', 'accepts-value', 'accepts-kind', 'has-part', 'platform' ] );
 const MAX_DEPTH = 4;
 const shown = ( e ) => Object.values( e?.visible || {} ).some( Boolean );
 const widthsOf = ( e ) => Object.keys( e?.visible || {} ).filter( ( w ) => true === e.visible[ w ] ).map( Number ).sort( ( a, b ) => a - b );
@@ -84,7 +87,7 @@ function writtenBy( d, fn ) {
 // o: { m (the inventory model), read (lib/element-facts.mjs), logicOf( component ), brands (lib/brand-registry.mjs::paletteBrands),
 // platforms (the database's platform values), divider (rules.typedDivider), carousels (Set of template keys), owned (Set of
 // element keys), keepAll( fact, value ) (whether a fact keeps every element showing it) }. Returns { region( e ) → Map( factKey → { fact, value, at: Set( element key ) } ), tabSets, key, parse }.
-export function makeDraftFacts( { m, read, logicOf = () => null, brands = [], platforms = [], divider = null, carousels = new Set(), owned = new Set(), keepAll = () => true } ) {
+export function makeDraftFacts( { m, read, logicOf = () => null, brands = [], platforms = [], divider = null, carousels = new Set(), owned = new Set(), keepAll = () => true, kinds = new Set() } ) {
 	const entry = ( e ) => read.view.entry( e )?.template ?? null;
 	const records = read.view.elements || {};
 	const inSvg = ( e ) => {
@@ -129,6 +132,7 @@ export function makeDraftFacts( { m, read, logicOf = () => null, brands = [], pl
 		}
 		return scrolls.get( id );
 	};
+	const parts = makePartReaders( { m, read, platformsIn, scrollsTrack, kinds } );
 	const ownFacts = ( e ) => {
 		const out = [];
 		if ( ! shown( e ) || inSvg( e ) ) {
@@ -145,6 +149,8 @@ export function makeDraftFacts( { m, read, logicOf = () => null, brands = [], pl
 		scrollsTrack( e ) && out.push( [ 'self-moving', 'controls' ] );
 		const typed = String( m.words( e ) ?? '' ).trim();
 		divider && ! m.blockKids( e ).length && specHit( divider, typed ) && out.push( [ 'accepts-value', typed ] );
+		parts.kindsOf( e ).forEach( ( k ) => out.push( [ 'accepts-kind', k ] ) );
+		parts.partsOf( e ).forEach( ( p ) => out.push( [ 'shows-part', p ] ) );
 		return out;
 	};
 
@@ -257,6 +263,15 @@ export function makeDraftFacts( { m, read, logicOf = () => null, brands = [], pl
 			for ( const f of region( k ).values() ) {
 				add( out, f.fact, f.value, f.at );
 			}
+		}
+		// A kind of value shown once in each of two or more of the element's child rows (a marker per list row) is a value an
+		// item field takes (`[]=<kind>`), as a repeating field holds it.
+		for ( const f of [ ...out.values() ].filter( ( x ) => 'accepts-kind' === x.fact && /^\*=/.test( x.value ) ) ) {
+			const rows = new Set( [ ...f.at ].map( ( k ) => chain( m.byKey[ k ] ).find( ( a ) => a.parentKey === e.key )?.key ).filter( Boolean ) );
+			// Each such row holds the marker and one piece of text beside it, as one item's icon and text: a row holding a title and
+			// a description is more than an item field holds.
+			const texts = ( r ) => m.els.filter( ( x ) => ! f.at.has( x.key ) && chain( x ).includes( m.byKey[ r ] ) && m.words( x ).trim() && ! m.blockKids( x ).some( ( c ) => m.words( c ).trim() ) ).length;
+			rows.size >= 2 && [ ...rows ].every( ( r ) => texts( r ) <= 1 ) && add( out, 'accepts-kind', f.value.replace( /^\*=/, '[]=' ), f.at );
 		}
 		memo.set( e.key, out );
 		return out;

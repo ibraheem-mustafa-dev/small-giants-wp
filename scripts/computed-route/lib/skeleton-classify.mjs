@@ -300,36 +300,62 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 			if ( ! anchor || ! x.block || decided( anchor ) ) {
 				continue;
 			}
-			const isPart = ( s ) => ! identity.ruledOut( x.block, s ) && [ ...identity.region( s ).values() ].some( ( f ) => ( 'platform' === f.fact || identity.naming( f ) ) && 'yes' === identity.table.state( x.block, f.fact, f.value ) );
+			// A sibling is the block's part when it shows a fact the block shows (its platform, a role or state few blocks share,
+			// a named part: stars, a score, a count, an arrow, a dot) and nothing the block cannot show; it is a whole part when
+			// every block child it holds is one too, or holds no words of its own (a glyph, a separator).
+			const shows = ( s ) => ! identity.ruledOut( x.block, s ) && [ ...identity.region( s ).values() ].some( ( f ) => ( 'platform' === f.fact || 'shows-part' === f.fact || identity.naming( f ) ) && 'yes' === identity.table.state( x.block, f.fact, f.value ) );
+			const quiet = ( k ) => ! m.words( k ).trim() && ! m.blockKids( k ).some( ( c ) => m.words( c ).trim() );
+			const memo = new Map();
+			const whole = ( s ) => memo.get( s.key ) ?? memo.set( s.key, shows( s ) && m.blockKids( s ).every( ( k ) => whole( k ) || quiet( k ) ) ).get( s.key );
+			// The whole parts within a sibling: itself, else the whole parts among its children, never inside a unit of its own (a
+			// control or card link, a loop's item, what a structure owns: a product card keeps its star rating and price).
+			const unit = ( s ) => [ 'a', 'button' ].includes( s.tag ) || !! m.read.handler( s ) || ( rules.owned || new Set() ).has( s.key ) || ( s.membership || [] ).some( ( x ) => 'sc-for' === x.kind );
+			const partsIn = ( s ) => ( whole( s ) ? [ s ] : unit( s ) ? [] : m.blockKids( s ).flatMap( partsIn ) );
 			let top = null;
+			let clean = true;
 			let parts = [];
 			const route = [];
 			for ( let at = anchor, p = m.byKey[ anchor.parentKey ]; p && p !== m.root; at = p, p = m.byKey[ p.parentKey ] ) {
 				const sibs = m.blockKids( p ).filter( ( k ) => k !== at );
-				route.push( at );
-				if ( sibs.length && ! sibs.every( isPart ) ) {
+				clean && route.push( at );
+				if ( ! sibs.length ) {
+					continue;
+				}
+				const found = sibs.flatMap( partsIn );
+				if ( ! found.length ) {
 					break;
 				}
-				if ( sibs.length ) {
+				// The block moves up only while every sibling is wholly its part; parts found beside other content are drawn by it
+				// where they stand (absorbed into it), and the walk stops at the first level holding no part.
+				if ( clean && sibs.every( whole ) ) {
 					top = p;
-					parts = [ ...parts, ...sibs ];
+				} else {
+					clean = false;
 				}
+				parts = [ ...parts, ...found ];
 			}
-			if ( ! top || decided( top ) || widened.at.has( top.key ) ) {
+			if ( ! parts.length || ( top && ( decided( top ) || widened.at.has( top.key ) ) ) ) {
 				continue;
 			}
 			const verdict = rules.ruleFor( anchor, null );
 			if ( ! verdict?.block ) {
 				continue;
 			}
-			const shown = parts.flatMap( ( s ) => [ ...identity.region( s ).values() ].filter( ( f ) => 'yes' === identity.table.state( x.block, f.fact, f.value ) && ( 'platform' === f.fact || identity.naming( f ) ) ).map( ( f ) => `${ f.fact } ${ f.value } at ${ s.key }` ) );
-			const why = `${ decisions.rules.identity.regionReason }: ${ x.block } placed on ${ anchor.key } stands over its own parts beside it (${ [ ...new Set( shown ) ].slice( 0, 4 ).join( '; ' ) })`;
-			widened.at.set( top.key, { ...fromRule( { ...verdict, reason: `${ verdict.reason }; ${ why }` } ), identityRegion: { anchor: anchor.key, parts: parts.map( ( s ) => s.key ) } } );
-			if ( ! verdict.absorb ) {
-				const inside = route.filter( ( k ) => k !== top );
-				inside.forEach( ( k ) => widened.inner.set( k.key, { action: 'unwrap', rule: 'identity', source: 'identity matcher', reason: `${ why }: unwrapped into ${ top.key }`, confidence: 1, candidates: [] } ) );
-				parts.forEach( ( k ) => widened.inner.set( k.key, { action: 'absorbed', rule: 'identity', into: top.key, source: 'identity matcher', reason: `${ why }: drawn by ${ x.block }`, confidence: 1, candidates: [] } ) );
+			const host = top ?? anchor;
+			const within = ( k ) => top && [ ...( function* up( e ) {
+				for ( let q = e; q; q = m.byKey[ q.parentKey ] ) {
+					yield q;
+				}
+			} )( k ) ].includes( top );
+			const shown = parts.flatMap( ( s ) => [ ...identity.region( s ).values() ].filter( ( f ) => 'yes' === identity.table.state( x.block, f.fact, f.value ) && ( 'platform' === f.fact || 'shows-part' === f.fact || identity.naming( f ) ) ).map( ( f ) => `${ f.fact } ${ f.value }` ) ).sort( ( a, b ) => Number( b.startsWith( 'shows-part' ) ) - Number( a.startsWith( 'shows-part' ) ) );
+			const why = `${ decisions.rules.identity.regionReason }: ${ x.block } placed on ${ anchor.key } draws its own parts beside it (${ [ ...new Set( shown ) ].slice( 0, 10 ).join( ', ' ) }; at ${ parts.map( ( k ) => k.key ).slice( 0, 6 ).join( ', ' ) })`;
+			top && widened.at.set( top.key, { ...fromRule( { ...verdict, reason: `${ verdict.reason }; ${ why }` } ), identityRegion: { anchor: anchor.key, parts: parts.map( ( s ) => s.key ) } } );
+			const absorbed = { action: 'absorbed', rule: 'identity', into: host.key, source: 'identity matcher', reason: `${ why }: drawn by ${ x.block }`, confidence: 1, candidates: [] };
+			if ( top && ! verdict.absorb ) {
+				route.filter( ( k ) => k !== top ).forEach( ( k ) => widened.inner.set( k.key, { action: 'unwrap', rule: 'identity', source: 'identity matcher', reason: `${ why }: unwrapped into ${ top.key }`, confidence: 1, candidates: [] } ) );
 			}
+			// A part inside the moved block's own subtree is drawn by it already when the block absorbs; any other part is absorbed.
+			parts.filter( ( k ) => ! ( verdict.absorb && within( k ) ) ).forEach( ( k ) => widened.inner.set( k.key, absorbed ) );
 		}
 		return widened;
 	};
