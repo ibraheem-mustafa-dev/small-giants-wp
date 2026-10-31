@@ -7,7 +7,7 @@ in exactly one of three places:
     heading level (fluid per width), line heights, tracking, the gutters and the section padding per tier; this module writes
     ``settings.custom.borderRadius`` (``pill`` the pill-shaped token, ``medium`` the token equal to the primary button's
     radius, ``small`` and ``large`` the smallest and largest of the rest), ``settings.custom.duration.fast`` and
-    ``settings.custom.easing.default`` (the draft's button and link transition);
+    ``settings.custom.easing.default`` (the draft's most used transition timing across its elements);
   * a PRESET: the framework's picker slots stay, valued from the draft's own scale. Font sizes ``small`` to ``hero`` (at most
     6, so the picker keeps its quick buttons) and spacing ``10`` to ``80`` (at most 8, so the picker keeps its slider) take
     the draft's most used scale tokens (``var(--token)`` references across the export), in ascending order, each slot named
@@ -217,26 +217,33 @@ def scale_tokens(family: str, rows: list[dict]) -> list[dict]:
 
 def pick_scale(family: str, rows: list[dict], slots: list[tuple[str, float]], usage: dict[str, int],
                pinned: dict | None = None) -> dict[str, dict]:
-    """``{slot: token row}``: the family's most used tokens (at most as many as the picker shows) placed on the slots."""
-    limit = min(SCALE_SIZE[family], len(slots))
+    """``{slot: token row}``: the scale spans the draft's range. The smallest token in use and the largest token take the
+    ends, the most used tokens fill between, all placed ascending; a pinned token (the body size) holds its own slot and
+    the rest are placed on the other slots. A slot is left without a token only when the draft has fewer tokens than slots."""
+    free = [(s, v) for s, v in slots if not pinned or s != pinned["slot"]]
+    k = min(SCALE_SIZE[family] - (1 if pinned else 0), len(free))
     order = {r["token"]: i for i, r in enumerate(rows)}
     pool = [r for r in rows if not pinned or r["token"] != pinned["row"]["token"]]
-    pool.sort(key=lambda r: (-usage.get(r["token"], 0), order[r["token"]]))
-    if not pinned:
-        return _assign(slots, pool[:limit], family)
-    names = [s for s, _ in slots]
-    cut = names.index(pinned["slot"])
-    below, above = slots[:cut], slots[cut + 1:]
-    body = _scalar(pinned["row"]["value"], family) or 0.0
-    lo: list[dict] = []
-    hi: list[dict] = []
-    for r in pool:
-        if len(lo) + len(hi) >= limit - 1:
+
+    def val(r: dict) -> float:
+        return _scalar(r["value"], family) or 0.0
+
+    in_use = [r for r in pool if usage.get(r["token"], 0) > 0] or pool
+    chosen: list[dict] = []
+    if pool and k:
+        chosen.append(min(in_use, key=lambda r: (val(r), order[r["token"]])))
+        top = max(pool, key=lambda r: (val(r), -order[r["token"]]))
+        if top not in chosen and k > 1:
+            chosen.append(top)
+    for r in sorted(pool, key=lambda r: (-usage.get(r["token"], 0), order[r["token"]])):
+        if len(chosen) >= k:
             break
-        side, cap = (lo, len(below)) if (_scalar(r["value"], family) or 0.0) < body else (hi, len(above))
-        if len(side) < cap:
-            side.append(r)
-    return {**_assign(below, lo, family), pinned["slot"]: pinned["row"], **_assign(above, hi, family)}
+        if r not in chosen:
+            chosen.append(r)
+    placed = _assign(free, chosen, family)
+    if pinned:
+        placed[pinned["slot"]] = pinned["row"]
+    return placed
 
 
 def _widest_headings_only(rows: list[dict]) -> list[dict]:
@@ -382,11 +389,11 @@ def apply_defaults(snap: dict, families: dict, movement: dict | None, trace: lis
         dur = next((r for r in families.get("duration") or []
                     if _scalar(r["value"], "duration") == float(movement["duration_ms"])), None)
         if dur:
-            put(("duration", "fast"), dur, "the draft's button and link transition duration")
+            put(("duration", "fast"), dur, "the draft's most used transition duration")
         want = _curve(str(movement["easing"]))
         ease = next((r for r in families.get("easing") or [] if want is not None and _curve(r["value"]) == want), None)
         if ease:
-            put(("easing", "default"), ease, "the draft's button and link transition easing")
+            put(("easing", "default"), ease, "the draft's most used transition easing")
     return used
 
 

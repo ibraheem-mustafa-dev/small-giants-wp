@@ -164,6 +164,28 @@ def movement_timing(html: str, tokens) -> dict | None:
     return {"duration_ms": duration, "easing": easing, "uses": uses, "of": sum(counts.values())}
 
 
+def overall_timing(html: str, tokens) -> dict | None:
+    """``{"duration_ms", "easing", "uses", "of"}`` for the duration and easing most used by every transition of the draft
+    (any property, ``all`` included), or None when it has none. An easing a transition does not state is ``ease``."""
+    values = _token_values(tokens)
+    counts: Counter = Counter()
+    for match in _TRANSITION_RE.finditer(html):
+        for item in _split_top(_resolve(match.group(1), values)):
+            words = _WORD_SPLIT_RE.split(item)
+            if words[0].lower() == "none":
+                continue
+            times = [ms for ms in (_milliseconds(w) for w in words[1:]) if ms is not None]
+            if not times:
+                continue
+            curve = next((normalise_easing(w) or w.lower() for w in words[1:]
+                          if _EASING_FN_RE.match(w) or w.lower() in _KEYWORD_EASINGS), "ease")
+            counts[(times[0], curve)] += 1
+    if not counts:
+        return None
+    (duration, easing), uses = counts.most_common(1)[0]
+    return {"duration_ms": duration, "easing": easing, "uses": uses, "of": sum(counts.values())}
+
+
 def propose_movement_timing(html: str, tokens, trace: list) -> dict | None:
     """Trace the movement timing proposal as a ``proposal`` row named ``hover-movement-timing``."""
     proposal = movement_timing(html, tokens)

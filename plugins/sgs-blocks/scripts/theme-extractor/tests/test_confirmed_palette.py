@@ -249,3 +249,10 @@ def test_merge_carries_client_custom_keys_and_keeps_derived_ones():
     assert custom["duration"]["slow"] == "560ms"
     assert custom["sgs"]["headerPattern"] == "sgs/framework-header-default"
     assert custom["buttonPresets"]["primary"]["background"] == "#new"
+
+
+def test_a_none_mark_is_no_correction_and_not_an_error():
+    """FR-32-28: a mark is a correction, so a row with no mark names no slug and raises nothing."""
+    assert cp._mark_slugs("--x", None, {"role": "heading"}) == []
+    with pytest.raises(cp.ConfirmError):
+        cp._mark_slugs("--x", "bogus", {})

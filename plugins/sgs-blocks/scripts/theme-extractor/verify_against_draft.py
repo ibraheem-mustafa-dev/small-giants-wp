@@ -106,7 +106,12 @@ def palette_expectations(intake: dict | None, baseline: dict, handoff: pathlib.P
     if not intake:
         return []
     framework = confirmed_palette.framework_slugs(baseline)
-    confirmed, _unmarked = confirmed_palette.confirmed_map(intake, framework, confirmed_palette.framework_colours(baseline))
+    # A mark is a correction (FR-32-28): only an explicit `role:<slug>` states a colour the snapshot must carry; no mark and
+    # `accept` (the old inference's proposal) leave the roles to the draft's own reading.
+    corrections = {**intake, "review": [e for e in intake.get("review") or []
+                                        if not (isinstance(e, dict) and e.get("rowType") == "palette-role"
+                                                and not str(e.get("mark") or "").startswith("role:"))]}
+    confirmed, _unmarked = confirmed_palette.confirmed_map(corrections, framework, confirmed_palette.framework_colours(baseline))
     files = token_files.read_token_files(handoff) if handoff else None
     aliases = {"--" + a for a in (files or {}).get("aliases", set())}
     return [{"role": "palette", "path": f"palette.{slug}", "value": row["hex"],
@@ -119,9 +124,11 @@ def _palette_value(snap: dict, slug: str):
     got = _preset(snap, "color", slug)
     if got is None and slug.startswith("custom-"):
         name = slug[len("custom-"):]
-        got = _preset(snap, "color", name)
+        # A draft token named for a framework role is entered as `<name>-shade` (FR-32-28): the role then points elsewhere.
+        rows = (((snap.get("settings") or {}).get("color") or {}).get("palette")) or []
+        got = next((e.get("color") for e in rows if e.get("slug") == name + "-shade"), None)
         if got is None:
-            got = _preset(snap, "color", name + "-shade")
+            got = _preset(snap, "color", name)
     return got
 
 

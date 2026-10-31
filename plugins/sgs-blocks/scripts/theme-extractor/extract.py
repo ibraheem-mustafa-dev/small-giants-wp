@@ -875,7 +875,7 @@ def main(argv=None) -> int:
     if draft_tokens is not None:
         unresolved_roles = shade_palette.apply(snap, draft_tokens, draft.parent, baseline, confirmed, trace)
     # FR-32-29: every other draft token family is one entry per token and the framework slots are hidden pointers.
-    token_families.apply(snap, draft_tokens, draft.parent, baseline, movement, trace)
+    token_families.apply(snap, draft_tokens, draft.parent, baseline, motion_tokens.overall_timing(html, draft_tokens), trace)
     for role in unresolved_roles:
         print(f"WARNING: role {role} has no value (no alias, mark, reading or related role gives one); the roster gate "
               "will refuse the snapshot", file=sys.stderr)

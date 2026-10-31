@@ -91,9 +91,9 @@ def _alpha(value) -> str:
 
 
 def _mark_slugs(token: str, mark, row: dict) -> list[str]:
-    """The slugs one palette mark names: none for ``one-off`` or an accepted "no palette entry" proposal; an accepted
+    """The slugs one palette mark names: none for no mark (a mark is a correction, FR-32-28), ``one-off`` or an accepted "no palette entry" proposal; an accepted
     proposal names every slug of the row's ``roles`` (one value can fill several), else its ``role``."""
-    if mark == "one-off":
+    if mark is None or mark == "one-off":
         return []
     if mark == "accept":
         if row.get("roles"):

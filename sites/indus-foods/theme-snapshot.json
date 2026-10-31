@@ -243,8 +243,8 @@
       "fontSizes": [
         {
           "slug": "small",
-          "name": "Fs Nav",
-          "size": "17px"
+          "name": "Fs Mono",
+          "size": "12px"
         },
         {
           "slug": "regular",
@@ -253,14 +253,13 @@
         },
         {
           "slug": "large",
-          "size": "20px",
-          "name": "Large",
-          "fluid": false
+          "name": "Fs Eyebrow",
+          "size": "13px"
         },
         {
           "slug": "x-large",
-          "name": "Fs Card Title",
-          "size": "22px"
+          "name": "Fs Nav",
+          "size": "17px"
         },
         {
           "slug": "xx-large",
@@ -598,9 +597,10 @@
       },
       "presetTokens": {
         "fontSizes": {
-          "small": "fs-nav",
+          "small": "fs-mono",
           "regular": "fs-body",
-          "x-large": "fs-card-title",
+          "large": "fs-eyebrow",
+          "x-large": "fs-nav",
           "xx-large": "fs-h2",
           "hero": "fs-h1"
         },

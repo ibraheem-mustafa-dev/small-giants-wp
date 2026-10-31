@@ -47,14 +47,29 @@ def sizes(snap, key="spacing"):
 GAPS = ":root{--gap-1:8px;--gap-2:10px;--gap-3:14px;--gap-4:18px;--gap-5:22px;--gap-6:28px;--gap-7:40px;--gap-8:64px;--gap-9:80px}"
 
 
-def test_the_eight_most_used_gaps_value_the_spacing_slots_in_ascending_order_and_carry_their_names(tmp_path):
+def test_the_spacing_scale_spans_the_drafts_range_and_carries_token_names(tmp_path):
     html = "".join("<div style='gap:%dpx'></div>" % v for v in (8, 10, 14, 18, 22, 28, 40, 64) for _ in range(3))
     snap, _, _ = run(tmp_path, GAPS, html=html)
     got = sizes(snap)
-    assert [got[s]["size"] for s in ("10", "20", "30", "40", "50", "60", "70", "80")] == ["8px", "10px", "14px", "18px", "22px", "28px", "40px", "64px"]
-    assert got["30"]["name"] == "Gap 3"
-    assert snap["settings"]["custom"]["presetTokens"]["spacing"]["30"] == "gap-3"
+    values = [got[s]["size"] for s in ("10", "20", "30", "40", "50", "60", "70", "80")]
+    assert values[0] == "8px" and values[-1] == "80px"
+    assert values == sorted(values, key=lambda v: int(v[:-2])) and len(set(values)) == 8
+    assert got["10"]["name"] == "Gap 1" and snap["settings"]["custom"]["presetTokens"]["spacing"]["10"] == "gap-1"
     assert len(got) == 8
+
+
+def test_seven_font_size_tokens_leave_no_framework_value_in_the_six_slots(tmp_path):
+    typo = ":root{--fs-body:19px;--fs-mono:12px;--fs-eyebrow:13px;--fs-nav:17px;--fs-card:22px;--fs-h2:clamp(28px,3.4vw,40px);--fs-h1:clamp(36px,5vw,62px)}" + chr(10) + "body{font-size:var(--fs-body)}"
+    snap, _, _ = run(tmp_path, ":root{--gap-1:8px}", typo)
+    carried = snap["settings"]["custom"]["presetTokens"]["fontSizes"]
+    assert set(carried) == {"small", "regular", "large", "x-large", "xx-large", "hero"}
+    assert carried["hero"] == "fs-h1" and carried["regular"] == "fs-body" and len(set(carried.values())) == 6
+
+
+def test_the_default_timing_is_the_most_used_across_every_element(tmp_path):
+    import motion_tokens
+    html = "<a style='transition:opacity .4s ease-out'></a><b style='transition:color .4s ease-out'></b><i style='transition:transform .2s ease'></i>"
+    assert motion_tokens.overall_timing(html, None)["duration_ms"] == 400
 
 
 def test_negative_control_a_ninth_scale_token_never_makes_a_ninth_preset(tmp_path):

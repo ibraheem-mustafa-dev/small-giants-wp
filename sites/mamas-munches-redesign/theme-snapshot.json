@@ -274,8 +274,8 @@
       "fontSizes": [
         {
           "slug": "small",
-          "name": "Size 15",
-          "size": "15px"
+          "name": "Size 11",
+          "size": "11px"
         },
         {
           "slug": "regular",
@@ -284,23 +284,23 @@
         },
         {
           "slug": "large",
+          "name": "Size 14",
+          "size": "14px"
+        },
+        {
+          "slug": "x-large",
+          "name": "Size 15",
+          "size": "15px"
+        },
+        {
+          "slug": "xx-large",
           "name": "Lead M",
           "size": "17px"
         },
         {
-          "slug": "x-large",
-          "name": "Size 22",
-          "size": "22px"
-        },
-        {
-          "slug": "xx-large",
-          "name": "Size 24",
-          "size": "24px"
-        },
-        {
           "slug": "hero",
-          "name": "Size 28",
-          "size": "28px"
+          "name": "H1 D",
+          "size": "82px"
         }
       ],
       "defaultFontSizes": false
@@ -322,43 +322,43 @@
       "spacingSizes": [
         {
           "slug": "10",
+          "name": "Space 2",
+          "size": "2px"
+        },
+        {
+          "slug": "20",
           "name": "Space 6",
           "size": "6px"
         },
         {
-          "slug": "20",
+          "slug": "30",
           "name": "Space 8",
           "size": "8px"
         },
         {
-          "slug": "30",
+          "slug": "40",
           "name": "Space 10",
           "size": "10px"
         },
         {
-          "slug": "40",
+          "slug": "50",
           "name": "Space 12",
           "size": "12px"
         },
         {
-          "slug": "50",
+          "slug": "60",
           "name": "Space 14",
           "size": "14px"
         },
         {
-          "slug": "60",
+          "slug": "70",
           "name": "Space 16",
           "size": "16px"
         },
         {
-          "slug": "70",
-          "name": "Space 18",
-          "size": "18px"
-        },
-        {
           "slug": "80",
-          "name": "Space 20",
-          "size": "20px"
+          "name": "Space 28",
+          "size": "28px"
         }
       ]
     },
@@ -636,22 +636,22 @@
       },
       "presetTokens": {
         "fontSizes": {
-          "small": "mm-size-15",
+          "small": "mm-size-11",
           "regular": "mm-size-16",
-          "large": "mm-lead-m",
-          "x-large": "mm-size-22",
-          "xx-large": "mm-size-24",
-          "hero": "mm-size-28"
+          "large": "mm-size-14",
+          "x-large": "mm-size-15",
+          "xx-large": "mm-lead-m",
+          "hero": "mm-h1-d"
         },
         "spacing": {
-          "10": "mm-space-6",
-          "20": "mm-space-8",
-          "30": "mm-space-10",
-          "40": "mm-space-12",
-          "50": "mm-space-14",
-          "60": "mm-space-16",
-          "70": "mm-space-18",
-          "80": "mm-space-20"
+          "10": "mm-space-2",
+          "20": "mm-space-6",
+          "30": "mm-space-8",
+          "40": "mm-space-10",
+          "50": "mm-space-12",
+          "60": "mm-space-14",
+          "70": "mm-space-16",
+          "80": "mm-space-28"
         }
       },
       "defaultTokens": [
