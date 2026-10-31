@@ -13,6 +13,7 @@ namespace SGS\Blocks\Forms;
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/field-name-scope.php';
+require_once dirname( __DIR__ ) . '/helpers-inline-formats.php';
 
 /**
  * Open a form field wrapper div.
