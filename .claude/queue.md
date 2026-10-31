@@ -80,3 +80,4 @@ The signal between parallel sessions working the cloning tool plan (`.claude/pla
 - 2026-10-30 S reseed-end (exit 0; identity facts 30893 code + 4 live rows from main a4cb93ea2, restoring the table an audit's stage-14 run had written from an older extractor; no unexpected seed-history change)
 - 2026-10-31 S reseed-start (sgs-update-v2.py from main: the rich-text slice 3 changed sgs/cart and other blocks' printed markup)
 - 2026-10-31 S reseed-end (see the commit)
+- 2026-10-31 S intake-start indus-foods,mamas-munches-redesign,eye-care-ward-end (sequential full intakes --record on main 360bfe5b5: F1 matcher, F3/F4/F5, rich text, both identity audits)
