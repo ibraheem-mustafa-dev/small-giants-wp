@@ -23,6 +23,7 @@ import {
 	ADD_TO_BASKET_BUTTON_SELECTOR,
 	BUY_NOW_BUTTON_SELECTOR,
 	SELECTED_CLASS,
+	QUESTION_SELECTOR,
 	CONTINUE_HINT_SELECTOR,
 	STEP_CHANGE_EVENT,
 } from './flow-constants.js';
@@ -33,6 +34,7 @@ import { refreshPricePanel } from './pricing.js';
 import { updateSkipVisibility } from './flow-skip.js';
 import { flowState } from './flow-persistence.js';
 import { announceStep, moveFocusToStep } from './flow-a11y.js';
+import { chosenButtons, questionLimits, meetsLeast } from './flow-multi.js';
 
 /**
  * Get this flow's `.sgs-form-step` children in DOM order.
@@ -97,7 +99,8 @@ export function updateFooterActions( flowRoot, targetStepEl ) {
 			buyNowBtn.hidden = true;
 		}
 		if ( continueBtn ) {
-			continueBtn.hidden = 'tap' === advanceModeOf( flowRoot );
+			// A multi-answer question needs Continue even in 'tap' advanceMode.
+			continueBtn.hidden = 'tap' === advanceModeOf( flowRoot ) && ! ( targetStepEl && targetStepEl.querySelector( '[data-answers-max]' ) );
 			if ( ! continueBtn.hidden && targetStepEl ) {
 				updateContinueState( flowRoot, targetStepEl );
 			}
@@ -160,7 +163,9 @@ export function updateContinueState( flowRoot, stepEl ) {
 	if ( ! continueBtn ) {
 		return;
 	}
-	const hasSelection = !! stepEl.querySelector( `.${ SELECTED_CLASS }` );
+	const selectedEl = stepEl.querySelector( `.${ SELECTED_CLASS }` );
+	// FR-43-27: a multi-answer question is ready once its least is chosen.
+	const hasSelection = !! selectedEl && meetsLeast( chosenButtons( selectedEl ).length, questionLimits( selectedEl.closest( QUESTION_SELECTOR ) ).min );
 	continueBtn.classList.toggle( 'is-muted', ! hasSelection );
 	continueBtn.setAttribute( 'aria-disabled', hasSelection ? 'false' : 'true' );
 }

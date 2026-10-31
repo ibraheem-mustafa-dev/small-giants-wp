@@ -19,6 +19,8 @@ import { refreshPricePanel } from './pricing.js';
 import { getSteps, updateContinueState, showContinueHint, hideContinueHint, advanceModeOf } from './flow-steps.js';
 import { flowState, ensureNavigationState, persistFlowState } from './flow-persistence.js';
 import { recordOptionAnswer, commitStepRouting, routesToQuestionStep } from './flow-routing.js';
+import { QUESTION_SELECTOR } from './flow-constants.js';
+import { isMultiQuestion, questionLimits, chosenButtons, routingButton, toggleMultiOption, meetsLeast } from './flow-multi.js';
 
 /** How long after a 'pick' advance option clicks are ignored (a double tap's second half). */
 const PICK_SETTLE_MS = 400;
@@ -70,6 +72,17 @@ export function handleOptionClick( buttonEl ) {
 	}
 
 	ensureNavigationState( flowRoot );
+
+	// FR-43-27: a multi-answer question toggles its options and waits for Continue in every advanceMode.
+	if ( isMultiQuestion( buttonEl.closest( QUESTION_SELECTOR ) ) ) {
+		if ( toggleMultiOption( buttonEl ) ) {
+			recordOptionAnswer( flowRoot, buttonEl, currentIndex );
+			updateContinueState( flowRoot, currentStepEl );
+			hideContinueHint( flowRoot );
+		}
+		return;
+	}
+
 	recordOptionAnswer( flowRoot, buttonEl, currentIndex );
 
 	if ( 'tap' === advanceModeOf( flowRoot ) ) {
@@ -114,7 +127,17 @@ export function handleContinueClick( buttonEl ) {
 	}
 	const currentIndex = steps.indexOf( currentStepEl );
 
-	const selectedButtonEl = currentStepEl.querySelector( `.${ SELECTED_CLASS }` );
+	let selectedButtonEl = currentStepEl.querySelector( `.${ SELECTED_CLASS }` );
+	if ( selectedButtonEl ) {
+		// FR-43-27: a multi-answer question needs its least, then routes by its first routed pick.
+		const chosen = chosenButtons( selectedButtonEl );
+		const { min } = questionLimits( selectedButtonEl.closest( QUESTION_SELECTOR ) );
+		if ( ! meetsLeast( chosen.length, min ) ) {
+			showContinueHint( flowRoot );
+			return;
+		}
+		selectedButtonEl = routingButton( chosen );
+	}
 	if ( ! selectedButtonEl ) {
 		showContinueHint( flowRoot );
 		return;

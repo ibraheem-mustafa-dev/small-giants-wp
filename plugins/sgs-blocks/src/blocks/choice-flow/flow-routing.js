@@ -16,6 +16,7 @@ import { recordPlainAnswer } from './flow-fields.js';
 import { handleProductOptionClick } from './variation.js';
 import { STEP_SELECTOR, RESULT_SELECTOR, OPTIONS_GROUP_SELECTOR, DEFAULT_OPTION_SELECTOR, TERMINAL_SENTINEL, QUESTION_SELECTOR } from './flow-constants.js';
 import { getSteps, advanceModeOf } from './flow-steps.js';
+import { chosenButtons } from './flow-multi.js';
 import { showStep } from './flow-inline.js';
 import { ensureNavigationState, persistFlowState } from './flow-persistence.js';
 
@@ -167,12 +168,14 @@ export function commitStepRouting( flowRoot, buttonEl, currentIndex ) {
 	const steps = getSteps( flowRoot );
 	const instanceState = ensureNavigationState( flowRoot );
 
-	const rawTags = buttonEl.getAttribute( 'data-tags' ) || '';
-	rawTags
-		.split( ',' )
-		.map( ( tag ) => tag.trim() )
-		.filter( Boolean )
-		.forEach( ( tag ) => instanceState.tags.add( tag ) );
+	// FR-43-27: every chosen answer of a multi-answer question contributes its tags.
+	chosenButtons( buttonEl ).forEach( ( chosenEl ) => {
+		( chosenEl.getAttribute( 'data-tags' ) || '' )
+			.split( ',' )
+			.map( ( tag ) => tag.trim() )
+			.filter( Boolean )
+			.forEach( ( tag ) => instanceState.tags.add( tag ) );
+	} );
 
 	if ( buttonEl.hasAttribute( 'data-add-to-bag-now' ) ) {
 		resetAddonAnswers( flowRoot );
@@ -211,7 +214,7 @@ export function applyDefaultAnswers( flowRoot ) {
 	}
 	const steps = getSteps( flowRoot );
 	flowRoot.querySelectorAll( DEFAULT_OPTION_SELECTOR ).forEach( ( buttonEl ) => {
-		buttonEl.setAttribute( 'aria-pressed', 'true' );
+		buttonEl.setAttribute( buttonEl.hasAttribute( 'aria-checked' ) ? 'aria-checked' : 'aria-pressed', 'true' );
 		const stepEl = buttonEl.closest( STEP_SELECTOR );
 		const stepIndex = stepEl ? steps.indexOf( stepEl ) : -1;
 		if ( stepIndex !== -1 ) {

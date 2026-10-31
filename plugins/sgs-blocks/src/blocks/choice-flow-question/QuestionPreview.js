@@ -12,6 +12,7 @@
  * @package SGS\Blocks
  */
 
+import { __, sprintf } from '@wordpress/i18n';
 import { useSettings } from '@wordpress/block-editor';
 import { textPaintPreview, typographyPreviewCss, usePreviewTier } from '../../utils';
 
@@ -25,7 +26,8 @@ const INTRO_WIDTHS = [ '52', '56', '58', '60', '64', 'none' ];
  * @return {JSX.Element} The heading and intro preview.
  */
 export default function QuestionPreview( { attributes } ) {
-	const { question, intro, questionFontWeight, introWidth } = attributes;
+	const { question, intro, questionFontWeight, introWidth, answersMin, answersMax, priceGroup, productAttribute } = attributes;
+	const multi = ! priceGroup && ! productAttribute && answersMax > 1;
 	const weight = TITLE_WEIGHTS.includes( questionFontWeight ) ? questionFontWeight : '700';
 	const introText = ( intro || '' ).trim();
 	const introClass = INTRO_WIDTHS.includes( introWidth )
@@ -40,6 +42,16 @@ export default function QuestionPreview( { attributes } ) {
 				</h3>
 			) }
 			{ introText && <AuthoredText as="p" className={ `sgs-choice-flow-question__intro${ introClass }` } value={ introText } /> }
+			{ multi && (
+				<p className="sgs-choice-flow-question__limit-message">
+					{ sprintf(
+						/* translators: 1: the fewest answers, 2: the most answers */
+						__( 'Shoppers pick %1$d to %2$d answers.', 'sgs-blocks' ),
+						Math.min( answersMin || 1, answersMax ),
+						answersMax
+					) }
+				</p>
+			) }
 		</>
 	);
 }

@@ -131,7 +131,7 @@ sgs-blocks/
 │   │   ├── form-field-textarea/  # Multi-line text input
 │   │   ├── form-field-tiles/     # Visual tile selection with icons
 │   │   ├── choice-flow/          # Branching step-by-step quiz that ends in a result
-│   │   ├── choice-flow-question/ # Multiple-choice question step (parent: sgs/form-step)
+│   │   ├── choice-flow-question/ # Multiple-choice question step (parent: sgs/form-step); answersMin/answersMax let a plain question take 1 to N answers (Spec 43 FR-43-27)
 │   │   ├── choice-flow-result/   # Recommendation terminal of a choice flow (parent: sgs/form-step)
 │   │   └── extensions/           # Not a block (no block.json): editor extensions applied to many blocks
 │   │       ├── motion/               # The sgsMotion support: Entrance, Hover and Effects panels (Spec 38A)

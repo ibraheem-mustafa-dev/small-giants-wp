@@ -67,7 +67,60 @@ if ( ! function_exists( 'sgs_choice_flow_question_data_attrs' ) ) {
 		if ( ! empty( $attributes['showNextStepInline'] ) ) {
 			$out['data-inline-next'] = '1';
 		}
+		// FR-43-27: a plain question that takes more than one answer (src/blocks/choice-flow/flow-multi.js).
+		$limits = sgs_choice_flow_question_answer_limits( $attributes );
+		if ( $limits['max'] > 1 ) {
+			$out['data-answers-min'] = (string) $limits['min'];
+			$out['data-answers-max'] = (string) $limits['max'];
+		}
 		return $out;
+	}
+}
+
+if ( ! function_exists( 'sgs_choice_flow_question_answer_limits' ) ) {
+	/**
+	 * FR-43-27: the least and most answers a question takes. 1 and 1 (one answer, as always) unless the
+	 * question is plain: a priced add-on step (`priceGroup`) or a product-option step (`productAttribute`)
+	 * resolves one answer. The most is capped at 12 and the least sits between 1 and the most.
+	 *
+	 * @param array $attributes The question block's attributes.
+	 * @return array{min:int,max:int} The limits.
+	 */
+	function sgs_choice_flow_question_answer_limits( array $attributes ): array {
+		$priced = '' !== trim( (string) ( $attributes['priceGroup'] ?? '' ) ) || '' !== trim( (string) ( $attributes['productAttribute'] ?? '' ) );
+		$max    = (int) ( $attributes['answersMax'] ?? 1 );
+		if ( $priced || $max < 2 ) {
+			return array(
+				'min' => 1,
+				'max' => 1,
+			);
+		}
+		$max = min( $max, 12 );
+		return array(
+			'min' => max( 1, min( (int) ( $attributes['answersMin'] ?? 1 ), $max ) ),
+			'max' => $max,
+		);
+	}
+}
+
+if ( ! function_exists( 'sgs_choice_flow_question_limit_message_html' ) ) {
+	/**
+	 * FR-43-27: the polite live region that names the limit when a pick past the most is refused.
+	 * Empty on a default question.
+	 *
+	 * @param array $limits From sgs_choice_flow_question_answer_limits().
+	 * @return string Escaped markup, or ''.
+	 */
+	function sgs_choice_flow_question_limit_message_html( array $limits ): string {
+		if ( $limits['max'] < 2 ) {
+			return '';
+		}
+		$message = sprintf(
+			/* translators: %d: the most answers this question takes */
+			_n( 'You can pick up to %d answer. Deselect one to choose another.', 'You can pick up to %d answers. Deselect one to choose another.', $limits['max'], 'sgs-blocks' ),
+			$limits['max']
+		);
+		return '<p class="sgs-choice-flow-question__limit-message" role="status" aria-live="polite" data-message="' . esc_attr( $message ) . '"></p>';
 	}
 }
 

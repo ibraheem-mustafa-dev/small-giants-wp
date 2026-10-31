@@ -149,6 +149,20 @@
 			"default": "",
 			"description": "Spec 43 Phase 3/4 (FR-43-10/10a): a `pa_*` taxonomy on the flow's own product. When set, this step is a product-option step — its options are generated from the product's attribute terms at render time (not typed), and it can't be combined with `priceGroup` (the editor clears `priceGroup` when this is chosen). Empty string = not a product-option step."
 		},
+		"answersMin": {
+			"type": "integer",
+			"default": 1,
+			"minimum": 1,
+			"maximum": 12,
+			"description": "FR-43-27: the least answers a shopper must pick before Continue is enabled. Only read on a plain question (no priceGroup, no productAttribute) whose answersMax is above 1."
+		},
+		"answersMax": {
+			"type": "integer",
+			"default": 1,
+			"minimum": 1,
+			"maximum": 12,
+			"description": "FR-43-27: the most answers a shopper may pick. 1 (the default) is a single-choice question; above 1 the options act as toggles and a pick past the most is refused with a live-region message. The chosen labels travel as one FR-43-21 cart-line row. Ignored on a priced add-on or product-option step."
+		},
 		"questionFontWeight": {
 			"type": "string",
 			"enum": [ "400", "500", "600", "700", "800" ],
