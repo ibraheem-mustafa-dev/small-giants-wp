@@ -81,3 +81,6 @@ The signal between parallel sessions working the cloning tool plan (`.claude/pla
 - 2026-10-31 S reseed-start (sgs-update-v2.py from main: the rich-text slice 3 changed sgs/cart and other blocks' printed markup)
 - 2026-10-31 S reseed-end (see the commit)
 - 2026-10-31 S intake-start indus-foods,mamas-munches-redesign,eye-care-ward-end (sequential full intakes --record on main 360bfe5b5: F1 matcher, F3/F4/F5, rich text, both identity audits)
+- 2026-10-31 S intake-end indus-foods,mamas-munches-redesign,eye-care-ward-end (exit 0 each: Mama's 12 min, Eye Care 55, Indus 57; census pass)
+- 2026-10-31 S reseed-start (sgs-update-v2.py from main 72548bb4b: rich-text slice 4's printed markup)
+- 2026-10-31 S reseed-end (exit 0; identity and schema drift clean)
