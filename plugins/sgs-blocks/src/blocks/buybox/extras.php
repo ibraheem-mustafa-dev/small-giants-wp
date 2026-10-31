@@ -147,7 +147,7 @@ if ( ! function_exists( 'sgs_buybox_sticky_bar_html' ) ) {
 			esc_html( $price_display ),
 			esc_html( implode( ' / ', array_filter( $parts ) ) ),
 			esc_attr( $button_classes ),
-			esc_html( $label )
+			sgs_rich_text_kses( $label, false )
 		);
 	}
 }

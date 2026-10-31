@@ -16,15 +16,11 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import {
-	PanelBody,
-	SelectControl,
-	RangeControl,
-	TextControl,
-} from '@wordpress/components';
+import { PanelBody, SelectControl, RangeControl } from '@wordpress/components';
 import HandpickedPanel from './handpicked-panel';
 import CategoryPanel from './category-panel';
 
+import SgsFreeTextField from '../../../components/SgsFreeTextField';
 /** Maximum result count enforced server-side (CPT_Collection_Query::MAX_COUNT). */
 const MAX_COUNT = 24;
 
@@ -129,7 +125,7 @@ export default function CollectionPanel( { attributes, setAttributes } ) {
 					/>
 				) }
 
-				<TextControl
+				<SgsFreeTextField type="rich"
 					label={ __( 'Empty state message', 'sgs-blocks' ) }
 					help={ __(
 						'Shown on the live site when nothing matches. Leave empty to show nothing; the editor shows a notice instead.',
@@ -137,8 +133,6 @@ export default function CollectionPanel( { attributes, setAttributes } ) {
 					) }
 					value={ emptyMessage || '' }
 					onChange={ ( v ) => setAttributes( { emptyMessage: v } ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
 				/>
 			</PanelBody>
 		</>

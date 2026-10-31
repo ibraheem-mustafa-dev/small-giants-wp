@@ -97,7 +97,7 @@ if ( ! $product instanceof \WC_Product ) {
 
 if ( ! $product->is_type( 'variable' ) ) {
 	// A linked customisation flow (FR-43-25) replaces core's Add to Cart.
-	$buybox_simple_flow = sgs_buybox_simple_linked_flow_html( $buybox_post_id, sanitize_text_field( (string) ( $attributes['addToCartLabel'] ?? '' ) ) );
+	$buybox_simple_flow = sgs_buybox_simple_linked_flow_html( $buybox_post_id, (string) ( $attributes['addToCartLabel'] ?? '' ) );
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo '' !== $buybox_simple_flow ? $buybox_simple_flow : do_blocks( $buybox_core_fallback );
 	return;
@@ -182,7 +182,7 @@ $buybox_rrp_show_price = (bool) ( $attributes['rrpShowPrice'] ?? false );
 // FR-Wave-B: stock-status indicator (extras.php) — SSR-only, default combo.
 // Existing $stock_text/hidden behaviour is untouched unless showStockStatus is on.
 $buybox_show_stock_status = (bool) ( $attributes['showStockStatus'] ?? false );
-$buybox_stock_in_label    = sanitize_text_field( (string) ( $attributes['stockInStockLabel'] ?? '' ) );
+$buybox_stock_in_label    = (string) ( $attributes['stockInStockLabel'] ?? '' );
 $buybox_stock_status      = sgs_buybox_stock_status( (int) $def['variationId'], (bool) $def['inStock'], $stock_text, $buybox_stock_in_label );
 
 // Computed early (ahead of $wrapper_attrs below, which embeds the
@@ -196,7 +196,7 @@ $buybox_picker_term_label_map      = $buybox_picker_show_selected_value ? sgs_bu
 // section below needs to know whether the shared '.sgs-buybox__picker-label-row'
 // markup is needed at all, for EITHER F1 or F2).
 $buybox_picker_link_axis = sanitize_key( (string) ( $attributes['pickerLabelLinkAxis'] ?? '' ) );
-$buybox_picker_link_text = sanitize_text_field( (string) ( $attributes['pickerLabelLinkText'] ?? '' ) );
+$buybox_picker_link_text = (string) ( $attributes['pickerLabelLinkText'] ?? '' );
 $buybox_picker_link_url  = esc_url_raw( (string) ( $attributes['pickerLabelLinkUrl'] ?? '' ) );
 $buybox_picker_has_link  = '' !== $buybox_picker_link_axis && '' !== $buybox_picker_link_text && '' !== $buybox_picker_link_url;
 
@@ -465,8 +465,8 @@ $product_permalink = esc_url( get_permalink( $buybox_post_id ) );
 
 // CTA label.
 $add_to_cart_label_raw = $attributes['addToCartLabel'] ?? '';
-$add_to_cart_label     = '' !== sanitize_text_field( $add_to_cart_label_raw )
-	? sanitize_text_field( $add_to_cart_label_raw )
+$add_to_cart_label     = '' !== trim( sgs_authored_text_plain( $add_to_cart_label_raw ) )
+	? (string) $add_to_cart_label_raw
 	: __( 'Add to Cart', 'sgs-blocks' );
 
 // Spec 43 Phase 3/4 §5a — the button either adds to the cart (default) or
@@ -980,7 +980,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 		role="status"
 		aria-live="polite"
 	>
-		<span class="buybox__stock-dot" aria-hidden="true"></span><?php echo esc_html( $buybox_stock_status['label'] ); ?>
+		<span class="buybox__stock-dot" aria-hidden="true"></span><?php echo sgs_rich_text_kses( (string) $buybox_stock_status['label'], false ); ?>
 	</p>
 	<?php else : ?>
 	<p
@@ -1205,7 +1205,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 						'<div class="sgs-buybox__picker-label-row"><span class="sgs-buybox__picker-label-text">%s</span><a class="sgs-buybox__picker-label-link" href="%s">%s</a></div>',
 						esc_html( $axis['label'] ),
 						esc_url( $buybox_picker_link_url ),
-						esc_html( $buybox_picker_link_text )
+						sgs_rich_text_kses( $buybox_picker_link_text, false )
 					);
 				} else {
 					$buybox_axis_default_slug  = (string) ( $manifest['defaultAxes'][ $buybox_axis_taxonomy ] ?? '' );
@@ -1268,8 +1268,8 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 	// on the outer wrapper (pure read of existing context — no new store state).
 	$notify_enabled = (bool) ( $attributes['notifyEnabled'] ?? true );
 	if ( $notify_enabled ) {
-		$notify_me_label = sanitize_text_field( $attributes['notifyMeLabel'] ?? __( 'Notify me', 'sgs-blocks' ) );
-		if ( '' === $notify_me_label ) {
+		$notify_me_label = (string) ( $attributes['notifyMeLabel'] ?? __( 'Notify me', 'sgs-blocks' ) );
+		if ( '' === trim( sgs_authored_text_plain( $notify_me_label ) ) ) {
 			$notify_me_label = __( 'Notify me', 'sgs-blocks' );
 		}
 		// Enqueue Turnstile script when configured.
@@ -1336,7 +1336,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 				<?php if ( $add_to_cart_show_icon ) : ?>
 				<svg class="buybox__cart-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
 				<?php endif; ?>
-				<span class="buybox__cart-label"><?php echo esc_html( $add_to_cart_label ); ?></span>
+				<span class="buybox__cart-label"><?php echo sgs_rich_text_kses( $add_to_cart_label, false ); ?></span>
 			</span>
 				<?php
 				// Bound directly to the SAME context.priceDisplay path the price row
@@ -1349,7 +1349,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 				<?php if ( $add_to_cart_show_icon ) : ?>
 			<svg class="buybox__cart-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
 				<?php endif; ?>
-			<span class="buybox__cart-label"><?php echo esc_html( $add_to_cart_label ); ?></span>
+			<span class="buybox__cart-label"><?php echo sgs_rich_text_kses( $add_to_cart_label, false ); ?></span>
 			<?php endif; ?>
 		</button>
 	</form>

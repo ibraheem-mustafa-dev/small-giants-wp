@@ -83,6 +83,18 @@ if ( ! function_exists( 'sgs_authored_text_plain' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_rich_text_sanitise_param' ) ) {
+	/**
+	 * A REST argument sanitiser for typed rich text that prints inside a link or button: the sanitised markup, no link.
+	 *
+	 * @param mixed $value The request value.
+	 * @return string Sanitised markup.
+	 */
+	function sgs_rich_text_sanitise_param( $value ): string {
+		return sgs_rich_text_kses( $value, false );
+	}
+}
+
 if ( ! function_exists( 'sgs_inline_format_palette_css' ) ) {
 	/**
 	 * The highlight colour rule for each palette slug that is safe in a selector.

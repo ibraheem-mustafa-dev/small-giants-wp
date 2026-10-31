@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, useInnerBlocksProps, InspectorControls, useSettings } from '@wordpress/block-editor';
-import { TextControl, PanelBody } from '@wordpress/components';
+import { PanelBody } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 // WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
@@ -11,6 +11,7 @@ import { SgsColourPanel, fillRow, textRow,
 import { usePreviewTier } from '../../utils';
 import { buildTabPreview } from './preview-style';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const { label, backgroundColour, backgroundColourGradient } = attributes;
 
@@ -158,13 +159,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			{ /* Width / spacing (WS-4 container wrapper) */ }
 			<InspectorControls>
 				<PanelBody title={ __( 'Tab Settings', 'sgs-blocks' ) } initialOpen={ true }>
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Tab label', 'sgs-blocks' ) }
 						value={ label }
 						onChange={ ( val ) => setAttributes( { label: val } ) }
 						help={ __( 'Label shown on the tab button.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 				</PanelBody>
 				<ContainerWrapperControls
@@ -201,12 +200,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 			<div { ...blockProps }>
 				<div className="sgs-tab__label-control">
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Tab label', 'sgs-blocks' ) }
 						value={ label }
 						onChange={ ( val ) => setAttributes( { label: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 				</div>
 				<div { ...innerBlocksProps } />

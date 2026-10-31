@@ -7,6 +7,7 @@
  *
  * @package SGS\Blocks
  */
+import { appendAuthoredText } from '../../utils/authored-text-dom';
 
 const KEY_PREFIX = 'sgs-form-progress';
 
@@ -149,7 +150,7 @@ function markSaved( formRoot ) {
 	const text = formRoot.querySelector( '.sgs-form__saved-text' );
 	const done = text ? text.getAttribute( 'data-saved-label' ) : null;
 	if ( text && done ) {
-		text.textContent = done;
+		appendAuthoredText( text, done, { links: false } );
 	}
 }
 

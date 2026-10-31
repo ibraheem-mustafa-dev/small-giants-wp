@@ -13,9 +13,10 @@
 
 import { __ } from '@wordpress/i18n';
 import { InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
-import { PanelBody, ToggleControl, TextControl, Button } from '@wordpress/components';
+import { PanelBody, ToggleControl, Button } from '@wordpress/components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
  * @param {Object}   o
  * @param {Object}   o.attributes    Block attributes.
@@ -78,13 +79,11 @@ export default function ChromePanel( { attributes, setAttributes } ) {
 								) }
 							/>
 						</MediaUploadCheck>
-						<TextControl
+						<SgsFreeTextField type="rich" noLink
 							label={ __( 'Close button label', 'sgs-blocks' ) }
 							value={ closeLabel }
 							onChange={ ( val ) => setAttributes( { closeLabel: val } ) }
 							help={ __( 'Shown as visible text next to a decorative ×.', 'sgs-blocks' ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
 						/>
 						<ToggleGroupControl
 							label={ __( 'Close button', 'sgs-blocks' ) }

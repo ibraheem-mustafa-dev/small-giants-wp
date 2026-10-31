@@ -16,6 +16,7 @@ import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
 import { FlexWrapControl } from '../../components';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
  * @param {Object}   o
  * @param {Object}   o.attributes    Block attributes.
@@ -45,12 +46,10 @@ export default function FlowNavigationPanel( { attributes, setAttributes } ) {
 					__next40pxDefaultSize
 				/>
 				{ 'tap' !== ( advanceMode || 'continue' ) && (
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Continue button label', 'sgs-blocks' ) }
 						value={ continueLabel }
 						onChange={ ( val ) => setAttributes( { continueLabel: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 				) }
 				<TextControl

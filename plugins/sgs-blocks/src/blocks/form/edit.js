@@ -5,13 +5,7 @@ import {
 	InspectorControls,
 	useSettings,
 } from '@wordpress/block-editor';
-import {
-	PanelBody,
-	TextControl,
-	TextareaControl,
-	SelectControl,
-	ToggleControl,
-} from '@wordpress/components';
+import { PanelBody, TextControl, SelectControl, ToggleControl } from '@wordpress/components';
 import { useEffect } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, FlexWrapControl } from '../../components';
@@ -40,6 +34,8 @@ import SavedProgressPanel from './SavedProgressPanel';
 import ButtonLabelControls from './ButtonLabelControls';
 import { submitShadowPreviewStyle, submitLiftPreviewRule } from './submit-motion-preview';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
+import AuthoredText from '../../components/AuthoredText';
 const SUBMIT_ALIGN_OPTIONS = [
 	{ label: __( 'Right (default)', 'sgs-blocks' ), value: '' },
 	{ label: __( 'Left', 'sgs-blocks' ), value: 'start' },
@@ -730,14 +726,12 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Submission', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<TextareaControl
+					<SgsFreeTextField type="rich" multiline
 						label={ __( 'Success Message', 'sgs-blocks' ) }
 						value={ successMessage }
 						onChange={ ( value ) =>
 							setAttributes( { successMessage: value } )
 						}
-						rows={ 3 }
-						__nextHasNoMarginBottom
 					/>
 					{ /* Spec 35 §2 LINK standard — replaces the superseded inline
 					   `SgsLinkControl` mount. `successRedirect` is a plain
@@ -1379,7 +1373,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						className="sgs-form__button sgs-form__button--prev"
 						style={ prevButtonStyle }
 					>
-						{ attributes.prevLabel || __( 'Previous', 'sgs-blocks' ) }
+						<AuthoredText value={ attributes.prevLabel || __( 'Previous', 'sgs-blocks' ) } />
 					</button>
 					{ ! ownSubmit && (
 						<button
@@ -1387,7 +1381,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 							className={ `sgs-form__button sgs-form__button--submit sgs-form__button--${ submitStyle }` }
 							style={ submitButtonStyle }
 						>
-							{ submitLabel || __( 'Submit', 'sgs-blocks' ) }
+							<AuthoredText value={ submitLabel || __( 'Submit', 'sgs-blocks' ) } />
 						</button>
 					) }
 				</div>

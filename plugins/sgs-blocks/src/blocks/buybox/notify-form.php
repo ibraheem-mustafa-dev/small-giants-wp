@@ -29,7 +29,7 @@ $notify_consent_id = 'sgs-notify-consent-' . \absint( $buybox_post_id );
 	data-wp-bind--hidden="context.inStock"
 >
 	<p class="sgs-buybox__notify-heading">
-		<?php echo \esc_html( $notify_me_label ); ?>
+		<?php echo sgs_rich_text_kses( $notify_me_label, false ); ?>
 	</p>
 
 	<form
@@ -83,7 +83,7 @@ $notify_consent_id = 'sgs-notify-consent-' . \absint( $buybox_post_id );
 		?>
 
 		<button type="submit" class="wp-element-button sgs-buybox__notify-submit">
-			<?php echo \esc_html( $notify_me_label ); ?>
+			<?php echo sgs_rich_text_kses( $notify_me_label, false ); ?>
 		</button>
 
 		<p

@@ -22,6 +22,8 @@ import { dimensionPaths } from '../../utils/diagram-geometry';
 import { clampPct, dotRadius, drawingBox, lockedEndpoints } from '../measured-diagram/drawing-box';
 import LinePanel from './line-panel';
 
+import AuthoredText from '../../components/AuthoredText';
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 const round1 = ( n ) => Math.round( n * 10 ) / 10;
 
 
@@ -177,13 +179,11 @@ export default function Edit( { attributes, setAttributes, context, isSelected }
 		<>
 			<InspectorControls>
 				<PanelBody title={ __( 'Measurement', 'sgs-blocks' ) }>
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Caption', 'sgs-blocks' ) }
 						help={ __( 'What is measured, e.g. "Lens width".', 'sgs-blocks' ) }
 						value={ caption || '' }
 						onChange={ ( v ) => setAttributes( { caption: v } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Value', 'sgs-blocks' ) }
@@ -299,7 +299,7 @@ export default function Edit( { attributes, setAttributes, context, isSelected }
 				<span className="sgs-diagram-dimension__number" aria-hidden="true" />
 				<span className="sgs-diagram-dimension__label" style={ { left: `${ lx }%`, top: `${ ly }%` } }>
 					<span className={ caption ? 'sgs-diagram-dimension__caption' : 'sgs-diagram-dimension__caption is-placeholder' }>
-						{ caption || __( 'Caption', 'sgs-blocks' ) }
+						<AuthoredText value={ caption || __( 'Caption', 'sgs-blocks' ) } />
 					</span>{ ' ' }
 					<span className={ shownValue ? 'sgs-diagram-dimension__value' : 'sgs-diagram-dimension__value is-placeholder' }>
 						{ shownValue || __( 'Value', 'sgs-blocks' ) }

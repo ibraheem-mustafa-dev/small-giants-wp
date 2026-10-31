@@ -36,7 +36,7 @@ export default function QuestionPreview( { attributes } ) {
 		<>
 			{ question && (
 				<h3 className={ `sgs-choice-flow-question__title sgs-choice-flow-question__title--w${ weight }` }>
-					{ question }
+					<AuthoredText value={ question } />
 				</h3>
 			) }
 			{ introText && <AuthoredText as="p" className={ `sgs-choice-flow-question__intro${ introClass }` } value={ introText } /> }

@@ -135,6 +135,9 @@ export function initPanel( panelRoot, { onCartUpdated, freeDelivery } = {} ) {
 		itemsEl.innerHTML = cart.items
 			.map( ( item ) => itemRowHtml( item, cart.totals, itemOpts ) )
 			.join( '' );
+		itemsEl.querySelectorAll( '[data-sgs-rich-remove]' ).forEach( ( slot ) => {
+			appendAuthoredText( slot, itemOpts.removeLabel || 'Remove', { links: false } );
+		} );
 
 		if ( subtotalEl ) {
 			subtotalEl.textContent = formatMoney(

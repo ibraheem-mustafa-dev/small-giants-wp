@@ -192,7 +192,6 @@ $context = array(
 	'submitting'      => false,
 	'submitted'       => false,
 	'errorMessage'    => '',
-	'successMessage'  => $success_message,
 	'successRedirect' => $success_redirect,
 );
 
@@ -702,7 +701,7 @@ if ( $sgs_form_saved_on ) :
 	?>
 <p class="sgs-form__saved-notice">
 	<span class="sgs-form__saved-dot" aria-hidden="true"></span>
-	<span class="sgs-form__saved-text" role="status" data-saved-label="<?php echo esc_attr( $sgs_form_saved_done_label ); ?>"><?php echo esc_html( $sgs_form_saved_label ); ?></span>
+	<span class="sgs-form__saved-text" role="status" data-saved-label="<?php echo esc_attr( sgs_rich_text_kses( $sgs_form_saved_done_label, false ) ); ?>"><?php echo sgs_rich_text_kses( $sgs_form_saved_label, false ); ?></span>
 </p>
 	<?php
 endif;
@@ -784,7 +783,7 @@ $sgs_form_label_attr = '' !== $sgs_form_label
 				data-wp-on--click="actions.prevStep"
 				data-wp-bind--hidden="state.isFirstStep"
 			>
-				<?php echo esc_html( is_string( $attributes['prevLabel'] ?? null ) && '' !== trim( $attributes['prevLabel'] ) ? $attributes['prevLabel'] : __( 'Previous', 'sgs-blocks' ) ); ?>
+				<?php echo sgs_rich_text_kses( is_string( $attributes['prevLabel'] ?? null ) && '' !== trim( $attributes['prevLabel'] ) ? $attributes['prevLabel'] : __( 'Previous', 'sgs-blocks' ), false ); ?>
 			</button>
 
 			<button
@@ -793,7 +792,7 @@ $sgs_form_label_attr = '' !== $sgs_form_label
 				data-wp-on--click="actions.nextStep"
 				data-wp-bind--hidden="state.isLastStep"
 			>
-				<?php echo esc_html( is_string( $attributes['nextLabel'] ?? null ) && '' !== trim( $attributes['nextLabel'] ) ? $attributes['nextLabel'] : __( 'Next', 'sgs-blocks' ) ); ?>
+				<?php echo sgs_rich_text_kses( is_string( $attributes['nextLabel'] ?? null ) && '' !== trim( $attributes['nextLabel'] ) ? $attributes['nextLabel'] : __( 'Next', 'sgs-blocks' ), false ); ?>
 			</button>
 		<?php endif; ?>
 
@@ -806,7 +805,7 @@ $sgs_form_label_attr = '' !== $sgs_form_label
 				data-wp-bind--hidden="!state.isLastStep"
 			<?php endif; ?>
 		>
-			<?php echo esc_html( $submit_label ); ?>
+			<?php echo sgs_rich_text_kses( (string) $submit_label, false ); ?>
 		</button>
 		<?php endif; ?>
 	</div>
@@ -819,8 +818,7 @@ $sgs_form_label_attr = '' !== $sgs_form_label
 	role="alert"
 	aria-live="polite"
 	data-wp-bind--hidden="!context.submitted"
-	data-wp-text="context.successMessage"
-></div>
+><?php echo sgs_rich_text_kses( (string) $success_message ); ?></div>
 
 <div
 	class="sgs-form__message sgs-form__message--error"

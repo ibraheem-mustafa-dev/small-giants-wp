@@ -147,7 +147,7 @@ function sgs_cart_panel_body_html( array $args ): string {
 	if ( '' !== (string) ( $args['instalments_note'] ?? '' ) ) {
 		$instalments_html = sprintf(
 			'<p class="sgs-cart__panel-note" data-sgs-cart-note data-note-template="%1$s" data-note-count="%2$d" hidden></p>',
-			esc_attr( $args['instalments_note'] ),
+			esc_attr( sgs_rich_text_kses( $args['instalments_note'] ) ), // Markup the view script inserts as DOM nodes.
 			max( 1, absint( $args['instalments_count'] ?? 3 ) )
 		);
 	}
@@ -182,7 +182,7 @@ function sgs_cart_panel_body_html( array $args ): string {
 		$count_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static markup.
 		(string) ( $args['close_html'] ?? '' ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built by sgs_cart_close_button_html().
 		'text' === ( $args['remove_style'] ?? 'icon' ) ? 'text' : 'icon',
-		esc_attr( (string) ( $args['remove_label'] ?? '' ) ),
+		esc_attr( sgs_rich_text_kses( (string) ( $args['remove_label'] ?? '' ), false ) ),
 		! isset( $args['show_qty'] ) || ! empty( $args['show_qty'] ) ? '1' : '0',
 		! isset( $args['show_save'] ) || ! empty( $args['show_save'] ) ? '1' : '0',
 		! empty( $args['show_add_options'] ) ? '1' : '0',

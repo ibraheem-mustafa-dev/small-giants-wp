@@ -23,6 +23,7 @@ import SvgCanvas from './components/SvgCanvas';
 import LottieCanvas from './components/LottieCanvas';
 import VideoCanvas from './components/VideoCanvas';
 
+import AuthoredText from '../../components/AuthoredText';
 /**
  * Playback options (autoplay/loop/muted/controls/plays-inline/lazy-load) are
  * now owned entirely by the `video-behaviour` atom (Wave 5b, 2026-09-01),
@@ -331,7 +332,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				/>
 				{ captionText && (
 					<CaptionTag className="sgs-media__caption" style={ captionStyle }>
-						{ captionText }
+						<AuthoredText value={ captionText } />
 					</CaptionTag>
 				) }
 			</figure>

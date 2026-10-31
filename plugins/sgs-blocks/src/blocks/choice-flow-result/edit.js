@@ -5,6 +5,7 @@ import { NumberControl } from '../../components/primitives';
 import { RICH_TEXT_BODY, RICH_TEXT_FREE_TEXT } from '../../utils/rich-text-formats';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
+import AuthoredText from '../../components/AuthoredText';
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		heading,
@@ -113,19 +114,15 @@ export default function Edit( { attributes, setAttributes } ) {
 							help={ __( 'Maximum submissions accepted per IP address, per hour.', 'sgs-blocks' ) }
 							__next40pxDefaultSize
 						/>
-						<TextControl
+						<SgsFreeTextField type="rich"
 							label={ __( 'Email field label', 'sgs-blocks' ) }
 							value={ emailLabel }
 							onChange={ ( val ) => setAttributes( { emailLabel: val } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
 						/>
-						<TextControl
+						<SgsFreeTextField type="rich" noLink
 							label={ __( 'Submit button label', 'sgs-blocks' ) }
 							value={ submitLabel }
 							onChange={ ( val ) => setAttributes( { submitLabel: val } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
 						/>
 						<SgsFreeTextField type="rich"
 							label={ __( 'Success message', 'sgs-blocks' ) }
@@ -197,7 +194,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ 'email' === action && (
 					<div className="sgs-choice-flow-result__email-form">
 						<label className="sgs-choice-flow-result__email-label" htmlFor="sgs-choice-flow-result-email-preview">
-							{ emailLabel || __( 'Email address', 'sgs-blocks' ) }
+							<AuthoredText value={ emailLabel || __( 'Email address', 'sgs-blocks' ) } />
 						</label>
 						<input
 							type="email"
@@ -207,7 +204,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							placeholder="you@example.com"
 						/>
 						<button type="button" disabled className="sgs-choice-flow-result__email-submit">
-							{ submitLabel || __( 'Submit', 'sgs-blocks' ) }
+							<AuthoredText value={ submitLabel || __( 'Submit', 'sgs-blocks' ) } />
 						</button>
 					</div>
 				) }

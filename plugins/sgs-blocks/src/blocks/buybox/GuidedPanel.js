@@ -3,6 +3,7 @@ import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
 import { fillRow } from '../../components';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
  * "Guided layout" panel for sgs/buybox (Spec 43 FR-43-23, FR-43-25 peripherals).
  *
@@ -76,14 +77,12 @@ export default function GuidedPanel( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
-						<TextControl
+						<SgsFreeTextField type="rich" noLink
 							label={ __( 'Next button label', 'sgs-blocks' ) }
 							value={ guidedNextLabel || '' }
 							placeholder={ __( 'Next', 'sgs-blocks' ) }
 							onChange={ ( val ) => setAttributes( { guidedNextLabel: val } ) }
 							maxLength={ 20 }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
 						/>
 						<SelectControl
 							label={ __( 'Meter style', 'sgs-blocks' ) }

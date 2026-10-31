@@ -262,14 +262,14 @@ if ( ! function_exists( 'sgs_choice_flow_stage_note_html' ) ) {
 
 		if ( '' === $url ) {
 			$class .= '' !== $badge ? ' sgs-choice-flow__summary-note--has-icon' : '';
-			return '<p class="' . esc_attr( $class ) . '">' . $badge . '<span class="sgs-choice-flow__summary-note-text">' . esc_html( $note ) . '</span></p>';
+			return '<p class="' . esc_attr( $class ) . '">' . $badge . '<span class="sgs-choice-flow__summary-note-text">' . sgs_rich_text_kses( $note, false ) . '</span></p>';
 		}
 
 		$class      .= ' sgs-choice-flow__summary-note--link' . ( '' !== $badge ? ' sgs-choice-flow__summary-note--has-icon' : '' );
 		$is_external = 0 === strpos( $url, 'http' ) && false === strpos( $url, (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
 		$out         = '<a class="' . esc_attr( $class ) . '" href="' . esc_url( $url ) . '"' . ( $is_external ? ' target="_blank" rel="noopener"' : '' ) . '>';
 		$out        .= $badge; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed SVG constants.
-		$out        .= '<span class="sgs-choice-flow__summary-note-text">' . esc_html( $note );
+		$out        .= '<span class="sgs-choice-flow__summary-note-text">' . sgs_rich_text_kses( $note, false );
 		if ( '' !== $link_text ) {
 			$out .= '<span class="sgs-choice-flow__summary-note-sub">' . esc_html( $link_text ) . '</span>';
 		}

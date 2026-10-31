@@ -298,7 +298,7 @@ if ( ! function_exists( 'sgs_buybox_guided_render' ) ) {
 					data-guided-next
 					<?php echo ( $first_active >= $total - 1 ) ? 'hidden' : ''; ?>
 					<?php echo ( '' === $groups[ $first_active ]['default_slug'] ) ? 'aria-disabled="true"' : ''; ?>
-				><?php echo esc_html( $next_label ); ?></button>
+				><?php echo sgs_rich_text_kses( (string) $next_label, false ); ?></button>
 			</div>
 
 			<p class="sgs-buybox-guided__status sgs-sr-only" role="status" aria-live="polite" data-guided-status></p>

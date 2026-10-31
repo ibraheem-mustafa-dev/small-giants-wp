@@ -51,6 +51,7 @@ import { typedCardPreview, TypedMediaOverlays, TypedRating, TypedSwatches, attri
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 import { RICH_TEXT_BODY, RICH_TEXT_PLAIN } from '../../utils/rich-text-formats';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 /** Sentinel value for the "No product connected" option. */
 const TYPED_VALUE = '__typed__';
 
@@ -620,14 +621,12 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 					/>
 					{ isOn( "cta" ) && (
 						<>
-							<TextControl
+							<SgsFreeTextField type="rich" noLink
 								label={ __( "Button text", "sgs-blocks" ) }
 								value={ attributes.ctaText || "" }
 								onChange={ ( v ) =>
 									setAttributes( { ctaText: v } )
 								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 							{ ( ctaBehaviour || "learn-more" ) ===
 							"learn-more" ? (
@@ -1694,25 +1693,21 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								__next40pxDefaultSize
 							/>
 							{ isTrial && (
-								<TextControl
+								<SgsFreeTextField type="rich" noLink
 									label={ __( 'Trial tag text', 'sgs-blocks' ) }
 									value={ attributes.trialTag || '' }
 									onChange={ ( v ) =>
 										setAttributes( { trialTag: v } )
 									}
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
 								/>
 							) }
 							{ isFeatured && (
-								<TextControl
+								<SgsFreeTextField type="rich" noLink
 									label={ __( 'Featured tag text', 'sgs-blocks' ) }
 									value={ attributes.featuredTag || '' }
 									onChange={ ( v ) =>
 										setAttributes( { featuredTag: v } )
 									}
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
 								/>
 							) }
 						</>
@@ -1779,7 +1774,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
-						<TextControl
+						<SgsFreeTextField type="rich" noLink
 							label={ __( 'Price note', 'sgs-blocks' ) }
 							help={ __(
 								'Small text below the price, e.g. "8-pack · Free delivery over £35"',
@@ -1789,8 +1784,6 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 							onChange={ ( v ) =>
 								setAttributes( { priceNote: v } )
 							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
 						/>
 						<TextControl
 							label={ __( 'Pack sizes', 'sgs-blocks' ) }
@@ -2078,7 +2071,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								__nextHasNoMarginBottom
 							/>
 							{ 0 === ( reviewCount ?? 0 ) && (
-								<TextControl
+								<SgsFreeTextField type="rich" noLink
 									label={ __(
 										'"No reviews yet" text',
 										'sgs-blocks'
@@ -2091,8 +2084,6 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 									onChange={ ( v ) =>
 										setAttributes( { noReviewsText: v } )
 									}
-									__next40pxDefaultSize
-									__nextHasNoMarginBottom
 								/>
 							) }
 						</>
@@ -2170,14 +2161,12 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					/>
 					{ showSavingBadge && (
 						<>
-							<TextControl
+							<SgsFreeTextField type="rich" noLink
 								label={ __( 'Saving badge text', 'sgs-blocks' ) }
 								value={ savingLabel || '' }
 								onChange={ ( v ) =>
 									setAttributes( { savingLabel: v } )
 								}
-								__next40pxDefaultSize
-								__nextHasNoMarginBottom
 							/>
 							<ToggleGroupControl
 								label={ __( 'Saving badge position', 'sgs-blocks' ) }
@@ -2311,7 +2300,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								__next40pxDefaultSize
 								__nextHasNoMarginBottom
 							/>
-							<TextControl
+							<SgsFreeTextField type="rich" noLink
 								label={ __( 'Tag text', 'sgs-blocks' ) }
 								help={ __(
 									'Empty (default) uses the matched term\'s own name.',
@@ -2321,8 +2310,6 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								onChange={ ( v ) =>
 									setAttributes( { attributeTagText: v } )
 								}
-								__next40pxDefaultSize
-								__nextHasNoMarginBottom
 							/>
 							<SgsBoxControl
 								label={ __( 'Attribute tag padding', 'sgs-blocks' ) }
@@ -2787,12 +2774,10 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					     here is redundant. Behaviour stays below (both modes). */ }
 					{ ! isBound && (
 						<>
-							<TextControl
+							<SgsFreeTextField type="rich" noLink
 								label={ __( 'Primary button text', 'sgs-blocks' ) }
 								value={ ctaText || '' }
 								onChange={ ( v ) => setAttributes( { ctaText: v } ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 							<LinkPopoverField
 								label={ __( 'Primary button URL', 'sgs-blocks' ) }
@@ -3158,7 +3143,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 
 					{ /* Secondary button */ }
 					<hr style={ { margin: '12px 0' } } />
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Secondary button text', 'sgs-blocks' ) }
 						help={ __(
 							'Leave empty to hide the secondary button.',
@@ -3168,8 +3153,6 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 						onChange={ ( v ) =>
 							setAttributes( { cta2Text: v } )
 						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 					{ ( cta2Text || '' ) !== '' && (
 						<>

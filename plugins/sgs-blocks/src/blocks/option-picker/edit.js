@@ -58,6 +58,7 @@ import {
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import SubLabelPanel from './sub-label-panel';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 /* ── Options ─────────────────────────────────────────────────────────────── */
 
 const PILL_STYLE_OPTIONS = [
@@ -600,12 +601,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Label', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Label text', 'sgs-blocks' ) }
 						value={ label }
 						onChange={ ( val ) => setAttributes( { label: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 					<ToggleControl
 						label={ __( 'Show label', 'sgs-blocks' ) }

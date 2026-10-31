@@ -11,6 +11,7 @@ import { SgsLengthControl, IconPicker, ResponsiveOverride, ResponsiveBoxControl,
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { resolveTier } from '../../utils';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
  * Wave 3C U-9 (§4.4) — burger morph pose options.
  *
@@ -214,21 +215,17 @@ export default function BurgerPanel( {
 			   a screen reader announces while the menu is open. */ }
 			{ showsText && (
 				<>
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Word on hover (optional)', 'sgs-blocks' ) }
 						value={ triggerHoverLabel ?? '' }
 						onChange={ ( val ) => setAttributes( { triggerHoverLabel: val } ) }
 						help={ __( 'Rolls in on hover when Label roll is on (Item effects).', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Word while open (optional)', 'sgs-blocks' ) }
 						value={ triggerOpenLabel ?? '' }
 						onChange={ ( val ) => setAttributes( { triggerOpenLabel: val } ) }
 						help={ __( 'For example "Close". Rolls in while the menu is open when Label roll is on.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 				</>
 			) }

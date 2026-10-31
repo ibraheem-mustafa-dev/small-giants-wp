@@ -53,7 +53,7 @@ foreach ( $block->inner_blocks as $inner_block ) {
 	}
 	$tabs[] = array( // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- $tabs[] append, not a WP global.
 		'label'   => isset( $inner_block->attributes['label'] )
-			? wp_strip_all_tags( $inner_block->attributes['label'] )
+			? (string) $inner_block->attributes['label'] // Typed rich text: sanitised once where it prints.
 			: __( 'Tab', 'sgs-blocks' ),
 		// Render the EXISTING WP_Block instance — it carries the inherited
 		// block context (postId/postType). Re-constructing from parsed_block
@@ -321,7 +321,7 @@ $panels_html = '';
 
 $aria_label = ! empty( $attributes['blockLabel'] )
 	? $attributes['blockLabel']
-	: ( ! empty( $tabs[0]['label'] ) ? $tabs[0]['label'] : __( 'Content tabs', 'sgs-blocks' ) );
+	: ( '' !== sgs_authored_text_plain( $tabs[0]['label'] ?? '' ) ? sgs_authored_text_plain( $tabs[0]['label'] ) : __( 'Content tabs', 'sgs-blocks' ) );
 
 $nav_html .= sprintf(
 	'<div class="sgs-tabs__nav" role="tablist" aria-label="%s" aria-orientation="%s">',
@@ -342,7 +342,7 @@ foreach ( $tabs as $i => $tab ) { // phpcs:ignore WordPress.WP.GlobalVariablesOv
 		$panel_id,
 		$is_first ? '0' : '-1',
 		$i,
-		esc_html( $tab['label'] )
+		sgs_rich_text_kses( $tab['label'], false )
 	);
 }
 

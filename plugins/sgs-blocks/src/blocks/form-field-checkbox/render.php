@@ -41,7 +41,7 @@ echo '<fieldset class="sgs-form-field__group">';
 
 if ( ! empty( $label ) ) {
 	echo '<legend class="sgs-form-field__label">';
-	echo esc_html( $label );
+	echo sgs_rich_text_kses( (string) $label, false );
 	if ( $required ) {
 		echo ' <span class="sgs-form-field__required" aria-hidden="true">*</span>';
 	}

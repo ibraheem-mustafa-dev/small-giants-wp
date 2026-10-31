@@ -12,11 +12,12 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { PanelBody, ToggleControl, TextControl, ComboboxControl, Spinner } from '@wordpress/components';
+import { PanelBody, ToggleControl, ComboboxControl, Spinner } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import { useState } from '@wordpress/element';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
  * @param {Object}   props
  * @param {boolean}  props.showPricePanel  Current `showPricePanel` attribute.
@@ -65,12 +66,10 @@ export default function PricingSettingsPanel( {
 			/>
 			{ showPricePanel && (
 				<>
-					<TextControl
+					<SgsFreeTextField type="rich"
 						label={ __( 'Panel title', 'sgs-blocks' ) }
 						value={ pricePanelTitle }
 						onChange={ ( val ) => setAttributes( { pricePanelTitle: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 					<ComboboxControl
 						label={ __( 'Product (if not on that product’s own page)', 'sgs-blocks' ) }

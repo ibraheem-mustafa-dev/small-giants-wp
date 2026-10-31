@@ -5,12 +5,7 @@ import {
 	useSetting,
 	useSettings,
 } from '@wordpress/block-editor';
-import {
-	PanelBody,
-	SelectControl,
-	TextControl,
-	Notice,
-} from '@wordpress/components';
+import { PanelBody, SelectControl, Notice } from '@wordpress/components';
 import {
 	SgsColourPanel,
 	fillRow,
@@ -29,6 +24,7 @@ import {
 import { usePreviewTier } from '../../utils';
 import { themeTogglePreview } from './preview-style';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 const TOGGLE_STYLE_OPTIONS = [
 	{ label: __( 'Switch', 'sgs-blocks' ), value: 'switch' },
 	{
@@ -136,12 +132,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Label', 'sgs-blocks' ) }
 						value={ label }
 						onChange={ ( val ) => setAttributes( { label: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 					{ 'switch' === toggleStyle && (
 						<>

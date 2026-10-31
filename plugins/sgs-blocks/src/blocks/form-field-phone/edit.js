@@ -9,6 +9,8 @@ import {
 import FormFieldAdvancedPanel from '../../components/FormFieldAdvancedPanel';
 import { fieldLabelClasses, fieldDefaultValue } from '../../components/form-field-preview';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
+import AuthoredText from '../../components/AuthoredText';
 const WIDTH_OPTIONS = [
 	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
 	{ label: __( 'Half width', 'sgs-blocks' ), value: 'half' },
@@ -45,12 +47,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Label', 'sgs-blocks' ) }
 						value={ label }
 						onChange={ ( val ) => setAttributes( { label: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Placeholder', 'sgs-blocks' ) }
@@ -97,7 +97,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			<div { ...blockProps }>
 				{ label && (
 					<label className="sgs-form-field__label">
-						{ label }
+						<AuthoredText value={ label } />
 						{ required && (
 							<span className="sgs-form-field__required">
 								*

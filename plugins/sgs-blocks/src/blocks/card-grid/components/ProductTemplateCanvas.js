@@ -24,6 +24,7 @@ import { useBlockPreview } from '../../../components/primitives';
 import { MIRROR_ATTR } from '../../extensions/motion/canvas/mirrors';
 import { TEMPLATE_CARD, itemContext, previewBlocks } from '../template-preview';
 
+import AuthoredText from '../../../components/AuthoredText';
 const ALLOWED = [ TEMPLATE_CARD ];
 
 /**
@@ -138,7 +139,7 @@ export default function ProductTemplateCanvas( { query, clientId, blockProps, gr
 					<>
 						{ ( error || emptyMessage ) && (
 							<div className="sgs-card-grid__empty">
-								<p className="sgs-card-grid__empty-message">{ error || emptyMessage }</p>
+								<p className="sgs-card-grid__empty-message">{ error || <AuthoredText value={ emptyMessage } /> }</p>
 							</div>
 						) }
 						<p className="sgs-card-grid__template-note">

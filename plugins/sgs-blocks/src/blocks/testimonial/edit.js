@@ -63,6 +63,8 @@ import {
 	RICH_TEXT_PLAIN,
 } from '../../utils/rich-text-formats';
 
+import AuthoredText from '../../components/AuthoredText';
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 // Variants whose stylesheet already paints a border: a chosen colour, style or
 // width overrides it part by part, as render.php emits each alone.
 const STYLESHEET_BORDER_VARIANTS = [
@@ -1298,7 +1300,7 @@ export default function Edit( {
 										setAttributes( { sourcePlatform: '' } )
 									}
 								>
-									<TextControl
+									<SgsFreeTextField type="rich" noLink
 										label={ __(
 											'Source platform',
 											'sgs-blocks'
@@ -1313,8 +1315,6 @@ export default function Edit( {
 												sourcePlatform: val,
 											} )
 										}
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
 									/>
 								</ToolsPanelItem>
 								<ToolsPanelItem
@@ -1324,7 +1324,7 @@ export default function Edit( {
 										setAttributes( { reviewDate: '' } )
 									}
 								>
-									<TextControl
+									<SgsFreeTextField type="rich" noLink
 										label={ __(
 											'Review date',
 											'sgs-blocks'
@@ -1333,8 +1333,6 @@ export default function Edit( {
 										onChange={ ( val ) =>
 											setAttributes( { reviewDate: val } )
 										}
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
 									/>
 								</ToolsPanelItem>
 							</>
@@ -2177,12 +2175,12 @@ export default function Edit( {
 							) }
 							{ sourcePlatform && (
 								<span className="sgs-testimonial__source">
-									{ sourcePlatform }
+									<AuthoredText value={ sourcePlatform } />
 								</span>
 							) }
 							{ reviewDate && (
 								<span className="sgs-testimonial__date">
-									{ reviewDate }
+									<AuthoredText value={ reviewDate } />
 								</span>
 							) }
 						</div>

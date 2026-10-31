@@ -41,10 +41,10 @@ if ( ! function_exists( 'sgs_buybox_modal_cta_html' ) ) {
 			// to the SAME context.priceDisplay path the price row (8a) reads,
 			// so a variation swap on the page keeps this in sync for free.
 			$inner = '<span class="buybox__add-to-cart-content">' . $cart_icon
-				. '<span class="buybox__cart-label">' . esc_html( $add_to_cart_label ) . '</span></span>'
+				. '<span class="buybox__cart-label">' . sgs_rich_text_kses( $add_to_cart_label, false ) . '</span></span>'
 				. '<span class="buybox__cart-price" data-wp-text="context.priceDisplay">' . esc_html( $price_display ) . '</span>';
 		} else {
-			$inner = $cart_icon . '<span class="buybox__cart-label">' . esc_html( $add_to_cart_label ) . '</span>';
+			$inner = $cart_icon . '<span class="buybox__cart-label">' . sgs_rich_text_kses( $add_to_cart_label, false ) . '</span>';
 		}
 
 		return sprintf(

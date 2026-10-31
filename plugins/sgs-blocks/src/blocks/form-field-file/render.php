@@ -60,13 +60,13 @@ printf(
 );
 
 echo '<div class="sgs-form-field__file-label sgs-focus-proxy">';
-echo '<span>' . esc_html( $drop_label ) . '</span>';
+echo '<span>' . sgs_rich_text_kses( (string) $drop_label, false ) . '</span>';
 echo '<span class="sgs-form-field__file-hint">' . sprintf( esc_html__( 'Max %d MB', 'sgs-blocks' ), $max ) . '</span>';
 if ( $is_panel ) {
 	// The help line and a button-look cue sit inside the panel; the whole panel is the file input's target.
 	echo field_help( $fid, $attributes );
 	$button_label = trim( (string) ( $attributes['buttonLabel'] ?? '' ) );
-	echo '<span class="sgs-form-field__file-button" aria-hidden="true">' . esc_html( '' !== $button_label ? $button_label : __( 'Choose file', 'sgs-blocks' ) ) . '</span>';
+	echo '<span class="sgs-form-field__file-button" aria-hidden="true">' . sgs_rich_text_kses( '' !== $button_label ? $button_label : __( 'Choose file', 'sgs-blocks' ), false ) . '</span>';
 }
 echo '</div>';
 

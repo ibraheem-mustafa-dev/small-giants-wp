@@ -96,7 +96,7 @@ defined( 'ABSPATH' ) || exit;
 			?>
 			<div class="sgs-card-grid__empty">
 				<p class="sgs-card-grid__empty-message">
-					<?php echo esc_html( $empty_message ); ?>
+					<?php echo sgs_rich_text_kses( $empty_message ); ?>
 				</p>
 			</div>
 			<?php

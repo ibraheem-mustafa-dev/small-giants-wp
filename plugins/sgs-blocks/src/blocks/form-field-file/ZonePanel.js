@@ -7,8 +7,9 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
+import { PanelBody, SelectControl } from '@wordpress/components';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
  * @param {Object}   props
  * @param {Object}   props.attributes    Block attributes (zoneStyle, buttonLabel).
@@ -31,13 +32,11 @@ export default function ZonePanel( { attributes, setAttributes } ) {
 				__next40pxDefaultSize
 			/>
 			{ isPanel && (
-				<TextControl
+				<SgsFreeTextField type="rich" noLink
 					label={ __( 'Button text', 'sgs-blocks' ) }
 					value={ attributes.buttonLabel || '' }
 					placeholder={ __( 'Choose file', 'sgs-blocks' ) }
 					onChange={ ( buttonLabel ) => setAttributes( { buttonLabel } ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
 				/>
 			) }
 		</PanelBody>

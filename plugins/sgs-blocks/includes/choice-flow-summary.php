@@ -45,7 +45,7 @@ if ( ! function_exists( 'sgs_choice_flow_summary_panel_html' ) ) {
 		$title          = isset( $attributes['pricePanelTitle'] ) ? (string) $attributes['pricePanelTitle'] : '';
 		$show_image     = ! isset( $attributes['summaryShowImage'] ) || ! empty( $attributes['summaryShowImage'] );
 		$position       = isset( $attributes['summaryPosition'] ) && 'end' === $attributes['summaryPosition'] ? 'end' : 'start';
-		$pending_label  = isset( $attributes['summaryPendingLabel'] ) ? sanitize_text_field( (string) $attributes['summaryPendingLabel'] ) : '';
+		$pending_label  = isset( $attributes['summaryPendingLabel'] ) ? (string) $attributes['summaryPendingLabel'] : '';
 		$pending_text   = isset( $attributes['summaryPendingText'] ) ? sanitize_text_field( (string) $attributes['summaryPendingText'] ) : '';
 		$details        = function_exists( 'sgs_choice_flow_product_details' ) ? sgs_choice_flow_product_details( $product_id ) : array(
 			'brand' => '',
@@ -81,7 +81,7 @@ if ( ! function_exists( 'sgs_choice_flow_summary_panel_html' ) ) {
 		// summary.js can name the buybox's chosen colour and size; data-pending-*:
 		// the "Lenses · not chosen yet" placeholder line (FR-43-19).
 		$out  = '<aside class="sgs-choice-flow__summary sgs-choice-flow__summary--position-' . esc_attr( $position ) . '" aria-live="polite" data-fallback-image="' . esc_attr( $fallback_image ) . '" data-product-name="' . esc_attr( $product_name ) . '" data-base-label="' . esc_attr( $base_label ) . '"';
-		$out .= ' data-axes="' . esc_attr( (string) wp_json_encode( $details['axes'] ) ) . '" data-pending-label="' . esc_attr( $pending_label ) . '" data-pending-text="' . esc_attr( $pending_text ) . '">';
+		$out .= ' data-axes="' . esc_attr( (string) wp_json_encode( $details['axes'] ) ) . '" data-pending-label="' . esc_attr( sgs_rich_text_kses( $pending_label, false ) ) . '" data-pending-text="' . esc_attr( $pending_text ) . '">';
 		$out .= '<details class="sgs-choice-flow__summary-toggle" open>';
 
 		// The collapsed mobile/compact row (D4): a 72px thumbnail, the
@@ -112,7 +112,7 @@ if ( ! function_exists( 'sgs_choice_flow_summary_panel_html' ) ) {
 			$out .= '<div class="sgs-choice-flow__summary-media">' . $image_tag . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $image_tag is built from esc_url()/esc_attr() above.
 		}
 		if ( '' !== $title ) {
-			$out .= '<h4 class="sgs-choice-flow__summary-title">' . esc_html( $title ) . '</h4>';
+			$out .= '<h4 class="sgs-choice-flow__summary-title">' . sgs_rich_text_kses( $title ) . '</h4>';
 		}
 		$out .= '<div class="sgs-choice-flow__summary-identity">' . sgs_choice_flow_summary_identity_html( $details['brand'], $product_name ) . '</div>';
 		$out .= '<ul class="sgs-choice-flow__summary-lines"></ul>';

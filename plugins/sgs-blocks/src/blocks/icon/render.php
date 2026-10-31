@@ -602,7 +602,7 @@ $image_attrs = '' === $link_url && '' !== $aria_label && $group['in_group'] && !
 // An outline shape with something to paint (a background or a stroke) draws its SVG behind the glyph.
 $outline_svg = $is_outline && ( $show_bg || array() !== $outline_w ) ? sgs_icon_outline_svg( $shape, $uid . '-oc' ) : '';
 $output      = '<span class="sgs-icon__shape"' . $image_attrs . '>' . $outline_svg . $glyph_html . '</span>';
-$label_html  = $has_label ? '<span class="sgs-icon__label-text">' . esc_html( $label_text ) . '</span>' : '';
+$label_html  = $has_label ? '<span class="sgs-icon__label-text">' . sgs_rich_text_kses( $label_text, false ) . '</span>' : '';
 
 // ── Accessible name and link (step 10) ───────────────────────────────────────
 $wrapper_extra = array( 'class' => implode( ' ', $classes ) );

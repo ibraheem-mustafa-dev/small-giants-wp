@@ -32,8 +32,8 @@ if ( ! function_exists( 'sgs_choice_flow_footer_html' ) ) {
 		$skip_html = '';
 		if ( '' !== $skip_label ) {
 			$skip_html = '<p class="sgs-choice-flow__skip" hidden>'
-				. ( '' !== $skip_prompt ? esc_html( $skip_prompt ) . ' ' : '' )
-				. '<button type="button" class="sgs-choice-flow__skip-button">' . esc_html( $skip_label ) . '</button></p>';
+				. ( '' !== $skip_prompt ? sgs_rich_text_kses( $skip_prompt ) . ' ' : '' )
+				. '<button type="button" class="sgs-choice-flow__skip-button">' . sgs_rich_text_kses( $skip_label, false ) . '</button></p>';
 		}
 
 		return '<div class="sgs-choice-flow__footer"><div class="sgs-choice-flow__footer-row">'
@@ -41,7 +41,7 @@ if ( ! function_exists( 'sgs_choice_flow_footer_html' ) ) {
 			. '<span aria-hidden="true">&larr;</span> ' . esc_html__( 'Back', 'sgs-blocks' ) . '</button>'
 			. $skip_html
 			. '<div class="sgs-choice-flow__footer-actions">'
-			. '<button type="button" class="sgs-choice-flow__continue is-muted" hidden aria-disabled="true">' . esc_html( $continue_label ) . '</button>'
+			. '<button type="button" class="sgs-choice-flow__continue is-muted" hidden aria-disabled="true">' . sgs_rich_text_kses( $continue_label, false ) . '</button>'
 			. '<button type="button" class="sgs-choice-flow__add-to-basket" hidden></button>'
 			. '<button type="button" class="sgs-choice-flow__buy-now" hidden></button>'
 			. '</div></div>'

@@ -10,6 +10,8 @@ import { fieldLabelClasses, fieldDefaultValue } from '../../components/form-fiel
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import FieldLabelLayoutPanel from '../../components/FieldLabelLayoutPanel';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
+import AuthoredText from '../../components/AuthoredText';
 const WIDTH_OPTIONS = [
 	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
 	{ label: __( 'Half width', 'sgs-blocks' ), value: 'half' },
@@ -93,12 +95,38 @@ export default function Edit( { attributes, setAttributes } ) {
 						onDeselect={ () => setAttributes( { label: '' } ) }
 						isShownByDefault
 					>
-						<TextControl
+						<SgsFreeTextField type="rich" noLink
 							label={ __( 'Label', 'sgs-blocks' ) }
 							value={ label }
 							onChange={ ( val ) => setAttributes( { label: val } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Column heading', 'sgs-blocks' ) }
+						hasValue={ () => !! attributes.columnHeading }
+						onDeselect={ () => setAttributes( { columnHeading: '' } ) }
+					>
+						<SgsFreeTextField
+							type="rich"
+							noLink
+							label={ __( 'Column heading', 'sgs-blocks' ) }
+							value={ attributes.columnHeading ?? '' }
+							onChange={ ( val ) => setAttributes( { columnHeading: val } ) }
+							help={ __( 'A short heading drawn beside the box (visual only; the label stays the accessible name).', 'sgs-blocks' ) }
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Row heading', 'sgs-blocks' ) }
+						hasValue={ () => !! attributes.rowHeading }
+						onDeselect={ () => setAttributes( { rowHeading: '' } ) }
+					>
+						<SgsFreeTextField
+							type="rich"
+							noLink
+							label={ __( 'Row heading', 'sgs-blocks' ) }
+							value={ attributes.rowHeading ?? '' }
+							onChange={ ( val ) => setAttributes( { rowHeading: val } ) }
+							help={ __( 'A short heading drawn beside the box (visual only; the label stays the accessible name).', 'sgs-blocks' ) }
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
@@ -229,7 +257,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						className={ 'hidden' === attributes.labelStyle ? 'sgs-form-field__label sgs-sr-only' : 'sgs-form-field__label' }
 						style={ 'hidden' === attributes.labelStyle ? SR_ONLY : undefined }
 					>
-						{ label }
+						<AuthoredText value={ label } />
 						{ required && (
 							<span className="sgs-form-field__required">
 								*

@@ -71,7 +71,12 @@ export default function PanelContentControls( { attributes, setAttributes, hasPa
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
-			{ isTextRemove && text( 'itemRemoveLabel', __( 'Remove link text', 'sgs-blocks' ) ) }
+			{ isTextRemove && <SgsFreeTextField
+	type="rich" noLink
+	label={ __( 'Remove link text', 'sgs-blocks' ) }
+	value={ attributes.itemRemoveLabel || '' }
+	onChange={ ( val ) => setAttributes( { itemRemoveLabel: val } ) }
+/> }
 			{ toggle( 'panelShowViewCart', __( 'Show the "View cart" button', 'sgs-blocks' ), undefined, true ) }
 			<SgsFreeTextField
 				type="rich"
@@ -80,11 +85,13 @@ export default function PanelContentControls( { attributes, setAttributes, hasPa
 				value={ attributes.panelTaxNote ?? '' }
 				onChange={ ( val ) => setAttributes( { panelTaxNote: val } ) }
 			/>
-			{ text(
-				'panelInstalmentsNote',
-				__( 'Note under Checkout', 'sgs-blocks' ),
-				__( 'For example "Or 3 payments of %s with Klarna". %s becomes the cart total divided by the number below. Leave empty to hide it.', 'sgs-blocks' )
-			) }
+			<SgsFreeTextField
+	type="rich"
+	label={ __( 'Note under Checkout', 'sgs-blocks' ) }
+	help={ __( 'For example "Or 3 payments of %s with Klarna". %s becomes the cart total divided by the number below. Leave empty to hide it.', 'sgs-blocks' ) }
+	value={ attributes.panelInstalmentsNote || '' }
+	onChange={ ( val ) => setAttributes( { panelInstalmentsNote: val } ) }
+/>
 			{ !! attributes.panelInstalmentsNote && (
 				<RangeControl
 					label={ __( 'Number of payments', 'sgs-blocks' ) }

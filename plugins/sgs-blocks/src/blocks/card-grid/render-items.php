@@ -134,7 +134,7 @@ foreach ( $items as $index => $item ) :
 				<div class="sgs-card-grid__image-overlay" aria-hidden="true"></div>
 			<?php endif; ?>
 			<?php if ( $item_use_fallback && '' !== $no_image_label ) : ?>
-				<span class="sgs-card-grid__no-image-label"><?php echo esc_html( $no_image_label ); ?></span>
+				<span class="sgs-card-grid__no-image-label"><?php echo sgs_rich_text_kses( $no_image_label, false ); ?></span>
 			<?php endif; ?>
 			<?php if ( '' !== $item_glyph_html && ! $glyph_in_caption ) : ?>
 				<?php echo $item_glyph_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside sgs_card_grid_glyph_html() via wp_kses(). ?>

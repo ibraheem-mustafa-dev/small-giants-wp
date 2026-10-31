@@ -102,7 +102,7 @@ echo '<div ' . $wrapper_attributes . '>'; // phpcs:ignore WordPress.Security.Esc
 if ( '' !== $question ) {
 	// D7: heading font-weight, emitted as a class (TitlePanel.js's control).
 	$question_weight_class = sgs_choice_flow_question_title_weight_class( $attributes );
-	echo '<h3 class="sgs-choice-flow-question__title sgs-choice-flow-question__title--w' . esc_attr( $question_weight_class ) . '">' . esc_html( $question ) . '</h3>';
+	echo '<h3 class="sgs-choice-flow-question__title sgs-choice-flow-question__title--w' . esc_attr( $question_weight_class ) . '">' . sgs_rich_text_kses( $question ) . '</h3>';
 }
 
 echo sgs_choice_flow_question_intro_html( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper escapes internally.

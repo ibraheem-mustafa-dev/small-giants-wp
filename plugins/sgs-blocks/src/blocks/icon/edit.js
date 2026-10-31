@@ -40,6 +40,7 @@ import { CanvasOutline } from './shape-options';
 import { shapeUsesWidthOnly, isOutlineShape } from '../../utils/icon-shapes';
 import { iconShadowStyle } from './icon-shadow';
 
+import AuthoredText from '../../components/AuthoredText';
 /**
  * The canvas root's custom properties and spacing: render.php's root rule for the previewed device.
  *
@@ -165,7 +166,7 @@ export function CanvasLabel( { text, attributes, tier } ) {
 	};
 	return (
 		<span className="sgs-icon__label-text" style={ style }>
-			{ text }
+			<AuthoredText value={ text } />
 		</span>
 	);
 }

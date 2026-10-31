@@ -141,7 +141,7 @@ function field_label( string $field_id, array $attributes ): string {
 		'<label for="%s" class="sgs-form-field__label%s">%s%s</label>',
 		esc_attr( $field_id ),
 		$hidden ? ' sgs-sr-only' : '',
-		esc_html( $label ),
+		sgs_rich_text_kses( (string) $label, false ),
 		$required ? ' <span class="sgs-form-field__required" aria-hidden="true">*</span><span class="sgs-sr-only">(required)</span>' : ''
 	);
 }
@@ -162,7 +162,7 @@ function field_headings( array $attributes ): string {
 	) as $key => $class ) {
 		$text = trim( (string) ( $attributes[ $key ] ?? '' ) );
 		if ( '' !== $text ) {
-			$out .= '<span class="' . $class . '" aria-hidden="true">' . esc_html( $text ) . '</span>';
+			$out .= '<span class="' . $class . '" aria-hidden="true">' . sgs_rich_text_kses( $text, false ) . '</span>';
 		}
 	}
 	return $out;
@@ -262,7 +262,7 @@ function field_submission_name( string $field_id, array $attributes, int $suffix
 	$max = min( 48, FIELD_NAME_MAX - max( 0, $suffix_reserve ) - 4 );
 
 	// A label that only slugs to percent-encoded bytes (a non-Latin script) names nothing readable.
-	$slug = sanitize_title( (string) ( $attributes['label'] ?? '' ) );
+	$slug = sanitize_title( sgs_authored_text_plain( $attributes['label'] ?? '' ) ); // The label is typed rich text: the slug comes from its words.
 	$base = false === strpos( $slug, '%' ) ? trim( substr( sanitize_key( $slug ), 0, $max ), '-_' ) : '';
 	if ( '' === $base ) {
 		$base = substr( 'field-' . preg_replace( '/^sgs-field-/', '', sanitize_key( $field_id ) ), 0, $max );

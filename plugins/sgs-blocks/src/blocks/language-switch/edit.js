@@ -35,6 +35,7 @@ import { usePreviewTier } from '../../utils';
 import { LINK_SOURCES_PAGES } from '../../shared/link-source-options';
 import { languageSwitchPreview } from './preview-style';
 
+import SgsFreeTextField from '../../components/SgsFreeTextField';
 const LENGTH_UNITS = [
 	{ value: 'px', label: 'px', default: 8 },
 	{ value: 'rem', label: 'rem', default: 0.5 },
@@ -244,13 +245,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						<ToggleGroupControlOption value="custom" label={ __( 'Custom', 'sgs-blocks' ) } />
 					</ToggleGroupControl>
 
-					<TextControl
+					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Prefix label', 'sgs-blocks' ) }
 						help={ __( 'e.g. "Language:" — shown before the list/trigger. Leave blank for none.', 'sgs-blocks' ) }
 						value={ prefixLabel }
 						onChange={ ( val ) => setAttributes( { prefixLabel: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 
 					{ 'inline' === display && (

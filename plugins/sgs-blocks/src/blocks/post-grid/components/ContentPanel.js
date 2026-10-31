@@ -3,12 +3,13 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { SelectControl, RangeControl, ToggleControl, TextControl } from '@wordpress/components';
+import { SelectControl, RangeControl, ToggleControl } from '@wordpress/components';
 import MediaElementPanel from '../../../components/MediaElementPanel';
 import SgsBooleanField from '../../../components/SgsBooleanField';
 import { ToolsPanel, ToolsPanelItem } from '../../../components/primitives';
 import { ASPECT_RATIO_OPTIONS, IMAGE_SIZE_OPTIONS } from './constants';
 
+import SgsFreeTextField from '../../../components/SgsFreeTextField';
 export default function ContentPanel( { attributes, setAttributes, set } ) {
 	const {
 		aspectRatio,
@@ -212,12 +213,10 @@ export default function ContentPanel( { attributes, setAttributes, set } ) {
 						>
 							{ showReadMore && (
 								<>
-									<TextControl
+									<SgsFreeTextField type="rich" noLink
 										label={ __( 'Read more text', 'sgs-blocks' ) }
 										value={ readMoreText }
 										onChange={ set( 'readMoreText' ) }
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
 									/>
 									{ /* Read more colour moved to the shared SgsColourPanel
 									     above (D622 is superseded). */ }
