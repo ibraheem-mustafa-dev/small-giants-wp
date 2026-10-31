@@ -43,7 +43,7 @@ def contrast_warnings(snapshot: dict) -> list[str]:
     selection = selection_of(snapshot)
     if incomplete_selection_keys(snapshot) or not _set(selection, "background"):
         return []
-    palette = roster.palette_map(snapshot)
+    palette = roster.effective_palette(snapshot)
     values = {k: roster.resolve_colour(selection[k], palette) for k in SELECTION_KEYS}
     if any(ft.norm_hex(v) is None for v in values.values()):
         return []
@@ -62,7 +62,7 @@ def check_snapshot(snapshot: dict) -> list[str]:
     selection = selection_of(snapshot)
     if problems or not _set(selection, "background"):
         return problems
-    palette = roster.palette_map(snapshot)
+    palette = roster.effective_palette(snapshot)
     values = {k: roster.resolve_colour(selection[k], palette) for k in SELECTION_KEYS}
     for key, value in values.items():
         if ft.norm_hex(value) is None:

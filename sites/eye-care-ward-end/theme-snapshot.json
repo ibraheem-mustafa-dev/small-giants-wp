@@ -5,231 +5,123 @@
     "color": {
       "palette": [
         {
-          "slug": "primary",
+          "slug": "ink",
           "color": "#141414",
-          "name": "Primary",
-          "_source": "confirmed"
+          "name": "Ink",
+          "_source": "declared"
         },
         {
-          "slug": "primary-text",
-          "name": "Text on Primary",
+          "slug": "ink-hover",
+          "color": "#2A2A2A",
+          "name": "Ink Hover",
+          "_source": "declared"
+        },
+        {
+          "slug": "paper",
           "color": "#FAF8F5",
-          "_source": "confirmed"
+          "name": "Paper",
+          "_source": "declared"
         },
         {
-          "slug": "primary-dark",
-          "color": "#0F0F0F",
-          "name": "Primary Dark",
-          "_source": "derived"
-        },
-        {
-          "slug": "accent",
-          "color": "#9C8B78",
-          "name": "Accent",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "accent-text",
-          "color": "#6F6152",
-          "name": "Text on Accent",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "accent-light",
-          "color": "#EFEAE2",
-          "name": "Accent Light",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "success",
-          "color": "#1B7F43",
-          "name": "Success",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "success-light",
-          "name": "Success Light",
-          "color": "#ECFDF5"
-        },
-        {
-          "slug": "error",
-          "color": "#DC2626",
-          "name": "Error"
-        },
-        {
-          "slug": "error-light",
-          "name": "Error Light",
-          "color": "#FEF2F2"
-        },
-        {
-          "slug": "info",
-          "name": "Info",
-          "color": "#3B82F6"
-        },
-        {
-          "slug": "info-light",
-          "name": "Info Light",
-          "color": "#EBF5FF"
-        },
-        {
-          "slug": "surface",
-          "color": "#FAF8F5",
-          "name": "Surface",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "surface-alt",
+          "slug": "white",
           "color": "#FFFFFF",
-          "name": "Raised Background",
-          "_source": "confirmed"
+          "name": "White",
+          "_source": "declared"
         },
         {
-          "slug": "text",
-          "color": "#141414",
-          "name": "Text",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "text-muted",
-          "color": "#5E584F",
-          "name": "Text Muted",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "text-inverse",
-          "color": "#FAF8F5",
-          "name": "Text on Dark",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "border",
-          "color": "#E6E1DA",
-          "name": "Border",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "border-light",
-          "color": "#E5E7EB",
-          "name": "Border Light"
-        },
-        {
-          "slug": "footer-bg",
-          "color": "#FAF8F5",
-          "name": "Footer Background",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "heading",
-          "color": "#141414",
-          "name": "Heading Text",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "link",
-          "color": "#141414",
-          "name": "Link",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "link-hover",
-          "color": "#6F6152",
-          "name": "Link Hover",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "section",
-          "color": "#FFFFFF",
-          "name": "Section Background",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "section-text",
-          "color": "#141414",
-          "name": "Section Text",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "custom-surface-alt",
+          "slug": "surface-alt-shade",
           "color": "#F3F0EB",
           "name": "Surface Alt",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "custom-text-3",
-          "color": "#77716A",
-          "name": "Text 3",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "custom-text-4",
-          "color": "#8B8478",
-          "name": "Text 4",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "custom-text-faint",
-          "color": "#A39C90",
-          "name": "Text Faint",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "custom-text-muted",
-          "color": "#6B655E",
-          "name": "Text Muted",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "custom-text-strong",
-          "color": "#4A453E",
-          "name": "Text Strong",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "custom-wa-ink",
-          "color": "#0B2B17",
-          "name": "Wa Ink",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "primary-hover",
-          "color": "#2A2A2A",
-          "name": "Primary Hover",
           "_source": "declared"
         },
         {
-          "slug": "text-label",
-          "color": "#77716A",
-          "name": "Text Label",
+          "slug": "surface-soft",
+          "color": "#F0EBE3",
+          "name": "Surface Soft",
           "_source": "declared"
         },
         {
-          "slug": "text-subtle",
-          "color": "#6B655E",
-          "name": "Text Subtle",
-          "_source": "declared"
-        },
-        {
-          "slug": "text-soft",
-          "color": "#4A453E",
-          "name": "Text Soft",
+          "slug": "hairline",
+          "color": "#E6E1DA",
+          "name": "Hairline",
           "_source": "declared"
         },
         {
           "slug": "border-strong",
           "color": "#D8D2C8",
           "name": "Border Strong",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "surface-stage",
-          "color": "#F3F0EB",
-          "name": "Surface Stage",
           "_source": "declared"
         },
         {
-          "slug": "border-hover",
-          "color": "#CFC7BB",
-          "name": "Border Hover",
+          "slug": "border-warm",
+          "color": "#D5CCBD",
+          "name": "Border Warm",
+          "_source": "declared"
+        },
+        {
+          "slug": "control-off",
+          "color": "#C9C2B8",
+          "name": "Control Off",
+          "_source": "declared"
+        },
+        {
+          "slug": "text-strong",
+          "color": "#4A453E",
+          "name": "Text Strong",
+          "_source": "declared"
+        },
+        {
+          "slug": "text-2",
+          "color": "#5E584F",
+          "name": "Text 2",
+          "_source": "declared"
+        },
+        {
+          "slug": "text-muted-shade",
+          "color": "#6B655E",
+          "name": "Text Muted",
+          "_source": "declared"
+        },
+        {
+          "slug": "text-3",
+          "color": "#77716A",
+          "name": "Text 3",
+          "_source": "declared"
+        },
+        {
+          "slug": "text-4",
+          "color": "#8B8478",
+          "name": "Text 4",
+          "_source": "declared"
+        },
+        {
+          "slug": "text-faint",
+          "color": "#A39C90",
+          "name": "Text Faint",
+          "_source": "declared"
+        },
+        {
+          "slug": "acc",
+          "color": "#9C8B78",
+          "name": "Accent",
+          "_source": "declared"
+        },
+        {
+          "slug": "acc-ink",
+          "color": "#6F6152",
+          "name": "Accent Ink",
+          "_source": "declared"
+        },
+        {
+          "slug": "acc-soft",
+          "color": "#EFEAE2",
+          "name": "Accent Soft",
+          "_source": "declared"
+        },
+        {
+          "slug": "success",
+          "color": "#1B7F43",
+          "name": "Success",
           "_source": "declared"
         }
       ],
@@ -753,6 +645,32 @@
           "line-width": "1.4px",
           "extension-width": "1px"
         }
+      },
+      "colourRoles": {
+        "primary": "ink",
+        "primary-text": "paper",
+        "primary-dark": "ink-hover",
+        "accent": "acc",
+        "accent-text": "acc-ink",
+        "accent-light": "acc-soft",
+        "success-light": "#ECFDF5",
+        "error": "#DC2626",
+        "error-light": "#FEF2F2",
+        "info": "#3B82F6",
+        "info-light": "#EBF5FF",
+        "surface": "paper",
+        "surface-alt": "white",
+        "text": "ink",
+        "text-muted": "text-2",
+        "text-inverse": "paper",
+        "border": "hairline",
+        "border-light": "hairline",
+        "footer-bg": "paper",
+        "heading": "ink",
+        "link": "ink",
+        "link-hover": "acc-ink",
+        "section": "white",
+        "section-text": "ink"
       }
     },
     "appearanceTools": true,
@@ -998,9 +916,9 @@
   "_sgsExtractor": {
     "draft_css_sha256": "b7d093ba6a9d32f74c05c7007a9cc785761edb203314c57bc80eaf44cceb447c",
     "extractor_version": "1.0",
-    "draft_source_sha256": "52aeda8416ee994b941c5562c93f1b6a8203db876b3e7789b4cbc29ad490099e",
+    "draft_source_sha256": "db909ddbf24f6c8cb1f17d729e4aedbc3c970854f9218d8dabcc630cef4e5c66",
     "manifest_sha256": {
-      "Eye Care Birmingham.dc.html": "2f2096a8c7a8c9ff8d40824b14d32f0374f84eda07a3c51c64d9a43a9315da3a",
+      "Eye Care Birmingham.dc.html": "547057ef6711a8b933e89bedaefd2e0c1d597606560f95dea39d8bc044e4867d",
       "Frame Card.dc.html": "4c139189317abfd2d49c4851624fd8e1e3043fc002bfaddb474a0a645b8b8db4",
       "tokens/colors.css": "9473a276fdb556d59fc1850805e80210dbc4dac9d1264eff03fb8f2b4b487977",
       "tokens/spacing.css": "d2ec7bbe305cce06d1124d4d03b1f507694bd6c0812210d67e879540b126a4fa",

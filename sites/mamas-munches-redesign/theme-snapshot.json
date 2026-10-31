@@ -5,243 +5,136 @@
     "color": {
       "palette": [
         {
-          "slug": "primary",
-          "color": "#F9CF6E",
-          "name": "Primary",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "primary-text",
-          "name": "Text on Primary",
+          "slug": "mm-cocoa",
           "color": "#3A2A22",
-          "_source": "confirmed"
+          "name": "Cocoa",
+          "_source": "declared"
         },
         {
-          "slug": "primary-dark",
-          "color": "#BB9B52",
-          "name": "Primary Dark",
-          "_source": "derived"
-        },
-        {
-          "slug": "accent",
-          "color": "#EE8088",
-          "name": "Accent",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "accent-text",
-          "color": "#3A2A22",
-          "name": "Text on Accent",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "accent-light",
-          "color": "#FEF3C7",
-          "name": "Accent Light"
-        },
-        {
-          "slug": "success",
-          "color": "#2E7D4F",
-          "name": "Success"
-        },
-        {
-          "slug": "success-light",
-          "name": "Success Light",
-          "color": "#ECFDF5"
-        },
-        {
-          "slug": "error",
-          "color": "#DC2626",
-          "name": "Error"
-        },
-        {
-          "slug": "error-light",
-          "name": "Error Light",
-          "color": "#FEF2F2"
-        },
-        {
-          "slug": "info",
-          "name": "Info",
-          "color": "#3B82F6"
-        },
-        {
-          "slug": "info-light",
-          "name": "Info Light",
-          "color": "#EBF5FF"
-        },
-        {
-          "slug": "surface",
-          "color": "#FBF3DC",
-          "name": "Surface",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "surface-alt",
+          "slug": "mm-paper",
           "color": "#FFFAF0",
-          "name": "Raised Background",
-          "_source": "confirmed"
+          "name": "Paper",
+          "_source": "declared"
         },
         {
-          "slug": "text",
-          "color": "#3A2A22",
-          "name": "Text",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "text-muted",
-          "color": "#5E4A3D",
-          "name": "Text Muted",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "text-inverse",
-          "color": "#FFFAF0",
-          "name": "Text on Dark",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "border",
-          "color": "#3A2A22",
-          "name": "Border",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "border-light",
-          "color": "#EADBC0",
-          "name": "Border Light",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "footer-bg",
+          "slug": "mm-cream",
           "color": "#FBF3DC",
-          "name": "Footer Background",
-          "_source": "confirmed"
+          "name": "Cream",
+          "_source": "declared"
         },
         {
-          "slug": "heading",
-          "color": "#3A2A22",
-          "name": "Heading Text",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "link",
-          "color": "#A8404F",
-          "name": "Link",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "link-hover",
-          "color": "#3A2A22",
-          "name": "Link Hover",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "section",
-          "color": "#F9D5D3",
-          "name": "Section Background",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "section-text",
-          "color": "#3A2A22",
-          "name": "Section Text",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "custom-mm-body",
-          "color": "#4E3C31",
-          "name": "Mm Body",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "custom-mm-image-bg",
-          "color": "#F3E6CC",
-          "name": "Mm Image Bg",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "custom-mm-muted-2",
-          "color": "#6B5646",
-          "name": "Mm Muted 2",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "custom-mm-pink-band",
-          "color": "#F5C2C8",
-          "name": "Mm Pink Band",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "custom-mm-script",
-          "color": "#8E3444",
-          "name": "Mm Script",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "custom-mm-script-gold",
-          "color": "#7A5A12",
-          "name": "Mm Script Gold",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "custom-mm-sparkle",
-          "color": "#E86A75",
-          "name": "Mm Sparkle",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "custom-mm-white",
+          "slug": "mm-white",
           "color": "#FFFFFF",
-          "name": "Mm White",
-          "_source": "confirmed"
+          "name": "White",
+          "_source": "declared"
         },
         {
-          "slug": "custom-mm-yellow-soft",
-          "color": "#FCEBBE",
-          "name": "Mm Yellow Soft",
-          "_source": "confirmed"
+          "slug": "mm-pink",
+          "color": "#EE8088",
+          "name": "Pink",
+          "_source": "declared"
         },
         {
-          "slug": "custom-mm-line-dashed",
-          "color": "#E6D4B4",
-          "name": "Mm Line Dashed",
-          "_source": "confirmed"
+          "slug": "mm-pink-dark",
+          "color": "#A8404F",
+          "name": "Pink Dark",
+          "_source": "declared"
         },
         {
-          "slug": "custom-mm-rule",
-          "color": "#3A2A224D",
-          "name": "Mm Rule",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "custom-mm-rule-soft",
-          "color": "#3A2A2247",
-          "name": "Mm Rule Soft",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "custom-mm-tape",
-          "color": "#F9CF6ED9",
-          "name": "Mm Tape",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "custom-mm-text-body",
-          "color": "#4E3C31",
-          "name": "Mm Text Body",
-          "_source": "confirmed"
-        },
-        {
-          "slug": "custom-mm-surface-band",
+          "slug": "mm-pink-band",
           "color": "#F5C2C8",
-          "name": "Mm Surface Band",
-          "_source": "confirmed"
+          "name": "Pink Band",
+          "_source": "declared"
         },
         {
-          "slug": "custom-mm-surface-panel-alt",
+          "slug": "mm-pink-soft",
+          "color": "#F9D5D3",
+          "name": "Pink Soft",
+          "_source": "declared"
+        },
+        {
+          "slug": "mm-yellow",
+          "color": "#F9CF6E",
+          "name": "Yellow",
+          "_source": "declared"
+        },
+        {
+          "slug": "mm-yellow-soft",
           "color": "#FCEBBE",
-          "name": "Mm Surface Panel Alt",
-          "_source": "confirmed"
+          "name": "Yellow Soft",
+          "_source": "declared"
+        },
+        {
+          "slug": "mm-body",
+          "color": "#4E3C31",
+          "name": "Body",
+          "_source": "declared"
+        },
+        {
+          "slug": "mm-muted",
+          "color": "#5E4A3D",
+          "name": "Muted",
+          "_source": "declared"
+        },
+        {
+          "slug": "mm-muted-2",
+          "color": "#6B5646",
+          "name": "Muted 2",
+          "_source": "declared"
+        },
+        {
+          "slug": "mm-script",
+          "color": "#8E3444",
+          "name": "Script",
+          "_source": "declared"
+        },
+        {
+          "slug": "mm-script-gold",
+          "color": "#7A5A12",
+          "name": "Script Gold",
+          "_source": "declared"
+        },
+        {
+          "slug": "mm-sparkle",
+          "color": "#E86A75",
+          "name": "Sparkle",
+          "_source": "declared"
+        },
+        {
+          "slug": "mm-image-bg",
+          "color": "#F3E6CC",
+          "name": "Image Background",
+          "_source": "declared"
+        },
+        {
+          "slug": "mm-line",
+          "color": "#EADBC0",
+          "name": "Line",
+          "_source": "declared"
+        },
+        {
+          "slug": "mm-line-dashed",
+          "color": "#E6D4B4",
+          "name": "Line Dashed",
+          "_source": "declared"
+        },
+        {
+          "slug": "mm-rule",
+          "color": "#3A2A224D",
+          "name": "Rule",
+          "_source": "declared"
+        },
+        {
+          "slug": "mm-rule-soft",
+          "color": "#3A2A2247",
+          "name": "Rule Soft",
+          "_source": "declared"
+        },
+        {
+          "slug": "mm-tape",
+          "color": "#F9CF6ED9",
+          "name": "Tape",
+          "_source": "declared"
         }
       ],
       "gradients": [],
@@ -743,7 +636,34 @@
         "2xl": "48px"
       },
       "header": {},
-      "footer": {}
+      "footer": {},
+      "colourRoles": {
+        "primary": "mm-yellow",
+        "primary-text": "mm-cocoa",
+        "primary-dark": "mm-paper",
+        "accent": "mm-pink",
+        "accent-text": "mm-cocoa",
+        "accent-light": "mm-pink-soft",
+        "success": "#2E7D4F",
+        "success-light": "#ECFDF5",
+        "error": "#DC2626",
+        "error-light": "#FEF2F2",
+        "info": "#3B82F6",
+        "info-light": "#EBF5FF",
+        "surface": "mm-cream",
+        "surface-alt": "mm-paper",
+        "text": "mm-cocoa",
+        "text-muted": "mm-muted",
+        "text-inverse": "mm-paper",
+        "border": "mm-cocoa",
+        "border-light": "mm-line",
+        "footer-bg": "mm-cream",
+        "heading": "mm-cocoa",
+        "link": "mm-pink-dark",
+        "link-hover": "mm-cocoa",
+        "section": "mm-pink-soft",
+        "section-text": "mm-cocoa"
+      }
     },
     "appearanceTools": true,
     "useRootPaddingAwareAlignments": true,

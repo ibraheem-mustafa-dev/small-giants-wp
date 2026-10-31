@@ -107,7 +107,7 @@ def is_ground_slug(slug: str) -> bool:
 def grounds(snapshot: dict) -> list[tuple[str, str, str]]:
     """(slug, hex, tone) for every palette entry that can be a ground (`is_ground_slug`, opaque, resolving to a colour),
     in palette order."""
-    palette = roster.palette_map(snapshot)
+    palette = roster.effective_palette(snapshot)
     out = []
     for slug in palette:
         if not is_ground_slug(slug):
@@ -193,7 +193,7 @@ def derive_focus(snapshot: dict, framework: bool = False, recalibrate: bool = Fa
     recomputes `ring` and `ringOnDark` from the current grounds even when the snapshot already holds a value for them
     (every other present key is still kept)."""
     notes: list[str] = []
-    palette = roster.palette_map(snapshot)
+    palette = roster.effective_palette(snapshot)
     existing = ((snapshot.get("settings") or {}).get("custom") or {}).get("focus")
     existing = existing if isinstance(existing, dict) else {}
 
@@ -258,7 +258,7 @@ def draft_ring_notes(snapshot: dict) -> list[str]:
     resolves, naming the lowest ratio and its ground. Empty for a snapshot that is not draft-sourced."""
     if not draft_sourced(snapshot):
         return []
-    palette = roster.palette_map(snapshot)
+    palette = roster.effective_palette(snapshot)
     focus = focus_of(snapshot)
     gs = grounds(snapshot)
     notes = []
@@ -279,7 +279,7 @@ def missing_focus_keys(snapshot: dict) -> list[str]:
 def check_snapshot(snapshot: dict, framework: bool = False) -> list[str]:
     """Problems with this snapshot's focus tokens (empty when it passes). `framework=True` skips the 3:1 ring test."""
     problems = [f"missing key {k}" for k in missing_focus_keys(snapshot)]
-    palette = roster.palette_map(snapshot)
+    palette = roster.effective_palette(snapshot)
     focus = focus_of(snapshot)
     gs = grounds(snapshot)
     absent = set(missing_focus_keys(snapshot))

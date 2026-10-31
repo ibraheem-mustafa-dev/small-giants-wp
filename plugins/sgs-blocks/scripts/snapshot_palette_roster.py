@@ -5,7 +5,9 @@ One importable home for the rule, shared by the completeness gate
 migration (`migrate-palette-roster-slugs.py`):
 
   * the roster is the framework palette, read from `theme/sgs-theme/theme.json`;
-  * the roster must be a subset of every snapshot's palette slugs (extras are allowed);
+  * every roster slug must resolve in every snapshot (extras are allowed), either as a palette entry or, for a cloned
+    client whose palette is its draft's own shades (FR-32-28), as a `settings.custom.colourRoles` key naming an
+    existing palette slug or holding a raw hex;
   * three colour pairs must reach WCAG 4.5:1 per snapshot, using that snapshot's own
     resolved values: `section-text` on `section`, `link` on `surface`, `link-hover` on `surface`.
 
@@ -43,9 +45,51 @@ def framework_roster(theme_json: Path | None = None) -> list[str]:
     return [e["slug"] for e in entries if isinstance(e, dict) and isinstance(e.get("slug"), str)]
 
 
+def colour_roles(theme: dict) -> dict:
+    """`settings.custom.colourRoles` (`{role: shade slug | raw hex}`), or {} when the snapshot keeps its roles as palette entries."""
+    roles = ((theme.get("settings") or {}).get("custom") or {}).get("colourRoles")
+    return roles if isinstance(roles, dict) else {}
+
+
+def effective_palette(theme: dict) -> dict[str, str]:
+    """slug -> colour for every slug the snapshot answers: its palette entries plus each `colourRoles` key whose value
+    names a palette slug (the shade's colour) or is a raw hex. A palette entry of the same name wins; an invalid value is
+    not answered (see `invalid_colour_roles`)."""
+    palette = palette_map(theme)
+    out = dict(palette)
+    for role, value in colour_roles(theme).items():
+        if role in out or not isinstance(role, str) or not isinstance(value, str):
+            continue
+        if value in palette and value != role:
+            out[role] = palette[value]
+        elif _HEX.match(value.strip()):
+            out[role] = value.strip()
+    return out
+
+
+def invalid_colour_roles(theme: dict, roster: list[str]) -> list[str]:
+    """One message per `colourRoles` entry that cannot resolve: a key that is no framework role, a value naming a slug
+    the palette lacks (or the role itself), or a malformed hex."""
+    palette = palette_map(theme)
+    problems = []
+    for role, value in colour_roles(theme).items():
+        if role not in roster:
+            problems.append("colourRoles.%s is not a framework role" % role)
+        elif not isinstance(value, str) or not value.strip():
+            problems.append("colourRoles.%s has no value" % role)
+        elif value.startswith("#"):
+            if not _HEX.match(value.strip()):
+                problems.append("colourRoles.%s holds %r, not a hex colour" % (role, value))
+        elif value == role:
+            problems.append("colourRoles.%s points at itself" % role)
+        elif value not in palette:
+            problems.append("colourRoles.%s names the palette slug `%s`, which the palette lacks" % (role, value))
+    return problems
+
+
 def missing_roster_slugs(snapshot: dict, roster: list[str]) -> list[str]:
-    """Roster slugs the snapshot's palette does not carry (roster order)."""
-    have = set(palette_map(snapshot))
+    """Roster slugs the snapshot does not resolve, as a palette entry or a valid `colourRoles` key (roster order)."""
+    have = set(effective_palette(snapshot))
     return [s for s in roster if s not in have]
 
 
@@ -112,7 +156,7 @@ def contrast_ratio(fg_hex: str, bg_hex: str) -> float | None:
 def contrast_report(snapshot: dict) -> list[dict]:
     """One row per CONTRAST_PAIRS entry: slugs, resolved hexes, ratio and status
     (ok / low / missing-slug / unresolvable)."""
-    palette = palette_map(snapshot)
+    palette = effective_palette(snapshot)
     rows = []
     for fg_slug, bg_slug in CONTRAST_PAIRS:
         row = {"fg": fg_slug, "bg": bg_slug, "fg_hex": None, "bg_hex": None, "ratio": None, "status": "ok"}

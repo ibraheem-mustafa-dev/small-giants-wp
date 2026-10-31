@@ -63,6 +63,7 @@ import palette as palette_mod
 import presets as presets_mod
 import palette_refs
 import role_defaults
+import shade_palette
 import site_palette
 import token_files
 import usage_census
@@ -865,6 +866,16 @@ def main(argv=None) -> int:
     # A Fill patch (--patch) is the last word: it wins over everything derived above, including the declared tokens.
     for patch_file in args.patch:
         patch_mod.apply_patch(snap, patch_file, trace)
+
+    # FR-32-28: the palette is the draft's own shades and the framework roles are hidden pointers to them. Last, so
+    # every colour reference above finds the palette the roles were derived from; a draft with no colour token keeps
+    # the roster as palette entries.
+    unresolved_roles: list = []
+    if draft_tokens is not None:
+        unresolved_roles = shade_palette.apply(snap, draft_tokens, draft.parent, baseline, confirmed, trace)
+    for role in unresolved_roles:
+        print(f"WARNING: role {role} has no value (no alias, mark, reading or related role gives one); the roster gate "
+              "will refuse the snapshot", file=sys.stderr)
 
     ok, errors = validate_theme_json(snap)
     if not ok:

@@ -63,7 +63,7 @@ def verdict(colour: str | None, ground_hexes: list[tuple[str, str]]) -> str:
 
 def survey_one(name: str, path: Path, recalibrate: bool = False) -> None:
     snap = json.loads(read(path))
-    palette = roster.palette_map(snap)
+    palette = roster.effective_palette(snap)
     gs = ft.grounds(snap)
     light = [(s, h) for s, h, t in gs if t == "light"]
     dark = [(s, h) for s, h, t in gs if t == "dark"]
@@ -243,8 +243,8 @@ def self_test() -> int:
     # 5d. a mid-dark palette entry lightens ringOnDark beyond the footer-only calibration
     base = make_snapshot("#f0c848")
     deep = make_snapshot("#f0c848", extra=(("primary-dark", "#587a6a"),))
-    on_base = ft.resolve(ft.derive_focus(base)[0]["ringOnDark"], roster.palette_map(base))
-    on_deep = ft.resolve(ft.derive_focus(deep)[0]["ringOnDark"], roster.palette_map(deep))
+    on_base = ft.resolve(ft.derive_focus(base)[0]["ringOnDark"], roster.effective_palette(base))
+    on_deep = ft.resolve(ft.derive_focus(deep)[0]["ringOnDark"], roster.effective_palette(deep))
     dgrounds = [(s, h) for s, h, t in ft.grounds(deep) if t == "dark"]
     expect(ft.lightness_of(on_deep) > ft.lightness_of(on_base) and ft.min_ratio(ft.norm_hex(on_deep), dgrounds)[0] >= 3.0
            and ft.min_ratio(ft.norm_hex(on_base), dgrounds)[0] < 3.0,

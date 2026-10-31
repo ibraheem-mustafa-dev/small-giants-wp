@@ -26,727 +26,617 @@
     "appended": 0
   },
   {
-    "kind": "declared",
-    "what": "accentSets.accent",
-    "value": "taupe",
-    "reason": "active option confirmed by the rendered custom property"
-  },
-  {
-    "kind": "skip",
-    "what": "Faint text",
-    "value": "#8B8478",
-    "reason": "placeholder-tier role: no palette slot"
-  },
-  {
-    "kind": "skip",
-    "what": "Soft fill",
-    "value": "#EFEAE2",
-    "reason": "accent slugs are supplied by the script variant set"
-  },
-  {
-    "kind": "skip",
-    "what": "Image placeholder",
-    "value": "#F3F0EB",
-    "reason": "placeholder-tier role: no palette slot"
-  },
-  {
-    "kind": "skip",
-    "what": "Dark placeholder",
-    "value": "#2B2721",
-    "reason": "placeholder-tier role: no palette slot"
-  },
-  {
-    "kind": "skip",
-    "what": "Accent (taupe, default)",
+    "kind": "token",
+    "slug": "custom-acc",
+    "_source": "declared",
     "value": "#9C8B78",
-    "reason": "accent slugs are supplied by the script variant set"
+    "uses": 14,
+    "reason": "tokens/*.css --acc, used by value 14 time(s) in the draft's code",
+    "render": "confirmed"
   },
   {
-    "kind": "skip",
-    "what": "Accent ink (taupe)",
+    "kind": "token",
+    "slug": "custom-acc-ink",
+    "_source": "declared",
     "value": "#6F6152",
-    "reason": "accent slugs are supplied by the script variant set"
+    "uses": 50,
+    "reason": "tokens/*.css --acc-ink, used by value 50 time(s) in the draft's code",
+    "render": "confirmed"
   },
   {
-    "kind": "skip",
-    "what": "Ordered in",
-    "value": "#8A6A1F",
-    "reason": "status colour with no base slug"
+    "kind": "token",
+    "slug": "custom-acc-soft",
+    "_source": "declared",
+    "value": "#EFEAE2",
+    "uses": 13,
+    "reason": "tokens/*.css --acc-soft, used by value 13 time(s) in the draft's code",
+    "render": "confirmed"
   },
   {
-    "kind": "skip",
-    "what": "Google blue",
-    "value": "#1A73E8",
-    "reason": "third-party widget colour: stays literal"
+    "kind": "token",
+    "slug": "custom-border-strong",
+    "_source": "declared",
+    "value": "#D8D2C8",
+    "uses": 4,
+    "reason": "tokens/*.css --border-strong, used by value 4 time(s) in the draft's code",
+    "render": "not in the measured nodes (the code uses it)"
   },
   {
-    "kind": "skip",
-    "what": "Google star",
-    "value": "#FBBC04",
-    "reason": "third-party widget colour: stays literal"
+    "kind": "gap",
+    "what": "tokens/*.css --border-warm",
+    "value": "#D5CCBD",
+    "reason": "declared but the draft's code never uses this exact value: gap-logged, not emitted (FR-33-1)"
   },
   {
-    "kind": "skip",
-    "what": "Google grey star",
-    "value": "#DADCE0",
-    "reason": "third-party widget colour: stays literal"
+    "kind": "token",
+    "slug": "custom-control-off",
+    "_source": "declared",
+    "value": "#C9C2B8",
+    "uses": 4,
+    "reason": "tokens/*.css --control-off, used by value 4 time(s) in the draft's code",
+    "render": "not in the measured nodes (the code uses it)"
   },
   {
-    "kind": "skip",
-    "what": "Google borders",
-    "value": "#DADCE0",
-    "reason": "third-party widget colour: stays literal"
-  },
-  {
-    "kind": "skip",
-    "what": "Google text",
-    "value": "#202124",
-    "reason": "third-party widget colour: stays literal"
-  },
-  {
-    "kind": "declared",
-    "what": "palette.surface",
-    "value": "#FAF8F5",
-    "reason": "README 'Page background', 13 of 43 uses in its role's families (background 13), consistent with its role"
-  },
-  {
-    "kind": "declared",
-    "what": "palette.footer-bg",
-    "value": "#FAF8F5",
-    "reason": "README 'Page background', 13 of 43 uses in its role's families (background 13), consistent with its role"
-  },
-  {
-    "kind": "declared",
-    "what": "palette.surface-alt",
-    "value": "#FFFFFF",
-    "reason": "README 'Surface', 88 of 102 uses in its role's families (background 88), consistent with its role"
-  },
-  {
-    "kind": "declared",
-    "what": "palette.text",
-    "value": "#141414",
-    "reason": "README 'Ink', 151 of 151 uses in its role's families (text 65, background 35, border 51), consistent with its role"
-  },
-  {
-    "kind": "declared",
-    "what": "palette.primary",
-    "value": "#141414",
-    "reason": "README 'Ink', 151 of 151 uses in its role's families (text 65, background 35, border 51), consistent with its role"
-  },
-  {
-    "kind": "declared",
-    "what": "palette.text-inverse",
-    "value": "#FAF8F5",
-    "reason": "README 'Ink on dark', 29 of 43 uses in its role's families (text 29), consistent with its role"
-  },
-  {
-    "kind": "declared",
-    "what": "palette.primary-text",
-    "value": "#FAF8F5",
-    "reason": "README 'Ink on dark', 29 of 43 uses in its role's families (text 29), consistent with its role"
-  },
-  {
-    "kind": "declared",
-    "what": "palette.text-muted",
-    "value": "#5E584F",
-    "reason": "README 'Body text', 56 of 56 uses in its role's families (text 56), consistent with its role"
-  },
-  {
-    "kind": "declared",
-    "what": "palette.text-label",
-    "value": "#77716A",
-    "reason": "README 'Muted text', 44 of 44 uses in its role's families (text 44), consistent with its role"
-  },
-  {
-    "kind": "declared",
-    "what": "palette.border",
+    "kind": "token",
+    "slug": "custom-hairline",
+    "_source": "declared",
     "value": "#E6E1DA",
-    "reason": "README 'Hairline', 124 of 124 uses in its role's families (background 14, border 110), consistent with its role"
+    "uses": 173,
+    "reason": "tokens/*.css --hairline, used by value 173 time(s) in the draft's code",
+    "render": "confirmed"
   },
   {
-    "kind": "declared",
-    "what": "palette.success",
+    "kind": "token",
+    "slug": "custom-ink",
+    "_source": "declared",
+    "value": "#141414",
+    "uses": 235,
+    "reason": "tokens/*.css --ink, used by value 235 time(s) in the draft's code",
+    "render": "confirmed"
+  },
+  {
+    "kind": "token",
+    "slug": "custom-ink-hover",
+    "_source": "declared",
+    "value": "#2A2A2A",
+    "uses": 17,
+    "reason": "tokens/*.css --ink-hover, used by value 17 time(s) in the draft's code",
+    "render": "confirmed"
+  },
+  {
+    "kind": "token",
+    "slug": "custom-paper",
+    "_source": "declared",
+    "value": "#FAF8F5",
+    "uses": 54,
+    "reason": "tokens/*.css --paper, used by value 54 time(s) in the draft's code",
+    "render": "confirmed"
+  },
+  {
+    "kind": "token",
+    "slug": "custom-success",
+    "_source": "declared",
     "value": "#1B7F43",
-    "reason": "README 'In stock', 2 of 2 uses in its role's families (text 2), consistent with its role"
+    "uses": 5,
+    "reason": "tokens/*.css --success, used by value 5 time(s) in the draft's code",
+    "render": "not in the measured nodes (the code uses it)"
   },
   {
-    "kind": "declared",
-    "what": "palette.whatsapp",
+    "kind": "token",
+    "slug": "custom-surface-alt",
+    "_source": "declared",
+    "value": "#F3F0EB",
+    "uses": 22,
+    "reason": "tokens/*.css --surface-alt, used by value 22 time(s) in the draft's code",
+    "render": "not in the measured nodes (the code uses it)"
+  },
+  {
+    "kind": "gap",
+    "what": "tokens/*.css --surface-soft",
+    "value": "#F0EBE3",
+    "reason": "within delta E 1 of --acc-soft: an alias, one palette entry"
+  },
+  {
+    "kind": "token",
+    "slug": "custom-text-2",
+    "_source": "declared",
+    "value": "#5E584F",
+    "uses": 71,
+    "reason": "tokens/*.css --text-2, used by value 71 time(s) in the draft's code",
+    "render": "confirmed"
+  },
+  {
+    "kind": "token",
+    "slug": "custom-text-3",
+    "_source": "declared",
+    "value": "#77716A",
+    "uses": 60,
+    "reason": "tokens/*.css --text-3, used by value 60 time(s) in the draft's code",
+    "render": "not in the measured nodes (the code uses it)"
+  },
+  {
+    "kind": "token",
+    "slug": "custom-text-4",
+    "_source": "declared",
+    "value": "#8B8478",
+    "uses": 18,
+    "reason": "tokens/*.css --text-4, used by value 18 time(s) in the draft's code",
+    "render": "not in the measured nodes (the code uses it)"
+  },
+  {
+    "kind": "token",
+    "slug": "custom-text-faint",
+    "_source": "declared",
+    "value": "#A39C90",
+    "uses": 1,
+    "reason": "tokens/*.css --text-faint, used by value 1 time(s) in the draft's code",
+    "render": "not in the measured nodes (the code uses it)"
+  },
+  {
+    "kind": "token",
+    "slug": "custom-text-muted",
+    "_source": "declared",
+    "value": "#6B655E",
+    "uses": 35,
+    "reason": "tokens/*.css --text-muted, used by value 35 time(s) in the draft's code",
+    "render": "not in the measured nodes (the code uses it)"
+  },
+  {
+    "kind": "token",
+    "slug": "custom-text-strong",
+    "_source": "declared",
+    "value": "#4A453E",
+    "uses": 32,
+    "reason": "tokens/*.css --text-strong, used by value 32 time(s) in the draft's code",
+    "render": "confirmed"
+  },
+  {
+    "kind": "token",
+    "slug": "custom-wa",
+    "_source": "declared",
     "value": "#25D366",
-    "reason": "README 'WhatsApp', 10 of 10 uses in its role's families (text 1, background 8, border 1), consistent with its role"
+    "uses": 11,
+    "reason": "tokens/*.css --wa, used by value 11 time(s) in the draft's code",
+    "render": "confirmed"
   },
   {
-    "kind": "declared",
-    "what": "palette.primary",
+    "kind": "token",
+    "slug": "custom-wa-border",
+    "_source": "declared",
+    "value": "#B7E5C7",
+    "uses": 6,
+    "reason": "tokens/*.css --wa-border, used by value 6 time(s) in the draft's code",
+    "render": "not in the measured nodes (the code uses it)"
+  },
+  {
+    "kind": "token",
+    "slug": "custom-wa-hover",
+    "_source": "declared",
+    "value": "#1EBE5A",
+    "uses": 4,
+    "reason": "tokens/*.css --wa-hover, used by value 4 time(s) in the draft's code",
+    "render": "confirmed"
+  },
+  {
+    "kind": "token",
+    "slug": "custom-wa-ink",
+    "_source": "declared",
+    "value": "#0B2B17",
+    "uses": 8,
+    "reason": "tokens/*.css --wa-ink, used by value 8 time(s) in the draft's code",
+    "render": "confirmed"
+  },
+  {
+    "kind": "token",
+    "slug": "custom-wa-ink-deep",
+    "_source": "declared",
+    "value": "#12301E",
+    "uses": 5,
+    "reason": "tokens/*.css --wa-ink-deep, used by value 5 time(s) in the draft's code",
+    "render": "not in the measured nodes (the code uses it)"
+  },
+  {
+    "kind": "token",
+    "slug": "custom-wa-soft",
+    "_source": "declared",
+    "value": "#E9F9EF",
+    "uses": 6,
+    "reason": "tokens/*.css --wa-soft, used by value 6 time(s) in the draft's code",
+    "render": "not in the measured nodes (the code uses it)"
+  },
+  {
+    "kind": "token",
+    "slug": "custom-white",
+    "_source": "declared",
+    "value": "#FFFFFF",
+    "uses": 137,
+    "reason": "tokens/*.css --white, used by value 137 time(s) in the draft's code",
+    "render": "confirmed"
+  },
+  {
+    "kind": "gap",
+    "what": "tokens/*.css --border-default",
+    "value": "#E6E1DA",
+    "reason": "within delta E 1 of --hairline: an alias, one palette entry"
+  },
+  {
+    "kind": "gap",
+    "what": "tokens/*.css --button-primary-bg",
     "value": "#141414",
-    "reason": "measured primary button background"
+    "reason": "within delta E 1 of --ink: an alias, one palette entry"
   },
   {
-    "kind": "declared",
-    "what": "palette.primary-text",
+    "kind": "gap",
+    "what": "tokens/*.css --button-primary-fg",
     "value": "#FAF8F5",
-    "reason": "measured primary button text"
+    "reason": "within delta E 1 of --paper: an alias, one palette entry"
   },
   {
-    "kind": "overlay",
-    "what": "palette.primary",
+    "kind": "gap",
+    "what": "tokens/*.css --focus-ring",
+    "value": "#9C8B78",
+    "reason": "within delta E 1 of --acc: an alias, one palette entry"
+  },
+  {
+    "kind": "gap",
+    "what": "tokens/*.css --surface-card",
+    "value": "#FFFFFF",
+    "reason": "within delta E 1 of --white: an alias, one palette entry"
+  },
+  {
+    "kind": "gap",
+    "what": "tokens/*.css --surface-page",
+    "value": "#FAF8F5",
+    "reason": "within delta E 1 of --paper: an alias, one palette entry"
+  },
+  {
+    "kind": "gap",
+    "what": "tokens/*.css --text-body",
     "value": "#141414",
-    "was": "#1F7A7A",
-    "reason": "base slug replaced in place"
+    "reason": "within delta E 1 of --ink: an alias, one palette entry"
   },
   {
-    "kind": "overlay",
-    "what": "palette.primary-text",
+    "kind": "gap",
+    "what": "tokens/*.css non-colour tokens",
+    "count": 127,
+    "reason": "typography and spacing tokens are read by their own passes, not the colour pass"
+  },
+  {
+    "kind": "confirm",
+    "slug": "custom-acc",
+    "action": "dropped",
+    "old": "#9C8B78",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "custom-acc-ink",
+    "action": "dropped",
+    "old": "#6F6152",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "custom-acc-soft",
+    "action": "dropped",
+    "old": "#EFEAE2",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "custom-border-strong",
+    "action": "dropped",
+    "old": "#D8D2C8",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "custom-control-off",
+    "action": "dropped",
+    "old": "#C9C2B8",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "custom-hairline",
+    "action": "dropped",
+    "old": "#E6E1DA",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "custom-ink",
+    "action": "dropped",
+    "old": "#141414",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "custom-ink-hover",
+    "action": "dropped",
+    "old": "#2A2A2A",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "custom-paper",
+    "action": "dropped",
+    "old": "#FAF8F5",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "custom-success",
+    "action": "dropped",
+    "old": "#1B7F43",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "custom-surface-alt",
+    "action": "dropped",
+    "old": "#F3F0EB",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "custom-text-2",
+    "action": "dropped",
+    "old": "#5E584F",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "custom-text-3",
+    "action": "dropped",
+    "old": "#77716A",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "custom-text-4",
+    "action": "dropped",
+    "old": "#8B8478",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "custom-text-faint",
+    "action": "dropped",
+    "old": "#A39C90",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "custom-text-muted",
+    "action": "dropped",
+    "old": "#6B655E",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "custom-text-strong",
+    "action": "dropped",
+    "old": "#4A453E",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "custom-wa",
+    "action": "dropped",
+    "old": "#25D366",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "custom-wa-border",
+    "action": "dropped",
+    "old": "#B7E5C7",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "custom-wa-hover",
+    "action": "dropped",
+    "old": "#1EBE5A",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "custom-wa-ink",
+    "action": "dropped",
+    "old": "#0B2B17",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "custom-wa-ink-deep",
+    "action": "dropped",
+    "old": "#12301E",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "custom-wa-soft",
+    "action": "dropped",
+    "old": "#E9F9EF",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "custom-white",
+    "action": "dropped",
+    "old": "#FFFFFF",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "primary",
+    "action": "set",
+    "old": "#1F7A7A",
+    "value": "#141414",
+    "tokens": "--ink, --text-body, --button-primary-bg",
+    "reason": "Bean's confirmed palette role (intake review)"
+  },
+  {
+    "kind": "confirm",
+    "slug": "text",
+    "action": "set",
+    "old": "#141414",
+    "value": "#141414",
+    "tokens": "--ink, --text-body, --button-primary-bg",
+    "reason": "Bean's confirmed palette role (intake review)"
+  },
+  {
+    "kind": "confirm",
+    "slug": "heading",
+    "action": "set",
+    "old": "#1A202C",
+    "value": "#141414",
+    "tokens": "--ink, --text-body, --button-primary-bg",
+    "reason": "Bean's confirmed palette role (intake review)"
+  },
+  {
+    "kind": "confirm",
+    "slug": "link",
+    "action": "set",
+    "old": "#1F7A7A",
+    "value": "#141414",
+    "tokens": "--ink, --text-body, --button-primary-bg",
+    "reason": "Bean's confirmed palette role (intake review)"
+  },
+  {
+    "kind": "confirm",
+    "slug": "section-text",
+    "action": "set",
+    "old": "#1A202C",
+    "value": "#141414",
+    "tokens": "--ink, --text-body, --button-primary-bg",
+    "reason": "Bean's confirmed palette role (intake review)"
+  },
+  {
+    "kind": "confirm",
+    "slug": "primary-text",
+    "action": "set",
+    "old": "#F1F5F9",
     "value": "#FAF8F5",
-    "was": "#F1F5F9",
-    "reason": "base slug replaced in place"
+    "tokens": "--paper, --surface-page, --button-primary-fg",
+    "reason": "Bean's confirmed palette role (intake review)"
   },
   {
-    "kind": "overlay",
+    "kind": "confirm",
+    "slug": "surface",
+    "action": "set",
+    "old": "#faf8f5",
+    "value": "#FAF8F5",
+    "tokens": "--paper, --surface-page, --button-primary-fg",
+    "reason": "Bean's confirmed palette role (intake review)"
+  },
+  {
+    "kind": "confirm",
+    "slug": "text-inverse",
+    "action": "set",
+    "old": "#F1F5F9",
+    "value": "#FAF8F5",
+    "tokens": "--paper, --surface-page, --button-primary-fg",
+    "reason": "Bean's confirmed palette role (intake review)"
+  },
+  {
+    "kind": "confirm",
+    "slug": "footer-bg",
+    "action": "set",
+    "old": "#0F172A",
+    "value": "#FAF8F5",
+    "tokens": "--paper, --surface-page, --button-primary-fg",
+    "reason": "Bean's confirmed palette role (intake review)"
+  },
+  {
+    "kind": "confirm",
+    "slug": "surface-alt",
+    "action": "set",
+    "old": "#F1F0EC",
+    "value": "#FFFFFF",
+    "tokens": "--white, --surface-card",
+    "reason": "Bean's confirmed palette role (intake review)"
+  },
+  {
+    "kind": "confirm",
+    "slug": "section",
+    "action": "set",
+    "old": "#F1F0EC",
+    "value": "#FFFFFF",
+    "tokens": "--white, --surface-card",
+    "reason": "Bean's confirmed palette role (intake review)"
+  },
+  {
+    "kind": "confirm",
+    "slug": "border",
+    "action": "set",
+    "old": "#D4DBE5",
+    "value": "#E6E1DA",
+    "tokens": "--hairline, --border-default",
+    "reason": "Bean's confirmed palette role (intake review)"
+  },
+  {
+    "kind": "confirm",
+    "slug": "text-muted",
+    "action": "set",
+    "old": "#606D80",
+    "value": "#5E584F",
+    "tokens": "--text-2",
+    "reason": "Bean's confirmed palette role (intake review)"
+  },
+  {
+    "kind": "confirm",
+    "slug": "accent",
+    "action": "set",
+    "old": "#F59E0B",
+    "value": "#9C8B78",
+    "tokens": "--acc, --focus-ring",
+    "reason": "Bean's confirmed palette role (intake review)"
+  },
+  {
+    "kind": "confirm",
+    "slug": "accent-text",
+    "action": "set",
+    "old": "#92400E",
+    "value": "#6F6152",
+    "tokens": "--acc-ink",
+    "reason": "Bean's confirmed palette role (intake review)"
+  },
+  {
+    "kind": "confirm",
+    "slug": "link-hover",
+    "action": "set",
+    "old": "#0F4C4C",
+    "value": "#6F6152",
+    "tokens": "--acc-ink",
+    "reason": "Bean's confirmed palette role (intake review)"
+  },
+  {
+    "kind": "confirm",
+    "slug": "accent-light",
+    "action": "set",
+    "old": "#FEF3C7",
+    "value": "#EFEAE2",
+    "tokens": "--acc-soft",
+    "reason": "Bean's confirmed palette role (intake review)"
+  },
+  {
+    "kind": "confirm",
+    "slug": "success",
+    "action": "set",
+    "old": "#2E7D4F",
+    "value": "#1B7F43",
+    "tokens": "--success",
+    "reason": "Bean's confirmed palette role (intake review)"
+  },
+  {
+    "kind": "derive",
     "what": "palette.primary-dark",
     "value": "#0F0F0F",
-    "was": "#0F4C4C",
-    "reason": "derived: primary mixed 25% toward black"
-  },
-  {
-    "kind": "overlay",
-    "what": "palette.accent",
-    "value": "#9C8B78",
-    "was": "#F59E0B",
-    "reason": "base slug replaced in place"
-  },
-  {
-    "kind": "overlay",
-    "what": "palette.accent-text",
-    "value": "#6F6152",
-    "was": "#92400E",
-    "reason": "base slug replaced in place"
-  },
-  {
-    "kind": "overlay",
-    "what": "palette.accent-light",
-    "value": "#EFEAE2",
-    "was": "#FEF3C7",
-    "reason": "base slug replaced in place"
-  },
-  {
-    "kind": "overlay",
-    "what": "palette.success",
-    "value": "#1B7F43",
-    "was": "#2E7D4F",
-    "reason": "base slug replaced in place"
-  },
-  {
-    "kind": "overlay",
-    "what": "palette.whatsapp",
-    "value": "#25D366",
-    "was": "#25D366",
-    "reason": "base slug replaced in place"
-  },
-  {
-    "kind": "overlay",
-    "what": "palette.surface",
-    "value": "#FAF8F5",
-    "was": "#faf8f5",
-    "reason": "base slug replaced in place"
-  },
-  {
-    "kind": "overlay",
-    "what": "palette.surface-alt",
-    "value": "#FFFFFF",
-    "was": "#F1F0EC",
-    "reason": "base slug replaced in place"
-  },
-  {
-    "kind": "overlay",
-    "what": "palette.text",
-    "value": "#141414",
-    "was": "#141414",
-    "reason": "base slug replaced in place"
-  },
-  {
-    "kind": "overlay",
-    "what": "palette.text-muted",
-    "value": "#5E584F",
-    "was": "#606D80",
-    "reason": "base slug replaced in place"
-  },
-  {
-    "kind": "overlay",
-    "what": "palette.text-inverse",
-    "value": "#FAF8F5",
-    "was": "#F1F5F9",
-    "reason": "base slug replaced in place"
-  },
-  {
-    "kind": "overlay",
-    "what": "palette.border",
-    "value": "#E6E1DA",
-    "was": "#D4DBE5",
-    "reason": "base slug replaced in place"
-  },
-  {
-    "kind": "overlay",
-    "what": "palette.footer-bg",
-    "value": "#FAF8F5",
-    "was": "#0F172A",
-    "reason": "base slug replaced in place"
-  },
-  {
-    "kind": "overlay",
-    "what": "palette.text-label",
-    "value": "#77716A",
-    "reason": "new role-named slug appended (no base slug fits)"
-  },
-  {
-    "kind": "declared",
-    "what": "layout.contentSize",
-    "value": "1440px",
-    "reason": "README max content width; wideSize 1440px (never narrower)"
-  },
-  {
-    "kind": "declared",
-    "what": "custom.borderRadius",
-    "value": "0px",
-    "reason": "README declares a square design; pill and other keys untouched"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#6B655E",
-    "reason": "undeclared, 24 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#4A453E",
-    "reason": "undeclared, 12 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#2A2A2A",
-    "reason": "undeclared, 9 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#0B2B17",
-    "reason": "undeclared, 8 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#B7E5C7",
-    "reason": "undeclared, 5 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#E9F9EF",
-    "reason": "undeclared, 5 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#F0EBE3",
-    "reason": "undeclared, 5 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#12301E",
-    "reason": "undeclared, 4 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#1EBE5A",
-    "reason": "undeclared, 4 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#5F6368",
-    "reason": "undeclared, 4 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#C9C2B8",
-    "reason": "undeclared, 4 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#D8D2C8",
-    "reason": "undeclared, 4 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#F1F6FE",
-    "reason": "undeclared, 4 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(20,20,20,0.5)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(255,255,255,0.94)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#0F2E1C",
-    "reason": "undeclared, 2 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#2F5C3F",
-    "reason": "undeclared, 2 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#70757A",
-    "reason": "undeclared, 2 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#999999",
-    "reason": "undeclared, 2 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#DCF4E5",
-    "reason": "undeclared, 2 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#DDD6CB",
-    "reason": "undeclared, 2 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#E8EAED",
-    "reason": "undeclared, 2 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#F7F4EF",
-    "reason": "undeclared, 2 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(20,20,20,0)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(20,20,20,0.72)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(20,20,20,0.8)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#000000",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#1765CC",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#2A2724",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#2F2F2F",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#3A352F",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#3C4043",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#3F3F3F",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#4285F4",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#4A4A4A",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#5F5F5F",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#7A7A7A",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#A39C90",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#B8B0A4",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#BDC1C6",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#C13584",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#CFC7BB",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#CFC8BE",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#D0C8BA",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#DADADA",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#DFD8CC",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#E2DCD3",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#EDE7DC",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#F1F3F4",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#F4F4F4",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#FFB3C7",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "#FFC439",
-    "reason": "undeclared, 1 uses below 25"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(18,18,18,0)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(18,18,18,0.04)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(18,18,18,0.4)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(18,18,18,0.74)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(18,18,18,0.86)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(20,20,20,0.06)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(20,20,20,0.1)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(20,20,20,0.2)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(20,20,20,0.34)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(20,20,20,0.44)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(20,20,20,0.45)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(20,20,20,0.88)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(20,20,20,0.93)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(20,20,20,0.97)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(250,248,245,0.14)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(250,248,245,0.16)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(250,248,245,0.5)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(250,248,245,0.6)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(250,248,245,0.75)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(250,248,245,0.9)",
-    "reason": "translucent"
-  },
-  {
-    "kind": "skip",
-    "what": "census",
-    "value": "rgba(250,248,245,0.94)",
-    "reason": "translucent"
+    "_source": "derived",
+    "reason": "the client's primary #141414 mixed 25% toward black (was #0F4C4C)"
   },
   {
     "kind": "base",
@@ -769,7 +659,7 @@
     "kind": "base",
     "what": "styles.color.background",
     "_source": "declared",
-    "reason": "widest content-containing ancestor 'html>body>div>div>div' (area 9276480)",
+    "reason": "widest content-containing ancestor 'html>body>div>div>div' (area 9210240)",
     "value": "rgb(250, 248, 245)"
   },
   {
@@ -827,12 +717,43 @@
     "source_css_url": "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500..700&display=swap"
   },
   {
+    "kind": "font-family",
+    "what": "fontFamilies:playfair-display",
+    "reason": "loaded by the draft and rendered on 46 element(s) — FR-33-18",
+    "fontFamily": "\"Playfair Display\", serif",
+    "weights": "500",
+    "google": true
+  },
+  {
+    "kind": "font-loading",
+    "what": "font-face:Roboto",
+    "reason": "self-hosted a font not already bundled in the framework",
+    "saved_to": "file:./assets/fonts/roboto/roboto-variable-latin.woff2",
+    "source_css_url": "https://fonts.googleapis.com/css2?family=Roboto:wght@100..900&display=swap"
+  },
+  {
+    "kind": "font-family",
+    "what": "fontFamilies:roboto",
+    "reason": "loaded by the draft and rendered on 87 element(s) — FR-33-18",
+    "fontFamily": "Roboto, Arial, sans-serif",
+    "weights": "400,500",
+    "google": true
+  },
+  {
+    "kind": "font-family",
+    "what": "fontFamilies:outfit",
+    "reason": "loaded by the draft and rendered on 74 element(s) — FR-33-18",
+    "fontFamily": "Outfit, system-ui, sans-serif",
+    "weights": "400,500",
+    "google": true
+  },
+  {
     "kind": "preset",
     "slot": "buttonPresets.primary",
     "_source": "derived",
     "reason": "slot inferred from an unclassed style signature (sig:rgb(20, 20, 20)|rgb(250, 248, 245)|rgb(250, 248, 245)|0px|0px|uppercase|400), 1 occurrence(s), on the PAINTING element <button>",
     "variant_from": "unclassed style signature",
-    "keys": "background,text,border,border-width,border-radius,font-size,font-weight,min-height,padding,hover-background,hover-transform"
+    "keys": "background,text,border,border-width,border-radius,font-size,font-weight,min-height,padding,hover-background,hover-text,hover-border,hover-transform"
   },
   {
     "kind": "preset",
@@ -840,7 +761,7 @@
     "_source": "derived",
     "reason": "slot inferred from an unclassed style signature (sig:rgb(250, 248, 245)|rgb(20, 20, 20)|rgb(20, 20, 20)|0px|0px|uppercase|400), 1 occurrence(s), on the PAINTING element <button>",
     "variant_from": "unclassed style signature",
-    "keys": "background,text,border,border-width,border-radius,font-size,font-weight,min-height,padding,hover-background,hover-transform"
+    "keys": "background,text,border,border-width,border-radius,font-size,font-weight,min-height,padding,hover-background,hover-text,hover-border,hover-transform"
   },
   {
     "kind": "preset",
@@ -848,46 +769,264 @@
     "_source": "derived",
     "reason": "slot inferred from an unclassed style signature (sig:rgba(0, 0, 0, 0)|rgb(250, 248, 245)|rgba(250, 248, 245, 0.75)|1px|0px|uppercase|400), 1 occurrence(s), on the PAINTING element <button:nth-of-type(2)>",
     "variant_from": "unclassed style signature",
-    "keys": "background,text,border,border-width,border-radius,font-size,font-weight,min-height,padding,hover-background,hover-border,hover-transform"
+    "keys": "background,text,border,border-width,border-radius,font-size,font-weight,min-height,padding,hover-background,hover-text,hover-border,hover-transform"
   },
   {
     "kind": "merge",
     "what": "buttonPresets.primary",
     "reason": "derived keys overlaid onto the framework baseline preset; baseline keys the extractor cannot derive are preserved",
-    "overridden": "background,border,border-radius,border-width,font-size,font-weight,hover-background,hover-transform,min-height,padding,text",
-    "preserved_from_baseline": "hover-border,hover-text"
+    "overridden": "background,border,border-radius,border-width,font-size,font-weight,hover-background,hover-border,hover-text,hover-transform,min-height,padding,text",
+    "preserved_from_baseline": "(none)"
   },
   {
     "kind": "merge",
     "what": "buttonPresets.secondary",
     "reason": "derived keys overlaid onto the framework baseline preset; baseline keys the extractor cannot derive are preserved",
-    "overridden": "background,border,border-radius,border-width,font-size,font-weight,hover-background,hover-transform,min-height,padding,text",
-    "preserved_from_baseline": "hover-border,hover-text"
+    "overridden": "background,border,border-radius,border-width,font-size,font-weight,hover-background,hover-border,hover-text,hover-transform,min-height,padding,text",
+    "preserved_from_baseline": "(none)"
   },
   {
     "kind": "merge",
     "what": "buttonPresets.outline",
     "reason": "derived keys overlaid onto the framework baseline preset; baseline keys the extractor cannot derive are preserved",
-    "overridden": "background,border,border-radius,border-width,font-size,font-weight,hover-background,hover-border,hover-transform,min-height,padding,text",
-    "preserved_from_baseline": "hover-text"
+    "overridden": "background,border,border-radius,border-width,font-size,font-weight,hover-background,hover-border,hover-text,hover-transform,min-height,padding,text",
+    "preserved_from_baseline": "(none)"
   },
   {
     "kind": "overlay",
     "what": "buttonPresets.outline",
-    "value": "hover-border=primary-text,text=primary-text",
+    "value": "hover-border=primary-text,hover-text=primary-text,text=primary-text",
     "reason": "preset hex values that equal a palette colour now reference it"
   },
   {
     "kind": "overlay",
     "what": "buttonPresets.primary",
-    "value": "background=primary,border=primary-text,text=primary-text",
+    "value": "background=primary,border=primary-text,hover-border=primary-text,hover-text=primary-text,text=primary-text",
     "reason": "preset hex values that equal a palette colour now reference it"
   },
   {
     "kind": "overlay",
     "what": "buttonPresets.secondary",
-    "value": "background=surface,border=primary,hover-background=surface-alt,text=text",
+    "value": "background=surface,border=primary,hover-background=surface-alt,hover-border=primary,hover-text=text,text=text",
     "reason": "preset hex values that equal a palette colour now reference it"
+  },
+  {
+    "kind": "layout",
+    "what": "layout.contentSize",
+    "_source": "rendered",
+    "value": "1336px",
+    "wideSize": "1440px",
+    "reason": "most common content box of the top-level bands at the widest census viewport; wideSize 1440px: the recurring wider band width",
+    "tally": {
+      "1336": 4,
+      "1392": 1,
+      "1440": 3
+    },
+    "superseded": {
+      "contentSize": "1200px",
+      "wideSize": "1400px"
+    },
+    "evidence": [
+      {
+        "band": "div.sgs-trust-ticker",
+        "text": "100% genuine, supplied direct by the bra",
+        "reason": "constrained",
+        "cap": "div.scp0",
+        "maxWidth": "1440px",
+        "boxSizing": "border-box",
+        "padding": "24/24",
+        "contentWidth": 1392,
+        "at1440": {
+          "x": 24,
+          "width": 1392
+        },
+        "at1920": {
+          "x": 264,
+          "width": 1392
+        }
+      },
+      {
+        "band": "header.sgs-header",
+        "text": "SUNGLASSES BRANDS LENSES GLASSES SOON 01",
+        "reason": "chrome (header/footer/nav): evidence only"
+      },
+      {
+        "band": "section.sgs-hero",
+        "text": "40 DESIGNER BRANDS · BIRMINGHAM The same",
+        "reason": "constrained",
+        "cap": "div",
+        "maxWidth": "1440px",
+        "boxSizing": "border-box",
+        "padding": "52/52",
+        "contentWidth": 1336,
+        "at1440": {
+          "x": 52,
+          "width": 1336
+        },
+        "at1920": {
+          "x": 292,
+          "width": 1336
+        }
+      },
+      {
+        "band": "section.sgs-brand-marquee",
+        "text": "RAY-BAN GUCCI OAKLEY PRADA VERSACE BALEN",
+        "reason": "full width (a row of text has no binding layout cap)"
+      },
+      {
+        "band": "section",
+        "text": "MOVING FASTEST THIS MONTH Best sellers S",
+        "reason": "constrained",
+        "cap": "section",
+        "maxWidth": "1440px",
+        "boxSizing": "border-box",
+        "padding": "52/52",
+        "contentWidth": 1336,
+        "at1440": {
+          "x": 52,
+          "width": 1336
+        },
+        "at1920": {
+          "x": 292,
+          "width": 1336
+        }
+      },
+      {
+        "band": "section.sgs-why-buy",
+        "text": "WHY BUY FROM ME Four reasons, and not on",
+        "reason": "constrained",
+        "cap": "div",
+        "maxWidth": "1440px",
+        "boxSizing": "border-box",
+        "padding": "0/0",
+        "contentWidth": 1440,
+        "at1440": {
+          "x": 52,
+          "width": 1336
+        },
+        "at1920": {
+          "x": 240,
+          "width": 1440
+        }
+      },
+      {
+        "band": "section",
+        "text": "NOT SURE WHAT SUITS YOU? Start with a sh",
+        "reason": "constrained",
+        "cap": "section",
+        "maxWidth": "1440px",
+        "boxSizing": "border-box",
+        "padding": "52/52",
+        "contentWidth": 1336,
+        "at1440": {
+          "x": 52,
+          "width": 1336
+        },
+        "at1920": {
+          "x": 292,
+          "width": 1336
+        }
+      },
+      {
+        "band": "section.sgs-google-reviews",
+        "text": "FROM THE CLINIC What people say Google R",
+        "reason": "constrained",
+        "cap": "div",
+        "maxWidth": "1440px",
+        "boxSizing": "border-box",
+        "padding": "0/0",
+        "contentWidth": 1440,
+        "at1440": {
+          "x": 52,
+          "width": 1336
+        },
+        "at1920": {
+          "x": 240,
+          "width": 1440
+        }
+      },
+      {
+        "band": "section.sgs-about-strip",
+        "text": "PRESCRIPTION SUNGLASSES Any pair here, m",
+        "reason": "constrained",
+        "cap": "section.sgs-about-strip",
+        "maxWidth": "1440px",
+        "boxSizing": "border-box",
+        "padding": "52/52",
+        "contentWidth": 1336,
+        "at1440": {
+          "x": 52,
+          "width": 1336
+        },
+        "at1920": {
+          "x": 292,
+          "width": 1336
+        }
+      },
+      {
+        "band": "section.sgs-optician",
+        "text": "PHOTO OF THE CLINIC The reception or the",
+        "reason": "constrained",
+        "cap": "div",
+        "maxWidth": "1440px",
+        "boxSizing": "border-box",
+        "padding": "0/0",
+        "contentWidth": 1440,
+        "at1440": {
+          "x": 52,
+          "width": 1336
+        },
+        "at1920": {
+          "x": 240,
+          "width": 1440
+        }
+      },
+      {
+        "band": "footer.sgs-footer",
+        "text": "Designer eyewear from an independent opt",
+        "reason": "chrome (header/footer/nav): evidence only"
+      }
+    ]
+  },
+  {
+    "kind": "merge",
+    "what": "styles",
+    "reason": "client styles keys the extractor does not write keep the client's value",
+    "keys_carried": "spacing"
+  },
+  {
+    "kind": "merge",
+    "what": "settings.custom",
+    "reason": "client keys the extractor does not derive are carried from the existing snapshot",
+    "keys_carried": "accentSets,borderRadius,colourRoles,distance,duration,easing,entrance,focus,gutter,hover,linkSweep,measuredDiagramPresets,transition"
+  },
+  {
+    "kind": "merge",
+    "what": "buttonPresets.primary",
+    "reason": "measured keys take the draft's value; every other key keeps the client's",
+    "measured": "background,border,border-radius,border-width,font-size,font-weight,hover-background,hover-border,hover-text,hover-transform,min-height,padding,text",
+    "carried": "(none)"
+  },
+  {
+    "kind": "merge",
+    "what": "buttonPresets.secondary",
+    "reason": "measured keys take the draft's value; every other key keeps the client's",
+    "measured": "background,border,border-radius,border-width,font-size,font-weight,hover-background,hover-border,hover-text,hover-transform,min-height,padding,text",
+    "carried": "(none)"
+  },
+  {
+    "kind": "merge",
+    "what": "buttonPresets.outline",
+    "reason": "measured keys take the draft's value; every other key keeps the client's",
+    "measured": "background,border,border-radius,border-width,font-size,font-weight,hover-background,hover-border,hover-text,hover-transform,min-height,padding,text",
+    "carried": "(none)"
+  },
+  {
+    "kind": "merge",
+    "what": "buttonPresets.default",
+    "reason": "measured keys take the draft's value; every other key keeps the client's",
+    "measured": "(none)",
+    "carried": "hover-transform,hover-transition"
   },
   {
     "kind": "merge",
@@ -897,6 +1036,471 @@
   },
   {
     "kind": "merge",
-    "reason": "additive merge onto existing snapshot: 0 extra palette slug(s) preserved + component css/blocks/patterns carried forward"
+    "reason": "additive merge onto existing snapshot: 19 extra palette slug(s) preserved + component css/blocks/patterns carried forward"
+  },
+  {
+    "kind": "motion",
+    "what": "tokens/*.css ease-out",
+    "reason": "already held by settings.custom.easing.emphasised",
+    "value": "cubic-bezier(0.2, 0.7, 0.2, 1)"
+  },
+  {
+    "kind": "proposal",
+    "what": "hover-movement-timing",
+    "reason": "most-used duration and easing of the draft's transform, translate, scale and rotate transitions (written to settings.custom.hover)",
+    "duration_ms": 250,
+    "easing": "ease",
+    "uses": 13,
+    "of": 21
+  },
+  {
+    "kind": "motion",
+    "what": "settings.custom.hover.duration",
+    "reason": "the draft's movement timing, 250ms ease (13 of 21 movement transitions)",
+    "value": "var(--wp--custom--duration--fast)"
+  },
+  {
+    "kind": "motion",
+    "what": "settings.custom.hover.easing",
+    "reason": "the draft's movement timing, 250ms ease (13 of 21 movement transitions)",
+    "value": "var(--wp--custom--easing--ease)"
+  },
+  {
+    "kind": "confirm",
+    "slug": "ink",
+    "action": "dropped",
+    "old": "#141414",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "ink-hover",
+    "action": "dropped",
+    "old": "#2A2A2A",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "paper",
+    "action": "dropped",
+    "old": "#FAF8F5",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "white",
+    "action": "dropped",
+    "old": "#FFFFFF",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "surface-alt-shade",
+    "action": "kept",
+    "old": "#F3F0EB",
+    "reason": "not a slug of this draft's tokens: a client slug the snapshot already held"
+  },
+  {
+    "kind": "confirm",
+    "slug": "surface-soft",
+    "action": "dropped",
+    "old": "#F0EBE3",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "hairline",
+    "action": "dropped",
+    "old": "#E6E1DA",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "border-strong",
+    "action": "dropped",
+    "old": "#D8D2C8",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "border-warm",
+    "action": "dropped",
+    "old": "#D5CCBD",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "control-off",
+    "action": "dropped",
+    "old": "#C9C2B8",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "text-strong",
+    "action": "dropped",
+    "old": "#4A453E",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "text-2",
+    "action": "dropped",
+    "old": "#5E584F",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "text-muted-shade",
+    "action": "kept",
+    "old": "#6B655E",
+    "reason": "not a slug of this draft's tokens: a client slug the snapshot already held"
+  },
+  {
+    "kind": "confirm",
+    "slug": "text-3",
+    "action": "dropped",
+    "old": "#77716A",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "text-4",
+    "action": "dropped",
+    "old": "#8B8478",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "text-faint",
+    "action": "dropped",
+    "old": "#A39C90",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "acc",
+    "action": "dropped",
+    "old": "#9C8B78",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "acc-ink",
+    "action": "dropped",
+    "old": "#6F6152",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "confirm",
+    "slug": "acc-soft",
+    "action": "dropped",
+    "old": "#EFEAE2",
+    "reason": "proposed from a draft token that no confirmed intake row names"
+  },
+  {
+    "kind": "declared",
+    "what": "styles.elements.link.:focus-visible",
+    "value": "(removed)",
+    "_source": "declared",
+    "reason": "the draft declares no link focus look (no a:focus or a:focus-visible rule in tokens/*.css or its CSS)"
+  },
+  {
+    "kind": "declared",
+    "what": "settings.custom.gutter.mobile",
+    "value": "20px",
+    "_source": "declared",
+    "reason": "tokens/*.css --gutter, tokens/*.css --gutter-mobile (the export's design system wins over the render)"
+  },
+  {
+    "kind": "declared",
+    "what": "settings.custom.gutter.tablet",
+    "value": "52px",
+    "_source": "declared",
+    "reason": "tokens/*.css --gutter, tokens/*.css --gutter-mobile (the export's design system wins over the render)"
+  },
+  {
+    "kind": "declared",
+    "what": "settings.custom.gutter.desktop",
+    "value": "52px",
+    "_source": "declared",
+    "reason": "tokens/*.css --gutter, tokens/*.css --gutter-mobile (the export's design system wins over the render)"
+  },
+  {
+    "kind": "declared",
+    "what": "styles.elements.h1.typography.fontSize",
+    "value": "clamp(34px, 29.0704px + 1.3146vw, 48px)",
+    "_source": "declared",
+    "reason": "tokens/*.css --size-h1, tokens/*.css --size-h1-mobile (the export's design system wins over the render)"
+  },
+  {
+    "kind": "declared",
+    "what": "styles.elements.h2.typography.fontSize",
+    "value": "clamp(32px, 27.0704px + 1.3146vw, 46px)",
+    "_source": "declared",
+    "reason": "tokens/*.css --size-h2, tokens/*.css --size-h2-mobile (the export's design system wins over the render)"
+  },
+  {
+    "kind": "declared",
+    "what": "styles.elements.heading.typography.lineHeight",
+    "value": "1.05",
+    "_source": "declared",
+    "reason": "tokens/*.css --lh-heading (the export's design system wins over the render)"
+  },
+  {
+    "kind": "declared",
+    "what": "styles.elements.h1.typography.lineHeight",
+    "value": "1.05",
+    "_source": "declared",
+    "reason": "tokens/*.css --lh-heading (the export's design system wins over the render)"
+  },
+  {
+    "kind": "declared",
+    "what": "styles.elements.h2.typography.lineHeight",
+    "value": "1.05",
+    "_source": "declared",
+    "reason": "tokens/*.css --lh-heading (the export's design system wins over the render)"
+  },
+  {
+    "kind": "declared",
+    "what": "styles.elements.h3.typography.lineHeight",
+    "value": "1.05",
+    "_source": "declared",
+    "reason": "tokens/*.css --lh-heading (the export's design system wins over the render)"
+  },
+  {
+    "kind": "declared",
+    "what": "styles.typography.fontSize",
+    "value": "16px",
+    "_source": "declared",
+    "reason": "tokens/*.css --text-base (the export's design system wins over the render)"
+  },
+  {
+    "kind": "declared",
+    "what": "styles.typography.lineHeight",
+    "value": "1.5",
+    "_source": "declared",
+    "reason": "tokens/*.css --lh-body (the export's design system wins over the render)"
+  },
+  {
+    "kind": "declared",
+    "what": "settings.custom.focus.ring",
+    "value": "#9c8b78",
+    "_source": "declared",
+    "reason": "tokens/*.css --focus-ring (the export's design system wins over the render)"
+  },
+  {
+    "kind": "declared",
+    "what": "settings.custom.focus",
+    "value": {
+      "width": "2px",
+      "offset": "2px",
+      "style": "solid",
+      "ring": "var(--wp--preset--color--accent)",
+      "ringOnDark": "var(--wp--preset--color--accent)",
+      "bloom": "0",
+      "ringOnly": "1",
+      "source": "draft"
+    },
+    "_source": "declared",
+    "reason": "draft CSS input:focus {outline}; the draft declares no focus glow, so the ring stands alone (ringOnly 1, bloom 0)"
+  },
+  {
+    "kind": "gap",
+    "what": "tokens/*.css --wa",
+    "value": "#25D366",
+    "reason": "named for a registry brand: its block holds this colour, so it is no palette entry"
+  },
+  {
+    "kind": "gap",
+    "what": "tokens/*.css --wa-hover",
+    "value": "#1EBE5A",
+    "reason": "named for a registry brand: its block holds this colour, so it is no palette entry"
+  },
+  {
+    "kind": "gap",
+    "what": "tokens/*.css --wa-ink",
+    "value": "#0B2B17",
+    "reason": "named for a registry brand: its block holds this colour, so it is no palette entry"
+  },
+  {
+    "kind": "gap",
+    "what": "tokens/*.css --wa-ink-deep",
+    "value": "#12301E",
+    "reason": "named for a registry brand: its block holds this colour, so it is no palette entry"
+  },
+  {
+    "kind": "gap",
+    "what": "tokens/*.css --wa-soft",
+    "value": "#E9F9EF",
+    "reason": "named for a registry brand: its block holds this colour, so it is no palette entry"
+  },
+  {
+    "kind": "gap",
+    "what": "tokens/*.css --wa-border",
+    "value": "#B7E5C7",
+    "reason": "named for a registry brand: its block holds this colour, so it is no palette entry"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.primary",
+    "value": "ink",
+    "reason": "Bean's confirmed mark (--ink, --text-body, --button-primary-bg)"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.primary-text",
+    "value": "paper",
+    "reason": "Bean's confirmed mark (--paper, --surface-page, --button-primary-fg)"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.primary-dark",
+    "value": "ink-hover",
+    "reason": "the primary button's measured hover fill (#2a2a2a)"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.accent",
+    "value": "acc",
+    "reason": "Bean's confirmed mark (--acc, --focus-ring)"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.accent-text",
+    "value": "acc-ink",
+    "reason": "Bean's confirmed mark (--acc-ink)"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.accent-light",
+    "value": "acc-soft",
+    "reason": "Bean's confirmed mark (--acc-soft)"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.success",
+    "value": "success",
+    "reason": "Bean's confirmed mark (--success)"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.success-light",
+    "value": "#ECFDF5",
+    "reason": "status role the draft has no shade for: the framework value"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.error",
+    "value": "#DC2626",
+    "reason": "status role the draft has no shade for: the framework value"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.error-light",
+    "value": "#FEF2F2",
+    "reason": "status role the draft has no shade for: the framework value"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.info",
+    "value": "#3B82F6",
+    "reason": "status role the draft has no shade for: the framework value"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.info-light",
+    "value": "#EBF5FF",
+    "reason": "status role the draft has no shade for: the framework value"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.surface",
+    "value": "paper",
+    "reason": "Bean's confirmed mark (--paper, --surface-page, --button-primary-fg)"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.surface-alt",
+    "value": "white",
+    "reason": "Bean's confirmed mark (--white, --surface-card)"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.text",
+    "value": "ink",
+    "reason": "Bean's confirmed mark (--ink, --text-body, --button-primary-bg)"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.text-muted",
+    "value": "text-2",
+    "reason": "Bean's confirmed mark (--text-2)"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.text-inverse",
+    "value": "paper",
+    "reason": "Bean's confirmed mark (--paper, --surface-page, --button-primary-fg)"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.border",
+    "value": "hairline",
+    "reason": "Bean's confirmed mark (--hairline, --border-default)"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.border-light",
+    "value": "hairline",
+    "reason": "the draft never shows it: it renders as border"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.footer-bg",
+    "value": "paper",
+    "reason": "Bean's confirmed mark (--paper, --surface-page, --button-primary-fg)"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.heading",
+    "value": "ink",
+    "reason": "Bean's confirmed mark (--ink, --text-body, --button-primary-bg)"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.link",
+    "value": "ink",
+    "reason": "Bean's confirmed mark (--ink, --text-body, --button-primary-bg)"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.link-hover",
+    "value": "acc-ink",
+    "reason": "Bean's confirmed mark (--acc-ink)"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.section",
+    "value": "white",
+    "reason": "Bean's confirmed mark (--white, --surface-card)"
+  },
+  {
+    "kind": "role",
+    "what": "colourRoles.section-text",
+    "value": "ink",
+    "reason": "Bean's confirmed mark (--ink, --text-body, --button-primary-bg)"
+  },
+  {
+    "kind": "gap",
+    "what": "palette.surface-alt",
+    "value": "#F3F0EB",
+    "reason": "the draft's token shares a role slug that points at another shade: the shade is surface-alt-shade"
+  },
+  {
+    "kind": "gap",
+    "what": "palette.text-muted",
+    "value": "#6B655E",
+    "reason": "the draft's token shares a role slug that points at another shade: the shade is text-muted-shade"
   }
 ]

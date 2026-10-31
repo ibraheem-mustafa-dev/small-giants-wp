@@ -236,8 +236,9 @@ def roster_guard(snapshot: dict) -> list[str]:
     """Framework tokens the snapshot lacks (Spec 32 FR-32-14 push guard, covering FR-32-15's tokens too).
 
     A snapshot replaces the site's theme.json wholesale, so every framework token it lacks is deleted for
-    that client. Two rosters, both read from the framework theme.json: the palette slugs (the function the
-    completeness gate check-snapshot-palette-roster.py uses) and the per-tier layout tokens under
+    that client. Two rosters, both read from the framework theme.json: the palette slugs, each resolved as a palette
+    entry or a valid `settings.custom.colourRoles` key (FR-32-28; an unresolvable `colourRoles` entry is named
+    `colourRoles.<role> ...`; the functions the completeness gate check-snapshot-palette-roster.py uses) and the per-tier layout tokens under
     settings.custom.section and settings.custom.gutter (snapshot_layout_tokens.py), and the motion tokens the
     motion schema's x-sgs-tokens table names (snapshot_motion_tokens.py, Spec 38A section 7), named `custom.<path>`,
     and the keyboard-focus keys under settings.custom.focus (snapshot_focus_tokens.py), named `custom.focus.<key>`,
@@ -246,7 +247,9 @@ def roster_guard(snapshot: dict) -> list[str]:
     `custom.selection.<key>`, and the highlight and inline-photo keys (snapshot_inline_format_tokens.py), named `custom.highlight.<key>` /
     `custom.inlinePhoto.<key>`.
     """
-    missing = palette_roster.missing_roster_slugs(snapshot, palette_roster.framework_roster())
+    roster = palette_roster.framework_roster()
+    missing = palette_roster.missing_roster_slugs(snapshot, roster)
+    missing += palette_roster.invalid_colour_roles(snapshot, roster)
     missing += ["custom." + path for path in layout_tokens.missing_layout_tokens(
         snapshot, layout_tokens.framework_layout_tokens())]
     missing += ["custom." + path for path in motion_tokens.missing_motion_tokens(
