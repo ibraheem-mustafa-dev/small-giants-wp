@@ -101,8 +101,8 @@ def test_the_gate_reports_a_snapshot_without_the_declared_tokens_and_passes_it_o
     after = verify_against_draft.compare(_applied(REDESIGN), _handoff(REDESIGN), _intake(REDESIGN), {}, baseline)
     # the committed snapshot predates the confirmed palette marks (apply_confirmed rewrites the palette on a run)
     open_after = {r["path"] for r in after if r["verdict"] == "mismatch" and not r["path"].startswith("palette.")}
-    # section padding is reported, never written: the route writes each section's own padding
-    assert open_after == {f"settings.custom.section.padding.{t}" for t in declared_tokens.TIERS}
+    # the draft's section tokens are the section padding default (FR-32-29), so nothing is left open
+    assert open_after == set()
     accepted = {p: "the route writes each section's padding" for p in open_after}
     final = verify_against_draft.compare(_applied(REDESIGN), _handoff(REDESIGN), None, accepted, baseline)
     assert not [r for r in final if r["verdict"] == "mismatch"]

@@ -243,39 +243,33 @@
       "fontSizes": [
         {
           "slug": "small",
-          "size": "14px",
-          "name": "Small",
-          "fluid": false
+          "name": "Fs Mono",
+          "size": "12px"
         },
         {
           "slug": "regular",
-          "size": "19px",
-          "name": "Regular",
-          "fluid": false
+          "name": "Fs Body",
+          "size": "19px"
         },
         {
           "slug": "large",
-          "size": "20px",
-          "name": "Large",
-          "fluid": false
+          "name": "Size 20",
+          "size": "20px"
         },
         {
           "slug": "x-large",
-          "size": "24px",
-          "name": "XL",
-          "fluid": false
+          "name": "Fs Card Title",
+          "size": "22px"
         },
         {
           "slug": "xx-large",
-          "size": "36px",
-          "name": "XXL",
-          "fluid": false
+          "name": "Fs H2",
+          "size": "clamp(28px,3.4vw,40px)"
         },
         {
           "slug": "hero",
-          "size": "50px",
-          "name": "Hero",
-          "fluid": false
+          "name": "Fs H1",
+          "size": "clamp(36px,5vw,62px)"
         }
       ],
       "defaultFontSizes": false
@@ -297,67 +291,43 @@
       "spacingSizes": [
         {
           "slug": "10",
-          "size": "0.25rem",
-          "name": "XXS"
+          "name": "Gap 1",
+          "size": "8px"
         },
         {
           "slug": "20",
-          "size": "0.5rem",
-          "name": "XS"
+          "name": "Gap 2",
+          "size": "10px"
         },
         {
           "slug": "30",
-          "size": "1rem",
-          "name": "S",
-          "fluid": {
-            "min": "0.75rem",
-            "max": "1rem"
-          }
+          "name": "Gap 3",
+          "size": "14px"
         },
         {
           "slug": "40",
-          "size": "1.5rem",
-          "name": "M",
-          "fluid": {
-            "min": "1rem",
-            "max": "1.5rem"
-          }
+          "name": "Gap 4",
+          "size": "18px"
         },
         {
           "slug": "50",
-          "size": "2rem",
-          "name": "L",
-          "fluid": {
-            "min": "1.25rem",
-            "max": "2rem"
-          }
+          "name": "Gap 5",
+          "size": "22px"
         },
         {
           "slug": "60",
-          "size": "3rem",
-          "name": "XL",
-          "fluid": {
-            "min": "1.75rem",
-            "max": "3rem"
-          }
+          "name": "Gap 6",
+          "size": "28px"
         },
         {
           "slug": "70",
-          "size": "5rem",
-          "name": "XXL",
-          "fluid": {
-            "min": "2.5rem",
-            "max": "5rem"
-          }
+          "name": "Gap 7",
+          "size": "40px"
         },
         {
           "slug": "80",
-          "size": "8rem",
-          "name": "XXXL",
-          "fluid": {
-            "min": "4rem",
-            "max": "8rem"
-          }
+          "name": "Gap 8",
+          "size": "64px"
         }
       ]
     },
@@ -502,18 +472,18 @@
           "hover-transform": "matrix(1.05, 0, 0, 1.05, 0, -2.1)"
         },
         "secondary": {
-          "background": "#000000",
-          "text": "#d8ca50",
-          "border": "#000000",
-          "border-width": "2px",
+          "background": "var(--wp--preset--color--surface)",
+          "text": "#0a7ea8",
+          "border": "var(--wp--preset--color--primary)",
+          "border-width": "0px",
           "border-radius": "999px",
-          "padding": "15px 26px 15px 26px",
-          "font-size": "16px",
-          "font-weight": "600",
+          "padding": "6px 14px 6px 14px",
+          "font-size": "15px",
+          "font-weight": "700",
           "min-height": "48px",
-          "hover-background": "#000000",
-          "hover-text": "#e7d768",
-          "hover-border": "#000000",
+          "hover-background": "var(--wp--preset--color--accent)",
+          "hover-text": "#2c3e50",
+          "hover-border": "#2c3e50",
           "hover-transform": "matrix(1.05, 0, 0, 1.05, 0, -2.1)"
         },
         "outline": {
@@ -532,10 +502,10 @@
         }
       },
       "borderRadius": {
-        "small": "4px",
-        "medium": "8px",
-        "large": "16px",
-        "pill": "9999px"
+        "small": "3px",
+        "medium": "12px",
+        "large": "22px",
+        "pill": "999px"
       },
       "transition": {
         "fast": "250ms cubic-bezier(0.25, 0.1, 0.25, 1)",
@@ -543,7 +513,7 @@
       },
       "hover": {
         "duration": "350ms",
-        "easing": "var(--wp--custom--easing--spring)"
+        "easing": "var(--wp--custom--easing--default)"
       },
       "duration": {
         "instant": "60ms",
@@ -554,7 +524,7 @@
         "extra-slow": "1000ms"
       },
       "easing": {
-        "default": "cubic-bezier(0.25, 0.1, 0.25, 1)",
+        "default": "cubic-bezier(.34,1.56,.64,1)",
         "ease": "ease",
         "ease-in": "ease-in",
         "ease-out": "ease-out",
@@ -574,9 +544,9 @@
       },
       "section": {
         "padding": {
-          "mobile": "0",
-          "tablet": "0",
-          "desktop": "0"
+          "mobile": "64px",
+          "tablet": "88px",
+          "desktop": "108px"
         }
       },
       "gutter": {
@@ -624,7 +594,46 @@
         "link-hover": "brand-blue-hover",
         "section": "brand-gold",
         "section-text": "slate"
-      }
+      },
+      "presetTokens": {
+        "fontSizes": {
+          "small": "fs-mono",
+          "regular": "fs-body",
+          "large": null,
+          "x-large": "fs-card-title",
+          "xx-large": "fs-h2",
+          "hero": "fs-h1"
+        },
+        "spacing": {
+          "10": "gap-1",
+          "20": "gap-2",
+          "30": "gap-3",
+          "40": "gap-4",
+          "50": "gap-5",
+          "60": "gap-6",
+          "70": "gap-7",
+          "80": "gap-8"
+        }
+      },
+      "defaultTokens": [
+        "ease-spring",
+        "font-body",
+        "font-heading",
+        "fs-body",
+        "fs-h1",
+        "fs-h2",
+        "gutter-desktop",
+        "gutter-mobile",
+        "gutter-tablet",
+        "lh-body",
+        "radius-card",
+        "radius-panel",
+        "radius-pill",
+        "radius-tag",
+        "section-desktop",
+        "section-mobile",
+        "section-tablet"
+      ]
     },
     "appearanceTools": true,
     "useRootPaddingAwareAlignments": true,

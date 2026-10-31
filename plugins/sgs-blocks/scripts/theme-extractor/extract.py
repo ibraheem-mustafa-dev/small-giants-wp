@@ -64,6 +64,7 @@ import presets as presets_mod
 import palette_refs
 import role_defaults
 import shade_palette
+import token_families
 import site_palette
 import token_files
 import usage_census
@@ -822,13 +823,12 @@ def main(argv=None) -> int:
         intake = json.loads(pathlib.Path(args.intake).read_text(encoding="utf-8"))
         draft_slugs = confirmed_palette.draft_custom_slugs(intake)
         try:
-            confirmed, unmarked = confirmed_palette.confirmed_map(intake, framework, confirmed_palette.framework_colours(baseline))
+            marked = confirmed_palette.effective_marks(intake, framework, confirmed_palette.read_key(args.intake))
+            confirmed, unmarked = confirmed_palette.confirmed_map(marked, framework, confirmed_palette.framework_colours(baseline))
+            intake = marked
         except confirmed_palette.ConfirmError as exc:
             print(f"HALT (FR-33-2 confirm step): {exc}", file=sys.stderr)
             return 7
-        if unmarked:
-            print(f"NOTE: {len(unmarked)} intake palette row(s) carry no review mark and get no palette "
-                  f"entry: {', '.join(unmarked)}", file=sys.stderr)
 
     trace: list = entry_trace
     try:
@@ -873,6 +873,8 @@ def main(argv=None) -> int:
     unresolved_roles: list = []
     if draft_tokens is not None:
         unresolved_roles = shade_palette.apply(snap, draft_tokens, draft.parent, baseline, confirmed, trace)
+    # FR-32-29: every other draft token family is one entry per token and the framework slots are hidden pointers.
+    token_families.apply(snap, draft_tokens, draft.parent, baseline, motion_tokens.overall_timing(html, draft_tokens), trace)
     for role in unresolved_roles:
         print(f"WARNING: role {role} has no value (no alias, mark, reading or related role gives one); the roster gate "
               "will refuse the snapshot", file=sys.stderr)

@@ -29,6 +29,8 @@ Only genuinely different colours on one slug are refused.
 """
 from __future__ import annotations
 
+import json
+import pathlib
 import re
 
 from colour import DEDUP_DELTA_E, delta_e
@@ -91,9 +93,9 @@ def _alpha(value) -> str:
 
 
 def _mark_slugs(token: str, mark, row: dict) -> list[str]:
-    """The slugs one palette mark names: none for ``one-off`` or an accepted "no palette entry" proposal; an accepted
+    """The slugs one palette mark names: none for no mark (a mark is a correction, FR-32-28), ``one-off`` or an accepted "no palette entry" proposal; an accepted
     proposal names every slug of the row's ``roles`` (one value can fill several), else its ``role``."""
-    if mark == "one-off":
+    if mark is None or mark == "one-off":
         return []
     if mark == "accept":
         if row.get("roles"):
@@ -102,6 +104,38 @@ def _mark_slugs(token: str, mark, row: dict) -> list[str]:
     if isinstance(mark, str) and mark.startswith("role:"):
         return [part.strip() for part in mark[len("role:"):].split(",")]
     raise ConfirmError(f"{token}: unrecognised palette mark {mark!r} (accept, role:<slug>[,<slug>...] or one-off)")
+
+
+def read_key(intake_path) -> dict[str, list[str]] | None:
+    """Bean's answer key beside the intake (``palette-key.json``: ``{"roles": {token: [slug, ...]}}``), or None."""
+    path = pathlib.Path(intake_path).with_name("palette-key.json")
+    if not path.is_file():
+        return None
+    roles = json.loads(path.read_text(encoding="utf-8")).get("roles")
+    return roles if isinstance(roles, dict) else None
+
+
+def effective_marks(intake: dict, framework_slugs_: set[str] | frozenset[str] | dict, key: dict[str, list[str]] | None = None) -> dict:
+    """The intake with every palette row marked (FR-32-28: the role map is a reading of the draft and a mark only corrects it).
+
+    A row Bean's answer key names takes the key's framework slugs as ``role:<slugs>`` (``one-off`` when it names none: a
+    key slug that is no framework role is the key's own name for a shade, which the palette already carries under the
+    token's name). A row with no mark, or a ``None`` mark, is accepted as the reading proposed for it."""
+    rows = [r.get("token") for r in ((intake.get("palette") or {}).get("rows") or []) if isinstance(r, dict) and r.get("token")]
+    known = set(framework_slugs_)
+    review = [e for e in intake.get("review") or []]
+    held = {(e.get("rowId") or "")[len("palette:"):]: e for e in review
+            if isinstance(e, dict) and e.get("rowType") == "palette-role" and (e.get("rowId") or "").startswith("palette:")}
+    out = [e for e in review if not (isinstance(e, dict) and e.get("rowType") == "palette-role")]
+    for token in rows:
+        entry = dict(held.get(token) or {"rowType": "palette-role", "rowId": f"palette:{token}"})
+        if key and token in key:
+            slugs = [x for x in key[token] if x in known or _CUSTOM_SLUG.match(x)]
+            entry["mark"] = ("role:" + ",".join(slugs)) if slugs else "one-off"
+        elif entry.get("mark") is None:
+            entry["mark"] = "accept"
+        out.append(entry)
+    return {**intake, "review": out}
 
 
 def confirmed_map(intake: dict, known_slugs, colours: dict | None = None) -> tuple[dict[str, dict], list[str]]:

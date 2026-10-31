@@ -13,8 +13,8 @@ and by the rules a token file writes on ``body``, ``h1, h2, h3`` and ``a``. Two 
 
 Token names are matched by their job word with an optional short client prefix (``--mm-h1-d``, ``--fs-h1``,
 ``--size-h1-mobile``); nothing here names a client. A tier the draft gives once (``--gutter``) holds for every
-wider tier the draft does not name. Section padding is reported, never written: the route writes each section's own
-padding, and a framework section padding would add to it (``APPLIED_ROLES`` lists what ``apply`` writes).
+wider tier the draft does not name. The section padding tokens are the section padding default (``settings.custom.section``): the route leaves a
+section that takes the draft's own padding unset so it inherits the default (``APPLIED_ROLES`` lists what ``apply`` writes).
 """
 from __future__ import annotations
 
@@ -44,7 +44,7 @@ _NUMBER_RE = re.compile(r"^\d*\.?\d+$")
 _PX_RE = re.compile(r"^(-?\d*\.?\d+)px$")
 # The viewport range a heading declared per device tier scales across (mobile at 375px, desktop at 1440px).
 FLUID_MIN_VW, FLUID_MAX_VW = 375, 1440
-APPLIED_ROLES = frozenset({"gutter", "heading-size", "heading-line-height", "heading-tracking", "body-size",
+APPLIED_ROLES = frozenset({"gutter", "section", "heading-size", "heading-line-height", "heading-tracking", "body-size",
                            "body-line-height", "body-colour", "focus"})
 
 

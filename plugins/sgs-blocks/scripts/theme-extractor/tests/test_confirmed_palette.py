@@ -249,3 +249,31 @@ def test_merge_carries_client_custom_keys_and_keeps_derived_ones():
     assert custom["duration"]["slow"] == "560ms"
     assert custom["sgs"]["headerPattern"] == "sgs/framework-header-default"
     assert custom["buttonPresets"]["primary"]["background"] == "#new"
+
+
+def test_a_none_mark_is_no_correction_and_not_an_error():
+    """FR-32-28: a mark is a correction, so a row with no mark names no slug and raises nothing."""
+    assert cp._mark_slugs("--x", None, {"role": "heading"}) == []
+    with pytest.raises(cp.ConfirmError):
+        cp._mark_slugs("--x", "bogus", {})
+
+
+def _marks_intake(marks):
+    rows = [{"token": "--a", "hex": "#111111", "role": "heading"}, {"token": "--b", "hex": "#EEEEEE", "role": "surface"},
+            {"token": "--c", "hex": "#0000AA", "role": None}]
+    return {"palette": {"rows": rows}, "review": [{"rowType": "palette-role", "rowId": f"palette:{t}", "mark": m} for t, m in marks.items()]}
+
+
+def test_an_unmarked_row_is_the_accepted_reading_and_a_key_row_is_a_role_mark():
+    """FR-32-28: a mark only corrects the reading. A row with no mark or a None mark is accepted; Bean's answer key is read as marks."""
+    known = {"heading", "surface", "primary"}
+    marked = cp.effective_marks(_marks_intake({"--a": None}), known, {"--b": ["primary", "not-a-framework-slug"], "--c": ["not-a-framework-slug"]})
+    got, _ = cp.confirmed_map(marked, known)
+    assert got["heading"]["tokens"] == ["--a"]
+    assert got["primary"]["tokens"] == ["--b"] and "surface" not in got
+    assert all("--c" not in v["tokens"] for v in got.values())
+
+
+def test_negative_control_without_the_effective_marks_the_unmarked_rows_get_nothing():
+    got, unmarked = cp.confirmed_map(_marks_intake({}), {"heading", "surface"})
+    assert got == {} and unmarked == ["--a", "--b", "--c"]

@@ -109,9 +109,18 @@ def palette_expectations(intake: dict | None, baseline: dict, handoff: pathlib.P
     confirmed, _unmarked = confirmed_palette.confirmed_map(intake, framework, confirmed_palette.framework_colours(baseline))
     files = token_files.read_token_files(handoff) if handoff else None
     aliases = {"--" + a for a in (files or {}).get("aliases", set())}
-    return [{"role": "palette", "path": f"palette.{slug}", "value": row["hex"],
-             "source": "intake mark " + ", ".join(row.get("tokens") or [])} for slug, row in sorted(confirmed.items())
-            if not (slug.startswith("custom-") and row.get("tokens") and all(t in aliases for t in row["tokens"]))]
+    out = []
+    for slug, row in sorted(confirmed.items()):
+        tokens = row.get("tokens") or []
+        if slug.startswith("custom-") and tokens and all(t in aliases for t in tokens):
+            continue
+        if slug.startswith("custom-") and tokens:
+            # a client's own colour name: the palette carries each literal token under the token's own name (FR-32-28)
+            out += [{"role": "palette", "path": f"palette.{t.lstrip('-')}", "value": row["hex"], "source": f"intake mark {t}"}
+                    for t in tokens if t not in aliases]
+            continue
+        out.append({"role": "palette", "path": f"palette.{slug}", "value": row["hex"], "source": "intake mark " + ", ".join(tokens)})
+    return out
 
 
 def _palette_value(snap: dict, slug: str):
@@ -119,9 +128,11 @@ def _palette_value(snap: dict, slug: str):
     got = _preset(snap, "color", slug)
     if got is None and slug.startswith("custom-"):
         name = slug[len("custom-"):]
-        got = _preset(snap, "color", name)
+        # A draft token named for a framework role is entered as `<name>-shade` (FR-32-28): the role then points elsewhere.
+        rows = (((snap.get("settings") or {}).get("color") or {}).get("palette")) or []
+        got = next((e.get("color") for e in rows if e.get("slug") == name + "-shade"), None)
         if got is None:
-            got = _preset(snap, "color", name + "-shade")
+            got = _preset(snap, "color", name)
     return got
 
 
@@ -177,6 +188,9 @@ def main(argv=None) -> int:
         return 2
     snap = json.loads(snap_path.read_text(encoding="utf-8"))
     intake = json.loads(intake_path.read_text(encoding="utf-8")) if intake_path.is_file() else None
+    if intake is not None:
+        baseline_theme = json.loads((REPO / "theme" / "sgs-theme" / "theme.json").read_text(encoding="utf-8"))
+        intake = confirmed_palette.effective_marks(intake, confirmed_palette.framework_slugs(baseline_theme), confirmed_palette.read_key(intake_path))
     rows = report(snap, args.client, handoff, intake,
                   accepted_path=pathlib.Path(args.accepted) if args.accepted else None)
     if args.json:
