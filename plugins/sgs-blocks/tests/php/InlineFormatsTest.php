@@ -124,7 +124,7 @@ final class InlineFormatsTest extends TestCase {
 			. '<span style="background:yellow" class="sgs-highlight sgs-highlight--accent">most</span> '
 			. '<a style="color:blue" class="cta" href="https://example.test/">shop</a></p>';
 
-		$out = sgs_rich_text_kses( $html );
+		$out = sgs_rich_text_kses( $html, true, 'body' ); // The body profile holds the photo and the highlight.
 
 		$this->assertStringNotContainsStringIgnoringCase( 'style=', $out, 'no tag keeps a style attribute' );
 		$this->assertStringContainsString( 'class="lead"', $out );
@@ -136,7 +136,7 @@ final class InlineFormatsTest extends TestCase {
 	}
 
 	public function test_happy_the_allowlist_has_no_style_anywhere_and_img_keeps_only_the_photo_attributes(): void {
-		sgs_rich_text_kses( '<span>x</span>' );
+		sgs_rich_text_kses( '<span>x</span>', true, 'body' );
 		$allowed = $GLOBALS['sgs_test_kses_allowed'];
 
 		$this->assertIsArray( $allowed );
