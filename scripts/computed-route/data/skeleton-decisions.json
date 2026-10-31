@@ -147,6 +147,14 @@
 				"attributes": {},
 				"reason": "a loop of review cards whose holder is a scroll track the draft's script steps (a timer, pointer drag or arrow controls, never a name) is the testimonial slider, each card one of its testimonials (Spec 48 FR-48-77, register row C5)"
 			},
+			"testimonials": {
+				"person": "^(?:(?:\\p{Lu}{1,3}\\.?|\\p{Lu}[\\p{Ll}'’-]+\\.?(?:\\s+(?:\\p{Lu}[\\p{Ll}'’-]*\\.?|\\p{Lu}{1,3}\\.?)){0,2})(?:\\s*[·•|,—–-]\\s*.+)?|[\\p{L}][\\p{L}\\p{N}._'’-]*(?:\\s+[\\p{L}][\\p{L}\\p{N}._'’-]*){0,2}\\s*[·•|—–]\\s*.*\\d.*)$",
+				"personMaxWords": 6,
+				"quotation": "^[\"“„«].*[\"”»]$|^[\"“”„«»]$",
+				"attributes": { "autoplay": false, "showArrows": false, "showDots": false },
+				"perRowAttribute": "slidesVisible",
+				"reason": "a loop of review cards with no provider link and no script moving it, each card naming the person who wrote it (a short line of a capitalised name or initials, a date or place after a separator allowed, or any one to three word name or handle followed by a separator and a date, never a heading) and showing no price, each with a rating and a quote or with a quotation, is the testimonial family: sgs/testimonial-slider in its still form (autoplay, arrows and dots off, as many cards visible as the draft lays side by side at 1440), each card an sgs/testimonial whose parts the content writer reads into its quote, name, date and rating fields; a provider link still picks that provider's block, and a script-moved track the carousel (Spec 48 FR-48-83, Bean 2026-10-31)"
+			},
 			"reviews": {
 				"rating": "[\u2605\u2B50]{3,}|(?:\u00e2\u02dc\u2026){3,}|\\b[1-5](?:\\.\\d)?\\s*(?:out of 5|\\/\\s*5)\\b",
 				"quoteLength": 40,
@@ -567,13 +575,13 @@
 			"itemBlock": "sgs/trust-bar",
 			"textBlock": "sgs/brand-strip",
 			"textAttributes": { "brandDisplay": "text" },
-			"reason": "a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels that are a page's own section make sgs/trust-bar, labels inside another block make sgs/brand-strip showing the names as text (the section block cannot sit inside a section, and a button group does not offer the marquee effect), and the repeated items are its items"
+			"reason": "a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee, the block chosen by what its items show and where it sits: logos alone make sgs/brand-strip; labels, alone or each with an icon or an image, make sgs/trust-bar when its item fields hold every kind the items show (array_item_schema roles: icon-slug or svg, image-object, text-content) and the section block fits where the strip sits; otherwise sgs/brand-strip showing the names as text. A section block (block_composition.container_kind section, as sgs/trust-bar) never sits inside another section, and sits only in a slot that gives it its full width: a header row, the footer's top row, a drawer's, modal's or mega panel's body, any slot the draft lays out as one full-width child (it spans its parent's content box through every ancestor up to the surface root or the section root that holds only its slot blocks, and no sibling sits beside it); never a slot that lays its children out as columns (the footer's column and bottom rows) and never a page section's own container. The marquee motion and the widths it runs at are the motion writer's (sgsMotion, belowBreakpoint), and the repeated items are its items (Bean, 2026-10-31)"
 		},
 		"trustBar": {
 			"block": "sgs/trust-bar",
 			"minItems": 2,
 			"maxWords": 4,
-			"reason": "a trust bar is a section block (block_composition.container_kind section): a page's own section that is a row of short non-interactive labels side by side, each with at most a glyph, at least one naming a capability the framework database records for sgs/trust-bar (accreditation, certification, halal), is sgs/trust-bar with the labels as its items; the same badges inside a section are sgs/label blocks in a row (Bean, 2026-10-13). The ignored capabilities (collection, features, icons) describe the block, not what its badges say",
+			"reason": "a trust bar is a section block (block_composition.container_kind section): placed where a section block fits (a page's own section, or on another surface a full-width slot no section holds, as rules.marquee says) on a row of short non-interactive labels side by side, each with at most a glyph, at least one naming a capability the framework database records for sgs/trust-bar (accreditation, certification, halal), is sgs/trust-bar with the labels as its items; the same badges inside a section are sgs/label blocks in a row (Bean, 2026-10-13). The ignored capabilities (collection, features, icons) describe the block, not what its badges say",
 			"ignoreCapabilities": [
 				"collection",
 				"features",

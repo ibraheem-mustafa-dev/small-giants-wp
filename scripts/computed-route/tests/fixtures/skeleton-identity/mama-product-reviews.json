@@ -1,0 +1,7129 @@
+{
+	"source": "sites/mamas-munches-redesign/build/intake/inventories/page-product-dc-html-id-zookies.json and facts.json (the product page's review section, Product/123, with its ancestors and fact-record entries, 2026-10-31)",
+	"client": "mamas-munches-redesign",
+	"draft": "Product.dc.html",
+	"inventory": {
+		"generated": "2026-10-31T00:28:51.627Z",
+		"source": "http://127.0.0.1:57837/Product.dc.html?id=zookies",
+		"root": "[data-sgs-skeleton-root=\"page-product-dc-html-id-zookies\"]",
+		"keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
+		"checks": {
+			"rootName": "Product",
+			"rootKey": "Product/7#0",
+			"unstamped": [
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Zookies"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Build your own"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "build your own box"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Zookies"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Our giant lactation cookie, baked to order in the flavour yo"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "8"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "£9.50"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "£1.19 each"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "20"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "£21.50"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "£1.08 each"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Most popular"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "40"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "£38.00"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "£0.95 each"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Best value"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Classic oat"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Vegan oat"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Milk choc"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "White choc"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Dark choc"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "No chips"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Vanilla"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Chocolate"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Strawberry"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Mango"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Banana"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Coffee"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Mint"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Caramel"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Coconut"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Pistachio"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Honey"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "All 20 strawberry"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "£19.35"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "£21.50"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "£21.50"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Add to basket · £21.50"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Ingredients & allergens"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Every Zookie contains oats (gluten), brewer’s yeast, flaxsee"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Delivery"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Keeping them fresh"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "A gentle note"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Healthy and filling snack"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "I received the strawberry and milk chocolate chip cookies. I"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "KA"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "June 2026"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Sweet, soft, addictive"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Sweet, soft oat cookies that are seriously addictive—and per"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "mariahzaini"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "January 2026"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Works like magic!"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "I was gifted these lactation cookies right after giving birt"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Mrs MIM"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "January 2026"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "New? Start here"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Taster Trio"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "3 Classic Zookies to try. Postage included, fits through the"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "£5"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "postage included"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Add to basket"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Gift favourite"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "New Baby Gift Box"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "A mix of Zookies in a gift box, sent with your message."
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "£15"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "gift-boxed"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Add to basket"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Most thoughtful"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "40-Day Care Bundle"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Six weekly deliveries for the 40-day postnatal window."
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "£42"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "6 deliveries"
+				},
+				{
+					"tag": "span",
+					"cls": "sc-interp",
+					"text": "Add to basket"
+				}
+			],
+			"duplicateKeys": 0,
+			"perWidthCounts": {
+				"375": 172,
+				"768": 186,
+				"1440": 186
+			},
+			"tagAgree": 183,
+			"tagDisagree": [
+				[
+					"Product/139#0",
+					"dc-import",
+					"div"
+				],
+				[
+					"Product/139#1",
+					"dc-import",
+					"div"
+				],
+				[
+					"Product/139#2",
+					"dc-import",
+					"div"
+				]
+			],
+			"keysMissingAt": {
+				"375": [
+					"Product>ProductCard@139#0/7#0",
+					"Product>ProductCard@139#1/7#0",
+					"Product/138#2",
+					"Product/139#2",
+					"Product>ProductCard@139#2/0#0",
+					"Product>ProductCard@139#2/1#0",
+					"Product>ProductCard@139#2/3#0",
+					"Product>ProductCard@139#2/4#0",
+					"Product>ProductCard@139#2/5#0",
+					"Product>ProductCard@139#2/7#0",
+					"Product>ProductCard@139#2/8#0",
+					"Product>ProductCard@139#2/9#0",
+					"Product>ProductCard@139#2/10#0",
+					"Product>ProductCard@139#2/11#0"
+				],
+				"768": [],
+				"1440": []
+			},
+			"screenshotSkips": []
+		},
+		"elements": [
+			{
+				"key": "Product/7#0",
+				"parentKey": "Product/5#0",
+				"depth": 0,
+				"tag": "main",
+				"template": "Product",
+				"tpl": 7,
+				"attrs": {
+					"style": "padding: 36px 40px 112px;"
+				},
+				"words": "",
+				"allText": "Home/Shop/Zookies Build your own baked with love build your own box Zookies ★★★★★ 4.3 · 8 Trustpilot reviews Our giant l",
+				"srcLine": 10,
+				"membership": [],
+				"srcTag": "main",
+				"srcOwnText": "",
+				"snippet": "<main style=\"padding:{{ L.pad }}\" data-dc-tpl=\"7\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"8\"> <nav aria-label=\"Breadcrumb\" style=\"font-size:14px;font-weight:600;margin-bottom:18px;display:flex;gap:8px;flex-wrap:wrap\" data-dc-tpl=\"9\"><a href=\"Home.dc.html\" style=\"color:#5E4A3D\" data-dc-tpl=\"10\">Home</a><span aria-hidden=\"true\" data-dc-tpl=\"11\">/</span><a href=\"Shop.dc.html\" style=",
+				"flow": [
+					" ",
+					{
+						"key": "Product/8#0"
+					}
+				],
+				"resolved": {
+					"375": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "375px",
+						"height": "3623.5px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "18px",
+						"padding-right": "20px",
+						"padding-bottom": "110px",
+						"padding-left": "20px"
+					},
+					"768": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "768px",
+						"height": "3423.16px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "28px",
+						"padding-right": "32px",
+						"padding-bottom": "88px",
+						"padding-left": "32px"
+					},
+					"1440": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "1440px",
+						"height": "3086.41px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "36px",
+						"padding-right": "40px",
+						"padding-bottom": "112px",
+						"padding-left": "40px"
+					}
+				},
+				"box": {
+					"375": {
+						"x": 0,
+						"y": 97,
+						"w": 375,
+						"h": 3623.5
+					},
+					"768": {
+						"x": 0,
+						"y": 97,
+						"w": 768,
+						"h": 3423.2
+					},
+					"1440": {
+						"x": 0,
+						"y": 117,
+						"w": 1440,
+						"h": 3086.4
+					}
+				},
+				"visible": {
+					"375": true,
+					"768": true,
+					"1440": true
+				},
+				"display": "block",
+				"position": {
+					"375": "static",
+					"768": "static",
+					"1440": "static"
+				},
+				"flexDirection": "row",
+				"displayAt": {
+					"375": "block",
+					"768": "block",
+					"1440": "block"
+				},
+				"layoutChanged375": true,
+				"screenshots": {}
+			},
+			{
+				"key": "Product/8#0",
+				"parentKey": "Product/7#0",
+				"depth": 1,
+				"tag": "div",
+				"template": "Product",
+				"tpl": 8,
+				"attrs": {
+					"style": "max-width: 1240px; margin: 0px auto;"
+				},
+				"words": "",
+				"allText": "Home/Shop/Zookies Build your own baked with love build your own box Zookies ★★★★★ 4.3 · 8 Trustpilot reviews Our giant l",
+				"srcLine": 11,
+				"membership": [],
+				"srcTag": "div",
+				"srcOwnText": "",
+				"snippet": "<div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"8\"> <nav aria-label=\"Breadcrumb\" style=\"font-size:14px;font-weight:600;margin-bottom:18px;display:flex;gap:8px;flex-wrap:wrap\" data-dc-tpl=\"9\"><a href=\"Home.dc.html\" style=\"color:#5E4A3D\" data-dc-tpl=\"10\">Home</a><span aria-hidden=\"true\" data-dc-tpl=\"11\">/</span><a href=\"Shop.dc.html\" style=\"color:#5E4A3D\" data-dc-tpl=\"12\">Shop</a><span aria",
+				"flow": [
+					" ",
+					{
+						"key": "Product/9#0"
+					},
+					" ",
+					{
+						"key": "Product/15#0"
+					},
+					" ",
+					{
+						"key": "Product/123#0"
+					},
+					" ",
+					{
+						"key": "Product/134#0"
+					},
+					" "
+				],
+				"resolved": {
+					"375": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "335px",
+						"height": "3495.5px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"768": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "704px",
+						"height": "3307.16px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"1440": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "1240px",
+						"height": "2938.41px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					}
+				},
+				"box": {
+					"375": {
+						"x": 20,
+						"y": 115,
+						"w": 335,
+						"h": 3495.5
+					},
+					"768": {
+						"x": 32,
+						"y": 125,
+						"w": 704,
+						"h": 3307.2
+					},
+					"1440": {
+						"x": 100,
+						"y": 153,
+						"w": 1240,
+						"h": 2938.4
+					}
+				},
+				"visible": {
+					"375": true,
+					"768": true,
+					"1440": true
+				},
+				"display": "block",
+				"position": {
+					"375": "static",
+					"768": "static",
+					"1440": "static"
+				},
+				"flexDirection": "row",
+				"displayAt": {
+					"375": "block",
+					"768": "block",
+					"1440": "block"
+				},
+				"layoutChanged375": true,
+				"screenshots": {}
+			},
+			{
+				"key": "Product/123#0",
+				"parentKey": "Product/8#0",
+				"depth": 2,
+				"tag": "section",
+				"template": "Product",
+				"tpl": 123,
+				"attrs": {
+					"style": "margin-top: 104px; scroll-margin-top: 100px;"
+				},
+				"words": "",
+				"allText": "real mums, real words What people are saying ★★★★★ Healthy and filling snack I received the strawberry and milk chocolat",
+				"srcLine": 112,
+				"membership": [],
+				"srcTag": "section",
+				"srcOwnText": "",
+				"snippet": "<section id=\"reviews\" style=\"margin-top:{{ L.secGap }};scroll-margin-top:100px\" data-dc-tpl=\"123\"> <div data-reveal=\"\" style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"124\">real mums, real words</div> <h2 data-reveal=\"\" style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05\" data-dc-tpl=\"125",
+				"flow": [
+					" ",
+					{
+						"key": "Product/124#0"
+					},
+					" ",
+					{
+						"key": "Product/125#0"
+					},
+					" ",
+					{
+						"key": "Product/126#0"
+					},
+					" "
+				],
+				"resolved": {
+					"375": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "335px",
+						"height": "512.344px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"768": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "704px",
+						"height": "560.938px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"1440": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "1240px",
+						"height": "396.359px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					}
+				},
+				"box": {
+					"375": {
+						"x": 20,
+						"y": 2650.4,
+						"w": 335,
+						"h": 512.3
+					},
+					"768": {
+						"x": 32,
+						"y": 2243.4,
+						"w": 704,
+						"h": 560.9
+					},
+					"1440": {
+						"x": 100,
+						"y": 1907.2,
+						"w": 1240,
+						"h": 396.4
+					}
+				},
+				"visible": {
+					"375": true,
+					"768": true,
+					"1440": true
+				},
+				"display": "block",
+				"position": {
+					"375": "static",
+					"768": "static",
+					"1440": "static"
+				},
+				"flexDirection": "row",
+				"displayAt": {
+					"375": "block",
+					"768": "block",
+					"1440": "block"
+				},
+				"layoutChanged375": true,
+				"screenshots": {}
+			},
+			{
+				"key": "Product/124#0",
+				"parentKey": "Product/123#0",
+				"depth": 3,
+				"tag": "div",
+				"template": "Product",
+				"tpl": 124,
+				"attrs": {
+					"style": "font-family: Caveat, cursive; font-size: 28px; color: rgb(142, 52, 68); line-height: 1;"
+				},
+				"words": "real mums, real words",
+				"allText": "real mums, real words",
+				"srcLine": 113,
+				"membership": [],
+				"srcTag": "div",
+				"srcOwnText": "real mums, real words",
+				"snippet": "<div data-reveal=\"\" style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"124\">real mums, real words</div>",
+				"textLeads": true,
+				"resolved": {
+					"375": {
+						"font-size": "28px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "28px",
+						"width": "335px",
+						"height": "28px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"768": {
+						"font-size": "28px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "28px",
+						"width": "704px",
+						"height": "28px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"1440": {
+						"font-size": "28px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "28px",
+						"width": "1240px",
+						"height": "28px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					}
+				},
+				"box": {
+					"375": {
+						"x": 20,
+						"y": 2650.4,
+						"w": 335,
+						"h": 28
+					},
+					"768": {
+						"x": 32,
+						"y": 2243.4,
+						"w": 704,
+						"h": 28
+					},
+					"1440": {
+						"x": 100,
+						"y": 1907.2,
+						"w": 1240,
+						"h": 28
+					}
+				},
+				"visible": {
+					"375": true,
+					"768": true,
+					"1440": true
+				},
+				"display": "block",
+				"position": {
+					"375": "static",
+					"768": "static",
+					"1440": "static"
+				},
+				"flexDirection": "row",
+				"displayAt": {
+					"375": "block",
+					"768": "block",
+					"1440": "block"
+				},
+				"layoutChanged375": true,
+				"screenshots": {}
+			},
+			{
+				"key": "Product/125#0",
+				"parentKey": "Product/123#0",
+				"depth": 3,
+				"tag": "h2",
+				"template": "Product",
+				"tpl": 125,
+				"attrs": {
+					"style": "margin: 4px 0px 24px; font-family: \"Young Serif\", Georgia, serif; font-weight: 400; font-size: 48px; line-height: 1.05;"
+				},
+				"words": "What people are saying",
+				"allText": "What people are saying",
+				"srcLine": 114,
+				"membership": [],
+				"srcTag": "h2",
+				"srcOwnText": "What people are saying",
+				"snippet": "<h2 data-reveal=\"\" style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05\" data-dc-tpl=\"125\">What people are saying</h2>",
+				"textLeads": true,
+				"resolved": {
+					"375": {
+						"font-size": "32px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "33.6px",
+						"width": "335px",
+						"height": "67.1875px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"768": {
+						"font-size": "40px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "42px",
+						"width": "704px",
+						"height": "42px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"1440": {
+						"font-size": "48px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "50.4px",
+						"width": "1240px",
+						"height": "50.3906px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					}
+				},
+				"box": {
+					"375": {
+						"x": 20,
+						"y": 2682.4,
+						"w": 335,
+						"h": 67.2
+					},
+					"768": {
+						"x": 32,
+						"y": 2275.4,
+						"w": 704,
+						"h": 42
+					},
+					"1440": {
+						"x": 100,
+						"y": 1939.2,
+						"w": 1240,
+						"h": 50.4
+					}
+				},
+				"visible": {
+					"375": true,
+					"768": true,
+					"1440": true
+				},
+				"display": "block",
+				"position": {
+					"375": "static",
+					"768": "static",
+					"1440": "static"
+				},
+				"flexDirection": "row",
+				"displayAt": {
+					"375": "block",
+					"768": "block",
+					"1440": "block"
+				},
+				"layoutChanged375": true,
+				"screenshots": {}
+			},
+			{
+				"key": "Product/126#0",
+				"parentKey": "Product/123#0",
+				"depth": 3,
+				"tag": "div",
+				"template": "Product",
+				"tpl": 126,
+				"attrs": {
+					"style": "display: grid; grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: repeat(3, minmax(0px, 1fr)); gap: 20px; overflow-x: visible; scroll-snap-type: x mandatory; scrollbar-width: none; margin: 0px; padding: 0px;"
+				},
+				"words": "",
+				"allText": "★★★★★ Healthy and filling snack I received the strawberry and milk chocolate chip cookies. I gave half of them to my SIL",
+				"srcLine": 115,
+				"membership": [],
+				"srcTag": "div",
+				"srcOwnText": "",
+				"snippet": "<div style=\"display:grid;grid-auto-flow:{{ L.flow }};grid-auto-columns:{{ L.autoCols }};grid-template-columns:{{ L.revCols }};gap:20px;overflow-x:{{ L.ovx }};scroll-snap-type:x mandatory;scrollbar-width:none;margin:{{ L.bleedM }};padding:{{ L.bleedP }}\" data-dc-tpl=\"126\"> <sc-for list=\"{{ reviews }}\" as=\"r\" hint-placeholder-count=\"0\" data-dc-tpl=\"127\"> <article data-reveal=\"\" style=\"scroll-snap-al",
+				"flow": [
+					"  ",
+					{
+						"key": "Product/128#0"
+					},
+					"  ",
+					{
+						"key": "Product/128#1"
+					},
+					"  ",
+					{
+						"key": "Product/128#2"
+					},
+					"  "
+				],
+				"resolved": {
+					"375": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "375px",
+						"height": "389.156px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "6px",
+						"padding-right": "20px",
+						"padding-bottom": "14px",
+						"padding-left": "20px"
+					},
+					"768": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "704px",
+						"height": "462.938px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"1440": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "1240px",
+						"height": "289.969px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					}
+				},
+				"box": {
+					"375": {
+						"x": 0,
+						"y": 2773.6,
+						"w": 375,
+						"h": 389.2
+					},
+					"768": {
+						"x": 32,
+						"y": 2341.4,
+						"w": 704,
+						"h": 462.9
+					},
+					"1440": {
+						"x": 100,
+						"y": 2013.6,
+						"w": 1240,
+						"h": 290
+					}
+				},
+				"visible": {
+					"375": true,
+					"768": true,
+					"1440": true
+				},
+				"display": "grid",
+				"position": {
+					"375": "static",
+					"768": "static",
+					"1440": "static"
+				},
+				"flexDirection": "row",
+				"displayAt": {
+					"375": "grid",
+					"768": "grid",
+					"1440": "grid"
+				},
+				"layoutChanged375": true,
+				"screenshots": {}
+			},
+			{
+				"key": "Product/128#0",
+				"parentKey": "Product/126#0",
+				"depth": 4,
+				"tag": "article",
+				"template": "Product",
+				"tpl": 128,
+				"attrs": {
+					"class": "scp3",
+					"style": "scroll-snap-align: start; background: rgb(255, 250, 240); border: 2px solid rgb(58, 42, 34); border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 10px; transform: rotate(-1deg); transition: transform 0.35s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.35s;"
+				},
+				"words": "",
+				"allText": "★★★★★ Healthy and filling snack I received the strawberry and milk chocolate chip cookies. I gave half of them to my SIL",
+				"srcLine": 117,
+				"membership": [
+					{
+						"kind": "sc-for",
+						"list": "{{ reviews }}",
+						"as": "r",
+						"tpl": "127"
+					}
+				],
+				"srcTag": "article",
+				"srcOwnText": "",
+				"snippet": "<article data-reveal=\"\" style=\"scroll-snap-align:start;background:{{ r.bg }};border:2px solid #3A2A22;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:10px;transform:rotate({{ r.rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-4px);box-shadow:6px 6px 0 #3A2A22\" data-dc-tpl=\"128\"> <span style=\"letter-",
+				"flow": [
+					" ",
+					{
+						"key": "Product/129#0"
+					},
+					" ",
+					{
+						"key": "Product/130#0"
+					},
+					" ",
+					{
+						"key": "Product/131#0"
+					},
+					" ",
+					{
+						"key": "Product/132#0"
+					},
+					" "
+				],
+				"resolved": {
+					"375": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "288.094px",
+						"height": "369.156px",
+						"border-top-left-radius": "24px",
+						"border-top-right-radius": "24px",
+						"border-bottom-right-radius": "24px",
+						"border-bottom-left-radius": "24px",
+						"padding-top": "24px",
+						"padding-right": "24px",
+						"padding-bottom": "24px",
+						"padding-left": "24px"
+					},
+					"768": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "221.328px",
+						"height": "462.938px",
+						"border-top-left-radius": "24px",
+						"border-top-right-radius": "24px",
+						"border-bottom-right-radius": "24px",
+						"border-bottom-left-radius": "24px",
+						"padding-top": "24px",
+						"padding-right": "24px",
+						"padding-bottom": "24px",
+						"padding-left": "24px"
+					},
+					"1440": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "400px",
+						"height": "289.969px",
+						"border-top-left-radius": "24px",
+						"border-top-right-radius": "24px",
+						"border-bottom-right-radius": "24px",
+						"border-bottom-left-radius": "24px",
+						"padding-top": "24px",
+						"padding-right": "24px",
+						"padding-bottom": "24px",
+						"padding-left": "24px"
+					}
+				},
+				"box": {
+					"375": {
+						"x": -0.2,
+						"y": 2777.1,
+						"w": 294.5,
+						"h": 374.1
+					},
+					"768": {
+						"x": 28,
+						"y": 2339.5,
+						"w": 229.4,
+						"h": 466.7
+					},
+					"1440": {
+						"x": 97.5,
+						"y": 2010.1,
+						"w": 405,
+						"h": 296.9
+					}
+				},
+				"visible": {
+					"375": true,
+					"768": true,
+					"1440": true
+				},
+				"display": "flex",
+				"position": {
+					"375": "static",
+					"768": "static",
+					"1440": "static"
+				},
+				"flexDirection": "column",
+				"displayAt": {
+					"375": "flex",
+					"768": "flex",
+					"1440": "flex"
+				},
+				"layoutChanged375": true,
+				"screenshots": {}
+			},
+			{
+				"key": "Product/129#0",
+				"parentKey": "Product/128#0",
+				"depth": 5,
+				"tag": "span",
+				"template": "Product",
+				"tpl": 129,
+				"attrs": {
+					"style": "letter-spacing: 2px;"
+				},
+				"words": "★★★★★",
+				"allText": "★★★★★",
+				"srcLine": 118,
+				"membership": [
+					{
+						"kind": "sc-for",
+						"list": "{{ reviews }}",
+						"as": "r",
+						"tpl": "127"
+					}
+				],
+				"srcTag": "span",
+				"srcOwnText": "★★★★★",
+				"snippet": "<span style=\"letter-spacing:2px\" data-dc-tpl=\"129\">★★★★★</span>",
+				"textLeads": true,
+				"resolved": {
+					"375": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "2px",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "236.094px",
+						"height": "21px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"768": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "2px",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "169.328px",
+						"height": "21px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"1440": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "2px",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "348px",
+						"height": "21px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					}
+				},
+				"box": {
+					"375": {
+						"x": 26.3,
+						"y": 2803.5,
+						"w": 236.4,
+						"h": 25.1
+					},
+					"768": {
+						"x": 54.4,
+						"y": 2365.9,
+						"w": 169.7,
+						"h": 24
+					},
+					"1440": {
+						"x": 123.9,
+						"y": 2036.6,
+						"w": 348.3,
+						"h": 27.1
+					}
+				},
+				"visible": {
+					"375": true,
+					"768": true,
+					"1440": true
+				},
+				"display": "block",
+				"position": {
+					"375": "static",
+					"768": "static",
+					"1440": "static"
+				},
+				"flexDirection": "row",
+				"displayAt": {
+					"375": "block",
+					"768": "block",
+					"1440": "block"
+				},
+				"layoutChanged375": true,
+				"screenshots": {}
+			},
+			{
+				"key": "Product/130#0",
+				"parentKey": "Product/128#0",
+				"depth": 5,
+				"tag": "h3",
+				"template": "Product",
+				"tpl": 130,
+				"attrs": {
+					"style": "margin: 0px; font-family: \"Young Serif\", serif; font-weight: 400; font-size: 20px;"
+				},
+				"words": "Healthy and filling snack",
+				"allText": "Healthy and filling snack",
+				"srcLine": 119,
+				"membership": [
+					{
+						"kind": "sc-for",
+						"list": "{{ reviews }}",
+						"as": "r",
+						"tpl": "127"
+					}
+				],
+				"srcTag": "h3",
+				"srcOwnText": "{{ r.title }}",
+				"snippet": "<h3 style=\"margin:0;font-family:'Young Serif',serif;font-weight:400;font-size:20px\" data-dc-tpl=\"130\">{{ r.title }}</h3>",
+				"flow": [
+					"Healthy and filling snack"
+				],
+				"textLeads": true,
+				"resolved": {
+					"375": {
+						"font-size": "20px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "236.094px",
+						"height": "56px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"768": {
+						"font-size": "20px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "169.328px",
+						"height": "56px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"1440": {
+						"font-size": "20px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "348px",
+						"height": "28px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					}
+				},
+				"box": {
+					"375": {
+						"x": 26.8,
+						"y": 2834.5,
+						"w": 237,
+						"h": 60.1
+					},
+					"768": {
+						"x": 55,
+						"y": 2396.9,
+						"w": 170.3,
+						"h": 58.9
+					},
+					"1440": {
+						"x": 124.5,
+						"y": 2067.6,
+						"w": 348.4,
+						"h": 34.1
+					}
+				},
+				"visible": {
+					"375": true,
+					"768": true,
+					"1440": true
+				},
+				"display": "block",
+				"position": {
+					"375": "static",
+					"768": "static",
+					"1440": "static"
+				},
+				"flexDirection": "row",
+				"displayAt": {
+					"375": "block",
+					"768": "block",
+					"1440": "block"
+				},
+				"layoutChanged375": true,
+				"screenshots": {}
+			},
+			{
+				"key": "Product/131#0",
+				"parentKey": "Product/128#0",
+				"depth": 5,
+				"tag": "p",
+				"template": "Product",
+				"tpl": 131,
+				"attrs": {
+					"style": "margin: 0px; font-size: 16px; line-height: 1.6;"
+				},
+				"words": "I received the strawberry and milk chocolate chip cookies. I gave half of them to my SIL, who is also postpartum. They were fresh, soft and delicious! … I think these would be lovely to gift a new Mum.",
+				"allText": "I received the strawberry and milk chocolate chip cookies. I gave half of them to my SIL, who is also postpartum. They w",
+				"srcLine": 120,
+				"membership": [
+					{
+						"kind": "sc-for",
+						"list": "{{ reviews }}",
+						"as": "r",
+						"tpl": "127"
+					}
+				],
+				"srcTag": "p",
+				"srcOwnText": "{{ r.text }}",
+				"snippet": "<p style=\"margin:0;font-size:16px;line-height:1.6\" data-dc-tpl=\"131\">{{ r.text }}</p>",
+				"flow": [
+					"I received the strawberry and milk chocolate chip cookies. I gave half of them to my SIL, who is also postpartum. They were fresh, soft and delicious! … I think these would be lovely to gift a new Mum."
+				],
+				"textLeads": true,
+				"resolved": {
+					"375": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "25.6px",
+						"width": "236.094px",
+						"height": "179.156px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"768": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "25.6px",
+						"width": "169.328px",
+						"height": "255.938px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"1440": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "25.6px",
+						"width": "348px",
+						"height": "127.969px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					}
+				},
+				"box": {
+					"375": {
+						"x": 27.9,
+						"y": 2900.5,
+						"w": 239.2,
+						"h": 183.2
+					},
+					"768": {
+						"x": 56.1,
+						"y": 2462.9,
+						"w": 173.8,
+						"h": 258.9
+					},
+					"1440": {
+						"x": 125.2,
+						"y": 2105.5,
+						"w": 350.2,
+						"h": 134
+					}
+				},
+				"visible": {
+					"375": true,
+					"768": true,
+					"1440": true
+				},
+				"display": "block",
+				"position": {
+					"375": "static",
+					"768": "static",
+					"1440": "static"
+				},
+				"flexDirection": "row",
+				"displayAt": {
+					"375": "block",
+					"768": "block",
+					"1440": "block"
+				},
+				"layoutChanged375": true,
+				"screenshots": {}
+			},
+			{
+				"key": "Product/132#0",
+				"parentKey": "Product/128#0",
+				"depth": 5,
+				"tag": "div",
+				"template": "Product",
+				"tpl": 132,
+				"attrs": {
+					"style": "margin-top: auto; padding-top: 12px; border-top: 2px dashed rgba(58, 42, 34, 0.3); font-size: 14px;"
+				},
+				"words": "· June 2026",
+				"allText": "KA · June 2026",
+				"srcLine": 121,
+				"membership": [
+					{
+						"kind": "sc-for",
+						"list": "{{ reviews }}",
+						"as": "r",
+						"tpl": "127"
+					}
+				],
+				"srcTag": "div",
+				"srcOwnText": "· {{ r.date }}",
+				"snippet": "<div style=\"margin-top:auto;padding-top:12px;border-top:2px dashed rgba(58,42,34,.3);font-size:14px\" data-dc-tpl=\"132\"><b data-dc-tpl=\"133\">{{ r.name }}</b> · {{ r.date }}</div>",
+				"flow": [
+					{
+						"key": "Product/133#0"
+					},
+					" · June 2026"
+				],
+				"textLeads": false,
+				"resolved": {
+					"375": {
+						"font-size": "14px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "236.094px",
+						"height": "31px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "12px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"768": {
+						"font-size": "14px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "169.328px",
+						"height": "31px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "12px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"1440": {
+						"font-size": "14px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "348px",
+						"height": "31px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "12px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					}
+				},
+				"box": {
+					"375": {
+						"x": 31.2,
+						"y": 3089.6,
+						"w": 236.6,
+						"h": 35.1
+					},
+					"768": {
+						"x": 61.1,
+						"y": 2745.8,
+						"w": 169.8,
+						"h": 34
+					},
+					"1440": {
+						"x": 127.6,
+						"y": 2243.5,
+						"w": 348.5,
+						"h": 37.1
+					}
+				},
+				"visible": {
+					"375": true,
+					"768": true,
+					"1440": true
+				},
+				"display": "block",
+				"position": {
+					"375": "static",
+					"768": "static",
+					"1440": "static"
+				},
+				"flexDirection": "row",
+				"displayAt": {
+					"375": "block",
+					"768": "block",
+					"1440": "block"
+				},
+				"layoutChanged375": true,
+				"screenshots": {}
+			},
+			{
+				"key": "Product/133#0",
+				"parentKey": "Product/132#0",
+				"depth": 6,
+				"tag": "b",
+				"template": "Product",
+				"tpl": 133,
+				"attrs": {},
+				"words": "KA",
+				"allText": "KA",
+				"srcLine": 121,
+				"membership": [
+					{
+						"kind": "sc-for",
+						"list": "{{ reviews }}",
+						"as": "r",
+						"tpl": "127"
+					}
+				],
+				"srcTag": "b",
+				"srcOwnText": "{{ r.name }}",
+				"snippet": "<b data-dc-tpl=\"133\">{{ r.name }}</b>",
+				"flow": [
+					"KA"
+				],
+				"inlineDiff": {
+					"font-weight": "700"
+				},
+				"textLeads": true,
+				"resolved": {
+					"375": {
+						"font-size": "14px",
+						"font-weight": "700",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "auto",
+						"height": "auto",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"768": {
+						"font-size": "14px",
+						"font-weight": "700",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "auto",
+						"height": "auto",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"1440": {
+						"font-size": "14px",
+						"font-weight": "700",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "auto",
+						"height": "auto",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					}
+				},
+				"box": {
+					"375": {
+						"x": 31.5,
+						"y": 3107.4,
+						"w": 18.2,
+						"h": 17.3
+					},
+					"768": {
+						"x": 61.3,
+						"y": 2762.4,
+						"w": 18.2,
+						"h": 17.3
+					},
+					"1440": {
+						"x": 127.8,
+						"y": 2263.3,
+						"w": 18.2,
+						"h": 17.3
+					}
+				},
+				"visible": {
+					"375": true,
+					"768": true,
+					"1440": true
+				},
+				"display": "inline",
+				"position": {
+					"375": "static",
+					"768": "static",
+					"1440": "static"
+				},
+				"flexDirection": "row",
+				"displayAt": {
+					"375": "inline",
+					"768": "inline",
+					"1440": "inline"
+				},
+				"layoutChanged375": true,
+				"screenshots": {}
+			},
+			{
+				"key": "Product/128#1",
+				"parentKey": "Product/126#0",
+				"depth": 4,
+				"tag": "article",
+				"template": "Product",
+				"tpl": 128,
+				"attrs": {
+					"class": "scp3",
+					"style": "scroll-snap-align: start; background: rgb(249, 213, 211); border: 2px solid rgb(58, 42, 34); border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 10px; transform: rotate(1deg); transition: transform 0.35s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.35s;"
+				},
+				"words": "",
+				"allText": "★★★★★ Sweet, soft, addictive Sweet, soft oat cookies that are seriously addictive—and perfect for a lactating mum who’s ",
+				"srcLine": 117,
+				"membership": [
+					{
+						"kind": "sc-for",
+						"list": "{{ reviews }}",
+						"as": "r",
+						"tpl": "127"
+					}
+				],
+				"srcTag": "article",
+				"srcOwnText": "",
+				"snippet": "<article data-reveal=\"\" style=\"scroll-snap-align:start;background:{{ r.bg }};border:2px solid #3A2A22;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:10px;transform:rotate({{ r.rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-4px);box-shadow:6px 6px 0 #3A2A22\" data-dc-tpl=\"128\"> <span style=\"letter-",
+				"flow": [
+					" ",
+					{
+						"key": "Product/129#1"
+					},
+					" ",
+					{
+						"key": "Product/130#1"
+					},
+					" ",
+					{
+						"key": "Product/131#1"
+					},
+					" ",
+					{
+						"key": "Product/132#1"
+					},
+					" "
+				],
+				"resolved": {
+					"375": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "288.094px",
+						"height": "369.156px",
+						"border-top-left-radius": "24px",
+						"border-top-right-radius": "24px",
+						"border-bottom-right-radius": "24px",
+						"border-bottom-left-radius": "24px",
+						"padding-top": "24px",
+						"padding-right": "24px",
+						"padding-bottom": "24px",
+						"padding-left": "24px"
+					},
+					"768": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "221.328px",
+						"height": "462.938px",
+						"border-top-left-radius": "24px",
+						"border-top-right-radius": "24px",
+						"border-bottom-right-radius": "24px",
+						"border-bottom-left-radius": "24px",
+						"padding-top": "24px",
+						"padding-right": "24px",
+						"padding-bottom": "24px",
+						"padding-left": "24px"
+					},
+					"1440": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "400px",
+						"height": "289.969px",
+						"border-top-left-radius": "24px",
+						"border-top-right-radius": "24px",
+						"border-bottom-right-radius": "24px",
+						"border-bottom-left-radius": "24px",
+						"padding-top": "24px",
+						"padding-right": "24px",
+						"padding-bottom": "24px",
+						"padding-left": "24px"
+					}
+				},
+				"box": {
+					"375": {
+						"x": 307.9,
+						"y": 2777.1,
+						"w": 294.5,
+						"h": 374.1
+					},
+					"768": {
+						"x": 269.3,
+						"y": 2339.5,
+						"w": 229.4,
+						"h": 466.7
+					},
+					"1440": {
+						"x": 517.5,
+						"y": 2010.1,
+						"w": 405,
+						"h": 296.9
+					}
+				},
+				"visible": {
+					"375": true,
+					"768": true,
+					"1440": true
+				},
+				"display": "flex",
+				"position": {
+					"375": "static",
+					"768": "static",
+					"1440": "static"
+				},
+				"flexDirection": "column",
+				"displayAt": {
+					"375": "flex",
+					"768": "flex",
+					"1440": "flex"
+				},
+				"layoutChanged375": true,
+				"screenshots": {}
+			},
+			{
+				"key": "Product/129#1",
+				"parentKey": "Product/128#1",
+				"depth": 5,
+				"tag": "span",
+				"template": "Product",
+				"tpl": 129,
+				"attrs": {
+					"style": "letter-spacing: 2px;"
+				},
+				"words": "★★★★★",
+				"allText": "★★★★★",
+				"srcLine": 118,
+				"membership": [
+					{
+						"kind": "sc-for",
+						"list": "{{ reviews }}",
+						"as": "r",
+						"tpl": "127"
+					}
+				],
+				"srcTag": "span",
+				"srcOwnText": "★★★★★",
+				"snippet": "<span style=\"letter-spacing:2px\" data-dc-tpl=\"129\">★★★★★</span>",
+				"textLeads": true,
+				"resolved": {
+					"375": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "2px",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "236.094px",
+						"height": "21px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"768": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "2px",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "169.328px",
+						"height": "21px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"1440": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "2px",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "348px",
+						"height": "21px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					}
+				},
+				"box": {
+					"375": {
+						"x": 339.5,
+						"y": 2803.5,
+						"w": 236.4,
+						"h": 25.1
+					},
+					"768": {
+						"x": 302.6,
+						"y": 2365.9,
+						"w": 169.7,
+						"h": 24
+					},
+					"1440": {
+						"x": 547.7,
+						"y": 2036.6,
+						"w": 348.3,
+						"h": 27.1
+					}
+				},
+				"visible": {
+					"375": true,
+					"768": true,
+					"1440": true
+				},
+				"display": "block",
+				"position": {
+					"375": "static",
+					"768": "static",
+					"1440": "static"
+				},
+				"flexDirection": "row",
+				"displayAt": {
+					"375": "block",
+					"768": "block",
+					"1440": "block"
+				},
+				"layoutChanged375": true,
+				"screenshots": {}
+			},
+			{
+				"key": "Product/130#1",
+				"parentKey": "Product/128#1",
+				"depth": 5,
+				"tag": "h3",
+				"template": "Product",
+				"tpl": 130,
+				"attrs": {
+					"style": "margin: 0px; font-family: \"Young Serif\", serif; font-weight: 400; font-size: 20px;"
+				},
+				"words": "Sweet, soft, addictive",
+				"allText": "Sweet, soft, addictive",
+				"srcLine": 119,
+				"membership": [
+					{
+						"kind": "sc-for",
+						"list": "{{ reviews }}",
+						"as": "r",
+						"tpl": "127"
+					}
+				],
+				"srcTag": "h3",
+				"srcOwnText": "{{ r.title }}",
+				"snippet": "<h3 style=\"margin:0;font-family:'Young Serif',serif;font-weight:400;font-size:20px\" data-dc-tpl=\"130\">{{ r.title }}</h3>",
+				"flow": [
+					"Sweet, soft, addictive"
+				],
+				"textLeads": true,
+				"resolved": {
+					"375": {
+						"font-size": "20px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "236.094px",
+						"height": "28px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"768": {
+						"font-size": "20px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "169.328px",
+						"height": "56px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"1440": {
+						"font-size": "20px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "348px",
+						"height": "28px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					}
+				},
+				"box": {
+					"375": {
+						"x": 338.8,
+						"y": 2834.5,
+						"w": 236.5,
+						"h": 32.1
+					},
+					"768": {
+						"x": 301.4,
+						"y": 2396.9,
+						"w": 170.3,
+						"h": 58.9
+					},
+					"1440": {
+						"x": 547.1,
+						"y": 2067.6,
+						"w": 348.4,
+						"h": 34.1
+					}
+				},
+				"visible": {
+					"375": true,
+					"768": true,
+					"1440": true
+				},
+				"display": "block",
+				"position": {
+					"375": "static",
+					"768": "static",
+					"1440": "static"
+				},
+				"flexDirection": "row",
+				"displayAt": {
+					"375": "block",
+					"768": "block",
+					"1440": "block"
+				},
+				"layoutChanged375": true,
+				"screenshots": {}
+			},
+			{
+				"key": "Product/131#1",
+				"parentKey": "Product/128#1",
+				"depth": 5,
+				"tag": "p",
+				"template": "Product",
+				"tpl": 131,
+				"attrs": {
+					"style": "margin: 0px; font-size: 16px; line-height: 1.6;"
+				},
+				"words": "Sweet, soft oat cookies that are seriously addictive—and perfect for a lactating mum who’s constantly hungry. … The cookies are generously sized, so one was usually enough to keep me full.",
+				"allText": "Sweet, soft oat cookies that are seriously addictive—and perfect for a lactating mum who’s constantly hungry. … The cook",
+				"srcLine": 120,
+				"membership": [
+					{
+						"kind": "sc-for",
+						"list": "{{ reviews }}",
+						"as": "r",
+						"tpl": "127"
+					}
+				],
+				"srcTag": "p",
+				"srcOwnText": "{{ r.text }}",
+				"snippet": "<p style=\"margin:0;font-size:16px;line-height:1.6\" data-dc-tpl=\"131\">{{ r.text }}</p>",
+				"flow": [
+					"Sweet, soft oat cookies that are seriously addictive—and perfect for a lactating mum who’s constantly hungry. … The cookies are generously sized, so one was usually enough to keep me full."
+				],
+				"textLeads": true,
+				"resolved": {
+					"375": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "25.6px",
+						"width": "236.094px",
+						"height": "179.156px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"768": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "25.6px",
+						"width": "169.328px",
+						"height": "255.938px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"1440": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "25.6px",
+						"width": "348px",
+						"height": "127.969px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					}
+				},
+				"box": {
+					"375": {
+						"x": 335.5,
+						"y": 2872.5,
+						"w": 239.2,
+						"h": 183.2
+					},
+					"768": {
+						"x": 296.8,
+						"y": 2462.9,
+						"w": 173.8,
+						"h": 258.9
+					},
+					"1440": {
+						"x": 544.7,
+						"y": 2105.5,
+						"w": 350.2,
+						"h": 134
+					}
+				},
+				"visible": {
+					"375": true,
+					"768": true,
+					"1440": true
+				},
+				"display": "block",
+				"position": {
+					"375": "static",
+					"768": "static",
+					"1440": "static"
+				},
+				"flexDirection": "row",
+				"displayAt": {
+					"375": "block",
+					"768": "block",
+					"1440": "block"
+				},
+				"layoutChanged375": true,
+				"screenshots": {}
+			},
+			{
+				"key": "Product/132#1",
+				"parentKey": "Product/128#1",
+				"depth": 5,
+				"tag": "div",
+				"template": "Product",
+				"tpl": 132,
+				"attrs": {
+					"style": "margin-top: auto; padding-top: 12px; border-top: 2px dashed rgba(58, 42, 34, 0.3); font-size: 14px;"
+				},
+				"words": "· January 2026",
+				"allText": "mariahzaini · January 2026",
+				"srcLine": 121,
+				"membership": [
+					{
+						"kind": "sc-for",
+						"list": "{{ reviews }}",
+						"as": "r",
+						"tpl": "127"
+					}
+				],
+				"srcTag": "div",
+				"srcOwnText": "· {{ r.date }}",
+				"snippet": "<div style=\"margin-top:auto;padding-top:12px;border-top:2px dashed rgba(58,42,34,.3);font-size:14px\" data-dc-tpl=\"132\"><b data-dc-tpl=\"133\">{{ r.name }}</b> · {{ r.date }}</div>",
+				"flow": [
+					{
+						"key": "Product/133#1"
+					},
+					" · January 2026"
+				],
+				"textLeads": false,
+				"resolved": {
+					"375": {
+						"font-size": "14px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "236.094px",
+						"height": "31px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "12px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"768": {
+						"font-size": "14px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "169.328px",
+						"height": "48px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "12px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"1440": {
+						"font-size": "14px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "348px",
+						"height": "31px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "12px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					}
+				},
+				"box": {
+					"375": {
+						"x": 334.3,
+						"y": 3089.6,
+						"w": 236.6,
+						"h": 35.1
+					},
+					"768": {
+						"x": 295.8,
+						"y": 2728.8,
+						"w": 170.1,
+						"h": 50.9
+					},
+					"1440": {
+						"x": 543.9,
+						"y": 2243.5,
+						"w": 348.5,
+						"h": 37.1
+					}
+				},
+				"visible": {
+					"375": true,
+					"768": true,
+					"1440": true
+				},
+				"display": "block",
+				"position": {
+					"375": "static",
+					"768": "static",
+					"1440": "static"
+				},
+				"flexDirection": "row",
+				"displayAt": {
+					"375": "block",
+					"768": "block",
+					"1440": "block"
+				},
+				"layoutChanged375": true,
+				"screenshots": {}
+			},
+			{
+				"key": "Product/133#1",
+				"parentKey": "Product/132#1",
+				"depth": 6,
+				"tag": "b",
+				"template": "Product",
+				"tpl": 133,
+				"attrs": {},
+				"words": "mariahzaini",
+				"allText": "mariahzaini",
+				"srcLine": 121,
+				"membership": [
+					{
+						"kind": "sc-for",
+						"list": "{{ reviews }}",
+						"as": "r",
+						"tpl": "127"
+					}
+				],
+				"srcTag": "b",
+				"srcOwnText": "{{ r.name }}",
+				"snippet": "<b data-dc-tpl=\"133\">{{ r.name }}</b>",
+				"flow": [
+					"mariahzaini"
+				],
+				"inlineDiff": {
+					"font-weight": "700"
+				},
+				"textLeads": true,
+				"resolved": {
+					"375": {
+						"font-size": "14px",
+						"font-weight": "700",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "auto",
+						"height": "auto",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"768": {
+						"font-size": "14px",
+						"font-weight": "700",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "auto",
+						"height": "auto",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"1440": {
+						"font-size": "14px",
+						"font-weight": "700",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "auto",
+						"height": "auto",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					}
+				},
+				"box": {
+					"375": {
+						"x": 334.3,
+						"y": 3103.6,
+						"w": 81.8,
+						"h": 18.4
+					},
+					"768": {
+						"x": 296.1,
+						"y": 2742.8,
+						"w": 81.8,
+						"h": 18.4
+					},
+					"1440": {
+						"x": 543.9,
+						"y": 2257.5,
+						"w": 81.8,
+						"h": 18.4
+					}
+				},
+				"visible": {
+					"375": true,
+					"768": true,
+					"1440": true
+				},
+				"display": "inline",
+				"position": {
+					"375": "static",
+					"768": "static",
+					"1440": "static"
+				},
+				"flexDirection": "row",
+				"displayAt": {
+					"375": "inline",
+					"768": "inline",
+					"1440": "inline"
+				},
+				"layoutChanged375": false,
+				"screenshots": {}
+			},
+			{
+				"key": "Product/128#2",
+				"parentKey": "Product/126#0",
+				"depth": 4,
+				"tag": "article",
+				"template": "Product",
+				"tpl": 128,
+				"attrs": {
+					"class": "scp3",
+					"style": "scroll-snap-align: start; background: rgb(252, 235, 190); border: 2px solid rgb(58, 42, 34); border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 10px; transform: rotate(-0.5deg); transition: transform 0.35s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.35s;"
+				},
+				"words": "",
+				"allText": "★★★★★ Works like magic! I was gifted these lactation cookies right after giving birth … They were such a comforting trea",
+				"srcLine": 117,
+				"membership": [
+					{
+						"kind": "sc-for",
+						"list": "{{ reviews }}",
+						"as": "r",
+						"tpl": "127"
+					}
+				],
+				"srcTag": "article",
+				"srcOwnText": "",
+				"snippet": "<article data-reveal=\"\" style=\"scroll-snap-align:start;background:{{ r.bg }};border:2px solid #3A2A22;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:10px;transform:rotate({{ r.rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-4px);box-shadow:6px 6px 0 #3A2A22\" data-dc-tpl=\"128\"> <span style=\"letter-",
+				"flow": [
+					" ",
+					{
+						"key": "Product/129#2"
+					},
+					" ",
+					{
+						"key": "Product/130#2"
+					},
+					" ",
+					{
+						"key": "Product/131#2"
+					},
+					" ",
+					{
+						"key": "Product/132#2"
+					},
+					" "
+				],
+				"resolved": {
+					"375": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "288.094px",
+						"height": "369.156px",
+						"border-top-left-radius": "24px",
+						"border-top-right-radius": "24px",
+						"border-bottom-right-radius": "24px",
+						"border-bottom-left-radius": "24px",
+						"padding-top": "24px",
+						"padding-right": "24px",
+						"padding-bottom": "24px",
+						"padding-left": "24px"
+					},
+					"768": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "221.328px",
+						"height": "462.938px",
+						"border-top-left-radius": "24px",
+						"border-top-right-radius": "24px",
+						"border-bottom-right-radius": "24px",
+						"border-bottom-left-radius": "24px",
+						"padding-top": "24px",
+						"padding-right": "24px",
+						"padding-bottom": "24px",
+						"padding-left": "24px"
+					},
+					"1440": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "400px",
+						"height": "289.969px",
+						"border-top-left-radius": "24px",
+						"border-top-right-radius": "24px",
+						"border-bottom-right-radius": "24px",
+						"border-bottom-left-radius": "24px",
+						"padding-top": "24px",
+						"padding-right": "24px",
+						"padding-bottom": "24px",
+						"padding-left": "24px"
+					}
+				},
+				"box": {
+					"375": {
+						"x": 617.6,
+						"y": 2778.3,
+						"w": 291.3,
+						"h": 371.7
+					},
+					"768": {
+						"x": 512.6,
+						"y": 2340.4,
+						"w": 225.4,
+						"h": 464.9
+					},
+					"1440": {
+						"x": 938.7,
+						"y": 2011.8,
+						"w": 402.5,
+						"h": 293.4
+					}
+				},
+				"visible": {
+					"375": true,
+					"768": true,
+					"1440": true
+				},
+				"display": "flex",
+				"position": {
+					"375": "static",
+					"768": "static",
+					"1440": "static"
+				},
+				"flexDirection": "column",
+				"displayAt": {
+					"375": "flex",
+					"768": "flex",
+					"1440": "flex"
+				},
+				"layoutChanged375": true,
+				"screenshots": {}
+			},
+			{
+				"key": "Product/129#2",
+				"parentKey": "Product/128#2",
+				"depth": 5,
+				"tag": "span",
+				"template": "Product",
+				"tpl": 129,
+				"attrs": {
+					"style": "letter-spacing: 2px;"
+				},
+				"words": "★★★★★",
+				"allText": "★★★★★",
+				"srcLine": 118,
+				"membership": [
+					{
+						"kind": "sc-for",
+						"list": "{{ reviews }}",
+						"as": "r",
+						"tpl": "127"
+					}
+				],
+				"srcTag": "span",
+				"srcOwnText": "★★★★★",
+				"snippet": "<span style=\"letter-spacing:2px\" data-dc-tpl=\"129\">★★★★★</span>",
+				"textLeads": true,
+				"resolved": {
+					"375": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "2px",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "236.094px",
+						"height": "21px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"768": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "2px",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "169.328px",
+						"height": "21px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"1440": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "2px",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "348px",
+						"height": "21px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					}
+				},
+				"box": {
+					"375": {
+						"x": 643.8,
+						"y": 2804.5,
+						"w": 236.3,
+						"h": 23.1
+					},
+					"768": {
+						"x": 538.9,
+						"y": 2366.6,
+						"w": 169.5,
+						"h": 22.5
+					},
+					"1440": {
+						"x": 965,
+						"y": 2038.1,
+						"w": 348.2,
+						"h": 24
+					}
+				},
+				"visible": {
+					"375": true,
+					"768": true,
+					"1440": true
+				},
+				"display": "block",
+				"position": {
+					"375": "static",
+					"768": "static",
+					"1440": "static"
+				},
+				"flexDirection": "row",
+				"displayAt": {
+					"375": "block",
+					"768": "block",
+					"1440": "block"
+				},
+				"layoutChanged375": true,
+				"screenshots": {}
+			},
+			{
+				"key": "Product/130#2",
+				"parentKey": "Product/128#2",
+				"depth": 5,
+				"tag": "h3",
+				"template": "Product",
+				"tpl": 130,
+				"attrs": {
+					"style": "margin: 0px; font-family: \"Young Serif\", serif; font-weight: 400; font-size: 20px;"
+				},
+				"words": "Works like magic!",
+				"allText": "Works like magic!",
+				"srcLine": 119,
+				"membership": [
+					{
+						"kind": "sc-for",
+						"list": "{{ reviews }}",
+						"as": "r",
+						"tpl": "127"
+					}
+				],
+				"srcTag": "h3",
+				"srcOwnText": "{{ r.title }}",
+				"snippet": "<h3 style=\"margin:0;font-family:'Young Serif',serif;font-weight:400;font-size:20px\" data-dc-tpl=\"130\">{{ r.title }}</h3>",
+				"flow": [
+					"Works like magic!"
+				],
+				"textLeads": true,
+				"resolved": {
+					"375": {
+						"font-size": "20px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "236.094px",
+						"height": "28px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"768": {
+						"font-size": "20px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "169.328px",
+						"height": "56px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"1440": {
+						"font-size": "20px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "348px",
+						"height": "28px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					}
+				},
+				"box": {
+					"375": {
+						"x": 644.1,
+						"y": 2835.5,
+						"w": 236.3,
+						"h": 30.1
+					},
+					"768": {
+						"x": 539.1,
+						"y": 2397.6,
+						"w": 169.8,
+						"h": 57.5
+					},
+					"1440": {
+						"x": 965.2,
+						"y": 2069.1,
+						"w": 348.2,
+						"h": 31
+					}
+				},
+				"visible": {
+					"375": true,
+					"768": true,
+					"1440": true
+				},
+				"display": "block",
+				"position": {
+					"375": "static",
+					"768": "static",
+					"1440": "static"
+				},
+				"flexDirection": "row",
+				"displayAt": {
+					"375": "block",
+					"768": "block",
+					"1440": "block"
+				},
+				"layoutChanged375": true,
+				"screenshots": {}
+			},
+			{
+				"key": "Product/131#2",
+				"parentKey": "Product/128#2",
+				"depth": 5,
+				"tag": "p",
+				"template": "Product",
+				"tpl": 131,
+				"attrs": {
+					"style": "margin: 0px; font-size: 16px; line-height: 1.6;"
+				},
+				"words": "I was gifted these lactation cookies right after giving birth … They were such a comforting treat during those early postpartum days and made me feel really supported as a new mum.",
+				"allText": "I was gifted these lactation cookies right after giving birth … They were such a comforting treat during those early pos",
+				"srcLine": 120,
+				"membership": [
+					{
+						"kind": "sc-for",
+						"list": "{{ reviews }}",
+						"as": "r",
+						"tpl": "127"
+					}
+				],
+				"srcTag": "p",
+				"srcOwnText": "{{ r.text }}",
+				"snippet": "<p style=\"margin:0;font-size:16px;line-height:1.6\" data-dc-tpl=\"131\">{{ r.text }}</p>",
+				"flow": [
+					"I was gifted these lactation cookies right after giving birth … They were such a comforting treat during those early postpartum days and made me feel really supported as a new mum."
+				],
+				"textLeads": true,
+				"resolved": {
+					"375": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "25.6px",
+						"width": "236.094px",
+						"height": "179.156px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"768": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "25.6px",
+						"width": "169.328px",
+						"height": "255.938px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"1440": {
+						"font-size": "16px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "25.6px",
+						"width": "348px",
+						"height": "102.375px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					}
+				},
+				"box": {
+					"375": {
+						"x": 644.4,
+						"y": 2873.5,
+						"w": 237.6,
+						"h": 181.2
+					},
+					"768": {
+						"x": 539.7,
+						"y": 2463.6,
+						"w": 171.6,
+						"h": 257.4
+					},
+					"1440": {
+						"x": 965.6,
+						"y": 2107.1,
+						"w": 348.9,
+						"h": 105.4
+					}
+				},
+				"visible": {
+					"375": true,
+					"768": true,
+					"1440": true
+				},
+				"display": "block",
+				"position": {
+					"375": "static",
+					"768": "static",
+					"1440": "static"
+				},
+				"flexDirection": "row",
+				"displayAt": {
+					"375": "block",
+					"768": "block",
+					"1440": "block"
+				},
+				"layoutChanged375": true,
+				"screenshots": {}
+			},
+			{
+				"key": "Product/132#2",
+				"parentKey": "Product/128#2",
+				"depth": 5,
+				"tag": "div",
+				"template": "Product",
+				"tpl": 132,
+				"attrs": {
+					"style": "margin-top: auto; padding-top: 12px; border-top: 2px dashed rgba(58, 42, 34, 0.3); font-size: 14px;"
+				},
+				"words": "· January 2026",
+				"allText": "Mrs MIM · January 2026",
+				"srcLine": 121,
+				"membership": [
+					{
+						"kind": "sc-for",
+						"list": "{{ reviews }}",
+						"as": "r",
+						"tpl": "127"
+					}
+				],
+				"srcTag": "div",
+				"srcOwnText": "· {{ r.date }}",
+				"snippet": "<div style=\"margin-top:auto;padding-top:12px;border-top:2px dashed rgba(58,42,34,.3);font-size:14px\" data-dc-tpl=\"132\"><b data-dc-tpl=\"133\">{{ r.name }}</b> · {{ r.date }}</div>",
+				"flow": [
+					{
+						"key": "Product/133#2"
+					},
+					" · January 2026"
+				],
+				"textLeads": false,
+				"resolved": {
+					"375": {
+						"font-size": "14px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "236.094px",
+						"height": "31px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "12px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"768": {
+						"font-size": "14px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "169.328px",
+						"height": "31px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "12px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"1440": {
+						"font-size": "14px",
+						"font-weight": "400",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "348px",
+						"height": "31px",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "12px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					}
+				},
+				"box": {
+					"375": {
+						"x": 646.3,
+						"y": 3090.7,
+						"w": 236.4,
+						"h": 33.1
+					},
+					"768": {
+						"x": 542.2,
+						"y": 2746.6,
+						"w": 169.6,
+						"h": 32.5
+					},
+					"1440": {
+						"x": 966.8,
+						"y": 2245,
+						"w": 348.3,
+						"h": 34
+					}
+				},
+				"visible": {
+					"375": true,
+					"768": true,
+					"1440": true
+				},
+				"display": "block",
+				"position": {
+					"375": "static",
+					"768": "static",
+					"1440": "static"
+				},
+				"flexDirection": "row",
+				"displayAt": {
+					"375": "block",
+					"768": "block",
+					"1440": "block"
+				},
+				"layoutChanged375": true,
+				"screenshots": {}
+			},
+			{
+				"key": "Product/133#2",
+				"parentKey": "Product/132#2",
+				"depth": 6,
+				"tag": "b",
+				"template": "Product",
+				"tpl": 133,
+				"attrs": {},
+				"words": "Mrs MIM",
+				"allText": "Mrs MIM",
+				"srcLine": 121,
+				"membership": [
+					{
+						"kind": "sc-for",
+						"list": "{{ reviews }}",
+						"as": "r",
+						"tpl": "127"
+					}
+				],
+				"srcTag": "b",
+				"srcOwnText": "{{ r.name }}",
+				"snippet": "<b data-dc-tpl=\"133\">{{ r.name }}</b>",
+				"flow": [
+					"Mrs MIM"
+				],
+				"inlineDiff": {
+					"font-weight": "700"
+				},
+				"textLeads": true,
+				"resolved": {
+					"375": {
+						"font-size": "14px",
+						"font-weight": "700",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "auto",
+						"height": "auto",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"768": {
+						"font-size": "14px",
+						"font-weight": "700",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "auto",
+						"height": "auto",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					},
+					"1440": {
+						"font-size": "14px",
+						"font-weight": "700",
+						"letter-spacing": "normal",
+						"text-transform": "none",
+						"line-height": "normal",
+						"width": "auto",
+						"height": "auto",
+						"border-top-left-radius": "0px",
+						"border-top-right-radius": "0px",
+						"border-bottom-right-radius": "0px",
+						"border-bottom-left-radius": "0px",
+						"padding-top": "0px",
+						"padding-right": "0px",
+						"padding-bottom": "0px",
+						"padding-left": "0px"
+					}
+				},
+				"box": {
+					"375": {
+						"x": 646.4,
+						"y": 3106.2,
+						"w": 57.6,
+						"h": 17.5
+					},
+					"768": {
+						"x": 542.3,
+						"y": 2761.5,
+						"w": 57.6,
+						"h": 17.5
+					},
+					"1440": {
+						"x": 966.9,
+						"y": 2261.6,
+						"w": 57.6,
+						"h": 17.5
+					}
+				},
+				"visible": {
+					"375": true,
+					"768": true,
+					"1440": true
+				},
+				"display": "inline",
+				"position": {
+					"375": "static",
+					"768": "static",
+					"1440": "static"
+				},
+				"flexDirection": "row",
+				"displayAt": {
+					"375": "inline",
+					"768": "inline",
+					"1440": "inline"
+				},
+				"layoutChanged375": true,
+				"screenshots": {}
+			}
+		]
+	},
+	"record": {
+		"Product/7": {
+			"template": {
+				"key": "Product/7",
+				"component": "Product",
+				"n": "7",
+				"tag": "main",
+				"realTag": "main",
+				"attrs": {},
+				"style": {
+					"static": [],
+					"holes": [
+						"style:padding#0"
+					]
+				},
+				"pseudo": {},
+				"holes": [
+					{
+						"id": "style:padding#0",
+						"where": "style:padding",
+						"expr": "L.pad",
+						"path": "L.pad",
+						"whole": true
+					}
+				],
+				"parent": "Product/5",
+				"realParent": "Product/5",
+				"parentChain": [
+					"Product/5"
+				],
+				"membership": {
+					"scIf": [],
+					"scFor": [],
+					"dcImport": []
+				},
+				"own": {},
+				"inHelmet": false,
+				"inFor": false,
+				"ref": null,
+				"hooks": {},
+				"events": [],
+				"words": "",
+				"srcLine": 10
+			},
+			"logic": {
+				"holes": {
+					"style:padding#0": {
+						"375": {
+							"v": [
+								{
+									"t": "string",
+									"v": "18px 20px 110px"
+								}
+							],
+							"n": 1,
+							"loop": false
+						},
+						"768": {
+							"v": [
+								{
+									"t": "string",
+									"v": "28px 32px 88px"
+								}
+							],
+							"n": 1,
+							"loop": false
+						},
+						"1440": {
+							"v": [
+								{
+									"t": "string",
+									"v": "36px 40px 112px"
+								}
+							],
+							"n": 1,
+							"loop": false
+						}
+					}
+				}
+			},
+			"surfaces": [
+				{
+					"id": "S-14",
+					"kind": "page",
+					"parent": null,
+					"root": false,
+					"states": [],
+					"otherStates": [
+						{
+							"name": "mobile (<768px)",
+							"state_keys": {
+								"bp": "m"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "tablet (768–1023px)",
+							"state_keys": {
+								"bp": "t"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "desktop (≥1024px)",
+							"state_keys": {
+								"bp": "d"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: zookies",
+							"state_keys": {
+								"p.kind": "zookies"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: card",
+							"state_keys": {
+								"p.kind": "card"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: simple",
+							"state_keys": {
+								"p.kind": "simple"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "gift toggle available",
+							"state_keys": {
+								"giftable": "kind !== card"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "badge",
+							"state_keys": {
+								"p.badge": "truthy"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						}
+					],
+					"closed_by": "Navigate away",
+					"time_dependent": {
+						"value": false,
+						"reason": "Reads no clock, random value, storage or timer."
+					},
+					"unresolved": null
+				}
+			],
+			"effects": [
+				{
+					"id": "TR-030",
+					"name": "Product · button [aria-label=\"{{ g.label }}\"] · transition",
+					"mechanism": "css-transition",
+					"group": "hover",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/23",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "hover",
+						"detail": "style-hover rule on the same element; inline value bound to a {{ }} hole; changes when renderVals() output changes",
+						"state_keys": [
+							"img"
+						]
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "TR-031",
+					"name": "Product · button \"{{ o.n }}{{ o.priceTxt }}{{ o.each }}{{ o.tag }}\" · transition",
+					"mechanism": "css-transition",
+					"group": "hover",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/37",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "hover",
+						"detail": "style-hover rule on the same element; inline value bound to a {{ }} hole; changes when renderVals() output changes",
+						"state_keys": [
+							"size"
+						]
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "TR-032",
+					"name": "Product · button \"{{ o.name }}\" · transition",
+					"mechanism": "css-transition",
+					"group": "hover",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/47",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "hover",
+						"detail": "style-hover rule on the same element; inline value bound to a {{ }} hole; changes when renderVals() output changes",
+						"state_keys": [
+							"base"
+						]
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "TR-033",
+					"name": "Product · button \"{{ o.name }}\" · transition",
+					"mechanism": "css-transition",
+					"group": "hover",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/53",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "hover",
+						"detail": "style-hover rule on the same element; inline value bound to a {{ }} hole; changes when renderVals() output changes",
+						"state_keys": [
+							"chip"
+						]
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "TR-034",
+					"name": "Product · button \"✓{{ o.name }}\" · transition",
+					"mechanism": "css-transition",
+					"group": "hover",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/60",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "hover",
+						"detail": "style-hover rule on the same element; inline value bound to a {{ }} hole; changes when renderVals() output changes",
+						"state_keys": [
+							"flav"
+						]
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "TR-035",
+					"name": "Product · button \"Subscribe & save 10%Skip, swap flavours or cance\" · transition",
+					"mechanism": "css-transition",
+					"group": "state-transition",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/64",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "state",
+						"detail": "inline value bound to a {{ }} hole; changes when renderVals() output changes",
+						"state_keys": [
+							"sub"
+						]
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "TR-036",
+					"name": "Product · button \"One-off box{{ onceTxt }}\" · transition",
+					"mechanism": "css-transition",
+					"group": "state-transition",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/75",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "state",
+						"detail": "inline value bound to a {{ }} hole; changes when renderVals() output changes",
+						"state_keys": [
+							"sub"
+						]
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "TR-037",
+					"name": "Product · button \"{{ o.label }}\" · transition",
+					"mechanism": "css-transition",
+					"group": "state-transition",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/83",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "state",
+						"detail": "inline value bound to a {{ }} hole; changes when renderVals() output changes",
+						"state_keys": [
+							"amount"
+						]
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "TR-038",
+					"name": "Product · button \"{{ addLabel }}\" · transition",
+					"mechanism": "css-transition",
+					"group": "hover",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/108",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "hover",
+						"detail": "style-hover rule on the same element; style-active rule (press)"
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "TR-039",
+					"name": "Product · div \"{{ a.t }}+ {{ a.body }}\" · transition",
+					"mechanism": "css-transition",
+					"group": "state-transition",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/118",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "state",
+						"detail": "inline value bound to a {{ }} hole; changes when renderVals() output changes",
+						"state_keys": [
+							"acc"
+						]
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "TR-040",
+					"name": "Product · span \"+\" · transition",
+					"mechanism": "css-transition",
+					"group": "state-transition",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/120",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "state",
+						"detail": "inline value bound to a {{ }} hole; changes when renderVals() output changes",
+						"state_keys": [
+							"acc"
+						]
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "TR-041",
+					"name": "Product · article \"★★★★★ {{ r.title }} {{ r.text }} {{ r.name }} · \" · transition",
+					"mechanism": "css-transition",
+					"group": "hover",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/128",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "hover",
+						"detail": "style-hover rule on the same element"
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "A-05",
+					"name": "Scroll reveal",
+					"mechanism": "waapi",
+					"group": "scroll-reveal",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/124",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "scroll-into-view",
+						"detail": "IntersectionObserver threshold 0.1; unobserved after first reveal. motion() runs 60ms after the mm:ready render"
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "skip",
+						"detail": "motion() returns early under prefers-reduced-motion."
+					}
+				}
+			],
+			"assets": [],
+			"instances": [
+				{
+					"key": "Product/7#0",
+					"state": "page-product-dc-html-id-zookies"
+				}
+			],
+			"fingerprint": {
+				"tag": "main",
+				"cls": "",
+				"styleHash": "617bd399",
+				"parentTags": [
+					"div"
+				],
+				"textHash": "1505",
+				"line": 10
+			}
+		},
+		"Product/8": {
+			"template": {
+				"key": "Product/8",
+				"component": "Product",
+				"n": "8",
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"max-width",
+							"1240px"
+						],
+						[
+							"margin-top",
+							"0px"
+						],
+						[
+							"margin-right",
+							"auto"
+						],
+						[
+							"margin-bottom",
+							"0px"
+						],
+						[
+							"margin-left",
+							"auto"
+						]
+					],
+					"holes": []
+				},
+				"pseudo": {},
+				"holes": [],
+				"parent": "Product/7",
+				"realParent": "Product/7",
+				"parentChain": [
+					"Product/7",
+					"Product/5"
+				],
+				"membership": {
+					"scIf": [],
+					"scFor": [],
+					"dcImport": []
+				},
+				"own": {},
+				"inHelmet": false,
+				"inFor": false,
+				"ref": null,
+				"hooks": {},
+				"events": [],
+				"words": "",
+				"srcLine": 11
+			},
+			"logic": {
+				"holes": {}
+			},
+			"surfaces": [
+				{
+					"id": "S-14",
+					"kind": "page",
+					"parent": null,
+					"root": false,
+					"states": [],
+					"otherStates": [
+						{
+							"name": "mobile (<768px)",
+							"state_keys": {
+								"bp": "m"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "tablet (768–1023px)",
+							"state_keys": {
+								"bp": "t"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "desktop (≥1024px)",
+							"state_keys": {
+								"bp": "d"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: zookies",
+							"state_keys": {
+								"p.kind": "zookies"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: card",
+							"state_keys": {
+								"p.kind": "card"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: simple",
+							"state_keys": {
+								"p.kind": "simple"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "gift toggle available",
+							"state_keys": {
+								"giftable": "kind !== card"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "badge",
+							"state_keys": {
+								"p.badge": "truthy"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						}
+					],
+					"closed_by": "Navigate away",
+					"time_dependent": {
+						"value": false,
+						"reason": "Reads no clock, random value, storage or timer."
+					},
+					"unresolved": null
+				}
+			],
+			"effects": [
+				{
+					"id": "TR-030",
+					"name": "Product · button [aria-label=\"{{ g.label }}\"] · transition",
+					"mechanism": "css-transition",
+					"group": "hover",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/23",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "hover",
+						"detail": "style-hover rule on the same element; inline value bound to a {{ }} hole; changes when renderVals() output changes",
+						"state_keys": [
+							"img"
+						]
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "TR-031",
+					"name": "Product · button \"{{ o.n }}{{ o.priceTxt }}{{ o.each }}{{ o.tag }}\" · transition",
+					"mechanism": "css-transition",
+					"group": "hover",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/37",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "hover",
+						"detail": "style-hover rule on the same element; inline value bound to a {{ }} hole; changes when renderVals() output changes",
+						"state_keys": [
+							"size"
+						]
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "TR-032",
+					"name": "Product · button \"{{ o.name }}\" · transition",
+					"mechanism": "css-transition",
+					"group": "hover",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/47",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "hover",
+						"detail": "style-hover rule on the same element; inline value bound to a {{ }} hole; changes when renderVals() output changes",
+						"state_keys": [
+							"base"
+						]
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "TR-033",
+					"name": "Product · button \"{{ o.name }}\" · transition",
+					"mechanism": "css-transition",
+					"group": "hover",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/53",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "hover",
+						"detail": "style-hover rule on the same element; inline value bound to a {{ }} hole; changes when renderVals() output changes",
+						"state_keys": [
+							"chip"
+						]
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "TR-034",
+					"name": "Product · button \"✓{{ o.name }}\" · transition",
+					"mechanism": "css-transition",
+					"group": "hover",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/60",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "hover",
+						"detail": "style-hover rule on the same element; inline value bound to a {{ }} hole; changes when renderVals() output changes",
+						"state_keys": [
+							"flav"
+						]
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "TR-035",
+					"name": "Product · button \"Subscribe & save 10%Skip, swap flavours or cance\" · transition",
+					"mechanism": "css-transition",
+					"group": "state-transition",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/64",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "state",
+						"detail": "inline value bound to a {{ }} hole; changes when renderVals() output changes",
+						"state_keys": [
+							"sub"
+						]
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "TR-036",
+					"name": "Product · button \"One-off box{{ onceTxt }}\" · transition",
+					"mechanism": "css-transition",
+					"group": "state-transition",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/75",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "state",
+						"detail": "inline value bound to a {{ }} hole; changes when renderVals() output changes",
+						"state_keys": [
+							"sub"
+						]
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "TR-037",
+					"name": "Product · button \"{{ o.label }}\" · transition",
+					"mechanism": "css-transition",
+					"group": "state-transition",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/83",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "state",
+						"detail": "inline value bound to a {{ }} hole; changes when renderVals() output changes",
+						"state_keys": [
+							"amount"
+						]
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "TR-038",
+					"name": "Product · button \"{{ addLabel }}\" · transition",
+					"mechanism": "css-transition",
+					"group": "hover",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/108",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "hover",
+						"detail": "style-hover rule on the same element; style-active rule (press)"
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "TR-039",
+					"name": "Product · div \"{{ a.t }}+ {{ a.body }}\" · transition",
+					"mechanism": "css-transition",
+					"group": "state-transition",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/118",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "state",
+						"detail": "inline value bound to a {{ }} hole; changes when renderVals() output changes",
+						"state_keys": [
+							"acc"
+						]
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "TR-040",
+					"name": "Product · span \"+\" · transition",
+					"mechanism": "css-transition",
+					"group": "state-transition",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/120",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "state",
+						"detail": "inline value bound to a {{ }} hole; changes when renderVals() output changes",
+						"state_keys": [
+							"acc"
+						]
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "TR-041",
+					"name": "Product · article \"★★★★★ {{ r.title }} {{ r.text }} {{ r.name }} · \" · transition",
+					"mechanism": "css-transition",
+					"group": "hover",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/128",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "hover",
+						"detail": "style-hover rule on the same element"
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "A-05",
+					"name": "Scroll reveal",
+					"mechanism": "waapi",
+					"group": "scroll-reveal",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/124",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "scroll-into-view",
+						"detail": "IntersectionObserver threshold 0.1; unobserved after first reveal. motion() runs 60ms after the mm:ready render"
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "skip",
+						"detail": "motion() returns early under prefers-reduced-motion."
+					}
+				}
+			],
+			"assets": [],
+			"instances": [
+				{
+					"key": "Product/8#0",
+					"state": "page-product-dc-html-id-zookies"
+				}
+			],
+			"fingerprint": {
+				"tag": "div",
+				"cls": "",
+				"styleHash": "b9ba7e6f",
+				"parentTags": [
+					"div",
+					"main"
+				],
+				"textHash": "1505",
+				"line": 11
+			}
+		},
+		"Product/123": {
+			"template": {
+				"key": "Product/123",
+				"component": "Product",
+				"n": "123",
+				"tag": "section",
+				"realTag": "section",
+				"attrs": {
+					"id": "reviews"
+				},
+				"style": {
+					"static": [
+						[
+							"scroll-margin-top",
+							"100px"
+						]
+					],
+					"holes": [
+						"style:margin-top#0"
+					]
+				},
+				"pseudo": {},
+				"holes": [
+					{
+						"id": "style:margin-top#0",
+						"where": "style:margin-top",
+						"expr": "L.secGap",
+						"path": "L.secGap",
+						"whole": true
+					}
+				],
+				"parent": "Product/8",
+				"realParent": "Product/8",
+				"parentChain": [
+					"Product/8",
+					"Product/7",
+					"Product/5"
+				],
+				"membership": {
+					"scIf": [],
+					"scFor": [],
+					"dcImport": []
+				},
+				"own": {},
+				"inHelmet": false,
+				"inFor": false,
+				"ref": null,
+				"hooks": {},
+				"events": [],
+				"words": "",
+				"srcLine": 112
+			},
+			"logic": {
+				"holes": {
+					"style:margin-top#0": {
+						"375": {
+							"v": [
+								{
+									"t": "string",
+									"v": "64px"
+								}
+							],
+							"n": 1,
+							"loop": false
+						},
+						"768": {
+							"v": [
+								{
+									"t": "string",
+									"v": "80px"
+								}
+							],
+							"n": 1,
+							"loop": false
+						},
+						"1440": {
+							"v": [
+								{
+									"t": "string",
+									"v": "104px"
+								}
+							],
+							"n": 1,
+							"loop": false
+						}
+					}
+				}
+			},
+			"surfaces": [
+				{
+					"id": "S-14",
+					"kind": "page",
+					"parent": null,
+					"root": false,
+					"states": [],
+					"otherStates": [
+						{
+							"name": "mobile (<768px)",
+							"state_keys": {
+								"bp": "m"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "tablet (768–1023px)",
+							"state_keys": {
+								"bp": "t"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "desktop (≥1024px)",
+							"state_keys": {
+								"bp": "d"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: zookies",
+							"state_keys": {
+								"p.kind": "zookies"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: card",
+							"state_keys": {
+								"p.kind": "card"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: simple",
+							"state_keys": {
+								"p.kind": "simple"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "gift toggle available",
+							"state_keys": {
+								"giftable": "kind !== card"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "badge",
+							"state_keys": {
+								"p.badge": "truthy"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						}
+					],
+					"closed_by": "Navigate away",
+					"time_dependent": {
+						"value": false,
+						"reason": "Reads no clock, random value, storage or timer."
+					},
+					"unresolved": null
+				}
+			],
+			"effects": [
+				{
+					"id": "TR-041",
+					"name": "Product · article \"★★★★★ {{ r.title }} {{ r.text }} {{ r.name }} · \" · transition",
+					"mechanism": "css-transition",
+					"group": "hover",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/128",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "hover",
+						"detail": "style-hover rule on the same element"
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "A-05",
+					"name": "Scroll reveal",
+					"mechanism": "waapi",
+					"group": "scroll-reveal",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/124",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "scroll-into-view",
+						"detail": "IntersectionObserver threshold 0.1; unobserved after first reveal. motion() runs 60ms after the mm:ready render"
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "skip",
+						"detail": "motion() returns early under prefers-reduced-motion."
+					}
+				}
+			],
+			"assets": [],
+			"instances": [
+				{
+					"key": "Product/123#0",
+					"state": "page-product-dc-html-id-zookies"
+				}
+			],
+			"fingerprint": {
+				"tag": "section",
+				"cls": "",
+				"styleHash": "b0efebe6",
+				"parentTags": [
+					"div",
+					"main",
+					"div"
+				],
+				"textHash": "1505",
+				"line": 112
+			}
+		},
+		"Product/124": {
+			"template": {
+				"key": "Product/124",
+				"component": "Product",
+				"n": "124",
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {
+					"data-reveal": ""
+				},
+				"style": {
+					"static": [
+						[
+							"font-family",
+							"Caveat, cursive"
+						],
+						[
+							"font-size",
+							"28px"
+						],
+						[
+							"color",
+							"rgb(142, 52, 68)"
+						],
+						[
+							"line-height",
+							"1"
+						]
+					],
+					"holes": []
+				},
+				"pseudo": {},
+				"holes": [],
+				"parent": "Product/123",
+				"realParent": "Product/123",
+				"parentChain": [
+					"Product/123",
+					"Product/8",
+					"Product/7",
+					"Product/5"
+				],
+				"membership": {
+					"scIf": [],
+					"scFor": [],
+					"dcImport": []
+				},
+				"own": {},
+				"inHelmet": false,
+				"inFor": false,
+				"ref": null,
+				"hooks": {
+					"data-reveal": ""
+				},
+				"events": [],
+				"words": "real mums, real words",
+				"srcLine": 113
+			},
+			"logic": {
+				"holes": {}
+			},
+			"surfaces": [
+				{
+					"id": "S-14",
+					"kind": "page",
+					"parent": null,
+					"root": false,
+					"states": [],
+					"otherStates": [
+						{
+							"name": "mobile (<768px)",
+							"state_keys": {
+								"bp": "m"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "tablet (768–1023px)",
+							"state_keys": {
+								"bp": "t"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "desktop (≥1024px)",
+							"state_keys": {
+								"bp": "d"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: zookies",
+							"state_keys": {
+								"p.kind": "zookies"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: card",
+							"state_keys": {
+								"p.kind": "card"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: simple",
+							"state_keys": {
+								"p.kind": "simple"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "gift toggle available",
+							"state_keys": {
+								"giftable": "kind !== card"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "badge",
+							"state_keys": {
+								"p.badge": "truthy"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						}
+					],
+					"closed_by": "Navigate away",
+					"time_dependent": {
+						"value": false,
+						"reason": "Reads no clock, random value, storage or timer."
+					},
+					"unresolved": null
+				}
+			],
+			"effects": [
+				{
+					"id": "A-05",
+					"name": "Scroll reveal",
+					"mechanism": "waapi",
+					"group": "scroll-reveal",
+					"status": "active",
+					"flagged": null,
+					"reach": "self",
+					"target": "Product/124",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "scroll-into-view",
+						"detail": "IntersectionObserver threshold 0.1; unobserved after first reveal. motion() runs 60ms after the mm:ready render"
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "skip",
+						"detail": "motion() returns early under prefers-reduced-motion."
+					}
+				}
+			],
+			"assets": [],
+			"instances": [
+				{
+					"key": "Product/124#0",
+					"state": "page-product-dc-html-id-zookies"
+				}
+			],
+			"fingerprint": {
+				"tag": "div",
+				"cls": "",
+				"styleHash": "8b39fc63",
+				"parentTags": [
+					"div",
+					"main",
+					"div",
+					"section"
+				],
+				"textHash": "a3bf47f2",
+				"line": 113
+			}
+		},
+		"Product/125": {
+			"template": {
+				"key": "Product/125",
+				"component": "Product",
+				"n": "125",
+				"tag": "h2",
+				"realTag": "h2",
+				"attrs": {
+					"data-reveal": ""
+				},
+				"style": {
+					"static": [
+						[
+							"margin-top",
+							"4px"
+						],
+						[
+							"margin-right",
+							"0px"
+						],
+						[
+							"margin-bottom",
+							"24px"
+						],
+						[
+							"margin-left",
+							"0px"
+						],
+						[
+							"font-family",
+							"\"Young Serif\", Georgia, serif"
+						],
+						[
+							"font-weight",
+							"400"
+						],
+						[
+							"line-height",
+							"1.05"
+						]
+					],
+					"holes": [
+						"style:font-size#0"
+					]
+				},
+				"pseudo": {},
+				"holes": [
+					{
+						"id": "style:font-size#0",
+						"where": "style:font-size",
+						"expr": "L.h2",
+						"path": "L.h2",
+						"whole": true
+					}
+				],
+				"parent": "Product/123",
+				"realParent": "Product/123",
+				"parentChain": [
+					"Product/123",
+					"Product/8",
+					"Product/7",
+					"Product/5"
+				],
+				"membership": {
+					"scIf": [],
+					"scFor": [],
+					"dcImport": []
+				},
+				"own": {},
+				"inHelmet": false,
+				"inFor": false,
+				"ref": null,
+				"hooks": {
+					"data-reveal": ""
+				},
+				"events": [],
+				"words": "What people are saying",
+				"srcLine": 114
+			},
+			"logic": {
+				"holes": {
+					"style:font-size#0": {
+						"375": {
+							"v": [
+								{
+									"t": "string",
+									"v": "32px"
+								}
+							],
+							"n": 1,
+							"loop": false
+						},
+						"768": {
+							"v": [
+								{
+									"t": "string",
+									"v": "40px"
+								}
+							],
+							"n": 1,
+							"loop": false
+						},
+						"1440": {
+							"v": [
+								{
+									"t": "string",
+									"v": "48px"
+								}
+							],
+							"n": 1,
+							"loop": false
+						}
+					}
+				}
+			},
+			"surfaces": [
+				{
+					"id": "S-14",
+					"kind": "page",
+					"parent": null,
+					"root": false,
+					"states": [],
+					"otherStates": [
+						{
+							"name": "mobile (<768px)",
+							"state_keys": {
+								"bp": "m"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "tablet (768–1023px)",
+							"state_keys": {
+								"bp": "t"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "desktop (≥1024px)",
+							"state_keys": {
+								"bp": "d"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: zookies",
+							"state_keys": {
+								"p.kind": "zookies"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: card",
+							"state_keys": {
+								"p.kind": "card"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: simple",
+							"state_keys": {
+								"p.kind": "simple"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "gift toggle available",
+							"state_keys": {
+								"giftable": "kind !== card"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "badge",
+							"state_keys": {
+								"p.badge": "truthy"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						}
+					],
+					"closed_by": "Navigate away",
+					"time_dependent": {
+						"value": false,
+						"reason": "Reads no clock, random value, storage or timer."
+					},
+					"unresolved": null
+				}
+			],
+			"effects": [
+				{
+					"id": "A-05",
+					"name": "Scroll reveal",
+					"mechanism": "waapi",
+					"group": "scroll-reveal",
+					"status": "active",
+					"flagged": null,
+					"reach": "self",
+					"target": "Product/125",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "scroll-into-view",
+						"detail": "IntersectionObserver threshold 0.1; unobserved after first reveal. motion() runs 60ms after the mm:ready render"
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "skip",
+						"detail": "motion() returns early under prefers-reduced-motion."
+					}
+				}
+			],
+			"assets": [],
+			"instances": [
+				{
+					"key": "Product/125#0",
+					"state": "page-product-dc-html-id-zookies"
+				}
+			],
+			"fingerprint": {
+				"tag": "h2",
+				"cls": "",
+				"styleHash": "bdaed2de",
+				"parentTags": [
+					"div",
+					"main",
+					"div",
+					"section"
+				],
+				"textHash": "8f55c771",
+				"line": 114
+			}
+		},
+		"Product/126": {
+			"template": {
+				"key": "Product/126",
+				"component": "Product",
+				"n": "126",
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"display",
+							"grid"
+						],
+						[
+							"row-gap",
+							"20px"
+						],
+						[
+							"column-gap",
+							"20px"
+						],
+						[
+							"scroll-snap-type",
+							"x mandatory"
+						],
+						[
+							"scrollbar-width",
+							"none"
+						]
+					],
+					"holes": [
+						"style:grid-auto-flow#0",
+						"style:grid-auto-columns#1",
+						"style:grid-template-columns#2",
+						"style:overflow-x#3",
+						"style:margin#4",
+						"style:padding#5"
+					]
+				},
+				"pseudo": {},
+				"holes": [
+					{
+						"id": "style:grid-auto-flow#0",
+						"where": "style:grid-auto-flow",
+						"expr": "L.flow",
+						"path": "L.flow",
+						"whole": true
+					},
+					{
+						"id": "style:grid-auto-columns#1",
+						"where": "style:grid-auto-columns",
+						"expr": "L.autoCols",
+						"path": "L.autoCols",
+						"whole": true
+					},
+					{
+						"id": "style:grid-template-columns#2",
+						"where": "style:grid-template-columns",
+						"expr": "L.revCols",
+						"path": "L.revCols",
+						"whole": true
+					},
+					{
+						"id": "style:overflow-x#3",
+						"where": "style:overflow-x",
+						"expr": "L.ovx",
+						"path": "L.ovx",
+						"whole": true
+					},
+					{
+						"id": "style:margin#4",
+						"where": "style:margin",
+						"expr": "L.bleedM",
+						"path": "L.bleedM",
+						"whole": true
+					},
+					{
+						"id": "style:padding#5",
+						"where": "style:padding",
+						"expr": "L.bleedP",
+						"path": "L.bleedP",
+						"whole": true
+					}
+				],
+				"parent": "Product/123",
+				"realParent": "Product/123",
+				"parentChain": [
+					"Product/123",
+					"Product/8",
+					"Product/7",
+					"Product/5"
+				],
+				"membership": {
+					"scIf": [],
+					"scFor": [],
+					"dcImport": []
+				},
+				"own": {},
+				"inHelmet": false,
+				"inFor": false,
+				"ref": null,
+				"hooks": {},
+				"events": [],
+				"words": "",
+				"srcLine": 115
+			},
+			"logic": {
+				"holes": {
+					"style:grid-auto-flow#0": {
+						"375": {
+							"v": [
+								{
+									"t": "string",
+									"v": "column"
+								}
+							],
+							"n": 1,
+							"loop": false
+						},
+						"768": {
+							"v": [
+								{
+									"t": "string",
+									"v": "row"
+								}
+							],
+							"n": 1,
+							"loop": false
+						},
+						"1440": {
+							"v": [
+								{
+									"t": "string",
+									"v": "row"
+								}
+							],
+							"n": 1,
+							"loop": false
+						}
+					},
+					"style:grid-auto-columns#1": {
+						"375": {
+							"v": [
+								{
+									"t": "string",
+									"v": "86%"
+								}
+							],
+							"n": 1,
+							"loop": false
+						},
+						"768": {
+							"v": [
+								{
+									"t": "string",
+									"v": "auto"
+								}
+							],
+							"n": 1,
+							"loop": false
+						},
+						"1440": {
+							"v": [
+								{
+									"t": "string",
+									"v": "auto"
+								}
+							],
+							"n": 1,
+							"loop": false
+						}
+					},
+					"style:grid-template-columns#2": {
+						"375": {
+							"v": [
+								{
+									"t": "string",
+									"v": "none"
+								}
+							],
+							"n": 1,
+							"loop": false
+						},
+						"768": {
+							"v": [
+								{
+									"t": "string",
+									"v": "repeat(3, minmax(0, 1fr))"
+								}
+							],
+							"n": 1,
+							"loop": false
+						},
+						"1440": {
+							"v": [
+								{
+									"t": "string",
+									"v": "repeat(3, minmax(0, 1fr))"
+								}
+							],
+							"n": 1,
+							"loop": false
+						}
+					},
+					"style:overflow-x#3": {
+						"375": {
+							"v": [
+								{
+									"t": "string",
+									"v": "auto"
+								}
+							],
+							"n": 1,
+							"loop": false
+						},
+						"768": {
+							"v": [
+								{
+									"t": "string",
+									"v": "visible"
+								}
+							],
+							"n": 1,
+							"loop": false
+						},
+						"1440": {
+							"v": [
+								{
+									"t": "string",
+									"v": "visible"
+								}
+							],
+							"n": 1,
+							"loop": false
+						}
+					},
+					"style:margin#4": {
+						"375": {
+							"v": [
+								{
+									"t": "string",
+									"v": "0 -20px"
+								}
+							],
+							"n": 1,
+							"loop": false
+						},
+						"768": {
+							"v": [
+								{
+									"t": "string",
+									"v": "0"
+								}
+							],
+							"n": 1,
+							"loop": false
+						},
+						"1440": {
+							"v": [
+								{
+									"t": "string",
+									"v": "0"
+								}
+							],
+							"n": 1,
+							"loop": false
+						}
+					},
+					"style:padding#5": {
+						"375": {
+							"v": [
+								{
+									"t": "string",
+									"v": "6px 20px 14px"
+								}
+							],
+							"n": 1,
+							"loop": false
+						},
+						"768": {
+							"v": [
+								{
+									"t": "string",
+									"v": "0"
+								}
+							],
+							"n": 1,
+							"loop": false
+						},
+						"1440": {
+							"v": [
+								{
+									"t": "string",
+									"v": "0"
+								}
+							],
+							"n": 1,
+							"loop": false
+						}
+					}
+				}
+			},
+			"surfaces": [
+				{
+					"id": "S-14",
+					"kind": "page",
+					"parent": null,
+					"root": false,
+					"states": [],
+					"otherStates": [
+						{
+							"name": "mobile (<768px)",
+							"state_keys": {
+								"bp": "m"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "tablet (768–1023px)",
+							"state_keys": {
+								"bp": "t"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "desktop (≥1024px)",
+							"state_keys": {
+								"bp": "d"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: zookies",
+							"state_keys": {
+								"p.kind": "zookies"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: card",
+							"state_keys": {
+								"p.kind": "card"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: simple",
+							"state_keys": {
+								"p.kind": "simple"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "gift toggle available",
+							"state_keys": {
+								"giftable": "kind !== card"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "badge",
+							"state_keys": {
+								"p.badge": "truthy"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						}
+					],
+					"closed_by": "Navigate away",
+					"time_dependent": {
+						"value": false,
+						"reason": "Reads no clock, random value, storage or timer."
+					},
+					"unresolved": null
+				}
+			],
+			"effects": [
+				{
+					"id": "TR-041",
+					"name": "Product · article \"★★★★★ {{ r.title }} {{ r.text }} {{ r.name }} · \" · transition",
+					"mechanism": "css-transition",
+					"group": "hover",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/128",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "hover",
+						"detail": "style-hover rule on the same element"
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "A-05",
+					"name": "Scroll reveal",
+					"mechanism": "waapi",
+					"group": "scroll-reveal",
+					"status": "active",
+					"flagged": null,
+					"reach": "descendant",
+					"target": "Product/128",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "scroll-into-view",
+						"detail": "IntersectionObserver threshold 0.1; unobserved after first reveal. motion() runs 60ms after the mm:ready render"
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "skip",
+						"detail": "motion() returns early under prefers-reduced-motion."
+					}
+				}
+			],
+			"assets": [],
+			"instances": [
+				{
+					"key": "Product/126#0",
+					"state": "page-product-dc-html-id-zookies"
+				}
+			],
+			"fingerprint": {
+				"tag": "div",
+				"cls": "",
+				"styleHash": "c82e0837",
+				"parentTags": [
+					"div",
+					"main",
+					"div",
+					"section"
+				],
+				"textHash": "1505",
+				"line": 115
+			}
+		},
+		"Product/128": {
+			"template": {
+				"key": "Product/128",
+				"component": "Product",
+				"n": "128",
+				"tag": "article",
+				"realTag": "article",
+				"attrs": {
+					"data-reveal": ""
+				},
+				"style": {
+					"static": [
+						[
+							"scroll-snap-align",
+							"start"
+						],
+						[
+							"border-top-width",
+							"2px"
+						],
+						[
+							"border-right-width",
+							"2px"
+						],
+						[
+							"border-bottom-width",
+							"2px"
+						],
+						[
+							"border-left-width",
+							"2px"
+						],
+						[
+							"border-top-style",
+							"solid"
+						],
+						[
+							"border-right-style",
+							"solid"
+						],
+						[
+							"border-bottom-style",
+							"solid"
+						],
+						[
+							"border-left-style",
+							"solid"
+						],
+						[
+							"border-top-color",
+							"rgb(58, 42, 34)"
+						],
+						[
+							"border-right-color",
+							"rgb(58, 42, 34)"
+						],
+						[
+							"border-bottom-color",
+							"rgb(58, 42, 34)"
+						],
+						[
+							"border-left-color",
+							"rgb(58, 42, 34)"
+						],
+						[
+							"border-image-source",
+							"initial"
+						],
+						[
+							"border-image-slice",
+							"initial"
+						],
+						[
+							"border-image-width",
+							"initial"
+						],
+						[
+							"border-image-outset",
+							"initial"
+						],
+						[
+							"border-image-repeat",
+							"initial"
+						],
+						[
+							"border-top-left-radius",
+							"24px"
+						],
+						[
+							"border-top-right-radius",
+							"24px"
+						],
+						[
+							"border-bottom-right-radius",
+							"24px"
+						],
+						[
+							"border-bottom-left-radius",
+							"24px"
+						],
+						[
+							"padding-top",
+							"24px"
+						],
+						[
+							"padding-right",
+							"24px"
+						],
+						[
+							"padding-bottom",
+							"24px"
+						],
+						[
+							"padding-left",
+							"24px"
+						],
+						[
+							"display",
+							"flex"
+						],
+						[
+							"flex-direction",
+							"column"
+						],
+						[
+							"row-gap",
+							"10px"
+						],
+						[
+							"column-gap",
+							"10px"
+						],
+						[
+							"transition-behavior",
+							"normal, normal"
+						],
+						[
+							"transition-duration",
+							"0.35s, 0.35s"
+						],
+						[
+							"transition-timing-function",
+							"cubic-bezier(0.3, 1.4, 0.5, 1), ease"
+						],
+						[
+							"transition-delay",
+							"0s, 0s"
+						],
+						[
+							"transition-property",
+							"transform, box-shadow"
+						]
+					],
+					"holes": [
+						"style:background#0",
+						"style:transform#1"
+					]
+				},
+				"pseudo": {
+					"hover": {
+						"static": [
+							[
+								"transform",
+								"rotate(0deg) translateY(-4px)"
+							],
+							[
+								"box-shadow",
+								"rgb(58, 42, 34) 6px 6px 0px"
+							]
+						],
+						"holes": []
+					}
+				},
+				"holes": [
+					{
+						"id": "style:background#0",
+						"where": "style:background",
+						"expr": "r.bg",
+						"path": "r.bg",
+						"whole": true
+					},
+					{
+						"id": "style:transform#1",
+						"where": "style:transform",
+						"expr": "r.rot",
+						"path": "r.rot",
+						"whole": false
+					}
+				],
+				"parent": "Product/127",
+				"realParent": "Product/126",
+				"parentChain": [
+					"Product/127",
+					"Product/126",
+					"Product/123",
+					"Product/8",
+					"Product/7",
+					"Product/5"
+				],
+				"membership": {
+					"scIf": [],
+					"scFor": [
+						{
+							"key": "Product/127",
+							"list": "{{ reviews }}",
+							"as": "r"
+						}
+					],
+					"dcImport": []
+				},
+				"own": {},
+				"inHelmet": false,
+				"inFor": true,
+				"ref": null,
+				"hooks": {
+					"data-reveal": ""
+				},
+				"events": [],
+				"words": "",
+				"srcLine": 117
+			},
+			"logic": {
+				"holes": {
+					"style:background#0": {
+						"375": {
+							"v": [
+								{
+									"t": "string",
+									"v": "#FFFAF0"
+								},
+								{
+									"t": "string",
+									"v": "#F9D5D3"
+								},
+								{
+									"t": "string",
+									"v": "#FCEBBE"
+								}
+							],
+							"n": 3,
+							"loop": true
+						},
+						"768": {
+							"v": [
+								{
+									"t": "string",
+									"v": "#FFFAF0"
+								},
+								{
+									"t": "string",
+									"v": "#F9D5D3"
+								},
+								{
+									"t": "string",
+									"v": "#FCEBBE"
+								}
+							],
+							"n": 3,
+							"loop": true
+						},
+						"1440": {
+							"v": [
+								{
+									"t": "string",
+									"v": "#FFFAF0"
+								},
+								{
+									"t": "string",
+									"v": "#F9D5D3"
+								},
+								{
+									"t": "string",
+									"v": "#FCEBBE"
+								}
+							],
+							"n": 3,
+							"loop": true
+						}
+					},
+					"style:transform#1": {
+						"375": {
+							"v": [
+								{
+									"t": "string",
+									"v": "-1deg"
+								},
+								{
+									"t": "string",
+									"v": "1deg"
+								},
+								{
+									"t": "string",
+									"v": "-.5deg"
+								}
+							],
+							"n": 3,
+							"loop": true
+						},
+						"768": {
+							"v": [
+								{
+									"t": "string",
+									"v": "-1deg"
+								},
+								{
+									"t": "string",
+									"v": "1deg"
+								},
+								{
+									"t": "string",
+									"v": "-.5deg"
+								}
+							],
+							"n": 3,
+							"loop": true
+						},
+						"1440": {
+							"v": [
+								{
+									"t": "string",
+									"v": "-1deg"
+								},
+								{
+									"t": "string",
+									"v": "1deg"
+								},
+								{
+									"t": "string",
+									"v": "-.5deg"
+								}
+							],
+							"n": 3,
+							"loop": true
+						}
+					}
+				}
+			},
+			"surfaces": [
+				{
+					"id": "S-14",
+					"kind": "page",
+					"parent": null,
+					"root": false,
+					"states": [],
+					"otherStates": [
+						{
+							"name": "mobile (<768px)",
+							"state_keys": {
+								"bp": "m"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "tablet (768–1023px)",
+							"state_keys": {
+								"bp": "t"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "desktop (≥1024px)",
+							"state_keys": {
+								"bp": "d"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: zookies",
+							"state_keys": {
+								"p.kind": "zookies"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: card",
+							"state_keys": {
+								"p.kind": "card"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: simple",
+							"state_keys": {
+								"p.kind": "simple"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "gift toggle available",
+							"state_keys": {
+								"giftable": "kind !== card"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "badge",
+							"state_keys": {
+								"p.badge": "truthy"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						}
+					],
+					"closed_by": "Navigate away",
+					"time_dependent": {
+						"value": false,
+						"reason": "Reads no clock, random value, storage or timer."
+					},
+					"unresolved": null
+				}
+			],
+			"effects": [
+				{
+					"id": "TR-041",
+					"name": "Product · article \"★★★★★ {{ r.title }} {{ r.text }} {{ r.name }} · \" · transition",
+					"mechanism": "css-transition",
+					"group": "hover",
+					"status": "active",
+					"flagged": null,
+					"reach": "self",
+					"target": "Product/128",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "hover",
+						"detail": "style-hover rule on the same element"
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "unchanged",
+						"detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+					}
+				},
+				{
+					"id": "A-05",
+					"name": "Scroll reveal",
+					"mechanism": "waapi",
+					"group": "scroll-reveal",
+					"status": "active",
+					"flagged": null,
+					"reach": "self",
+					"target": "Product/128",
+					"via": "template_tpl_id",
+					"trigger": {
+						"type": "scroll-into-view",
+						"detail": "IntersectionObserver threshold 0.1; unobserved after first reveal. motion() runs 60ms after the mm:ready render"
+					},
+					"breakpoints": [],
+					"routes": [
+						"Product.dc.html"
+					],
+					"reduced_motion": {
+						"behaviour": "skip",
+						"detail": "motion() returns early under prefers-reduced-motion."
+					}
+				}
+			],
+			"assets": [],
+			"instances": [
+				{
+					"key": "Product/128#0",
+					"state": "page-product-dc-html-id-zookies"
+				},
+				{
+					"key": "Product/128#1",
+					"state": "page-product-dc-html-id-zookies"
+				},
+				{
+					"key": "Product/128#2",
+					"state": "page-product-dc-html-id-zookies"
+				}
+			],
+			"fingerprint": {
+				"tag": "article",
+				"cls": "",
+				"styleHash": "ec38ce4e",
+				"parentTags": [
+					"div",
+					"main",
+					"div",
+					"section",
+					"div"
+				],
+				"textHash": "1505",
+				"line": 117
+			}
+		},
+		"Product/129": {
+			"template": {
+				"key": "Product/129",
+				"component": "Product",
+				"n": "129",
+				"tag": "span",
+				"realTag": "span",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"letter-spacing",
+							"2px"
+						]
+					],
+					"holes": []
+				},
+				"pseudo": {},
+				"holes": [],
+				"parent": "Product/128",
+				"realParent": "Product/128",
+				"parentChain": [
+					"Product/128",
+					"Product/127",
+					"Product/126",
+					"Product/123",
+					"Product/8",
+					"Product/7",
+					"Product/5"
+				],
+				"membership": {
+					"scIf": [],
+					"scFor": [
+						{
+							"key": "Product/127",
+							"list": "{{ reviews }}",
+							"as": "r"
+						}
+					],
+					"dcImport": []
+				},
+				"own": {},
+				"inHelmet": false,
+				"inFor": true,
+				"ref": null,
+				"hooks": {},
+				"events": [],
+				"words": "★★★★★",
+				"srcLine": 118
+			},
+			"logic": {
+				"holes": {}
+			},
+			"surfaces": [
+				{
+					"id": "S-14",
+					"kind": "page",
+					"parent": null,
+					"root": false,
+					"states": [],
+					"otherStates": [
+						{
+							"name": "mobile (<768px)",
+							"state_keys": {
+								"bp": "m"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "tablet (768–1023px)",
+							"state_keys": {
+								"bp": "t"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "desktop (≥1024px)",
+							"state_keys": {
+								"bp": "d"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: zookies",
+							"state_keys": {
+								"p.kind": "zookies"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: card",
+							"state_keys": {
+								"p.kind": "card"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: simple",
+							"state_keys": {
+								"p.kind": "simple"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "gift toggle available",
+							"state_keys": {
+								"giftable": "kind !== card"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "badge",
+							"state_keys": {
+								"p.badge": "truthy"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						}
+					],
+					"closed_by": "Navigate away",
+					"time_dependent": {
+						"value": false,
+						"reason": "Reads no clock, random value, storage or timer."
+					},
+					"unresolved": null
+				}
+			],
+			"effects": [],
+			"assets": [],
+			"instances": [
+				{
+					"key": "Product/129#0",
+					"state": "page-product-dc-html-id-zookies"
+				},
+				{
+					"key": "Product/129#1",
+					"state": "page-product-dc-html-id-zookies"
+				},
+				{
+					"key": "Product/129#2",
+					"state": "page-product-dc-html-id-zookies"
+				}
+			],
+			"fingerprint": {
+				"tag": "span",
+				"cls": "",
+				"styleHash": "d2ea55f7",
+				"parentTags": [
+					"div",
+					"main",
+					"div",
+					"section",
+					"div",
+					"article"
+				],
+				"textHash": "af1300e0",
+				"line": 118
+			}
+		},
+		"Product/130": {
+			"template": {
+				"key": "Product/130",
+				"component": "Product",
+				"n": "130",
+				"tag": "h3",
+				"realTag": "h3",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"margin-top",
+							"0px"
+						],
+						[
+							"margin-right",
+							"0px"
+						],
+						[
+							"margin-bottom",
+							"0px"
+						],
+						[
+							"margin-left",
+							"0px"
+						],
+						[
+							"font-family",
+							"\"Young Serif\", serif"
+						],
+						[
+							"font-weight",
+							"400"
+						],
+						[
+							"font-size",
+							"20px"
+						]
+					],
+					"holes": []
+				},
+				"pseudo": {},
+				"holes": [
+					{
+						"id": "text#0",
+						"where": "text",
+						"expr": "r.title",
+						"path": "r.title",
+						"whole": false
+					}
+				],
+				"parent": "Product/128",
+				"realParent": "Product/128",
+				"parentChain": [
+					"Product/128",
+					"Product/127",
+					"Product/126",
+					"Product/123",
+					"Product/8",
+					"Product/7",
+					"Product/5"
+				],
+				"membership": {
+					"scIf": [],
+					"scFor": [
+						{
+							"key": "Product/127",
+							"list": "{{ reviews }}",
+							"as": "r"
+						}
+					],
+					"dcImport": []
+				},
+				"own": {},
+				"inHelmet": false,
+				"inFor": true,
+				"ref": null,
+				"hooks": {},
+				"events": [],
+				"words": "{{ r.title }}",
+				"srcLine": 119
+			},
+			"logic": {
+				"holes": {
+					"text#0": {
+						"375": {
+							"v": [
+								{
+									"t": "string",
+									"v": "Healthy and filling snack"
+								},
+								{
+									"t": "string",
+									"v": "Sweet, soft, addictive"
+								},
+								{
+									"t": "string",
+									"v": "Works like magic!"
+								}
+							],
+							"n": 3,
+							"loop": true
+						},
+						"768": {
+							"v": [
+								{
+									"t": "string",
+									"v": "Healthy and filling snack"
+								},
+								{
+									"t": "string",
+									"v": "Sweet, soft, addictive"
+								},
+								{
+									"t": "string",
+									"v": "Works like magic!"
+								}
+							],
+							"n": 3,
+							"loop": true
+						},
+						"1440": {
+							"v": [
+								{
+									"t": "string",
+									"v": "Healthy and filling snack"
+								},
+								{
+									"t": "string",
+									"v": "Sweet, soft, addictive"
+								},
+								{
+									"t": "string",
+									"v": "Works like magic!"
+								}
+							],
+							"n": 3,
+							"loop": true
+						}
+					}
+				}
+			},
+			"surfaces": [
+				{
+					"id": "S-14",
+					"kind": "page",
+					"parent": null,
+					"root": false,
+					"states": [],
+					"otherStates": [
+						{
+							"name": "mobile (<768px)",
+							"state_keys": {
+								"bp": "m"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "tablet (768–1023px)",
+							"state_keys": {
+								"bp": "t"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "desktop (≥1024px)",
+							"state_keys": {
+								"bp": "d"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: zookies",
+							"state_keys": {
+								"p.kind": "zookies"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: card",
+							"state_keys": {
+								"p.kind": "card"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: simple",
+							"state_keys": {
+								"p.kind": "simple"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "gift toggle available",
+							"state_keys": {
+								"giftable": "kind !== card"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "badge",
+							"state_keys": {
+								"p.badge": "truthy"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						}
+					],
+					"closed_by": "Navigate away",
+					"time_dependent": {
+						"value": false,
+						"reason": "Reads no clock, random value, storage or timer."
+					},
+					"unresolved": null
+				}
+			],
+			"effects": [],
+			"assets": [],
+			"instances": [
+				{
+					"key": "Product/130#0",
+					"state": "page-product-dc-html-id-zookies"
+				},
+				{
+					"key": "Product/130#1",
+					"state": "page-product-dc-html-id-zookies"
+				},
+				{
+					"key": "Product/130#2",
+					"state": "page-product-dc-html-id-zookies"
+				}
+			],
+			"fingerprint": {
+				"tag": "h3",
+				"cls": "",
+				"styleHash": "f924ac45",
+				"parentTags": [
+					"div",
+					"main",
+					"div",
+					"section",
+					"div",
+					"article"
+				],
+				"textHash": "e112379",
+				"line": 119
+			}
+		},
+		"Product/131": {
+			"template": {
+				"key": "Product/131",
+				"component": "Product",
+				"n": "131",
+				"tag": "p",
+				"realTag": "p",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"margin-top",
+							"0px"
+						],
+						[
+							"margin-right",
+							"0px"
+						],
+						[
+							"margin-bottom",
+							"0px"
+						],
+						[
+							"margin-left",
+							"0px"
+						],
+						[
+							"font-size",
+							"16px"
+						],
+						[
+							"line-height",
+							"1.6"
+						]
+					],
+					"holes": []
+				},
+				"pseudo": {},
+				"holes": [
+					{
+						"id": "text#0",
+						"where": "text",
+						"expr": "r.text",
+						"path": "r.text",
+						"whole": false
+					}
+				],
+				"parent": "Product/128",
+				"realParent": "Product/128",
+				"parentChain": [
+					"Product/128",
+					"Product/127",
+					"Product/126",
+					"Product/123",
+					"Product/8",
+					"Product/7",
+					"Product/5"
+				],
+				"membership": {
+					"scIf": [],
+					"scFor": [
+						{
+							"key": "Product/127",
+							"list": "{{ reviews }}",
+							"as": "r"
+						}
+					],
+					"dcImport": []
+				},
+				"own": {},
+				"inHelmet": false,
+				"inFor": true,
+				"ref": null,
+				"hooks": {},
+				"events": [],
+				"words": "{{ r.text }}",
+				"srcLine": 120
+			},
+			"logic": {
+				"holes": {
+					"text#0": {
+						"375": {
+							"v": [
+								{
+									"t": "string",
+									"v": "I received the strawberry and milk chocolate chip cookies. I gave half of them to my SIL, who is also postpartum. They were fresh, soft and delicious! … I think these would be lovely to gift a new Mum…"
+								},
+								{
+									"t": "string",
+									"v": "Sweet, soft oat cookies that are seriously addictive—and perfect for a lactating mum who’s constantly hungry. … The cookies are generously sized, so one was usually enough to keep me full."
+								},
+								{
+									"t": "string",
+									"v": "I was gifted these lactation cookies right after giving birth … They were such a comforting treat during those early postpartum days and made me feel really supported as a new mum."
+								}
+							],
+							"n": 3,
+							"loop": true
+						},
+						"768": {
+							"v": [
+								{
+									"t": "string",
+									"v": "I received the strawberry and milk chocolate chip cookies. I gave half of them to my SIL, who is also postpartum. They were fresh, soft and delicious! … I think these would be lovely to gift a new Mum…"
+								},
+								{
+									"t": "string",
+									"v": "Sweet, soft oat cookies that are seriously addictive—and perfect for a lactating mum who’s constantly hungry. … The cookies are generously sized, so one was usually enough to keep me full."
+								},
+								{
+									"t": "string",
+									"v": "I was gifted these lactation cookies right after giving birth … They were such a comforting treat during those early postpartum days and made me feel really supported as a new mum."
+								}
+							],
+							"n": 3,
+							"loop": true
+						},
+						"1440": {
+							"v": [
+								{
+									"t": "string",
+									"v": "I received the strawberry and milk chocolate chip cookies. I gave half of them to my SIL, who is also postpartum. They were fresh, soft and delicious! … I think these would be lovely to gift a new Mum…"
+								},
+								{
+									"t": "string",
+									"v": "Sweet, soft oat cookies that are seriously addictive—and perfect for a lactating mum who’s constantly hungry. … The cookies are generously sized, so one was usually enough to keep me full."
+								},
+								{
+									"t": "string",
+									"v": "I was gifted these lactation cookies right after giving birth … They were such a comforting treat during those early postpartum days and made me feel really supported as a new mum."
+								}
+							],
+							"n": 3,
+							"loop": true
+						}
+					}
+				}
+			},
+			"surfaces": [
+				{
+					"id": "S-14",
+					"kind": "page",
+					"parent": null,
+					"root": false,
+					"states": [],
+					"otherStates": [
+						{
+							"name": "mobile (<768px)",
+							"state_keys": {
+								"bp": "m"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "tablet (768–1023px)",
+							"state_keys": {
+								"bp": "t"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "desktop (≥1024px)",
+							"state_keys": {
+								"bp": "d"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: zookies",
+							"state_keys": {
+								"p.kind": "zookies"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: card",
+							"state_keys": {
+								"p.kind": "card"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: simple",
+							"state_keys": {
+								"p.kind": "simple"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "gift toggle available",
+							"state_keys": {
+								"giftable": "kind !== card"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "badge",
+							"state_keys": {
+								"p.badge": "truthy"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						}
+					],
+					"closed_by": "Navigate away",
+					"time_dependent": {
+						"value": false,
+						"reason": "Reads no clock, random value, storage or timer."
+					},
+					"unresolved": null
+				}
+			],
+			"effects": [],
+			"assets": [],
+			"instances": [
+				{
+					"key": "Product/131#0",
+					"state": "page-product-dc-html-id-zookies"
+				},
+				{
+					"key": "Product/131#1",
+					"state": "page-product-dc-html-id-zookies"
+				},
+				{
+					"key": "Product/131#2",
+					"state": "page-product-dc-html-id-zookies"
+				}
+			],
+			"fingerprint": {
+				"tag": "p",
+				"cls": "",
+				"styleHash": "ddee1f10",
+				"parentTags": [
+					"div",
+					"main",
+					"div",
+					"section",
+					"div",
+					"article"
+				],
+				"textHash": "3034fa64",
+				"line": 120
+			}
+		},
+		"Product/132": {
+			"template": {
+				"key": "Product/132",
+				"component": "Product",
+				"n": "132",
+				"tag": "div",
+				"realTag": "div",
+				"attrs": {},
+				"style": {
+					"static": [
+						[
+							"margin-top",
+							"auto"
+						],
+						[
+							"padding-top",
+							"12px"
+						],
+						[
+							"border-top-width",
+							"2px"
+						],
+						[
+							"border-top-style",
+							"dashed"
+						],
+						[
+							"border-top-color",
+							"rgba(58, 42, 34, 0.3)"
+						],
+						[
+							"font-size",
+							"14px"
+						]
+					],
+					"holes": []
+				},
+				"pseudo": {},
+				"holes": [
+					{
+						"id": "text#0",
+						"where": "text",
+						"expr": "r.date",
+						"path": "r.date",
+						"whole": false
+					}
+				],
+				"parent": "Product/128",
+				"realParent": "Product/128",
+				"parentChain": [
+					"Product/128",
+					"Product/127",
+					"Product/126",
+					"Product/123",
+					"Product/8",
+					"Product/7",
+					"Product/5"
+				],
+				"membership": {
+					"scIf": [],
+					"scFor": [
+						{
+							"key": "Product/127",
+							"list": "{{ reviews }}",
+							"as": "r"
+						}
+					],
+					"dcImport": []
+				},
+				"own": {},
+				"inHelmet": false,
+				"inFor": true,
+				"ref": null,
+				"hooks": {},
+				"events": [],
+				"words": "· {{ r.date }}",
+				"srcLine": 121
+			},
+			"logic": {
+				"holes": {
+					"text#0": {
+						"375": {
+							"v": [
+								{
+									"t": "string",
+									"v": "June 2026"
+								},
+								{
+									"t": "string",
+									"v": "January 2026"
+								}
+							],
+							"n": 3,
+							"loop": true
+						},
+						"768": {
+							"v": [
+								{
+									"t": "string",
+									"v": "June 2026"
+								},
+								{
+									"t": "string",
+									"v": "January 2026"
+								}
+							],
+							"n": 3,
+							"loop": true
+						},
+						"1440": {
+							"v": [
+								{
+									"t": "string",
+									"v": "June 2026"
+								},
+								{
+									"t": "string",
+									"v": "January 2026"
+								}
+							],
+							"n": 3,
+							"loop": true
+						}
+					}
+				}
+			},
+			"surfaces": [
+				{
+					"id": "S-14",
+					"kind": "page",
+					"parent": null,
+					"root": false,
+					"states": [],
+					"otherStates": [
+						{
+							"name": "mobile (<768px)",
+							"state_keys": {
+								"bp": "m"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "tablet (768–1023px)",
+							"state_keys": {
+								"bp": "t"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "desktop (≥1024px)",
+							"state_keys": {
+								"bp": "d"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: zookies",
+							"state_keys": {
+								"p.kind": "zookies"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: card",
+							"state_keys": {
+								"p.kind": "card"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: simple",
+							"state_keys": {
+								"p.kind": "simple"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "gift toggle available",
+							"state_keys": {
+								"giftable": "kind !== card"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "badge",
+							"state_keys": {
+								"p.badge": "truthy"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						}
+					],
+					"closed_by": "Navigate away",
+					"time_dependent": {
+						"value": false,
+						"reason": "Reads no clock, random value, storage or timer."
+					},
+					"unresolved": null
+				}
+			],
+			"effects": [],
+			"assets": [],
+			"instances": [
+				{
+					"key": "Product/132#0",
+					"state": "page-product-dc-html-id-zookies"
+				},
+				{
+					"key": "Product/132#1",
+					"state": "page-product-dc-html-id-zookies"
+				},
+				{
+					"key": "Product/132#2",
+					"state": "page-product-dc-html-id-zookies"
+				}
+			],
+			"fingerprint": {
+				"tag": "div",
+				"cls": "",
+				"styleHash": "ff02e046",
+				"parentTags": [
+					"div",
+					"main",
+					"div",
+					"section",
+					"div",
+					"article"
+				],
+				"textHash": "a6b1abfa",
+				"line": 121
+			}
+		},
+		"Product/133": {
+			"template": {
+				"key": "Product/133",
+				"component": "Product",
+				"n": "133",
+				"tag": "b",
+				"realTag": "b",
+				"attrs": {},
+				"style": {
+					"static": [],
+					"holes": []
+				},
+				"pseudo": {},
+				"holes": [
+					{
+						"id": "text#0",
+						"where": "text",
+						"expr": "r.name",
+						"path": "r.name",
+						"whole": false
+					}
+				],
+				"parent": "Product/132",
+				"realParent": "Product/132",
+				"parentChain": [
+					"Product/132",
+					"Product/128",
+					"Product/127",
+					"Product/126",
+					"Product/123",
+					"Product/8",
+					"Product/7",
+					"Product/5"
+				],
+				"membership": {
+					"scIf": [],
+					"scFor": [
+						{
+							"key": "Product/127",
+							"list": "{{ reviews }}",
+							"as": "r"
+						}
+					],
+					"dcImport": []
+				},
+				"own": {},
+				"inHelmet": false,
+				"inFor": true,
+				"ref": null,
+				"hooks": {},
+				"events": [],
+				"words": "{{ r.name }}",
+				"srcLine": 121
+			},
+			"logic": {
+				"holes": {
+					"text#0": {
+						"375": {
+							"v": [
+								{
+									"t": "string",
+									"v": "KA"
+								},
+								{
+									"t": "string",
+									"v": "mariahzaini"
+								},
+								{
+									"t": "string",
+									"v": "Mrs MIM"
+								}
+							],
+							"n": 3,
+							"loop": true
+						},
+						"768": {
+							"v": [
+								{
+									"t": "string",
+									"v": "KA"
+								},
+								{
+									"t": "string",
+									"v": "mariahzaini"
+								},
+								{
+									"t": "string",
+									"v": "Mrs MIM"
+								}
+							],
+							"n": 3,
+							"loop": true
+						},
+						"1440": {
+							"v": [
+								{
+									"t": "string",
+									"v": "KA"
+								},
+								{
+									"t": "string",
+									"v": "mariahzaini"
+								},
+								{
+									"t": "string",
+									"v": "Mrs MIM"
+								}
+							],
+							"n": 3,
+							"loop": true
+						}
+					}
+				}
+			},
+			"surfaces": [
+				{
+					"id": "S-14",
+					"kind": "page",
+					"parent": null,
+					"root": false,
+					"states": [],
+					"otherStates": [
+						{
+							"name": "mobile (<768px)",
+							"state_keys": {
+								"bp": "m"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "tablet (768–1023px)",
+							"state_keys": {
+								"bp": "t"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "desktop (≥1024px)",
+							"state_keys": {
+								"bp": "d"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: zookies",
+							"state_keys": {
+								"p.kind": "zookies"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: card",
+							"state_keys": {
+								"p.kind": "card"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "kind: simple",
+							"state_keys": {
+								"p.kind": "simple"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "gift toggle available",
+							"state_keys": {
+								"giftable": "kind !== card"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						},
+						{
+							"name": "badge",
+							"state_keys": {
+								"p.badge": "truthy"
+							},
+							"in_sc_if": false,
+							"animation_ids": []
+						}
+					],
+					"closed_by": "Navigate away",
+					"time_dependent": {
+						"value": false,
+						"reason": "Reads no clock, random value, storage or timer."
+					},
+					"unresolved": null
+				}
+			],
+			"effects": [],
+			"assets": [],
+			"instances": [
+				{
+					"key": "Product/133#0",
+					"state": "page-product-dc-html-id-zookies"
+				},
+				{
+					"key": "Product/133#1",
+					"state": "page-product-dc-html-id-zookies"
+				},
+				{
+					"key": "Product/133#2",
+					"state": "page-product-dc-html-id-zookies"
+				}
+			],
+			"fingerprint": {
+				"tag": "b",
+				"cls": "",
+				"styleHash": "1505",
+				"parentTags": [
+					"div",
+					"main",
+					"div",
+					"section",
+					"div",
+					"article",
+					"div"
+				],
+				"textHash": "65da461e",
+				"line": 121
+			}
+		}
+	}
+}

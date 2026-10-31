@@ -12,7 +12,7 @@
 	{ "file": "lib/skeleton-loop-blocks.mjs", "find": "everyItem( ( it, all ) => all.some( ( e ) => 'a' === e.tag ) ) ) {", "replace": "true ) {", "why": "brand labels that link nowhere are the brand strip" },
 	{ "file": "lib/skeleton-loop-blocks.mjs", "find": "brandMaxItems: named.size }", "replace": "brandMaxItems: items.length }", "why": "a marquee's repeated items count as brands" },
 	{ "file": "lib/skeleton-loop-blocks.mjs", "find": "rated.test( all.map( ( e ) => `${ text( e ) } ${ m.read.attr( e, 'aria-label' ) ?? '' }` ).join( ' ' ) ) )", "replace": "true )", "why": "items with no rating are reviews" },
-	{ "file": "lib/skeleton-loop-blocks.mjs", "find": "&& quoted * 2 >= items.length ) {", "replace": ") {", "why": "reviews with no quotes are reviews" },
+	{ "file": "lib/skeleton-loop-blocks.mjs", "find": "&& quoted * 2 >= items.length;", "replace": "&& true;", "why": "reviews with no quotes are reviews" },
 	{ "file": "lib/skeleton-loop-blocks.mjs", "find": ", ...( p.countAttribute ? { [ p.countAttribute ]: items.length } : {} ) }", "replace": " }", "why": "the reviews block shows its default count" },
 	{ "file": "lib/skeleton-loop-blocks.mjs", "find": "handover: p.handover, reason", "replace": "reason", "why": "the reviews block's place is never handed over" },
 	{ "file": "lib/skeleton-loop-blocks.mjs", "find": "const els = m.els.filter( shown );", "replace": "const els = m.els;", "why": "an element never shown counts" },

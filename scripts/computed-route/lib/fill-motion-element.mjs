@@ -226,7 +226,8 @@ export function elementEffects( records, { mdb, loops = null, runtimeLoops = [],
 	const base = [ 1440, 768, 375 ].find( ( w ) => shows( loops?.[ w ] ) ) ?? 1440;
 	const wide = loops?.[ base ] || null;
 	const ranAt = [ 1440, 768, 375 ].filter( ( w ) => shows( loops?.[ w ] ) ).map( ( w ) => TIER[ w ] );
-	const only = ranAt.length && ! ranAt.includes( 'desktop' ) ? `the render shows this endless animation at ${ ranAt.join( ' and ' ) } only, so it is judged there; the effect runs at every width (no per-width switch holds it)` : null;
+	const below = ranAt.length && ! ranAt.includes( 'desktop' );
+	const only = below ? `the render shows this endless animation at ${ ranAt.join( ' and ' ) } only, so it is judged there` : null;
 	let own = records.filter( ( r ) => 'effect' === classify( r, cls ).kind );
 	if ( ! own.length && wide?.loops?.length ) {
 		own = wide.loops.flatMap( ( l ) => runtimeLoopsFor( runtimeLoops, { ...wide, loops: [ l ] } ).slice( 0, 1 ) );
@@ -260,7 +261,21 @@ export function elementEffects( records, { mdb, loops = null, runtimeLoops = [],
 			keep( `<${ a.tag } ${ a.attributeName || a.type || '' }>`, chooseEffect( loop, { tablet: 1440 === base ? at( 768 ) : null, mobile: base > 375 ? at( 375 ) : null }, { mdb } ) );
 		}
 	} );
-	only && out.effects.length && out.notes.push( only );
+	// A loop the draft runs below a width only is written to run there through the effect's own range field (the marquee's
+	// belowBreakpoint: `mobile` when only the narrowest width ran it, `tablet` when the middle one did too); an effect with no
+	// such field runs at every width, and the note says so.
+	if ( below ) {
+		for ( const fx of out.effects ) {
+			const range = mdb.rangeField?.( 'effects', fx.effect, Object.values( TIER ) );
+			const value = ranAt.includes( 'tablet' ) ? 'tablet' : 'mobile';
+			if ( range && range.choices.includes( value ) && ranAt.includes( 'mobile' ) ) {
+				fx.values = { ...fx.values, [ range.path.replace( /^values\./, '' ) ]: value };
+				out.notes.push( `${ only }, and written to run at ${ value } width and below (${ range.path })` );
+			} else {
+				out.notes.push( `${ only }; the effect runs at every width (no per-width switch holds it)` );
+			}
+		}
+	}
 	if ( wide?.loops?.length && ! own.length ) {
 		out.notes.push( `the render shows an endless animation on this element that no code record explains, so nothing is written (R-47-4)` );
 	}
