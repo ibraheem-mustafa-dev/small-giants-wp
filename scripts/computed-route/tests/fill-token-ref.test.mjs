@@ -5,14 +5,14 @@ import assert from 'node:assert/strict';
 import { traceToken, traceRefs, applyRefs, tokenWrites } from '../lib/fill-token-ref.mjs';
 
 const map = new Map( [
-	[ '--s-4', '16px' ], [ '--s-card', '24px' ], [ '--s-gutter', '16px' ], [ '--pad-card', 'var(--s-gutter)' ],
+	[ '--s-4', '16px' ], [ '--sec-d', '108px' ], [ '--sec-m', '64px' ], [ '--s-card', '24px' ], [ '--s-gutter', '16px' ], [ '--pad-card', 'var(--s-gutter)' ],
 	[ '--mm-h1-m', '32px' ], [ '--mm-h1-t', '40px' ], [ '--mm-h1-d', '48px' ],
 	[ '--brand', '#c8102e' ], [ '--shade-a', '#c8102e' ],
 ] );
 const raw = { settings: {
 	spacing: { spacingSizes: [ { slug: '30', size: '16px' }, { slug: '40', size: '16px' }, { slug: '50', size: '24px' } ] },
 	typography: { fontSizes: [ { slug: 'small', size: '2rem' }, { slug: 'large', size: '40px' }, { slug: 'hero', size: '48px' } ] },
-	custom: { defaultTokens: [ 'mm-h1-d', 's-card' ], presetTokens: { spacing: { 30: 's-4', 40: 's-gutter' }, fontSizes: { small: 'mm-h1-m', large: 'mm-h1-t' } } },
+	custom: { section: { padding: { mobile: '64px', tablet: '88px', desktop: '108px' } }, defaultTokens: [ 'mm-h1-d', 's-card', 'sec-d', 'sec-m' ], presetTokens: { spacing: { 30: 's-4', 40: 's-gutter' }, fontSizes: { small: 'mm-h1-m', large: 'mm-h1-t' } } },
 	color: { palette: [ { slug: 'brand', color: '#c8102e' }, { slug: 'shade-a', color: '#c8102e' } ] },
 } };
 const run = ( prop, draft, declared, writes, side = null, snapshot = raw ) => {
@@ -86,4 +86,15 @@ test( 'tokenWrites reads the declared value off the run state and keeps the trac
 	assert.equal( st.out.tokenRefs[ 0 ].status, 'ref' );
 	const none = tokenWrites( { ...st, draftTokens: new Map() }, { id: 't', slot: '' }, 'padding-top', { 1440: '16px' }, [ { attr: 'padding', value: { desktop: { top: '16px' } } } ] );
 	assert.equal( none[ 0 ].value.desktop.top, '16px', 'no draft tokens: the resolver\'s write stands' );
+} );
+
+test( 'MUST FAIL: a section padding equal to the section default at a width stays unset there and keeps its literal where it differs', () => {
+	const write = [ { attr: 'padding', value: { desktop: { top: '108px' }, mobile: { top: '80px' } }, merge: 'deep' } ];
+	const r = run( 'padding-top', { 375: '80px', 1440: '108px' }, { 375: 'var(--sec-m)', 1440: 'var(--sec-d)' }, write, 'top' );
+	assert.deepEqual( r.writes[ 0 ].value, { mobile: { top: '80px' } } );
+	assert.deepEqual( r.traced.rows.map( ( x ) => x.status ), [ 'default', 'unset' ] );
+	const none = run( 'padding-top', { 1440: '108px' }, { 1440: 'var(--sec-d)' }, [ { attr: 'padding', value: { desktop: { top: '108px' } }, merge: 'deep' } ], 'top' );
+	assert.deepEqual( none.writes, [], 'a write left empty is dropped' );
+	const lit = run( 'padding-top', { 1440: '108px' }, { 1440: '108px' }, [ { attr: 'padding', value: { desktop: { top: '108px' } }, merge: 'deep' } ], 'top' );
+	assert.deepEqual( lit.writes[ 0 ].value, { desktop: { top: '108px' } }, 'negative control: a literal 108px is not traced to the default' );
 } );

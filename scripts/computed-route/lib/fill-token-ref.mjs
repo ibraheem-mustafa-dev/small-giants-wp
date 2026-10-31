@@ -20,6 +20,7 @@ import { toPx, parseColour, deltaE, COLOUR_DE, LENGTH_TOL } from './normalise.mj
 import { readTokens } from './tokens.mjs';
 import { splitProperty } from './resolve.mjs';
 
+const SECTION_PROPS = [ 'padding-top', 'padding-bottom' ];
 const SIDES = [ 'top', 'right', 'bottom', 'left' ];
 const CORNER_KEY = { 'top-left': 'topLeft', 'top-right': 'topRight', 'bottom-right': 'bottomRight', 'bottom-left': 'bottomLeft' };
 const TIER_OF = { 375: 'mobile', 768: 'tablet', 1440: 'desktop' };
@@ -121,7 +122,7 @@ function sameValue( kind, snapshotValue, computed, fontPx ) {
 // `ref` (written), or `literal` with its reason. `declaredAt`: { width: declared text }; `draft`: { width: computed value }.
 export function traceRefs( { prop, draft, declaredAt, map, raw, fontPx = {} } ) {
 	const f = familyOfProp( prop );
-	const out = { family: f?.id ?? null, widths: {}, rows: [] };
+	const out = { family: f?.id ?? null, widths: {}, unset: {}, rows: [] };
 	if ( ! f ) {
 		return out;
 	}
@@ -140,7 +141,14 @@ export function traceRefs( { prop, draft, declaredAt, map, raw, fontPx = {} } ) 
 		}
 		const token = hit.token.replace( /^--/, '' );
 		if ( raw?.settings?.custom?.defaultTokens?.includes?.( token ) ) {
-			row( 'default', `${ hit.token } is a default; the default does not render the draft's value here, so the literal stays`, hit.token );
+			// A section's padding equal to the client's section default at this width stays unset, or the section adds its own padding on top.
+			const dflt = SECTION_PROPS.includes( prop ) ? raw.settings.custom.section?.padding?.[ TIER_OF[ w ] ] : undefined;
+			if ( undefined !== dflt && sameValue( 'length', dflt, draft[ w ], fontPx[ w ] || 16 ) ) {
+				out.unset[ w ] = true;
+				row( 'unset', `${ hit.token } is the section padding default and renders the draft's value here: the setting stays unset`, hit.token );
+			} else {
+				row( 'default', `${ hit.token } is a default; the default does not render the draft's value here, so the literal stays`, hit.token );
+			}
 			continue;
 		}
 		const slug = f.preset ? slotOf( raw, f, token ) : token;
@@ -203,10 +211,30 @@ function rewrite( value, f, prop, widths, side ) {
 // when no width traced to a reference.
 export function applyRefs( { writes, prop, side, traced } ) {
 	const f = familyOfProp( prop );
-	if ( ! f || ! f.write || ! Object.keys( traced.widths ).length ) {
+	if ( ! f || ! ( Object.keys( traced.widths ).length || Object.keys( traced.unset ).length ) ) {
 		return writes;
 	}
-	return writes.map( ( w ) => ( { ...w, value: rewrite( w.value, f, prop, traced.widths, side ) } ) );
+	return writes.map( ( w ) => {
+		const value = f.write ? rewrite( w.value, f, prop, traced.widths, side ) : w.value;
+		return { ...w, value: dropUnset( value, traced.unset, side ) };
+	} ).filter( ( w ) => undefined !== w.value );
+}
+
+// A write's value without the tiers the default already renders: the side's leaf of each unset width's tier (the whole tier
+// when it holds nothing else); a write left empty is dropped.
+function dropUnset( value, unset, side ) {
+	if ( ! Object.keys( unset ).length || ! isObj( value ) || ! side ) {
+		return value;
+	}
+	const out = { ...value };
+	for ( const w of Object.keys( unset ) ) {
+		const tier = TIER_OF[ w ];
+		if ( isObj( out[ tier ] ) && side in out[ tier ] ) {
+			const { [ side ]: _gone, ...rest } = out[ tier ];
+			Object.keys( rest ).length ? ( out[ tier ] = rest ) : delete out[ tier ];
+		}
+	}
+	return Object.keys( out ).length ? out : undefined;
 }
 
 // The box key a longhand lands on inside a tier: `top` for padding-top, `topLeft` for border-top-left-radius, null for a
