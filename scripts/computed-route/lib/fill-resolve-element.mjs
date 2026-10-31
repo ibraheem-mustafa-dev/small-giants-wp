@@ -11,6 +11,7 @@ import { INHERITED, resolveProperty, notPainted, gapPaintsNothing } from './fill
 import { unpairedPart } from './fill-part-pairing.mjs';
 import { gateFor } from './fill-fixture.mjs';
 import { fillEquivalent } from './fill-equivalents.mjs';
+import { tokenWrites } from './fill-token-ref.mjs';
 import { compareDR } from './fill-confirm.mjs';
 import { elementContext } from './fill-held.mjs';
 import { samePaint } from './css-equivalence/tolerance.mjs';
@@ -309,7 +310,7 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 				if ( GAP_PROPS.includes( prop ) ) {
 					gapProp[ prop ] = { attrs, draft };
 				}
-				res.writes = res.writes.filter( ( w ) => ownerKeeps( st, rec, ref, target, prop, w, res.slot ) );
+				res.writes = tokenWrites( st, target, prop, draft, res.writes, fontPx ).filter( ( w ) => ownerKeeps( st, rec, ref, target, prop, w, res.slot ) );
 				apply( st, rec, ref, target, prop, { ...res, readSlot: slot, answers: answeredWidths( prop, draft, res ) }, res.slot );
 				res.writes.forEach( ( w ) => recordOwner( st, rec, target, prop, w.attr, target.slot === res.slot ) );
 			}
