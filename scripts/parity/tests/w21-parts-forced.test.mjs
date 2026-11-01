@@ -128,3 +128,42 @@ test( 'MUST FAIL (d): the row shape is today\'s, and a forced read equals the re
 	await forced.page.close();
 	await pointer.page.close();
 } );
+
+// React (the draft's runtime) attaches handlers at its root container and keeps each element's own in __reactProps$<id>.
+test( 'MUST FAIL (React): a part whose ancestor holds React props with onMouseEnter is read with a real pointer', async () => {
+	const { page, cdp, seen } = await open( `${ CSS_ONLY }<script>document.getElementById( 'nav' ).__reactProps$x = { onMouseEnter() {} };</script>` );
+	const [ home ] = await readParts( page, '#nav', [], RESOLVE, 800, { cdp } );
+	assert.ok( seen.moves > 0 );
+	assert.equal( seen.forced, 0 );
+	assert.equal( home.hover.color, 'rgb(200, 0, 0)' );
+	await page.close();
+} );
+
+test( 'MUST FAIL (React): a part under a React root with only the root delegated listener and no handler props stays forced', async () => {
+	const { page, cdp, seen } = await open( `<div id="root">${ CSS_ONLY }</div><script>document.getElementById( 'root' ).addEventListener( 'mouseover', () => {} );
+		document.getElementById( 'nav' ).__reactProps$x = { className: 'nav', onClick() {} };</script>` );
+	const [ home ] = await readParts( page, '#nav', [], RESOLVE, 800, { cdp } );
+	assert.equal( seen.moves, 0 );
+	assert.ok( seen.forced > 0 );
+	assert.equal( home.hover.color, 'rgb(200, 0, 0)' );
+	await page.close();
+} );
+
+test( 'MUST FAIL (Interactivity API): a part with a data-wp-on--mouseenter directive is read with a real pointer', async () => {
+	const { page, cdp, seen } = await open( CSS_ONLY.replace( '<a href="#a">', '<a href="#a" data-wp-on--mouseenter="actions.x">' ) );
+	await readParts( page, '#nav', [], RESOLVE, 800, { cdp } );
+	assert.ok( seen.moves > 0 );
+	assert.equal( seen.forced, 0 );
+	await page.close();
+} );
+
+test( 'MUST FAIL (Interactivity API): a data-wp-on-async--pointerenter directive on an ancestor inside the pair is pointer-read too, a click directive is not', async () => {
+	const a = await open( CSS_ONLY.replace( '<nav id="nav">', '<nav id="nav" data-wp-on-async--pointerenter="actions.x">' ) );
+	await readParts( a.page, '#nav', [], RESOLVE, 800, { cdp: a.cdp } );
+	assert.ok( a.seen.moves > 0 );
+	const b = await open( CSS_ONLY.replace( '<a href="#a">', '<a href="#a" data-wp-on--click="actions.x">' ) );
+	await readParts( b.page, '#nav', [], RESOLVE, 800, { cdp: b.cdp } );
+	assert.equal( b.seen.moves, 0 );
+	await a.page.close();
+	await b.page.close();
+} );

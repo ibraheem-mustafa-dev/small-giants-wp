@@ -34,5 +34,17 @@
 		"find": "const rec = { name: part.name,",
 		"replace": "const rec = { eid: part.eid, name: part.name,",
 		"why": "(d) the cache's element id leaks onto the row"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "if ( k.startsWith( '__reactProps$' ) &&",
+		"replace": "if ( false &&",
+		"why": "(React) a handler held only in React props is missed"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "/^data-wp-on(-async)?--(mouse|pointer)(enter|over|move|down)/.test( a.name )",
+		"replace": "false",
+		"why": "(Interactivity API) a directive is not looked at"
 	}
 ]
