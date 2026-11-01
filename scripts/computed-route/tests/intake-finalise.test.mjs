@@ -294,10 +294,10 @@ test( 'MUST FAIL: a remove mark on a confident skeleton row is saved as a remova
 // MUST FAIL: saving accepted proposals made --apply-review check the writer's own blocks against the framework database,
 // which holds no WooCommerce block, so an accepted product collection (Spec 48 FR-48-83) refused the whole review
 // (Eye Care, 2026-11-01). Only a block Bean typed is checked.
-test( 'MUST FAIL: an accepted proposal is not typed; a block:<slug> mark is', () => {
+test( 'MUST FAIL: an accepted proposal is not typed; a block:<slug> mark is, whatever words either element has', () => {
 	const intake = { skeletons: { 'page-shop': { rows: [
-		{ rowId: 'skeleton:page-shop:Shop/1#0', key: 'Shop/1#0', tag: 'div', words: '', block: 'woocommerce/product-collection' },
-		{ rowId: 'skeleton:page-shop:Shop/2#0', key: 'Shop/2#0', tag: 'h2', words: 'Shop', block: 'sgs/text' },
+		{ rowId: 'skeleton:page-shop:Shop/1#0', key: 'Shop/1#0', tag: 'div', words: 'Best sellers', block: 'woocommerce/product-collection' },
+		{ rowId: 'skeleton:page-shop:Shop/2#0', key: 'Shop/2#0', tag: 'span', words: '', block: 'sgs/text' },
 	] } }, review: [ { rowId: 'skeleton:page-shop:Shop/1#0', mark: 'accept' }, { rowId: 'skeleton:page-shop:Shop/2#0', mark: 'block:sgs/heading' } ] };
 	const typed = Object.fromEntries( reviewDecisions( intake, '2026-11-01' ).map( ( d ) => [ d.element.key, d.typed ] ) );
 	assert.deepEqual( typed, { 'Shop/1#0': false, 'Shop/2#0': true } );

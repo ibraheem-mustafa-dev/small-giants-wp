@@ -169,6 +169,7 @@ export function reviewDecisions( intake, today, wordsOf = () => undefined ) {
 		for ( const r of s.rows || [] ) {
 			const mark = marks.get( r.rowId || `skeleton:${ surface }:${ r.key }` ) ?? null;
 			const own = /^block:(.+)$/.exec( mark || '' )?.[ 1 ];
+			const typed = Boolean( own );
 			const removed = 'remove' === mark;
 			const accepted = 'accept' === mark && ! [ 'absorbed', 'unwrap', 'unresolved' ].includes( r.action ) && ( r.block || 'remove' === r.action );
 			if ( ! own && ! accepted && ! removed ) {
@@ -184,7 +185,7 @@ export function reviewDecisions( intake, today, wordsOf = () => undefined ) {
 				h.keys.forEach( ( key, i ) => {
 					const own = distinct ? wordsOf( h.surface, key ) : r.words ?? '';
 					const words = undefined === own && distinct && h.surface === surface && 0 === i ? r.words ?? '' : own;
-					undefined !== words && out.push( { surface: h.surface, element: { key, tag: r.tag, words }, choice, reason, proposed, typed: Boolean( own ) } );
+					undefined !== words && out.push( { surface: h.surface, element: { key, tag: r.tag, words }, choice, reason, proposed, typed } );
 				} );
 			}
 		}
