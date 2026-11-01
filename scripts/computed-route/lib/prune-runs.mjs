@@ -29,7 +29,14 @@ function trackedStamps( parent ) {
 // git-tracked file, one that is a link, and any name that is not a stamp. Throws, deleting nothing, when `parent` is not a
 // known run-output folder, is a link, or `keep` is not a stamp folder that exists directly inside it.
 // parent: the stamp folders' parent; keep: the new run's folder. Returns { removed: [names], skipped: [{ name, reason }] }.
-export function pruneRuns( { parent, keep } ) {
+// True when any file directly in the run folder changed within RECENT_MS: an older run that is still going keeps writing
+// its logs and status there, so its age alone does not make it finished.
+export const RECENT_MS = 30 * 60 * 1000;
+function recentlyWritten( dir, now ) {
+	return fs.readdirSync( dir ).some( ( f ) => now - fs.statSync( path.join( dir, f ) ).mtimeMs < RECENT_MS ) || now - fs.statSync( dir ).mtimeMs < RECENT_MS;
+}
+
+export function pruneRuns( { parent, keep, now = Date.now() } ) {
 	const dir = path.resolve( parent );
 	const kept = path.resolve( keep );
 	if ( ! RUN_PARENT.test( dir ) ) {
@@ -56,6 +63,8 @@ export function pruneRuns( { parent, keep } ) {
 			skipped.push( { name, reason: 'a link or not a folder' } );
 		} else if ( name > keepName ) {
 			skipped.push( { name, reason: 'newer than the kept run (another run may be writing it)' } );
+		} else if ( recentlyWritten( target, now ) ) {
+			skipped.push( { name, reason: 'written in the last 30 minutes (a run started earlier may still be writing it)' } );
 		} else if ( tracked.has( name ) ) {
 			skipped.push( { name, reason: 'holds a git-tracked file' } );
 		} else {
@@ -67,9 +76,9 @@ export function pruneRuns( { parent, keep } ) {
 }
 
 // pruneRuns for a writer: never throws (a prune problem must not fail a finished run) and reports what it did.
-export function pruneRunsReport( { parent, keep, log = console.log } ) {
+export function pruneRunsReport( { parent, keep, log = console.log, now = Date.now() } ) {
 	try {
-		const { removed, skipped } = pruneRuns( { parent, keep } );
+		const { removed, skipped } = pruneRuns( { parent, keep, now } );
 		( removed.length || skipped.length ) && log( `pruned ${ removed.length } old run(s) in ${ path.dirname( path.resolve( keep ) ) }${ skipped.length ? `; kept ${ skipped.map( ( s ) => `${ s.name } (${ s.reason })` ).join( ', ' ) }` : '' }` );
 		return { removed, skipped };
 	} catch ( e ) {

@@ -30,9 +30,12 @@ function scratch( stamps = [ S1, S2, S3 ] ) {
 const names = ( d ) => fs.readdirSync( d ).sort();
 const cleanup = ( root ) => fs.rmSync( root, { recursive: true, force: true } );
 
+// A clock two hours on, so folders the tests just made count as finished runs.
+const LATER = Date.now() + 2 * 60 * 60 * 1000;
+
 test( 'positive: older stamp folders go, the new run and the other surface stay', () => {
 	const t = scratch();
-	const r = pruneRuns( { parent: t.header, keep: path.join( t.header, S3 ) } );
+	const r = pruneRuns( { now: LATER, parent: t.header, keep: path.join( t.header, S3 ) } );
 	assert.deepEqual( r.removed.sort(), [ S1, S2 ] );
 	assert.deepEqual( names( t.header ), [ S3 ] );
 	assert.equal( names( t.footer ).length, 3, 'a run of one surface never prunes another' );
@@ -42,16 +45,16 @@ test( 'positive: older stamp folders go, the new run and the other surface stay'
 test( 'the new run is never deleted, and nothing is deleted when it is missing', () => {
 	const t = scratch();
 	const keep = path.join( t.header, S2 );
-	pruneRuns( { parent: t.header, keep } );
+	pruneRuns( { now: LATER, parent: t.header, keep } );
 	assert.ok( fs.existsSync( path.join( keep, 'fill-report.json' ) ) );
-	assert.throws( () => pruneRuns( { parent: t.header, keep: path.join( t.header, '2026-10-09T10-00-00' ) } ), /existing stamp folder/ );
+	assert.throws( () => pruneRuns( { now: LATER, parent: t.header, keep: path.join( t.header, '2026-10-09T10-00-00' ) } ), /existing stamp folder/ );
 	assert.deepEqual( names( t.header ), [ S2, S3 ] );
 	cleanup( t.root );
 } );
 
 test( 'a keep folder outside the parent is refused', () => {
 	const t = scratch();
-	assert.throws( () => pruneRuns( { parent: t.header, keep: path.join( t.footer, S3 ) } ), /directly inside/ );
+	assert.throws( () => pruneRuns( { now: LATER, parent: t.header, keep: path.join( t.footer, S3 ) } ), /directly inside/ );
 	assert.equal( names( t.header ).length, 3 );
 	cleanup( t.root );
 } );
@@ -61,7 +64,7 @@ test( 'a non-stamp folder and a loose file are left alone', () => {
 	fs.mkdirSync( path.join( t.header, 'baseline' ) );
 	fs.writeFileSync( path.join( t.header, 'unjudged.json' ), '{}' );
 	fs.mkdirSync( path.join( t.header, '2026-10-01' ) );
-	pruneRuns( { parent: t.header, keep: path.join( t.header, S3 ) } );
+	pruneRuns( { now: LATER, parent: t.header, keep: path.join( t.header, S3 ) } );
 	assert.deepEqual( names( t.header ), [ '2026-10-01', S3, 'baseline', 'unjudged.json' ] );
 	cleanup( t.root );
 } );
@@ -71,13 +74,13 @@ test( 'a path outside sites/<client>/build/qa, or an unknown run folder, is refu
 	const outside = path.join( t.root, 'elsewhere' );
 	fs.mkdirSync( path.join( outside, S1 ), { recursive: true } );
 	fs.mkdirSync( path.join( outside, S3 ) );
-	assert.throws( () => pruneRuns( { parent: outside, keep: path.join( outside, S3 ) } ), /not a run-output folder/ );
+	assert.throws( () => pruneRuns( { now: LATER, parent: outside, keep: path.join( outside, S3 ) } ), /not a run-output folder/ );
 	assert.equal( names( outside ).length, 2 );
 	const parity = path.join( t.qa, 'parity', 'out' );
 	fs.mkdirSync( path.join( parity, S1 ), { recursive: true } );
 	fs.mkdirSync( path.join( parity, S3 ) );
-	assert.throws( () => pruneRuns( { parent: parity, keep: path.join( parity, S3 ) } ), /not a run-output folder/ );
-	assert.throws( () => pruneRuns( { parent: t.qa, keep: path.join( t.qa, S3 ) } ), /not a run-output folder/ );
+	assert.throws( () => pruneRuns( { now: LATER, parent: parity, keep: path.join( parity, S3 ) } ), /not a run-output folder/ );
+	assert.throws( () => pruneRuns( { now: LATER, parent: t.qa, keep: path.join( t.qa, S3 ) } ), /not a run-output folder/ );
 	assert.equal( names( parity ).length, 2 );
 	cleanup( t.root );
 } );
@@ -87,7 +90,7 @@ test( 'a stamp folder holding a git-tracked file is kept and reported', () => {
 	const git = ( ...a ) => execFileSync( 'git', a, { cwd: t.root, stdio: 'pipe' } );
 	git( 'init', '-q' );
 	git( 'add', '--', `sites/acme/build/qa/fill/header/${ S1 }/fill-report.json` );
-	const r = pruneRuns( { parent: t.header, keep: path.join( t.header, S3 ) } );
+	const r = pruneRuns( { now: LATER, parent: t.header, keep: path.join( t.header, S3 ) } );
 	assert.deepEqual( r.removed, [ S2 ] );
 	assert.deepEqual( r.skipped, [ { name: S1, reason: 'holds a git-tracked file' } ] );
 	assert.ok( fs.existsSync( path.join( t.header, S1, 'fill-report.json' ) ) );
@@ -100,7 +103,7 @@ test( 'a link (symlink or junction) in place of a stamp folder is never followed
 	fs.mkdirSync( target );
 	fs.writeFileSync( path.join( target, 'keep.txt' ), 'x' );
 	fs.symlinkSync( target, path.join( t.header, S1 ), 'junction' );
-	const r = pruneRuns( { parent: t.header, keep: path.join( t.header, S3 ) } );
+	const r = pruneRuns( { now: LATER, parent: t.header, keep: path.join( t.header, S3 ) } );
 	assert.equal( r.skipped[ 0 ].name, S1 );
 	assert.ok( fs.existsSync( path.join( target, 'keep.txt' ) ) );
 	assert.ok( fs.lstatSync( path.join( t.header, S1 ) ).isSymbolicLink() );
@@ -114,14 +117,14 @@ test( 'a parent that is itself a link is refused', () => {
 	fs.mkdirSync( path.join( real, S3 ) );
 	const link = path.join( t.qa, 'site-run' );
 	fs.symlinkSync( real, link, 'junction' );
-	assert.throws( () => pruneRuns( { parent: link, keep: path.join( link, S3 ) } ), /link or not a folder/ );
+	assert.throws( () => pruneRuns( { now: LATER, parent: link, keep: path.join( link, S3 ) } ), /link or not a folder/ );
 	assert.equal( names( real ).length, 2 );
 	cleanup( t.root );
 } );
 
 test( 'a run newer than the kept one is left alone (it may still be writing)', () => {
 	const t = scratch();
-	const r = pruneRuns( { parent: t.header, keep: path.join( t.header, S2 ) } );
+	const r = pruneRuns( { now: LATER, parent: t.header, keep: path.join( t.header, S2 ) } );
 	assert.deepEqual( r.removed, [ S1 ] );
 	assert.ok( names( t.header ).includes( S3 ) );
 	cleanup( t.root );
@@ -133,10 +136,10 @@ test( 'site-run, solve and site-check parents are accepted; pruneRunsReport neve
 		const p = path.join( t.qa, sub );
 		fs.mkdirSync( path.join( p, S1 ), { recursive: true } );
 		fs.mkdirSync( path.join( p, S2 ) );
-		assert.deepEqual( pruneRuns( { parent: p, keep: path.join( p, S2 ) } ).removed, [ S1 ] );
+		assert.deepEqual( pruneRuns( { now: LATER, parent: p, keep: path.join( p, S2 ) } ).removed, [ S1 ] );
 	}
 	const lines = [];
-	const r = pruneRunsReport( { parent: t.root, keep: path.join( t.root, 'x' ), log: ( m ) => lines.push( m ) } );
+	const r = pruneRunsReport( { now: LATER, parent: t.root, keep: path.join( t.root, 'x' ), log: ( m ) => lines.push( m ) } );
 	assert.deepEqual( r.removed, [] );
 	assert.match( lines[ 0 ], /prune skipped/ );
 	cleanup( t.root );
@@ -147,4 +150,16 @@ test( 'the stamp pattern matches what the writers stamp', () => {
 	assert.ok( STAMP_PATTERN.test( at.replace( /[:.]/g, '-' ).slice( 0, 19 ) ) );
 	assert.ok( STAMP_PATTERN.test( at.replace( /\.\d+Z$/, '' ).replace( /:/g, '-' ) ) );
 	assert.ok( ! STAMP_PATTERN.test( 'baseline' ) );
+} );
+
+// MUST FAIL (2026-11-01): a second site run on the same client finished first and pruned the older run's folder while that
+// run was still writing to it (Mama's: ENOENT on flow-choice-flow-build-your-zookie.fill.log). A folder written in the last
+// 30 minutes is kept whatever its stamp.
+test( 'an older run folder written recently is kept (an earlier run may still be going)', () => {
+	const t = scratch();
+	const r = pruneRuns( { parent: t.header, keep: path.join( t.header, S3 ) } );
+	assert.deepEqual( r.removed, [] );
+	assert.ok( r.skipped.some( ( x ) => /last 30 minutes/.test( x.reason ) ) );
+	assert.deepEqual( names( t.header ), [ S1, S2, S3 ] );
+	cleanup( t.root );
 } );
