@@ -3,7 +3,7 @@
 // CSS property, so lib/db.mjs::attrsFor never returns them and the slot map cannot see them; they are queried by their
 // framework-database `role` instead, and read for node existence, text content and link attributes rather than for
 // computed style. The style reader is lib/calibrate-read.mjs; this is its content counterpart.
-import { WIDTHS, CAL_PREFIX } from './calibrate-props.mjs';
+import { WIDTHS, CAL_PREFIX, ANY_REF_SELECTOR } from './calibrate-props.mjs';
 import { preconditionsFor, variantAttributes } from './calibrate-instances.mjs';
 import { elementPath } from '../../parity/lib/ref-trace.mjs';
 import { EDITOR_TIMEOUT_MS } from './calibrate-chunk.mjs';
@@ -258,7 +258,7 @@ export async function readContentAll( page, url, instances, needles ) {
 		try {
 			await p.setViewportSize( { width: w, height: 900 } );
 			await p.goto( `${ url }${ url.includes( '?' ) ? '&' : '?' }cb=${ Date.now() }`, { waitUntil: 'domcontentloaded', timeout: EDITOR_TIMEOUT_MS } );
-			await p.waitForSelector( `.${ CAL_PREFIX }0`, { state: 'attached', timeout: EDITOR_TIMEOUT_MS } );
+			await p.waitForSelector( ANY_REF_SELECTOR, { state: 'attached', timeout: EDITOR_TIMEOUT_MS } );
 			await p.waitForTimeout( 800 );
 			out[ w ] = await p.evaluate( readContentInPage, [ instances.length, CAL_PREFIX, elementPath.toString(), needles, LINK_ATTRS, undefined ] );
 		} finally {

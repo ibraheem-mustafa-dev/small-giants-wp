@@ -12,6 +12,8 @@ export const MARKER_GRADIENT = 'linear-gradient(90deg, #13579b 0%, #9b1357 100%)
 // A resting gradient that differs from MARKER_GRADIENT, for a hover gradient to be compared with.
 export const MARKER_REST_GRADIENT = 'linear-gradient(90deg, #9b1357 0%, #13579b 100%)';
 export const CAL_PREFIX = 'cr-ref-cal-';
+// Matches the root of any calibration instance on the page, whichever of them rendered.
+export const ANY_REF_SELECTOR = `[class*="${ CAL_PREFIX }"]`;
 
 // Properties calibration reads beyond the walker's own: a setting painting one of them is still located (its slot
 // and default paint are recorded) even before the walker compares that property. The second line holds what a block's

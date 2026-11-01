@@ -158,8 +158,9 @@ export function paintStale( dir, block, site, paintKey ) {
 // `next.settings`, and every key of `prev.discovered` missing from `next.discovered` (named `discovered:<attr>`), minus the
 // names in `allowed`. Sorted. No existing slot map means nothing to lose. `declared` (a Set of the block's current
 // attribute names, from the framework DB) drops every name the block no longer declares: a removed attribute has nothing
-// left to reach, so it is never a loss. Without `declared` every missing name counts.
-export function slotMapLosses( prev, next, allowed = [], declared = null ) {
+// left to reach, so it is never a loss. Without `declared` every missing name counts. `notRendered` (names whose instance
+// rendered nothing on this site) were not measured, so they are never a loss either.
+export function slotMapLosses( prev, next, allowed = [], declared = null, notRendered = [] ) {
 	if ( ! prev ) {
 		return [];
 	}
@@ -168,7 +169,7 @@ export function slotMapLosses( prev, next, allowed = [], declared = null ) {
 		...Object.keys( prev.discovered || {} ).filter( ( k ) => ! ( k in ( next?.discovered || {} ) ) ).map( ( k ) => `discovered:${ k }` ),
 	];
 	const stillDeclared = ( n ) => ! declared || declared.has( n.replace( /^discovered:/, '' ) );
-	return lost.filter( ( n ) => ! allowed.includes( n ) && stillDeclared( n ) ).sort();
+	return lost.filter( ( n ) => ! allowed.includes( n ) && ! notRendered.includes( n.replace( /^discovered:/, '' ) ) && stillDeclared( n ) ).sort();
 }
 
 // Where a lost setting went in the new slot map: 'dead', 'oneWidth', 'noMarker', 'rejected', 'untestedStates', or 'absent'
@@ -197,10 +198,27 @@ export function lossDestination( name, next ) {
 
 // Whether a run may write the block's slot map: { write, lost: [ { setting, wentTo } ] }. It may not when the new map drops
 // a setting the existing one reaches and the loss is not named in `allowed` (calibrate.mjs --allow-loss). `declared`: as
-// slotMapLosses.
-export function slotMapWriteDecision( prev, next, allowed = [], declared = null ) {
-	const lost = slotMapLosses( prev, next, allowed, declared ).map( ( setting ) => ( { setting, wentTo: lossDestination( setting, next ) } ) );
+// slotMapLosses, as is `notRendered`.
+export function slotMapWriteDecision( prev, next, allowed = [], declared = null, notRendered = [] ) {
+	const lost = slotMapLosses( prev, next, allowed, declared, notRendered ).map( ( setting ) => ( { setting, wentTo: lossDestination( setting, next ) } ) );
 	return { write: ! lost.length, lost };
+}
+
+// The slot map to write: `next`, plus the existing map's entry (setting and discovered) for each name in `notRendered` that
+// `next` lacks. A site whose business details lack a value measures nothing for the settings that value feeds, so it
+// cannot shrink the library-wide map.
+export function keepUnmeasured( prev, next, notRendered = [] ) {
+	if ( ! prev || ! notRendered.length ) {
+		return next;
+	}
+	const keep = ( field ) => Object.fromEntries( notRendered.filter( ( n ) => n in ( prev[ field ] || {} ) && ! ( n in ( next[ field ] || {} ) ) ).map( ( n ) => [ n, prev[ field ][ n ] ] ) );
+	const settings = keep( 'settings' );
+	const discovered = keep( 'discovered' );
+	return {
+		...next,
+		...( Object.keys( settings ).length ? { settings: { ...( next.settings || {} ), ...settings } } : {} ),
+		...( Object.keys( discovered ).length ? { discovered: { ...( next.discovered || {} ), ...discovered } } : {} ),
+	};
 }
 
 // The --allow-loss list as { 'sgs/a': [ 'settingX', 'discovered:layout' ] }; each entry is block:name, split on the first

@@ -311,6 +311,42 @@ export function discoverEffects( defReads, markReads ) {
 	return Object.fromEntries( Object.entries( found ).map( ( [ k, v ] ) => [ k, { slots: v.slots, value: v.value } ] ) );
 }
 
+// Whether an instance's raw reading ({ width: { path: styles } | null }) found its root at any width. A block that
+// renders nothing for an instance on this site (a business-details display type the site has no value for) reads null.
+export const renderedAt = ( read ) => WIDTHS.some( ( w ) => !! read?.[ w ] );
+
+// Whether an instance has a reading to fold: its own root was found at some width, and so was its default's.
+export const isRendered = ( read, defRead ) => renderedAt( read ) && renderedAt( defRead );
+
+// The default paint's elements across the default instances that rendered: every variant's elements, a path seen in
+// several variants keeping the first. A default that never rendered adds nothing.
+export function defaultElements( instances ) {
+	const elements = {};
+	instances.filter( ( i ) => i.isDefault && i.rendered ).forEach( ( i ) => Object.entries( defaultPaint( i.read ) ).forEach( ( [ p, v ] ) => ( elements[ p ] ??= v ) ) );
+	return elements;
+}
+
+// The settings, and discovered attributes, whose every instance rendered nothing: [ { setting, reason } ] in first-seen
+// order. `inst.rendered` is false for an instance that was not read, or whose default was not. A setting with one
+// rendered instance has a reading and is not listed; one listed was never measured, so it is never dead.
+export function notRenderedSettings( instances ) {
+	const seen = new Map();
+	for ( const inst of instances ) {
+		const name = inst.discover?.attr ?? ( inst.content ? null : inst.row?.attr_name );
+		if ( ! name ) {
+			continue;
+		}
+		seen.set( name, ( seen.get( name ) ?? false ) || false !== inst.rendered );
+	}
+	return [ ...seen ].filter( ( [ , rendered ] ) => ! rendered ).map( ( [ setting ] ) => ( { setting, reason: 'its instance rendered nothing on this site' } ) );
+}
+
+// True when the block has default instances and none of them rendered at any width: there is nothing to measure.
+export function noDefaultRendered( instances ) {
+	const defaults = instances.filter( ( i ) => i.isDefault );
+	return defaults.length > 0 && ! defaults.some( ( i ) => false !== i.rendered );
+}
+
 // The default paint of every element at each width, without inherited properties.
 export function defaultPaint( defReads ) {
 	const out = {};

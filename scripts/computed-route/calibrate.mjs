@@ -30,11 +30,11 @@ import { loadSnapshot } from './lib/normalise.mjs';
 import { blockSchema } from './lib/resolve.mjs';
 import { assertWritable, assertQuiet, writeTree } from './lib/tree.mjs';
 import { acquireCalibrationLock, acquireSlotMapLock } from './lib/calibration-lock.mjs';
-import { slotMapSkip, paintSkip, dueOutputs, instancesDue, splitCalibration, writeSlotMap, writePaint, readSlotMap, slotMapWriteDecision, parseAllowLoss, refusedFile } from './lib/cache.mjs';
+import { slotMapSkip, paintSkip, dueOutputs, instancesDue, splitCalibration, writeSlotMap, writePaint, readSlotMap, slotMapWriteDecision, keepUnmeasured, parseAllowLoss, refusedFile } from './lib/cache.mjs';
 import { md5, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
 import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, needsBiggerHeap, buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout, sizeForReading, replanQueue } from './lib/calibrate-chunk.mjs';
 import { isContainerQueryBlock, renderedNothingReason } from './lib/calibrate-container.mjs';
-import { WIDTHS, READ_KEY, buildTree, slotFor, foldReading, defaultPaint, longhands, discoverEffects, diffReads, triggerFor, planInstances, instanceCtx, stateTarget, readAll, missedReason } from './lib/calibrate.mjs';
+import { WIDTHS, READ_KEY, buildTree, slotFor, foldReading, defaultPaint, longhands, discoverEffects, diffReads, triggerFor, planInstances, instanceCtx, stateTarget, readAll, missedReason, renderedAt, isRendered, defaultElements, notRenderedSettings, noDefaultRendered } from './lib/calibrate.mjs';
 import { contentRowsFor, planContentInstances, needlesOf, readContentAll, collectContent } from './lib/calibrate-content.mjs';
 import { setBasket, pickPass } from './lib/calibrate-basket.mjs';
 import { withTestOrder } from './lib/calibrate-order.mjs';
@@ -264,7 +264,7 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 			const d = inst.baseKey ? chunkBase[ inst.baseKey ] : chunkDefault[ inst.variant ];
 			// A style instance's pass is the one where its setting is reached (lib/calibrate.mjs::slotFor on that pass).
 			const reached = inst.row && ! inst.content && inst.marker
-				? ( r ) => ! slotFor( inst.row, inst.marker, at( d, r ), at( n, r ), { own: stateTarget( block, inst.row ) } ).dead
+				? ( r ) => renderedAt( at( d, r ) ) && renderedAt( at( n, r ) ) && ! slotFor( inst.row, inst.marker, at( d, r ), at( n, r ), { own: stateTarget( block, inst.row ) } ).dead
 				: null;
 			const reads = pickPass( passes, n, d, reached );
 			// A default or paint-state instance keeps its whole reading (the default paint is read from it); every other instance
@@ -272,21 +272,26 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 			// variant and chunk, not one per instance.
 			const whole = inst.isDefault || inst.paintState;
 			const def = at( d, reads );
+			// An instance that rendered nothing at every width, or whose default did not, has no reading to fold.
+			const rendered = isRendered( at( n, reads ), def );
 			const defScrolled = at( d, reads.scrolled );
 			const read = whole ? at( n, reads ) : diffReads( def, at( n, reads ) );
 			const readScrolled = whole ? at( n, reads.scrolled ) : diffReads( defScrolled, at( n, reads.scrolled ) );
-			kept.push( { ...inst, read, readScrolled, def, defScrolled, hoverMissed: reads.hoverMissed.includes( n ), hoverWhy: reads.hoverWhy?.[ n ], scrollMissed: reads.scrollMissed.includes( n ), ...( inst.content ? { contentRead: at( n, contentReads ), contentDef: at( d, contentReads ) } : {} ) } );
+			kept.push( { ...inst, rendered, read, readScrolled, def, defScrolled, hoverMissed: reads.hoverMissed.includes( n ), hoverWhy: reads.hoverWhy?.[ n ], scrollMissed: reads.scrollMissed.includes( n ), ...( inst.content ? { contentRead: at( n, contentReads ), contentDef: at( d, contentReads ) } : {} ) } );
 		} );
 		done++;
 	}
 	rejectedOut.push( ...rejected.map( ( r ) => ( { block, ...r } ) ) );
 	instances = kept;
+	if ( noDefaultRendered( instances ) ) {
+		return { block, error: `no default instance rendered at any width on ${ site }: the block drew nothing, so there is nothing to measure` };
+	}
+	const notRendered = notRenderedSettings( instances );
 	const untested = [ ...states ];
-	// Default paint: every variant's elements (a path seen in several variants keeps the first).
-	const elements = {};
-	instances.filter( ( i ) => i.isDefault ).forEach( ( i ) => Object.entries( defaultPaint( i.read ) ).forEach( ( [ p, v ] ) => ( elements[ p ] ??= v ) ) );
+	// Default paint: every rendered variant's elements (a path seen in several variants keeps the first).
+	const elements = defaultElements( instances );
 	// Each paint state's own default paint, with the condition Fill matches a node against (lib/paint-state.mjs).
-	const paintStates = Object.fromEntries( instances.filter( ( i ) => i.paintState && i.read ).map( ( i ) => [ i.paintState.name, { when: i.paintState.when, elements: statePaint( defaultPaint( i.read ), i.paintState.props ) } ] ) );
+	const paintStates = Object.fromEntries( instances.filter( ( i ) => i.paintState && i.rendered ).map( ( i ) => [ i.paintState.name, { when: i.paintState.when, elements: statePaint( defaultPaint( i.read ), i.paintState.props ) } ] ) );
 	// A state the fixture declares that was not measured (its instance rejected or unread): the paint is not written, so
 	// the next run measures it again instead of keeping a paint key that claims the state.
 	const statesMissing = missingPaintStates( fixture, paintStates );
@@ -299,6 +304,9 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 	const oneWidth = [];
 	const discovered = {};
 	instances.forEach( ( inst ) => {
+		if ( ! inst.rendered ) {
+			return;
+		}
 		if ( inst.discover ) {
 			const fx = discoverEffects( inst.def, inst.read );
 			const d = ( discovered[ inst.discover.attr ] ??= {} );
@@ -331,15 +339,18 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 	// Dead: no marker of the setting changed anything (a setting with one live marker is not dead).
 	const deadNames = [ ...new Set( dead ) ].filter( ( n ) => ! settings[ n ] );
 	// text, presence and link are omitted entirely when the block has nothing of that kind.
-	const content = collectContent( instances.filter( ( i ) => i.content && i.contentRead ) );
+	const content = collectContent( instances.filter( ( i ) => i.content && i.contentRead && i.rendered ) );
 	// FR-48-75: the Playwright and browser builds that produced this file; G0 treats a change in either as stale.
 	const playwrightVersion = createRequire( import.meta.url )( 'playwright/package.json' ).version;
 	const browserVersion = shared.context.browser()?.version() ?? null;
-	const file = { block, site, slotKey, paintKey, readKey: READ_KEY, playwrightVersion, browserVersion, measured: new Date().toISOString(), settings, discovered, elements, ...( Object.keys( paintStates ).length ? { paintStates } : {} ), ...content, dead: deadNames, oneWidth, noMarker: [ ...noMarker ], untestedStates: [ ...new Set( untested ) ], rejected };
+	const file = { block, site, slotKey, paintKey, readKey: READ_KEY, playwrightVersion, browserVersion, measured: new Date().toISOString(), settings, discovered, elements, ...( Object.keys( paintStates ).length ? { paintStates } : {} ), ...content, dead: deadNames, notRendered, oneWidth, noMarker: [ ...noMarker ], untestedStates: [ ...new Set( untested ) ], rejected };
 	// A paint-only run built only the default and paint-state instances (lib/cache.mjs::instancesDue); only the due output is written.
 	const { slotMap, paint } = splitCalibration( file );
-	const decision = due.slotMap ? slotMapWriteDecision( readSlotMap( CACHE, block ), slotMap, allowLoss[ block ] || [], declaredAttrs( db, block ) ) : { write: false, lost: [] };
-	decision.write && writeSlotMap( CACHE, block, slotMap );
+	// A setting the site gave no instance to measure is not lost, and the existing map's entry for it stays in the written map.
+	const unmeasured = notRendered.map( ( n ) => n.setting );
+	const prevMap = readSlotMap( CACHE, block );
+	const decision = due.slotMap ? slotMapWriteDecision( prevMap, slotMap, allowLoss[ block ] || [], declaredAttrs( db, block ), unmeasured ) : { write: false, lost: [] };
+	decision.write && writeSlotMap( CACHE, block, keepUnmeasured( prevMap, slotMap, unmeasured ) );
 	decision.write && fs.rmSync( refusedFile( CACHE, block ), { force: true } );
 	due.paint && ! statesMissing.length && writePaint( CACHE, site, block, paint );
 	if ( decision.lost.length ) {
@@ -353,7 +364,7 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 	if ( ! due.slotMap ) {
 		return { block, paintOnly: true, elements: Object.keys( elements ).length, paintStates: Object.keys( paintStates ).length, rejected: rejected.length };
 	}
-	return { block, settings: Object.keys( settings ).length, dead: deadNames.length, oneWidth: oneWidth.length, noMarker: noMarker.size, rejected: rejected.length };
+	return { block, settings: Object.keys( settings ).length, dead: deadNames.length, notRendered: notRendered.length, oneWidth: oneWidth.length, noMarker: noMarker.size, rejected: rejected.length };
 }
 
 if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) && needsBiggerHeap( v8.getHeapStatistics().heap_size_limit ) ) {
