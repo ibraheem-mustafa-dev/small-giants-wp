@@ -152,3 +152,34 @@ test( 'MUST FAIL: every produced scope key is 4 to 16 lowercase letters and digi
 	}
 	assert.throws( () => customCssPuts( { attributes: {} }, { css: '& { color: red; }', label: 'x', key: 'css1', why: 'w' } ), /scope/ );
 } );
+
+// An overlay surface read through its opener (a drawer, modal, mega panel) was read OPEN: the root's open/close machinery
+// is the block's own, never a resting rule (lib/fill-custom-css.mjs::openMachinery).
+const runOpened = ( unmapped, opened, flat = tree() ) => ( { flat, out: customCssWrites( { unmapped, writes: [], nodes: NODES, flat, refOf: ( n ) => n.ref, keyScope: 'acme|surface', opened } ) } );
+
+test( 'MUST FAIL: the open/close machinery of an opened surface root is not written as a resting rule, and each skip is reported', () => {
+	const props = [ [ 'display', 'flex' ], [ 'visibility', 'visible' ], [ 'opacity', '1' ], [ 'pointer-events', 'auto' ], [ 'content-visibility', 'visible' ] ];
+	const { flat, out } = runOpened( props.map( ( [ property, value ] ) => row( { property, value } ) ), { root: 'n0' } );
+	assert.equal( flat[ 0 ].attributes.sgsCustomCss, undefined );
+	assert.deepEqual( out.writes, [] );
+	assert.equal( out.unmapped.length, 5 );
+	assert.ok( out.unmapped.every( ( u ) => /^custom-css-skipped: open-state machinery of an opened surface root; the block owns its open\/closed display/.test( u.reason ) && 'custom-css-skipped' === u.how && ! u.appliedCss ) );
+	assert.equal( out.notes.length, 5 );
+	assert.match( out.notes[ 0 ], /n0 sgs\/container: custom-css-skipped display: open-state machinery/ );
+} );
+
+test( 'MUST FAIL: the same declarations on the root of a surface read at rest are written (negative control), and so are the opened root\'s other properties', () => {
+	const rest = runOpened( [ row( { property: 'display', value: 'flex' } ) ], null );
+	assert.equal( rest.flat[ 0 ].attributes.sgsCustomCss, '& { display: flex; }' );
+	const open = runOpened( [ row( { property: 'display', value: 'flex' } ), row( { property: 'z-index', value: '300' } ), row( { property: 'overflow-y', value: 'hidden' } ) ], { root: 'n0' } );
+	assert.equal( open.flat[ 0 ].attributes.sgsCustomCss, '& { z-index: 300; overflow-y: hidden; }' );
+} );
+
+test( 'MUST FAIL: a descendant of an opened surface keeps its display, and a width-gate rule on the root is kept', () => {
+	const flat = tree();
+	flat[ 0 ].attributes = scopedCssPuts( flat[ 0 ], { css: '@media (max-width: 767px) { & { display: none; } }', label: 'Width gate', index: 0, why: 'width gate', keyScope: 'acme|surface' } ).reduce( ( a, x ) => ( { ...a, [ x.attr ]: x.value } ), {} );
+	const { out } = runOpened( [ row( { node: 'n1', block: 'sgs/text', property: 'display', value: 'block' } ), row( { property: 'display', value: 'flex' } ) ], { root: 'n0' }, flat );
+	assert.equal( flat[ 1 ].attributes.sgsCustomCss, '& { display: block; }' );
+	assert.equal( flat[ 0 ].attributes.sgsCustomCss, '@media (max-width: 767px) { & { display: none; } }' );
+	assert.equal( out.writes.filter( ( w ) => 'n0' === w.node ).length, 0 );
+} );

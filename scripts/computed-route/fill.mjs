@@ -334,7 +334,7 @@ export async function fillSurface( o ) {
 		// Rows the element already renders (lib/fill-held.mjs) leave UNMAPPED and are listed under their reason in the report.
 		Object.assign( result, result.settleHeld( result ) );
 		// Every draft declaration no setting of its block holds, applied through that block's Custom CSS as a scoped rule and kept as its gap row (lib/fill-custom-css.mjs).
-		const customCss = customCssWrites( { unmapped: result.unmapped, writes: result.writes, nodes, flat, refOf, keyScope } );
+		const customCss = customCssWrites( { unmapped: result.unmapped, writes: result.writes, nodes, flat, refOf, keyScope, opened: opener?.state && nodes.length ? { root: refOf( flat[ nodes[ 0 ].index ] ) } : null } );
 		result.writes.push( ...customCss.writes );
 		result.unmapped = customCss.unmapped;
 		result.customCssGaps.push( ...customCss.gaps );

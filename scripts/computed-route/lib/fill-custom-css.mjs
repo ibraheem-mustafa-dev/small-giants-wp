@@ -40,6 +40,11 @@ export const STATE_UNHELD = 'state-unheld';
 const PSEUDO_CLASS = { hover: ':hover', focus: ':focus', active: ':active', disabled: ':disabled' };
 const UNSAFE_VALUE = /[{};<]/;
 
+// The open/close machinery of an overlay surface's root: the block owns whether it shows (`dialog:not([open]){display:none}`),
+// so a value read from the OPEN draft is never a resting rule (it would defeat the closed state).
+export const OPEN_MACHINERY = [ 'display', 'visibility', 'opacity', 'pointer-events', 'content-visibility' ];
+export const openMachinery = ( row, opened ) => !! opened && row.node === opened.root && '' === ( row.slot ?? '' ) && OPEN_MACHINERY.includes( row.property );
+
 const codeOf = ( row ) => String( row.reason || '' ).split( ':' )[ 0 ];
 export const eligible = ( row ) => ( NO_HOLDER.includes( codeOf( row ) ) || STATE_UNHELD === row.code ) && ! /^held:/.test( row.code || '' );
 
@@ -123,14 +128,22 @@ function refusal( row ) {
 // unmapped: the run's UNMAPPED rows; writes: the run's writes (a property one of them paints is never also CSS); nodes,
 // flat, refOf: the skeleton nodes, the tree's nodes by index and their refs; keyScope: the surface's identity
 // (`<client>|<surface>`), which makes each scope key unique across the page's posts (custom-css-writer.mjs::scopeKey). Returns { writes, unmapped (
-// every row, a written one carrying `appliedCss` and saying so in its reason), gaps, notes }.
-export function customCssWrites( { unmapped, writes, nodes, flat, refOf, keyScope } ) {
+// every row, a written one carrying `appliedCss` and saying so in its reason), gaps, notes }. opened: `{ root }` (the ref
+// of the root node) when the surface was read through its opener (a drawer, modal, mega panel or choice flow read in its
+// open state), else null: the root's open/close machinery is then never written (openMachinery) and each skip is a row and a note.
+export function customCssWrites( { unmapped, writes, nodes, flat, refOf, keyScope, opened = null } ) {
 	const out = { writes: [], unmapped: [], gaps: [], notes: [] };
 	const recOf = new Map( nodes.map( ( n ) => [ refOf( flat[ n.index ] ), n ] ) );
 	// node -> Map( `${ selector }|${ range }` -> { selector, range, decls: [], rows: [] } )
 	const rules = new Map();
 	for ( const row of perNode( unmapped ) ) {
 		const rec = recOf.get( row.node );
+		if ( eligible( row ) && rec && openMachinery( row, opened ) && ! painted( writes, row ) ) {
+			const reason = 'open-state machinery of an opened surface root; the block owns its open/closed display';
+			out.unmapped.push( { ...row, how: 'custom-css-skipped', reason: `custom-css-skipped: ${ reason } (${ row.reason })` } );
+			out.notes.push( `${ row.node } ${ rec.name }: custom-css-skipped ${ row.property }: ${ reason }` );
+			continue;
+		}
 		const why = eligible( row ) && rec ? refusal( row ) : null;
 		if ( null === why || painted( writes, row ) ) {
 			out.unmapped.push( row );

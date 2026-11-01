@@ -3165,7 +3165,8 @@ FR-48-57: the words of a multi-step form's own buttons. The draft's Next and Bac
 - `routeWrittenRules(writes)` → `[ { node, block, how, css, label } ]`: every rule a run wrote into a Custom CSS box, one per `sgsCustomCss` write, with the label the same pass added.
 
 ### `lib/fill-custom-css.mjs`
-- `customCssWrites({ unmapped, writes, nodes, flat, refOf })` → `{ writes, unmapped, gaps, notes }`: every eligible row applied through its block's Custom CSS (writes `how: 'custom-css'`), kept in `unmapped` with `appliedCss` and a reason saying so; one gaps row per rule naming the native control it could become (FR-48-86). `COVERAGE_WRITES`: the clone coverage IDs it closes.
+- `customCssWrites({ unmapped, writes, nodes, flat, refOf, keyScope, opened })` → `{ writes, unmapped, gaps, notes }`: every eligible row applied through its block's Custom CSS (writes `how: 'custom-css'`), kept in `unmapped` with `appliedCss` and a reason saying so; one gaps row per rule naming the native control it could become (FR-48-86). `COVERAGE_WRITES`: the clone coverage IDs it closes.
+- `openMachinery(row, opened)`, `OPEN_MACHINERY`: when the surface was read through its opener (`opened: { root }`, set by `fill.mjs` from `opener.state`), the root's `display`, `visibility`, `opacity`, `pointer-events` and `content-visibility` are never written as a resting rule (the block owns its open and closed display); each skip stays a row with `how: 'custom-css-skipped'` and a note.
 - `eligible(row)`, `selectorOf(slot, state)` (`&`, `& <slot>`, the state's pseudo-class before a pseudo-element), `valueRanges(row)` → `[ { range, value } ]` per run of tiers (null when two widths of one tier differ). `STATE_UNHELD`: the code `lib/fill-state.mjs` gives a state look the block paints by itself that nothing holds.
 - `holdsDeclaration(css, selector, property, value)` → whether a Custom CSS text already holds `property: value` in a rule on that selector.
 
