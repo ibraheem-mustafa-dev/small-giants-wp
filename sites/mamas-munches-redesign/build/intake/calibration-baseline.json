@@ -1,7 +1,7 @@
 {
   "client": "mamas-munches-redesign",
   "site": "local-mamas",
-  "takenOn": "2026-10-28T06:03:21.347Z",
+  "takenOn": "2026-11-01T20:31:58.489Z",
   "playwright": "1.58.2",
   "browser": "145.0.7632.6",
   "blockSet": [
@@ -24,46 +24,46 @@
   ],
   "blocks": {
     "sgs/container": {
-      "deployHash": "71dfffc8d3fae004ba72ed4e66fece21",
+      "deployHash": "654d6557f1f619dbf7e20791b49e5ca1",
       "dead": 8,
       "noMarker": 4,
       "oneWidth": 9,
       "untestedStates": 0
     },
     "sgs/heading": {
-      "deployHash": "340b22660416735405a97bf26b98dbd0",
-      "dead": 4,
-      "noMarker": 1,
+      "deployHash": "98d6dde6abe3ad943263994c335aa88b",
+      "dead": 2,
+      "noMarker": 2,
       "oneWidth": 0,
       "untestedStates": 0
     },
     "sgs/text": {
-      "deployHash": "8daba5b3622b612b2161208ed80cb167",
+      "deployHash": "7d3f0832d1cd84a065a811533d38cbe5",
       "dead": 5,
-      "noMarker": 1,
+      "noMarker": 2,
       "oneWidth": 0,
       "untestedStates": 0
     },
     "sgs/button": {
       "deployHash": "96ae2e6460e392469d5e457a1db0fcc7",
       "dead": 2,
-      "noMarker": 1,
+      "noMarker": 0,
       "oneWidth": 0,
       "untestedStates": 0
     },
     "sgs/media": {
-      "deployHash": "60b0bd8ab4e95c0f72530824e5dc0b79",
+      "deployHash": "6f51df8f7d429b7d97f4c04cbda158b7",
       "dead": 2,
       "noMarker": 1,
       "oneWidth": 0,
       "untestedStates": 1
     },
     "sgs/icon-list": {
-      "deployHash": "37dec157d2baf673c34413ea1d3fe4c6",
+      "deployHash": "f8ed5dcb23b3ed2b32b050dd2de21062",
       "dead": 10,
       "noMarker": 2,
       "oneWidth": 0,
-      "untestedStates": 0
+      "untestedStates": 3
     },
     "sgs/accordion": {
       "deployHash": "451fc217f43a4f9744cc2f80db6074ae",
@@ -73,42 +73,42 @@
       "untestedStates": 0
     },
     "sgs/choice-flow-result": {
-      "deployHash": "6490da20f31b63438104a2a89af4f239",
+      "deployHash": "2b38d6b994e7d9925589ea3f6a575240",
       "dead": 0,
       "noMarker": 0,
       "oneWidth": 0,
       "untestedStates": 0
     },
     "sgs/form": {
-      "deployHash": "be2b5d88d08579e3d4473f1645fb36df",
+      "deployHash": "b5d80a14f18b36918a4a42c0e6bc4b48",
       "dead": 36,
       "noMarker": 1,
       "oneWidth": 0,
       "untestedStates": 12
     },
     "sgs/form-step": {
-      "deployHash": "ef4382d9f498328080b55e7d53330e8c",
+      "deployHash": "894506efac98c3e6ce996c2efcda19f1",
       "dead": 0,
       "noMarker": 0,
       "oneWidth": 0,
       "untestedStates": 0
     },
     "sgs/mega-panel": {
-      "deployHash": "24f66ded95ef0ea1cbbf31695387937a",
+      "deployHash": "151a9c9c39668f13acc1f4a30b4447ce",
       "dead": 3,
       "noMarker": 2,
       "oneWidth": 0,
       "untestedStates": 0
     },
     "sgs/modal": {
-      "deployHash": "0f90979a97a9ba56b6ffe313089f93fd",
+      "deployHash": "4cc75993f94c1ada304b0dd1aab34444",
       "dead": 0,
       "noMarker": 0,
       "oneWidth": 0,
       "untestedStates": 4
     },
     "sgs/nav-drawer": {
-      "deployHash": "a8f4d53407125c8db504aa2692491c59",
+      "deployHash": "714cb431cab9309b1b4a987c2b4bd4df",
       "dead": 6,
       "noMarker": 5,
       "oneWidth": 0,
@@ -116,20 +116,20 @@
     },
     "sgs/site-footer": {
       "deployHash": "21583481058148b67295e8c4120cd5f9",
-      "dead": 4,
+      "dead": 6,
       "noMarker": 1,
       "oneWidth": 0,
-      "untestedStates": 2
+      "untestedStates": 0
     },
     "sgs/site-header": {
       "deployHash": "2978f7649ec8c6a8913574593ce81c36",
-      "dead": 2,
+      "dead": 4,
       "noMarker": 1,
       "oneWidth": 0,
-      "untestedStates": 2
+      "untestedStates": 0
     },
     "sgs/wishlist-panel": {
-      "deployHash": "7c267d94241955a15834b4f07d80f637",
+      "deployHash": "d7f4b5da46d05b94781de33f6a297cbb",
       "dead": 0,
       "noMarker": 0,
       "oneWidth": 2,
