@@ -150,6 +150,20 @@ test( 'a client decision is top evidence, and goes stale when the element under 
 	assert.equal( row( removed, ( r ) => r.key === key ).action, 'remove' );
 } );
 
+test( 'MUST FAIL: a client decision the rules now disagree with keeps its block and records what the rules propose (ruleWould)', () => {
+	const key = byWords( real, 'Privacy', 'a' ).key;
+	const decide = ( proposed ) => ( { surfaces: { footer: { [ key ]: { block: 'sgs/text', signature: 'a|Privacy', reason: 'Bean accepted sgs/text in the intake review on 2026-10-20', ...( proposed ? { proposed } : {} ) } } } } );
+	const changed = row( run( inventory, { clientDecisions: decide( 'sgs/heading' ) } ), ( r ) => r.key === key );
+	assert.equal( changed.block, 'sgs/text', 'the saved choice stands' );
+	assert.equal( changed.ruleWould.label, 'sgs/button', 'the rules now propose sgs/button' );
+	assert.equal( changed.ruleWould.decision.label, 'sgs/text' );
+	assert.match( changed.ruleWould.decision.reason, /on 2026-10-20/ );
+	const same = row( run( inventory, { clientDecisions: decide( 'sgs/button' ) } ), ( r ) => r.key === key );
+	assert.equal( same.ruleWould, undefined, 'negative control: the rules still propose what they proposed when it was saved' );
+	const legacy = row( run( inventory, { clientDecisions: decide( null ) } ), ( r ) => r.key === key );
+	assert.equal( legacy.ruleWould, undefined, 'negative control: a decision saved without a baseline records nothing' );
+} );
+
 // ---------- the 13 uncertain rows ----------
 // The first prototype's rows with confidence below 0.7, scored against what the committed footer tree records. `tree` is the
 // path of the answer in footer.tree.json (i = innerBlocks index, items[n] = icon-list item n); `where` finds the element in

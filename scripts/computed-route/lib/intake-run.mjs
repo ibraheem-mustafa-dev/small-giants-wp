@@ -372,6 +372,6 @@ export function applyIntakeReview( o, { log = ( l ) => process.stderr.write( `${
 	const saved = recordReviewDecisions( decisions, file );
 	writeConfirmedPageMap( at, `${ JSON.stringify( pageMap, null, 2 ) }\n`, today );
 	const dropped = res.intake.pageMap.length - pageMap.length;
-	say( `${ o.client }: ${ res.intake.review.length } rows marked (dated ${ today }); page-map.json confirmed with ${ pageMap.length } rows${ dropped ? ` (${ dropped } dropped)` : '' }; ${ saved } skeleton choices saved to ${ path.relative( o.repo, file ) } (block:<slug> marks and accepted finaliser picks)` );
+	say( `${ o.client }: ${ res.intake.review.length } rows marked (dated ${ today }); page-map.json confirmed with ${ pageMap.length } rows${ dropped ? ` (${ dropped } dropped)` : '' }; ${ saved } skeleton choices saved to ${ path.relative( o.repo, file ) } (block:<slug> marks, removals and accepted proposals)` );
 	return 0;
 }

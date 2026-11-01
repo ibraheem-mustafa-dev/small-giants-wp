@@ -100,7 +100,7 @@ export const HASH_FIELDS = {
 	// What a diff row states, never its `text` or row ID (both name record IDs, which renumber across a re-export).
 	'inventory-diff': [ 'draftId', 'field', 'ours', 'theirs' ],
 	effect: [ 'record', 'effect', 'kind', 'unmapped' ],
-	'skeleton-block': [ 'surface', 'key', 'tag', 'words', 'block', 'action' ], // action only when it removes or absorbs
+	'skeleton-block': [ 'surface', 'key', 'tag', 'words', 'block', 'action', 'ruleWouldLabel' ], // action only when it removes or absorbs
 	notice: [ 'kind', 'file', 'text', 'host', 'reasons' ],
 };
 export const VOLATILE = [ 'rowId', 'confidence', 'score', 'scores', 'why', 'reason', 'location', 'source', 'sources', 'screenshots', 'snippet', 'candidates', 'low', 'ms' ];
@@ -135,15 +135,17 @@ const unique = ( list ) => {
 // Why a skeleton or missing-feature row needs Bean's judgement rather than a glance (null: a confident proposal Accept
 // all covers). Skeleton: the clone agent picked it, no block fits, or its confidence is low. Missing feature: it is
 // on the main flow, or it proposes no block (Accept all cannot mark it).
-export const NEEDS_ORDER = [ 'agent-pick', 'unresolved', 'low', 'main-flow', 'no-block' ];
+export const NEEDS_ORDER = [ 'rule-changed', 'agent-pick', 'unresolved', 'low', 'main-flow', 'no-block' ];
 // The cause that settled a skeleton row, for grouping the review by cause (Spec 48 FR-48-6): the standing rule
 // (lib/skeleton-rules.mjs), with its reason; {} for a row the scoring proposed.
 const causeOf = ( r ) => {
 	return r.rule && 'agent' !== r.finalisedBy ? { cause: `rule ${ r.rule }`, causeReason: r.reason || '' } : {};
 };
-const skeletonNeeds = ( r ) => ( 'agent' === r.finalisedBy ? 'agent-pick' : 'unresolved' === r.action ? 'unresolved' : r.low ? 'low' : null );
+const skeletonNeeds = ( r ) => ( r.ruleWould ? 'rule-changed' : 'agent' === r.finalisedBy ? 'agent-pick' : 'unresolved' === r.action ? 'unresolved' : r.low ? 'low' : null );
 const proposalText = ( r ) => ( r.block ? `block:${ r.block }` : r.action && 'unresolved' !== r.action ? r.action : 'no block' );
-const skeletonNote = ( r ) => ( 'agent' === r.finalisedBy
+// A saved client decision the rules now disagree with: what Bean chose, when, and what the rules propose and why.
+export const ruleChangedNote = ( r ) => `you chose ${ r.ruleWould.decision.label } on ${ /on (\d{4}-\d{2}-\d{2})/.exec( r.ruleWould.decision.reason )?.[ 1 ] ?? 'an earlier review' }; the rules now propose ${ r.ruleWould.label } because ${ String( r.ruleWould.reason || 'of a rule change' ).replace( /\|/g, '/' ) }`;
+const skeletonNote = ( r ) => ( r.ruleWould ? ruleChangedNote( r ) : 'agent' === r.finalisedBy
 	? `agent pick ${ r.confidence ?? '?' }: ${ r.reason ?? '' }; was ${ proposalText( r.original || {} ) } ${ r.original?.confidence ?? '' }`.trim()
 	: [ r.confidence, r.reason ].filter( ( x ) => null != x && '' !== x ).join( ': ' ) );
 
@@ -233,7 +235,7 @@ export function reviewRows( intake ) {
 	effectRows( intake.inventory?.animations?.records ).forEach( ( r ) => add( 'effect', r, r.draftId, r.text, r.unmapped ? 'difference' : 'accept', r.unmapped ? 'a Spec 38 gap: ' + r.unmapped : '', r.unmapped ? 'difference' : 'accept' ) );
 	const sk = intake.skeletons || {};
 	( Array.isArray( sk ) ? sk : Object.entries( sk ).map( ( [ surface, s ] ) => ( { surface, ...s } ) ) ).forEach( ( s ) => ( s.rows || [] ).forEach( ( r ) => add( 'skeleton-block',
-		{ surface: s.surface, ...r, action: r.action && 'unresolved' !== r.action ? r.action : undefined, rowId: r.rowId || `skeleton:${ s.surface }:${ r.key }` }, r.key,
+		{ surface: s.surface, ...r, ruleWouldLabel: r.ruleWould?.label, action: r.action && 'unresolved' !== r.action ? r.action : undefined, rowId: r.rowId || `skeleton:${ s.surface }:${ r.key }` }, r.key,
 		`${ s.surface } ${ r.key } <${ r.tag ?? '?' }>${ r.words ? ` "${ text( r.words ) }"` : '' }`, proposalText( r ), skeletonNote( r ), MARKS[ 'skeleton-block' ][ 0 ].value, skeletonNeeds( r ), causeOf( r ) ) ) );
 	( intake.inventory?.diff || [] ).forEach( ( r ) => add( 'inventory-diff', { ...r, rowId: r.rowId || `inventory:${ r.draftId }` }, r.draftId, describe( r ), 'ours', text( r.why ?? r.reason ) ) );
 	( intake.notices?.prose || [] ).forEach( ( r ) => add( 'notice', { kind: 'prose', file: r.file, text: r.text, rowId: `notice:${ r.rowId }` }, `${ r.file }:${ r.line }`, `${ r.file }:${ r.line } ${ r.text }`, 'noted', r.why || '' ) );

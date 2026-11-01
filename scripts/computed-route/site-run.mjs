@@ -48,6 +48,7 @@ import { reviewedVerdict, reviewedRowsFor } from './lib/site-run-reviewed.mjs';
 import { calibrationVerdict } from './lib/site-run-blocks.mjs';
 import { certsPath } from './lib/site-run-certs.mjs';
 import { hashesFor } from './stage0.mjs';
+import { intakeGateFor } from './lib/site-run-intake-gate.mjs';
 import { pruneRunsReport } from './lib/prune-runs.mjs';
 import { WHOLE_TREE, commonChain, contentUnder, copyFile, copyTree, readShell, splitShell, writeCopy } from './lib/template-copies.mjs';
 
@@ -207,6 +208,10 @@ export async function main( argv ) {
 	const surfaces = readJson( path.join( build, 'surfaces.json' ) );
 	const rows = readJson( path.join( build, 'page-map.json' ) );
 	const intake = readJson( path.join( build, 'intake', 'intake.json' ) );
+	const gate = intakeGateFor( REPO, client, intake );
+	if ( gate.length ) {
+		throw new Error( `site run refused for ${ client }:\n${ gate.map( ( g ) => `  - ${ g }` ).join( '\n' ) }` );
+	}
 	const keys = runKeys( surfaces, only );
 	const dir = path.join( build, 'qa', 'site-run', stamp() );
 	fs.mkdirSync( dir, { recursive: true } );

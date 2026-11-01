@@ -70,6 +70,9 @@ export function overrideFor( e, { clientDecisions = {}, picks = {}, facts, surfa
 	return hit ? { block: hit.block || null, remove: 'remove' === hit.action, attributes: hit.attributes, reason: hit.reason, source: `standing decision ${ hit.id }` } : null;
 }
 
+// The label of what a proposal or a decision settles an element as: its action, else its block, else `no block`.
+export const proposalLabel = ( r ) => ( r.remove ? 'remove' : r.action || r.block || r.candidates?.[ 0 ]?.block || 'no block' );
+
 export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey = () => null, motion = new Set(), view = undefined, scope = null, formLinkOf = () => null, siteLink = undefined } ) {
 	const { composition, capsOf, tagMap, decisions } = facts;
 	const minLinks = decisions.structural?.linkList?.minLinks ?? 2;
@@ -155,23 +158,36 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 		};
 	};
 
+	// A client decision records what the rules propose for its element when that differs from what they proposed as it was
+	// saved (`decision.proposed`, a label from `proposalLabel`): { ruleWould: { label, reason, decision: { label, reason } } }.
+	// A decision saved without `proposed` has no baseline and records nothing.
+	const ruleWouldOf = ( e, parentBlock, ctx, over ) => {
+		if ( 'client decision' !== over.source || ! over.proposed || ctx.noClient ) {
+			return {};
+		}
+		const alt = sgsOnly( classify( e, parentBlock, { ...ctx, noClient: true } ), facts.replacedBy, decisions.rules?.coreExceptions || [] );
+		const label = proposalLabel( alt );
+		return label === over.proposed ? {} : { ruleWould: { label, reason: alt.reason || alt.source || '', decision: { label: proposalLabel( over ), reason: over.reason || '' } } };
+	};
+
 	// The candidates for one element. ctx: { parentBlock, typedBrand (the element is part of a typed brand name), noRule (the
 	// standing rules set aside: the DB's own scoring) }.
 	function classify( e, parentBlock = null, ctx = {} ) {
 		const C = {};
 		const words = m.words( e );
-		const over = overrides( e, words );
+		const decided = overrides( e, words );
+		const over = ctx.noClient && 'client decision' === decided?.source ? null : decided;
 		const verdict = ! ctx.typedBrand && ! ctx.noRule && 'client decision' !== over?.source ? rules.ruleFor( e, parentBlock ) : null;
 		if ( verdict ) {
 			return ruleAgainstDb( e, parentBlock, ctx, fromRule( verdict ) );
 		}
 		if ( over?.remove ) {
-			return { action: 'remove', reason: over.reason || over.source, source: over.source, candidates: [], confidence: 1 };
+			return { action: 'remove', reason: over.reason || over.source, source: over.source, candidates: [], confidence: 1, ...ruleWouldOf( e, parentBlock, ctx, over ) };
 		}
 		if ( over?.block ) {
 			add( C, over.block, 'decision', W.decision, `${ over.source }${ over.reason ? `: ${ over.reason }` : '' }`, { attributes: over.attributes } );
 			const r = finish( C );
-			return { ...r, confidence: over.confidence ?? 1, source: over.source };
+			return { ...r, confidence: over.confidence ?? 1, source: over.source, ...ruleWouldOf( e, parentBlock, ctx, over ) };
 		}
 		const stale = over?.stale || null;
 		const brief = briefOnly( e );

@@ -17,6 +17,7 @@ import { openDb } from './db.mjs';
 import { finaliseRequest, readPicks, recordDecision, skeletonDir } from './skeleton-finalise.mjs';
 import { reviewRows, renderReview, readingCounts } from './intake-review.mjs';
 import { refreshIntakeSkeletons } from './skeleton-rerun.mjs';
+import { proposalLabel } from './skeleton-classify.mjs';
 
 export const FINALISER_PROMPT = 'scripts/computed-route/prompts/skeleton-finaliser.md';
 export const LOW_BELOW = 0.7;
@@ -146,13 +147,20 @@ export function applyIntakePicks( intake, picks ) {
 	return { intake: next, applied: picked.length, missing };
 }
 
-// The skeleton choices --apply-review saves in the client decisions file (§3.4 step 4): a row Bean marked
-// `block:<slug>` (his correction), and a finaliser pick he accepted. A confident writer proposal he accepted is not
-// saved: it already follows from the framework DB, so a decision would add no evidence the next run lacks. Each copy of
-// a collapsed row is saved under its own element key: with the row's words when the copies share one text, and with each
-// copy's own words (the element signature is tag and words) when they differ and `wordsOf( surface, key )` knows them
-// (the saved inventory, lib/intake-run.mjs::inventoryWords); a copy whose words it does not know is not saved, as a
-// decision under another copy's words would read as stale. Returns [ { surface, element: { key, tag, words }, choice, reason } ].
+// The label of what a skeleton row proposes as the rules proposed it: a finaliser pick stands for the writer's own proposal
+// it replaced (`original`), a row carrying `ruleWould` for what the rules propose now (Bean has seen it in the review).
+const proposedLabel = ( r ) => ( r.ruleWould ? r.ruleWould.label : proposalLabel( r.original || r ) );
+
+// The skeleton choices --apply-review saves in the client decisions file (§3.4 step 4): a row Bean marked `block:<slug>`
+// (his correction) or `remove`, and a row he marked `accept` (a confident proposal or a finaliser pick) that places a block
+// or removes the element. A row the identity matcher absorbs or unwraps, and a row with no block, is not saved: its
+// `accept` leaves nothing for a decision to reproduce. Each decision carries `proposed`, the label of what the rules
+// proposed when it was saved (a later different proposal becomes a review row, lib/skeleton-classify.mjs::makeClassifier).
+// Each copy of a collapsed row is saved under its own element key: with the row's words when the copies share one text,
+// and with each copy's own words (the element signature is tag and words) when they differ and `wordsOf( surface, key )`
+// knows them (the saved inventory, lib/intake-run.mjs::inventoryWords); a copy whose words it does not know is not saved,
+// as a decision under another copy's words would read as stale.
+// Returns [ { surface, element: { key, tag, words }, choice, reason, proposed } ].
 export function reviewDecisions( intake, today, wordsOf = () => undefined ) {
 	const marks = new Map( ( intake.review || [] ).map( ( r ) => [ r.rowId, r.mark ] ) );
 	const out = [];
@@ -160,20 +168,22 @@ export function reviewDecisions( intake, today, wordsOf = () => undefined ) {
 		for ( const r of s.rows || [] ) {
 			const mark = marks.get( r.rowId || `skeleton:${ surface }:${ r.key }` ) ?? null;
 			const own = /^block:(.+)$/.exec( mark || '' )?.[ 1 ];
-			const accepted = 'accept' === mark && 'agent' === r.finalisedBy;
 			const removed = 'remove' === mark;
+			const accepted = 'accept' === mark && ! [ 'absorbed', 'unwrap', 'unresolved' ].includes( r.action ) && ( r.block || 'remove' === r.action );
 			if ( ! own && ! accepted && ! removed ) {
 				continue;
 			}
+			const what = own ? `block:${ own }` : removed || 'remove' === r.action ? 'remove' : r.block;
 			const choice = own ? { block: own } : removed || 'remove' === r.action ? { remove: true } : { block: r.block, ...( r.attributes ? { attributes: r.attributes } : {} ) };
-			const reason = own ? `Bean marked block:${ own } in the intake review on ${ today }` : removed ? `Bean marked remove in the intake review on ${ today }: the element is absorbed into its parent block` : `Bean accepted the finaliser's pick in the intake review on ${ today }: ${ r.reason || '' }`.trim();
+			const reason = own ? `Bean marked block:${ own } in the intake review on ${ today }` : removed ? `Bean marked remove in the intake review on ${ today }: the element is absorbed into its parent block` : 'agent' === r.finalisedBy ? `Bean accepted the finaliser's pick in the intake review on ${ today }: ${ r.reason || '' }`.trim() : `Bean accepted ${ 'remove' === what ? 'remove' : what } in the intake review on ${ today }`;
+			const proposed = proposedLabel( r );
 			const distinct = Boolean( r.distinctWords && r.distinctWords > 1 );
 			const homes = [ { surface, keys: r.keys || [ r.key ] }, ...( r.alsoIn || [] ) ];
 			for ( const h of homes ) {
 				h.keys.forEach( ( key, i ) => {
 					const own = distinct ? wordsOf( h.surface, key ) : r.words ?? '';
 					const words = undefined === own && distinct && h.surface === surface && 0 === i ? r.words ?? '' : own;
-					undefined !== words && out.push( { surface: h.surface, element: { key, tag: r.tag, words }, choice, reason } );
+					undefined !== words && out.push( { surface: h.surface, element: { key, tag: r.tag, words }, choice, reason, proposed } );
 				} );
 			}
 		}
@@ -192,7 +202,7 @@ export const decisionsFile = ( repo, client ) => path.join( skeletonDir( repo, c
 
 // Writes each decision through recordDecision. Returns how many elements were recorded.
 export function recordReviewDecisions( decisions, file ) {
-	decisions.forEach( ( d ) => recordDecision( { file, surface: d.surface, element: d.element, choice: d.choice, reason: d.reason } ) );
+	decisions.forEach( ( d ) => recordDecision( { file, surface: d.surface, element: d.element, choice: d.choice, reason: d.reason, proposed: d.proposed } ) );
 	return decisions.length;
 }
 

@@ -463,3 +463,15 @@ test( 'MUST FAIL a missing feature the skeleton raised is not listed once the re
 	assert.deepEqual( listed, [ 'missing:Nav:63', 'missing:Nav:64' ] );
 	assert.ok( ! renderReview( intake ).includes( 'missing:Nav:60' ) );
 } );
+
+test( 'MUST FAIL: a row whose saved decision the rules now disagree with needs Bean\'s mark, states both choices, and a mark given before does not carry', () => {
+	const row = { rowId: 'skeleton:header:logo', key: 'logo', tag: 'a', words: 'Acme', block: 'sgs/text', confidence: 1, reason: 'client decision' };
+	const ruleWould = { label: 'sgs/button', reason: 'rule links: a link run is a button', decision: { label: 'sgs/text', reason: 'Bean accepted sgs/text in the intake review on 2026-10-20' } };
+	const plain = reviewRows( fixture( { skeletons: { header: { rows: [ row ] } } } ) ).find( ( r ) => 'skeleton-block' === r.rowType );
+	assert.equal( plain.needs, null, 'negative control: a confident row with no disagreement is covered by Accept all' );
+	const changed = reviewRows( fixture( { skeletons: { header: { rows: [ { ...row, ruleWould } ] } } } ) ).find( ( r ) => 'skeleton-block' === r.rowType );
+	assert.equal( changed.needs, 'rule-changed' );
+	assert.match( changed.note, /you chose sgs\/text on 2026-10-20; the rules now propose sgs\/button because rule links: a link run is a button/ );
+	assert.notEqual( changed.contentHash, plain.contentHash, 'the mark Bean gave the row before the rules changed does not carry' );
+	assert.match( renderReview( fixture( { skeletons: { header: { rows: [ { ...row, ruleWould } ] } } } ) ), /Needs a decision \(rule-changed\)/ );
+} );

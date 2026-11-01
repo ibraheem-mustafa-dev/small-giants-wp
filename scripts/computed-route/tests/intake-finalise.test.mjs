@@ -203,7 +203,7 @@ test( 'MUST FAIL: review.md lists rows needing judgement first, the confident on
 	assert.deepEqual( Object.keys( parsed.rowMarks ).sort(), [ ...ids ].sort(), 'every row\'s Mark cell is read, confident rows included' );
 } );
 
-test( 'MUST FAIL: --apply-review saves block:<slug> marks and accepted finaliser picks only, to the client decisions file', () => {
+test( 'MUST FAIL: --apply-review saves block:<slug> marks, removals and every accepted block choice, to the client decisions file', () => {
 	write( fixture() );
 	assert.equal( run( '--finalise', CLIENT ).code, 0 );
 	pick( PICKS );
@@ -216,9 +216,11 @@ test( 'MUST FAIL: --apply-review saves block:<slug> marks and accepted finaliser
 	fs.writeFileSync( file( 'review.md' ), md );
 	const r = run( '--apply-review', CLIENT );
 	assert.equal( r.code, 0, r.out );
-	assert.match( r.out, /6 skeleton choices saved to .*decisions\.json/ );
+	assert.match( r.out, /7 skeleton choices saved to .*decisions\.json/ );
 	const dec = JSON.parse( fs.readFileSync( path.join( REPO, 'sites', CLIENT, 'build', 'skeleton', 'decisions.json' ), 'utf8' ) );
-	assert.deepEqual( Object.keys( dec.surfaces.header ).sort(), [ 'Site/5#0', 'Site/9#0' ], 'the accepted confident proposal Site/2#0 is not saved' );
+	assert.deepEqual( Object.keys( dec.surfaces.header ).sort(), [ 'Site/2#0', 'Site/5#0', 'Site/9#0' ], 'the accepted confident proposal Site/2#0 is saved too' );
+	assert.match( dec.surfaces.header[ 'Site/2#0' ].reason, /^Bean accepted \S+ in the intake review on \d{4}-\d{2}-\d{2}$/ );
+	assert.ok( dec.surfaces.header[ 'Site/2#0' ].proposed, 'a decision records what the rules proposed when it was saved' );
 	assert.equal( dec.surfaces.header[ 'Site/5#0' ].block, 'sgs/business-info' );
 	assert.equal( dec.surfaces.header[ 'Site/5#0' ].signature, 'span|0121 000 0000' );
 	assert.equal( dec.surfaces.header[ 'Site/9#0' ].remove, true );
@@ -275,6 +277,16 @@ test( 'MUST FAIL: a remove mark on a confident skeleton row is saved as a remova
 		{ rowId: 'skeleton:header:Site/3#0', key: 'Site/3#0', tag: 'a', words: 'Home', block: 'sgs/container' },
 	] } }, review: [ { rowId: 'skeleton:header:Site/2#0', mark: 'remove' }, { rowId: 'skeleton:header:Site/3#0', mark: 'accept' } ] };
 	const d = reviewDecisions( intake, '2026-10-13' );
-	assert.deepEqual( d.map( ( x ) => [ x.element.key, x.choice ] ), [ [ 'Site/2#0', { remove: true } ] ], 'the removed row is saved; the accepted confident row is not' );
+	assert.deepEqual( d.map( ( x ) => [ x.element.key, x.choice ] ), [ [ 'Site/2#0', { remove: true } ], [ 'Site/3#0', { block: 'sgs/container' } ] ], 'the removed row and the accepted confident row are both saved' );
 	assert.match( d[ 0 ].reason, /Bean marked remove/ );
+	assert.match( d[ 1 ].reason, /^Bean accepted sgs\/container in the intake review on 2026-10-13$/ );
+	assert.equal( d[ 1 ].proposed, 'sgs/container' );
+	const structural = { skeletons: { header: { rows: [
+		{ rowId: 'skeleton:header:Site/4#0', key: 'Site/4#0', tag: 'span', words: '', action: 'absorbed', into: 'Site/2#0' },
+		{ rowId: 'skeleton:header:Site/6#0', key: 'Site/6#0', tag: 'div', words: '', action: 'remove' },
+		{ rowId: 'skeleton:header:Site/7#0', key: 'Site/7#0', tag: 'div', words: '', action: 'unresolved' },
+	] } }, review: [ 'Site/4#0', 'Site/6#0', 'Site/7#0' ].map( ( k ) => ( { rowId: `skeleton:header:${ k }`, mark: 'accept' } ) ) };
+	assert.deepEqual( reviewDecisions( structural, '2026-10-13' ).map( ( x ) => [ x.element.key, x.choice ] ), [ [ 'Site/6#0', { remove: true } ] ], 'an accepted remove is saved; an absorbed or unresolved row leaves nothing for a decision to reproduce' );
+	const reconsidered = { skeletons: { header: { rows: [ { rowId: 'skeleton:header:Site/8#0', key: 'Site/8#0', tag: 'a', words: 'Home', block: 'sgs/text', ruleWould: { label: 'sgs/button', reason: 'r', decision: { label: 'sgs/text', reason: '' } } } ] } }, review: [ { rowId: 'skeleton:header:Site/8#0', mark: 'accept' } ] };
+	assert.equal( reviewDecisions( reconsidered, '2026-10-14' )[ 0 ].proposed, 'sgs/button', 'accepting a row the rules disagreed with acknowledges what they propose now' );
 } );

@@ -16,11 +16,11 @@ const writeJson = ( file, value ) => {
 	fs.writeFileSync( file, `${ JSON.stringify( value, null, '\t' ) }\n` );
 };
 
-// { siteName?, surfaces: { <surface>: { <key>: { block | remove, attributes?, signature, reason? } } } }.
+// { siteName?, surfaces: { <surface>: { <key>: { block | remove, attributes?, signature, proposed?, reason? } } } }.
 export const readDecisions = ( file ) => readJson( file, { surfaces: {} } );
 
 // Records one decision for an element of a surface. `choice`: { block, attributes? } or { remove: true }. Returns the file's content.
-export function recordDecision( { file, surface, element, choice, reason = null } ) {
+export function recordDecision( { file, surface, element, choice, reason = null, proposed = null } ) {
 	if ( ! element ) {
 		throw new Error( 'decide needs an element that is in the inventory' );
 	}
@@ -28,7 +28,7 @@ export function recordDecision( { file, surface, element, choice, reason = null 
 		throw new Error( 'decide needs --block <slug> or --remove' );
 	}
 	const all = readDecisions( file );
-	( all.surfaces[ surface ] ||= {} )[ element.key ] = { ...( choice.remove ? { remove: true } : { block: choice.block, ...( choice.attributes ? { attributes: choice.attributes } : {} ) } ), signature: signatureOf( element ), ...( reason ? { reason } : {} ) };
+	( all.surfaces[ surface ] ||= {} )[ element.key ] = { ...( choice.remove ? { remove: true } : { block: choice.block, ...( choice.attributes ? { attributes: choice.attributes } : {} ) } ), signature: signatureOf( element ), ...( proposed ? { proposed } : {} ), ...( reason ? { reason } : {} ) };
 	writeJson( file, all );
 	return all;
 }
