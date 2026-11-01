@@ -2913,6 +2913,12 @@
 				"signature": "main|",
 				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/container"
+			},
+			"Basket/44#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
 			}
 		},
 		"page-contact-dc-html": {
@@ -4273,6 +4279,12 @@
 				"signature": "main|",
 				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/container"
+			},
+			"Checkout/60#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
 			}
 		},
 		"checkout-form": {
