@@ -6,19 +6,10 @@
 // state under a real pointer, plus the layers that appear or animate while it is hovered and while it is pressed. Parts
 // pair across the two sides by name, else by destination, else by kind, place and size (pairParts). Read on a desktop
 // width of a ref-traced walk.
-//
-// How the reads are made (no fixed holds): hover and press are read with DevTools forced pseudo-states (:hover, then
-// :hover + :active on the part and its ancestors, devtools.mjs::forcedPseudo) and the computed styles, with no pointer. A
-// part whose hover or press is driven by a script (a pointer or mouse listener on it or an ancestor up to the pair's
-// element, found with DOMDebugger.getEventListeners, scriptDriven) is read with a real pointer instead, waiting only until
-// its animations settle (the old fixed 800/400/400/300 ms holds are the caps). Reads are kept per page (one page is one
-// side at one width): a later state of the same page reuses a part's reading when its element, identity, page box, resting
-// look and resting layers are unchanged, and reads only the parts that are new or changed (readParts, partsCache).
 import { HOVER_PROPS, hoverPointOf, hoverStyles } from './collect.mjs';
 import { PAINT_SRC } from './paint.mjs';
 import { sameValue } from './compare.mjs';
 import { TRANSFORM_PARTS, sameTransform, effectiveText } from './transform.mjs';
-import { forcedPseudo, settleAnimations } from './devtools.mjs';
 
 // A part's destination as both sides can name it alike: tel: digits, a mailto: address, or another site's host, path and
 // query, lower-case, without www. or a trailing slash. null for '#', javascript: and the page's own site (a draft's own
@@ -66,10 +57,6 @@ export function listParts( [ finder, resolveSrc, others, hrefKeySrc ] ) {
 	};
 	const parts = [ ...( el.matches( SEL ) ? [ el ] : [] ), ...el.querySelectorAll( SEL ) ].filter( ( p ) => shown( p ) && ! owned.some( ( o ) => o.contains( p ) ) );
 	window.__crParts = parts;
-	window.__crPartsRoot = el;
-	// A part's element id outlives the state: the same element keeps its id across the states of one page load.
-	window.__crPartIds = window.__crPartIds || { tok: Math.random().toString( 36 ).slice( 2 ), n: 0, map: new WeakMap() };
-	const ids = window.__crPartIds;
 	// The elements present now: one a script adds later is an effect layer (effectArm), never a painted layer.
 	window.__crKnown = new WeakSet( parts.flatMap( ( p ) => [ ...p.querySelectorAll( '*' ) ] ) );
 	const seen = new Map();
@@ -92,12 +79,7 @@ export function listParts( [ finder, resolveSrc, others, hrefKeySrc ] ) {
 				site = null;
 			}
 		}
-		if ( ! ids.map.has( p ) ) {
-			ids.map.set( p, `${ ids.tok }:${ ++ids.n }` );
-		}
-		// eid and abs (the part's box on the page) are the cache's: readParts keeps them off the rows.
-		const abs = { x: Math.round( r.left + scrollX ), y: Math.round( r.top + scrollY ), w: Math.round( r.width ), h: Math.round( r.height ) };
-		return { i, eid: ids.map.get( p ), abs, name: base, dup: k, worded: !! words, root: p === el, kind: link ? 'link' : 'button', href: link ? keyOf( raw, p.href, location.origin ) : null, site, pos, box: { w: Math.round( r.width ), h: Math.round( r.height ) } };
+		return { i, name: base, dup: k, worded: !! words, root: p === el, kind: link ? 'link' : 'button', href: link ? keyOf( raw, p.href, location.origin ) : null, site, pos, box: { w: Math.round( r.width ), h: Math.round( r.height ) } };
 	} );
 }
 
@@ -226,57 +208,13 @@ export function partsRestore() {
 // The hover properties and the point a part's pose turns about.
 const PART_PROPS = [ ...HOVER_PROPS, 'transform-origin' ];
 
-// The pointer and mouse events a script listens to to drive a hover or press look.
-const POINTER_EVENTS = new Set( [ 'pointerenter', 'pointerover', 'pointerdown', 'mouseenter', 'mouseover', 'mousedown', 'pointermove', 'mousemove' ] );
-
-// Whether part i's hover or press is script-driven: a pointer or mouse listener (POINTER_EVENTS) on the part or on any
-// ancestor up to the pair's element (DOMDebugger.getEventListeners). CSS-only parts have none and are read forced.
-export async function scriptDriven( cdp, i ) {
-	const GROUP = 'sgs-parts';
-	try {
-		const { result } = await cdp.send( 'Runtime.evaluate', { expression: `window.__crParts[${ i }]`, objectGroup: GROUP } );
-		for ( let objectId = result?.objectId; objectId; ) {
-			const { listeners } = await cdp.send( 'DOMDebugger.getEventListeners', { objectId } );
-			if ( listeners.some( ( l ) => POINTER_EVENTS.has( l.type ) ) ) {
-				return true;
-			}
-			const up = await cdp.send( 'Runtime.callFunctionOn', { objectId, objectGroup: GROUP, functionDeclaration: 'function () { return this === window.__crPartsRoot ? null : this.parentElement; }' } );
-			objectId = up.result?.objectId || null;
-		}
-		return false;
-	} catch {
-		// Cannot tell: a real pointer is the read that is always right.
-		return true;
-	} finally {
-		await cdp.send( 'Runtime.releaseObjectGroup', { objectGroup: GROUP } ).catch( () => {} );
-	}
-}
-
-// The parts' readings kept per page (one page is one side at one width) and pair: Map<pair name, Map<element id, { sig, rec }>>.
-const partsCache = new WeakMap();
-const cacheFor = ( page, pair ) => {
-	if ( ! partsCache.has( page ) ) {
-		partsCache.set( page, new Map() );
-	}
-	const byPair = partsCache.get( page );
-	if ( ! byPair.has( pair ) ) {
-		byPair.set( pair, new Map() );
-	}
-	return byPair.get( pair );
-};
-
-// One pair's parts on one side: [{ name, root, pos, box, rest, hover, layers: { rest, hover }, effects: { hover, press } }].
-// Rest looks and layers are always read (no waits). Hover and press are read with DevTools forced :hover and :hover + :active
-// (forcedPseudo) when `cdp` is given and the part is not script-driven; otherwise with a real pointer (hovered, read after
-// the animations settle up to `wait` ms, pressed, read after they settle up to 400 ms, the pointer moved off before release
-// so nothing is clicked). Reuse rule: a part whose element, name, destination, page box, resting look and resting layers
-// equal those of its last reading on this page (`opts.cache`, the pair's entry in partsCache) keeps that reading, so the
-// later states of a width (slider slides, auto-scrolled) read only the parts that are new or changed.
-export async function readParts( page, finder, others, RESOLVE, wait = 800, { cdp = null, cache = null } = {} ) {
+// One pair's parts on one side: [{ name, root, pos, box, rest, hover, layers: { rest, hover }, effects: { hover, press } }]. Each part
+// is hovered with a real pointer (collect.mjs::hoverPointOf), held `wait` ms, read, then pressed (mouse down, read, the
+// pointer moved off before release so nothing is clicked).
+export async function readParts( page, finder, others, RESOLVE, wait = 800 ) {
 	await page.evaluate( partsSave, [ finder, RESOLVE ] ).catch( () => 0 );
 	const list = await page.evaluate( listParts, [ finder, RESOLVE, others, hrefKey.toString() ] ).catch( () => [] );
 	const out = [];
-	let pointed = false;
 	for ( const part of list ) {
 		const pf = { js: `() => window.__crParts[${ part.i }]` };
 		const styles = () => page.evaluate( hoverStyles, [ pf, PART_PROPS, RESOLVE, PAINT_SRC, { paintPart: true } ] ).catch( () => null );
@@ -285,79 +223,36 @@ export async function readParts( page, finder, others, RESOLVE, wait = 800, { cd
 			continue;
 		}
 		const rec = { name: part.name, dup: part.dup, worded: part.worded, root: part.root, kind: part.kind, href: part.href, site: part.site, pos: part.pos, box: part.box, rest: await styles(), layers: { rest: await page.evaluate( partLayers, [ part.i ] ) }, effects: {} };
-		const sig = JSON.stringify( [ part.name, part.dup, part.kind, part.href, part.site, part.abs, rec.rest, rec.layers.rest ] );
-		const kept = cache?.get( part.eid );
-		if ( kept?.sig === sig ) {
-			out.push( structuredClone( kept.rec ) );
-			continue;
-		}
-		if ( ! ( cdp && ! await scriptDriven( cdp, part.i ) && await readForced( cdp, page, part, pf, styles, rec, RESOLVE ) ) ) {
-			pointed = true;
-			await readPointer( page, part, at, styles, rec, wait );
-		}
+		await page.evaluate( effectArm, [ part.i ] );
+		await page.mouse.move( at.x, at.y );
+		await page.waitForTimeout( wait );
+		rec.effects.hover = await page.evaluate( effectRead );
+		rec.hover = await styles();
+		rec.layers.hover = await page.evaluate( partLayers, [ part.i ] );
+		await page.evaluate( effectArm, [ part.i ] );
+		await page.mouse.down();
+		await page.waitForTimeout( 400 );
+		rec.effects.press = await page.evaluate( effectRead );
+		await page.mouse.move( 1, 1 );
+		await page.mouse.up();
+		await page.waitForTimeout( 400 );
 		out.push( rec );
-		cache?.set( part.eid, { sig, rec: structuredClone( rec ) } );
 	}
 	await page.evaluate( partsRestore ).catch( () => 0 );
-	if ( pointed ) {
-		await settleAnimations( page, { floor: 0, cap: 300 } );
+	if ( list.length ) {
+		await page.waitForTimeout( 300 );
 	}
 	return out;
 }
 
-// Hover and press of one part by forced pseudo-states: no pointer, no hold. Fills rec.effects, rec.hover, rec.layers.hover.
-// Returns false when DevTools could not force the part (the caller reads it with a pointer).
-async function readForced( cdp, page, part, pf, styles, rec, RESOLVE ) {
-	try {
-		await page.evaluate( effectArm, [ part.i ] );
-		const hovered = await forcedPseudo( cdp, page, pf, RESOLVE, [ 'hover' ], async () => ( { effects: await page.evaluate( effectRead ), hover: await styles(), layers: await page.evaluate( partLayers, [ part.i ] ) } ) );
-		if ( ! hovered ) {
-			await page.evaluate( effectRead ).catch( () => [] );
-			return false;
-		}
-		await page.evaluate( effectArm, [ part.i ] );
-		const pressed = await forcedPseudo( cdp, page, pf, RESOLVE, [ 'hover', 'active' ], () => page.evaluate( effectRead ) );
-		rec.effects.hover = hovered.effects;
-		rec.hover = hovered.hover;
-		rec.layers.hover = hovered.layers;
-		rec.effects.press = pressed || [];
-		return true;
-	} catch {
-		await page.evaluate( effectRead ).catch( () => [] );
-		return false;
-	}
-}
-
-// Hover and press of one script-driven part with a real pointer, each read once the animations settle (floor 0: the
-// handler ran on the event; two frames let a handler that starts its animation in requestAnimationFrame begin it).
-async function readPointer( page, part, at, styles, rec, wait ) {
-	const frame = () => page.evaluate( () => new Promise( ( r ) => requestAnimationFrame( () => requestAnimationFrame( r ) ) ) ).catch( () => 0 );
-	await page.evaluate( effectArm, [ part.i ] );
-	await page.mouse.move( at.x, at.y );
-	await frame();
-	await settleAnimations( page, { floor: 0, cap: wait } );
-	rec.effects.hover = await page.evaluate( effectRead );
-	rec.hover = await styles();
-	rec.layers.hover = await page.evaluate( partLayers, [ part.i ] );
-	await page.evaluate( effectArm, [ part.i ] );
-	await page.mouse.down();
-	await frame();
-	await settleAnimations( page, { floor: 0, cap: 400 } );
-	rec.effects.press = await page.evaluate( effectRead );
-	await page.mouse.move( 1, 1 );
-	await page.mouse.up();
-	await settleAnimations( page, { floor: 0, cap: 400 } );
-}
-
-// Every pair's parts in a state, onto snap[name].parts. A phone has no pointer to hover with and is skipped. `cdp` forces the
-// pseudo-states; without it every part is read with a real pointer.
-export async function partsPass( page, pairs, side, snap, RESOLVE, phone, cdp = null ) {
+// Every pair's parts in a state, onto snap[name].parts. A phone has no pointer to hover with and is skipped.
+export async function partsPass( page, pairs, side, snap, RESOLVE, phone ) {
 	if ( phone ) {
 		return;
 	}
 	for ( const p of pairs.filter( ( q ) => ! snap[ q.name ].missing && ! q[ side ]?.textRun && ! q[ side ]?.group ) ) {
 		const others = pairs.filter( ( q ) => q !== p ).map( ( q ) => q[ side ] ).filter( Boolean );
-		snap[ p.name ].parts = await readParts( page, p[ side ], others, RESOLVE, 800, { cdp, cache: cacheFor( page, p.name ) } );
+		snap[ p.name ].parts = await readParts( page, p[ side ], others, RESOLVE );
 	}
 }
 
