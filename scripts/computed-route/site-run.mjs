@@ -38,7 +38,7 @@ import { assertInventoryCurrent, handoffOf, sourcesOf } from './lib/freshness.mj
 import { openRunSession, readEnv } from './lib/wp-run-session.mjs';
 import { isContentOnlySurface, isUnwalkedWooPage, wooContentRole } from './lib/site-build-plan.mjs';
 import { rowKey, treeHash } from './lib/site-build-map.mjs';
-import { deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site-build-apply.mjs';
+import { buildThenMarkPost, deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site-build-apply.mjs';
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
 import { pointAfterBuild } from './lib/site-run-layout.mjs';
 import { walkVerdict } from './lib/site-run-walk.mjs';
@@ -366,7 +366,7 @@ export async function main( argv ) {
 		const builder = [ 'scripts/wp-build-page.js', '--env-file', entry.envFile, '--env-key', entry.envKey, '--tree', tree, ...( slug ? [ '--template', slug ] : [ '--post-id', String( entry.target.postId ) ] ) ];
 		if ( ! await step( 'build', () => exclusive( async () => {
 			await exec( 'dry', 'node', [ ...builder, '--dry-run' ] );
-			const said = await exec( 'build', 'node', builder );
+			const said = await buildThenMarkPost( { build: () => exec( 'build', 'node', builder ), postId: slug ? null : entry.target.postId, runPhp } ); // lib/site-build-apply.mjs: the post gets the site build's content marker
 			// Recorded as the site build records its own copies, so a later site build sees it as built from this tree.
 			slug && recordTemplate( slug, treeHash( readJson( path.join( REPO, tree ) ) ) );
 			// A built header, footer or drawer becomes the site's active one (lib/site-run-layout.mjs).

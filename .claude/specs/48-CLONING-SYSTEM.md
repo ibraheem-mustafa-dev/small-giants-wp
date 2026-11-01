@@ -1463,6 +1463,8 @@ One script, `scripts/computed-route/site-build.mjs`, builds the site's skeleton 
 
 On a rerun, every row with an `id` is updated by that ID, never created twice: its title, slug, parent and template by `wp post update`, and its content by `wp-build-page.js --post-id <id>` only when its tree changed, so content a later stage built into the post survives. A stored ID that no longer exists stops the run and names it. The script prints a before-and-after table of every option it changes.
 
+The site run's build stage marks each post it builds with the same `_sgs_site_build_content` hash the site build stores (`lib/site-build-apply.mjs::contentMarkPhp`, hashed over the content read back from the site after a successful build; a failed build or a template copy writes none), so a rebuild stops only for a change made by a person, never for the clone's own build.
+
 The script writes IDs into page-map rows only; `manifest.mjs` (§2, Surface manifest) turns the rows with IDs into `build/surfaces.json`.
 
 *Done when:* a run on a fresh Indus site creates every page-map row once, a second run creates nothing and changes nothing, every menu item resolves to its row, and each mega-menu item renders its panel.

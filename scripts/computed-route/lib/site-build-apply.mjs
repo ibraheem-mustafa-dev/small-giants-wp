@@ -75,6 +75,27 @@ if ( $t ) {
 `;
 }
 
+// The PHP storing a post's content marker: the hash of the content as the site holds it now, read back on the site so
+// both sides hash the same text. The site build writes it after each save and the site run after each post it builds.
+export function contentMarkPhp( id ) {
+	if ( ! Number.isInteger( id ) || id <= 0 ) {
+		throw new Error( `post id "${ id }" is not a post id` );
+	}
+	return `<?php
+update_post_meta( ${ id }, '${ CONTENT_META }', hash( 'sha256', get_post_field( 'post_content', ${ id }, 'raw' ) ) );
+`;
+}
+
+// The site run's build of one post: `build` runs first (it throws on a failed build, so a failed build writes no marker),
+// then the post's content marker is stored through `runPhp` (lib/calibration-refs.mjs::wpEvalRunner) so the next site
+// build sees the clone's own build as its own and not as a person's edit. A surface with no post id (a template copy,
+// recorded by templateRecordPhp) is built and left unmarked. Returns what `build` returned.
+export async function buildThenMarkPost( { build, postId, runPhp } ) {
+	const said = await build();
+	Number.isInteger( postId ) && runPhp( contentMarkPhp( postId ) );
+	return said;
+}
+
 // The meta key that marks an order the site run made only to show the order confirmation (FR-48-56).
 export const TEST_ORDER_META = '_sgs_site_run_test_order';
 
@@ -161,9 +182,7 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 	};
 	const mark = ( id, key ) => again( () => wp( [ 'post', 'meta', 'update', String( id ), ROW_META, key ] ) );
 	// The hash of what a save produced, read and written on the site so the two sides hash the same text (a later difference is a person's edit).
-	const markContent = ( id ) => again( () => wp( [ 'eval-file', '-' ], `<?php
-update_post_meta( ${ Number( id ) }, '${ CONTENT_META }', hash( 'sha256', get_post_field( 'post_content', ${ Number( id ) }, 'raw' ) ) );
-` ) );
+	const markContent = ( id ) => again( () => wp( [ 'eval-file', '-' ], contentMarkPhp( id ) ) );
 	const markTemplateContent = ( slug ) => {
 		const php = templateRecordPhp( slug );
 		again( () => wp( [ 'eval-file', '-' ], php ) );
