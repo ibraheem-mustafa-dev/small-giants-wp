@@ -4,7 +4,7 @@ Taken on 2026-10-31T01:32:33.809Z; manifest 1.0, files hash df55d7988b7b72a6.
 
 How to mark: put x in a section's `Accept all: [ ]` box to give every row the section's first mark; to mark one row differently, write its mark in that row's Mark cell (a row's own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review eye-care-ward-end`.
 
-Rows: 1617; 722 need reading, 895 are confident proposals that Accept all covers (skeleton block choices 858, missing features 37).
+Rows: 1617; 712 need reading, 905 are confident proposals that Accept all covers (skeleton block choices 868, missing features 37).
 
 Not defects counted, not listed: breakpoint 46, prop-variant 91, reached-when-forced 242, render-wins 1270.
 
@@ -228,19 +228,12 @@ Accept all: [ ]
 
 Accept all: [ ]
 
-### Needs a decision (rule-changed): block:sgs/button (3)
+### Needs a decision (rule-changed): block:sgs/button (2)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:footer:Eye Care Birmingham/1158#0` | footer Eye Care Birmingham/1158#0 <a> | block:sgs/button | you chose sgs/button on 2026-10-29; the rules now propose sgs/whatsapp-cta because names and attributes: sgs/whatsapp-cta holds whatsapp (score 1.00, features: floating, link kind whatsapp); fixed to the viewport (bottom-right): variant = floating | block:sgs/whatsapp-cta |
-| `skeleton:size-guide:Eye Care Birmingham/1237#0` | size-guide Eye Care Birmingham/1237#0 <button> "×" | block:sgs/button | you chose sgs/button on 2026-10-29; the rules now propose absorbed because the modal's close control (its click handler writes a falsy value to the state the modal opens on): the sgs/modal frame draws the close and its look becomes the frame's close settings; the draft's button is never built as a second, dead close |  |
 | `skeleton:size-guide:Eye Care Birmingham/1269#0` | size-guide Eye Care Birmingham/1269#0 <a> | block:sgs/button | you chose sgs/button on 2026-10-29; the rules now propose sgs/whatsapp-cta because names and attributes: sgs/whatsapp-cta holds whatsapp (score 1.00, features: flow, link kind whatsapp); in flow: variant = inline | block:sgs/whatsapp-cta |
-
-### Needs a decision (rule-changed): block:sgs/card-grid (1)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/54#0` | mega-menu-sunglasses Eye Care Birmingham/54#0 <div> | block:sgs/card-grid | you chose sgs/card-grid on 2026-10-29; the rules now propose unwrap because the grid inside a header disclosure panel's width wrapper is the panel's own layout: the sgs/mega-panel block draws the columns and takes the grid's gap, so the grid goes and its columns are the panel's mega groups (a heading and its run of links) and mega aside (the feature card) |  |
 
 ### Needs a decision (rule-changed): block:sgs/cart (1)
 
@@ -248,27 +241,16 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:bag-drawer:Eye Care Birmingham/1196#0` | bag-drawer Eye Care Birmingham/1196#0 <div> | block:sgs/cart | you chose sgs/cart on 2026-10-27; the rules now propose sgs/container because of a rule change | block:sgs/container |
 
-### Needs a decision (rule-changed): block:sgs/container (11)
+### Needs a decision (rule-changed): block:sgs/container (6)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:header:Eye Care Birmingham/17#0` | header Eye Care Birmingham/17#0 <button> | block:sgs/container | you chose sgs/container on 2026-10-27; the rules now propose absorbed because a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener) |  |
-| `skeleton:header:Eye Care Birmingham/28#0` | header Eye Care Birmingham/28#0 <a> | block:sgs/container | you chose sgs/container on 2026-10-27; the rules now propose unwrap because the link around one or more logos (a mark and a wordmark) goes: the logo block links home itself |  |
 | `skeleton:page-account:Eye Care Birmingham/923#0` | page-account Eye Care Birmingham/923#0 <div> | block:sgs/container | you chose sgs/container on 2026-10-30; the rules now propose sgs/account because the account page is an ordinary page (Bean, 2026-10-26; the hand-built reference shop's account page is the theme's page with WooCommerce's account output in it): its sign-in and account forms region is sgs/account, WooCommerce's account piece, which draws the forms, the menu and the dashboard (the account navigation Eye Care Birmingham/924#0 and the panel beside it) | block:sgs/account |
 | `skeleton:page-checkout:Eye Care Birmingham/739#0` | page-checkout Eye Care Birmingham/739#0 <div> | block:sgs/container | you chose sgs/container on 2026-10-30; the rules now propose core/post-content because the checkout page's content is WooCommerce's Checkout block (kept by site build), which draws the payment form and the order summary (10 entry field(s); the order summary beside them) | block:core/post-content |
 | `skeleton:page-help:Eye Care Birmingham/644#0` | page-help Eye Care Birmingham/644#0 <div> | block:sgs/container | you chose sgs/container on 2026-10-29; the rules now propose sgs/accordion because a loop whose items each hold a control that writes a state the item's own conditional panel reads is the accordion, read from the fact record and the logic's syntax tree with aria-expanded as the rendered confirmation, never from words or a surface kind (Spec 48 §3.4, RC6) (a loop of 8 items whose control writes "faqOpen", which the item's own panel reads; one item open at a time) | block:sgs/accordion |
 | `skeleton:page-help:Eye Care Birmingham/646` | page-help Eye Care Birmingham/646 <div> | block:sgs/container | you chose sgs/container on 2026-10-29; the rules now propose sgs/accordion-item because one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6) | block:sgs/accordion-item |
 | `skeleton:page-product:Eye Care Birmingham/493` | page-product Eye Care Birmingham/493 <div> | block:sgs/container | you chose sgs/container on 2026-10-30; the rules now propose sgs/accordion-item because one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6) | block:sgs/accordion-item |
 | `skeleton:page-shop:Eye Care Birmingham/286#0` | page-shop Eye Care Birmingham/286#0 <div> | block:sgs/container | you chose sgs/container on 2026-10-27; the rules now propose sgs/multi-button because of a rule change | remove |
-| `skeleton:size-guide:Eye Care Birmingham/1232#0` | size-guide Eye Care Birmingham/1232#0 <div> | block:sgs/container | you chose sgs/container on 2026-10-29; the rules now propose unwrap because the modal's full-viewport overlay: the sgs/modal frame draws the overlay, so its children are the post's content |  |
-| `skeleton:size-guide:Eye Care Birmingham/1234#0` | size-guide Eye Care Birmingham/1234#0 <div> | block:sgs/container | you chose sgs/container on 2026-10-29; the rules now propose unwrap because the modal's panel (the element declaring role dialog): the sgs/modal frame draws the panel and its paint becomes the frame's dialog settings, so its children are the post's content |  |
-| `skeleton:size-guide:Eye Care Birmingham/1238#0` | size-guide Eye Care Birmingham/1238#0 <div> | block:sgs/container | you chose sgs/container on 2026-10-27; the rules now propose unwrap because a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) |  |
-
-### Needs a decision (rule-changed): block:sgs/form-field-select (1)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:page-shop:Eye Care Birmingham/255#0` | page-shop Eye Care Birmingham/255#0 <select> | block:sgs/form-field-select | you chose sgs/form-field-select on 2026-10-30; the rules now propose absorbed because the draft's sort control and result count are WooCommerce's catalog-sorting and product-results-count in a toolbar row at the top of the product collection, as the theme's archive-product copy composes them (the count reads its query from the collection around it); found by the shop parts record's stamps, never by words (FR-48-61, FR-48-87) |  |
 
 ### Needs a decision (rule-changed): block:sgs/text (7)
 
@@ -281,14 +263,6 @@ Accept all: [ ]
 | `skeleton:size-guide:Eye Care Birmingham/1246#0` | size-guide Eye Care Birmingham/1246#0 <span> "Lens width" | block:sgs/text | you chose sgs/text on 2026-10-29; the rules now propose sgs/label because a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | block:sgs/label |
 | `skeleton:size-guide:Eye Care Birmingham/1247#0` | size-guide Eye Care Birmingham/1247#0 <span> "Bridge" | block:sgs/text | you chose sgs/text on 2026-10-29; the rules now propose sgs/label because a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | block:sgs/label |
 | `skeleton:size-guide:Eye Care Birmingham/1248#0` | size-guide Eye Care Birmingham/1248#0 <span> "Temple" | block:sgs/text | you chose sgs/text on 2026-10-29; the rules now propose sgs/label because a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | block:sgs/label |
-
-### Needs a decision (rule-changed): remove (3)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:page-home:Eye Care Birmingham/117#0` | page-home Eye Care Birmingham/117#0 <div> | remove | you chose remove on 2026-10-27; the rules now propose unwrap because inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-shop:Eye Care Birmingham/252#0` | page-shop Eye Care Birmingham/252#0 <span> "16 frames" | remove | you chose remove on 2026-10-30; the rules now propose absorbed because the draft's sort control and result count are WooCommerce's catalog-sorting and product-results-count in a toolbar row at the top of the product collection, as the theme's archive-product copy composes them (the count reads its query from the collection around it); found by the shop parts record's stamps, never by words (FR-48-61, FR-48-87) |  |
-| `skeleton:size-guide:Eye Care Birmingham/1233#0` | size-guide Eye Care Birmingham/1233#0 <div> | remove | you chose remove on 2026-10-29; the rules now propose absorbed because the modal's backdrop (an empty layer covering the overlay): its fill becomes the frame's scrim settings |  |
 
 ### Needs a decision (agent-pick): block:sgs/card-grid (1)
 
@@ -308,10 +282,11 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:header:Eye Care Birmingham/30#0` | header Eye Care Birmingham/30#0 <img> | block:sgs/responsive-logo | agent pick 0.8: The wordmark image beside the mark inside the home link; brand text or a logo image is the logo block, and its sibling mark is already sgs/responsive-logo.; was block:sgs/responsive-logo 0.66 | accept |
 
-### Needs a decision (agent-pick): block:sgs/text (1)
+### Needs a decision (agent-pick): block:sgs/text (2)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/70#0` | mega-menu-sunglasses Eye Care Birmingham/70#0 <span> "Any frame here, from £59" | block:sgs/text | agent pick 0.85: A one-line description under the card heading; plain copy.; was block:sgs/text 0.25 | accept |
 | `skeleton:page-product:Eye Care Birmingham/523` | page-product Eye Care Birmingham/523 <figcaption> "Placeholder review" | block:sgs/text | agent pick 0.5: The reviewer line ({{ r.who }}, printed as Placeholder review); kept as text with its quote, though the whole reviews block is placeholder content.; was block:sgs/text 0.25 | accept |
 
 ### Needs a decision (agent-pick): block:sgs/whatsapp-cta (3)
@@ -385,6 +360,12 @@ Accept all: [ ]
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:page-home:Eye Care Birmingham/171#0` | page-home Eye Care Birmingham/171#0 <div> | unwrap | 1: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) | accept |
+
+### Settled by rule cardTitle: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label (1)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/69#0` | mega-menu-sunglasses Eye Care Birmingham/69#0 <span> "Prescription sunglasses" | block:sgs/heading | 1: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label | accept |
 
 ### Settled by rule commerceRegion: WooCommerce's product collection draws the shop's products, each in the site's own sgs/product-card, as the hand-built reference shop's archive-product copy has them; its column count is the draft's cards per row at 1440 (a loop of 16 mounted cards showing a price) (76)
 
@@ -467,11 +448,13 @@ Accept all: [ ]
 | `skeleton:page-signin:Eye Care Birmingham/882#0` | page-signin Eye Care Birmingham/882#0 <span> "8 characters or more" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/account: rule commerceRegion | accept |
 | `skeleton:page-signin:Eye Care Birmingham/883#0` | page-signin Eye Care Birmingham/883#0 <button> "Create account" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/account: rule commerceRegion | accept |
 
-### Settled by rule decorationLayer: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in (2)
+### Settled by rule decorationLayer: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in (4)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:bag-drawer:Eye Care Birmingham/1194#0` | bag-drawer Eye Care Birmingham/1194#0 <div> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in | accept |
+| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/66#0` | mega-menu-sunglasses Eye Care Birmingham/66#0 <span> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in | accept |
+| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/67#0` | mega-menu-sunglasses Eye Care Birmingham/67#0 <span> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in | accept |
 | `skeleton:page-shop:Eye Care Birmingham/316#0` | page-shop Eye Care Birmingham/316#0 <span> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in | accept |
 
 ### Settled by rule drawerClose: a button or link inside a drawer surface whose click handler writes a falsy value to a state key one of the drawer's own surfaces.json states holds at true (lib/skeleton-handler-opens.mjs::handlerCloses; a handler that also writes the key to an opening value is a toggle, not a close) is the drawer block's own close control (Spec 36 FR-36-6: close is the drawer's chrome, drawn by sgs/nav-drawer above its body), so the block takes it and its look becomes the block's close settings; the draft's button is never built as a second, dead close (1)
@@ -480,7 +463,17 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:bag-drawer:Eye Care Birmingham/1199#0` | bag-drawer Eye Care Birmingham/1199#0 <button> "×" | absorbed | 1: a button or link inside a drawer surface whose click handler writes a falsy value to a state key one of the drawer's own surfaces.json states holds at true (lib/skeleton-handler-opens.mjs::handlerCloses; a handler that also writes the key to an opening value is a toggle, not a close) is the drawer block's own close control (Spec 36 FR-36-6: close is the drawer's chrome, drawn by sgs/nav-drawer above its body), so the block takes it and its look becomes the block's close settings; the draft's button is never built as a second, dead close | accept |
 
-### Settled by rule drawsChildren: the block each sits in draws it (each row's reason names that block) (68)
+### Settled by rule drawerOpener: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener) (5)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:header:Eye Care Birmingham/17` | header Eye Care Birmingham/17 <button> | absorbed | 1: 2 copies of one template element; a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener) | accept |
+| `skeleton:header:Eye Care Birmingham/18` | header Eye Care Birmingham/18 <span> | absorbed | 1: 2 copies of one template element; drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener) | accept |
+| `skeleton:header:Eye Care Birmingham/19` | header Eye Care Birmingham/19 <span> | absorbed | 1: 2 copies of one template element; drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener) | accept |
+| `skeleton:header:Eye Care Birmingham/20` | header Eye Care Birmingham/20 <span> | absorbed | 1: 2 copies of one template element; drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener) | accept |
+| `skeleton:header:Eye Care Birmingham/21` | header Eye Care Birmingham/21 <span> "Menu" | absorbed | 1: 2 copies of one template element; drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener) | accept |
+
+### Settled by rule drawsChildren: the block each sits in draws it (each row's reason names that block) (54)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -505,20 +498,6 @@ Accept all: [ ]
 | `skeleton:mega-menu-brands:Eye Care Birmingham/79#0` | mega-menu-brands Eye Care Birmingham/79#0 <div> "All 40 brands" | absorbed | 1: drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
 | `skeleton:mega-menu-brands:Eye Care Birmingham/80#0` | mega-menu-brands Eye Care Birmingham/80#0 <div> | absorbed | 1: drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
 | `skeleton:mega-menu-brands:Eye Care Birmingham/82` | mega-menu-brands Eye Care Birmingham/82 <a> "Ray-Ban" | absorbed | 1: 40 copies of one template element; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/55#0` | mega-menu-sunglasses Eye Care Birmingham/55#0 <div> | absorbed | 1: drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/56#0` | mega-menu-sunglasses Eye Care Birmingham/56#0 <div> "By style" | absorbed | 1: drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/57#0` | mega-menu-sunglasses Eye Care Birmingham/57#0 <div> | absorbed | 1: drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/59` | mega-menu-sunglasses Eye Care Birmingham/59 <a> "Pilot" | absorbed | 1: 12 copies of one template element; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/60#0` | mega-menu-sunglasses Eye Care Birmingham/60#0 <div> | absorbed | 1: drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/61#0` | mega-menu-sunglasses Eye Care Birmingham/61#0 <div> "Shop by" | absorbed | 1: drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/62#0` | mega-menu-sunglasses Eye Care Birmingham/62#0 <div> | absorbed | 1: drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/64` | mega-menu-sunglasses Eye Care Birmingham/64 <a> "Best sellers" | absorbed | 1: 6 copies of one template element; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/65#0` | mega-menu-sunglasses Eye Care Birmingham/65#0 <a> | absorbed | 1: drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/66#0` | mega-menu-sunglasses Eye Care Birmingham/66#0 <span> | absorbed | 1: drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/67#0` | mega-menu-sunglasses Eye Care Birmingham/67#0 <span> | absorbed | 1: drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/68#0` | mega-menu-sunglasses Eye Care Birmingham/68#0 <span> | absorbed | 1: drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/69#0` | mega-menu-sunglasses Eye Care Birmingham/69#0 <span> "Prescription sunglasses" | absorbed | 1: drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/70#0` | mega-menu-sunglasses Eye Care Birmingham/70#0 <span> "Any frame here, from £59" | absorbed | 1: drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
 | `skeleton:mobile-menu:Eye Care Birmingham/1167#0` | mobile-menu Eye Care Birmingham/1167#0 <a> "Sunglasses" | absorbed | 1: drawn by sgs/nav-drawer-menu: decisions rules.drawsChildren: sgs/nav-drawer-menu draws its items, numbers and carets from a WordPress menu | accept |
 | `skeleton:mobile-menu:Eye Care Birmingham/1168#0` | mobile-menu Eye Care Birmingham/1168#0 <a> "Brands" | absorbed | 1: drawn by sgs/nav-drawer-menu: decisions rules.drawsChildren: sgs/nav-drawer-menu draws its items, numbers and carets from a WordPress menu | accept |
 | `skeleton:mobile-menu:Eye Care Birmingham/1169#0` | mobile-menu Eye Care Birmingham/1169#0 <a> "Prescription lenses" | absorbed | 1: drawn by sgs/nav-drawer-menu: decisions rules.drawsChildren: sgs/nav-drawer-menu draws its items, numbers and carets from a WordPress menu | accept |
@@ -617,7 +596,7 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:header:Eye Care Birmingham/7#0` | header Eye Care Birmingham/7#0 <div> | block:sgs/site-header-row | 1: a strip above the header's main bar is its top row | accept |
 
-### Settled by rule heroInner: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays (18)
+### Settled by rule heroInner: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays (19)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -636,11 +615,18 @@ Accept all: [ ]
 | `skeleton:page-contact:Eye Care Birmingham/700#0` | page-contact Eye Care Birmingham/700#0 <a> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
 | `skeleton:page-home:Eye Care Birmingham/113#0` | page-home Eye Care Birmingham/113#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
 | `skeleton:page-home:Eye Care Birmingham/114#0` | page-home Eye Care Birmingham/114#0 <img> | absorbed | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
+| `skeleton:page-home:Eye Care Birmingham/117#0` | page-home Eye Care Birmingham/117#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
 | `skeleton:page-product:Eye Care Birmingham/341#0` | page-product Eye Care Birmingham/341#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
 | `skeleton:page-product:Eye Care Birmingham/346#0` | page-product Eye Care Birmingham/346#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
 | `skeleton:page-shop:Eye Care Birmingham/248#0` | page-shop Eye Care Birmingham/248#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
 
-### Settled by rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number (14)
+### Settled by rule homeLink: the link around one or more logos (a mark and a wordmark) goes: the logo block links home itself (1)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:header:Eye Care Birmingham/28#0` | header Eye Care Birmingham/28#0 <a> | unwrap | 1: the link around one or more logos (a mark and a wordmark) goes: the logo block links home itself | accept |
+
+### Settled by rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number (16)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -653,19 +639,23 @@ Accept all: [ ]
 | `skeleton:mega-menu-help:Eye Care Birmingham/105#0` | mega-menu-help Eye Care Birmingham/105#0 <div> "Talk to me" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
 | `skeleton:mega-menu-help:Eye Care Birmingham/93#0` | mega-menu-help Eye Care Birmingham/93#0 <div> "Buying here" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
 | `skeleton:mega-menu-help:Eye Care Birmingham/99#0` | mega-menu-help Eye Care Birmingham/99#0 <div> "Prescriptions" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
+| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/56#0` | mega-menu-sunglasses Eye Care Birmingham/56#0 <div> "By style" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
+| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/61#0` | mega-menu-sunglasses Eye Care Birmingham/61#0 <div> "Shop by" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
 | `skeleton:page-product:Eye Care Birmingham/507#0` | page-product Eye Care Birmingham/507#0 <div> "★★★★★" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
 | `skeleton:page-product:Eye Care Birmingham/520` | page-product Eye Care Birmingham/520 <span> "★★★★★" | block:sgs/label | 1: 3 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
 | `skeleton:page-product:Eye Care Birmingham/521` | page-product Eye Care Birmingham/521 <span> "Verified · prescription lenses" | block:sgs/label | 1: 3 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
 | `skeleton:page-shop:Eye Care Birmingham/278` | page-shop Eye Care Birmingham/278 <span> "Gender" | block:sgs/label | 1: 10 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | remove |
 | `skeleton:page-shop:Eye Care Birmingham/314#0` | page-shop Eye Care Birmingham/314#0 <span> "Polarised only" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | remove |
 
-### Settled by rule listWrapper: a bare wrapper whose only content is one list goes: the list block is that wrapper (3)
+### Settled by rule listWrapper: a bare wrapper whose only content is one list goes: the list block is that wrapper (5)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:mega-menu-help:Eye Care Birmingham/100#0` | mega-menu-help Eye Care Birmingham/100#0 <div> | unwrap | 1: a bare wrapper whose only content is one list goes: the list block is that wrapper | accept |
 | `skeleton:mega-menu-help:Eye Care Birmingham/106#0` | mega-menu-help Eye Care Birmingham/106#0 <div> | unwrap | 1: a bare wrapper whose only content is one list goes: the list block is that wrapper | accept |
 | `skeleton:mega-menu-help:Eye Care Birmingham/94#0` | mega-menu-help Eye Care Birmingham/94#0 <div> | unwrap | 1: a bare wrapper whose only content is one list goes: the list block is that wrapper | accept |
+| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/57#0` | mega-menu-sunglasses Eye Care Birmingham/57#0 <div> | unwrap | 1: a bare wrapper whose only content is one list goes: the list block is that wrapper | accept |
+| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/62#0` | mega-menu-sunglasses Eye Care Birmingham/62#0 <div> | unwrap | 1: a bare wrapper whose only content is one list goes: the list block is that wrapper | accept |
 
 ### Settled by rule loopBlocks: a loop of items that show a price and link to a product page is the site's product collection, the block the shop region uses, with its own query (FR-48-83, Spec 27 FR-24-4) (a loop of 4 items showing a price and linking to a product page) (52)
 
@@ -731,19 +721,37 @@ Accept all: [ ]
 | `skeleton:header:Eye Care Birmingham/10=absorbed` | header Eye Care Birmingham/10=absorbed <span> "100% genuine, supplied direct by the brands" | absorbed | 1: 4 copies of one template element; drawn by sgs/trust-bar: rule marquee | accept |
 | `skeleton:header:Eye Care Birmingham/8#0` | header Eye Care Birmingham/8#0 <div> | block:sgs/trust-bar | 1: a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee, the block chosen by what its items show and where it sits: logos alone make sgs/brand-strip; labels, alone or each with an icon or an image, make sgs/trust-bar when its item fields hold every kind the items show (array_item_schema roles: icon-slug or svg, image-object, text-content) and the section block fits where the strip sits; otherwise sgs/brand-strip showing the names as text. A section block (block_composition.container_kind section, as sgs/trust-bar) never sits inside another section, and sits only in a slot that gives it its full width: a header row, the footer's top row, a drawer's, modal's or mega panel's body, any slot the draft lays out as one full-width child (it spans its parent's content box through every ancestor up to the surface root or the section root that holds only its slot blocks, and no sibling sits beside it); never a slot that lays its children out as columns (the footer's column and bottom rows) and never a page section's own container. The marquee motion and the widths it runs at are the motion writer's (sgsMotion, belowBreakpoint), and the repeated items are its items (Bean, 2026-10-31) | accept |
 
-### Settled by rule megaGroup: a growing child of a header's disclosure panel that holds a run of sibling links is a mega group: the panel's column of links (Bean's approved header mega menus, 2026-10-21) (3)
+### Settled by rule megaAside: a fixed or ratio-sized painted box beside a header disclosure panel's links, holding no link run, is the panel's aside: its feature or call-to-action card (Bean's approved header mega menus, 2026-10-21) (1)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/65#0` | mega-menu-sunglasses Eye Care Birmingham/65#0 <a> | block:sgs/mega-aside | 1: a fixed or ratio-sized painted box beside a header disclosure panel's links, holding no link run, is the panel's aside: its feature or call-to-action card (Bean's approved header mega menus, 2026-10-21) | accept |
+
+### Settled by rule megaGroup: a growing child of a header's disclosure panel that holds a run of sibling links is a mega group: the panel's column of links (Bean's approved header mega menus, 2026-10-21) (5)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:mega-menu-help:Eye Care Birmingham/104#0` | mega-menu-help Eye Care Birmingham/104#0 <div> | block:sgs/mega-group | 1: a growing child of a header's disclosure panel that holds a run of sibling links is a mega group: the panel's column of links (Bean's approved header mega menus, 2026-10-21) | accept |
 | `skeleton:mega-menu-help:Eye Care Birmingham/92#0` | mega-menu-help Eye Care Birmingham/92#0 <div> | block:sgs/mega-group | 1: a growing child of a header's disclosure panel that holds a run of sibling links is a mega group: the panel's column of links (Bean's approved header mega menus, 2026-10-21) | accept |
 | `skeleton:mega-menu-help:Eye Care Birmingham/98#0` | mega-menu-help Eye Care Birmingham/98#0 <div> | block:sgs/mega-group | 1: a growing child of a header's disclosure panel that holds a run of sibling links is a mega group: the panel's column of links (Bean's approved header mega menus, 2026-10-21) | accept |
+| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/55#0` | mega-menu-sunglasses Eye Care Birmingham/55#0 <div> | block:sgs/mega-group | 1: a growing child of a header's disclosure panel that holds a run of sibling links is a mega group: the panel's column of links (Bean's approved header mega menus, 2026-10-21) | accept |
+| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/60#0` | mega-menu-sunglasses Eye Care Birmingham/60#0 <div> | block:sgs/mega-group | 1: a growing child of a header's disclosure panel that holds a run of sibling links is a mega group: the panel's column of links (Bean's approved header mega menus, 2026-10-21) | accept |
 
-### Settled by rule megaPanelGrid: the grid inside a header disclosure panel's width wrapper is the panel's own layout: the sgs/mega-panel block draws the columns and takes the grid's gap, so the grid goes and its columns are the panel's mega groups (a heading and its run of links) and mega aside (the feature card) (1)
+### Settled by rule megaPanelGrid: the grid inside a header disclosure panel's width wrapper is the panel's own layout: the sgs/mega-panel block draws the columns and takes the grid's gap, so the grid goes and its columns are the panel's mega groups (a heading and its run of links) and mega aside (the feature card) (2)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:mega-menu-help:Eye Care Birmingham/91#0` | mega-menu-help Eye Care Birmingham/91#0 <div> | unwrap | 1: the grid inside a header disclosure panel's width wrapper is the panel's own layout: the sgs/mega-panel block draws the columns and takes the grid's gap, so the grid goes and its columns are the panel's mega groups (a heading and its run of links) and mega aside (the feature card) | accept |
+| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/54#0` | mega-menu-sunglasses Eye Care Birmingham/54#0 <div> | unwrap | 1: the grid inside a header disclosure panel's width wrapper is the panel's own layout: the sgs/mega-panel block draws the columns and takes the grid's gap, so the grid goes and its columns are the panel's mega groups (a heading and its run of links) and mega aside (the feature card) | accept |
+
+### Settled by rule modalFrame: the modal's full-viewport overlay: the sgs/modal frame draws the overlay, so its children are the post's content (4)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:size-guide:Eye Care Birmingham/1232#0` | size-guide Eye Care Birmingham/1232#0 <div> | unwrap | 1: the modal's full-viewport overlay: the sgs/modal frame draws the overlay, so its children are the post's content | accept |
+| `skeleton:size-guide:Eye Care Birmingham/1233#0` | size-guide Eye Care Birmingham/1233#0 <div> | absorbed | 1: the modal's backdrop (an empty layer covering the overlay): its fill becomes the frame's scrim settings | accept |
+| `skeleton:size-guide:Eye Care Birmingham/1234#0` | size-guide Eye Care Birmingham/1234#0 <div> | unwrap | 1: the modal's panel (the element declaring role dialog): the sgs/modal frame draws the panel and its paint becomes the frame's dialog settings, so its children are the post's content | accept |
+| `skeleton:size-guide:Eye Care Birmingham/1237#0` | size-guide Eye Care Birmingham/1237#0 <button> "×" | absorbed | 1: the modal's close control (its click handler writes a falsy value to the state the modal opens on): the sgs/modal frame draws the close and its look becomes the frame's close settings; the draft's button is never built as a second, dead close | accept |
 
 ### Settled by rule navigationLink: a text link in a header, outside its navigation element, set in the navigation links' own type (the same size, case and tracking) is one of the navigation's items: the menu block draws it from the header menu, never a button (2)
 
@@ -801,15 +809,22 @@ Accept all: [ ]
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:lens-configurator:Eye Care Birmingham/1312#0` | lens-configurator Eye Care Birmingham/1312#0 <a> | block:sgs/whatsapp-cta | 1: names and attributes: sgs/whatsapp-cta holds whatsapp (score 1.00, features: flow, link kind whatsapp); in flow: variant = inline | remove |
-| `skeleton:lens-configurator:Eye Care Birmingham/1313#0` | lens-configurator Eye Care Birmingham/1313#0 <span> | absorbed | 1: drawn by sgs/whatsapp-cta: rule recognise | remove |
-| `skeleton:lens-configurator:Eye Care Birmingham/1314#0` | lens-configurator Eye Care Birmingham/1314#0 <img> | absorbed | 1: drawn by sgs/whatsapp-cta: rule recognise | remove |
-| `skeleton:lens-configurator:Eye Care Birmingham/1315#0` | lens-configurator Eye Care Birmingham/1315#0 <span> "Not sure which to pick?" | absorbed | 1: drawn by sgs/whatsapp-cta: rule recognise | remove |
-| `skeleton:lens-configurator:Eye Care Birmingham/1316#0` | lens-configurator Eye Care Birmingham/1316#0 <span> "Happy to talk it through — message me and we'll choose together." | absorbed | 1: drawn by sgs/whatsapp-cta: rule recognise | remove |
+| `skeleton:lens-configurator:Eye Care Birmingham/1313#0` | lens-configurator Eye Care Birmingham/1313#0 <span> | absorbed | 1: drawn by sgs/whatsapp-cta: rule recognise | accept |
+| `skeleton:lens-configurator:Eye Care Birmingham/1314#0` | lens-configurator Eye Care Birmingham/1314#0 <img> | absorbed | 1: drawn by sgs/whatsapp-cta: rule recognise | accept |
+| `skeleton:lens-configurator:Eye Care Birmingham/1315#0` | lens-configurator Eye Care Birmingham/1315#0 <span> "Not sure which to pick?" | absorbed | 1: drawn by sgs/whatsapp-cta: rule recognise | accept |
+| `skeleton:lens-configurator:Eye Care Birmingham/1316#0` | lens-configurator Eye Care Birmingham/1316#0 <span> "Happy to talk it through — message me and we'll choose together." | absorbed | 1: drawn by sgs/whatsapp-cta: rule recognise | accept |
 | `skeleton:lens-configurator:Eye Care Birmingham/1429#0` | lens-configurator Eye Care Birmingham/1429#0 <a> | block:sgs/whatsapp-cta | 1: names and attributes: sgs/whatsapp-cta holds whatsapp (score 1.00, features: flow, link kind whatsapp); in flow: variant = inline | remove |
-| `skeleton:lens-configurator:Eye Care Birmingham/1430#0` | lens-configurator Eye Care Birmingham/1430#0 <span> | absorbed | 1: drawn by sgs/whatsapp-cta: rule recognise | remove |
-| `skeleton:lens-configurator:Eye Care Birmingham/1431#0` | lens-configurator Eye Care Birmingham/1431#0 <img> | absorbed | 1: drawn by sgs/whatsapp-cta: rule recognise | remove |
-| `skeleton:lens-configurator:Eye Care Birmingham/1432#0` | lens-configurator Eye Care Birmingham/1432#0 <span> "Not sure which to pick?" | absorbed | 1: drawn by sgs/whatsapp-cta: rule recognise | remove |
-| `skeleton:lens-configurator:Eye Care Birmingham/1433#0` | lens-configurator Eye Care Birmingham/1433#0 <span> "Happy to talk it through — message me and we'll choose together." | absorbed | 1: drawn by sgs/whatsapp-cta: rule recognise | remove |
+| `skeleton:lens-configurator:Eye Care Birmingham/1430#0` | lens-configurator Eye Care Birmingham/1430#0 <span> | absorbed | 1: drawn by sgs/whatsapp-cta: rule recognise | accept |
+| `skeleton:lens-configurator:Eye Care Birmingham/1431#0` | lens-configurator Eye Care Birmingham/1431#0 <img> | absorbed | 1: drawn by sgs/whatsapp-cta: rule recognise | accept |
+| `skeleton:lens-configurator:Eye Care Birmingham/1432#0` | lens-configurator Eye Care Birmingham/1432#0 <span> "Not sure which to pick?" | absorbed | 1: drawn by sgs/whatsapp-cta: rule recognise | accept |
+| `skeleton:lens-configurator:Eye Care Birmingham/1433#0` | lens-configurator Eye Care Birmingham/1433#0 <span> "Happy to talk it through — message me and we'll choose together." | absorbed | 1: drawn by sgs/whatsapp-cta: rule recognise | accept |
+
+### Settled by rule shopToolbar: the draft's sort control and result count are WooCommerce's catalog-sorting and product-results-count in a toolbar row at the top of the product collection, as the theme's archive-product copy composes them (the count reads its query from the collection around it); found by the shop parts record's stamps, never by words (FR-48-61, FR-48-87) (2)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-shop:Eye Care Birmingham/252#0` | page-shop Eye Care Birmingham/252#0 <span> "16 frames" | absorbed | 1: the draft's sort control and result count are WooCommerce's catalog-sorting and product-results-count in a toolbar row at the top of the product collection, as the theme's archive-product copy composes them (the count reads its query from the collection around it); found by the shop parts record's stamps, never by words (FR-48-61, FR-48-87) | accept |
+| `skeleton:page-shop:Eye Care Birmingham/255#0` | page-shop Eye Care Birmingham/255#0 <select> | absorbed | 1: the draft's sort control and result count are WooCommerce's catalog-sorting and product-results-count in a toolbar row at the top of the product collection, as the theme's archive-product copy composes them (the count reads its query from the collection around it); found by the shop parts record's stamps, never by words (FR-48-61, FR-48-87) | accept |
 
 ### Settled by rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text (2)
 
@@ -873,10 +888,6 @@ Accept all: [ ]
 | `skeleton:header:Eye Care Birmingham/13#0` | header Eye Care Birmingham/13#0 <header> | block:sgs/site-header | 1 | accept |
 | `skeleton:header:Eye Care Birmingham/14#0` | header Eye Care Birmingham/14#0 <div> | block:sgs/site-header-row | 1 | accept |
 | `skeleton:header:Eye Care Birmingham/15#0` | header Eye Care Birmingham/15#0 <nav> | block:sgs/nav-bar-menu | 1 | accept |
-| `skeleton:header:Eye Care Birmingham/18#0` | header Eye Care Birmingham/18#0 <span> | block:sgs/container | 1 | accept |
-| `skeleton:header:Eye Care Birmingham/19#0` | header Eye Care Birmingham/19#0 <span> | remove | 1: Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block | accept |
-| `skeleton:header:Eye Care Birmingham/20#0` | header Eye Care Birmingham/20#0 <span> | remove | 1: Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block | accept |
-| `skeleton:header:Eye Care Birmingham/21#0` | header Eye Care Birmingham/21#0 <span> "Menu" | block:sgs/label | 1 | accept |
 | `skeleton:header:Eye Care Birmingham/29#0` | header Eye Care Birmingham/29#0 <img> | block:sgs/responsive-logo | 1 | accept |
 | `skeleton:header:Eye Care Birmingham/31#0` | header Eye Care Birmingham/31#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:header:Eye Care Birmingham/33#0` | header Eye Care Birmingham/33#0 <a> "0121 729 8233" | block:sgs/button | 1 | accept |
@@ -918,6 +929,9 @@ Accept all: [ ]
 | `skeleton:mega-menu-help:Eye Care Birmingham/96#0` | mega-menu-help Eye Care Birmingham/96#0 <a> "Size guide" | block:sgs/icon-list | 0.7 | accept |
 | `skeleton:mega-menu-help:Eye Care Birmingham/97#0` | mega-menu-help Eye Care Birmingham/97#0 <a> "Frequently asked questions" | block:sgs/icon-list | 0.7 | accept |
 | `skeleton:mega-menu-sunglasses:Eye Care Birmingham/51#0` | mega-menu-sunglasses Eye Care Birmingham/51#0 <div> | block:sgs/mega-panel | 1: 4 copies of one template element on 4 surfaces | accept |
+| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/59` | mega-menu-sunglasses Eye Care Birmingham/59 <a> "Pilot" | block:sgs/icon-list | 0.7: 12 copies of one template element | accept |
+| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/64` | mega-menu-sunglasses Eye Care Birmingham/64 <a> "Best sellers" | block:sgs/icon-list | 0.7: 6 copies of one template element | accept |
+| `skeleton:mega-menu-sunglasses:Eye Care Birmingham/68#0` | mega-menu-sunglasses Eye Care Birmingham/68#0 <span> | block:sgs/container | 0.75 | accept |
 | `skeleton:mobile-menu:Eye Care Birmingham/1162#0` | mobile-menu Eye Care Birmingham/1162#0 <div> | block:sgs/nav-drawer | 1 | accept |
 | `skeleton:mobile-menu:Eye Care Birmingham/1163#0` | mobile-menu Eye Care Birmingham/1163#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:mobile-menu:Eye Care Birmingham/1164#0` | mobile-menu Eye Care Birmingham/1164#0 <img> | block:sgs/responsive-logo | 0.82 | accept |
@@ -1105,12 +1119,12 @@ Accept all: [ ]
 | `skeleton:page-home:Eye Care Birmingham/112#0` | page-home Eye Care Birmingham/112#0 <section> | block:sgs/hero | 1 | accept |
 | `skeleton:page-home:Eye Care Birmingham/115#0` | page-home Eye Care Birmingham/115#0 <div> | remove | 1: Bean accepted remove in the intake review on 2026-11-01 (recovered from the review history, 2026-11-01) | accept |
 | `skeleton:page-home:Eye Care Birmingham/116#0` | page-home Eye Care Birmingham/116#0 <div> | remove | 1: Bean accepted remove in the intake review on 2026-11-01 (recovered from the review history, 2026-11-01) | accept |
-| `skeleton:page-home:Eye Care Birmingham/118#0` | page-home Eye Care Birmingham/118#0 <p> "40 designer brands · Birmingham" | remove | 1: inside a removed element (Eye Care Birmingham/117#0) | accept |
-| `skeleton:page-home:Eye Care Birmingham/119#0` | page-home Eye Care Birmingham/119#0 <h1> "The same designer shades. A good deal less." | remove | 1: inside a removed element (Eye Care Birmingham/117#0) | accept |
-| `skeleton:page-home:Eye Care Birmingham/120#0` | page-home Eye Care Birmingham/120#0 <p> "I'm an optician in Birmingham, buying from the same suppliers as the high street and pricing it more sensibly. If you need your prescription in them, I glaze and fit the lenses myself." | remove | 1: inside a removed element (Eye Care Birmingham/117#0) | accept |
-| `skeleton:page-home:Eye Care Birmingham/121#0` | page-home Eye Care Birmingham/121#0 <div> | remove | 1: inside a removed element (Eye Care Birmingham/117#0) | accept |
-| `skeleton:page-home:Eye Care Birmingham/122#0` | page-home Eye Care Birmingham/122#0 <button> "Shop sunglasses" | remove | 1: inside a removed element (Eye Care Birmingham/117#0) | accept |
-| `skeleton:page-home:Eye Care Birmingham/123#0` | page-home Eye Care Birmingham/123#0 <button> "Add your prescription" | remove | 1: inside a removed element (Eye Care Birmingham/117#0) | accept |
+| `skeleton:page-home:Eye Care Birmingham/118#0` | page-home Eye Care Birmingham/118#0 <p> "40 designer brands · Birmingham" | block:sgs/text | 1 | accept |
+| `skeleton:page-home:Eye Care Birmingham/119#0` | page-home Eye Care Birmingham/119#0 <h1> "The same designer shades. A good deal less." | block:sgs/heading | 1 | accept |
+| `skeleton:page-home:Eye Care Birmingham/120#0` | page-home Eye Care Birmingham/120#0 <p> "I'm an optician in Birmingham, buying from the same suppliers as the high street and pricing it more sensibly. If you need your prescription in them, I glaze and fit the lenses myself." | block:sgs/text | 1 | accept |
+| `skeleton:page-home:Eye Care Birmingham/121#0` | page-home Eye Care Birmingham/121#0 <div> | block:sgs/multi-button | 1 | accept |
+| `skeleton:page-home:Eye Care Birmingham/122#0` | page-home Eye Care Birmingham/122#0 <button> "Shop sunglasses" | block:sgs/button | 1 | accept |
+| `skeleton:page-home:Eye Care Birmingham/123#0` | page-home Eye Care Birmingham/123#0 <button> "Add your prescription" | block:sgs/button | 1 | accept |
 | `skeleton:page-home:Eye Care Birmingham/124#0` | page-home Eye Care Birmingham/124#0 <section> | block:sgs/container | 1 | accept |
 | `skeleton:page-home:Eye Care Birmingham/128#0` | page-home Eye Care Birmingham/128#0 <section> | block:sgs/container | 1 | accept |
 | `skeleton:page-home:Eye Care Birmingham/129#0` | page-home Eye Care Birmingham/129#0 <div> | block:sgs/container | 1 | accept |
@@ -1320,6 +1334,7 @@ Accept all: [ ]
 | `skeleton:page-signin:Eye Care Birmingham/859#0` | page-signin Eye Care Birmingham/859#0 <p> "You don't need an account to order; checkout works as a guest. An account keeps your orders, subscriptions, addresses and saved frames in one place." | block:sgs/text | 1 | accept |
 | `skeleton:size-guide:Eye Care Birmingham/1235#0` | size-guide Eye Care Birmingham/1235#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:size-guide:Eye Care Birmingham/1236#0` | size-guide Eye Care Birmingham/1236#0 <span> "Which size am I?" | block:sgs/text | 1 | accept |
+| `skeleton:size-guide:Eye Care Birmingham/1238#0` | size-guide Eye Care Birmingham/1238#0 <div> | block:sgs/container | 0.75 | accept |
 | `skeleton:size-guide:Eye Care Birmingham/1239#0` | size-guide Eye Care Birmingham/1239#0 <p> "The quickest way: pick up a pair of glasses you already like the fit of and look at the inside of the left arm. You'll find three numbers printed there." | block:sgs/text | 1 | accept |
 | `skeleton:size-guide:Eye Care Birmingham/1240#0` | size-guide Eye Care Birmingham/1240#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:size-guide:Eye Care Birmingham/1241#0` | size-guide Eye Care Birmingham/1241#0 <div> | block:sgs/container | 1 | accept |
