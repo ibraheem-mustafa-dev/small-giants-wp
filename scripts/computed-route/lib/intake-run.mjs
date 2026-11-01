@@ -20,7 +20,7 @@ import { withUnappliedMarks, writeProposedPageMap, writeConfirmedPageMap } from 
 import { carryIds, lostIds, leavingRows } from './intake-pagemap-regen.mjs';
 import { mergeBlocked } from './intake-run-collapse.mjs';
 import { reviewDecisions, recordReviewDecisions, decisionsFile, dbKnownBlock } from './intake-run-finalise.mjs';
-import { sourcesOf } from './freshness.mjs';
+import { sourcesOf, assertCurrent } from './freshness.mjs';
 import { writeCatalogue } from './intake-catalogue-run.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -175,6 +175,31 @@ export function recordProblems( record, ajv = loadAjv() ) {
 	return [ ...schemaProblems( ajv, INTAKE_SCHEMA, record ).map( ( p ) => `intake.json ${ p }` ), ...pageMapProblems( record.pageMap, ajv ).map( ( p ) => `page map ${ p }` ) ];
 }
 
+// The surfaces a `--surfaces` run does not read again: the saved intake.json's skeleton entries (and render parts) other than
+// the named ones, so the run's record still holds every surface. With no saved intake.json (a first run) there is nothing to keep. Throws, naming the cause, when a kept surface's saved inventory is missing or no longer describes the export (a full run is
+// needed then: a run that dropped those surfaces would lose their rows and marks). `hashed` is sourcesOf( the export ).
+export function keptSurfaces( at, want, hashed ) {
+	if ( ! fs.existsSync( at.intake ) ) {
+		return { skeletons: {}, renderParts: {} };
+	}
+	const saved = readJson( at.intake );
+	const named = ( slug, x ) => want.includes( slug ) || want.includes( x?.id );
+	const skeletons = Object.fromEntries( Object.entries( saved.skeletons || {} ).filter( ( [ slug, x ] ) => ! named( slug, x ) ) );
+	const stale = [];
+	for ( const slug of Object.keys( skeletons ).filter( ( k ) => ! skeletons[ k ].gap && null != skeletons[ k ].inventory ) ) {
+		const file = path.join( at.inventories, `${ slug }.json` );
+		try {
+			assertCurrent( JSON.parse( fs.readFileSync( file, 'utf8' ) ), at.folder, { label: `inventory ${ slug }`, requireSources: true, current: hashed } );
+		} catch ( e ) {
+			stale.push( `${ slug } (${ e.code === 'ENOENT' ? 'no saved inventory' : e.message })` );
+		}
+	}
+	if ( stale.length ) {
+		throw new Error( `the saved skeletons of ${ stale.length } other surface(s) are missing or stale, so only a full run (without --surfaces) keeps them: ${ stale.slice( 0, 5 ).join( '; ' ) }${ stale.length > 5 ? '; …' : '' }` );
+	}
+	return { skeletons, renderParts: saved.renderParts || {} };
+}
+
 // Stage 1. Returns the exit code; every line goes to `log`.
 export async function runIntake( o, { log = ( l ) => process.stderr.write( `${ l }\n` ) } = {} ) {
 	const t0 = Date.now();
@@ -197,7 +222,18 @@ export async function runIntake( o, { log = ( l ) => process.stderr.write( `${ l
 	// The inputs are hashed before the worker reads any of them, so a draft edited during the run leaves a stale record.
 	const hashed = sourcesOf( at.folder );
 	const work = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-intake-' ) );
-	const job = { repo: o.repo, client: o.client, folder: at.folder, sources: hashed, entry: m.entry_drafts?.[ 0 ], harPath, record: o.record, widths: o.widths, surfaces: o.surfaces, inventoriesDir: at.inventories, factsFile: at.facts, runtimeSha: m.runtime_sha256 ?? 'none', progressFile: path.join( work, 'progress.log' ), outFile: path.join( work, 'result.json' ) };
+	let kept = { skeletons: {}, renderParts: {} };
+	if ( o.surfaces ) {
+		try {
+			kept = keptSurfaces( at, o.surfaces, hashed );
+		} catch ( e ) {
+			say( `--surfaces refused: ${ e.message }` );
+			fs.rmSync( work, { recursive: true, force: true } );
+			return 1;
+		}
+		say( `--surfaces ${ o.surfaces.join( ',' ) }: those surfaces are read again; the other ${ Object.keys( kept.skeletons ).length } keep their saved skeletons` );
+	}
+	const job = { repo: o.repo, client: o.client, folder: at.folder, sources: hashed, entry: m.entry_drafts?.[ 0 ], harPath, record: o.record, widths: o.widths, surfaces: o.surfaces, keptSkeletons: kept.skeletons, keptRenderParts: kept.renderParts, inventoriesDir: at.inventories, factsFile: at.facts, runtimeSha: m.runtime_sha256 ?? 'none', progressFile: path.join( work, 'progress.log' ), outFile: path.join( work, 'result.json' ) };
 	fs.mkdirSync( at.inventories, { recursive: true } );
 	fs.writeFileSync( path.join( work, 'job.json' ), JSON.stringify( job ) );
 	fs.writeFileSync( job.progressFile, '' );

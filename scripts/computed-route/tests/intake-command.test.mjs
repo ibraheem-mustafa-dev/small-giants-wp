@@ -14,7 +14,7 @@ import { fileURLToPath } from 'url';
 import { recheckManifest } from '../lib/intake-sandbox.mjs';
 import { staticCensus } from '../lib/intake-census.mjs';
 import { surfaceRoots, proposeSkeletons } from '../lib/intake-skeletons.mjs';
-import { parseReview, isoDay, reviewRows, renderReview } from '../lib/intake-review.mjs';
+import { parseReview, isoDay, reviewRows, renderReview, ROW_TYPES } from '../lib/intake-review.mjs';
 import { recordProblems, parseArgs } from '../lib/intake-run.mjs';
 import { collapseSkeletonRows, collapseSkeletons, collapseFlags, collapseMissing, paletteUsage, templateOf } from '../lib/intake-run-collapse.mjs';
 import { pageMapProblems } from '../lib/intake-pagemap.mjs';
@@ -311,4 +311,68 @@ test( 'usage errors exit 2', () => {
 	assert.equal( spawnSync( process.execPath, [ INTAKE, 'fx', '--widths', 'wide' ], { encoding: 'utf8' } ).status, 2 );
 	assert.match( parseArgs( [ '--apply-review', 'fx', '--record' ] ).error, /takes only the client/ );
 	assert.deepEqual( parseArgs( [ 'fx', '--surfaces', 'a,b', '--widths', '375,1440' ] ).surfaces, [ 'a', 'b' ] );
+} );
+
+// A client of its own: a full run, then the two commands that used to lose work (Spec 48 FR-48-17).
+const KEEP = 'fx-keep';
+let keep;
+const keepFull = () => {
+	if ( keep ) {
+		return keep;
+	}
+	const hash = makeClient( KEEP );
+	placeHar( KEEP, hash );
+	keep = run( KEEP );
+	return keep;
+};
+
+test( 'MUST FAIL: --surfaces re-reads the named surfaces only and every other surface keeps its skeleton and its review.md rows', () => {
+	assert.equal( keepFull().code, 0, keep.out );
+	const before = read( KEEP, 'intake', 'intake.json' );
+	const slugs = Object.keys( before.skeletons );
+	assert.ok( slugs.length > 1, `the fixture needs more than one surface: ${ slugs }` );
+	const rowIdsBefore = reviewRows( before ).filter( ( r ) => 'skeleton-block' === r.rowType ).map( ( r ) => r.rowId );
+	const r = run( KEEP, '--surfaces', 'footer' );
+	assert.equal( r.code, 0, r.out );
+	assert.match( r.out, /--surfaces footer: those surfaces are read again; the other \d+ keep their saved skeletons/ );
+	const after = read( KEEP, 'intake', 'intake.json' );
+	assert.deepEqual( Object.keys( after.skeletons ), slugs, 'no surface is dropped, and the order holds' );
+	assert.deepEqual( reviewRows( after ).filter( ( x ) => 'skeleton-block' === x.rowType ).map( ( x ) => x.rowId ), rowIdsBefore );
+	const md = parseReview( bytes( KEEP, 'intake', 'review.md' ) );
+	rowIdsBefore.forEach( ( id ) => assert.ok( id in md.rowSection, `review.md lost ${ id }` ) );
+} );
+
+test( 'negative control: --surfaces refuses up front, naming a full run, when the export changed since the other surfaces were saved', () => {
+	assert.equal( keepFull().code, 0, keep.out );
+	const folder = handoff( KEEP );
+	const file = path.join( folder, 'Home.dc.html' );
+	const was = fs.readFileSync( file, 'utf8' );
+	const before = bytes( KEEP, 'intake', 'intake.json' );
+	try {
+		fs.writeFileSync( file, `${ was }\n<!-- edited -->\n` );
+		placeHar( KEEP, writeManifest( folder ) );
+		const r = run( KEEP, '--surfaces', 'footer' );
+		assert.equal( r.code, 1, r.out );
+		assert.match( r.out, /--surfaces refused: .*missing or stale, so only a full run \(without --surfaces\) keeps them/ );
+		assert.equal( bytes( KEEP, 'intake', 'intake.json' ), before, 'nothing is rewritten' );
+	} finally {
+		fs.writeFileSync( file, was );
+		placeHar( KEEP, writeManifest( folder ) );
+	}
+} );
+
+test( 'MUST FAIL: --rerun-skeletons carries a mark written into review.md and not yet applied', () => {
+	assert.equal( keepFull().code, 0, keep.out );
+	const intake = read( KEEP, 'intake', 'intake.json' );
+	const row = reviewRows( intake ).find( ( r ) => 'skeleton-block' === r.rowType );
+	assert.ok( row, 'the fixture has a skeleton row' );
+	const md = bytes( KEEP, 'intake', 'review.md' );
+	const mark = 'accept';
+	const edited = marked( md, { except: ROW_TYPES, marks: { [ row.rowId ]: mark } } );
+	assert.notEqual( edited, md );
+	fs.writeFileSync( at( KEEP, 'intake', 'review.md' ), edited );
+	const r = run( '--rerun-skeletons', KEEP );
+	assert.equal( r.code, 0, r.out );
+	assert.match( r.out, /review\.md: \d+ mark\(s\) not yet applied are carried/ );
+	assert.equal( parseReview( bytes( KEEP, 'intake', 'review.md' ) ).rowMarks[ row.rowId ], mark, 'the mark is still in the rewritten review.md' );
 } );

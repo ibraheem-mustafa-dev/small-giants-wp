@@ -9,7 +9,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { loadAjv, schemaProblems } from '../lib/handoff.mjs';
 import { reviewRows, renderReview, parseReview, applyReview, carryOver, markProblem, notDefectLine, MARKS, ROW_TYPES, byCause, CONFIDENT_HEADING } from '../lib/intake-review.mjs';
-import { withUnappliedMarks, writeProposedPageMap, writeConfirmedPageMap } from '../lib/intake-review-carry.mjs';
+import { withUnappliedMarks, carryReviewMdMarks, writeProposedPageMap, writeConfirmedPageMap } from '../lib/intake-review-carry.mjs';
 import { deadCodeWhy } from '../lib/intake-defects-static.mjs';
 import { deadFieldVerdict } from '../lib/intake-defects-deadfield.mjs';
 import { diffAnimations } from '../lib/intake-inventory-diff.mjs';
@@ -378,7 +378,7 @@ test( 'MUST FAIL: a mark written in review.md but never applied survives a re-ru
 	assert.equal( review.find( ( r ) => r.rowId === b.rowId ).mark, null, 'a row whose content changed is unmarked, as for an applied mark' );
 	assert.equal( carryOver( prev, next ).review.find( ( r ) => r.rowId === a.rowId ).mark, null, 'control: without the review.md step the mark is lost' );
 	const applied = { ...prev, review: prev.review.map( ( r ) => ( r.rowId === a.rowId ? { ...r, mark: 'drop', markedOn: '2026-10-10' } : r ) ) };
-	assert.equal( withUnappliedMarks( applied, md ).intake.review.find( ( r ) => r.rowId === a.rowId ).mark, 'drop', 'an applied mark is never overwritten by review.md' );
+	assert.equal( withUnappliedMarks( applied, md ).intake.review.find( ( r ) => r.rowId === a.rowId ).mark, 'accept', 'a review.md mark wins over an older intake.json mark for the same row' );
 } );
 
 test( 'MUST FAIL: a review.md mark --apply-review would refuse, or one on a row listed in another section, is not carried and is named', () => {
@@ -474,4 +474,30 @@ test( 'MUST FAIL: a row whose saved decision the rules now disagree with needs B
 	assert.match( changed.note, /you chose sgs\/text on 2026-10-20; the rules now propose sgs\/button because rule links: a link run is a button/ );
 	assert.notEqual( changed.contentHash, plain.contentHash, 'the mark Bean gave the row before the rules changed does not carry' );
 	assert.match( renderReview( fixture( { skeletons: { header: { rows: [ { ...row, ruleWould } ] } } } ) ), /Needs a decision \(rule-changed\)/ );
+} );
+
+test( 'MUST FAIL: carryReviewMdMarks carries an unapplied review.md mark onto an unchanged row after an offline re-proposal, and wins over an older mark', () => {
+	const prev = { ...fixture(), review: carryOver( null, fixture() ).review };
+	const [ a, b ] = prev.review;
+	const md = mark( renderReview( prev ), { rows: { [ a.rowId ]: 'accept', [ b.rowId ]: 'accept' } } );
+	const older = { ...prev, review: prev.review.map( ( r ) => ( r.rowId === b.rowId ? { ...r, mark: 'drop', markedOn: '2026-10-10' } : r ) ) };
+	const kept = carryReviewMdMarks( prev, older, md, { day: '2026-11-01' } );
+	assert.deepEqual( kept.carried.sort(), [ a.rowId, b.rowId ].sort() );
+	const get = ( id ) => kept.intake.review.find( ( r ) => r.rowId === id );
+	assert.deepEqual( [ get( a.rowId ).mark, get( a.rowId ).markedOn, get( b.rowId ).mark ], [ 'accept', '2026-11-01', 'accept' ] );
+	assert.equal( parseReview( renderReview( kept.intake ) ).rowMarks[ a.rowId ], 'accept', 'the rewritten review.md still shows the mark' );
+} );
+
+test( 'negative control: a review.md mark on a row whose content changed is not carried and the row is listed as changed', () => {
+	const prev = { ...fixture(), review: carryOver( null, fixture() ).review };
+	const [ a ] = prev.review;
+	const md = mark( renderReview( prev ), { rows: { [ a.rowId ]: 'accept' } } );
+	// review.md was drawn from `before`; the new proposal's row differs from it, so the mark was made on other content.
+	const before = fixture( { pageMap: fixture().pageMap.map( ( r ) => ( { ...r, title: `${ r.title } (old)` } ) ) } );
+	const next = { ...fixture(), review: prev.review };
+	const kept = carryReviewMdMarks( { ...before, review: prev.review }, next, md, { day: '2026-11-01' } );
+	assert.ok( kept.changed.includes( a.rowId ) && ! kept.carried.includes( a.rowId ) );
+	assert.equal( kept.intake.review.find( ( r ) => r.rowId === a.rowId ).mark, null );
+	assert.equal( kept.intake.review.find( ( r ) => r.rowId === a.rowId ).changed, true );
+	assert.match( kept.refused[ 0 ], /changed since review\.md was written/ );
 } );

@@ -4,7 +4,7 @@
 //     reads sites/<client>/handoff/ and writes sites/<client>/build/intake/{intake.json,review.md} and
 //     sites/<client>/build/page-map.json. --record (re)records the replay file; without it a missing one is an error.
 //     --widths sets the replay check, runtime census, recording and draft-defect widths (the skeleton inventory always
-//     reads 375, 768 and 1440); --surfaces limits the skeleton step to those surface slugs or surfaces.json ids.
+//     reads 375, 768 and 1440); --surfaces reads only those surface slugs or surfaces.json ids again and keeps every other surface's saved skeleton (a full run is needed when the export changed).
 //   node scripts/computed-route/intake.mjs --apply-review <client> [--section <row type>[,...]] [--repo <path>]
 //     reads review.md back, writes the dated marks into intake.json and the confirmed page-map.json, and saves Bean's
 //     block:<slug> marks, removals and accepted proposals to sites/<client>/build/skeleton/decisions.json. --section

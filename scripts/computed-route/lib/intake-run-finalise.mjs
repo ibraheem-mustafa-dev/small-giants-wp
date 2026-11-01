@@ -17,6 +17,8 @@ import { openDb } from './db.mjs';
 import { finaliseRequest, readDecisions, readPicks, recordDecision, signatureOf, skeletonDir } from './skeleton-finalise.mjs';
 import { reviewRows, renderReview, readingCounts } from './intake-review.mjs';
 import { refreshIntakeSkeletons } from './skeleton-rerun.mjs';
+import { carryReviewMdMarks } from './intake-review-carry.mjs';
+import { REPO as CODE_REPO } from './skeleton-facts.mjs';
 import { proposalLabel } from './skeleton-classify.mjs';
 
 export const FINALISER_PROMPT = 'scripts/computed-route/prompts/skeleton-finaliser.md';
@@ -305,7 +307,7 @@ export function runRerunSkeletons( at, o, { log, recordProblems } ) {
 	const db = openDb();
 	let res;
 	try {
-		res = refreshIntakeSkeletons( { intake, client: o.client, db, repo: o.repo } );
+		res = refreshIntakeSkeletons( { intake, client: o.client, db, repo: o.repo, codeRepo: CODE_REPO } );
 	} catch ( e ) {
 		say( `the skeletons could not be proposed again: ${ e.message }` );
 		return 1;
@@ -314,6 +316,14 @@ export function runRerunSkeletons( at, o, { log, recordProblems } ) {
 	}
 	res.missing.length && say( `no saved inventory for ${ res.missing.join( ', ' ) }: those surfaces keep their rows (run the intake to save them)` );
 	let next = res.intake;
+	// Marks written into review.md and not yet applied are carried onto the rows that are unchanged; a mark on a changed row is dropped.
+	if ( fs.existsSync( at.review ) ) {
+		const kept = carryReviewMdMarks( intake, next, fs.readFileSync( at.review, 'utf8' ), { day: fs.statSync( at.review ).mtime.toISOString().slice( 0, 10 ) } );
+		next = kept.intake;
+		kept.carried.length && say( `review.md: ${ kept.carried.length } mark(s) not yet applied are carried (${ kept.carried.slice( 0, 5 ).join( ', ' ) }${ kept.carried.length > 5 ? ', …' : '' })` );
+		kept.refused.length && say( `review.md: ${ kept.refused.length } mark(s) not carried: ${ kept.refused.slice( 0, 8 ).join( '; ' ) }${ kept.refused.length > 8 ? '; …' : '' }` );
+		kept.acceptAll.length && say( `review.md: Accept all was ticked in ${ kept.acceptAll.join( ', ' ) }; a tick is not carried, so tick it again in the new review.md` );
+	}
 	const request = intakeFinaliseRequest( next );
 	const files = { request: path.join( at.dir, 'finalise-request.json' ), picks: path.join( at.dir, 'finalise-picks.json' ) };
 	let carried = 0;

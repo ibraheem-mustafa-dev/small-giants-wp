@@ -5,8 +5,8 @@ import fs from 'fs';
 import { parseReview, markProblem, isoDay, reviewRows, safeRowId } from './intake-review.mjs';
 import { realign, fingerprintDiff } from './identity.mjs';
 
-// The previous intake with each unmarked review row given the mark review.md holds for it (dated `markedOn`, the day
-// the file was last written), so carryOver keeps it while the row's content hash holds. Only a mark --apply-review
+// The previous intake with each review row given the mark review.md holds for it when that differs from the row's own (a
+// review.md mark wins over an older intake.json mark; dated `markedOn`, the day the file was last written), so carryOver keeps it while the row's content hash holds. Only a mark --apply-review
 // would accept is carried: one on a row listed in its own section, of a value its row type takes; a line review.md
 // cannot read carries nothing, and every other row's mark still carries. Returns { intake, carried: [rowIds],
 // refused: [ 'rowId: why' ], acceptAll: [section row types whose Accept all box is ticked] }; an Accept all tick is
@@ -20,7 +20,7 @@ export function withUnappliedMarks( previous, markdown, { day = isoDay() } = {} 
 	out.acceptAll = Object.entries( parsed.sections ).filter( ( [ , s ] ) => s.acceptAll ).map( ( [ t ] ) => t );
 	const review = ( previous.review || [] ).map( ( r ) => {
 		const mark = parsed.rowMarks[ r.rowId ];
-		if ( null !== r.mark || ! mark ) {
+		if ( ! mark || mark === r.mark ) {
 			return r;
 		}
 		const why = parsed.rowSection[ r.rowId ] !== r.rowType ? `listed in the ${ parsed.rowSection[ r.rowId ] } section, but it is a ${ r.rowType } row` : markProblem( r.rowType, mark );
@@ -32,6 +32,53 @@ export function withUnappliedMarks( previous, markdown, { day = isoDay() } = {} 
 		return { ...r, mark, markedOn: day };
 	} );
 	out.intake = { ...previous, review };
+	return out;
+}
+
+// The marks review.md holds that --apply-review has not yet written, for the offline proposal step (`--rerun-skeletons`),
+// which re-proposes the rows and keeps intake.json's other parts. `previous` is intake.json as the last run or rerun
+// wrote it (the rows review.md was drawn from, so reviewRows(previous) holds the hashes Bean's marks were made on), `next`
+// the same record with its skeletons proposed again. A review.md mark (one --apply-review would accept) on a row whose
+// rowId and contentHash are the same in both is written into next.review and wins over an older mark there; a mark on a
+// row whose hash changed is dropped and the row is flagged `changed`, and a row review.md lists that next no longer has
+// is refused. Returns { intake (next with `review` carrying the marks), carried: [rowIds], changed: [rowIds],
+// refused: [ 'rowId: why' ], acceptAll: [section row types] }.
+export function carryReviewMdMarks( previous, next, markdown, { day = isoDay() } = {} ) {
+	const out = { intake: next, carried: [], changed: [], refused: [], acceptAll: [] };
+	if ( ! previous || 'string' !== typeof markdown ) {
+		return out;
+	}
+	const parsed = parseReview( markdown );
+	out.acceptAll = Object.entries( parsed.sections ).filter( ( [ , s ] ) => s.acceptAll ).map( ( [ t ] ) => t );
+	const was = new Map( reviewRows( previous ).map( ( r ) => [ r.rowId, r ] ) );
+	const now = new Map( reviewRows( next ).map( ( r ) => [ r.rowId, r ] ) );
+	const review = new Map( ( next.review || [] ).map( ( r ) => [ r.rowId, r ] ) );
+	Object.entries( parsed.rowMarks ).filter( ( [ , mark ] ) => mark ).forEach( ( [ rowId, mark ] ) => {
+		const row = now.get( rowId );
+		if ( ! row ) {
+			out.refused.push( `${ rowId }: mark "${ mark }" not carried (the row is not in the new proposal)` );
+			return;
+		}
+		const old = review.get( rowId );
+		const before = was.get( rowId );
+		if ( ! before || before.contentHash !== row.contentHash ) {
+			out.changed.push( rowId );
+			out.refused.push( `${ rowId }: mark "${ mark }" not carried (the row changed since review.md was written)` );
+			review.set( rowId, { rowId, rowType: row.rowType, contentHash: row.contentHash, mark: null, markedOn: null, carriedFrom: null, changed: true } );
+			return;
+		}
+		const why = parsed.rowSection[ rowId ] !== row.rowType ? `listed in the ${ parsed.rowSection[ rowId ] } section, but it is a ${ row.rowType } row` : markProblem( row.rowType, mark );
+		if ( why ) {
+			out.refused.push( `${ rowId }: mark "${ mark }" not carried (${ why })` );
+			return;
+		}
+		if ( old && old.mark === mark && old.contentHash === row.contentHash ) {
+			return;
+		}
+		out.carried.push( rowId );
+		review.set( rowId, { rowId, rowType: row.rowType, contentHash: row.contentHash, mark, markedOn: day, carriedFrom: null } );
+	} );
+	out.intake = { ...next, review: [ ...review.values() ] };
 	return out;
 }
 
