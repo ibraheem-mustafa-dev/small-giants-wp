@@ -104,6 +104,19 @@ test( 'MUST FAIL: the first run uploads each image once, a second uploads nothin
 	assert.deepEqual( ( await run( third.map ) ).uploaded, [ 'sites/acme/assets/food/bread.jpg' ] );
 } );
 
+// MUST FAIL: an upload through a mirror read and wrote the record under the mirror's own name, found nothing there and
+// uploaded every file again, while every reader looks under the test site the mirror copies (Eye Care, 2026-11-01: 48
+// duplicates on local-eye-care, the wordmark never reached the record the logo check reads).
+test( 'MUST FAIL: an upload through a mirror checks and writes the test site\'s record, which both share', async () => {
+	const repo = fixtureRepo();
+	const wp = fakeWordPress();
+	const creds = siteCredentials( repo, 'acme-test' );
+	const first = await uploadMedia( { repo, client: 'acme', site: 'eye-care-clone-test', map: { sites: {} }, creds, fetchImpl: wp.fetchImpl, apply: true } );
+	const viaMirror = await uploadMedia( { repo, client: 'acme', site: 'local-eye-care', map: first.map, creds, fetchImpl: wp.fetchImpl, apply: true } );
+	assert.deepEqual( [ viaMirror.uploaded.length, wp.calls.uploads ], [ 0, 3 ], 'nothing is uploaded again through the mirror' );
+	assert.deepEqual( Object.keys( viaMirror.map.sites ), [ 'eye-care-clone-test' ] );
+} );
+
 test( 'MUST FAIL: two files with the same bytes share one attachment, on the first run and on a rerun', async () => {
 	const repo = fixtureRepo();
 	ship( repo, 'hero-copy.png', 'PNG-hero' );

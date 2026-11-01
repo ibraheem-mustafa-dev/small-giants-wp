@@ -23,105 +23,113 @@
 				{
 					"asset": "sites/eye-care-ward-end/assets/flow-mark.png",
 					"sha256": "e03046bfc9455ad61b91ce7003b030d1c7efebe17a68899c191c325cad6c364d",
-					"id": 42,
-					"url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/flow-mark.png",
-					"storedSha256": "0e543984d7fcad637f47141ceda9b45d431654e3acbe589127741670b541d904",
+					"id": 536,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/flow-mark-1.png",
+					"storedSha256": "e03046bfc9455ad61b91ce7003b030d1c7efebe17a68899c191c325cad6c364d",
 					"stock": false
 				},
 				{
 					"asset": "sites/eye-care-ward-end/assets/lens-options/finish-clear.png",
 					"sha256": "0b1fde1ed5c6ae65b27b7823dc167362753f333d5737940da9a278701eaefcfe",
-					"id": 43,
-					"url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/finish-clear.png",
-					"storedSha256": "db05cc99d9af61511d5f0c895393a903c02afdacbc63de0ef4b6711a8b3c4bbe",
+					"id": 537,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/finish-clear-1.png",
+					"storedSha256": "0b1fde1ed5c6ae65b27b7823dc167362753f333d5737940da9a278701eaefcfe",
 					"stock": false
 				},
 				{
 					"asset": "sites/eye-care-ward-end/assets/lens-options/finish-photo.png",
 					"sha256": "92f73fcfb32791370359cb27a94d615dd1cb2f37a55b7df1ae6d35e3c9f90c89",
-					"id": 44,
-					"url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/finish-photo.png",
-					"storedSha256": "6485a32401f7ff5b51746ce906ec52274a3c16991ae6b95abb9353a04a64480d",
+					"id": 538,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/finish-photo-1.png",
+					"storedSha256": "92f73fcfb32791370359cb27a94d615dd1cb2f37a55b7df1ae6d35e3c9f90c89",
 					"stock": false
 				},
 				{
 					"asset": "sites/eye-care-ward-end/assets/lens-options/finish-pol.png",
 					"sha256": "1a73a2b023fdf8822e45fc252954ea714ac6318b34dba01a703a2ac990830f70",
-					"id": 45,
-					"url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/finish-pol.png",
-					"storedSha256": "a382592a3bf83af612a710726d49f3217f5d712b278d83d898c6a735c9edc6dc",
+					"id": 539,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/finish-pol-1.png",
+					"storedSha256": "1a73a2b023fdf8822e45fc252954ea714ac6318b34dba01a703a2ac990830f70",
 					"stock": false
 				},
 				{
 					"asset": "sites/eye-care-ward-end/assets/lens-options/finish-tint.png",
 					"sha256": "b9e3bded3bd0835dea63d5bd2a6292c6a5fcc9b6ae251134279e6e078bd6d6ee",
-					"id": 46,
-					"url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/finish-tint.png",
-					"storedSha256": "e0d684d13c7773efb05e0448f00b8f880375ca81f343ac6beb54722e66057e0f",
+					"id": 540,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/finish-tint-1.png",
+					"storedSha256": "b9e3bded3bd0835dea63d5bd2a6292c6a5fcc9b6ae251134279e6e078bd6d6ee",
 					"stock": false
 				},
 				{
 					"asset": "sites/eye-care-ward-end/assets/lens-options/thickness-std.png",
 					"sha256": "81b67dafc9114d272c6553cb759a7eecd542424d23cb98ba66c12db3c438205b",
-					"id": 47,
-					"url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/thickness-std.png",
-					"storedSha256": "8398cec66ceb2478fb446493e877af9b0830e382e83a5e78e65be70d2eac7544",
+					"id": 541,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/thickness-std-1.png",
+					"storedSha256": "81b67dafc9114d272c6553cb759a7eecd542424d23cb98ba66c12db3c438205b",
 					"stock": false
 				},
 				{
 					"asset": "sites/eye-care-ward-end/assets/lens-options/thickness-thin.png",
 					"sha256": "c0b9282bea39d75f57c809eabae64f6f715e1549ee5390980e9b88c452603fa4",
-					"id": 48,
-					"url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/thickness-thin.png",
-					"storedSha256": "b8081cf34744ff027671dcbc8ebcb903de32323882c28c04dfdd03e0a844fb3f",
+					"id": 542,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/thickness-thin-1.png",
+					"storedSha256": "c0b9282bea39d75f57c809eabae64f6f715e1549ee5390980e9b88c452603fa4",
 					"stock": false
 				},
 				{
 					"asset": "sites/eye-care-ward-end/assets/lens-options/thickness-ultra.png",
 					"sha256": "40b39d640c41358eb074d8fc085f3c1c124e173f221a823f647f0280677d2e6f",
-					"id": 49,
-					"url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/thickness-ultra.png",
-					"storedSha256": "84985ef1a43905cb5cb9de6147a56169818eb4296e3066bd5b0eed482710e32b",
+					"id": 543,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/thickness-ultra-1.png",
+					"storedSha256": "40b39d640c41358eb074d8fc085f3c1c124e173f221a823f647f0280677d2e6f",
 					"stock": false
 				},
 				{
 					"asset": "sites/eye-care-ward-end/assets/lens-options/thickness-xthin.png",
 					"sha256": "529876369f5170f023a9eb497414e61f0d281a866d156946f33c7c16bed4f46a",
-					"id": 50,
-					"url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/thickness-xthin.png",
-					"storedSha256": "fd6f08ec210fa650d1cdb6026c5e167d72d3580022f2772018ebadc26b396d77",
+					"id": 544,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/thickness-xthin-1.png",
+					"storedSha256": "529876369f5170f023a9eb497414e61f0d281a866d156946f33c7c16bed4f46a",
 					"stock": false
 				},
 				{
 					"asset": "sites/eye-care-ward-end/assets/lens-options/use-distance.png",
 					"sha256": "9d3fc02424dff887aeab231e4efd0079c08e1eb0df903e2e29d15ff5abb7aad4",
-					"id": 51,
-					"url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/use-distance.png",
-					"storedSha256": "01c0554612ee1e16589cc46e37fe30fcde053a7e8d0d89515a20fc40696e267e",
+					"id": 545,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/use-distance-1.png",
+					"storedSha256": "9d3fc02424dff887aeab231e4efd0079c08e1eb0df903e2e29d15ff5abb7aad4",
 					"stock": false
 				},
 				{
 					"asset": "sites/eye-care-ward-end/assets/lens-options/use-none.png",
 					"sha256": "ffb426ac4965a13bed860f69d8f69013520d1a45c65fb2b7abf98cc597566f45",
-					"id": 52,
-					"url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/use-none.png",
-					"storedSha256": "7b8af6f2696455054b57b5eb6c7e08159a6ff65b52a0dfae473b736cda5eaa3f",
+					"id": 546,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/use-none-1.png",
+					"storedSha256": "ffb426ac4965a13bed860f69d8f69013520d1a45c65fb2b7abf98cc597566f45",
 					"stock": false
 				},
 				{
 					"asset": "sites/eye-care-ward-end/assets/lens-options/use-reading.png",
 					"sha256": "b35cd89cc80172f5207c405e8a9c0ae53b4d8497d3bbdd3af19a4e0d7198ef53",
-					"id": 53,
-					"url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/use-reading.png",
-					"storedSha256": "18bb44bbe429ae339fd2b108b4b66881f8c90433e3d00040b3baaa7717b5f3f4",
+					"id": 547,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/use-reading-1.png",
+					"storedSha256": "b35cd89cc80172f5207c405e8a9c0ae53b4d8497d3bbdd3af19a4e0d7198ef53",
 					"stock": false
 				},
 				{
 					"asset": "sites/eye-care-ward-end/assets/lens-options/use-varifocal.png",
 					"sha256": "ebd6426d39578dc610f11e3cb5cbaa8a6ea285d1b2c60ebb7045efae135d7c48",
-					"id": 54,
-					"url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/use-varifocal-1.png",
-					"storedSha256": "4ad3ccced77ba940afc1283f22e8a223a2dddb439c63373b2700e4f97ceafc31",
+					"id": 548,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/use-varifocal-1.png",
+					"storedSha256": "ebd6426d39578dc610f11e3cb5cbaa8a6ea285d1b2c60ebb7045efae135d7c48",
+					"stock": false
+				},
+				{
+					"asset": "sites/eye-care-ward-end/assets/shape-glyphs/cat-eye.png",
+					"sha256": "7626aaf78bf69f5a058bd7ef298dfa1f2cdf6249687bfbb1e3145668101f3ec5",
+					"id": 474,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/cat-eye.png",
+					"storedSha256": "7626aaf78bf69f5a058bd7ef298dfa1f2cdf6249687bfbb1e3145668101f3ec5",
 					"stock": false
 				},
 				{
@@ -134,6 +142,14 @@
 					"sanitised": true
 				},
 				{
+					"asset": "sites/eye-care-ward-end/assets/shape-glyphs/oversized.png",
+					"sha256": "8196339755a9fb3573e416c2333982c72600f11928a50c605914e20357634a98",
+					"id": 476,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/oversized.png",
+					"storedSha256": "8196339755a9fb3573e416c2333982c72600f11928a50c605914e20357634a98",
+					"stock": false
+				},
+				{
 					"asset": "sites/eye-care-ward-end/assets/shape-glyphs/oversized.svg",
 					"sha256": "b7067920adc00ce9bc9d4ed8a022c0b4916856d2fca04027f21711a5b550f541",
 					"id": 56,
@@ -141,6 +157,14 @@
 					"storedSha256": "8a3d0c6d27c84a561edca01db5e18b39a157fb613baa634439c20f32f81e6d49",
 					"stock": false,
 					"sanitised": true
+				},
+				{
+					"asset": "sites/eye-care-ward-end/assets/shape-glyphs/pilot.png",
+					"sha256": "c32e7d5c5765283d9688efe883d4ed37fb97944f51c59ba34bdb5e5724c82c28",
+					"id": 478,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/pilot.png",
+					"storedSha256": "c32e7d5c5765283d9688efe883d4ed37fb97944f51c59ba34bdb5e5724c82c28",
+					"stock": false
 				},
 				{
 					"asset": "sites/eye-care-ward-end/assets/shape-glyphs/pilot.svg",
@@ -152,6 +176,14 @@
 					"sanitised": true
 				},
 				{
+					"asset": "sites/eye-care-ward-end/assets/shape-glyphs/round.png",
+					"sha256": "b9f11f77b96cf34048131288dbd7cb25bdadbd67d53a2158bf4cd638b1d7650b",
+					"id": 480,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/round.png",
+					"storedSha256": "b9f11f77b96cf34048131288dbd7cb25bdadbd67d53a2158bf4cd638b1d7650b",
+					"stock": false
+				},
+				{
 					"asset": "sites/eye-care-ward-end/assets/shape-glyphs/round.svg",
 					"sha256": "7562b4bd15361b17604559157d156d42662967a5b88c38dc9cc951504b7483b2",
 					"id": 58,
@@ -161,6 +193,14 @@
 					"sanitised": true
 				},
 				{
+					"asset": "sites/eye-care-ward-end/assets/shape-glyphs/square.png",
+					"sha256": "87596310e0ea36432918fda436ef2a52d608e9d0df85841018afd0e19cb7f075",
+					"id": 482,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/square.png",
+					"storedSha256": "87596310e0ea36432918fda436ef2a52d608e9d0df85841018afd0e19cb7f075",
+					"stock": false
+				},
+				{
 					"asset": "sites/eye-care-ward-end/assets/shape-glyphs/square.svg",
 					"sha256": "ed27683c264002c7b15804303d23287d451f0cbebb238bc1c1974de3ab69362a",
 					"id": 59,
@@ -168,6 +208,14 @@
 					"storedSha256": "425f13d58d6629c568702567f91ccf9f81bba7d94fc38ff7a86010cdd46c1e0a",
 					"stock": false,
 					"sanitised": true
+				},
+				{
+					"asset": "sites/eye-care-ward-end/assets/shape-glyphs/wayfarer.png",
+					"sha256": "60a98e72238edc7631a608d5062eaebb98cf2a6808c0ed819c30e40bdb6bc6d2",
+					"id": 484,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/wayfarer.png",
+					"storedSha256": "60a98e72238edc7631a608d5062eaebb98cf2a6808c0ed819c30e40bdb6bc6d2",
+					"stock": false
 				},
 				{
 					"asset": "sites/eye-care-ward-end/assets/shape-glyphs/wayfarer.svg",
@@ -181,9 +229,9 @@
 				{
 					"asset": "sites/eye-care-ward-end/assets/site-icon.png",
 					"sha256": "e064b1401d176ae2dffe22fc15a18337b13c25f352c7425f74ea7ad6d9be1d08",
-					"id": 61,
-					"url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/site-icon.png",
-					"storedSha256": "4a79bfc7d3fd46b5227b5ef2c0c9186cef1ee8e88da5f42d1459ba282d1fc26e",
+					"id": 549,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/site-icon-1.png",
+					"storedSha256": "e064b1401d176ae2dffe22fc15a18337b13c25f352c7425f74ea7ad6d9be1d08",
 					"stock": false
 				},
 				{
@@ -216,9 +264,17 @@
 				{
 					"asset": "sites/eye-care-ward-end/handoff/assets/ec-logo.png",
 					"sha256": "a8533911367a930ee85e83bd163e4c1e195ad9cfea9d9189757f32415fade27f",
-					"id": 65,
-					"url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/ec-logo-1.png",
-					"storedSha256": "d307b5249328c7155b508837bba4e4a86887ac82ea2ef3e571ef80ebcd428bc5",
+					"id": 550,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/ec-logo-1.png",
+					"storedSha256": "a8533911367a930ee85e83bd163e4c1e195ad9cfea9d9189757f32415fade27f",
+					"stock": false
+				},
+				{
+					"asset": "sites/eye-care-ward-end/handoff/assets/eye-care-wordmark.png",
+					"sha256": "7a991f041e5022c103366e28f88b7b6ba013c5c99929bbdc180cd99982bb6012",
+					"id": 491,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/eye-care-wordmark.png",
+					"storedSha256": "7a991f041e5022c103366e28f88b7b6ba013c5c99929bbdc180cd99982bb6012",
 					"stock": false
 				},
 				{
@@ -278,110 +334,110 @@
 				{
 					"asset": "https://images.unsplash.com/photo-1473496169904-658ba7c44d8a",
 					"source": "https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?w=1600&q=80&auto=format&fit=crop",
-					"sha256": "9bd060541868e61cade2b98844823e919604e394f39a9cfd382ca1a5b47b381f",
-					"id": 72,
-					"url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/stock-1473496169904-658ba7c44d8a.jpg",
-					"storedSha256": "a817ba6b40b4b0729efeb378fa917b69b15e097fb07c4c327acc4ced8e29211c",
+					"sha256": "5b348eddc3405c299225f68e8bed15776d7f22d0ee9aae1911d62835bac9f749",
+					"id": 551,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/stock-1473496169904-658ba7c44d8a-1.jpg",
+					"storedSha256": "5b348eddc3405c299225f68e8bed15776d7f22d0ee9aae1911d62835bac9f749",
 					"stock": true,
 					"paintedAt": [
-						"Eye Care Birmingham.dc.html:2427"
+						"Eye Care Birmingham.dc.html:2423"
 					]
 				},
 				{
 					"asset": "https://images.unsplash.com/photo-1508296695146-257a814070b4",
 					"source": "https://images.unsplash.com/photo-1508296695146-257a814070b4?w=1600&q=80&auto=format&fit=crop",
 					"sha256": "760165e90aff55afdb03a6e6456e09a46502049ac7e65ebd74fd72d98c32138d",
-					"id": 73,
-					"url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/stock-1508296695146-257a814070b4.jpg",
-					"storedSha256": "d739c0357a0a0f6169c4250b342bbcf6f33a57cd026d66318bf3343f2d1cd6f8",
+					"id": 552,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/stock-1508296695146-257a814070b4-1.jpg",
+					"storedSha256": "760165e90aff55afdb03a6e6456e09a46502049ac7e65ebd74fd72d98c32138d",
 					"stock": true,
 					"paintedAt": [
-						"Eye Care Birmingham.dc.html:2428"
+						"Eye Care Birmingham.dc.html:2424"
 					]
 				},
 				{
 					"asset": "https://images.unsplash.com/photo-1509695507497-903c140c43b0",
 					"source": "https://images.unsplash.com/photo-1509695507497-903c140c43b0?w=1600&q=80&auto=format&fit=crop",
 					"sha256": "cf9e85cfb2764e955dfc9d817043cd40f7ed08b9dbaa4e4b86d1c3ac987b31d2",
-					"id": 74,
-					"url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/stock-1509695507497-903c140c43b0.jpg",
-					"storedSha256": "e6e3e417ecdb68e4661b6fabeb2f1f4c1c6afedb44b87e4e41a5b1f61dff7fc8",
-					"stock": true,
-					"paintedAt": [
-						"Eye Care Birmingham.dc.html:2430"
-					]
-				},
-				{
-					"asset": "https://images.unsplash.com/photo-1511499767150-a48a237f0083",
-					"source": "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=1600&q=80&auto=format&fit=crop",
-					"sha256": "838456f49fdc4fb790eb93218a749fdb9e720a3ca0aa12466a5429f660abdde7",
-					"id": 75,
-					"url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/stock-1511499767150-a48a237f0083.jpg",
-					"storedSha256": "345d9bc4051f51a3806ff8210e86c2f19fae19b8a19f2cfe4248add03a8e369b",
-					"stock": true,
-					"paintedAt": [
-						"Eye Care Birmingham.dc.html:2431"
-					]
-				},
-				{
-					"asset": "https://images.unsplash.com/photo-1529139574466-a303027c1d8b",
-					"source": "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=1500&q=80&auto=format&fit=crop",
-					"sha256": "00187b190da57c15483eca3712a1c334715bddca0765403ecf2a67a306f7c429",
-					"id": 76,
-					"url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/stock-1529139574466-a303027c1d8b.jpg",
-					"storedSha256": "466d2d16b98d80eeb9b259a80048efeb62e3e7d8dee79b1f2e63ff11e6c044d1",
-					"stock": true,
-					"paintedAt": [
-						"Eye Care Birmingham.dc.html:871"
-					]
-				},
-				{
-					"asset": "https://images.unsplash.com/photo-1556306535-0f09a537f0a3",
-					"source": "https://images.unsplash.com/photo-1556306535-0f09a537f0a3?w=1600&q=80&auto=format&fit=crop",
-					"sha256": "9f7ec758e720696f91b3b6c01a79b97bc1675008ee8a82d55ca575ff1e5443ca",
-					"id": 77,
-					"url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/stock-1556306535-0f09a537f0a3.jpg",
-					"storedSha256": "ffa50d118102d555f674ed7c83dc27387ae168e85a510a28145ea423a7b6b127",
-					"stock": true,
-					"paintedAt": [
-						"Eye Care Birmingham.dc.html:2432"
-					]
-				},
-				{
-					"asset": "https://images.unsplash.com/photo-1572635196237-14b3f281503f",
-					"source": "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=1600&q=80&auto=format&fit=crop",
-					"sha256": "e545272ec61f78ac07b8568950c05d6506a92b39d35694a622526c0b1e686761",
-					"id": 78,
-					"url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/stock-1572635196237-14b3f281503f.jpg",
-					"storedSha256": "4d5b4620d5a23fe857a35ea0e5e26bd5834e4b8d9336db505df94760b9654316",
+					"id": 553,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/stock-1509695507497-903c140c43b0-1.jpg",
+					"storedSha256": "cf9e85cfb2764e955dfc9d817043cd40f7ed08b9dbaa4e4b86d1c3ac987b31d2",
 					"stock": true,
 					"paintedAt": [
 						"Eye Care Birmingham.dc.html:2426"
 					]
 				},
 				{
+					"asset": "https://images.unsplash.com/photo-1511499767150-a48a237f0083",
+					"source": "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=1600&q=80&auto=format&fit=crop",
+					"sha256": "838456f49fdc4fb790eb93218a749fdb9e720a3ca0aa12466a5429f660abdde7",
+					"id": 554,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/stock-1511499767150-a48a237f0083-1.jpg",
+					"storedSha256": "838456f49fdc4fb790eb93218a749fdb9e720a3ca0aa12466a5429f660abdde7",
+					"stock": true,
+					"paintedAt": [
+						"Eye Care Birmingham.dc.html:2427"
+					]
+				},
+				{
+					"asset": "https://images.unsplash.com/photo-1529139574466-a303027c1d8b",
+					"source": "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=1500&q=80&auto=format&fit=crop",
+					"sha256": "00187b190da57c15483eca3712a1c334715bddca0765403ecf2a67a306f7c429",
+					"id": 555,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/stock-1529139574466-a303027c1d8b-1.jpg",
+					"storedSha256": "00187b190da57c15483eca3712a1c334715bddca0765403ecf2a67a306f7c429",
+					"stock": true,
+					"paintedAt": [
+						"Eye Care Birmingham.dc.html:868"
+					]
+				},
+				{
+					"asset": "https://images.unsplash.com/photo-1556306535-0f09a537f0a3",
+					"source": "https://images.unsplash.com/photo-1556306535-0f09a537f0a3?w=1600&q=80&auto=format&fit=crop",
+					"sha256": "9f7ec758e720696f91b3b6c01a79b97bc1675008ee8a82d55ca575ff1e5443ca",
+					"id": 556,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/stock-1556306535-0f09a537f0a3-1.jpg",
+					"storedSha256": "9f7ec758e720696f91b3b6c01a79b97bc1675008ee8a82d55ca575ff1e5443ca",
+					"stock": true,
+					"paintedAt": [
+						"Eye Care Birmingham.dc.html:2428"
+					]
+				},
+				{
+					"asset": "https://images.unsplash.com/photo-1572635196237-14b3f281503f",
+					"source": "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=1600&q=80&auto=format&fit=crop",
+					"sha256": "e545272ec61f78ac07b8568950c05d6506a92b39d35694a622526c0b1e686761",
+					"id": 557,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/stock-1572635196237-14b3f281503f-1.jpg",
+					"storedSha256": "e545272ec61f78ac07b8568950c05d6506a92b39d35694a622526c0b1e686761",
+					"stock": true,
+					"paintedAt": [
+						"Eye Care Birmingham.dc.html:2422"
+					]
+				},
+				{
 					"asset": "https://images.unsplash.com/photo-1574258495973-f010dfbb5371",
 					"source": "https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=1600&q=80&auto=format&fit=crop",
 					"sha256": "6373cc44ccd4ef2c661a32848506d50181c06c84ed813a4631bba1adaa8e267b",
-					"id": 79,
-					"url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/stock-1574258495973-f010dfbb5371.jpg",
-					"storedSha256": "90b7c8f80f2181eb5398d6b8f5c9d471d76eab9b7163945e552b901db2529bb5",
+					"id": 558,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/stock-1574258495973-f010dfbb5371-1.jpg",
+					"storedSha256": "6373cc44ccd4ef2c661a32848506d50181c06c84ed813a4631bba1adaa8e267b",
 					"stock": true,
 					"paintedAt": [
-						"Eye Care Birmingham.dc.html:2433"
+						"Eye Care Birmingham.dc.html:2429"
 					]
 				},
 				{
 					"asset": "https://images.unsplash.com/photo-1577803645773-f96470509666",
 					"source": "https://images.unsplash.com/photo-1577803645773-f96470509666?w=2200&q=80&auto=format&fit=crop",
 					"sha256": "b7c59217524b4a7f04bb188dbe52411aa4a85af7805f829be66c9669b539e074",
-					"id": 80,
-					"url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/stock-1577803645773-f96470509666.jpg",
-					"storedSha256": "c0269a78af7da7cc87f1a9a8cb20c66edb5da0d0d72287b8879d72b5e3fb640b",
+					"id": 559,
+					"url": "http://localhost:8081/wp-content/uploads/2026/11/stock-1577803645773-f96470509666-1.jpg",
+					"storedSha256": "b7c59217524b4a7f04bb188dbe52411aa4a85af7805f829be66c9669b539e074",
 					"stock": true,
 					"paintedAt": [
-						"Eye Care Birmingham.dc.html:714",
-						"Eye Care Birmingham.dc.html:2429"
+						"Eye Care Birmingham.dc.html:711",
+						"Eye Care Birmingham.dc.html:2425"
 					]
 				}
 			]

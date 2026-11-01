@@ -11,6 +11,7 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { downloadStock, stockDownloadUrl, stockFileName, stockKey, stockSurvey } from './media-stock.mjs';
+import { recordSite } from './cache.mjs';
 
 export const IMAGE_TYPES = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp', '.avif': 'image/avif', '.svg': 'image/svg+xml' };
 export const sha256 = ( buf ) => crypto.createHash( 'sha256' ).update( buf ).digest( 'hex' );
@@ -116,7 +117,10 @@ async function postMedia( fetchImpl, creds, label, name, type, bytes ) {
 // photo IDs the draft holds without painting (never uploaded) and `failed` the stock downloads that did not complete
 // (the run goes on without them).
 export async function uploadMedia( { repo, client, site, map, creds, fetchImpl = fetch, apply = false, log = () => {}, survey = stockSurvey( repo, client ), stock = survey.painted } ) {
-	const known = map.sites?.[ site ]?.files || [];
+	// A mirror shares its test site's record (lib/cache.mjs::recordSite): a refresh or a push copies the database, so both
+	// hold the same attachment ids and every reader looks there; an upload on either site checks and writes that one record.
+	const key = recordSite( site );
+	const known = map.sites?.[ key ]?.files || [];
 	const handoffPrefix = `sites/${ client }/handoff/`;
 	const manifest = manifestSums( repo, client );
 	const files = [];
@@ -197,10 +201,10 @@ export async function uploadMedia( { repo, client, site, map, creds, fetchImpl =
 			await carryStock( row );
 		}
 	} catch ( e ) {
-		e.map = { ...map, sites: { ...( map.sites || {} ), [ site ]: { files: [ ...files, ...known.filter( ( k ) => ! files.some( ( f ) => f.asset === k.asset ) ) ] } } };
+		e.map = { ...map, sites: { ...( map.sites || {} ), [ key ]: { files: [ ...files, ...known.filter( ( k ) => ! files.some( ( f ) => f.asset === k.asset ) ) ] } } };
 		throw e;
 	}
-	return { map: { ...map, sites: { ...( map.sites || {} ), [ site ]: { files } } }, ...report };
+	return { map: { ...map, sites: { ...( map.sites || {} ), [ key ]: { files } } }, ...report };
 }
 
 // The asset a painted image URL shows on a site, through the map (FR-48-58's identity check): the attachment whose URL
