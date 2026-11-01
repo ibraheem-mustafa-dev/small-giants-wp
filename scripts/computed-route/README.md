@@ -3262,7 +3262,7 @@ FR-48-57: the words of a multi-step form's own buttons. The draft's Next and Bac
 ### `lib/site-check-site.mjs`
 - `targetOf(site, targets, roots)`, `siteBase(target, roots)` → the target and its `WP_URL_*` (never another secret); `candidateRoots` → the repo, then a worktree's main checkout (re-exported from `scripts/parity/flows/lib/browser.mjs`).
 - `STORE_EXAMPLES` → the Store API list a product or product-category row opens its example from.
-- `rowsFor(rows, idsSite, target)`, `readRows(repo, client, target)` → the page map with its ids kept for the site that owns them or its mirror.
+- `rowsFor(rows, idsSite, target, targets?)`, `readRows(repo, client, target)` → the page map with its ids kept for the site that owns them or its mirror, in either direction (a map recorded under a mirror's name holds its test site's ids too; `targets` is calibration-targets.json, to resolve the mirror name).
 - `pageTargets(rows, base)` → `{ pages, examples, skipped }`; `flowsClient(outRoot)` → the client `scripts/parity/flows` belongs to, from `lib/flow.mjs::flowsOutRoot`.
 
 ### `lib/site-check-nav.mjs`

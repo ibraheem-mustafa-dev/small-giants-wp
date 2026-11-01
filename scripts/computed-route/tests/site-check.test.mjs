@@ -265,5 +265,10 @@ test( 'MUST FAIL: page targets and the flows owner', () => {
 	assert.equal( t.skipped.length, 3 );
 	assert.equal( rowsFor( rows, 'test-site', { site: 'local-test', mirrorOf: 'test-site' } )[ 0 ].id, 5, 'a mirror keeps its test site\'s ids' );
 	assert.equal( rowsFor( rows, 'test-site', { site: 'other' } )[ 0 ].id, null, 'another site\'s ids are dropped' );
+	// MUST FAIL (indus-foods on indus-test, 2026-11-01): a map recorded under the mirror's name holds the test site's ids
+	// too, because push-to-remote.sh copies the mirror's database over; the one-way rule dropped every id on the test site.
+	const targets = { 'local-test': { mirrorOf: 'test-site' } };
+	assert.equal( rowsFor( rows, 'local-test', { site: 'test-site' }, targets )[ 0 ].id, 5, 'a test site keeps ids recorded under its mirror' );
+	assert.equal( rowsFor( rows, 'local-test', { site: 'other' }, targets )[ 0 ].id, null, 'a mirror name never stands for another site' );
 	assert.equal( flowsClient( '/repo/sites/some-client/build/qa/flows' ), 'some-client' );
 } );

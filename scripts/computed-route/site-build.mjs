@@ -81,6 +81,9 @@ const apply = args.includes( '--apply' );
 // of over SSH; a site with no target entry runs over SSH.
 const targetsFile = path.join( repo, 'scripts', 'computed-route', 'calibration-targets.json' );
 const target = ( fs.existsSync( targetsFile ) ? JSON.parse( fs.readFileSync( targetsFile, 'utf8' ) )[ site ] : null ) || {};
+// A local mirror shares its test site's database and ids (calibration-targets.json `mirrorOf`; push-to-remote.sh copies it
+// over), so the page map's ids are recorded and compared under the test site's name either way.
+const idsSite = target.mirrorOf || site;
 if ( args.includes( '--catalogue' ) ) {
 	try {
 		process.exit( runCatalogue( { repo, client, site, runPhp: wpEvalRunner( target, site, repo ), apply } ) );
@@ -115,7 +118,7 @@ if ( args.includes( '--flow-products' ) ) {
 }
 if ( args.includes( '--menus' ) ) {
 	try {
-		const rows = rowsForSite( readPageMap( mapFile ), readIdsSite( mapFile ), site );
+		const rows = rowsForSite( readPageMap( mapFile ), readIdsSite( mapFile ), idsSite );
 		const runPhp = wpEvalRunner( target, site, repo );
 		const planFor = () => {
 			const link = readLinkTextReport( { repo, client } );
@@ -162,7 +165,7 @@ const print = ( plan ) => {
 
 try {
 	// The rows as this site sees them: ids written for another site name nothing here.
-	const original = rowsForSite( readPageMap( mapFile ), readIdsSite( mapFile ), site );
+	const original = rowsForSite( readPageMap( mapFile ), readIdsSite( mapFile ), idsSite );
 	const runPhp = wpEvalRunner( target, site, repo );
 	const wp = wpCommand( target, site, repo );
 	const ids = {};
@@ -193,7 +196,7 @@ try {
 	// (lib/wp-run-session.mjs::openDetachedSession): each wp-build-page.js child attaches through SGS_CDP_URL instead of
 	// launching and logging in on its own.
 	const session = await openDetachedSession( site, readEnv( siteEnv( target, site ).envFile, siteEnv( target, site ).envKey, repo ) );
-	writeIdsSite( mapFile, site );
+	writeIdsSite( mapFile, idsSite );
 	const onId = ( key, id ) => {
 		ids[ key ] = id;
 		rows = writePageMap( mapFile, original, ids );
