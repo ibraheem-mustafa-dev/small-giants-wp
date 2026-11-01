@@ -930,13 +930,13 @@
   "_sgsExtractor": {
     "draft_css_sha256": "5ddd278e6d6749289438f26f38c0db622832a4b07ded1f57053c5e3c11fa9e69",
     "extractor_version": "1.0",
-    "draft_source_sha256": "3175fd28b56b729903b6caac1622bf19276926466f4c17500d366e0726d464ea",
+    "draft_source_sha256": "51ca54072029d388a7347a3346d390f4bf358a6ddacf1fa0209d08cf1ba8b180",
     "manifest_sha256": {
       "Account.dc.html": "569c41da66b4296faa81347c53f0d5d922d7bca67aed70fdb23df5efee8d01b5",
       "Basket.dc.html": "f4520e82997834a44f5c99b456e3b9ca4a9fcdab575314d4b266bb2c8945bb8e",
       "Checkout.dc.html": "19b5c1fec140b77d22c72b5110d1a675f2aa985330b72803e5cd3a7570d8891b",
       "Confirmation.dc.html": "ddfcd751828e19d938d173826d514e40830a97221e4c6fa19e03c7836053f046",
-      "Contact.dc.html": "7044b48beb77c75507cebaf71ef867ca65e3301bb5463b3c96ffa1fc20107572",
+      "Contact.dc.html": "bcb3e4bcc8e1fdddb9abf777afab9396c7d06f809ba7b9cbd64a722205607b85",
       "Gifts.dc.html": "c653d9aa8ca4475d3f1cfc45bd1f691341abd57ed56bedf07ee3cbfde2e227a9",
       "Help.dc.html": "e705fc78ad76548eada464f2feee868d8ae5a40a8632c0e7f13a841f87bb55d6",
       "Home.dc.html": "c25fa7cf4d35f8a68895902d7413f0534c7932cb3d8ca0bab692843bdf0282ca",
