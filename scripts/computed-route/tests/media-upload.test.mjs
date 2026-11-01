@@ -465,3 +465,11 @@ test( 'MUST FAIL: the stock review lists each stock image with where it is paint
 	assert.equal( ( md.match( /^\| https:/gm ) || [] ).length, 3 );
 	assert.ok( ! md.includes( 'bread.jpg' ) );
 } );
+
+// MUST FAIL (qc-council 2026-11-01): paintedAsset read the record by the raw site name and compared full URLs, so on a mirror
+// (local-*, its own host) no painted image was found in the record it shares with its test site.
+test( 'MUST FAIL: a mirror finds the painted image in the shared record whatever the host', () => {
+	const map = { sites: { 'eye-care-clone-test': { files: [ { asset: 'sites/acme/handoff/assets/hero.png', id: 7, url: 'https://eye-care-clone-test.example/wp-content/uploads/2026/11/hero.png' } ] } } };
+	assert.equal( paintedAsset( map, 'local-eye-care', 'http://localhost:8081/wp-content/uploads/2026/11/hero-300x200.png' )?.id, 7 );
+	assert.equal( paintedAsset( map, 'local-eye-care', 'http://localhost:8081/wp-content/uploads/2026/11/other.png' ), null, 'negative control: another file is not matched' );
+} );

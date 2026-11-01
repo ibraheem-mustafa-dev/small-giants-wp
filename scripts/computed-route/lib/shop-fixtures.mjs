@@ -7,6 +7,7 @@ import path from 'node:path';
 import { variesByOf } from './catalogue-read.mjs';
 import { IMAGE_TYPES, mediaAssets, safeSiteUrl } from './media-upload.mjs';
 import { applyVariesBy, planVariesBy } from './shop-fixtures-variesby.mjs';
+import { recordSite } from './cache.mjs';
 
 export class ShopFixturesError extends Error {}
 
@@ -42,7 +43,7 @@ export function fixtureDefs( client ) {
 export function imageChoice( repo, client, site ) {
 	const mapFile = path.join( repo, 'sites', client, 'build', 'media-map.json' );
 	if ( fs.existsSync( mapFile ) ) {
-		const hit = ( JSON.parse( fs.readFileSync( mapFile, 'utf8' ) ).sites?.[ site ]?.files || [] ).find( ( f ) => f.id && RASTER.has( path.extname( f.asset ).toLowerCase() ) );
+		const hit = ( JSON.parse( fs.readFileSync( mapFile, 'utf8' ) ).sites?.[ recordSite( site ) ]?.files || [] ).find( ( f ) => f.id && RASTER.has( path.extname( f.asset ).toLowerCase() ) );
 		if ( hit ) {
 			return { source: 'media-map', id: hit.id, asset: hit.asset };
 		}

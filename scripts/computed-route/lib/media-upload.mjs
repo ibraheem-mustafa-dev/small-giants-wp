@@ -210,8 +210,9 @@ export async function uploadMedia( { repo, client, site, map, creds, fetchImpl =
 // The asset a painted image URL shows on a site, through the map (FR-48-58's identity check): the attachment whose URL
 // the painted URL is, else a stock preview whose source URL it is, else one a size WordPress made of it matches (`name-300x200.png`, `name-scaled.png`); null when none.
 export function paintedAsset( map, site, src ) {
-	const files = map.sites?.[ site ]?.files || [];
-	const plain = ( u ) => String( u ).split( /[?#]/ )[ 0 ];
+	const files = map.sites?.[ recordSite( site ) ]?.files || [];
+	// A mirror and its test site share the record but not the host, so a URL is compared from its uploads path on.
+	const plain = ( u ) => ( ( p ) => ( p.includes( '/wp-content/uploads/' ) ? p.slice( p.indexOf( '/wp-content/uploads/' ) ) : p ) )( String( u ).split( /[?#]/ )[ 0 ] );
 	const unsized = ( u ) => plain( u ).replace( /-(?:\d+x\d+|scaled)(?=\.[a-z0-9]+$)/i, '' );
 	// The exact URL first, so an asset whose own name ends like a size (hero-1200x600.png) is never taken for another's.
 	// A stock preview the draft paints from its source URL is found by that URL without the query.
