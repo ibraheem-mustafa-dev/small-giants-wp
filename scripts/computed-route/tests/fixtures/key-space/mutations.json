@@ -1,6 +1,6 @@
 [
 	{ "file": "lib/key-space.mjs", "find": "const dc = served ? rootComponent : e.template;", "replace": "const dc = e.template;", "why": "a served Root host is never renamed to the entry component, so no node finds its record entry" },
-	{ "file": "lib/key-space.mjs", "find": "instanceKey: served ? renameRootHost( e.key, SERVED_ROOT, rootComponent ) : e.key,", "replace": "instanceKey: e.key,", "why": "the instance key stays in the served space" },
+	{ "file": "lib/key-space.mjs", "find": "instanceKey: rootComponent ? renameRootHost( e.key, SERVED_ROOT, rootComponent ) : e.key,", "replace": "instanceKey: e.key,", "why": "the instance key stays in the served space" },
 	{ "file": "lib/key-space.mjs", "find": "copy: parsed ? parsed.copy : null", "replace": "copy: 0", "why": "every loop copy reports copy 0" },
 	{ "file": "lib/key-space.mjs", "find": "if ( served && ! rootComponent ) {", "replace": "if ( false ) {", "why": "a Root host with no entry component is guessed instead of listed" },
 	{ "file": "lib/key-space.mjs", "find": "if ( parsed && parsed.tpl !== Number( e.tpl ) ) {", "replace": "if ( false ) {", "why": "a key that disagrees with the element's tpl is translated" },

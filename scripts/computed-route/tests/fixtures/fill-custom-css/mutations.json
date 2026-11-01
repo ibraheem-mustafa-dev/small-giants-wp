@@ -91,8 +91,8 @@
 	},
 	{
 		"file": "lib/fill-width-gate.mjs",
-		"find": "export const scopedCssPuts = ( node, { css, label, index, why } ) => customCssPuts( node, { css, label, why, key: `wgate${ index }` } );",
-		"replace": "export const scopedCssPuts = ( node, { css, label, index, why } ) => [ { attr: 'sgsCustomCss', value: css, prop: why }, { attr: 'sgsCustomCssId', value: `wgate${ index }`, prop: why }, { attr: 'sgsCustomCssNote', value: label, prop: why } ];",
+		"find": "export const scopedCssPuts = ( node, { css, label, index, why, keyScope } ) => customCssPuts( node, { css, label, why, scope: keyScope, key: `wgate${ index }` } );",
+		"replace": "export const scopedCssPuts = ( node, { css, label, index, why, keyScope } ) => [ { attr: 'sgsCustomCss', value: css, prop: why }, { attr: 'sgsCustomCssId', value: `wgate${ index }`, prop: why }, { attr: 'sgsCustomCssNote', value: label, prop: why } ];",
 		"why": "the width gate would keep its own writer"
 	},
 	{

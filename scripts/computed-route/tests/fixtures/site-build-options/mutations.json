@@ -27,7 +27,7 @@
 	{"file":"lib/site-build-options.mjs","find":"Object.entries( out.options ).forEach( ( [ n, o ] ) => checkedScalar( n, o.value ) );","replace":"","why":"a bad scalar option is planned"},
 	{"file":"lib/site-build-options.mjs","find":"if ( ! NAME.test( name ) || ! [ 'string', 'number', 'boolean' ].includes( typeof value ) ) {","replace":"if ( ! [ 'string', 'number', 'boolean' ].includes( typeof value ) ) {","why":"a scalar option with a bad name is planned"},
 	{"file":"lib/site-build-options.mjs","find":"out.options[ name ] = { records: [ ...new Set( [ ...( held?.records || [] ), r.rowId ] ) ], value, sources: [ source ] };","replace":"out.options[ name ] = { records: [], value, sources: [] };","why":"the scalar option names no record or source"},
-	{"file":"lib/site-build-options.mjs","find":"! same( held ?? undefined, value ) && out.actions.push(","replace":"out.actions.push(","why":"a scalar option the site already holds is planned again"},
+	{"file":"lib/site-build-options.mjs","find":"const differs = storedScalar( held ) !== storedScalar( value );","replace":"const differs = true;","why":"a scalar option the site already holds is planned again"},
 	{"file":"lib/site-build-options.mjs","find":"\t\tif ( ! isObject( value ) ) {\n","replace":"\t\tif ( false ) {\n","why":"a scalar option is planned as an array of keys"},
 	{"file":"lib/site-build-options.mjs","find":"plan.notes.push( ...skeleton.notes, ...mine.notes );","replace":"plan.notes.push( ...mine.notes );","why":"the plan hides a disputed option"},
 	{"file":"lib/intake-skeletons.mjs","find":"...( r.siteOptions ? { siteOptions: r.siteOptions } : {} ), ...( r.conflict","replace":"...( r.conflict","why":"intake.json drops the site options a row sets"}
