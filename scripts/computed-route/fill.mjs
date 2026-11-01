@@ -41,6 +41,7 @@ import { customCssWrites } from './lib/fill-custom-css.mjs';
 import { dimensionWrites } from './lib/fill-dimensions.mjs';
 import { scrollbarPatch, mergePatch } from './lib/fill-scrollbar.mjs';
 import { motionWrites } from './lib/fill-motion.mjs';
+import { customCssEffectIds } from './lib/effect-css-equivalent.mjs';
 import { draftCssOf, hasAttrOf, templateOf } from './lib/fill-behaviour.mjs';
 import { headerRootIds } from './lib/fill-header-behaviour.mjs';
 import { groupBindings, noFactsWarning } from './lib/fill-binding-group.mjs';
@@ -303,7 +304,7 @@ export async function fillSurface( o ) {
 		result.unmapped.push( ...refusalRows( { opener: { ...opener, refused: motionRefused }, nodes, flat, refOf } ) );
 		const refused = [ ...readRefused, ...motionRefused ];
 		const entrances = nodes.filter( ( x ) => x.targets.length ).map( ( n ) => ( { node: refOf( flat[ n.index ] ), block: n.name, measured: sampled[ n.targets[ 0 ].id ]?.[ 1440 ] ?? null } ) );
-		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), db, schema: loadMotionSchema(), rawSnapshot, template: templateOf( facts ), draftCss: draftCssOf( o.draftDir, o.draftIndex ), reads, calFor, keyScope, clientMotion: readDecisions( path.join( skeletonDir( repo, o.client ), 'decisions.json' ) ).motion?.[ o.surface ] || null } );
+		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), db, schema: loadMotionSchema(), rawSnapshot, template: templateOf( facts ), draftCss: draftCssOf( o.draftDir, o.draftIndex ), reads, calFor, keyScope, cssEffects: customCssEffectIds( intakeData ), clientMotion: readDecisions( path.join( skeletonDir( repo, o.client ), 'decisions.json' ) ).motion?.[ o.surface ] || null } );
 		result.writes.push( ...motion.writes );
 		result.unmapped.push( ...motion.unmapped );
 		// The resting timing and rest-length rows a motion part's written hover state holds (lib/fill-motion-settle.mjs).

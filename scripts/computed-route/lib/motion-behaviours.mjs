@@ -29,6 +29,7 @@ import { pinnedSectionOf, headerScrollOf, dotPulseOf, accordionScrollOf, autopla
 import { hiddenStartOf } from './motion-reveal.mjs';
 import { effectElementStyle, effectElementOwner, colourOf, largerSideFactor } from './motion-effect-element.mjs';
 import { templateKey } from './fact-key.mjs';
+import { cssEquivalentOf } from './effect-css-equivalent.mjs';
 import { fromPointer, tiltOf, tiltGlareHostOf, tiltResetOf } from './motion-tilt.mjs';
 
 // The attribute selector of the template element a record's script finds its target by (`[data-mag]`), or null.
@@ -310,7 +311,7 @@ export function recogniseBehaviour( record, ctx = {} ) {
 	}
 	const rate = hoverRateOf( r );
 	if ( rate ) {
-		return done( r, { kind: 'unmapped', reason: `framework gap: a hover that speeds up a running animation ${ rate } times (a playback-rate control); the marquee's hover rate is the only SGS playback-rate field` } );
+		return done( r, { kind: 'unmapped', css: cssEquivalentOf( r, ctx.records ) ?? undefined, reason: `framework gap: a hover that speeds up a running animation ${ rate } times (a playback-rate control); the marquee's hover rate is the only SGS playback-rate field` } );
 	}
 	if ( scrollResetOf( r ) ) {
 		return done( r, { kind: 'native', reason: 'the draft scrolls to the top when its route changes; each SGS page is its own page load, which starts at the top' } );
@@ -411,6 +412,7 @@ export function effectRows( records, ctx = {} ) {
 			rowId: `effect:${ r.id }`, draftId: r.id, record: r.id, effect: what, kind: b.kind,
 			text: `${ r.id } ${ r.name ?? '' } (${ r.mechanism }, ${ triggerOf( r ) }) is ${ says }`.replace( /\s+/g, ' ' ),
 			unmapped: 'unmapped' === b.kind ? b.reason : undefined,
+			cssEquivalent: 'unmapped' === b.kind ? b.css : undefined,
 		} );
 		( b.unread || [] ).forEach( ( u ) => rows.push( { rowId: `effect:${ r.id }:${ u.field }`, draftId: r.id, record: r.id, effect: what, kind: b.kind, text: `${ r.id } ${ what } ${ u.field }: ${ u.reason }`, unmapped: u.reason } ) );
 	}

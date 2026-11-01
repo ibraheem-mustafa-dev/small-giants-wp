@@ -64,8 +64,8 @@ export const MARKS = {
 	'not-a-defect': [ { value: 'not-a-defect' }, { value: 'defect' } ],
 	'missing-feature': [ { shape: 'map:<block>', re: /^map:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) }, { value: 'difference' }, { value: 'build' },
 		{ shape: 'gap:<wave>', re: /^gap:(.*)$/, check: ( m ) => ( m[ 1 ].trim() ? null : 'the wave is empty' ) } ],
-	// A script-driven effect the recogniser (lib/motion-behaviours.mjs, FR-48-77) maps to an SGS effect: `accept` writes it where the skeleton put the element, `block:<slug>` writes it on that block instead, `difference` records the effect as a deliberate difference and writes nothing.
-	effect: [ { value: 'accept' }, { shape: 'block:<slug>', re: /^block:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) }, { value: 'difference' } ],
+	// A script-driven effect the recogniser (lib/motion-behaviours.mjs, FR-48-77) maps to an SGS effect: `accept` writes it where the skeleton put the element, `block:<slug>` writes it on that block instead, `custom-css` writes the effect's CSS equivalent into the Custom CSS of the block that draws the element (Bean 2026-11-01, lib/effect-css-equivalent.mjs; proposed for an effect no SGS effect expresses when a CSS equivalent exists), `difference` records the effect as a deliberate difference and writes nothing.
+	effect: [ { value: 'accept' }, { shape: 'block:<slug>', re: /^block:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) }, { value: 'custom-css' }, { value: 'difference' } ],
 	'skeleton-block': [ { value: 'accept' }, { shape: 'block:<slug>', re: /^block:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) }, { value: 'remove' } ],
 	'inventory-diff': [ { value: 'ours' }, { value: 'theirs' } ],
 	notice: [ { value: 'noted' } ],
@@ -232,7 +232,7 @@ export function reviewRows( intake ) {
 		add( 'missing-feature', r, r.draftId, describe( r ), tracked ?? ( block ? `map:${ block }` : 'no block proposed' ), text( r.why ?? r.reason ), acceptAll, r.mainFlow ? 'main-flow' : acceptAll ? null : 'no-block' );
 	} );
 	// FR-48-77: one row per script-driven effect the recogniser maps to an SGS effect, and one per script effect no SGS effect expresses.
-	effectRows( intake.inventory?.animations?.records ).forEach( ( r ) => add( 'effect', r, r.draftId, r.text, r.unmapped ? 'difference' : 'accept', r.unmapped ? 'a Spec 38 gap: ' + r.unmapped : '', r.unmapped ? 'difference' : 'accept' ) );
+	effectRows( intake.inventory?.animations?.records ).forEach( ( r ) => add( 'effect', r, r.draftId, r.text, r.unmapped ? ( r.cssEquivalent ? 'custom-css' : 'difference' ) : 'accept', r.unmapped ? 'a Spec 38 gap: ' + r.unmapped + ( r.cssEquivalent ? '; its CSS equivalent is written to the Custom CSS of the block that draws it' : '' ) : '', r.unmapped ? ( r.cssEquivalent ? 'custom-css' : 'difference' ) : 'accept' ) );
 	const sk = intake.skeletons || {};
 	( Array.isArray( sk ) ? sk : Object.entries( sk ).map( ( [ surface, s ] ) => ( { surface, ...s } ) ) ).forEach( ( s ) => ( s.rows || [] ).forEach( ( r ) => add( 'skeleton-block',
 		{ surface: s.surface, ...r, ruleWouldLabel: r.ruleWould?.label, action: r.action && 'unresolved' !== r.action ? r.action : undefined, rowId: r.rowId || `skeleton:${ s.surface }:${ r.key }` }, r.key,
