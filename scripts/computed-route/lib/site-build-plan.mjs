@@ -311,7 +311,9 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 			}
 			const e = existing.splice( at, 1 )[ 0 ];
 			matched[ it.key ] = e.id;
-			const titleOff = it.title ? e.title !== it.title : '' !== e.title;
+			// WordPress stores an item title equal to its object's own title as empty and shows the object's title
+			// (wp_update_nav_menu_item; `shown` is the title wp_setup_nav_menu_item resolves), so that is no difference.
+			const titleOff = it.title ? e.title !== it.title && ( e.title || ( e.shown ?? '' ) !== it.title ) : '' !== e.title;
 			if ( titleOff && ! it.title ) {
 				notes.push( `${ where }: item ${ e.id } carries the custom title "${ e.title }"; clear it in Appearance > Menus to show the post's own title` );
 			}
