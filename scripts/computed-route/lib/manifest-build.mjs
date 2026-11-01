@@ -301,6 +301,10 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 	for ( const row of [ ...rows, ...filled.map( ( c ) => ( { ...c.row, templateOf: c } ) ) ] ) {
 		const isTemplate = !! row.templateOf;
 		if ( ! isTemplate && null == row.id && ! builtTemplate( row ) ) {
+			// A `template` row is addressed by its slug, never a post id: the template copy Filled at this row plays it.
+			if ( 'template' === row.postType && filled.some( ( c ) => c.row === row ) ) {
+				continue;
+			}
 			out.skipped.push( { row: `${ row.postType }:${ row.slug }`, reason: 'no id' } );
 			continue;
 		}
@@ -372,11 +376,12 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 		if ( have ) {
 			const added = Object.keys( entry ).filter( ( f ) => ! Object.hasOwn( have, f ) );
 			added.length && ( out.added[ key ] = added );
-			// The skip is generated truth, never a kept field: it follows the draft.
+			// The skip and a template copy's `copy` are generated truth, never kept fields: they follow the draft (a copy kept
+			// from a run before the draft's record matched stayed an unplayed copy of the page shell, so no draft was read for it).
 			// A kept intakeSurface naming a skeleton intake no longer holds (a record now read as one skeleton per tab panel)
 			// gives way to the generated link.
 			const stale = intakeSurface && Object.hasOwn( have, 'intakeSurface' ) && ! Object.hasOwn( intake.skeletons, have.intakeSurface );
-			entries[ key ] = { ...entry, ...have, ...( noDraft ? { noDraft } : {} ), ...( stale ? { intakeSurface } : {} ) };
+			entries[ key ] = { ...entry, ...have, ...( isTemplate ? { copy: row.templateOf.copy } : {} ), ...( noDraft ? { noDraft } : {} ), ...( stale ? { intakeSurface } : {} ) };
 			noDraft || delete entries[ key ].noDraft;
 			// An existing entry's walker fields do not survive for a page the run never walks: a re-apply drops them.
 			walked || ( delete entries[ key ].walker, delete entries[ key ].walkerFull );
