@@ -279,7 +279,7 @@ export async function main( argv ) {
 		const role = checkoutRole( entry, row );
 		const prime = 'checkout' === role ? primeProduct() : null;
 		prime && ! prime.id && note( key, 'prime', true, 0, `live walk unprimed: ${ prime.why }` );
-		const livePrime = livePrimeFor( { role, base, productId: prime?.id } );
+		const livePrime = livePrimeFor( { role, base, productId: prime?.id, variation: prime?.variation } );
 		const step = stepper( key, wooPage );
 		const exec = execFor( key );
 		if ( ! entry.intakeSurface || ! skel ) {
