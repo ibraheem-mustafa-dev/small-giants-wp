@@ -302,6 +302,13 @@
 				"signature": "p|Placeholder reviews, clearly marked — swap in the real ones whenever you're ready.",
 				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
 			}
+		},
+		"page-contact": {
+			"Eye Care Birmingham/681#0": {
+				"remove": true,
+				"signature": "h2|Or send me a message",
+				"reason": "Bean ruled remove in the review answers on 2026-11-01: the form stays separate from the page content; the heading is cloned on the contact-form surface"
+			}
 		}
 	},
 	"siteName": "Eye Care Birmingham",

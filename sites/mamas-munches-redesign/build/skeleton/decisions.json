@@ -47,6 +47,16 @@
 				"remove": true,
 				"signature": "span|",
 				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
+			},
+			"Home/150#0": {
+				"remove": true,
+				"signature": "button|←",
+				"reason": "Bean ruled remove in the review answers on 2026-11-01: the testimonial slider draws its own arrows"
+			},
+			"Home/151#0": {
+				"remove": true,
+				"signature": "button|→",
+				"reason": "Bean ruled remove in the review answers on 2026-11-01: the testimonial slider draws its own arrows"
 			}
 		},
 		"page-shop-dc-html": {
