@@ -18,6 +18,294 @@
 				},
 				"signature": "a|Website by Ibraheem Mustafa",
 				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A website-credit link is Site Info attribution; sgs/business-info has displayType attribution and is the top candidate."
+			},
+			"Indus Foods Website v2/653#0": {
+				"block": "sgs/site-footer",
+				"signature": "footer|",
+				"reason": "Bean accepted sgs/site-footer in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/site-footer"
+			},
+			"Indus Foods Website v2/654#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/655#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/657#0": {
+				"block": "sgs/site-footer-row",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/site-footer-row in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/site-footer-row"
+			},
+			"Indus Foods Website v2/658#0": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/659#0": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2/660#0": {
+				"block": "sgs/container",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/661#0": {
+				"block": "sgs/label",
+				"signature": "span|Call us",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/662#0": {
+				"block": "sgs/business-info",
+				"signature": "span|0121 771 4330",
+				"reason": "Bean accepted sgs/business-info in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/business-info"
+			},
+			"Indus Foods Website v2/664#0": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/665#0": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2/666#0": {
+				"block": "sgs/container",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/667#0": {
+				"block": "sgs/label",
+				"signature": "span|Email us",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/668#0": {
+				"block": "sgs/business-info",
+				"signature": "span|amir@indusfoodsltd.com",
+				"reason": "Bean accepted sgs/business-info in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/business-info"
+			},
+			"Indus Foods Website v2/670#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/671#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/672#0": {
+				"block": "sgs/label",
+				"signature": "span|Opening hours",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/673#0": {
+				"block": "sgs/business-info",
+				"signature": "span|Open now",
+				"reason": "Bean accepted sgs/business-info in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/business-info"
+			},
+			"Indus Foods Website v2/675#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/677#0": {
+				"block": "sgs/business-info",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/business-info in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/business-info"
+			},
+			"Indus Foods Website v2/677#1": {
+				"block": "sgs/business-info",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/business-info in the intake review on 2026-10-28 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/business-info"
+			},
+			"Indus Foods Website v2/677#2": {
+				"block": "sgs/business-info",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/business-info in the intake review on 2026-10-28 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/business-info"
+			},
+			"Indus Foods Website v2/677#3": {
+				"block": "sgs/business-info",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/business-info in the intake review on 2026-10-28 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/business-info"
+			},
+			"Indus Foods Website v2/681#0": {
+				"block": "sgs/site-footer-row",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/site-footer-row in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/site-footer-row"
+			},
+			"Indus Foods Website v2/682#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/684#0": {
+				"block": "sgs/responsive-logo",
+				"signature": "indus-logo|",
+				"reason": "Bean accepted sgs/responsive-logo in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/responsive-logo"
+			},
+			"Indus Foods Website v2/685#0": {
+				"block": "sgs/text",
+				"signature": "p|As an industry leading food & drink distributor, based in the heart of the UK, the company specialises in Ethnic Foods & has a strong export operation. Part of the Unitas Wholesale Group, with an annual turnover of £8bn, the company is at the forefront of driving positive growth within the Independent Wholesale sector.",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2/686#0": {
+				"block": "sgs/social-icons",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/social-icons in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/social-icons"
+			},
+			"Indus Foods Website v2/702#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/703#0": {
+				"block": "sgs/heading",
+				"signature": "div|Quick links",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/706#0": {
+				"block": "sgs/icon-list",
+				"signature": "a|Certifications",
+				"reason": "Bean accepted sgs/icon-list in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon-list"
+			},
+			"Indus Foods Website v2/708#0": {
+				"block": "sgs/button",
+				"signature": "a|Apply For A Trade Account",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/709#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/710#0": {
+				"block": "sgs/heading",
+				"signature": "div|Visit us",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/711#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/712#0": {
+				"block": "sgs/business-info",
+				"signature": "iframe|",
+				"reason": "Bean accepted sgs/business-info in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/business-info"
+			},
+			"Indus Foods Website v2/713#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/714#0": {
+				"block": "sgs/business-info",
+				"signature": "div|55-58 Stratford St N, Birmingham B11 1BU, United Kingdom",
+				"reason": "Bean accepted sgs/business-info in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/business-info"
+			},
+			"Indus Foods Website v2/717#0": {
+				"block": "sgs/button",
+				"signature": "a|Get Directions",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/718#0": {
+				"block": "sgs/site-footer-row",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/site-footer-row in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/site-footer-row"
+			},
+			"Indus Foods Website v2/720#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/721#0": {
+				"block": "sgs/business-info",
+				"signature": "span|Copyright © 2026 Indus Foods Ltd",
+				"reason": "Bean accepted sgs/business-info in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/business-info"
+			},
+			"Indus Foods Website v2/722#0": {
+				"remove": true,
+				"signature": "span||",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/724#0": {
+				"remove": true,
+				"signature": "span||",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/725#0": {
+				"remove": true,
+				"signature": "span|Placeholder photography via Unsplash",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/726#0": {
+				"block": "sgs/container",
+				"signature": "button|Back to top",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/727#0": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2/728#0": {
+				"block": "sgs/button",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
 			}
 		},
 		"page-home": {
@@ -255,6 +543,468 @@
 				"block": "sgs/media",
 				"signature": "image-slot|",
 				"reason": "Bean marked block:sgs/media in the intake review on 2026-10-24"
+			},
+			"Indus Foods Website v2/201#0": {
+				"block": "sgs/container",
+				"signature": "main|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/203#0": {
+				"block": "sgs/hero",
+				"signature": "section|",
+				"reason": "Bean accepted sgs/hero in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/hero"
+			},
+			"Indus Foods Website v2/206#0": {
+				"block": "sgs/heading",
+				"signature": "h1|Leading Indian Food & Drinks Wholesaler",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/207#0": {
+				"block": "sgs/text",
+				"signature": "p|Proud to be a family-run food wholesaler since 1962!",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2/209#0": {
+				"block": "sgs/button",
+				"signature": "a|Apply For A Trade Account",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/210#0": {
+				"block": "sgs/button",
+				"signature": "a|Request Our Catalogue",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/211#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/213#0": {
+				"block": "sgs/label",
+				"signature": "span|BRC certified",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/218#0": {
+				"block": "sgs/container",
+				"signature": "section|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/220#0": {
+				"block": "sgs/heading",
+				"signature": "h2|Our Brands",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/226#0": {
+				"block": "sgs/container",
+				"signature": "section|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/227#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/228#0": {
+				"block": "sgs/heading",
+				"signature": "h2|Our UK Wide Food Services",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/229#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/231#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/231#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/231#2": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/231#3": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/232#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/232#1": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/232#2": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/232#3": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/233#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/233#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/233#2": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/233#3": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/234#0": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/234#1": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/234#2": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/234#3": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/235#0": {
+				"block": "sgs/heading",
+				"signature": "h3|Food Service",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/236#0": {
+				"block": "sgs/text",
+				"signature": "p|Top quality ingredients, drinks and food ready to be served at venues or events",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2/237#0": {
+				"block": "sgs/button",
+				"signature": "a|Top Ethnic Food Services",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/238#0": {
+				"block": "sgs/container",
+				"signature": "section|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/239#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/240#0": {
+				"block": "sgs/heading",
+				"signature": "h2|Why Choose Indus Foods?",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/241#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/243#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/243#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/243#2": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/243#3": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/244#0": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2/244#1": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2/244#2": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2/244#3": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2/245#0": {
+				"block": "sgs/heading",
+				"signature": "h3|Experience",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/246#0": {
+				"block": "sgs/text",
+				"signature": "p|Six decades supplying the UK trade, run by three generations of the same family.",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2/247#0": {
+				"block": "sgs/label",
+				"signature": "span|Est. 1962",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/248#0": {
+				"block": "sgs/container",
+				"signature": "section|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/249#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/250#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/251#0": {
+				"block": "sgs/label",
+				"signature": "span|Our heritage",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/252#0": {
+				"block": "sgs/heading",
+				"signature": "h2|Family-run since 1962.",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/253#0": {
+				"block": "sgs/text",
+				"signature": "p|From a corner shop on Ladypool Road to one of the UK’s leading Indian food wholesalers, still run by the same family.",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2/254#0": {
+				"block": "sgs/button",
+				"signature": "a|Read our story",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/255#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/257#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/265#0": {
+				"block": "sgs/container",
+				"signature": "section|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/266#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/268#0": {
+				"block": "sgs/heading",
+				"signature": "h2|Our Partners Love Us!",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/269#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/290#0": {
+				"block": "sgs/container",
+				"signature": "section|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/291#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/293#0": {
+				"block": "sgs/label",
+				"signature": "span|Getting started",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/294#0": {
+				"block": "sgs/heading",
+				"signature": "h2|How to open a trade account",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/295#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/297#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/305#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/306#0": {
+				"block": "sgs/button",
+				"signature": "a|Start your application",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/307#0": {
+				"block": "sgs/container",
+				"signature": "section|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/308#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/309#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/310#0": {
+				"block": "sgs/heading",
+				"signature": "h2|What Are You Waiting For?",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/311#0": {
+				"block": "sgs/text",
+				"signature": "p|Our customers stay with us for decades because they can rely on the quality of the brands we stock, our fast delivery times and never have to look around for food and drinks again!",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2/313#0": {
+				"block": "sgs/icon-list",
+				"signature": "a|Apply For A Trade Account",
+				"reason": "Bean accepted sgs/icon-list in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon-list"
+			},
+			"Indus Foods Website v2/314#0": {
+				"block": "sgs/icon-list",
+				"signature": "a|Request Our Catalogue",
+				"reason": "Bean accepted sgs/icon-list in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon-list"
+			},
+			"Indus Foods Website v2/217#0": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
 			}
 		},
 		"page-about": {
@@ -587,6 +1337,480 @@
 				"remove": true,
 				"signature": "p|Our founders open one of the UK’s first halal butchers and greengrocers on Ladypool Road, Sparkbrook.",
 				"reason": "Bean marked remove in the intake review on 2026-10-24: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/316#0": {
+				"block": "sgs/hero",
+				"signature": "section|",
+				"reason": "Bean accepted sgs/hero in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/hero"
+			},
+			"Indus Foods Website v2/321#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/331#0": {
+				"block": "sgs/label",
+				"signature": "span|About Indus Foods",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/333#0": {
+				"block": "sgs/heading",
+				"signature": "h1|A family business feeding the UK since 1962.",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/334#0": {
+				"block": "sgs/text",
+				"signature": "p|We are a family-run Indian and South Asian food wholesaler based in Birmingham, supplying more than 5,000 foodservice, retail, manufacturing and wholesale customers across the UK and Europe.",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2/338#0": {
+				"block": "sgs/button",
+				"signature": "a|Read our story",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/344#0": {
+				"block": "sgs/container",
+				"signature": "section|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/344#1": {
+				"block": "sgs/container",
+				"signature": "section|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/344#2": {
+				"block": "sgs/container",
+				"signature": "section|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/344#3": {
+				"block": "sgs/container",
+				"signature": "section|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/345#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/345#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/345#2": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/345#3": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/358#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/360#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/360#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/360#2": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/360#3": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/361#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/361#1": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/361#2": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/361#3": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/347#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/347#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/348#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/348#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/350#0": {
+				"block": "sgs/label",
+				"signature": "div|Our heritage",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/352#0": {
+				"block": "sgs/heading",
+				"signature": "h2|Six decades in five chapters.",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/437#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/438#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/439#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/479#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/481#0": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/481#1": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/481#2": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/481#3": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/481#4": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/481#5": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/481#6": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/481#7": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/485#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/485#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/485#2": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/485#3": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/485#4": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/485#5": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/485#6": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/485#7": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/486#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/486#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/486#2": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/486#3": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/486#4": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/486#5": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/486#6": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/486#7": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/489#0": {
+				"block": "sgs/label",
+				"signature": "span|Heritage",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/493#0": {
+				"block": "sgs/button",
+				"signature": "span|Learn more",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/493#1": {
+				"block": "sgs/button",
+				"signature": "span|Learn more",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/493#2": {
+				"block": "sgs/button",
+				"signature": "span|Learn more",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/493#3": {
+				"block": "sgs/button",
+				"signature": "span|Learn more",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/493#4": {
+				"block": "sgs/button",
+				"signature": "span|Learn more",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/493#5": {
+				"block": "sgs/button",
+				"signature": "span|Learn more",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/493#6": {
+				"block": "sgs/button",
+				"signature": "span|Learn more",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/493#7": {
+				"block": "sgs/button",
+				"signature": "span|Learn more",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/515#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/516#0": {
+				"block": "sgs/decorative-image",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/decorative-image in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/decorative-image"
+			},
+			"Indus Foods Website v2/517#0": {
+				"block": "sgs/decorative-image",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/decorative-image in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/decorative-image"
+			},
+			"Indus Foods Website v2/518#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/519#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/520#0": {
+				"block": "sgs/label",
+				"signature": "div|Work with us",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/522#0": {
+				"block": "sgs/heading",
+				"signature": "h2|Ready to trade with Indus Foods?",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/523#0": {
+				"block": "sgs/text",
+				"signature": "p|Open a trade account for wholesale pricing, a named account manager and UK-wide delivery.",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2/525#0": {
+				"block": "sgs/button",
+				"signature": "a|Become a Trade Customer",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/526#0": {
+				"block": "sgs/button",
+				"signature": "a|Call 0121 771 4330",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/362#1": {
+				"block": "sgs/text",
+				"signature": "div|5,000+",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2/363#1": {
+				"block": "sgs/text",
+				"signature": "div|Trade customers",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2/490#1": {
+				"block": "sgs/text",
+				"signature": "div|Certifications",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
 			}
 		},
 		"page-our-story": {
@@ -859,6 +2083,138 @@
 				"remove": true,
 				"signature": "div|Today",
 				"reason": "Bean marked remove in the intake review on 2026-10-24: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/318#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/319#0": {
+				"block": "sgs/decorative-image",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/decorative-image in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/decorative-image"
+			},
+			"Indus Foods Website v2/379#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/379#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/380#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/380#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/382#0": {
+				"block": "sgs/label",
+				"signature": "div|Still family-run",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/384#0": {
+				"block": "sgs/heading",
+				"signature": "h2|The third generation at the helm.",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/386#0": {
+				"block": "sgs/text",
+				"signature": "p|The grandchildren of our founders now run the business day to day. The approach hasn’t changed: know every customer, keep the shelves full and price fairly.",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2/394#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/394#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/395#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/395#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/396#0": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/396#1": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/388#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/390#0": {
+				"block": "sgs/container",
+				"signature": "div|Today’s Group member",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/391#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/391#1": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/391#2": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/391#3": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/393#0": {
+				"block": "sgs/button",
+				"signature": "a|See our certifications",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
 			}
 		},
 		"page-certifications": {
@@ -901,6 +2257,168 @@
 				"block": "sgs/text",
 				"signature": "div|We vet the producers we import from before their products join our range.",
 				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block."
+			},
+			"Indus Foods Website v2/483#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/483#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/483#2": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/483#3": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/484#0": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/484#1": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/484#2": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/484#3": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/398#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/399#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/401#0": {
+				"block": "sgs/label",
+				"signature": "div|How we protect quality",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/403#0": {
+				"block": "sgs/heading",
+				"signature": "h2|Controls at every step.",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/405#0": {
+				"block": "sgs/text",
+				"signature": "p|Certification is only as good as the process behind it.",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2/408#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/410#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/410#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/410#2": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/410#3": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/412#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/412#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/412#2": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/412#3": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/413#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/413#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/413#2": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/413#3": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/414#0": {
+				"block": "sgs/heading",
+				"signature": "div|Supplier approval",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
 			}
 		},
 		"page-community": {
@@ -933,6 +2451,18 @@
 				"remove": true,
 				"signature": "span|About Us",
 				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/331#0": {
+				"block": "sgs/container",
+				"signature": "span|About · Community & Charity",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/332#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
 			}
 		},
 		"page-sustainability": {
@@ -997,6 +2527,354 @@
 				"remove": true,
 				"signature": "span|About Us",
 				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/354#0": {
+				"block": "sgs/text",
+				"signature": "p|Apply for an open role below, or register your interest further down if you don’t see the right fit.",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2/422#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/424#0": {
+				"block": "sgs/container",
+				"signature": "article|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/424#1": {
+				"block": "sgs/container",
+				"signature": "article|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/424#2": {
+				"block": "sgs/container",
+				"signature": "article|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/425#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/425#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/425#2": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/426#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/426#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/426#2": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/427#0": {
+				"block": "sgs/label",
+				"signature": "span|Warehouse & logistics",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/428#0": {
+				"block": "sgs/label",
+				"signature": "span|Full-time",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/428#1": {
+				"block": "sgs/label",
+				"signature": "span|Full-time",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/428#2": {
+				"block": "sgs/label",
+				"signature": "span|Full-time",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/429#0": {
+				"block": "sgs/label",
+				"signature": "span|Birmingham B11",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/429#1": {
+				"block": "sgs/label",
+				"signature": "span|Birmingham B11",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/429#2": {
+				"block": "sgs/label",
+				"signature": "span|Birmingham B11",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/430#0": {
+				"block": "sgs/heading",
+				"signature": "h3|Warehouse Operative",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/431#0": {
+				"block": "sgs/text",
+				"signature": "p|Picking, packing and loading ambient, chilled and frozen orders for trade customers across the UK. Forklift training is available.",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2/432#0": {
+				"block": "sgs/button",
+				"signature": "button|Apply for this role",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/432#1": {
+				"block": "sgs/button",
+				"signature": "button|Apply for this role",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/432#2": {
+				"block": "sgs/button",
+				"signature": "button|Apply for this role",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/418#0": {
+				"block": "sgs/container",
+				"signature": "button|Register interest",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/418#1": {
+				"block": "sgs/container",
+				"signature": "button|Register interest",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/418#2": {
+				"block": "sgs/container",
+				"signature": "button|Register interest",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/418#3": {
+				"block": "sgs/container",
+				"signature": "button|Register interest",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/419#0": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2/419#1": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2/419#2": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2/419#3": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2/541#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/542#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/550#0": {
+				"block": "sgs/form",
+				"signature": "form|",
+				"reason": "Bean accepted sgs/form in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form"
+			},
+			"Indus Foods Website v2/551#0": {
+				"block": "sgs/heading",
+				"signature": "h3|Register your interest",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/552#0": {
+				"block": "sgs/text",
+				"signature": "p|Tell us about yourself and we’ll be in touch when a suitable role opens.",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2/553#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/560#0": {
+				"block": "sgs/form-field-text",
+				"signature": "input|",
+				"reason": "Bean accepted sgs/form-field-text in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-text"
+			},
+			"Indus Foods Website v2/560#1": {
+				"block": "sgs/form-field-email",
+				"signature": "input|",
+				"reason": "Bean accepted sgs/form-field-email in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-email"
+			},
+			"Indus Foods Website v2/560#2": {
+				"block": "sgs/form-field-phone",
+				"signature": "input|",
+				"reason": "Bean accepted sgs/form-field-phone in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-phone"
+			},
+			"Indus Foods Website v2/562#0": {
+				"block": "sgs/form-field-select",
+				"signature": "select|",
+				"reason": "Bean accepted sgs/form-field-select in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-select"
+			},
+			"Indus Foods Website v2/562#1": {
+				"block": "sgs/form-field-select",
+				"signature": "select|",
+				"reason": "Bean accepted sgs/form-field-select in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-select"
+			},
+			"Indus Foods Website v2/568#0": {
+				"block": "sgs/form-field-file",
+				"signature": "input|",
+				"reason": "Bean accepted sgs/form-field-file in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-file"
+			},
+			"Indus Foods Website v2/566#0": {
+				"block": "sgs/form-field-textarea",
+				"signature": "textarea|",
+				"reason": "Bean accepted sgs/form-field-textarea in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-textarea"
+			},
+			"Indus Foods Website v2/570#0": {
+				"block": "sgs/form-field-consent",
+				"signature": "input|",
+				"reason": "Bean accepted sgs/form-field-consent in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-consent"
+			},
+			"Indus Foods Website v2/571#0": {
+				"block": "sgs/button",
+				"signature": "button|Send application",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/572#0": {
+				"block": "sgs/container",
+				"signature": "aside|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/573#0": {
+				"block": "sgs/decorative-image",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/decorative-image in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/decorative-image"
+			},
+			"Indus Foods Website v2/574#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/575#0": {
+				"block": "sgs/label",
+				"signature": "div|Talk to us",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/577#0": {
+				"block": "sgs/heading",
+				"signature": "h3|Prefer to talk first?",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/578#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/580#0": {
+				"block": "sgs/container",
+				"signature": "div|Call our office during working hours",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/581#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/581#1": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/581#2": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/583#0": {
+				"block": "sgs/icon-list",
+				"signature": "a|0121 771 4330",
+				"reason": "Bean accepted sgs/icon-list in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon-list"
+			},
+			"Indus Foods Website v2/584#0": {
+				"block": "sgs/icon-list",
+				"signature": "a|amir@indusfoodsltd.com",
+				"reason": "Bean accepted sgs/icon-list in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon-list"
 			}
 		},
 		"page-food-service": {
@@ -1044,6 +2922,150 @@
 				"block": "sgs/text",
 				"signature": "div|Bulk spices, pulses, nuts and flours supplied consistently to specification.",
 				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block."
+			},
+			"Indus Foods Website v2/365#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/367#0": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/367#1": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/367#2": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/368#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/368#1": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/368#2": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/369#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/369#1": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/369#2": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/370#0": {
+				"block": "sgs/decorative-image",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/decorative-image in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/decorative-image"
+			},
+			"Indus Foods Website v2/370#1": {
+				"block": "sgs/decorative-image",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/decorative-image in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/decorative-image"
+			},
+			"Indus Foods Website v2/370#2": {
+				"block": "sgs/decorative-image",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/decorative-image in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/decorative-image"
+			},
+			"Indus Foods Website v2/371#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/371#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/371#2": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/372#0": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/372#1": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/372#2": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/373#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/373#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/373#2": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/375#0": {
+				"block": "sgs/heading",
+				"signature": "div|Manufacturing",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/377#0": {
+				"block": "sgs/button",
+				"signature": "span|Explore Manufacturing",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
 			}
 		},
 		"page-manufacturing": {
@@ -1155,6 +3177,18 @@
 				"block": "sgs/multi-button",
 				"signature": "div|",
 				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A flex-wrap group whose children are proposed as sgs/button; sgs/multi-button is the DB container for one or more SGS Buttons and outranks a plain container."
+			},
+			"Indus Foods Website v2/401#0": {
+				"block": "sgs/container",
+				"signature": "div|Why wholesalers work with us",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/402#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
 			}
 		},
 		"page-brands": {
@@ -1192,6 +3226,198 @@
 				"block": "sgs/text",
 				"signature": "div|Own brand · rice, flour & quality foods",
 				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block."
+			},
+			"Indus Foods Website v2/499#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/501#0": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/501#1": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/501#2": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/501#3": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/501#4": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/501#5": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/501#6": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/501#7": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/501#8": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/501#9": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/502#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/502#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/502#2": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/502#3": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/502#4": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/502#5": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/502#6": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/502#7": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/502#8": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/502#9": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/503#0": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/503#1": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/503#2": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/503#3": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/503#4": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/503#5": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/503#6": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/503#7": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/503#8": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/503#9": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/505#0": {
+				"block": "sgs/heading",
+				"signature": "div|Sanam",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
 			}
 		},
 		"page-brand-sanam": {
@@ -1229,6 +3455,66 @@
 				"block": "sgs/multi-button",
 				"signature": "div|",
 				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A flex-wrap group whose children are proposed as sgs/button; sgs/multi-button is the DB container for one or more SGS Buttons and outranks a plain container."
+			},
+			"Indus Foods Website v2/495#0": {
+				"block": "sgs/container",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/495#1": {
+				"block": "sgs/container",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/495#2": {
+				"block": "sgs/container",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/495#3": {
+				"block": "sgs/container",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/495#4": {
+				"block": "sgs/container",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/496#0": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/496#1": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/496#2": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/496#3": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/496#4": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
 			}
 		},
 		"page-brand-shan": {
@@ -1447,6 +3733,300 @@
 				"block": "sgs/text",
 				"signature": "span|Takes about 5 minutes · Your progress saves automatically",
 				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A short reassurance line beside the Continue button; sgs/text is the only candidate."
+			},
+			"Indus Foods Website v2/466#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/4#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/6#0": {
+				"block": "sgs/form",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/form in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/9#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/10#0": {
+				"block": "sgs/label",
+				"signature": "span|Step 1 of 5",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/12#0": {
+				"block": "sgs/container",
+				"signature": "span|Saves as you go",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/13#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/23#0": {
+				"block": "sgs/heading",
+				"signature": "h2|Tell us about your business",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/24#0": {
+				"block": "sgs/text",
+				"signature": "p|The basics we need to set up your account and check your details.",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/26#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/28#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/28#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/28#2": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/28#3": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/28#4": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/28#5": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/28#6": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/33#0": {
+				"block": "sgs/container",
+				"signature": "label|What kind of business are you?",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/35#1": {
+				"remove": true,
+				"signature": "span|*",
+				"reason": "Bean accepted remove in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/35#2": {
+				"remove": true,
+				"signature": "span|*",
+				"reason": "Bean accepted remove in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/35#3": {
+				"remove": true,
+				"signature": "span|*",
+				"reason": "Bean accepted remove in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/49#0": {
+				"block": "sgs/button",
+				"signature": "button|Restaurant or takeaway",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-19 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/39#0": {
+				"block": "sgs/form-field-text",
+				"signature": "input|",
+				"reason": "Bean accepted sgs/form-field-text in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-text"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/39#1": {
+				"block": "sgs/form-field-text",
+				"signature": "input|",
+				"reason": "Bean accepted sgs/form-field-text in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-text"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/39#2": {
+				"block": "sgs/form-field-text",
+				"signature": "input|",
+				"reason": "Bean accepted sgs/form-field-text in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-text"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/41#0": {
+				"block": "sgs/form-field-select",
+				"signature": "select|",
+				"reason": "Bean accepted sgs/form-field-select in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-select"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/41#1": {
+				"block": "sgs/form-field-select",
+				"signature": "select|",
+				"reason": "Bean accepted sgs/form-field-select in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-select"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/64#0": {
+				"remove": true,
+				"signature": "span|Leave blank if you are not VAT registered.",
+				"reason": "Bean accepted remove in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/79#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/85#0": {
+				"block": "sgs/button",
+				"signature": "button|Continue",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/86#0": {
+				"block": "sgs/container",
+				"signature": "aside|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/87#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/88#0": {
+				"block": "sgs/container",
+				"signature": "button|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/89#0": {
+				"block": "sgs/label",
+				"signature": "span|Have these ready",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/93#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/95#0": {
+				"block": "sgs/container",
+				"signature": "div|Your trading and registered business name",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/96#0": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/96#1": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/96#2": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/96#3": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/96#4": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/98#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/99#0": {
+				"block": "sgs/heading",
+				"signature": "span|Need a hand?",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/100#0": {
+				"block": "sgs/text",
+				"signature": "p|Our trade team can complete the application with you over the phone.",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/101#0": {
+				"block": "sgs/button",
+				"signature": "a|0121 771 4330",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/91#0": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/103#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/104#0": {
+				"block": "sgs/text",
+				"signature": "span|Prefer to apply over the phone?",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/105#0": {
+				"block": "sgs/button",
+				"signature": "a|Call 0121 771 4330",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
 			}
 		},
 		"page-catalogue": {
@@ -1516,6 +4096,78 @@
 				"block": "sgs/text",
 				"signature": "span|01",
 				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here."
+			},
+			"Indus Foods Website v2/586#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/588#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/589#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/591#0": {
+				"block": "sgs/heading",
+				"signature": "h3|Delivery",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/592#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/594#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/594#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/594#2": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/595#0": {
+				"block": "sgs/container",
+				"signature": "button|Is there a minimum order?",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/596#0": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2/596#1": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2/596#2": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
 			}
 		},
 		"page-terms": {
@@ -1568,6 +4220,72 @@
 				"remove": true,
 				"signature": "span|01",
 				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/642#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/643#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/647#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/649#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/649#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/649#2": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/649#3": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/649#4": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/649#5": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/649#6": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/652#0": {
+				"block": "sgs/text",
+				"signature": "p|Trade accounts are available to registered businesses. We may request company details or references before an account is opened.",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
 			}
 		},
 		"page-blog": {
@@ -1810,6 +4528,12 @@
 				"remove": true,
 				"signature": "span|Read article",
 				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/603#0": {
+				"remove": true,
+				"signature": "button|All",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
 			}
 		},
 		"page-contact": {
@@ -1927,6 +4651,252 @@
 				"block": "sgs/text",
 				"signature": "span|Sparkbrook, Birmingham B11 1BU",
 				"reason": "Bean marked block:sgs/text in the intake review on 2026-10-24"
+			},
+			"Indus Foods Website v2/528#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/529#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/531#0": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/531#1": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/531#2": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/532#0": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2/532#1": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2/532#2": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2/533#0": {
+				"block": "sgs/container",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/533#1": {
+				"block": "sgs/container",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/533#2": {
+				"block": "sgs/container",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/534#0": {
+				"block": "sgs/label",
+				"signature": "span|Visit",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/537#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/538#0": {
+				"block": "sgs/business-info",
+				"signature": "iframe|",
+				"reason": "Bean accepted sgs/business-info in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/business-info"
+			},
+			"Indus Foods Website v2/539#0": {
+				"block": "sgs/button",
+				"signature": "a|Get Directions",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/468#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/3#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/4#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/6#0": {
+				"block": "sgs/form",
+				"signature": "form|",
+				"reason": "Bean accepted sgs/form in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/7#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/9#0": {
+				"block": "sgs/heading",
+				"signature": "h3|What can we help with?",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/20#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/22#0": {
+				"block": "sgs/heading",
+				"signature": "h3|Your details",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/23#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/25#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/25#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/25#2": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/25#3": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/26#0": {
+				"block": "sgs/form-field-text",
+				"signature": "input|",
+				"reason": "Bean accepted sgs/form-field-text in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-text"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/26#1": {
+				"block": "sgs/form-field-text",
+				"signature": "input|",
+				"reason": "Bean accepted sgs/form-field-text in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-text"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/26#2": {
+				"block": "sgs/form-field-email",
+				"signature": "input|",
+				"reason": "Bean accepted sgs/form-field-email in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-email"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/26#3": {
+				"block": "sgs/form-field-phone",
+				"signature": "input|",
+				"reason": "Bean accepted sgs/form-field-phone in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-phone"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/27#0": {
+				"remove": true,
+				"signature": "label|Your name",
+				"reason": "Bean accepted remove in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/30#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/31#0": {
+				"block": "sgs/form-field-textarea",
+				"signature": "textarea|",
+				"reason": "Bean accepted sgs/form-field-textarea in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-textarea"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/32#0": {
+				"remove": true,
+				"signature": "label|How can we help?",
+				"reason": "Bean accepted remove in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/33#0": {
+				"remove": true,
+				"signature": "span|0 / 800",
+				"reason": "Bean accepted remove in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/36#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/39#0": {
+				"block": "sgs/button",
+				"signature": "button|Email",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/40#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/42#0": {
+				"block": "sgs/button",
+				"signature": "button|Send message",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
 			}
 		},
 		"page-faqs": {
@@ -2131,6 +5101,84 @@
 				"block": "sgs/text",
 				"signature": "span|The aim is simple: nobody should run short in the busiest weeks of their year.",
 				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: The pull-quote words inside a blockquote; sgs/text is the only candidate, though the blockquote parent fits sgs/quote."
+			},
+			"Indus Foods Website v2/617#0": {
+				"block": "sgs/container",
+				"signature": "article|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/618#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/619#0": {
+				"block": "sgs/label",
+				"signature": "span|Seasonal",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/621#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/623#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/627#0": {
+				"block": "sgs/text",
+				"signature": "p|Ramadan is one of the busiest periods of the year for our customers. Restaurants extend their hours, caterers take on community iftars and retailers see demand for staples rise sharply.",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2/631#0": {
+				"block": "sgs/heading",
+				"signature": "h2|Planning starts months ahead",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/629#0": {
+				"block": "sgs/text",
+				"signature": "p|We begin building stock of rice, flour, oils, dates and spices well before the month begins, so customers can order at normal lead times when demand peaks.",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2/636#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/637#0": {
+				"block": "sgs/container",
+				"signature": "a|All articles",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/638#0": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2/639#0": {
+				"block": "sgs/button",
+				"signature": "a|Ask our team",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/356#0": {
+				"block": "sgs/button",
+				"signature": "a|All articles",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
 			}
 		},
 		"page-post-post-2": {
@@ -2923,6 +5971,282 @@
 				"block": "sgs/text",
 				"signature": "span|Takes about 5 minutes · Your progress saves automatically",
 				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A short reassurance line beside the Continue button; sgs/text is the only candidate."
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/6#0": {
+				"block": "sgs/form",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/form in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/9#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/12#0": {
+				"block": "sgs/container",
+				"signature": "span|Saves as you go",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/13#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/23#0": {
+				"block": "sgs/heading",
+				"signature": "h2|Tell us about your business",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/24#0": {
+				"block": "sgs/text",
+				"signature": "p|The basics we need to set up your account and check your details.",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/26#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/28#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/28#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/28#2": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/28#3": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/28#4": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/28#5": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/28#6": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/33#0": {
+				"block": "sgs/container",
+				"signature": "label|What kind of business are you?",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-28 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/35#1": {
+				"remove": true,
+				"signature": "span|*",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/35#2": {
+				"remove": true,
+				"signature": "span|*",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/35#3": {
+				"remove": true,
+				"signature": "span|*",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/39#0": {
+				"block": "sgs/form-field-text",
+				"signature": "input|",
+				"reason": "Bean accepted sgs/form-field-text in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-text"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/39#1": {
+				"block": "sgs/form-field-text",
+				"signature": "input|",
+				"reason": "Bean accepted sgs/form-field-text in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-text"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/39#2": {
+				"block": "sgs/form-field-text",
+				"signature": "input|",
+				"reason": "Bean accepted sgs/form-field-text in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-text"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/41#0": {
+				"block": "sgs/form-field-select",
+				"signature": "select|",
+				"reason": "Bean accepted sgs/form-field-select in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-select"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/41#1": {
+				"block": "sgs/form-field-select",
+				"signature": "select|",
+				"reason": "Bean accepted sgs/form-field-select in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-select"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/64#0": {
+				"remove": true,
+				"signature": "span|Leave blank if you are not VAT registered.",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/79#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/86#0": {
+				"block": "sgs/container",
+				"signature": "aside|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/87#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/88#0": {
+				"block": "sgs/container",
+				"signature": "button|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/89#0": {
+				"block": "sgs/label",
+				"signature": "span|Have these ready",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/93#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/96#0": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/96#1": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/96#2": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/96#3": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/96#4": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/98#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/99#0": {
+				"block": "sgs/heading",
+				"signature": "span|Need a hand?",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/100#0": {
+				"block": "sgs/text",
+				"signature": "p|Our trade team can complete the application with you over the phone.",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/101#0": {
+				"block": "sgs/button",
+				"signature": "a|0121 771 4330",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/91#0": {
+				"block": "sgs/icon",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/icon"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/103#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/104#0": {
+				"block": "sgs/text",
+				"signature": "span|Prefer to apply over the phone?",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/105#0": {
+				"block": "sgs/button",
+				"signature": "a|Call 0121 771 4330",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/19#0": {
+				"remove": true,
+				"signature": "span|1",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/21#0": {
+				"remove": true,
+				"signature": "span|Business",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/95#0": {
+				"block": "sgs/container",
+				"signature": "div|Your trading and registered business name",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
 			}
 		},
 		"contact-enquiry": {
@@ -2985,6 +6309,138 @@
 				"block": "sgs/text",
 				"signature": "span|We reply within one working day. Your details are only used to answer your enquiry.",
 				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A privacy reassurance line beside the submit button; sgs/text is the only candidate."
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/7#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/9#0": {
+				"block": "sgs/heading",
+				"signature": "h3|What can we help with?",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/20#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/22#0": {
+				"block": "sgs/heading",
+				"signature": "h3|Your details",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/23#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/25#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/25#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/25#2": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/25#3": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/26#0": {
+				"block": "sgs/form-field-text",
+				"signature": "input|",
+				"reason": "Bean accepted sgs/form-field-text in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-text"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/26#1": {
+				"block": "sgs/form-field-text",
+				"signature": "input|",
+				"reason": "Bean accepted sgs/form-field-text in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-text"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/26#2": {
+				"block": "sgs/form-field-email",
+				"signature": "input|",
+				"reason": "Bean accepted sgs/form-field-email in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-email"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/26#3": {
+				"block": "sgs/form-field-phone",
+				"signature": "input|",
+				"reason": "Bean accepted sgs/form-field-phone in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-phone"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/30#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/31#0": {
+				"block": "sgs/form-field-textarea",
+				"signature": "textarea|",
+				"reason": "Bean accepted sgs/form-field-textarea in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-textarea"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/32#0": {
+				"remove": true,
+				"signature": "label|How can we help?",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/33#0": {
+				"remove": true,
+				"signature": "span|0 / 800",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/36#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/40#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/42#0": {
+				"block": "sgs/button",
+				"signature": "button|Send message",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/27#0": {
+				"remove": true,
+				"signature": "label|Your name",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/39#0": {
+				"block": "sgs/button",
+				"signature": "button|Email",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
 			}
 		},
 		"sticky-header": {
@@ -2997,6 +6453,612 @@
 				"block": "sgs/responsive-logo",
 				"signature": "indus-logo|",
 				"reason": "the header logo is <indus-logo variant=\"horizontal\">, a custom element; its logoId is carried from build/media-map.json (the file indus-logo.js draws for that variant), not set here"
+			},
+			"Indus Foods Website v2/39#0": {
+				"block": "sgs/site-header",
+				"signature": "header|",
+				"reason": "Bean accepted sgs/site-header in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/site-header"
+			},
+			"Indus Foods Website v2/40#0": {
+				"block": "sgs/site-header-row",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/site-header-row in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/site-header-row"
+			},
+			"Indus Foods Website v2/43#0": {
+				"block": "sgs/responsive-logo",
+				"signature": "indus-logo|",
+				"reason": "Bean accepted sgs/responsive-logo in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/responsive-logo"
+			},
+			"Indus Foods Website v2/45#0": {
+				"block": "sgs/nav-bar-menu",
+				"signature": "nav|",
+				"reason": "Bean accepted sgs/nav-bar-menu in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/nav-bar-menu"
+			},
+			"Indus Foods Website v2/54#0": {
+				"block": "sgs/button",
+				"signature": "a|Register For A Trade Account",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/9#0": {
+				"block": "sgs/site-header-row",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/site-header-row in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/site-header-row"
+			},
+			"Indus Foods Website v2/11#0": {
+				"block": "sgs/multi-button",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/multi-button in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/multi-button"
+			},
+			"Indus Foods Website v2/14#0": {
+				"block": "sgs/button",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/20#0": {
+				"block": "sgs/button",
+				"signature": "a|amir@indusfoodsltd.com",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/22#0": {
+				"block": "sgs/social-icons",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/social-icons in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/social-icons"
+			},
+			"Indus Foods Website v2/13#0": {
+				"block": "sgs/button",
+				"signature": "a|Register For A Trade Account",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/18#0": {
+				"block": "sgs/button",
+				"signature": "span|Call",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			},
+			"Indus Foods Website v2/56#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/58#0": {
+				"block": "sgs/button",
+				"signature": "a|Register For A Trade Account",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			}
+		},
+		"scroll-progress-bar": {
+			"Indus Foods Website v2/38#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			}
+		},
+		"about-mega-menu": {
+			"Indus Foods Website v2/67#0": {
+				"block": "sgs/mega-panel",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/mega-panel in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/mega-panel"
+			},
+			"Indus Foods Website v2/68#0": {
+				"block": "sgs/mega-group",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/mega-group in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/mega-group"
+			},
+			"Indus Foods Website v2/76#0": {
+				"block": "sgs/mega-aside",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/mega-aside in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/mega-aside"
+			},
+			"Indus Foods Website v2/70#0": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/70#1": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/70#2": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/70#3": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/70#4": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/70#5": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/71#0": {
+				"block": "sgs/text",
+				"signature": "span|01",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2/72#0": {
+				"block": "sgs/container",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/72#1": {
+				"block": "sgs/container",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/72#2": {
+				"block": "sgs/container",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/72#3": {
+				"block": "sgs/container",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/72#4": {
+				"block": "sgs/container",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/72#5": {
+				"block": "sgs/container",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/73#0": {
+				"block": "sgs/heading",
+				"signature": "span|Our Story",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/74#0": {
+				"block": "sgs/text",
+				"signature": "span|Six decades of family heritage",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2/77#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/78#0": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/79#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/80#0": {
+				"block": "sgs/label",
+				"signature": "span|Since 1962",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/81#0": {
+				"block": "sgs/text",
+				"signature": "div|Six decades of heritage",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2/82#0": {
+				"block": "sgs/text",
+				"signature": "div|From a Sparkbrook corner shop to one of the UK’s leading Indian food wholesalers.",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2/83#0": {
+				"block": "sgs/button",
+				"signature": "a|Read our story",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			}
+		},
+		"sectors-mega-menu": {
+			"Indus Foods Website v2/85#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/87#0": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/87#1": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/87#2": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/87#3": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/88#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/88#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/88#2": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/88#3": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/89#0": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/89#1": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/89#2": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/89#3": {
+				"block": "sgs/media",
+				"signature": "image-slot|",
+				"reason": "Bean accepted sgs/media in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/media"
+			},
+			"Indus Foods Website v2/90#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/90#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/90#2": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/90#3": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/91#0": {
+				"block": "sgs/heading",
+				"signature": "div|Food Service",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/92#0": {
+				"block": "sgs/text",
+				"signature": "div|Quality ingredients for venues, caterers & events across the UK.",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2/93#0": {
+				"block": "sgs/button",
+				"signature": "div|Explore Food Service",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			}
+		},
+		"brands-mega-menu": {
+			"Indus Foods Website v2/95#0": {
+				"block": "sgs/mega-panel",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/mega-panel in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/mega-panel"
+			},
+			"Indus Foods Website v2/96#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/102#0": {
+				"block": "sgs/mega-aside",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/mega-aside in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/mega-aside"
+			},
+			"Indus Foods Website v2/97#0": {
+				"block": "sgs/label",
+				"signature": "div|Our Brands",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/98#0": {
+				"block": "sgs/gallery",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/gallery in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/gallery"
+			},
+			"Indus Foods Website v2/103#0": {
+				"block": "sgs/label",
+				"signature": "span|Own Brands",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/104#0": {
+				"block": "sgs/text",
+				"signature": "div|We develop and market our own Sanam range alongside trusted brands like Shan, Green Leaf and The Lemon Tree.",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2/105#0": {
+				"block": "sgs/button",
+				"signature": "a|View All Brands",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			}
+		},
+		"mobile-tablet-drawer": {
+			"Indus Foods Website v2/108#0": {
+				"block": "sgs/nav-drawer",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/nav-drawer in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/nav-drawer"
+			},
+			"Indus Foods Website v2/109#0": {
+				"block": "sgs/decorative-image",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/decorative-image in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/decorative-image"
+			},
+			"Indus Foods Website v2/110#0": {
+				"block": "sgs/decorative-image",
+				"signature": "span|",
+				"reason": "Bean accepted sgs/decorative-image in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/decorative-image"
+			},
+			"Indus Foods Website v2/111#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/112#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/114#0": {
+				"block": "sgs/responsive-logo",
+				"signature": "indus-logo|",
+				"reason": "Bean accepted sgs/responsive-logo in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/responsive-logo"
+			},
+			"Indus Foods Website v2/115#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/116#0": {
+				"block": "sgs/social-icons",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/social-icons in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/social-icons"
+			},
+			"Indus Foods Website v2/117#0": {
+				"block": "sgs/business-info",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/business-info in the intake review on 2026-10-20 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/business-info"
+			},
+			"Indus Foods Website v2/118#0": {
+				"block": "sgs/container",
+				"signature": "button|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/119#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/120#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean accepted remove in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
+				"proposed": "remove"
+			},
+			"Indus Foods Website v2/121#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/122#0": {
+				"block": "sgs/nav-drawer-menu",
+				"signature": "nav|",
+				"reason": "Bean accepted sgs/nav-drawer-menu in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/nav-drawer-menu"
+			},
+			"Indus Foods Website v2/178#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/179#0": {
+				"block": "sgs/label",
+				"signature": "span|Follow us",
+				"reason": "Bean accepted sgs/label in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/label"
+			},
+			"Indus Foods Website v2/180#0": {
+				"block": "sgs/social-icons",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/social-icons in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/social-icons"
+			},
+			"Indus Foods Website v2/196#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/197#0": {
+				"block": "sgs/button",
+				"signature": "a|",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
+			}
+		},
+		"inline-form-careers": {
+			"Indus Foods Website v2/551#0": {
+				"block": "sgs/heading",
+				"signature": "h3|Register your interest",
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/heading"
+			},
+			"Indus Foods Website v2/552#0": {
+				"block": "sgs/text",
+				"signature": "p|Tell us about yourself and we’ll be in touch when a suitable role opens.",
+				"reason": "Bean accepted sgs/text in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/text"
+			},
+			"Indus Foods Website v2/553#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/container"
+			},
+			"Indus Foods Website v2/560#0": {
+				"block": "sgs/form-field-text",
+				"signature": "input|",
+				"reason": "Bean accepted sgs/form-field-text in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-text"
+			},
+			"Indus Foods Website v2/560#1": {
+				"block": "sgs/form-field-email",
+				"signature": "input|",
+				"reason": "Bean accepted sgs/form-field-email in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-email"
+			},
+			"Indus Foods Website v2/560#2": {
+				"block": "sgs/form-field-phone",
+				"signature": "input|",
+				"reason": "Bean accepted sgs/form-field-phone in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-phone"
+			},
+			"Indus Foods Website v2/562#0": {
+				"block": "sgs/form-field-select",
+				"signature": "select|",
+				"reason": "Bean accepted sgs/form-field-select in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-select"
+			},
+			"Indus Foods Website v2/562#1": {
+				"block": "sgs/form-field-select",
+				"signature": "select|",
+				"reason": "Bean accepted sgs/form-field-select in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-select"
+			},
+			"Indus Foods Website v2/568#0": {
+				"block": "sgs/form-field-file",
+				"signature": "input|",
+				"reason": "Bean accepted sgs/form-field-file in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-file"
+			},
+			"Indus Foods Website v2/566#0": {
+				"block": "sgs/form-field-textarea",
+				"signature": "textarea|",
+				"reason": "Bean accepted sgs/form-field-textarea in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-textarea"
+			},
+			"Indus Foods Website v2/570#0": {
+				"block": "sgs/form-field-consent",
+				"signature": "input|",
+				"reason": "Bean accepted sgs/form-field-consent in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/form-field-consent"
+			},
+			"Indus Foods Website v2/571#0": {
+				"block": "sgs/button",
+				"signature": "button|Send application",
+				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
+				"proposed": "sgs/button"
 			}
 		}
 	}
