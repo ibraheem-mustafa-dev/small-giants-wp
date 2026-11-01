@@ -23,6 +23,10 @@ export const siteOptionsFile = ( repo, client ) => path.join( repo, 'sites', cli
 const isObject = ( v ) => !! v && 'object' === typeof v && ! Array.isArray( v );
 const same = ( a, b ) => JSON.stringify( a ) === JSON.stringify( b );
 
+// A scalar option as WordPress holds it: update_option stores true as "1", false as "" and a number as its digits, and
+// get_option returns that text, so a written boolean or number is compared in this form. An unset option stays undefined.
+export const storedScalar = ( v ) => ( undefined === v || null === v ? undefined : 'boolean' === typeof v ? ( v ? '1' : '' ) : String( v ) );
+
 // Throws on an entry the site build must not write: an option name or key that is not a plain identifier, or a value that is not an object.
 function checked( name, entry ) {
 	if ( ! NAME.test( name ) ) {
@@ -166,8 +170,9 @@ export function planSiteOptions( { desired, stored } ) {
 		const held = stored[ name ];
 		// A scalar option (a skeleton row's Floating UI setting) is written whole when the stored value differs.
 		if ( ! isObject( value ) ) {
-			! same( held ?? undefined, value ) && out.options.push( { name, before: shown( held ?? undefined ), after: shown( value ) } );
-			! same( held ?? undefined, value ) && out.actions.push( { phase: 'site', type: 'site-option', name, value, say: `option ${ name }: set ${ shown( held ?? undefined ) } -> ${ shown( value ) }` } );
+			const differs = storedScalar( held ) !== storedScalar( value );
+			differs && out.options.push( { name, before: shown( held ?? undefined ), after: shown( value ) } );
+			differs && out.actions.push( { phase: 'site', type: 'site-option', name, value, say: `option ${ name }: set ${ shown( held ?? undefined ) } -> ${ shown( value ) }` } );
 			continue;
 		}
 		if ( null !== held && undefined !== held && ! isObject( held ) ) {

@@ -209,3 +209,15 @@ test( 'MUST FAIL: intake.json\'s skeleton rows carry the site options a proposal
 	assert.deepEqual( rows[ 0 ].siteOptions, BAR );
 	assert.equal( 'siteOptions' in rows[ 1 ], false );
 } );
+
+// get_option returns the text update_option stored: a boolean or number the site build wrote reads back as "1", "" or its
+// digits. MUST FAIL: a strict comparison plans the same write again on every run (indus-foods' reading-progress options
+// on 2026-11-01: "a fresh read still plans 2 changes" after --apply).
+test( 'planSiteOptions: a scalar option already stored in WordPress text form plans no write', () => {
+	const desired = { a_on: { value: true }, a_off: { value: false }, a_height: { value: 3 }, a_text: { value: 'x' } };
+	const stored = { a_on: '1', a_off: '', a_height: '3', a_text: 'x' };
+	assert.deepEqual( planSiteOptions( { desired, stored } ).actions, [] );
+	const changed = planSiteOptions( { desired, stored: { a_on: '', a_off: '1', a_height: '4', a_text: 'y' } } );
+	assert.deepEqual( changed.actions.map( ( a ) => a.name ).sort(), [ 'a_height', 'a_off', 'a_on', 'a_text' ] );
+	assert.equal( planSiteOptions( { desired: { a_on: { value: true } }, stored: { a_on: null } } ).actions.length, 1 );
+} );
