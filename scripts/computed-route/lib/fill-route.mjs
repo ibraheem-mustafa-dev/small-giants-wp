@@ -31,6 +31,6 @@ export function hashRoutePermalink( href, pages ) {
 		return null;
 	}
 	const route = m[ 1 ].replace( /\/+$/, '' ) || 'home';
-	const row = pages.find( ( r ) => 'page' === r.postType && r.route === route );
+	const row = pages.find( ( r ) => [ 'page', 'shop' ].includes( r.postType ) && r.route === route );
 	return row ? permalinkOf( row, pages ) : null;
 }

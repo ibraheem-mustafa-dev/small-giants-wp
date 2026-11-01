@@ -56,3 +56,22 @@ test( 'MUST FAIL: a surface the manifest marks noDraft (a WooCommerce page with 
 	assert.equal( r.skip, why );
 	assert.equal( surfaceReach( { key: 'cart', entry: {}, skel: null, rows: [ row( { slug: 'cart', route: null, template: 'cart' } ) ] } ).skip, null, 'negative control: without the mark it is read' );
 } );
+
+const WOO = [
+	row( { slug: 'home', route: 'home', template: 'front-page' } ),
+	row( { slug: 'shop', route: 'Shop.dc.html', template: 'archive-product', postType: 'shop', id: 100 } ),
+	row( { slug: 'product', route: 'Product.dc.html', template: 'single-product', postType: 'product' } ),
+];
+
+test( 'MUST FAIL: a shop surface reaches its shop row and /shop/, a product surface its product row, a page surface is unchanged', async () => {
+	const { liveAddress } = await import( '../site-run.mjs' );
+	const shop = surfaceReach( { key: 'shop', entry: { target: { template: 'archive-product' } }, skel: null, rows: WOO } );
+	assert.equal( shop.row?.postType, 'shop' );
+	assert.equal( liveAddress( shop.row, WOO ), '/shop/' );
+	const product = surfaceReach( { key: 'product', entry: { target: { template: 'single-product' } }, skel: null, rows: WOO } );
+	assert.equal( product.row?.postType, 'product' );
+	assert.equal( liveAddress( product.row, WOO, { product: '/product/zookies/' } ), '/product/zookies/' );
+	assert.equal( liveAddress( product.row, WOO ), null, 'no chosen product: no address, never the home page' );
+	assert.equal( surfaceReach( { key: 'home', entry: {}, skel: null, rows: WOO } ).row.slug, 'home', 'negative control: a plain page keeps its row' );
+	assert.equal( liveAddress( null, WOO ), '/', 'negative control: a surface with no row keeps today\'s address' );
+} );

@@ -36,10 +36,12 @@ import { isStatePage, stateRouteHash } from './lib/state-route.mjs';
 import { savedInventoryOf, servedInventoryOf } from './lib/skeleton-saved-inventory.mjs';
 import { assertInventoryCurrent, handoffOf, sourcesOf } from './lib/freshness.mjs';
 import { openRunSession, readEnv } from './lib/wp-run-session.mjs';
+import { primeCandidatesPhp, pickPrimeProduct, livePrimeFor, checkoutRole } from './lib/live-prime.mjs';
 import { isContentOnlySurface, isUnwalkedWooPage, wooContentRole } from './lib/site-build-plan.mjs';
 import { rowKey, treeHash } from './lib/site-build-map.mjs';
 import { buildThenMarkPost, deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site-build-apply.mjs';
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
+import { liveProductsPhp, pickLiveProduct, draftHeading, liveAddressFailure } from './lib/live-product.mjs';
 import { pointAfterBuild } from './lib/site-run-layout.mjs';
 import { walkVerdict } from './lib/site-run-walk.mjs';
 import { reviewedVerdict, reviewedRowsFor } from './lib/site-run-reviewed.mjs';
@@ -93,12 +95,16 @@ function liveBase( envFile, envKey ) {
 // its `draftRoute`; any other surface at the page row its key names. `routing` (intake.json `routing`) names the adapter: a
 // state-page draft is reached by state, so the hash is that state route (lib/state-route.mjs); a page-file draft is reached
 // by the file the surface's `draftIndex` names, so it takes no hash.
+// The row kinds a surface keyed by slug or route can name: a page, the WooCommerce shop page (`shop`) and the single-product
+// template (`product`, every product uses it).
+const PAGE_LIKE = [ 'page', 'shop', 'product' ];
+
 export function surfaceReach( { key, entry, skel, rows, withContent = false, routing = null } ) {
 	const routeName = ( r ) => String( r ?? '' ).replace( /^#?\/?/, '' );
 	const postSlug = entry.fromPost ?? ( entry.contentOnly ? key : null );
 	// A template copy Filled on its own is read at the row playing it (`copy.row`, a row key).
 	const byRow = 'fill' === entry.copy?.from ? rows.find( ( r ) => rowKey( r ) === entry.copy.row ) : null;
-	const own = byRow ?? ( postSlug ? rows.find( ( r ) => 'post' === r.postType && r.slug === postSlug ) : rows.find( ( r ) => 'page' === r.postType && ( r.slug === key || r.route === key ) ) );
+	const own = byRow ?? ( postSlug ? rows.find( ( r ) => 'post' === r.postType && r.slug === postSlug ) : rows.find( ( r ) => PAGE_LIKE.includes( r.postType ) && ( r.slug === key || r.route === key ) ) );
 	const named = entry.draftRoute && ! postSlug ? rows.find( ( r ) => 'page' === r.postType && r.route === routeName( entry.draftRoute ) ) : null;
 	const row = own ?? named ?? null;
 	// A surface the manifest marks `noDraft` (one of WooCommerce's own pages the draft has no page for) has nothing to read.
@@ -113,6 +119,10 @@ export function surfaceReach( { key, entry, skel, rows, withContent = false, rou
 // results for any query, the not-found page for an address nothing holds, the order confirmation at the run's test order,
 // `shown`: template slug -> address), or null when the run has none.
 export function liveAddress( row, rows, shown = {} ) {
+	// The single-product template is read at one real product (`shown.product`, chosen from the live site), or nowhere.
+	if ( 'product' === row?.postType ) {
+		return shown.product ?? null;
+	}
 	if ( 'template' !== row?.postType ) {
 		return row ? permalinkOf( row, rows ) : '/';
 	}
@@ -255,8 +265,21 @@ export async function main( argv ) {
 		// are never Filled or built over; a template copy read at one of them is. The account page is Filled like any page.
 		const wooPage = isUnwalkedWooPage( entry.target, row ) ? wooContentRole( row ) : null;
 		const base = liveOverride ? liveOverride.replace( /\/+$/, '' ) : liveBase( entry.envFile, entry.envKey );
+		// A product surface is read at one real product of the live site (lib/live-product.mjs), chosen once per run.
+		const pick = 'product' === row?.postType ? liveProduct( draftHeading( build, entry.intakeSurface ) ) : null;
+		pick?.address && ( shown.product = pick.address );
 		const address = liveAddress( row, rows, shown );
+		// A shop or product surface never falls back to the home page: no address stops it, naming why.
+		const noAddress = liveAddressFailure( { entry, row, address, pick } );
+		if ( noAddress ) {
+			return note( key, 'inventory', false, 0, noAddress );
+		}
 		const liveUrl = `${ base }${ address ?? '/' }`;
+		// A checkout surface's live walk starts with a product in the basket (lib/live-prime.mjs); no product means it walks unprimed.
+		const role = checkoutRole( entry, row );
+		const prime = 'checkout' === role ? primeProduct() : null;
+		prime && ! prime.id && note( key, 'prime', true, 0, `live walk unprimed: ${ prime.why }` );
+		const livePrime = livePrimeFor( { role, base, productId: prime?.id } );
 		const step = stepper( key, wooPage );
 		const exec = execFor( key );
 		if ( ! entry.intakeSurface || ! skel ) {
@@ -308,7 +331,7 @@ export async function main( argv ) {
 		let walkUrl = draftUrl;
 		if ( ! await step( 'fill', async () => {
 			const tail = await exec( 'fill', 'node', [ 'scripts/computed-route/fill.mjs', '--client', client, '--surface', key,
-				'--skeleton', path.relative( REPO, p.skeleton ), '--draft-url', draftUrl, '--live-url', liveUrl, '--allow-external', '--out', path.relative( REPO, out ) ] );
+				'--skeleton', path.relative( REPO, p.skeleton ), '--draft-url', draftUrl, '--live-url', liveUrl, ...( livePrime ? [ '--live-prime', livePrime[ 0 ] ] : [] ), '--allow-external', '--out', path.relative( REPO, out ) ] );
 			// A state that never rendered is an opener failure, not a Fill that happened to run.
 			const opened = path.join( out, 'opener.json' );
 			const o = fs.existsSync( opened ) ? readJson( opened ) : null;
@@ -404,6 +427,26 @@ export async function main( argv ) {
 	const hashMemo = new Map();
 	const blockHashes = ( block ) => hashMemo.get( block ) ?? ( hashMemo.set( block, hashesFor( site, target, block ) ), hashMemo.get( block ) );
 	const wp = wpCommand( target, site, REPO );
+	// The product that primes a checkout walk's basket, chosen once per run from the live site (read-only query).
+	let primeMemo = null;
+	const primeProduct = () => primeMemo ??= ( () => {
+		try {
+			const line = String( runPhp( primeCandidatesPhp() ) ).trim().split( /\r?\n/ ).reverse().find( ( l ) => l.trim().startsWith( '[' ) );
+			return pickPrimeProduct( line ? JSON.parse( line ) : [] );
+		} catch ( e ) {
+			return { id: null, why: `the product query failed: ${ String( e.message || e ).slice( 0, 200 ) }` };
+		}
+	} )();
+	// The product a product surface is read at, chosen from the live site's published products (read-only query).
+	let productsMemo = null;
+	const liveProduct = ( heading ) => {
+		try {
+			productsMemo ??= ( ( line ) => ( line ? JSON.parse( line ) : [] ) )( String( runPhp( liveProductsPhp() ) ).trim().split( /\r?\n/ ).reverse().find( ( l ) => l.trim().startsWith( '[' ) ) );
+		} catch ( e ) {
+			return { id: null, address: null, why: `the product query failed: ${ String( e.message || e ).slice( 0, 200 ) }` };
+		}
+		return pickLiveProduct( productsMemo, heading );
+	};
 	const recordTemplate = ( slug, hash ) => runPhp( templateRecordPhp( slug, hash ) );
 
 	const pool = async ( list, fn ) => {
