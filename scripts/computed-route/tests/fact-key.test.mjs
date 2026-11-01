@@ -52,7 +52,8 @@ test( 'copy and host renames touch only what they name', () => {
 	assert.equal( withCopy( 'Root>H@1#0/5#3', 0 ), 'Root>H@1#0/5#0' );
 	assert.equal( withCopy( 'not a key', 0 ), 'not a key' );
 	assert.equal( renameRootHost( 'Site/5#1', 'Site', 'Root' ), 'Root/5#1' );
-	assert.equal( renameRootHost( 'Site>H@1#0/5#1', 'Site', 'Root' ), 'Site>H@1#0/5#1' );
+	assert.equal( renameRootHost( 'Site>H@1#0/5#1', 'Site', 'Root' ), 'Root>H@1#0/5#1' );
+	assert.equal( renameRootHost( 'Other>H@1#0/5#1', 'Site', 'Root' ), 'Other>H@1#0/5#1' );
 	assert.equal( renameHost( 'Site/5', 'Site', 'Root' ), 'Root/5' );
 	assert.equal( renameHost( 'Other/5', 'Site', 'Root' ), 'Other/5' );
 } );

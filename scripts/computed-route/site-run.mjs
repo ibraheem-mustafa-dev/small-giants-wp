@@ -42,7 +42,7 @@ import { deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
 import { pointAfterBuild } from './lib/site-run-layout.mjs';
 import { walkVerdict } from './lib/site-run-walk.mjs';
-import { reviewedVerdict } from './lib/site-run-reviewed.mjs';
+import { reviewedVerdict, reviewedRowsFor } from './lib/site-run-reviewed.mjs';
 import { calibrationVerdict } from './lib/site-run-blocks.mjs';
 import { certsPath } from './lib/site-run-certs.mjs';
 import { hashesFor } from './stage0.mjs';
@@ -296,7 +296,7 @@ export async function main( argv ) {
 				throw new Error( r.problems.join( '; ' ).slice( 0, 500 ) );
 			}
 			// Built equals reviewed: the new proposal against the rows intake saved for Bean's review.
-			const reviewed = reviewedVerdict( { surface: key, reviewed: skel.rows, proposed: r.proposal.rows, rootComponent: skel.inventory?.checks?.rootName ?? null } );
+			const reviewed = reviewedVerdict( { surface: key, reviewed: reviewedRowsFor( intake.skeletons, entry.intakeSurface ), proposed: r.proposal.rows, rootComponent: skel.inventory?.checks?.rootName ?? null } );
 			// Every block it places has a current slot map before Fill.
 			const calibrated = calibrationVerdict( { surface: key, rows: r.proposal.rows, client, site, cacheDir: CACHE, hashesOf: blockHashes, fixtures: calibrationFixtures() } );
 			return `${ r.proposal.counts.skeletonNodes } nodes, ${ r.proposal.counts.low } low; ${ reviewed }; ${ calibrated }`;

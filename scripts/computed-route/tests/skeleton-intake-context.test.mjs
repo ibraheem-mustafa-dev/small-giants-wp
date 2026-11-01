@@ -95,14 +95,14 @@ test( 'propose passes the intake skeleton kind, name and looping templates under
 	f.done();
 } );
 
-test( 'a served inventory applies decisions saved in intake space; an import chain key is not rewritten', () => {
+test( 'a served inventory applies decisions saved in intake space; an import chain key takes the served root too', () => {
 	const sig = SIG;
 	const own = { block: 'sgs/heading', signature: `${ sig.tag }|${ sig.words.replace( /\s+/g, ' ' ).trim() }` };
 	const chain = `${ ROOT }>Child@5#0/3#0`;
 	const seen = [];
 	const f = fixture( { decisions: { surfaces: { 'site-footer': { [ `${ ROOT }${ KEY_PATH }` ]: own, [ chain ]: own } } } } );
 	proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, propose: spy( seen ) } );
-	assert.deepEqual( Object.keys( seen[ 0 ].clientDecisions.surfaces[ 'site-footer' ] ), [ KEY, chain ] );
+	assert.deepEqual( Object.keys( seen[ 0 ].clientDecisions.surfaces[ 'site-footer' ] ), [ KEY, 'Root>Child@5#0/3#0' ] );
 	const real = proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db } );
 	assert.equal( real.proposal.rows.find( ( r ) => KEY === r.key ).source, 'client decision' );
 	f.done();
@@ -152,10 +152,11 @@ test( 'MUST FAIL (C5 skeleton 12): propose passes the scroll tracks the draft sc
 	g.done();
 } );
 
-test( 'key-space helpers rewrite only a root-host key', () => {
+test( 'key-space helpers rewrite the root host at the head of any chain, and nothing else', () => {
 	assert.equal( servedKey( `${ ROOT }/12#3`, ROOT ), 'Root/12#3' );
 	assert.equal( servedKey( 'Other/12#3', ROOT ), 'Other/12#3' );
-	assert.equal( servedKey( `${ ROOT }>Child@5#0/3#0`, ROOT ), `${ ROOT }>Child@5#0/3#0` );
+	assert.equal( servedKey( `${ ROOT }>Child@5#0/3#0`, ROOT ), 'Root>Child@5#0/3#0' );
+	assert.equal( servedKey( 'Other>Child@5#0/3#0', ROOT ), 'Other>Child@5#0/3#0' );
 	assert.equal( servedKey( `${ ROOT }/12#3`, null ), `${ ROOT }/12#3` );
 	assert.deepEqual( [ ...servedMotion( [ `${ ROOT }/9`, 'Other/9' ], ROOT ) ], [ 'Root/9', 'Other/9' ] );
 	assert.equal( isServedInventory( footer ), true );

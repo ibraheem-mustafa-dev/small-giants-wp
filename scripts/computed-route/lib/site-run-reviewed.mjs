@@ -12,6 +12,15 @@ const SAVED = /^(client decision|finaliser pick|standing decision )/;
 const placed = ( r ) => `${ r.action ?? '' }|${ r.block ?? '' }`;
 const say = ( r ) => ( r.action ? `${ r.action }${ r.block ? ` ${ r.block }` : '' }` : r.block ?? 'no block' );
 
+// The rows intake saved for Bean's review of one intake surface: its own rows, plus every row intake stored once under
+// another surface whose `alsoIn` names this one (a row shared by several surfaces is kept once), each copied under the key
+// `alsoIn` gives it here. skeletons: intake.json `skeletons`; surface: the intake surface name.
+export function reviewedRowsFor( skeletons, surface ) {
+	const own = skeletons?.[ surface ]?.rows || [];
+	const shared = Object.entries( skeletons || {} ).filter( ( [ name ] ) => name !== surface ).flatMap( ( [ , s ] ) => ( s.rows || [] ).flatMap( ( r ) => ( r.alsoIn || [] ).filter( ( a ) => a?.surface === surface ).flatMap( ( a ) => ( a.keys || [] ).map( ( key ) => ( { ...r, key } ) ) ) ) );
+	return [ ...own, ...shared ];
+}
+
 // The comparison of intake's reviewed rows with the new proposal's rows, by draft key:
 // { common, changed: [ { key, was, now, why } ], added, removed } where `why` is the explanation or null. Intake keys the
 // entry draft's own elements by its component and a served proposal by `Root` (lib/key-space.mjs): with `rootComponent`

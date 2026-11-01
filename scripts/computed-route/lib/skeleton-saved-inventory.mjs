@@ -10,7 +10,7 @@ import { servedKey, SERVED_ROOT } from './key-space.mjs';
 // inv: a saved inventory; rootComponent: the entry component's name (checks.rootName). Returns the inventory in the served space,
 // its elements, root key and `beside` list alike.
 export function servedInventoryOf( inv, rootComponent ) {
-	const served = ( key ) => servedKey( rootComponent && String( key ).startsWith( `${ rootComponent }>` ) ? `${ SERVED_ROOT }${ String( key ).slice( rootComponent.length ) }` : key, rootComponent );
+	const served = ( key ) => servedKey( key, rootComponent );
 	const own = ( e ) => ( e.template === rootComponent ? SERVED_ROOT : e.template );
 	const checks = inv.checks ? { ...inv.checks, ...( inv.checks.rootName === rootComponent ? { rootName: SERVED_ROOT } : {} ), ...( inv.checks.rootKey ? { rootKey: served( inv.checks.rootKey ) } : {} ) } : inv.checks;
 	// The saved inventory's top element hangs under a parent that is not in it; the surface root has no parent. The

@@ -10,7 +10,8 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { reviewedChanges, reviewedVerdict } from '../lib/site-run-reviewed.mjs';
+import { reviewedChanges, reviewedVerdict, reviewedRowsFor } from '../lib/site-run-reviewed.mjs';
+import { servedKey, servedDecisions, translateElement } from '../lib/key-space.mjs';
 import { calibrationVerdict, proposedBlocks } from '../lib/site-run-blocks.mjs';
 import { walkCounts, walkVerdict } from '../lib/site-run-walk.mjs';
 import { certsPath, certifiPath } from '../lib/site-run-certs.mjs';
@@ -49,11 +50,12 @@ test( 'MUST FAIL: no reviewed rows, or no key in common, cannot be compared and 
 
 test( 'MUST FAIL: intake rows keyed by the entry draft component are compared with the served proposal Root keys', () => {
 	const reviewed = [ rev( 'Home Draft/1#0', 'sgs/hero' ), rev( 'Home Draft/2#0', 'sgs/heading' ), rev( 'Home Draft>Card@3#0/4#0', 'sgs/text' ) ];
-	const proposed = [ rev( 'Root/1#0', 'sgs/hero' ), rev( 'Root/2#0', 'sgs/text' ), rev( 'Home Draft>Card@3#0/4#0', 'sgs/text' ) ];
+	const proposed = [ rev( 'Root/1#0', 'sgs/hero' ), rev( 'Root/2#0', 'sgs/text' ), rev( 'Root>Card@3#0/4#0', 'sgs/text' ) ];
 	assert.throws( () => reviewedVerdict( { surface: 'home', reviewed, proposed, rootComponent: 'Home Draft' } ), /1 row\(s\) of home differ.*Root\/2#0 was sgs\/heading, now sgs\/text/ );
 	assert.equal( reviewedChanges( { reviewed, proposed, rootComponent: 'Home Draft' } ).common, 3 );
-	// Negative control: with no root component the spaces stay apart, so only the imported element is in common.
-	assert.equal( reviewedChanges( { reviewed, proposed } ).common, 1 );
+	// Negative control: with no root component the spaces stay apart, so no key is in common (the served runtime names a
+	// mounted host's elements under Root too).
+	assert.equal( reviewedChanges( { reviewed, proposed } ).common, 0 );
 } );
 
 test( 'NEGATIVE: identical rows, a change a saved decision made and a stale row shown all pass, and the explanation is in the result', () => {
@@ -160,7 +162,7 @@ test( 'MUST FAIL: NODE_EXTRA_CA_CERTS wins, else the certifi path a Python print
 
 test( 'MUST FAIL: site-run.mjs wires the three checks and no machine path', () => {
 	const t = fs.readFileSync( path.join( ROUTE, 'site-run.mjs' ), 'utf8' );
-	assert.match( t, /reviewedVerdict\( \{ surface: key, reviewed: skel\.rows, proposed: r\.proposal\.rows, rootComponent: skel\.inventory\?\.checks\?\.rootName \?\? null \} \)/ );
+	assert.match( t, /reviewedVerdict\( \{ surface: key, reviewed: reviewedRowsFor\( intake\.skeletons, entry\.intakeSurface \), proposed: r\.proposal\.rows, rootComponent: skel\.inventory\?\.checks\?\.rootName \?\? null \} \)/ );
 	assert.match( t, /calibrationVerdict\( \{ surface: key, rows: r\.proposal\.rows,/ );
 	assert.match( t, /const certs = certsPath\(\);/ );
 	assert.doesNotMatch( t, /AppData|Python313/ );
@@ -206,4 +208,31 @@ test( 'MUST FAIL: push-to-remote.sh runs the build comparison before any write a
 	assert.match( sh, /build-compare\.mjs" --local "\$LOCAL" --target "\$REMOTE" \|\| \{ [^}]*exit 1; \}/ );
 	assert.match( sh, /site-check\.mjs "\$CLIENT" --site "\$REMOTE"/ );
 	assert.match( sh, /Last step, not run here/ );
+} );
+
+// Intake stores a row shared by several surfaces once, under the first, and names the others in `alsoIn` with their own
+// keys. MUST FAIL: reading only a surface's own rows leaves a page that shares a template with an earlier one with nothing
+// to compare (indus-foods' sector and brand pages, 2026-11-01: "intake saved no reviewed rows").
+test( 'reviewedRowsFor: a surface reads its own rows and the shared rows alsoIn names it in, under its own keys', () => {
+	const skeletons = {
+		'page-a': { rows: [ { key: 'Site/5#0', block: 'sgs/text', alsoIn: [ { surface: 'page-b', keys: [ 'Site/5#0' ] }, { surface: 'page-c', keys: [ 'Site/9#0', 'Site/9#1' ] } ] } ] },
+		'page-b': { rows: [] },
+		'page-c': { rows: [ { key: 'Site/1#0', block: 'sgs/heading' } ] },
+	};
+	assert.deepEqual( reviewedRowsFor( skeletons, 'page-b' ).map( ( r ) => [ r.key, r.block ] ), [ [ 'Site/5#0', 'sgs/text' ] ] );
+	assert.deepEqual( reviewedRowsFor( skeletons, 'page-c' ).map( ( r ) => r.key ), [ 'Site/1#0', 'Site/9#0', 'Site/9#1' ] );
+	assert.equal( reviewedRowsFor( skeletons, 'page-a' ).length, 1 );
+	assert.doesNotThrow( () => reviewedVerdict( { surface: 'page-b', reviewed: reviewedRowsFor( skeletons, 'page-b' ), proposed: [ { key: 'Site/5#0', block: 'sgs/text' } ] } ) );
+} );
+
+// The served runtime names a mounted host's elements under `Root` (`Root>Form@4#0/7#0`), and intake names them under the
+// entry component. MUST FAIL: renaming only a single-host key leaves every nested key unmatched, so a form's reviewed rows
+// share no key with its proposal and Bean's decisions on nested rows never reach the served proposal.
+test( 'served keys rename the root host at the head of a chain of any depth, both ways', () => {
+	assert.equal( servedKey( 'Site>Form@4#0/7#0', 'Site' ), 'Root>Form@4#0/7#0' );
+	assert.equal( servedKey( 'Site/7#0', 'Site' ), 'Root/7#0' );
+	assert.equal( servedKey( 'Other>Form@4#0/7#0', 'Site' ), 'Other>Form@4#0/7#0' );
+	assert.deepEqual( Object.keys( servedDecisions( { 'Site>Footer@2#0/5#0': { block: 'remove' } }, 'Site' ) ), [ 'Root>Footer@2#0/5#0' ] );
+	assert.equal( translateElement( { key: 'Root>Footer@2#0/5#0', template: 'Footer', tpl: 5 }, 'Site' ).instanceKey, 'Site>Footer@2#0/5#0' );
+	assert.doesNotThrow( () => reviewedVerdict( { surface: 'form', reviewed: [ { key: 'Site>Form@4#0/7#0', block: 'sgs/text' } ], proposed: [ { key: 'Root>Form@4#0/7#0', block: 'sgs/text' } ], rootComponent: 'Site' } ) );
 } );
