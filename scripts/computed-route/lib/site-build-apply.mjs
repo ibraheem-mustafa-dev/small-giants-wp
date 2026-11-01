@@ -75,6 +75,18 @@ if ( $t ) {
 `;
 }
 
+// The PHP dropping a template's content marker once its saved copy is deleted.
+export function templateForgetPhp( slug ) {
+	if ( ! /^[a-z0-9_-]+$/.test( slug ) ) {
+		throw new Error( `template slug "${ slug }" is not plain` );
+	}
+	return `<?php
+$o = (array) get_option( '${ TEMPLATE_CONTENT_OPTION }', array() );
+unset( $o['${ slug }'] );
+update_option( '${ TEMPLATE_CONTENT_OPTION }', $o );
+`;
+}
+
 // The PHP storing a post's content marker: the hash of the content as the site holds it now, read back on the site so
 // both sides hash the same text. The site build writes it after each save and the site run after each post it builds.
 export function contentMarkPhp( id ) {
@@ -249,6 +261,14 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 				throw e;
 			}
 			markTemplateContent( a.template );
+		} else if ( 'template-remove' === a.type ) {
+			// Only the saved wp_template post goes (the theme or plugin file stands); its recorded hash and content marker go with it.
+			if ( ! Number.isInteger( a.id ) || a.id < 1 ) {
+				throw new Error( `the saved ${ a.template } template has no post id in the site's state` );
+			}
+			again( () => wp( [ 'post', 'delete', String( a.id ), '--force' ] ) );
+			again( () => wp( [ 'option', 'update', TEMPLATE_OPTION, JSON.stringify( a.hashes ), '--format=json' ] ) );
+			again( () => wp( [ 'eval-file', '-' ], templateForgetPhp( a.template ) ) );
 		} else if ( 'section' === a.type ) {
 			wp( [ 'post', 'meta', 'update', String( val( a.id ) ), SECTION_META, String( val( a.page ) ) ] );
 		} else if ( 'update' === a.type ) {

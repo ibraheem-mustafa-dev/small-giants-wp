@@ -180,15 +180,15 @@ try {
 		}
 		const all = withSiteOptions( p, { repo, client, runPhp } );
 		if ( templatesOnly ) {
-			return { ...all, actions: all.actions.filter( ( a ) => 'template' === a.type ), options: all.options.filter( ( o ) => o.name.startsWith( 'sgs_site_build_templates[' ) ) };
+			return { ...all, actions: all.actions.filter( ( a ) => [ 'template', 'template-remove' ].includes( a.type ) ), options: all.options.filter( ( o ) => o.name.startsWith( 'sgs_site_build_templates[' ) ) };
 		}
-		return onlyRows ? { ...all, actions: all.actions.filter( ( a ) => 'template' !== a.type && onlyRows.includes( a.key ) ), options: [] } : all;
+		return onlyRows ? { ...all, actions: all.actions.filter( ( a ) => ! [ 'template', 'template-remove' ].includes( a.type ) && onlyRows.includes( a.key ) ), options: [] } : all;
 	};
 	const first = plan();
 	print( first );
 	const counts = tally( first.actions );
 	if ( ! apply ) {
-		console.log( `${ counts.creates } to create, ${ counts.changes } to change, ${ counts.adopts } to adopt (dry run: re-run with --apply)` );
+		console.log( `${ counts.creates } to create, ${ counts.changes } to change (${ first.actions.filter( ( a ) => 'template-remove' === a.type ).length } of them saved templates removed), ${ counts.adopts } to adopt (dry run: re-run with --apply)` );
 		process.exit( templatesOnly || onlyRows ? 0 : runFlowLinks( { rows, runPhp, apply: false, pending: true } ) );
 	}
 	const build = wpBuildPage( repo, site, target );

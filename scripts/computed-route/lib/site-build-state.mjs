@@ -155,13 +155,16 @@ $out['templateHashes'] = (object) (array) get_option( '${ TEMPLATE_OPTION }', ar
 $out['templateSaved'] = (object) (array) get_option( '${ TEMPLATE_CONTENT_OPTION }', array() );
 $out['customTemplates'] = array();
 $out['templateContent'] = array();
+$out['templateIds'] = array();
 foreach ( get_block_templates( array(), 'wp_template' ) as $t ) {
 	if ( 'custom' === $t->source ) {
 		$out['customTemplates'][] = $t->slug;
+		$out['templateIds'][ $t->slug ] = (int) $t->wp_id;
 		$out['templateContent'][ $t->slug ] = hash( 'sha256', (string) $t->content );
 	}
 }
 $out['templateContent'] = (object) $out['templateContent'];
+$out['templateIds'] = (object) $out['templateIds'];
 $out['pointers'] = array();
 $out['pointerKeys'] = array();
 foreach ( array( 'header', 'footer', 'drawer' ) as $a ) {

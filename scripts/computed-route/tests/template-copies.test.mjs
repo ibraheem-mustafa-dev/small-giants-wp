@@ -6,10 +6,10 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { DERIVED, POST_CONTENT, commonChain, contentUnder, copySource, copyTree, framed, pageTemplateOf, parseBlocks, servedTemplates, splitShell, themeContent, THEME_TEMPLATES } from '../lib/template-copies.mjs';
-import { planBuild } from '../lib/site-build-plan.mjs';
+import { planBuild, tally } from '../lib/site-build-plan.mjs';
 import { buildManifest, templateSurfaces } from '../lib/manifest-build.mjs';
 import { copyTrees, liveAddress, needsTestOrder, orderAddress, runKeys, surfaceReach } from '../site-run.mjs';
-import { TEST_ORDER_META, deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from '../lib/site-build-apply.mjs';
+import { TEST_ORDER_META, applyPhase, deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from '../lib/site-build-apply.mjs';
 
 const row = ( o ) => ( { route: o.slug, parent: null, template: null, menus: [], postType: 'page', collection: 'static', flags: [], id: null, ...o } );
 const state = ( o = {} ) => ( {
@@ -124,7 +124,7 @@ test( 'MUST FAIL: site build builds the single copy as the frame around the firs
 
 test( 'MUST FAIL: site build builds a run\'s copy file once, derives 404/search/archive from the page copy\'s shell, and reports what has no copy', () => {
 	const copy = copyTree( { slug: 'page', chain: [ BG ] } );
-	const files = { 'sites/c/build/trees/template/page.json': copy, 'sites/c/build/trees/template/page.shell.json': { chain: [ BG ], surfaces: { about: [ BG ] } } };
+	const files = { 'sites/c/build/trees/template/page.json': copy, 'sites/c/build/trees/template/page.shell.json': { chain: [ BG ], surfaces: { about: [ BG ] } }, 'sites/c/build/surfaces.json': { 'template-page': { target: { template: 'page' } } } };
 	const p = planBuild( { rows: fresh( INDUS ), state: state(), repo: repoWith( files ), client: 'c' } );
 	const built = p.actions.filter( ( a ) => 'template' === a.type );
 	assert.deepEqual( built.map( ( a ) => a.template ), [ 'page', 'archive', 'search', '404' ] );
@@ -241,16 +241,71 @@ test( "MUST FAIL: a WooCommerce page's copy Filled at its page is its whole tree
 	assert.ok( find( out.cart.tree, 'sgs/heading' ), "the draft's heading beside the region stays in the copy" );
 } );
 
-test( 'MUST FAIL: a WooCommerce template whose page has no draft surface is built from the page copy, holding the theme\u2019s own content', () => {
-	const noCart = manifest( SHOP ).entries;
-	assert.deepEqual( noCart[ 'template-cart' ].copy, { from: 'fill', row: 'page:cart' }, 'a cart page the draft has keeps its own Fill' );
-	const drawerOnly = buildManifest( { client: 'c', site: 's', rows: SHOP, records: records.filter( ( r ) => 'cart' !== r.page_key ), target, entryFile: 'Site.dc.html', vocab: [ { state: 'hover' } ] } ).entries;
-	assert.deepEqual( drawerOnly[ 'template-cart' ].copy, { from: 'page', unplayed: 'page:cart' } );
-	assert.equal( 'draftIndex' in drawerOnly[ 'template-cart' ], false, 'no draft is read for it' );
+test( 'MUST FAIL: a WooCommerce template no draft surface plays gets no manifest surface; a DERIVED template still comes from the page copy', () => {
+	const noCart = manifest( SHOP );
+	assert.deepEqual( noCart.entries[ 'template-cart' ].copy, { from: 'fill', row: 'page:cart' }, 'a cart page the draft has keeps its own Fill' );
+	const drawerOnly = buildManifest( { client: 'c', site: 's', rows: SHOP, records: records.filter( ( r ) => 'cart' !== r.page_key ), target, entryFile: 'Site.dc.html', vocab: [ { state: 'hover' } ] } );
+	assert.equal( 'template-cart' in drawerOnly.entries, false, 'a cart no draft surface plays is never built as a copy' );
+	assert.deepEqual( drawerOnly.unplayed.map( ( u ) => u.key ), [ 'template-cart', 'template-checkout' ], 'the records here have no checkout page either' );
+	assert.equal( 'template-order-confirmation' in drawerOnly.entries, true, 'a template a draft surface plays is still built' );
+	assert.equal( 'template-404' in drawerOnly.entries, true, 'a template a draft surface plays or derives is still built' );
 	const buildDir = fs.mkdtempSync( path.join( os.tmpdir(), 'copies-' ) );
 	fs.mkdirSync( path.join( buildDir, 'trees', 'template' ), { recursive: true } );
 	fs.writeFileSync( path.join( buildDir, 'trees', 'template', 'page.shell.json' ), JSON.stringify( { chain: [ BG ] } ) );
-	const out = copyTrees( { surfaces: drawerOnly, keys: [ 'template-cart' ], filled: {}, buildDir } );
-	assert.deepEqual( out.cart.tree, copyTree( { slug: 'cart', chain: [ BG ] } ) );
+	assert.equal( drawerOnly.entries[ 'template-404' ].copy.from, 'page', 'a derived template still takes the page copy' );
+	const out = copyTrees( { surfaces: drawerOnly.entries, keys: [ 'template-404' ], filled: {}, buildDir } );
+	assert.deepEqual( out[ '404' ].tree, copyTree( { slug: '404', chain: [ BG ] } ) );
 	assert.deepEqual( copyTree( { slug: 'page-my-account', chain: [] } )[ 1 ].innerBlocks, [ POST_CONTENT ], 'a template the theme ships no file for holds the page content' );
+} );
+
+const surfacesFile = ( slugs ) => ( { 'sites/c/build/surfaces.json': Object.fromEntries( slugs.map( ( s ) => [ `template-${ s }`, { target: { template: s } } ] ) ) } );
+
+test( 'MUST FAIL: a stale tree file no manifest surface builds is never read, so its template is not rebuilt', () => {
+	const copy = copyTree( { slug: 'cart', whole: [ { name: 'sgs/heading', attributes: { content: 'Bag' } }, POST_CONTENT ] } );
+	const files = { 'sites/c/build/trees/template/cart.json': copy };
+	const stale = planBuild( { rows: fresh( SHOP ), state: state(), repo: repoWith( files ), client: 'c' } );
+	assert.equal( stale.actions.some( ( a ) => 'template' === a.type && 'cart' === a.template ), false );
+	// Negative control: the same file with a manifest surface for the template is built.
+	const surfaced = planBuild( { rows: fresh( SHOP ), state: state(), repo: repoWith( { ...files, ...surfacesFile( [ 'cart' ] ) } ), client: 'c' } );
+	assert.equal( surfaced.actions.some( ( a ) => 'template' === a.type && 'cart' === a.template ), true );
+} );
+
+test( 'MUST FAIL: every saved template the clone wrote that no manifest surface or site-build copy builds is removed, listed, and nothing else is touched', () => {
+	const copy = copyTree( { slug: 'page', chain: [ BG ] } );
+	const files = { 'sites/c/build/trees/template/page.json': copy, 'sites/c/build/trees/template/page.shell.json': { chain: [ BG ] }, ...surfacesFile( [ 'page' ] ) };
+	const saved = [ 'page', 'page-my-account', 'order-confirmation' ];
+	const hashes = { page: 'p', 'page-my-account': 'a', 'order-confirmation': 'b' };
+	const ids = { page: 5, 'page-my-account': 6, 'order-confirmation': 7 };
+	const p = planBuild( { rows: fresh( INDUS ), state: state( { customTemplates: saved, templateHashes: hashes, templateIds: ids } ), repo: repoWith( files ), client: 'c' } );
+	assert.deepEqual( p.problems, [] );
+	const gone = p.actions.filter( ( a ) => 'template-remove' === a.type );
+	assert.deepEqual( gone.map( ( a ) => [ a.template, a.id ] ), [ [ 'page-my-account', 6 ], [ 'order-confirmation', 7 ] ], 'a template the manifest builds (page) is never removed' );
+	assert.equal( 'page-my-account' in gone[ 1 ].hashes || 'order-confirmation' in gone[ 1 ].hashes, false, 'the removed copies leave no recorded hash' );
+	assert.ok( gone.every( ( a ) => /remove the saved copy/.test( a.say ) ), 'each removal is listed' );
+	// Negative control: a saved template the clone never recorded (WooCommerce's or a person's) is kept and noted.
+	const foreign = planBuild( { rows: fresh( INDUS ), state: state( { customTemplates: [ ...saved, 'single-product-gift-card' ], templateHashes: hashes, templateIds: { ...ids, 'single-product-gift-card': 8 } } ), repo: repoWith( files ), client: 'c' } );
+	assert.equal( foreign.actions.some( ( a ) => 'template-remove' === a.type && 'single-product-gift-card' === a.template ), false );
+	assert.ok( foreign.notes.includes( 'template:single-product-gift-card: kept: not written by the clone' ) );
+	assert.deepEqual( foreign.actions.filter( ( a ) => 'template-remove' === a.type ).map( ( a ) => a.template ), [ 'page-my-account', 'order-confirmation' ], 'the recorded stale ones still go' );
+	assert.equal( tally( p.actions ).changes, tally( p.actions.filter( ( a ) => 'template-remove' !== a.type ) ).changes + 2, 'a removal counts as a change, so a fresh read after it plans none' );
+	// A template the site build itself builds from its rows (a shop row's tree) is never removed either.
+	const shopTree = [ { name: 'sgs/heading', attributes: { content: 'S' } }, { name: 'woocommerce/product-collection' } ];
+	const shopRepo = repoWith( { 'sites/c/build/trees/shop/shop.json': shopTree } );
+	const first = planBuild( { rows: fresh( SHOP ), state: state(), repo: shopRepo, client: 'c' } );
+	const hashes2 = Object.fromEntries( first.actions.filter( ( a ) => 'template' === a.type ).map( ( a ) => [ a.template, a.hash ] ) );
+	assert.ok( 'archive-product' in hashes2, 'the shop row builds archive-product' );
+	const built = planBuild( { rows: fresh( SHOP ), state: state( { customTemplates: [ 'archive-product' ], templateIds: { 'archive-product': 9 }, templateHashes: hashes2, templateContent: hashes2, templateSaved: hashes2 } ), repo: shopRepo, client: 'c' } );
+	assert.deepEqual( built.problems, [] );
+	assert.equal( built.actions.some( ( a ) => 'template-remove' === a.type ), false );
+} );
+
+test( 'removing a saved template deletes only its wp_template post and its markers', () => {
+	const calls = [];
+	const wp = ( args, php ) => ( calls.push( [ args, php ] ), '' );
+	const action = { phase: 'posts', type: 'template-remove', key: 'template:page-my-account', template: 'page-my-account', id: 6, hashes: { page: 'h' }, say: 'x' };
+	assert.equal( applyPhase( [ action ], 'posts', { wp, build: () => assert.fail( 'no build' ), onId() {}, log() {}, refs: {} } ), 1 );
+	assert.deepEqual( calls[ 0 ][ 0 ], [ 'post', 'delete', '6', '--force' ] );
+	assert.deepEqual( calls[ 1 ][ 0 ].slice( 0, 3 ), [ 'option', 'update', 'sgs_site_build_templates' ] );
+	assert.match( calls[ 2 ][ 1 ], /unset\( \$o\['page-my-account'\] \)/ );
+	assert.throws( () => applyPhase( [ { ...action, id: undefined } ], 'posts', { wp, build() {}, onId() {}, log() {}, refs: {} } ), /no post id/ );
 } );

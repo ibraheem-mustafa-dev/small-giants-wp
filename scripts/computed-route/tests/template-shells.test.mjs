@@ -62,7 +62,7 @@ test( 'MUST FAIL: the order confirmation is built from the draft\'s result surfa
 	const out = buildManifest( { client: 'c', site: 's', rows: [ HOME, OC ], records: [ rec( 'S-1', 'page', 'Home' ), rec( 'S-32', 'result', 'Confirmation' ) ], target, entryFile: 'Site.dc.html', vocab: [ { state: 'hover' } ] } ).entries;
 	assert.deepEqual( out[ 'template-order-confirmation' ].copy, { from: 'fill', row: 'template:order-confirmation' } );
 	const none = buildManifest( { client: 'c', site: 's', rows: [ HOME, OC ], records: [ rec( 'S-1', 'page', 'Home' ) ], target, entryFile: 'Site.dc.html', vocab: [ { state: 'hover' } ] } ).entries;
-	assert.deepEqual( none[ 'template-order-confirmation' ].copy, { from: 'page', unplayed: 'template:order-confirmation' }, 'with no record the copy stays the page shell around the theme\'s content' );
+	assert.equal( 'template-order-confirmation' in none, false, "with no record no copy is built: WooCommerce's own template stands (FR-48-87)" );
 	assert.ok( WHOLE_TREE.includes( 'order-confirmation' ) );
 	assert.equal( copySource( [ OC ], 'order-confirmation' ), 'whole', 'the copy is the whole Filled tree with WooCommerce\'s blocks placed in it' );
 } );

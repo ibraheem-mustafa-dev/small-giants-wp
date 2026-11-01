@@ -222,6 +222,9 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 	const rel = ( f ) => path.relative( repo, f ).split( path.sep ).join( '/' );
 	const builders = new Map();
 	const uncopied = [];
+	// The templates a manifest surface builds (the site run's copies). A copy file under trees/template/ with no surface
+	// here is a stale tree and is never read, so a template the manifest stopped building is not recreated.
+	const surfaced = new Set( Object.values( readSurfaces( repo, client ) ).map( ( e ) => e?.target?.template ).filter( Boolean ) );
 	for ( const slug of servedTemplates( rows ) ) {
 		const how = copySource( rows, slug );
 		const mine = rowsOf( rows, slug );
@@ -229,7 +232,7 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		const trees = sources.map( ( row ) => ( { row, ...treeFor( repo, client, row, {} ) } ) ).filter( ( t ) => 'placeholder' !== t.source );
 		const owner = mine[ 0 ] || null;
 		let pick = null;
-		if ( fs.existsSync( copyFile( buildDir, slug ) ) ) {
+		if ( surfaced.has( slug ) && fs.existsSync( copyFile( buildDir, slug ) ) ) {
 			pick = { row: owner, tree: JSON.parse( fs.readFileSync( copyFile( buildDir, slug ), 'utf8' ) ), source: rel( copyFile( buildDir, slug ) ) };
 		} else if ( 'whole' === how && trees.length ) {
 			pick = { row: trees[ 0 ].row, tree: copyTree( { slug, whole: trees[ 0 ].tree } ), source: trees[ 0 ].source };
@@ -274,6 +277,22 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		const previous = hashes;
 		hashes = { ...hashes, [ slug ]: hash };
 		actions.push( { phase: 'posts', type: 'template', key: pick.row ? rowKey( pick.row ) : `template:${ slug }`, template: slug, tree: pick.tree, hash, hashes, previous, say: `${ pick.row ? `${ rowKey( pick.row ) }: ` : '' }${ verb } the site's own ${ slug } template from ${ pick.source }` } );
+	}
+
+	// A saved template the clone wrote (its slug is recorded in `sgs_site_build_templates`, which the site build and the site
+	// run both write after each template they save) that no manifest surface and no site-build copy builds now goes back to the
+	// theme or plugin file (FR-48-55 step 8, R-48-2): the saved wp_template post is deleted and its recorded hash dropped. A
+	// saved template the clone did not write (WooCommerce's or a person's) is noted and kept. Template parts and posts are never touched.
+	for ( const slug of ( state.customTemplates || [] ).filter( ( t ) => ! builders.has( t ) && ! surfaced.has( t ) ) ) {
+		if ( ! Object.hasOwn( hashes, slug ) ) {
+			notes.push( `template:${ slug }: kept: not written by the clone` );
+			continue;
+		}
+		const { [ slug ]: dropped, ...kept } = hashes;
+		const id = ( state.templateIds || {} )[ slug ];
+		actions.push( { phase: 'posts', type: 'template-remove', key: `template:${ slug }`, template: slug, id, hashes: kept, previous: hashes, say: `template:${ slug }: remove the saved copy${ id ? ` (wp_template ${ id })` : '' }; the clone wrote it and no manifest surface builds it now, so the theme or plugin file stands` } );
+		hashes = kept;
+		options.push( { name: `${ TEMPLATE_OPTION }[${ slug }]`, before: dropped.slice( 0, 12 ), after: '(removed)' } );
 	}
 
 	// Section pages (Spec 36 FR-36-5): each mega panel links its menu items to the page on its menu slot.
@@ -412,7 +431,7 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 	return problems.length ? { actions: [], problems, notes, options: [], uncopied } : { actions, problems, notes, options, uncopied };
 }
 
-// The plan's counts: posts, menus and items it creates; everything else it changes (an adoption only fills the map).
+// The plan's counts: posts, menus and items it creates; everything else it changes (a saved template it removes counts as a change) (an adoption only fills the map).
 export const tally = ( actions ) => ( {
 	creates: actions.filter( ( a ) => CREATES.includes( a.type ) ).length,
 	changes: actions.filter( ( a ) => ! CREATES.includes( a.type ) && 'adopt' !== a.type ).length,

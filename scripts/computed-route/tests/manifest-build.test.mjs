@@ -779,17 +779,20 @@ test( 'MUST FAIL: a template row with a draft route and no id is a played templa
 	assert.equal( 'unplayed' in e.copy, false );
 	assert.equal( out.matched[ 'template-order-confirmation' ], 'S-32' );
 	assert.deepEqual( out.skipped, [] );
-	// An existing entry kept from a run before the record matched (an unplayed copy) gives way to the generated copy.
+	// An existing entry kept from a run before the record matched gives way to the generated copy.
 	const stale = { ...e, copy: { from: 'page', unplayed: 'template:order-confirmation' } };
 	const again = run( [ confRow() ], [ confRecord ], { entryFiles: [ 'Home.dc.html', 'Confirmation.dc.html' ], existing: { 'template-order-confirmation': stale } } );
 	assert.deepEqual( again.entries[ 'template-order-confirmation' ].copy, { from: 'fill', row: 'template:order-confirmation' } );
 } );
 
-test( 'MUST FAIL: a template row with no draft route stays a copy of the page shell, unplayed', () => {
+test( "MUST FAIL: a WooCommerce template no draft surface plays gets no copy: WooCommerce's own template stands (FR-48-87)", () => {
 	const out = run( [ confRow( { route: undefined } ) ], [ confRecord ] );
-	const e = out.entries[ 'template-order-confirmation' ];
-	assert.deepEqual( e.copy, { from: 'page', unplayed: 'template:order-confirmation' } );
-	assert.equal( 'draftIndex' in e, false, 'an unplayed copy reads no draft' );
+	assert.equal( 'template-order-confirmation' in out.entries, false, 'no surface, so the site run builds no copy' );
+	assert.deepEqual( out.unplayed.map( ( u ) => [ u.key, u.slug ] ), [ [ 'template-order-confirmation', 'order-confirmation' ] ] );
+	// Negative control: the same template played by a draft surface is still a copy Filled at it.
+	const played = run( [ confRow() ], [ confRecord ], { entryFiles: [ 'Home.dc.html', 'Confirmation.dc.html' ] } );
+	assert.deepEqual( played.unplayed, [] );
+	assert.deepEqual( played.entries[ 'template-order-confirmation' ].copy, { from: 'fill', row: 'template:order-confirmation' } );
 } );
 
 test( 'MUST FAIL: a page row with a null id is still skipped; rows needing a post id still need one', () => {
