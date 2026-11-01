@@ -12,6 +12,7 @@ import { proposeSurface, reviewSurface, intakeContext, main } from '../skeleton.
 import { loadFacts } from '../lib/skeleton-facts.mjs';
 import { servedKey, servedMotion, isServedInventory } from '../lib/key-space.mjs';
 import { sourcesOf } from '../lib/freshness.mjs';
+import { proposalContext } from '../lib/skeleton-context.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const CLIENT = 'eye-care-ward-end';
@@ -92,6 +93,22 @@ test( 'propose passes the intake skeleton kind, name and looping templates under
 	assert.equal( a.surfaceName, 'Footer' );
 	assert.equal( a.built, undefined );
 	assert.deepEqual( [ ...a.motion ], [ 'Root/847' ], 'a looping template of the root host is keyed in the served space' );
+	f.done();
+} );
+
+// MUST FAIL: the site run built its own copy of the proposal inputs and left out the catalogue's filter data, so a page whose
+// filter rail Bean reviewed (Mama's gifts, rows 15 to 20, 2026-11-01) was proposed without its rail and failed the reviewed gate.
+test( 'MUST FAIL: propose takes every input intake proposes with (proposalContext), the catalogue filter data included', () => {
+	const seen = [];
+	const f = fixture();
+	const catalogue = { products: [ { draftId: 'p1', brand: 'Acme', categories: [ 'Gifts' ] } ], dropped: [], facets: [ { key: 'moment', label: 'Moment' } ] };
+	fs.writeFileSync( path.join( f.repo, 'sites', CLIENT, 'build', 'catalogue.json' ), JSON.stringify( catalogue ) );
+	proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, propose: spy( seen ) } );
+	const a = seen[ 0 ];
+	assert.deepEqual( a.filters, { facets: catalogue.facets, brands: [ 'Acme' ], categories: [ 'Gifts' ] } );
+	const intake = proposalContext( { repo: f.repo, client: CLIENT, slug: 'site-footer', id: 'S-14' } );
+	const missing = Object.keys( intake ).filter( ( k ) => ! ( k in a ) );
+	assert.deepEqual( missing, [], `the site run's proposal lacks inputs intake passes: ${ missing.join( ', ' ) }` );
 	f.done();
 } );
 

@@ -30,19 +30,10 @@ import { loopingKeys, carouselKeys } from './lib/skeleton-rerun.mjs';
 import { isServedInventory, servedDecisions, servedMotion } from './lib/key-space.mjs';
 import { sharedOverrides } from './lib/skeleton-shared-rows.mjs';
 import { reviewHtml } from './lib/skeleton-review.mjs';
-import { calKeysFor, calSettingsFor, calPaintFor, calTextFor, statesOfRecord, thresholdsOf } from './lib/skeleton-context.mjs';
+import { statesOfRecord, thresholdsOf, proposalContext } from './lib/skeleton-context.mjs';
 import { assertCurrent, assertInventoryCurrent, handoffOf, sourcesOf } from './lib/freshness.mjs';
-import { carriedIds } from './lib/skeleton-carried.mjs';
-import { formLinksFor } from './lib/skeleton-form-link.mjs';
-import { draftLinksFor } from './lib/draft-link.mjs';
-import { detectReferences } from './lib/references.mjs';
 import { savedInventoryOf } from './lib/skeleton-saved-inventory.mjs';
 import { skeletonDir, readDecisions, readPicks, recordDecision, recordSiteName, finaliseRequest, applyPicks } from './lib/skeleton-finalise.mjs';
-import { commerceOf, filtersOf } from './lib/skeleton-commerce-region.mjs';
-import { loadCatalogue } from './lib/catalogue-read.mjs';
-import { flowSale } from './lib/flow-product.mjs';
-import { loadShopParts } from './lib/fill-shop-parts.mjs';
-import { componentScript } from './lib/fill-form-success.mjs';
 
 const FINALISER_PROMPT = 'scripts/computed-route/prompts/skeleton-finaliser.md';
 
@@ -135,16 +126,11 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	if ( bad.length ) {
 		throw new Error( `the decisions data is not sound:\n- ${ bad.join( '\n- ' ) }` );
 	}
-	const refs = detectReferences();
-	const formLinks = formLinksFor( { repo, client, refs } );
-	// A WooCommerce page's template surface places WooCommerce's piece at the draft's commerce region (lib/skeleton-commerce-region.mjs),
-	// and the shop's its filter rail from the draft catalogue's facets (lib/skeleton-filter-rail.mjs).
-	const rows = readJson( path.join( repo, 'sites', client, 'build', 'page-map.json' ), [] );
-	const catalogue = loadCatalogue( repo, client );
-	const commerce = commerceOf( readSurface( repo, client, surface ), rows, catalogue, loadShopParts( path.join( repo, 'sites', client, 'build' ) ) );
-	// A loop of products, brands or reviews on any page is a working block (lib/skeleton-loop-blocks.mjs): the page map names the product page, the catalogue the brands.
-	const loops = { rows, brands: catalogue ? filtersOf( catalogue ).brands : [], carousels: served ? servedMotion( ctx.carousels, ctx.rootComponent ) : ctx.carousels };
-	const r = propose( { inventory, facts, formLinks, refs, draftLinks: draftLinksFor( { repo, client } ), surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, commerce, loops, carried: carriedIds( { repo, client, site: readSurface( repo, client, surface ).site, rootComponent: served ? ctx.rootComponent : null } ), scriptOf: ( component ) => componentScript( path.join( repo, 'sites', client, 'handoff' ), component ), saleOf: ( component ) => flowSale( { folder: path.join( repo, 'sites', client, 'handoff' ), component, catalogue } ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: { ...sharedPicks, ...readPicks( p.picks ) }, calKeys: calKeysFor( readSurface( repo, client, surface ).site ), calSettings: calSettingsFor( readSurface( repo, client, surface ).site ), calPaint: calPaintFor( readSurface( repo, client, surface ).site ), calText: calTextFor( readSurface( repo, client, surface ).site ), states: ctx.states, thresholds: ctx.thresholds, pageMap: ctx.pageMap, surfaceId: ctx.id, db } );
+	// Every input beyond the inventory, the decisions and the facts comes from the one builder intake and the offline rerun
+	// use (lib/skeleton-context.mjs::proposalContext), so the site run proposes from what Bean reviewed: the commerce region,
+	// the catalogue's filter data, loops, carried ids, draft links and calibration readers alike.
+	const pc = proposalContext( { repo, client, slug: ctx.slug, id: ctx.id, route: ctx.skeletons?.[ ctx.slug ]?.route ?? null, site: readSurface( repo, client, surface ).site, carousels: served ? servedMotion( ctx.carousels, ctx.rootComponent ) : ctx.carousels, rootComponent: served ? ctx.rootComponent : null } );
+	const r = propose( { ...pc, inventory, facts, surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: { ...sharedPicks, ...readPicks( p.picks ) }, states: ctx.states, thresholds: ctx.thresholds, pageMap: ctx.pageMap, surfaceId: ctx.id, db } );
 	json( p.skeleton, r.skeleton );
 	json( p.proposal, r.proposal );
 	return { ...r, paths: p, facts, inventory, clientDecisions };
