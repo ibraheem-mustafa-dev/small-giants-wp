@@ -19,7 +19,7 @@
 //     person who wrote them (a short line of a capitalised name or initials, or a name or handle with a date after a
 //     separator; never a heading) and show
 //     no price, each with a rating and a quote or with a quotation, is the testimonial slider in its still form (no autoplay,
-//     arrows or dots, the cards per row at 1440 visible), a testimonial per card; a team or blog grid shows no rating or
+//     arrows or dots; the visible-card count is no skeleton attribute, Fill reads it: lib/fill-visible-count.mjs), a testimonial per card; a team or blog grid shows no rating or
 //     quotation and a product grid a price, so neither is one.
 // Only shown elements count; a loop inside an overlay (a drawer or modal fixed at every width) belongs to that panel, and a
 // WooCommerce page's own commerce role (shop, cart, checkout, account) is placed by lib/skeleton-commerce-region.mjs.
@@ -120,18 +120,10 @@ export function loopBlocks( { m, rows = [], brands = [], carousels = new Set(), 
 				continue;
 			}
 			// A loop of review cards no script moves, each naming the person who wrote it, is the testimonial family in its still
-			// form: the slider with no autoplay, arrows or dots, as many cards visible as the draft lays side by side at the
-			// widest width; a holder whose cards overflow it on one row at some width is a track the visitor swipes.
+			// form: the slider with no autoplay, arrows or dots. How many cards show side by side is Fill's reading (a number setting
+			// tied to `flex` carries a css_property, so the skeleton never sets it, R-47-10).
 			if ( ! hit && T && ( styled || everyItem( ( it, all ) => person( it, all ) && ! priced( all ) ) ) ) {
-				// Cards share a row when their boxes overlap by more than half the first one's height (a tilted card's box
-				// shifts a little); a track's cards run past the holder's right edge by more than a tenth of a card.
-				const sameRow = ( a, b ) => !! a && !! b && Math.min( a.y + a.h, b.y + b.h ) - Math.max( a.y, b.y ) > a.h / 2;
-				const row = items.filter( ( k ) => sameRow( items[ 0 ].box?.[ 1440 ], k.box?.[ 1440 ] ) ).length || items.length;
-				const track = Object.entries( holder.box || {} ).filter( ( [ , b ] ) => b ).map( ( [ w, hb ] ) => {
-					const bs = items.map( ( k ) => k.box?.[ w ] ).filter( Boolean );
-					return bs.length >= 2 && bs.every( ( b ) => sameRow( bs[ 0 ], b ) ) && Math.max( ...bs.map( ( b ) => b.x + b.w ) ) > hb.x + hb.w + bs[ 0 ].w / 10 ? w : null;
-				} ).filter( Boolean );
-				out.regions.push( { key: holder.key, kind: 'testimonials', block: rule.carousel.block, attributes: { ...( T.attributes || {} ), ...( T.perRowAttribute ? { [ T.perRowAttribute ]: row } : {} ) }, inner: null, item: null, absorb: false, cards: items.map( ( it ) => it.key ), cardBlock: rule.carousel.cardBlock, handover: null, reason: `${ T.reason } (a loop of ${ items.length } cards each naming its reviewer, ${ row } side by side at 1440${ track.length ? `, a swiped track at ${ track.join( ' and ' ) }` : '' })${ styled }` } );
+				out.regions.push( { key: holder.key, kind: 'testimonials', block: rule.carousel.block, attributes: { ...( T.attributes || {} ) }, inner: null, item: null, absorb: false, cards: items.map( ( it ) => it.key ), cardBlock: rule.carousel.cardBlock, handover: null, reason: `${ T.reason } (a loop of ${ items.length } cards each naming its reviewer; how many show side by side is read by Fill)${ styled }` } );
 				continue;
 			}
 			if ( ! hit ) {

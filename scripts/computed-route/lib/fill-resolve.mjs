@@ -14,6 +14,7 @@ import { listMarkerDecisions } from './fill-list-marker.mjs';
 import { handoverEntry } from './fill-handover.mjs';
 import { unreadOf } from './fill-unread.mjs';
 import { fillBand, bandSetting } from './fill-band.mjs';
+import { fillVisibleCount } from './fill-visible-count.mjs';
 import { hasRow } from './fill-skeleton.mjs';
 import { liftRow } from './fill-row-lift.mjs';
 import { json, makeState, snapsOf, planSpacing } from './fill-resolve-state.mjs';
@@ -202,6 +203,8 @@ export function fillTree( opts ) {
 		if ( hasRow( st.nodes[ rec.index ].node ) ) {
 			liftRow( st, rec, ref, cal, { fillElement, snapsOf } );
 		}
+		// A track's visible-item count (a slider's cards side by side), read from the draft's render (lib/fill-visible-count.mjs).
+		fillVisibleCount( st, rec, ref, cal );
 		// The content band no finder reads: its width from the draft's render (lib/fill-band.mjs).
 		const band = fillBand( st, rec, ref, cal );
 		// What this node's calibration knows and nothing read or judged, so no setting is skipped silently.

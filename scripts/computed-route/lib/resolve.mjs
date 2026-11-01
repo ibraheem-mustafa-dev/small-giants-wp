@@ -196,7 +196,12 @@ export function timeToMs( raw ) {
 
 // One measured value in the setting's form. Returns { value } or { error }. layout: the draft element's display, flex-wrap
 // and flex-direction at the tier's width, for an enum value spelt as another alignment keyword of the same edge.
-function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, log, where, layout = {}, media = null } ) {
+function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, log, where, layout = {}, media = null, count = false } ) {
+	// A visible-item count (input.count: how many items sit side by side in a track): a whole number a number setting holds as it is.
+	if ( count ) {
+		const n = Number( raw );
+		return Number.isInteger( n ) && n >= 1 && [].concat( def?.type || [] ).includes( 'number' ) ? { value: n } : { error: `${ raw } is not a visible-item count a number setting holds` };
+	}
 	if ( COLOUR_PROPS.includes( prop ) ) {
 		const s = snapColour( raw, snapshot, { log, where, prefer } );
 		if ( ! s ) {
@@ -557,9 +562,10 @@ export function resolve( input, ctx ) {
 		return 'display' !== prop || ! ( 1 === type.length && 'boolean' === type[ 0 ] ) || Object.values( perWidth ).some( ( v ) => 'none' === v );
 	};
 	// A setting painting the slot itself wins; otherwise one whose inherited value calibration saw reach the slot.
+	// A visible-item count names its setting by the database's `flex` row and the slot calibration measured (it measures the items' flex-basis, which no `flex` spelling reaches).
 	const tiedBy = ( paths ) => rows.filter( ( r ) => {
 		const c = ctx.calibration.settings?.[ r.attr_name ];
-		return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && canGive( r, c ) && holdsDisplay( r );
+		return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( input.count || ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && canGive( r, c ) && holdsDisplay( r );
 	} );
 	const direct = tiedBy( ( c ) => c.slots || [ c.slot ] );
 	const reached = direct.length ? direct : tiedBy( ( c ) => c.reaches || [] );
@@ -635,7 +641,7 @@ export function resolve( input, ctx ) {
 		return [ p, pw[ { mobile: 375, tablet: 768, desktop: 1440 }[ t ] ] ?? ( 1 === all.length ? all[ 0 ] : undefined ) ];
 	} ) );
 	const fmt = ( t, raw, def ) => formatValue( { prop: short, raw, def, unit, fontPx: tierPx( t ), forms, prefer: typeof current[ attr ] === 'string' ? current[ attr ] : null,
-		snapshot: ctx.snapshot, log: ctx.log || [], where: `${ block } ${ slot } ${ prop }@${ t }`, layout: layoutAt( t ), media: ctx.media || null } );
+		snapshot: ctx.snapshot, log: ctx.log || [], where: `${ block } ${ slot } ${ prop }@${ t }`, layout: layoutAt( t ), media: ctx.media || null, count: true === input.count } );
 	const folded = foldFamily( { prop, perWidth, siblings: input.siblings, row, attr, tiers } );
 	if ( folded.gap ) {
 		return folded;

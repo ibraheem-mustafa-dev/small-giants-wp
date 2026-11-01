@@ -152,8 +152,7 @@
 				"personMaxWords": 6,
 				"quotation": "^[\"“„«].*[\"”»]$|^[\"“”„«»]$",
 				"attributes": { "autoplay": false, "showArrows": false, "showDots": false },
-				"perRowAttribute": "slidesVisible",
-				"reason": "a loop of review cards with no provider link and no script moving it, each card naming the person who wrote it (a short line of a capitalised name or initials, a date or place after a separator allowed, or any one to three word name or handle followed by a separator and a date, never a heading) and showing no price, each with a rating and a quote or with a quotation, is the testimonial family: sgs/testimonial-slider in its still form (autoplay, arrows and dots off, as many cards visible as the draft lays side by side at 1440), each card an sgs/testimonial whose parts the content writer reads into its quote, name, date and rating fields; a provider link still picks that provider's block, and a script-moved track the carousel (Spec 48 FR-48-83, Bean 2026-10-31)"
+				"reason": "a loop of review cards with no provider link and no script moving it, each card naming the person who wrote it (a short line of a capitalised name or initials, a date or place after a separator allowed, or any one to three word name or handle followed by a separator and a date, never a heading) and showing no price, each with a rating and a quote or with a quotation, is the testimonial family: sgs/testimonial-slider in its still form (autoplay, arrows and dots off, the visible-card count is Fill's reading of the draft's track), each card an sgs/testimonial whose parts the content writer reads into its quote, name, date and rating fields; a provider link still picks that provider's block, and a script-moved track the carousel (Spec 48 FR-48-83, Bean 2026-10-31)"
 			},
 			"reviews": {
 				"rating": "[\u2605\u2B50]{3,}|(?:\u00e2\u02dc\u2026){3,}|\\b[1-5](?:\\.\\d)?\\s*(?:out of 5|\\/\\s*5)\\b",

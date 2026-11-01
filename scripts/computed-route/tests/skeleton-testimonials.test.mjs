@@ -29,9 +29,9 @@ test( "MUST FAIL: Mama's product review cards (stars, a quote and a reviewer lin
 	const r = proposeSkeleton( { inventory: fix.inventory, facts: loadFacts( { db, client: fix.client, repo: REPO } ), surface: 'fixture', surfaceKind: 'page', surfaceName: 'Fixture', db, rootComponent: fix.inventory.checks.rootName, loops: LOOPS, factRecord: { schema: '1', client: fix.client, elements: fix.record, surfaces: {}, sources } } );
 	const holder = r.proposal.rows.find( ( x ) => 'Product/126#0' === x.key );
 	assert.deepEqual( [ holder.block, holder.rule ], [ 'sgs/testimonial-slider', 'loopBlocks' ], holder.reason );
-	assert.match( holder.reason, /3 cards each naming its reviewer, 3 side by side at 1440, a swiped track at 375/ );
+	assert.match( holder.reason, /3 cards each naming its reviewer; how many show side by side is read by Fill/ );
 	const slider = flat( r.skeleton ).find( ( n ) => 'sgs/testimonial-slider' === n.name );
-	assert.deepEqual( slider.attributes, { autoplay: false, showArrows: false, showDots: false, slidesVisible: 3 }, 'the still form: nothing moves it' );
+	assert.deepEqual( slider.attributes, { autoplay: false, showArrows: false, showDots: false }, 'the still form: nothing moves it, and no attribute with a css_property (R-47-10)' );
 	assert.equal( slider.innerBlocks.filter( ( n ) => 'sgs/testimonial' === n.name ).length, 3, 'one testimonial per card' );
 	assert.deepEqual( [ 129, 130, 131, 132 ].map( ( n ) => r.proposal.rows.find( ( x ) => `Product/${ n }` === x.key || `Product/${ n }#0` === x.key ).action ), [ 'absorbed', 'absorbed', 'absorbed', 'absorbed' ], "the stars, title, quote and reviewer line are the testimonial's own fields" );
 } );
@@ -61,7 +61,7 @@ const sliderOf = ( r ) => flat( r.skeleton ).find( ( n ) => 'sgs/testimonial-sli
 test( 'MUST FAIL: a grid of rated or quoted cards each naming its reviewer (initials, a name or a handle with a date) is the still testimonial slider', () => {
 	const rated = run( grid( ( i ) => [ [ 'span', '★★★★★' ], [ 'p', QUOTE ], [ 'div', NAMES[ i ] ] ] ) );
 	assert.ok( sliderOf( rated ), JSON.stringify( rated.proposal.rows.map( ( x ) => [ x.key, x.block, x.action ] ) ) );
-	assert.equal( sliderOf( rated ).attributes.slidesVisible, 3 );
+	assert.equal( 'slidesVisible' in sliderOf( rated ).attributes, false, 'the visible-card count is the Fill reading, never a skeleton attribute (R-47-10)' );
 	const quoted = run( grid( ( i ) => [ [ 'blockquote', QUOTE ], [ 'cite', NAMES[ i ] ] ] ) );
 	assert.ok( sliderOf( quoted ), 'a quotation stands for a rating' );
 } );
