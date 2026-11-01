@@ -208,6 +208,15 @@ test( 'MUST FAIL: the autoplay interval is the setInterval delay in the record\'
 	assert.equal( speed( timer( 'const EVERY = 4500; this.iv = setInterval(() => t.scrollTo({ left: x }), EVERY)' ) ), 4500 );
 } );
 
+test( 'MUST FAIL: a step-only record whose timer lives elsewhere takes its own delay_ms as the interval; none or zero stays a named gap', () => {
+	const speed = ( delay ) => { const t = { ...step, delay_ms: delay, source: { ...step.source, code: 't.scrollTo({ left: 0 })' }, trigger: { type: 'interval', detail: 'setInterval every 6000ms via step' } }; return carouselOf( t, { records: [ t ] } ); };
+	assert.equal( speed( 6000 ).blocks[ 'sgs/testimonial-slider' ].find( ( s ) => 'autoplaySpeed' === s.attr )?.value, 6000 );
+	assert.equal( speed( 6000 ).unread, undefined );
+	for ( const none of [ null, 0, undefined ] ) {
+		assert.deepEqual( speed( none ).unread.map( ( u ) => u.field ), [ 'autoplaySpeed' ], 'negative control: no literal and no delay_ms stays a gap' );
+	}
+} );
+
 test( 'negative control: with no timer call in the record\'s code the interval is not written and a named row says so; a delay spelled in a string is no delay', () => {
 	const t = { ...step, source: { ...step.source, code: "t.scrollTo({ left: t.scrollLeft + w }); log('setInterval(f, 6000)')" } };
 	const b = carouselOf( t, { records: [ t ] } );
@@ -224,5 +233,5 @@ test( 'MUST FAIL: a setting a behaviour could not read is a named unmapped row w
 	applySettings( { items: [ { r: t, b: carouselOf( t, { records: [ t ] } ) } ], n: { name: 'sgs/testimonial-slider', index: 0 }, out, where: { node: 'r0', block: 'sgs/testimonial-slider', slot: '' }, flat: [ { attributes: {} } ], hasAttr: () => true } );
 	assert.deepEqual( out.writes.map( ( w ) => w.attr ), [ 'autoplay' ] );
 	assert.equal( out.unmapped.length, 1 );
-	assert.match( out.unmapped[ 0 ].reason, /^sgs\/testimonial-slider autoplaySpeed not written: the timer's interval is not in the record's own code/ );
+	assert.match( out.unmapped[ 0 ].reason, /^sgs\/testimonial-slider autoplaySpeed not written: the timer's interval is not in the record's own code and the record holds no delay_ms/ );
 } );

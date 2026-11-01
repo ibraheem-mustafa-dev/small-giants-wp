@@ -319,7 +319,7 @@ export function pinnedTimelineOf( r, ctx = {} ) {
 
 // A scroll track the draft's script drives, which the testimonial slider is: a timer that steps the track sideways
 // (an `interval` trigger, a `scrollTo( { left: ... } )`) is the slider's autoplay, its interval the delay of the timer call in
-// the record's own code (unwritten, a named row, when the code holds none); one writer
+// the record's own code, else the record's typed `delay_ms` (unwritten, a named row, when the code holds none); one writer
 // that suspends scroll snapping (`scroll-snap-type: none`) and moves `scrollLeft` directly is its drag to scroll; prev and next controls that step
 // the same function are its arrows; press controls of another function that scroll the same track to an offset derived from
 // an index (`scrollTo( { left: i * w } )` inside the object each dot returns) are its dots. The track's other script writes (the drag handlers, the arrows' steps) are the slider's
@@ -352,8 +352,10 @@ export function carouselOf( r, ctx = {} ) {
 	if ( timer.id !== r.id ) {
 		return owns.has( r.id ) ? { kind: 'covered', by: 'testimonial-slider', reason: `a write of the scroll track ${ timer.id } drives (its timer, its pointer drag or its arrows): the testimonial slider's own autoplay, drag to scroll and arrows` } : null;
 	}
-	// The interval is the delay of the timer call in the record's own code; without that code it is not written.
-	const every = timerMs( r );
+	// The interval is the delay of the timer call in the record's own code; when the code is only the step (the timer is
+	// elsewhere in the draft), the record's own typed `delay_ms` on its interval trigger is that same delay; with neither it is not written.
+	const typed = Number( r.delay_ms );
+	const every = timerMs( r ) ?? ( Number.isFinite( typed ) && typed > 0 ? typed : null );
 	return {
 		kind: 'settings',
 		blocks: { 'sgs/testimonial-slider': [
@@ -362,7 +364,7 @@ export function carouselOf( r, ctx = {} ) {
 			...( dotted ? [ { attr: 'showDots', value: true } ] : [] ),
 		] },
 		accepted: "the hover, touch and focus holds that pause the timer and the slider's own arrow and dot styling are the slider's own",
-		...( null === every ? { unread: [ { field: 'autoplaySpeed', reason: "the timer's interval is not in the record's own code, so the slider's own speed stands (the handoff trigger holds no interval_ms)" } ] } : {} ),
+		...( null === every ? { unread: [ { field: 'autoplaySpeed', reason: "the timer's interval is not in the record's own code and the record holds no delay_ms, so the slider's own speed stands" } ] } : {} ),
 		notes: [ `a scroll track stepped by a ${ null === every ? '' : `${ every }ms ` }timer${ dragging ? ', dragged by the pointer' : '' }${ arrows ? ' and stepped by arrow controls' : '' } is the testimonial slider's autoplay${ dragging ? ', drag to scroll' : '' }${ arrows ? ' and arrows' : '' }${ dotted ? ' and dots' : '' }`, ...( dotted ? [] : [ "the slider's dots are not read from an active record, so showDots is left to the slider's own setting" ] ) ],
 	};
 }
