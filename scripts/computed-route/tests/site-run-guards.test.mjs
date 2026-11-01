@@ -11,7 +11,7 @@ import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { reviewedChanges, reviewedVerdict, reviewedRowsFor } from '../lib/site-run-reviewed.mjs';
-import { servedKey, servedDecisions, translateElement } from '../lib/key-space.mjs';
+import { servedKey, servedDecisions, translateElement, isServedInventory } from '../lib/key-space.mjs';
 import { calibrationVerdict, proposedBlocks } from '../lib/site-run-blocks.mjs';
 import { walkCounts, walkVerdict } from '../lib/site-run-walk.mjs';
 import { certsPath, certifiPath } from '../lib/site-run-certs.mjs';
@@ -235,4 +235,12 @@ test( 'served keys rename the root host at the head of a chain of any depth, bot
 	assert.deepEqual( Object.keys( servedDecisions( { 'Site>Footer@2#0/5#0': { block: 'remove' } }, 'Site' ) ), [ 'Root>Footer@2#0/5#0' ] );
 	assert.equal( translateElement( { key: 'Root>Footer@2#0/5#0', template: 'Footer', tpl: 5 }, 'Site' ).instanceKey, 'Site>Footer@2#0/5#0' );
 	assert.doesNotThrow( () => reviewedVerdict( { surface: 'form', reviewed: [ { key: 'Site>Form@4#0/7#0', block: 'sgs/text' } ], proposed: [ { key: 'Root>Form@4#0/7#0', block: 'sgs/text' } ], rootComponent: 'Site' } ) );
+} );
+
+// A form surface's saved inventory holds only a mounted host's elements (`Root>Form@4#0/...`). MUST FAIL: recognising a
+// served inventory only by `Root/` keys left it unrecognised, so Bean's decisions on it were never translated into the
+// served space and his remove marks were dropped (indus-foods form-enquiry, 2026-11-01).
+test( 'isServedInventory: an inventory of only mounted-host keys is served', () => {
+	assert.equal( isServedInventory( { elements: [ { key: 'Root>Form@4#0/7#0' }, { key: 'Root>Form@4#0/8#0' } ] } ), true );
+	assert.equal( isServedInventory( { elements: [ { key: 'Site>Form@4#0/7#0' } ] } ), false );
 } );
