@@ -73,6 +73,7 @@ import { injectedSvgWrites } from './lib/fill-injected-svg.mjs';
 import { liveReadSlots } from './lib/written-slot.mjs';
 import { renderScoped } from './lib/fill-render.mjs';
 import { renderSourcePass } from './lib/fill-render-source.mjs';
+import { pruneRunsReport } from './lib/prune-runs.mjs';
 import { calibrationLoader, parseMirrors, stamp, animationInventory } from './lib/fill-inputs.mjs';
 
 export { calibrationLoader, parseMirrors };
@@ -400,6 +401,8 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 				liveUrl: flag( '--live-url' ), out: flag( '--out' ), open: flag( '--open' ), cache: flag( '--cache' ), sweep: ! argv.includes( '--no-sweep' ), headless: ! argv.includes( '--headed' ), external: argv.includes( '--allow-external' ), mirror: parseMirrors( argv ),
 				log: ( m ) => console.log( m ),
 			} );
+			// A default run folder replaces the surface's older ones (site-run passes --out and prunes after its own checks).
+			flag( '--out' ) || pruneRunsReport( { parent: path.dirname( r.outDir ), keep: r.outDir } );
 			console.log( `fill ${ r.surface }: ${ r.counts.writes } settings written, ${ r.counts.unmapped } UNMAPPED, ${ r.counts.handover } handover, ${ r.counts.fluid } fluid, ${ r.counts.breakpointSteps } breakpoint steps. Report: ${ path.join( r.outDir, 'fill-report.md' ) }` );
 		}
 	} catch ( e ) {

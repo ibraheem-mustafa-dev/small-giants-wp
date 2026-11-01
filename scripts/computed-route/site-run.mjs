@@ -45,6 +45,7 @@ import { reviewedVerdict } from './lib/site-run-reviewed.mjs';
 import { calibrationVerdict } from './lib/site-run-blocks.mjs';
 import { certsPath } from './lib/site-run-certs.mjs';
 import { hashesFor } from './stage0.mjs';
+import { pruneRunsReport } from './lib/prune-runs.mjs';
 import { WHOLE_TREE, commonChain, contentUnder, copyFile, copyTree, readShell, splitShell, writeCopy } from './lib/template-copies.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
@@ -317,6 +318,7 @@ export async function main( argv ) {
 		} ) ) {
 			return;
 		}
+		pruneRunsReport( { parent: path.dirname( out ), keep: out } );
 		const parity = path.join( build, 'qa', 'parity' );
 		fs.mkdirSync( parity, { recursive: true } );
 		for ( const f of [ entry.walker, entry.walkerFull ] ) {
@@ -450,6 +452,7 @@ export async function main( argv ) {
 	}
 	const failed = Object.entries( status ).filter( ( [ , s ] ) => Object.values( s ).some( ( x ) => ! x.ok ) );
 	console.log( `site run ${ client }: ${ keys.length } surfaces, ${ failed.length } with a failed stage. ${ path.join( dir, 'status.json' ) }` );
+	pruneRunsReport( { parent: path.dirname( dir ), keep: dir } );
 }
 
 if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) ) {

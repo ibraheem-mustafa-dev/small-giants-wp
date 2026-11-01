@@ -36,6 +36,7 @@ import { solveLoopBody } from './lib/solve-loop-body.mjs';
 import { solveInline } from './lib/inline-writer.mjs';
 import { solveLoop } from './lib/solve-loop.mjs';
 import { journalFile, readJournal, resumeFrom, writeJournal } from './lib/solve-journal.mjs';
+import { pruneRunsReport } from './lib/prune-runs.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -605,5 +606,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		const cl = writeConfirmLive( outDir, path.resolve( flag( '--fill-report' ) ), report, { stateMap: s.states, media: { map: readMediaMap( path.join( buildDir, 'media-map.json' ) ), site: s.site } } );
 		console.log( confirmLiveLine( cl ) );
 	}
+	// A default run folder replaces the surface's older ones, unless an unjudged-writes record still stands (it may name a base report in an older run).
+	flag( '--out' ) || fs.existsSync( jFile ) || pruneRunsReport( { parent: path.dirname( outDir ), keep: outDir } );
 	console.log( `solve ${ surface }: ${ allWrites.length } writes over ${ rounds } round(s); hardcode ${ classes.hardcode.length }, missing ${ classes.missing.length }, unresolved ${ classes.unresolved.length }, derived ${ classes.derived.length }, unmapped-state ${ unmappedState }, handover ${ handover.length }; wrong writes ${ wrong.length } (settings ${ settingRatio( wrong, allWrites ).wrong } of ${ settingRatio( wrong, allWrites ).total }). Report: ${ path.join( outDir, 'solve-report.md' ) }` );
 }

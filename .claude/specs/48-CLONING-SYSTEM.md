@@ -536,6 +536,7 @@ All in `scripts/computed-route/`. The README lists every file and every exported
 | `lib/runtime-probe.mjs`, `data/known-runtimes.json`, `data/runtime-probe.dc.html`, `data/runtime-probe.expected.json`, `data/runtimes/` | Known `support.js` builds and the probe that admits a new one | Spec 48A FR-48A-5 |
 | `trace-check.mjs` | Cross-checks `animations.json` against the motion recorded on a running draft (`--shift=7` negative control) | Spec 48A FR-48A-7 |
 | `lib/draft.mjs` | Serves a local draft folder on 127.0.0.1 at an ephemeral port, shut down at exit (`serveDraft`) | §2, Spec 48A FR-48A-10 |
+| `lib/prune-runs.mjs` | Deletes a surface's older stamped run folders under `sites/<client>/build/qa/` once the new run is written (`pruneRuns`), keeping tracked, linked, non-stamp and newer folders; called by `fill.mjs`, `site-run.mjs`, `solve.mjs` and `site-check.mjs` | §8 |
 | `lib/db.mjs` | Read-only `block_attributes` queries | R-47-2 |
 | `lib/brand-registry.mjs` | Reads `plugins/sgs-blocks/includes/data/brand-registry.json` for the social-row expansion and the lint, and names the brand a palette token is named for (`brandOfToken`, over `paletteBrands`: the registry's brands plus one per `sgs/<brand>-reviews` block in the framework DB; FR-48-31) | §3.9 |
 | `calibrate.mjs`, `lib/calibrate.mjs`, `lib/calibrate-props.mjs`, `lib/calibrate-markers.mjs`, `lib/calibrate-instances.mjs`, `lib/calibrate-read.mjs`, `lib/calibrate-content.mjs`, `lib/calibrate-chunk.mjs`, `lib/calibrate-container.mjs` | Calibration command and library | §3.2 |

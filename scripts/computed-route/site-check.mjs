@@ -18,6 +18,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { pruneRunsReport } from './lib/prune-runs.mjs';
 import { CHECKS, parseOnly, checkRecord, skippedRecord, exitCodeOf, renderMarkdown } from './lib/site-check-report.mjs';
 import { targetOf, siteBase, candidateRoots, pageTargets, readRows, flowsClient } from './lib/site-check-site.mjs';
 import { MARK, readHeaderLinksInPage, readDraftLinksInPage, menuItems, headerRowsOf, megaItems, markMegaInPage, drawerItem, pathKey } from './lib/site-check-nav.mjs';
@@ -132,6 +133,7 @@ async function main() {
 		fs.writeFileSync( path.join( dir, 'result.json' ), `${ JSON.stringify( result, null, '\t' ) }\n` );
 		fs.writeFileSync( path.join( dir, 'result.md' ), renderMarkdown( result ) );
 		console.log( `site check ${ args.client } on ${ args.site }: ${ ordered.filter( ( c ) => 'fail' === c.status ).length } failed. ${ rel( path.join( dir, 'result.md' ) ) }` );
+		args.out || pruneRunsReport( { parent: path.dirname( dir ), keep: dir } );
 		return result.exitCode;
 	};
 
