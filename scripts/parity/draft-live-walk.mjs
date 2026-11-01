@@ -53,6 +53,7 @@ import { REF_PROPS, elementPath, traceRef, loadUnmatched, loadMispaired, appendU
 import { loadDivergences } from './lib/divergences.mjs';
 import { openDevtools, settleAnimations, triggerArmed, declaredValues, DECLARED_PROPS } from './lib/devtools.mjs';
 import { readRest, toRest, untriggered, unmeasuredRun, appendStateLines } from './lib/state-rest.mjs';
+import { primeLive } from './lib/prime.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const { chromium, devices } = await import( pathToFileURL( path.join( HERE, '../../plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
@@ -170,6 +171,10 @@ async function walkSide( browser, side, width, draftStates = null ) {
 	// Pressed states (section 23): a ref-traced walk reads every pair through that session; a hand config flags pairs
 	// `active: true` and gets a session of its own. The automatic check's interactive elements use whichever exists.
 	const pressCdp = cdp || ( header && ! lean && ( autoOn || cfg.pairs.some( ( q ) => q.active ) ) ? await openDevtools( page ) : null );
+	// `live.prime` (lib/prime.mjs): the live context visits its prime URLs first; the draft side never does.
+	if ( side === 'live' ) {
+		await primeLive( page, cfg.live.prime, cfg.live.url );
+	}
 	await h.goto( cfg[ side ].url );
 	// Load entrances (GAP-CHECKLIST.md section 15): the page reloaded and sampled as it paints in.
 	const firstState = cfg.states[ 0 ]?.name;

@@ -36,6 +36,7 @@ import { isStatePage, stateRouteHash } from './lib/state-route.mjs';
 import { savedInventoryOf, servedInventoryOf } from './lib/skeleton-saved-inventory.mjs';
 import { assertInventoryCurrent, handoffOf, sourcesOf } from './lib/freshness.mjs';
 import { openRunSession, readEnv } from './lib/wp-run-session.mjs';
+import { primeCandidatesPhp, pickPrimeProduct, livePrimeFor, checkoutRole } from './lib/live-prime.mjs';
 import { isContentOnlySurface, isUnwalkedWooPage, wooContentRole } from './lib/site-build-plan.mjs';
 import { rowKey, treeHash } from './lib/site-build-map.mjs';
 import { buildThenMarkPost, deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site-build-apply.mjs';
@@ -87,10 +88,6 @@ function liveBase( envFile, envKey ) {
 	return line.slice( line.indexOf( '=' ) + 1 ).trim().replace( /^["']|["']$/g, '' ).replace( /\/+$/, '' );
 }
 
-// The row kinds a surface keyed by slug or route can name: a page, the WooCommerce shop page (`shop`) and the single-product
-// template (`product`, every product uses it).
-const PAGE_LIKE = [ 'page', 'shop', 'product' ];
-
 // Where one surface is read: the draft route it opens at, the page-map row whose permalink is its live address, and why it is
 // skipped (a content-only post surface runs only with `--with-content`). The route is the entry's `draftRoute` (a form's
 // page, a post's route), else its page row's route, else its intake record's route. A post surface (`contentOnly`) and the
@@ -98,6 +95,10 @@ const PAGE_LIKE = [ 'page', 'shop', 'product' ];
 // its `draftRoute`; any other surface at the page row its key names. `routing` (intake.json `routing`) names the adapter: a
 // state-page draft is reached by state, so the hash is that state route (lib/state-route.mjs); a page-file draft is reached
 // by the file the surface's `draftIndex` names, so it takes no hash.
+// The row kinds a surface keyed by slug or route can name: a page, the WooCommerce shop page (`shop`) and the single-product
+// template (`product`, every product uses it).
+const PAGE_LIKE = [ 'page', 'shop', 'product' ];
+
 export function surfaceReach( { key, entry, skel, rows, withContent = false, routing = null } ) {
 	const routeName = ( r ) => String( r ?? '' ).replace( /^#?\/?/, '' );
 	const postSlug = entry.fromPost ?? ( entry.contentOnly ? key : null );
@@ -274,6 +275,11 @@ export async function main( argv ) {
 			return note( key, 'inventory', false, 0, noAddress );
 		}
 		const liveUrl = `${ base }${ address ?? '/' }`;
+		// A checkout surface's live walk starts with a product in the basket (lib/live-prime.mjs); no product means it walks unprimed.
+		const role = checkoutRole( entry, row );
+		const prime = 'checkout' === role ? primeProduct() : null;
+		prime && ! prime.id && note( key, 'prime', true, 0, `live walk unprimed: ${ prime.why }` );
+		const livePrime = livePrimeFor( { role, base, productId: prime?.id } );
 		const step = stepper( key, wooPage );
 		const exec = execFor( key );
 		if ( ! entry.intakeSurface || ! skel ) {
@@ -325,7 +331,7 @@ export async function main( argv ) {
 		let walkUrl = draftUrl;
 		if ( ! await step( 'fill', async () => {
 			const tail = await exec( 'fill', 'node', [ 'scripts/computed-route/fill.mjs', '--client', client, '--surface', key,
-				'--skeleton', path.relative( REPO, p.skeleton ), '--draft-url', draftUrl, '--live-url', liveUrl, '--allow-external', '--out', path.relative( REPO, out ) ] );
+				'--skeleton', path.relative( REPO, p.skeleton ), '--draft-url', draftUrl, '--live-url', liveUrl, ...( livePrime ? [ '--live-prime', livePrime[ 0 ] ] : [] ), '--allow-external', '--out', path.relative( REPO, out ) ] );
 			// A state that never rendered is an opener failure, not a Fill that happened to run.
 			const opened = path.join( out, 'opener.json' );
 			const o = fs.existsSync( opened ) ? readJson( opened ) : null;
@@ -421,6 +427,16 @@ export async function main( argv ) {
 	const hashMemo = new Map();
 	const blockHashes = ( block ) => hashMemo.get( block ) ?? ( hashMemo.set( block, hashesFor( site, target, block ) ), hashMemo.get( block ) );
 	const wp = wpCommand( target, site, REPO );
+	// The product that primes a checkout walk's basket, chosen once per run from the live site (read-only query).
+	let primeMemo = null;
+	const primeProduct = () => primeMemo ??= ( () => {
+		try {
+			const line = String( runPhp( primeCandidatesPhp() ) ).trim().split( /\r?\n/ ).reverse().find( ( l ) => l.trim().startsWith( '[' ) );
+			return pickPrimeProduct( line ? JSON.parse( line ) : [] );
+		} catch ( e ) {
+			return { id: null, why: `the product query failed: ${ String( e.message || e ).slice( 0, 200 ) }` };
+		}
+	} )();
 	// The product a product surface is read at, chosen from the live site's published products (read-only query).
 	let productsMemo = null;
 	const liveProduct = ( heading ) => {
