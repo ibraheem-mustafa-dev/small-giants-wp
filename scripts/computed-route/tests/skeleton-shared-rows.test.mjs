@@ -62,6 +62,16 @@ test( 'MUST FAIL (d): a decision or pick on A row with no alsoIn naming B does n
 	assert.deepEqual( sharedOverrides( { skeletons: skeletons( aRow( { alsoIn: undefined } ) ), surface: 'b' } ), NONE );
 } );
 
+test( 'MUST FAIL (e): a finaliser pick on a surface own row reaches that surface, by key, in the served space, and a saved decision on it still wins', () => {
+	const sh = sharedOverrides( { skeletons: skeletons( aRow() ), surface: 'a', rootComponent: ROOT } );
+	assert.equal( sh.picks[ 'Root/81#0' ].block, 'sgs/heading' );
+	const own = { 'Root/81#0': { remove: true } };
+	const hit = overrideFor( { key: 'Root/81#0', tag: 'div' }, { clientDecisions: { surfaces: { a: own } }, picks: sh.picks, facts, surface: 'a', words: 'Six decades of heritage' } );
+	assert.equal( hit.remove, true );
+	assert.equal( overrideFor( { key: 'Root/81#0', tag: 'div' }, { clientDecisions: { surfaces: {} }, picks: sh.picks, facts, surface: 'a', words: 'x' } ).source, 'finaliser pick' );
+	assert.deepEqual( sharedOverrides( { skeletons: skeletons( aRow( { finalisedBy: undefined } ) ), surface: 'a' } ), NONE );
+} );
+
 // The wiring: proposeSurface hands the carried outcome to propose.
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const CLIENT = 'eye-care-ward-end';
@@ -70,14 +80,14 @@ const SERVED = footer.elements.find( ( e ) => /^Root\/\d+#0$/.test( e.key ) && (
 const INTAKE = SERVED.replace( /^Root/, 'Eye Care Site' );
 const db = openDb();
 
-function fixture( { decisions = { surfaces: {} }, row = {} } = {} ) {
+function fixture( { decisions = { surfaces: {} }, row = {}, own = false } = {} ) {
 	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'skel-shared-' ) );
 	const build = path.join( repo, 'sites', CLIENT, 'build' );
 	fs.mkdirSync( path.join( build, 'intake' ), { recursive: true } );
 	fs.mkdirSync( path.join( build, 'skeleton' ), { recursive: true } );
 	fs.writeFileSync( path.join( build, 'surfaces.json' ), JSON.stringify( { footer: { site: 'x', intakeSurface: 'site-footer' } } ) );
 	const header = { id: 'S-1', kind: 'header', name: 'Header', rows: [ { key: INTAKE, tag: 'p', words: 'Header words', block: 'sgs/heading', finalisedBy: 'agent', confidence: 0.7, alsoIn: [ { surface: 'site-footer', keys: [ INTAKE ] } ], ...row } ] };
-	fs.writeFileSync( path.join( build, 'intake', 'intake.json' ), JSON.stringify( { skeletons: { 'site-header': header, 'site-footer': { id: 'S-14', kind: 'footer', name: 'Footer', inventory: { checks: { rootName: 'Eye Care Site' } } } }, inventory: { animations: { records: [] } } } ) );
+	fs.writeFileSync( path.join( build, 'intake', 'intake.json' ), JSON.stringify( { skeletons: { 'site-header': header, 'site-footer': { id: 'S-14', kind: 'footer', name: 'Footer', ...( own ? { rows: [ { key: INTAKE, tag: 'p', words: 'Footer words', block: 'sgs/heading', finalisedBy: 'agent', confidence: 0.7 } ] } : {} ), inventory: { checks: { rootName: 'Eye Care Site' } } } }, inventory: { animations: { records: [] } } } ) );
 	const handoff = path.join( repo, 'sites', CLIENT, 'handoff' );
 	fs.mkdirSync( handoff, { recursive: true } );
 	fs.writeFileSync( path.join( handoff, 'Home.dc.html' ), '<p>draft</p>' );
@@ -111,6 +121,12 @@ test( 'MUST FAIL (c): a decision saved on the surface own row beats the carried 
 	const mine = run( f ).clientDecisions.surfaces[ 'site-footer' ][ SERVED ];
 	assert.equal( mine.block, 'sgs/text' );
 	assert.equal( mine.remove, undefined );
+	f.done();
+} );
+
+test( 'MUST FAIL (e): proposeSurface passes the finaliser pick on the surface own row under its served key, and the surface own picks file beats it', () => {
+	const f = fixture( { row: { alsoIn: undefined }, own: true } );
+	assert.equal( run( f ).picks[ SERVED ].block, 'sgs/heading' );
 	f.done();
 } );
 

@@ -3,7 +3,7 @@
 // Bean's outcome for that row (his recorded decision, or the finaliser pick the row carries) was meant for every copy, so
 // when a surface is proposed, the outcome of each row naming it in `alsoIn` applies to the key `alsoIn` gives it here, by key
 // and never by words: the collapse already decided the copies are one slot, so a decision carried here has no signature to go
-// stale on. A decision saved directly on the surface's own row is not touched here; the caller lets it win.
+// stale on. The surface's own rows contribute the finaliser pick they carry too. A decision saved directly on the surface's own row is not touched here; the caller lets it win.
 
 import { servedKey } from './key-space.mjs';
 
@@ -23,12 +23,17 @@ function pickOf( r ) {
 // [ { from, row, keys } ] in intake's order.
 const rowsNaming = ( skeletons, surface ) => Object.entries( skeletons || {} ).filter( ( [ name ] ) => name !== surface ).flatMap( ( [ from, s ] ) => ( s.rows || [] ).flatMap( ( row ) => ( row.alsoIn || [] ).filter( ( a ) => a?.surface === surface ).map( ( a ) => ( { from, row, keys: a.keys || [] } ) ) ) );
 
-// What the other surfaces' reviewed rows decide for `surface`'s keys: { decisions: { <key>: decision }, picks: { <key>: pick } },
+// What the reviewed rows decide for `surface`'s keys (its own rows' finaliser picks, and the other surfaces' rows naming it in `alsoIn`): { decisions: { <key>: decision }, picks: { <key>: pick } },
 // keyed in the served space when `rootComponent` is given (the proposal's inventory is served: lib/key-space.mjs::servedKey).
 // skeletons: intake.json `skeletons`; decisions: the client's decisions.json (`surfaces: { <intake surface>: { <key>: ... } }`).
-// A row's recorded decision wins over its pick; the first row to name a key wins.
+// A row's recorded decision wins over its pick; the surface's own rows come first, then the first row to name a key wins.
 export function sharedOverrides( { skeletons, surface, decisions = {}, rootComponent = null } ) {
 	const out = { decisions: {}, picks: {} };
+	// The surface's own reviewed rows carry the finaliser's pick on the row itself (intake-run-finalise.mjs::applyIntakePicks writes it there; finalise-picks.json is only its input), and nothing else hands it to a re-proposal.
+	for ( const row of skeletons?.[ surface ]?.rows || [] ) {
+		const pick = pickOf( row );
+		( pick ? ( row.keys || [ row.key ] ) : [] ).forEach( ( k ) => ( out.picks[ servedKey( k, rootComponent ) ] ??= { ...pick } ) );
+	}
 	for ( const { from, row, keys } of rowsNaming( skeletons, surface ) ) {
 		const decided = decisions.surfaces?.[ from ]?.[ row.key ];
 		const [ bucket, value ] = decided ? [ out.decisions, { ...decided, signature: undefined } ] : [ out.picks, pickOf( row ) ];
