@@ -1410,6 +1410,7 @@ A whole-string token becomes the id as a number (`:text` keeps it a string); a t
 - `causeGroups(issues)` → `[ { class, key, label, issues } ]`, largest first; `valueText(issue)`; `groupsMarkdown(issues, causes)`.
 
 ### `lib/prune-runs.mjs`
+- `RECENT_MS`: 30 minutes; a run folder with any file written more recently is kept whatever its stamp (an earlier run may still be writing it).
 - `STAMP_PATTERN` is the run-folder name every writer stamps (`2026-11-01T12-34-56`); `RUN_PARENT` matches the only parents that may be pruned. `pruneRuns({ parent, keep })` → `{ removed, skipped }`: deletes the stamp folders in `parent` older than `keep` (the folder just written), skipping a tracked, linked or non-stamp one; throws and deletes nothing for an unknown parent, a linked parent or a missing `keep`. `pruneRunsReport({ parent, keep, log })` → the same result, never throws, logs one line of what it pruned or why it did not.
 
 ### `lib/solve-journal.mjs`
