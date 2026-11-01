@@ -141,6 +141,13 @@ export function dueOutputs( slotWhy, paintWhy, slotMapOnly = false ) {
 	return { slotMap: ! slotWhy, paint: ! slotMapOnly && ! paintWhy };
 }
 
+// The instances a block's run builds: every planned instance when its slot map is due; otherwise only those the default
+// paint is read from (each variant's default instance and each paint state), because a paint-only run writes nothing the
+// setting instances measure.
+export function instancesDue( instances, due ) {
+	return due.slotMap ? instances : instances.filter( ( i ) => i.isDefault || i.paintState );
+}
+
 // True when this site's paint file exists but its key or read list no longer matches (so it is re-measured on that site).
 export function paintStale( dir, block, site, paintKey ) {
 	const have = readPaint( dir, site, block );

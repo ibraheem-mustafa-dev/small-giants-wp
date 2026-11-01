@@ -30,7 +30,7 @@ import { loadSnapshot } from './lib/normalise.mjs';
 import { blockSchema } from './lib/resolve.mjs';
 import { assertWritable, assertQuiet, writeTree } from './lib/tree.mjs';
 import { acquireCalibrationLock, acquireSlotMapLock } from './lib/calibration-lock.mjs';
-import { slotMapSkip, paintSkip, dueOutputs, splitCalibration, writeSlotMap, writePaint, readSlotMap, slotMapWriteDecision, parseAllowLoss, refusedFile } from './lib/cache.mjs';
+import { slotMapSkip, paintSkip, dueOutputs, instancesDue, splitCalibration, writeSlotMap, writePaint, readSlotMap, slotMapWriteDecision, parseAllowLoss, refusedFile } from './lib/cache.mjs';
 import { md5, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
 import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, needsBiggerHeap, buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout, sizeForReading, replanQueue } from './lib/calibrate-chunk.mjs';
 import { isContainerQueryBlock, renderedNothingReason } from './lib/calibrate-container.mjs';
@@ -136,7 +136,7 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 	const noMarker = new Set( [ ...plan.noMarker, ...contentPlan.noMarker ] );
 	// A state with no trigger (lib/calibrate.mjs::STATE_TRIGGERS) is reported, never calibrated.
 	const states = rows.filter( ( r ) => r.css_state && undefined === triggerFor( r.css_state ) ).map( ( r ) => `${ r.attr_name }:${ r.css_state }` );
-	instances = instances.filter( ( i ) => ! i.row || undefined !== i.trigger );
+	instances = instancesDue( instances.filter( ( i ) => ! i.row || undefined !== i.trigger ), due );
 	const treeFile = path.join( CACHE, `${ short }.tree.json` );
 	const rejected = [];
 	// A block with more instances than one page saves reliably is built in chunks (the fixture's own `chunk`, else CHUNK);
@@ -336,7 +336,7 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 	const playwrightVersion = createRequire( import.meta.url )( 'playwright/package.json' ).version;
 	const browserVersion = shared.context.browser()?.version() ?? null;
 	const file = { block, site, slotKey, paintKey, readKey: READ_KEY, playwrightVersion, browserVersion, measured: new Date().toISOString(), settings, discovered, elements, ...( Object.keys( paintStates ).length ? { paintStates } : {} ), ...content, dead: deadNames, oneWidth, noMarker: [ ...noMarker ], untestedStates: [ ...new Set( untested ) ], rejected };
-	// The whole block is measured either way; only the output that is due is written.
+	// A paint-only run built only the default and paint-state instances (lib/cache.mjs::instancesDue); only the due output is written.
 	const { slotMap, paint } = splitCalibration( file );
 	const decision = due.slotMap ? slotMapWriteDecision( readSlotMap( CACHE, block ), slotMap, allowLoss[ block ] || [], declaredAttrs( db, block ) ) : { write: false, lost: [] };
 	decision.write && writeSlotMap( CACHE, block, slotMap );
@@ -349,6 +349,9 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 	}
 	if ( due.paint && statesMissing.length ) {
 		return { block, error: `paint state(s) ${ statesMissing.join( ', ' ) } not measured (rejected or unread); the default paint was not written, so the next run measures it again` };
+	}
+	if ( ! due.slotMap ) {
+		return { block, paintOnly: true, elements: Object.keys( elements ).length, paintStates: Object.keys( paintStates ).length, rejected: rejected.length };
 	}
 	return { block, settings: Object.keys( settings ).length, dead: deadNames.length, oneWidth: oneWidth.length, noMarker: noMarker.size, rejected: rejected.length };
 }
