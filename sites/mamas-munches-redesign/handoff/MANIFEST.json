@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated": "2026-10-11",
+  "generated": "2026-11-01",
   "project": "Mama's Munches ecommerce",
   "entry_drafts": [
     "Home.dc.html",
@@ -39,8 +39,8 @@
     },
     {
       "path": "Contact.dc.html",
-      "bytes": 14763,
-      "sha256": "7044b48beb77c75507cebaf71ef867ca65e3301bb5463b3c96ffa1fc20107572"
+      "bytes": 16443,
+      "sha256": "bcb3e4bcc8e1fdddb9abf777afab9396c7d06f809ba7b9cbd64a722205607b85"
     },
     {
       "path": "Gifts.dc.html",
@@ -74,8 +74,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 31541,
-      "sha256": "68ecf2bfb10c99e8ebfe9f85d5f094d51b0b0f114c650e861a05951e69cb7bf7"
+      "bytes": 31841,
+      "sha256": "09a85b34b22187e5be6458af75461cbd11e0536d95d868812d4ef7b247cd5163"
     },
     {
       "path": "Shop.dc.html",
@@ -99,8 +99,8 @@
     },
     {
       "path": "animations.json",
-      "bytes": 385818,
-      "sha256": "2fa588d44cb089f53d1beeb0159ec3c1d9d2066b60da5f66c6e574c7ef4b7a82"
+      "bytes": 387763,
+      "sha256": "10cff8410cac5c7ab9d50558203278fc1ea3acd0d47744b254b24024aac2743f"
     },
     {
       "path": "assets/logo-horizontal.png",
@@ -184,8 +184,8 @@
     },
     {
       "path": "surfaces.json",
-      "bytes": 75477,
-      "sha256": "cdfd32645458176d39be7a1306c23c4a58d74f6e837d0948fd9a2900820361c2"
+      "bytes": 76468,
+      "sha256": "4d7d9f56be27fc79b9e498b285a8e8304ec7068899f10e78f0264a6cf354e9ab"
     },
     {
       "path": "tokens/colors.css",

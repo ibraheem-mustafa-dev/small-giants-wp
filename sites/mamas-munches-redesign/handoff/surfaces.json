@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "project": "Mama's Munches ecommerce",
-  "generated": "2026-10-11",
+  "generated": "2026-11-01",
   "runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe",
   "records": [
     {
@@ -2616,6 +2616,46 @@
         "reason": "setTimeout 2400ms hides the saved messages."
       },
       "id": "S-58"
+    },
+    {
+      "kind": "accordion",
+      "name": "Contact FAQ list",
+      "dc": "Contact",
+      "template_tpl_id": [
+        "78"
+      ],
+      "route": "Contact.dc.html",
+      "parent": "S-33",
+      "opened_by": "Question button",
+      "closed_by": "Same button",
+      "states": [
+        {
+          "name": "item i open",
+          "state_keys": {
+            "faq": "0–3 (default 0)"
+          },
+          "sc_if_tpl_ids": [
+            "84"
+          ],
+          "how_to_reach": "dcLogic('Contact').setState({ faq: i })",
+          "animation_ids": [
+            "TR-070",
+            "TR-139"
+          ]
+        },
+        {
+          "name": "all closed",
+          "state_keys": {
+            "faq": -1
+          },
+          "how_to_reach": "Click the open item"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-59"
     }
   ],
   "counts": {
@@ -2656,13 +2696,13 @@
         "Gifts": 1,
         "Basket": 4,
         "Checkout": 3,
-        "Contact": 4,
+        "Contact": 5,
         "Help": 2,
         "SignIn": 15,
         "Account": 19,
         "SiteHeader": 5
       },
-      "total": 58,
+      "total": 59,
       "covered_by": {
         "Home:115 isSub": "S-08",
         "Home:248 f.open": "S-11",
@@ -2721,7 +2761,8 @@
         "SiteHeader:133 hasItems": "S-04",
         "SiteHeader:158 gift.on": "S-04",
         "SiteHeader:161 showUpsell": "S-04",
-        "SiteHeader:175 isEmpty": "S-04"
+        "SiteHeader:175 isEmpty": "S-04",
+        "Contact:84 f.open": "S-59"
       }
     },
     "other_sc_ifs": {
@@ -2775,8 +2816,8 @@
         "content": 15,
         "session": 8
       },
-      "all_sc_ifs": 94,
-      "check": "58 toggling + 8 breakpoint + 5 route + 15 content + 8 session = 94",
+      "all_sc_ifs": 95,
+      "check": "59 toggling + 8 breakpoint + 5 route + 15 content + 8 session = 95",
       "note": "session = depends on whether the visitor is signed in (MM.account), set on another page; content = stored data variants."
     }
   },

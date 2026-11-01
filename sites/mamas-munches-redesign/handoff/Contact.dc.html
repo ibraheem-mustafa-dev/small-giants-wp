@@ -78,9 +78,15 @@
       </div>
       <div style="display:flex;flex-direction:column;gap:14px">
         <div data-reveal="" style="font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1">quick answers</div>
-        <sc-for list="{{ quick }}" as="q" hint-placeholder-count="0">
-          <a data-reveal="" href="{{ q.href }}" style="display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:64px;padding:12px 18px;background:#FFFAF0;border:2px solid #3A2A22;border-radius:20px;text-decoration:none;color:#3A2A22;font-family:'Young Serif',serif;font-size:18px;transition:transform .25s cubic-bezier(.3,1.4,.5,1), box-shadow .25s" style-hover="transform:translate(-3px,-3px);box-shadow:6px 6px 0 #3A2A22">{{ q.t }}<span aria-hidden="true" style="flex:none;width:34px;height:34px;border-radius:999px;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-family:Karla">→</span></a>
-        </sc-for>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <sc-for list="{{ faqs }}" as="f" hint-placeholder-count="0">
+            <div style="border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s">
+              <button onClick="{{ f.toggle }}" aria-expanded="{{ f.open }}" style="width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer"><span style="display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444">{{ f.cat }}</span><span style="font-family:'Young Serif',serif;font-size:19px">{{ f.q }}</span></span><span aria-hidden="true" style="flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)">+</span></button>
+              <sc-if value="{{ f.open }}" hint-placeholder-val="{{ false }}"><p style="margin:0;padding:0 20px 20px;font-size:16px;line-height:1.6;max-width:700px">{{ f.a }}</p></sc-if>
+            </div>
+          </sc-for>
+        </div>
+        <a href="Help.dc.html" style="align-self:flex-start;display:inline-flex;align-items:center;min-height:44px;font-size:15px;font-weight:700;color:#3A2A22;text-decoration:underline;text-underline-offset:4px">More answers on the Help page</a>
         <div data-reveal="" style="border:2px dashed #3A2A22;border-radius:20px;padding:16px 18px;font-size:15px;line-height:1.55">Handmade in Birmingham by a registered food business. No shop to visit, but you’ll sometimes find Zainab at local markets and events.</div>
       </div>
     </div>
@@ -92,7 +98,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  state = { bp: this.bpOf(), topic: 'order', sent: false };
+  state = { bp: this.bpOf(), topic: 'order', sent: false, faq: 0 };
   rootRef = React.createRef();
   bpOf() { const w = window.innerWidth; return w < 768 ? 'm' : w < 1024 ? 't' : 'd'; }
   componentDidMount() {
@@ -117,7 +123,7 @@ class Component extends DCLogic {
       showOrder: S.topic === 'order', showBulk: S.topic === 'bulk',
       sent: S.sent, notSent: !S.sent,
       send: e => { e.preventDefault(); this.setState({ sent: true }); }, reset: () => this.setState({ sent: false }),
-      quick: [{ t: 'When will my order arrive?', href: 'Help.dc.html#delivery' }, { t: 'What allergens are in them?', href: 'Help.dc.html#allergens' }, { t: 'How does Subscribe & save work?', href: 'Help.dc.html' }, { t: 'Can I send them as a gift?', href: 'Help.dc.html' }]
+      faqs: [['Ordering & delivery', 'When will my order arrive?', 'Zainab bakes every order fresh when it comes in, then posts it with Royal Mail Tracked. Most orders are with you in 3–5 days.'], ['Ingredients & allergens', 'What allergens are in them?', 'Oats (gluten), eggs, milk and fenugreek, a legume that may cross-react with peanut or soy allergies. Made in a kitchen that also handles tree nuts. The vegan base has no eggs or dairy.'], ['Subscriptions', 'How does Subscribe & save work?', 'Build your box and choose every 2 or 4 weeks. You get 10% off every box, free delivery on 20 and 40 packs and a guaranteed slot in every bake.'], ['Gifting', 'Can I send them as a gift?', 'Yes. Choose “It’s a gift” at checkout, add her address and your note, and we’ll leave the prices off the packing slip.']].map(([c, qq, a], i) => { const open = S.faq === i; return { cat: c, q: qq, a, open, rot: open ? '45deg' : '0deg', bg: open ? '#FCEBBE' : '#FFFAF0', shadow: open ? '4px 4px 0 #3A2A22' : '0 0 0 #3A2A22', toggle: () => this.setState({ faq: open ? -1 : i }) }; })
     };
   }
 }
