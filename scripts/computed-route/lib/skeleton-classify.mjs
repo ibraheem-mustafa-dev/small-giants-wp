@@ -61,7 +61,10 @@ export function overrideFor( e, { clientDecisions = {}, picks = {}, facts, surfa
 	const sig = `${ e.tag }|${ words }`;
 	const own = clientDecisions.surfaces?.[ surface ]?.[ e.key ];
 	if ( own ) {
-		return own.signature && own.signature !== sig ? { stale: `decision for ${ e.key } was made for "${ own.signature }" and the element is now "${ sig }"` } : { ...own, source: 'client decision' };
+		// An acceptance (its own label is the label the rules proposed when it was saved) is not an override: the classifier
+		// runs the rules in full and keeps their result while it still has that label (makeClassifier's classify).
+		const decision = { ...own, source: 'client decision' };
+		return own.signature && own.signature !== sig ? { stale: `decision for ${ e.key } was made for "${ own.signature }" and the element is now "${ sig }"` } : { ...decision, ...( own.proposed && proposalLabel( decision ) === own.proposed ? { acceptance: true } : {} ) };
 	}
 	if ( picks[ e.key ] ) {
 		return { ...picks[ e.key ], source: 'finaliser pick' };
@@ -69,6 +72,10 @@ export function overrideFor( e, { clientDecisions = {}, picks = {}, facts, surfa
 	const hit = ( facts.decisions.elements || [] ).find( ( d ) => ( ! d.match.tag || d.match.tag === e.tag ) && ( ! d.match.wordsPattern || new RegExp( d.match.wordsPattern, 'i' ).test( words ) ) && ( ! d.match.classPattern || new RegExp( d.match.classPattern, 'i' ).test( e.attrs?.class || '' ) ) );
 	return hit ? { block: hit.block || null, remove: 'remove' === hit.action, attributes: hit.attributes, reason: hit.reason, source: `standing decision ${ hit.id }` } : null;
 }
+
+// Whether a decision settles an element against the rules: a client decision that is not an acceptance (a typed block, a
+// removal chosen against the proposal, a decision saved without `proposed`).
+export const isOverride = ( d ) => 'client decision' === d?.source && ! d.acceptance;
 
 // The label of what a proposal or a decision settles an element as: its action, else its block, else `no block`.
 export const proposalLabel = ( r ) => ( r.remove ? 'remove' : r.action || r.block || r.candidates?.[ 0 ]?.block || 'no block' );
@@ -158,6 +165,13 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 		};
 	};
 
+	// What the rules give an element with its client decision set aside: `raw` as classify returns it, `settled` as the
+	// classifier's result is (lib/skeleton-identity.mjs and the region widening applied).
+	const withoutClient = ( e, parentBlock, ctx ) => {
+		const raw = sgsOnly( classify( e, parentBlock, { ...ctx, noClient: true } ), facts.replacedBy, decisions.rules?.coreExceptions || [] );
+		return { raw, settled: settle( e, raw, { ...ctx, noClient: true } ) };
+	};
+
 	// A client decision records what the rules propose for its element when that differs from what they proposed as it was
 	// saved (`decision.proposed`, a label from `proposalLabel`): { ruleWould: { label, reason, decision: { label, reason } } }.
 	// A decision saved without `proposed` has no baseline and records nothing.
@@ -165,7 +179,7 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 		if ( 'client decision' !== over.source || ! over.proposed || ctx.noClient ) {
 			return {};
 		}
-		const alt = sgsOnly( classify( e, parentBlock, { ...ctx, noClient: true } ), facts.replacedBy, decisions.rules?.coreExceptions || [] );
+		const alt = withoutClient( e, parentBlock, ctx ).settled;
 		const label = proposalLabel( alt );
 		return label === over.proposed ? {} : { ruleWould: { label, reason: alt.reason || alt.source || '', decision: { label: proposalLabel( over ), reason: over.reason || '' } } };
 	};
@@ -177,6 +191,14 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 		const words = m.words( e );
 		const decided = overrides( e, words );
 		const over = ctx.noClient && 'client decision' === decided?.source ? null : decided;
+		// An acceptance: the rules run in full and their result stands (absorption, handovers, attributes included) while its
+		// label is the one accepted; a rule that now proposes another label leaves the accepted block standing with `ruleWould`.
+		if ( over?.acceptance && ! ctx.noClient ) {
+			const alt = withoutClient( e, parentBlock, ctx );
+			if ( proposalLabel( alt.settled ) === over.proposed ) {
+				return { ...alt.raw, acceptedDecision: true };
+			}
+		}
 		const verdict = ! ctx.typedBrand && ! ctx.noRule && 'client decision' !== over?.source ? rules.ruleFor( e, parentBlock ) : null;
 		if ( verdict ) {
 			return ruleAgainstDb( e, parentBlock, ctx, fromRule( verdict ) );
@@ -310,7 +332,7 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 			return widened;
 		}
 		widened = { at: new Map(), inner: new Map() };
-		const decided = ( e ) => 'client decision' === overrides( e, m.words( e ) )?.source;
+		const decided = ( e ) => isOverride( overrides( e, m.words( e ) ) );
 		for ( const x of identity ? rules.loopRegions || [] : [] ) {
 			const anchor = m.byKey[ x.key ];
 			if ( ! anchor || ! x.block || decided( anchor ) ) {
@@ -389,5 +411,11 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 		}
 		return r.rule ? identity.check( e, r ) : identity.match( e, r ) || r;
 	};
-	return { classify: ( e, parentBlock = null, ctx = {} ) => settle( e, sgsOnly( classify( e, parentBlock, ctx ), facts.replacedBy, facts.decisions.rules?.coreExceptions || [] ), ctx ), identity, accordionRuns: rules.accordionRuns || new Map(), brandFor, siteInfoKinds, isColumnLabel, briefOnly, timedPopup: rules.timedPopup, drawsChildren: rules.drawsChildren, modalParts: rules.modalParts, iconRun: rules.iconRun, siteInfoBrand: rules.siteInfoBrand, commerceRegion: rules.commerceRegion, filterRail: rules.filterRail, filterDrawer: rules.filterDrawer, choiceFlow: rules.choiceFlow };
+	// A rule result that stands for an accepted proposal keeps the mark `acceptedDecision` through the settling.
+	const classifySettled = ( e, parentBlock = null, ctx = {} ) => {
+		const raw = sgsOnly( classify( e, parentBlock, ctx ), facts.replacedBy, facts.decisions.rules?.coreExceptions || [] );
+		const out = settle( e, raw, ctx );
+		return raw.acceptedDecision && ! out.acceptedDecision ? { ...out, acceptedDecision: true } : out;
+	};
+	return { classify: classifySettled, identity, accordionRuns: rules.accordionRuns || new Map(), brandFor, siteInfoKinds, isColumnLabel, briefOnly, timedPopup: rules.timedPopup, drawsChildren: rules.drawsChildren, modalParts: rules.modalParts, iconRun: rules.iconRun, siteInfoBrand: rules.siteInfoBrand, commerceRegion: rules.commerceRegion, filterRail: rules.filterRail, filterDrawer: rules.filterDrawer, choiceFlow: rules.choiceFlow };
 }

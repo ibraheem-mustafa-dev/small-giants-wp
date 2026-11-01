@@ -13,27 +13,32 @@ export function makeRecorder( ctx ) {
 		const top = r.candidates?.[ 0 ];
 		const row = {
 			order: rows.length, key: e.key, tag: e.tag, depth: e.depth, words: m.words( e ), block: top?.block ?? null, action: r.action || null, reason: r.reason || null, source: r.source || null,
-			confidence: r.confidence, low: r.confidence < 0.7, stale: r.stale || null, rule: r.rule || null, ...( r.into ? { into: r.into } : {} ), ...( r.handover ? { handover: r.handover } : {} ), ...( r.missingFeature ? { missingFeature: r.missingFeature } : {} ), ...( r.siteOptions ? { siteOptions: r.siteOptions } : {} ), ...( r.conflict ? { conflict: r.conflict } : {} ), ...( r.ruleWould ? { ruleWould: r.ruleWould } : {} ), ...( r.widthDependent ? { widthDependent: r.widthDependent } : {} ),
+			confidence: r.confidence, low: r.confidence < 0.7, stale: r.stale || null, rule: r.rule || null, ...( r.into ? { into: r.into } : {} ), ...( r.handover ? { handover: r.handover } : {} ), ...( r.missingFeature ? { missingFeature: r.missingFeature } : {} ), ...( r.siteOptions ? { siteOptions: r.siteOptions } : {} ), ...( r.conflict ? { conflict: r.conflict } : {} ), ...( r.ruleWould ? { ruleWould: r.ruleWould } : {} ), ...( r.acceptedDecision ? { acceptedDecision: true } : {} ), ...( r.widthDependent ? { widthDependent: r.widthDependent } : {} ),
 			candidates: ( r.candidates || [] ).slice( 0, 5 ).map( ( c ) => ( { block: c.block, score: c.score, share: c.share, evidence: c.evidence.map( ( ev ) => ev.text ) } ) ),
 			parts: m.kids( e ).filter( m.isPart ).map( ( k ) => k.key ), screenshots: e.screenshots, snippet: e.snippet, attributes: {}, ...extra,
 		};
+		// An element a structure draws (absorbed) that carries its own client decision: the row says the decision no longer applies,
+		// so the review shows it (absorbSubtree sets the same note for the children it walks).
+		const own = 'absorbed' === row.action && ! row.stale && ! r.acceptedDecision ? overrides( e, row.words ) : null;
+		'client decision' === own?.source && ( row.stale = `the client decision for ${ e.key } (${ own.block || 'remove' }) no longer applies: ${ r.reason || 'the element is absorbed' }` );
 		rows.push( row );
 		rowOf[ e.key ] = row;
 		return row;
 	};
-	const removeSubtree = ( e, why ) => m.kids( e ).filter( ( k ) => ! m.isPart( k ) ).forEach( ( k ) => {
-		record( k, { action: 'remove', reason: why, confidence: 1, candidates: [] } );
-		removeSubtree( k, why );
+	// `source` is set when a saved decision on an ancestor removed the subtree (lib/skeleton-propose.mjs::savedSource).
+	const removeSubtree = ( e, why, source = null ) => m.kids( e ).filter( ( k ) => ! m.isPart( k ) ).forEach( ( k ) => {
+		record( k, { action: 'remove', reason: why, confidence: 1, candidates: [], ...( source ? { source } : {} ) } );
+		removeSubtree( k, why, source );
 	} );
 	// The children of an element whose block draws them itself: each is a row absorbed into it, never a block.
 	// A child carrying its own client decision is still absorbed (its block draws it), but the row says the decision no
 	// longer applies, so the review shows it instead of dropping it.
-	const absorbSubtree = ( e, top, why, rule, node = null, parentBlock = null ) => {
+	const absorbSubtree = ( e, top, why, rule, node = null, parentBlock = null, source = null ) => {
 		m.blockKids( e ).forEach( ( k ) => {
 			const own = overrides( k, m.words( k ) );
 			const stale = 'client decision' === own?.source ? `the client decision for ${ k.key } (${ own.block || 'remove' }) no longer applies: ${ top.block } draws this element` : null;
-			record( k, { action: 'absorbed', reason: `drawn by ${ top.block }: ${ why }`, confidence: 1, candidates: [], rule, into: top.key, stale } );
-			absorbSubtree( k, top, why, rule, node, parentBlock );
+			record( k, { action: 'absorbed', reason: `drawn by ${ top.block }: ${ why }`, confidence: 1, candidates: [], rule, into: top.key, stale, ...( source ? { source } : {} ) } );
+			absorbSubtree( k, top, why, rule, node, parentBlock, source );
 		} );
 		absorbWidthKids( e, top, rule, node, parentBlock );
 	};

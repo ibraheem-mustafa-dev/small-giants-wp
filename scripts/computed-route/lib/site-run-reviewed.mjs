@@ -39,7 +39,7 @@ export function reviewedChanges( { reviewed, proposed, rootComponent = null } ) 
 		if ( placed( old ) === placed( row ) ) {
 			continue;
 		}
-		const why = SAVED.test( row.source || '' ) ? `saved decision (${ row.source })` : row.stale ? `stale: ${ row.stale }` : null;
+		const why = SAVED.test( row.source || '' ) ? `saved decision (${ row.source })` : row.acceptedDecision ? `saved decision (accepted proposal, ${ row.source || 'rule' })` : row.stale ? `stale: ${ row.stale }` : null;
 		changed.push( { key, was: say( old ), now: say( row ), why } );
 	}
 	return { common, changed, added: [ ...now.keys() ].filter( ( k ) => ! was.has( k ) ), removed: [ ...was.keys() ].filter( ( k ) => ! now.has( k ) ) };

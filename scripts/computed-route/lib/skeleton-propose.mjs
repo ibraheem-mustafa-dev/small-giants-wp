@@ -162,6 +162,10 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	const { record, removeSubtree, absorbSubtree, absorbWidthKids, takeVariants, unitsOf, buildBrand, buildIcons, buildList, contentAttrs, carriedAttrs, buildHeaderRows, buildFooterRows, hostSlot, ownWordsNode } = w;
 	Object.assign( w, { buildNode, buildChildren } );
 
+	// The source a descendant row carries when only a saved decision on its ancestor `e` removed or absorbed it, so the reviewed
+	// gate (lib/site-run-reviewed.mjs) reads it as explained; null when the ancestor's own result is a rule's.
+	const savedSource = ( r, e ) => ( /^(client decision|finaliser pick|standing decision )/.test( r.source || '' ) ? `${ r.source } (inside ${ e.key })` : null );
+
 	function buildNode( e, parentBlock ) {
 		// A bare wrapper whose children are exactly one list: the list block is that wrapper (unless the client decided it).
 		const units = m.words( e ) || 'client decision' === overrides( e, '' )?.source ? [] : unitsOf( e );
@@ -172,7 +176,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const r = cls.classify( e, parentBlock );
 		if ( 'remove' === r.action ) {
 			record( e, r );
-			removeSubtree( e, `inside a removed element (${ e.key })` );
+			removeSubtree( e, `inside a removed element (${ e.key })`, savedSource( r, e ) );
 			return null;
 		}
 		if ( 'unwrap' === r.action ) {
@@ -283,7 +287,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			Object.keys( cs.slots ).length && ( node.draftSlots = { ...node.draftSlots, ...cs.slots }, row.slots = { ...row.slots, ...cs.slots } );
 			const notes = [ ...cs.notes, ...( collapse?.note ? [ collapse.note ] : [] ) ];
 			notes.length && ( row.slotNotes = notes );
-			absorbSubtree( e, { block, key: e.key, wordBound: top.wordBound, drawsItself }, drawn, r.rule || 'drawsChildren', node, parentBlock );
+			absorbSubtree( e, { block, key: e.key, wordBound: top.wordBound, drawsItself }, drawn, r.rule || 'drawsChildren', node, parentBlock, savedSource( r, e ) );
 			return [ node, ...takeVariants( node ) ];
 		}
 		if ( ! m.blockKids( e ).length && m.widthKids( e ).length && 'leaf' === composition[ block ]?.composition_role ) {
