@@ -8,6 +8,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { runStage0, blockSetFor, surfaceKinds, buildBaseline, baselineProblems, calibrateArgs, FIXED_BLOCKS } from '../lib/stage0.mjs';
+import { manifestSha256 } from '../lib/site-run-intake-gate.mjs';
 import { parseArgs } from '../stage0.mjs';
 import { dueOutputs, writeSlotMap, writePaint, readSlotMap } from '../lib/cache.mjs';
 import { READ_KEY } from '../lib/calibrate-props.mjs';
@@ -22,6 +23,7 @@ function world( kinds, keys ) {
 	const handoff = path.join( repo, 'sites', 'cl', 'handoff' );
 	fs.mkdirSync( handoff, { recursive: true } );
 	fs.writeFileSync( path.join( handoff, 'surfaces.json' ), JSON.stringify( { records: kinds.map( ( kind, i ) => ( { id: `S-0${ i }`, kind } ) ) } ) );
+	fs.writeFileSync( path.join( handoff, 'MANIFEST.json' ), '{"files":["a.html"]}\n' );
 	const cacheDir = path.join( repo, 'cache' );
 	Object.entries( keys ).forEach( ( [ b, k ] ) => writeSlotMap( cacheDir, b, slotMap( b, k ) ) );
 	return { repo, cacheDir };
@@ -79,6 +81,8 @@ test( 'a stale slot map is recalibrated with --slot-map-only, and the baseline i
 	assert.deepEqual( b.blockSet, all );
 	assert.deepEqual( b.blocks[ 'sgs/form' ], { deployHash: 'H-sgs/form', dead: 2, noMarker: 1, oneWidth: 0, untestedStates: 1 } );
 	assert.equal( b.browser, '145.0.1' );
+	assert.equal( b.manifestSha256, manifestSha256( path.join( w.repo, 'sites', 'cl', 'handoff', 'MANIFEST.json' ) ), 'the baseline records the manifest hash' );
+	assert.match( b.manifestSha256, /^[0-9a-f]{64}$/ );
 } );
 
 test( 'MUST FAIL: a block whose deploy hash still differs from its cache after the run is not calibrated, no baseline is written', async () => {
@@ -156,7 +160,8 @@ test( 'a planted invalid baseline is refused: it is not written', async () => {
 	assert.equal( r.code, 1 );
 	assert.equal( d.written.length, 0 );
 	assert.match( r.lines.join( '\n' ), /the baseline was not written/ );
-	const good = buildBaseline( { client: 'cl', site: 's', takenOn: '2026-10-12T11:00:00.000Z', playwright: '1', cacheDir: w.cacheDir, blocks: [], hashes: {} } );
+	const good = buildBaseline( { client: 'cl', site: 's', takenOn: '2026-10-12T11:00:00.000Z', playwright: '1', cacheDir: w.cacheDir, blocks: [], hashes: {}, manifestSha256: 'a'.repeat( 64 ) } );
+	assert.ok( baselineProblems( { ...good, browser: 'x', manifestSha256: undefined } ).length, 'a baseline without manifestSha256 fails the schema' );
 	assert.ok( baselineProblems( { ...good, browser: 'x', takenOn: 'yesterday' } ).length, 'a takenOn that is not a date-time fails the schema' );
 	assert.ok( baselineProblems( { ...good, browser: 'x', blockSet: [ 'core/group' ] } ).length, 'a block outside sgs/ fails the schema' );
 	assert.ok( baselineProblems( { ...good, browser: 'x', blocks: { 'sgs/a': { deployHash: 'h', dead: '1' } } } ).length, 'a block with a missing or non-integer count fails' );

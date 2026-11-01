@@ -1,7 +1,8 @@
 {
   "client": "mamas-munches-redesign",
   "site": "local-mamas",
-  "takenOn": "2026-11-01T20:31:58.489Z",
+  "takenOn": "2026-11-01T20:43:43.001Z",
+  "manifestSha256": "f8d9cb96d7dd217b4811580a47f83b707a6fba5bc50c0862df2a08d7fa89c0d9",
   "playwright": "1.58.2",
   "browser": "145.0.7632.6",
   "blockSet": [

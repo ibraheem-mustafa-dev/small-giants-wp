@@ -1,7 +1,8 @@
 {
   "client": "eye-care-ward-end",
   "site": "local-eye-care",
-  "takenOn": "2026-11-01T20:31:52.451Z",
+  "takenOn": "2026-11-01T20:43:51.261Z",
+  "manifestSha256": "03d53ec775d864f50d932496e07e6d9cfa291136197a6d2a0f9ef59e78a5a51c",
   "playwright": "1.58.2",
   "browser": "145.0.7632.6",
   "blockSet": [
