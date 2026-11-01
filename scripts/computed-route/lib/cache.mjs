@@ -122,10 +122,12 @@ export function slotMapSkip( dir, block, site, slotKey, recalibrate = false ) {
 	if ( recalibrate || ! have || have.readKey !== READ_KEY ) {
 		return null;
 	}
-	if ( have.site && have.site !== site ) {
-		return `slot map calibrated on ${ have.site }; pass --recalibrate to replace`;
+	// A stale map (its deploy hash is not the build's) is measured again on any site; only a current map measured on
+	// another site is kept there, so two sites never replace each other's current map.
+	if ( have.slotKey !== slotKey ) {
+		return null;
 	}
-	return have.slotKey === slotKey ? 'slot map current' : null;
+	return have.site && have.site !== site ? `slot map calibrated on ${ have.site }; pass --recalibrate to replace` : 'slot map current';
 }
 
 // Why a run on `site` must leave the block's default paint for that site alone, or null when it must measure it: only this
