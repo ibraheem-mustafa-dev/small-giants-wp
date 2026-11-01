@@ -10,7 +10,9 @@ import fs from 'fs';
 export function walkAbsence( report ) {
 	return ( report?.runs || [] ).filter( ( run ) => {
 		const root = Object.entries( run.pairs || {} ).find( ( [ key ] ) => '(state)' !== key )?.[ 1 ];
-		return true === root?.live?.missing;
+		// A surface the draft itself does not show at a width (a mega menu above the drawer's breakpoint, a drawer at desktop)
+		// is missing on both sides there, which is a match, not an absence.
+		return true === root?.live?.missing && true !== root?.draft?.missing;
 	} ).map( ( run ) => `${ run.state } at ${ run.width }` );
 }
 

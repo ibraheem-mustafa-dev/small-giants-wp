@@ -45,3 +45,12 @@ test( 'MUST FAIL: site-run.mjs\'s walk step returns its result through walkVerdi
 	assert.match( text, /return walkVerdict\( said, path\.join\( parity, 'out', key, 'report\.json' \) \);/ );
 	assert.match( text, /import \{ walkVerdict \} from '\.\/lib\/site-run-walk\.mjs';/ );
 } );
+
+// A surface the draft itself does not show at a width is missing on both sides there. MUST FAIL: counting every missing
+// live root as absent failed indus-foods' mega menus at 768 and 375 and its drawer at 1440, where the draft shows neither
+// (2026-11-01).
+test( 'walkAbsence: a root missing on both sides is a match, not an absence', () => {
+	const BOTH = { draft: { missing: true }, live: { missing: true, running: null }, diffs: [] };
+	assert.deepEqual( walkAbsence( { runs: [ run( 'open', 1440, FOUND ), run( 'open', 768, BOTH ), run( 'open', 375, BOTH ) ] } ), [] );
+	assert.deepEqual( walkAbsence( { runs: [ run( 'open', 768, BOTH ), run( 'open', 375, ABSENT ) ] } ), [ 'open at 375' ] );
+} );
