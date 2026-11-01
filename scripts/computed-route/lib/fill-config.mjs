@@ -55,7 +55,7 @@ function besideUse( nodes, inventory ) {
 
 // The surface's root on each side, the element the walker's automatic text, link and moved-run collection runs inside
 // (cfg.auto.root and cfg.linkRoot, both CSS selectors): one root block is its own draft element and its ref class on
-// live; several root blocks (a page) are the element holding all of them as children on each side. A root whose
+// live; several root blocks (a page) are the element holding all of them as children on each side; a modal surface's lifted frame node makes the live root the page's `sgs/modal` element with the frame's anchor as its id. A root whose
 // skeleton also draws rows from elements beside its draft element (inventory.beside) is, on the draft, the element
 // holding the root and those strips, less the siblings the surface does not use (`exclude`, draft side). Null when a
 // side cannot be named, so the walk keeps the whole page on both sides rather than a root on one.
@@ -67,7 +67,11 @@ export function surfaceRoots( nodes, tree, inventory = null ) {
 	const { used, other } = besideUse( nodes, inventory );
 	const draft = [ ...roots.map( ( r ) => draftSelector( r.node.draftRef ) ), ...used.map( ( k ) => tplSelector( k ) ) ];
 	const exclude = used.length ? other.map( ( k ) => tplSelector( k ) ) : [];
-	const live = tree.map( ( n ) => ( refOf( n ) ? `.${ refOf( n ) }` : null ) );
+	// A modal surface's frame node is lifted out of the post (lib/fill-modal-frame.mjs::liftModalFrame) and its ref class is not
+	// carried to the page: on live the surface's own element is the page's sgs/modal frame, whose id is the frame's anchor, and it
+	// holds every other root. Its draft element stays one of the draft's roots.
+	const frame = roots.find( ( r ) => true === r.node.modalFrame );
+	const live = frame ? [ frame.node.attributes?.anchor ? `[id=${ JSON.stringify( frame.node.attributes.anchor ) }]` : null ] : tree.map( ( n ) => ( refOf( n ) ? `.${ refOf( n ) }` : null ) );
 	if ( [ ...draft, ...exclude, ...live ].some( ( s ) => ! s ) ) {
 		return null;
 	}

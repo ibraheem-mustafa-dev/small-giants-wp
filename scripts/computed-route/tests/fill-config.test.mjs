@@ -167,3 +167,26 @@ test( 'MUST FAIL: a state-driven surface\'s walker opens the same draft state Fi
 	await plain.draft.open( { clickText: async ( re ) => clicked.push( re ) } );
 	assert.deepEqual( clicked, [ 'About' ], 'a surface with no state keeps the click-text open' );
 } );
+
+test( 'MUST FAIL WITHOUT THE FRAME ROOT: a modal surface\'s lifted frame node roots live at the page\'s sgs/modal element (its id is the anchor), not at a holder of refs the page does not carry; a page with several top-level blocks keeps the direct-children holder', () => {
+	const modal = [
+		{ name: 'sgs/container', draftRef: { tpl: 'Root/1235#0' }, attributes: {} },
+		{ name: 'sgs/container', draftRef: { tpl: 'Root/1238#0' }, attributes: {} },
+		{ name: 'sgs/modal', modalFrame: true, draftRef: { tpl: 'Root/1232#0' }, attributes: { triggerStyle: 'none', anchor: 'modal-size-guide' } },
+	];
+	const tree = cleanTree( modal );
+	addRefs( tree, 'msg' );
+	const roots = surfaceRoots( skeletonNodes( modal ), tree );
+	assert.equal( roots.live, '[id="modal-size-guide"]' );
+	assert.match( roots.draft, /1235.*1238.*1232/ );
+	// A frame with no anchor names no live element, so the surface stays unrooted.
+	const bare = modal.map( ( n ) => ( n.modalFrame ? { ...n, attributes: { triggerStyle: 'none' } } : n ) );
+	const bareTree = cleanTree( bare );
+	addRefs( bareTree, 'msg' );
+	assert.equal( surfaceRoots( skeletonNodes( bare ), bareTree ), null );
+	// Negative control: the same roots with no frame node keep the direct-children holder.
+	const plain = modal.filter( ( n ) => ! n.modalFrame );
+	const plainTree = cleanTree( plain );
+	addRefs( plainTree, 'msg' );
+	assert.equal( surfaceRoots( skeletonNodes( plain ), plainTree ).live, ':has(> :is(.cr-ref-msg-0)):has(> :is(.cr-ref-msg-1))' );
+} );
