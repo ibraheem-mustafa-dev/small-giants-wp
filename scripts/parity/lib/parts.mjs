@@ -11,7 +11,7 @@
 // :hover + :active on the part and its ancestors, devtools.mjs::forcedPseudo) and the computed styles, with no pointer. A
 // part whose hover or press is driven by a script (a pointer or mouse listener on it or an ancestor up to the pair's
 // element, found with DOMDebugger.getEventListeners, scriptDriven) is read with a real pointer instead, waiting only until
-// its animations settle (the old fixed 800/400/400/300 ms holds are the caps). React-driven (`__reactProps$` handlers) and Interactivity-directive parts count as script-driven too. Reads are kept per page (one page is one
+// its animations settle (the old fixed 800/400/400/300 ms holds are the caps). Reads are kept per page (one page is one
 // side at one width): a later state of the same page reuses a part's reading when its element, identity, page box, resting
 // look and resting layers are unchanged, and reads only the parts that are new or changed (readParts, partsCache).
 import { HOVER_PROPS, hoverPointOf, hoverStyles } from './collect.mjs';
@@ -229,25 +229,8 @@ const PART_PROPS = [ ...HOVER_PROPS, 'transform-origin' ];
 // The pointer and mouse events a script listens to to drive a hover or press look.
 const POINTER_EVENTS = new Set( [ 'pointerenter', 'pointerover', 'pointerdown', 'mouseenter', 'mouseover', 'mousedown', 'pointermove', 'mousemove' ] );
 
-// Run in the page on one element (`this`): whether it carries a pointer or mouse handler that no listener on the element
-// shows. React attaches every handler at its root container, so a React-driven element (the draft's runtime) holds its
-// handlers only in its `__reactProps$<id>` property (onMouseEnter, onMouseOver, onMouseMove, onMouseDown, onPointerEnter,
-// onPointerOver, onPointerMove, onPointerDown); the root's delegated listener alone is never a handler. A WordPress
-// Interactivity directive (`data-wp-on--mouseenter`, `data-wp-on-async--pointerenter`, ...) is a backstop for the listener
-// check. Self-contained: it is sent to the page as source.
-const HANDLER_ATTR = `function () {
-	const names = [ 'onMouseEnter', 'onMouseOver', 'onMouseMove', 'onMouseDown', 'onPointerEnter', 'onPointerOver', 'onPointerMove', 'onPointerDown' ];
-	for ( const k of Object.keys( this ) ) {
-		if ( k.startsWith( '__reactProps$' ) && this[ k ] && names.some( ( n ) => 'function' === typeof this[ k ][ n ] ) ) {
-			return true;
-		}
-	}
-	return [ ...this.attributes ].some( ( a ) => /^data-wp-on(-async)?--(mouse|pointer)(enter|over|move|down)/.test( a.name ) );
-}`;
-
 // Whether part i's hover or press is script-driven: a pointer or mouse listener (POINTER_EVENTS) on the part or on any
-// ancestor up to the pair's element (DOMDebugger.getEventListeners), or a React prop or Interactivity directive handler there
-// (HANDLER_ATTR). CSS-only parts have none and are read forced.
+// ancestor up to the pair's element (DOMDebugger.getEventListeners). CSS-only parts have none and are read forced.
 export async function scriptDriven( cdp, i ) {
 	const GROUP = 'sgs-parts';
 	try {
@@ -255,10 +238,6 @@ export async function scriptDriven( cdp, i ) {
 		for ( let objectId = result?.objectId; objectId; ) {
 			const { listeners } = await cdp.send( 'DOMDebugger.getEventListeners', { objectId } );
 			if ( listeners.some( ( l ) => POINTER_EVENTS.has( l.type ) ) ) {
-				return true;
-			}
-			const prop = await cdp.send( 'Runtime.callFunctionOn', { objectId, functionDeclaration: HANDLER_ATTR, returnByValue: true } );
-			if ( true === prop.result?.value ) {
 				return true;
 			}
 			const up = await cdp.send( 'Runtime.callFunctionOn', { objectId, objectGroup: GROUP, functionDeclaration: 'function () { return this === window.__crPartsRoot ? null : this.parentElement; }' } );
