@@ -17,6 +17,7 @@ import fs from 'fs';
 import path from 'path';
 import { spawnSync } from 'child_process';
 import { fileURLToPath } from 'url';
+import { routeCacheDir } from './lib/cache-dir.mjs';
 import { main as handoffCheck } from './handoff-check.mjs';
 import { openDb } from './lib/db.mjs';
 import { localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
@@ -97,7 +98,7 @@ async function run( argv ) {
 			fs.writeFileSync( file, text );
 		},
 	};
-	const r = await runStage0( { repo: REPO, client: o.client, site: o.site, cacheDir: path.join( HERE, 'cache' ), plan: o.plan, recalibrate: o.recalibrate, allowLoss: o.allowLoss }, deps );
+	const r = await runStage0( { repo: REPO, client: o.client, site: o.site, cacheDir: routeCacheDir( REPO ), plan: o.plan, recalibrate: o.recalibrate, allowLoss: o.allowLoss }, deps );
 	r.lines.forEach( ( l ) => console.log( l ) );
 	return r.code;
 }

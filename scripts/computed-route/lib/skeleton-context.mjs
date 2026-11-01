@@ -5,7 +5,7 @@
 // (lib/skeleton-form-link.mjs).
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { routeCacheDir } from './cache-dir.mjs';
 import { loadCalibration } from './cache.mjs';
 import { formLinksFor } from './skeleton-form-link.mjs';
 import { detectReferences } from './references.mjs';
@@ -18,7 +18,7 @@ import { flowSale } from './flow-product.mjs';
 import { loadShopParts } from './fill-shop-parts.mjs';
 import { componentScript } from './fill-form-success.mjs';
 
-const CACHE = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'cache' );
+const CACHE = routeCacheDir();
 
 // The calibration cache's element keys for a block on a site (slot targets), or none when it has no default paint there.
 export const calKeysFor = ( site ) => ( slug ) => Object.keys( loadCalibration( CACHE, slug, site )?.elements || {} );

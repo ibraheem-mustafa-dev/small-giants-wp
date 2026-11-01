@@ -77,7 +77,7 @@ export function staleSlotMaps( { cacheDir, readKey, localHash } ) {
 			continue;
 		}
 		const why = cal.slotKey !== have ? `slotKey ${ cal.slotKey } is not the local build hash ${ have }` : ( cal.readKey !== readKey ? `readKey ${ cal.readKey ?? 'none' } is not the current ${ readKey }` : null );
-		why && rows.push( { key: `${ cal.block }:slot-map`, class: 'I-stale', gate: 'G0', block: cal.block, attribute: null, property: null, evidence: { file: `scripts/computed-route/cache/${ f }`, key: why } } );
+		why && rows.push( { key: `${ cal.block }:slot-map`, class: 'I-stale', gate: 'G0', block: cal.block, attribute: null, property: null, evidence: { file: path.join( cacheDir, f ).split( path.sep ).join( '/' ), key: why } } );
 	}
 	return { rows, missing };
 }

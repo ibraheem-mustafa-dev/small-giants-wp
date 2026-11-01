@@ -21,6 +21,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { routeCacheDir } from './cache-dir.mjs';
 import { openHarness, settleRest } from './intake-harness.mjs';
 import { mapPool, poolSize } from './intake-pool.mjs';
 import { readInventory, INVENTORY_WIDTHS } from './skeleton-inventory.mjs';
@@ -566,7 +567,7 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 	const ownDb = ! readOnly && ! db && ! facts;
 	const theDb = readOnly ? null : db || ( facts ? null : openDb() );
 	const f = readOnly ? null : factsFor( { db: theDb, client, repo, facts } );
-	const calKeys = site ? ( s ) => Object.keys( loadCalibration( path.join( HERE, '..', 'cache' ), s, site )?.elements || {} ) : () => [];
+	const calKeys = site ? ( s ) => Object.keys( loadCalibration( routeCacheDir(), s, site )?.elements || {} ) : () => [];
 	const sources = inventoriesDir ? sourcesOf( folder ) : null;
 	// The state keys each component writes from the viewport width: a state bounding one opens only at the widths inside it.
 	const widthKeys = widthStateKeys( readBreakpoints( { folder } ) );

@@ -11,6 +11,7 @@ import fs from 'fs';
 import path from 'path';
 import { spawn, spawnSync } from 'child_process';
 import { fileURLToPath, pathToFileURL } from 'url';
+import { routeCacheDir } from './lib/cache-dir.mjs';
 import { openDb, statesVocabulary } from './lib/db.mjs';
 import { loadCalibration } from './lib/cache.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
@@ -48,13 +49,13 @@ export const USED_VALUES = [ 'width', 'left', 'top' ];
 // The calibration for a block on a site, or null (the resolver then returns `uncalibrated`): the library-wide slot map
 // with the site's own default paint as `elements` (lib/cache.mjs::loadCalibration). A site with no paint file gets
 // `paintMissing` and no elements, never another site's paint.
-export function calibrationFor( block, site, dir = path.join( HERE, 'cache' ) ) {
+export function calibrationFor( block, site, dir = routeCacheDir() ) {
 	const cal = loadCalibration( dir, block, site );
 	return cal ? withInnerRootAliases( cal, block ) : null;
 }
 
 // The block-to-calibration function for one site, the shape every reader takes as `calFor`.
-export const calibrationForSite = ( site, dir = path.join( HERE, 'cache' ) ) => ( block ) => calibrationFor( block, site, dir );
+export const calibrationForSite = ( site, dir = routeCacheDir() ) => ( block ) => calibrationFor( block, site, dir );
 
 // A block that wraps its own root element only in some modes (icon-list adds a <div> or <nav> around its <ul> when it has
 // a heading or a landmark; business-info wraps its value) is calibrated in one mode and measured on a page in another. A

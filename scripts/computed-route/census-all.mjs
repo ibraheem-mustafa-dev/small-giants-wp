@@ -2,13 +2,14 @@
 // mechanism signature (block family, property family, state, tier pattern, side, Fill reason class).
 //   node census-all.mjs [--clients a,b] [--root <repo root>] [--out <file>] [--json] [--check]
 // Each row also carries its FR-48-65 class (lib/census-gap-class.mjs): the Fill reason's class, with an I-class where the block's
-// fitting setting is NULL-routed, mistagged, uncalibrated or stale. The calibration cache is read from <root>/scripts/computed-route/cache.
+// fitting setting is NULL-routed, mistagged, uncalibrated or stale. The calibration cache is read from lib/cache-dir.mjs::routeCacheDir( root ).
 // --out writes Markdown, or JSON when the file ends in .json. --check exits 1 when a row has no signature (a key the property
 // families cannot name, or a Fill reason data/census-classes.json does not name). A block slug the framework DB does not hold
 // is the `unregistered:<slug>` family and an element row with no slug the `(no block read)` family (data/census-mechanisms.json). Exit 2 on usage.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { routeCacheDir } from './lib/cache-dir.mjs';
 import { openDb } from './lib/db.mjs';
 import { loadRules } from './lib/fill-census.mjs';
 import { blockLookup, surfaceRows, groupRows, SIGNATURE_PARTS } from './lib/census-mechanism.mjs';
@@ -109,7 +110,7 @@ export function renderTable( { groups, unclassified, surfaces, clients, classes 
 // names no site or the block has no cache; `.files` gives the same block's cache files ({ slotMap, paint }, repo-relative),
 // or null when the surface names no site.
 function calibrationReader( repo ) {
-	const cacheDir = path.join( repo, 'scripts', 'computed-route', 'cache' );
+	const cacheDir = routeCacheDir( repo );
 	const sites = new Map();
 	const readers = new Map();
 	const siteOf = ( client, surface ) => {

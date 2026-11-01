@@ -25,6 +25,7 @@ import { spawn, spawnSync } from 'child_process';
 import v8 from 'v8';
 import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
+import { routeCacheDir } from './lib/cache-dir.mjs';
 import { openDb, attrsFor, enumSettings, variantInfo } from './lib/db.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { blockSchema } from './lib/resolve.mjs';
@@ -46,7 +47,7 @@ export { remotePlugin, EDITOR_ONLY, BUNDLE_TEXT, normaliseBundle, TEXT_FILE, lfT
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
-const CACHE = path.join( HERE, 'cache' );
+const CACHE = routeCacheDir();
 // Most instances one calibration page holds: larger blocks are built in chunks (google-reviews has about 400, and a
 // save of that page failed with an invalid JSON response on 2026-10-03; 157 saved).
 // SGS_CAL_CHUNK overrides it for a run (a block whose page times out on the host is read in smaller chunks).

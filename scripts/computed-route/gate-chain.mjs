@@ -16,6 +16,7 @@ import { createRequire } from 'module';
 import os from 'os';
 import { execFileSync, spawnSync } from 'child_process';
 import { fileURLToPath, pathToFileURL } from 'url';
+import { routeCacheDir } from './lib/cache-dir.mjs';
 import { openDb } from './lib/db.mjs';
 import { runChain } from './lib/gate-chain.mjs';
 import { renderEvidence } from './lib/gate-evidence.mjs';
@@ -102,7 +103,7 @@ export function buildContext( { report, walk, surfaces, surface, client, probes,
 	const buildDir = client ? path.join( REPO, 'sites', client, 'build' ) : null;
 	const tree = s && buildDir ? readTree( path.join( buildDir, s.tree ) ) : null;
 	const blockOf = ( row ) => ( tree && row.ref ? nodeByRef( tree, row.ref )?.name ?? null : null );
-	const calFor = s?.site ? calibrationForSite( s.site, path.join( REPO, 'scripts', 'computed-route', 'cache' ) ) : () => null;
+	const calFor = s?.site ? calibrationForSite( s.site, routeCacheDir( REPO ) ) : () => null;
 	const intake = intakeFile && fs.existsSync( intakeFile ) ? JSON.parse( fs.readFileSync( intakeFile, 'utf8' ) ) : null;
 	const ancestors = ancestorsOf( db );
 	const draftIdOf = loadDraftIdentity( { buildDir, surface, s, intake } );
@@ -227,7 +228,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	// FR-48-67: every I-class row, and the known items whose inputs are present, grouped by owner beside gaps.json.
 	if ( client ) {
 		const db = openDb();
-		const cacheDir = path.join( REPO, 'scripts', 'computed-route', 'cache' );
+		const cacheDir = routeCacheDir( REPO );
 		const inTree = ctx.treeBlocks();
 		const stale = staleSlotMaps( { cacheDir, readKey: READ_KEY, localHash: ( short ) => {
 			const dir = path.join( REPO, 'plugins', 'sgs-blocks', 'build', 'blocks', short );

@@ -1,6 +1,6 @@
 // One logged-in browser for a run that builds pages on a site (scripts/lib/wp-session.js): the run launches it once, every
 // scripts/wp-build-page.js child it starts attaches to it through SGS_CDP_URL, and the login is kept between runs in a
-// per-site profile under scripts/computed-route/cache/ (gitignored), so a run logs in at most once and a later run not at
+// per-site profile under the route cache (lib/cache-dir.mjs::routeCacheDir), so a run logs in at most once and a later run not at
 // all. A host's edge that blocks bursts of automated logins (Hostinger answers 403 to every request for about 20 minutes)
 // sees one session instead of one login per page. Used by calibrate.mjs, site-build.mjs and site-run.mjs.
 // SGS_CDP_URL already set: attach to that browser instead (an everyday Chrome started with --remote-debugging-port, which
@@ -12,10 +12,11 @@ import path from 'path';
 import { spawn } from 'child_process';
 import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
+import { routeCacheDir } from './cache-dir.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '..', '..', '..' );
-const CACHE = path.join( HERE, '..', 'cache' );
+const CACHE = routeCacheDir();
 
 // A site's credentials from its secrets file (never printed): { url, user, pwd }.
 export function readEnv( file, key, repo = REPO ) {

@@ -2,7 +2,7 @@
 roster, and the two Node collectors (editor facts and the check-dead-controls
 dump), regenerated on every run so their facts are never stale.
 
-Never reads the calibration cache (`scripts/computed-route/cache/`); that is a
+Never reads the calibration cache (`lib/route_cache_dir.py`); that is a
 test oracle only.
 """
 from __future__ import annotations

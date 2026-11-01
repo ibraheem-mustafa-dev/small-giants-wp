@@ -26,6 +26,7 @@ import fs from 'fs';
 import path from 'path';
 import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
+import { routeCacheDir } from './lib/cache-dir.mjs';
 import { assertDraftPage, serveDraft } from './lib/draft.mjs';
 import { readInventory } from './lib/skeleton-inventory.mjs';
 import { permalinkOf } from './lib/fill-route.mjs';
@@ -49,7 +50,7 @@ import { pruneRunsReport } from './lib/prune-runs.mjs';
 import { WHOLE_TREE, commonChain, contentUnder, copyFile, copyTree, readShell, splitShell, writeCopy } from './lib/template-copies.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
-const CACHE = path.join( REPO, 'scripts', 'computed-route', 'cache' );
+const CACHE = routeCacheDir( REPO );
 const calibrationFixtures = () => readJson( path.join( REPO, 'scripts', 'computed-route', 'calibration-fixtures.json' ) );
 const ALL_STAGES = [ 'inventory', 'propose', 'fill', 'build', 'walk' ];
 

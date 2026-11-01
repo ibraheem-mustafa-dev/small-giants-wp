@@ -2,7 +2,7 @@
 .claude/plans/archive/2026-10-04-wiring-fingerprint-gate.md), measured against the QC
 council's labelled evidence and the calibration cache. The oracles live outside
 the shipped tree (`.claude/reports/2026-10-04-route-data-audit/council/`, the
-gitignored `scripts/computed-route/cache/`); each measurement reports `None`
+gitignored route cache, see `lib/route_cache_dir.py`); each measurement reports `None`
 when its oracle is absent. Never imported by the gate itself.
 
     python scripts/wiring-fingerprint/wf_acceptance.py [--report report.json]
@@ -20,13 +20,16 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 from wf_paint import EXTRA_SUFFIXES, PaintClassifier  # noqa: E402
-from wf_paths import REPO, real_roots  # noqa: E402
+from wf_paths import REPO, SCRIPTS, real_roots  # noqa: E402
+
+sys.path.insert(0, str(SCRIPTS / "lib"))
+from route_cache_dir import route_cache_dir  # noqa: E402
 
 BRIEF_SUFFIX = PaintClassifier([])
 BRIEF_EXTRA = {s for s, _css in EXTRA_SUFFIXES}
 
 COUNCIL = REPO / ".claude" / "reports" / "2026-10-04-route-data-audit" / "council"
-CACHE = REPO / "scripts" / "computed-route" / "cache"
+CACHE = route_cache_dir(REPO)
 LINK_ALIASES = {"L3": ("L3", "L3-tier", "L3-state", "L3-runtime"), "L2": ("L2",), "L4": ("L4",), "L5": ("L5",), "L6": ("L6",), "L7": ("L7",), "C1": ("C1",)}
 KNOWN_BUGS = (
     ("sgs/accordion-item", None, "B1"),
