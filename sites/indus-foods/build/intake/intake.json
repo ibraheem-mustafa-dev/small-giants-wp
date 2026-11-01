@@ -80277,27 +80277,14 @@
      },
      "tag": "indus-logo",
      "words": "",
-     "block": "sgs/responsive-logo",
+     "block": null,
      "confidence": 1,
      "low": false,
-     "reason": null,
-     "rule": null,
-     "ruleWould": {
-      "label": "absorbed",
-      "reason": "a logo in a drawer's top row (the row holding the drawer's own close control, not its navigation) is the drawer block's own top-row logo (Spec 36 FR-36-6: sgs/nav-drawer draws its logo from its chrome logo settings above its body), so the block takes it: the logo's carried attachment is the block's logo setting and its look the block's logo settings; the draft's logo is never built as a second logo block",
-      "decision": {
-       "label": "sgs/responsive-logo",
-       "reason": "Bean accepted sgs/responsive-logo in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)"
-      }
-     },
-     "candidates": [
-      {
-       "block": "sgs/responsive-logo",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "a logo in a drawer's top row (the row holding the drawer's own close control, not its navigation) is the drawer block's own top-row logo (Spec 36 FR-36-6: sgs/nav-drawer draws its logo from its chrome logo settings above its body), so the block takes it: the logo's carried attachment is the block's logo setting and its look the block's logo settings; the draft's logo is never built as a second logo block",
+     "rule": "drawerLogo",
+     "into": "Indus Foods Website v2/108#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<indus-logo variant=\"horizontal\" aria-label=\"Indus Foods Ltd\" style=\"display:block;height:{{ R.drawerLogoH }};aspect-ratio:3741 / 848;\" data-dc-tpl=\"114\"></indu",
      "parent": {
       "draftId": "Indus Foods Website v2:113",
@@ -80444,7 +80431,7 @@
       {
        "draftId": "Indus Foods Website v2:118",
        "tag": "button",
-       "block": "sgs/container"
+       "block": null
       }
      ],
      "siblingCount": 2,
@@ -80513,7 +80500,7 @@
       {
        "draftId": "Indus Foods Website v2:118",
        "tag": "button",
-       "block": "sgs/container"
+       "block": null
       }
      ],
      "siblingCount": 2,
@@ -80559,27 +80546,14 @@
      },
      "tag": "button",
      "words": "",
-     "block": "sgs/container",
+     "block": null,
      "confidence": 1,
      "low": false,
-     "reason": null,
-     "rule": null,
-     "ruleWould": {
-      "label": "absorbed",
-      "reason": "a button or link inside a drawer surface whose click handler writes a falsy value to a state key one of the drawer's own surfaces.json states holds at true (lib/skeleton-handler-opens.mjs::handlerCloses; a handler that also writes the key to an opening value is a toggle, not a close) is the drawer block's own close control (Spec 36 FR-36-6: close is the drawer's chrome, drawn by sgs/nav-drawer above its body), so the block takes it and its look becomes the block's close settings; the draft's button is never built as a second, dead close",
-      "decision": {
-       "label": "sgs/container",
-       "reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)"
-      }
-     },
-     "candidates": [
-      {
-       "block": "sgs/container",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "a button or link inside a drawer surface whose click handler writes a falsy value to a state key one of the drawer's own surfaces.json states holds at true (lib/skeleton-handler-opens.mjs::handlerCloses; a handler that also writes the key to an opening value is a toggle, not a close) is the drawer block's own close control (Spec 36 FR-36-6: close is the drawer's chrome, drawn by sgs/nav-drawer above its body), so the block takes it and its look becomes the block's close settings; the draft's button is never built as a second, dead close",
+     "rule": "drawerClose",
+     "into": "Indus Foods Website v2/108#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<button sc-camel-on-click=\"{{ closeMobile }}\" aria-label=\"Close menu\" style=\"position:relative;width:46px;height:46px;border-radius:50%;border:0;background:#E7D",
      "parent": {
       "draftId": "Indus Foods Website v2:115",
@@ -80645,15 +80619,16 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "Bean accepted remove in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-     "rule": null,
+     "reason": "drawn by the element before it: a button or link inside a drawer surface whose click handler writes a falsy value to a state key one of the drawer's own surfaces.json states holds at true (lib/skeleton-handler-opens.mjs::handlerCloses; a handler that also writes the key to an opening value is a toggle, not a close) is the drawer block's own close control (Spec 36 FR-36-6: close is the drawer's chrome, drawn by sgs/nav-drawer above its body), so the block takes it and its look becomes the block's close settings; the draft's button is never built as a second, dead close",
+     "rule": "drawerClose",
+     "into": "Indus Foods Website v2/108#0",
      "candidates": [],
-     "action": "remove",
+     "action": "absorbed",
      "snippet": "<span style=\"position:absolute;width:18px;height:2.5px;border-radius:2px;background:currentColor;transform:rotate(45deg);\" data-dc-tpl=\"119\"></span>",
      "parent": {
       "draftId": "Indus Foods Website v2:118",
       "tag": "button",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
@@ -80709,15 +80684,16 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "Bean accepted remove in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-     "rule": null,
+     "reason": "drawn by the element before it: a button or link inside a drawer surface whose click handler writes a falsy value to a state key one of the drawer's own surfaces.json states holds at true (lib/skeleton-handler-opens.mjs::handlerCloses; a handler that also writes the key to an opening value is a toggle, not a close) is the drawer block's own close control (Spec 36 FR-36-6: close is the drawer's chrome, drawn by sgs/nav-drawer above its body), so the block takes it and its look becomes the block's close settings; the draft's button is never built as a second, dead close",
+     "rule": "drawerClose",
+     "into": "Indus Foods Website v2/108#0",
      "candidates": [],
-     "action": "remove",
+     "action": "absorbed",
      "snippet": "<span style=\"position:absolute;width:18px;height:2.5px;border-radius:2px;background:currentColor;transform:rotate(-45deg);\" data-dc-tpl=\"120\"></span>",
      "parent": {
       "draftId": "Indus Foods Website v2:118",
       "tag": "button",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
@@ -82265,14 +82241,16 @@
     "inventoryElements": 225,
     "parts": 164,
     "rows": 61,
-    "skeletonNodes": 15,
-    "expandedNodes": 21,
+    "skeletonNodes": 13,
+    "expandedNodes": 19,
     "low": 0,
-    "removed": 46,
+    "removed": 48,
     "unresolved": 0,
     "byRule": {
      "homeLink": 1,
+     "drawerLogo": 1,
      "drawerIconRun": 2,
+     "drawerClose": 3,
      "drawsChildren": 41
     }
    },
@@ -136289,32 +136267,32 @@
    "rowId": "page:page:food-service",
    "rowType": "page-map",
    "contentHash": "49751060d826467c6a3373ac8c57f1913ccb645d531042ec7768d7d3140cd991",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "page:page:manufacturing",
    "rowType": "page-map",
    "contentHash": "d3f444b9fbb2d9d1ca421ccd169155fb1311ab8a00ac3f87dbc4cf14a8a28346",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "page:page:retail",
    "rowType": "page-map",
    "contentHash": "4033c83d79cee7a3cf0a0b5816000b9b8c66d8dcf4c93d1a0c64455d1d314c2d",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "page:page:wholesale",
    "rowType": "page-map",
    "contentHash": "eb6de86dec3997e82802fa0a380d980182c657d130c801662bafadfd5dd83cf5",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -136369,24 +136347,24 @@
    "rowId": "page:page:catalogue",
    "rowType": "page-map",
    "contentHash": "aafb5d4d9b33f608dd8b2ae8c52230a53d7a1e9fc6f0634ae7b1950102051087",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "page:page:delivery",
    "rowType": "page-map",
    "contentHash": "df1bee880f90d60fd8479245887a008184213b0fac10745a0750989d6043f5d2",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "page:page:terms",
    "rowType": "page-map",
    "contentHash": "2fe21154350bbeb69632f6272424018a99a8a26d5d95bae7086aa5039faa02b3",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -136409,8 +136387,8 @@
    "rowId": "page:page:faqs",
    "rowType": "page-map",
    "contentHash": "979b16effa69d03e9f8de45868a98573486d9738db992d63c9de54caa848b5a3",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -136553,8 +136531,8 @@
    "rowId": "palette:--brand-blue",
    "rowType": "palette-role",
    "contentHash": "2337be239d257e45bb3dbc0bfb798c6e4cc2d0c010757456b57be4d7bc696b97",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -136577,8 +136555,8 @@
    "rowId": "palette:--brand-gold",
    "rowType": "palette-role",
    "contentHash": "4b44fd9b35311d1ae688f8af28327c3af56f1a135bc0440e3e4be4762f4ecdfc",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -136609,16 +136587,16 @@
    "rowId": "palette:--ink",
    "rowType": "palette-role",
    "contentHash": "147cebf2e0cbca3537cb3902c3241c387600834aa342d8789e6bac8b4bc50cc8",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "palette:--slate",
    "rowType": "palette-role",
    "contentHash": "83425484ac80bcec8881e1017327489554b7524b4fb85dd2b58332fbc15a8013",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -136641,8 +136619,8 @@
    "rowId": "palette:--surface-white",
    "rowType": "palette-role",
    "contentHash": "31110b1aae430925b1b3381f1acc5903297b92e0d4126152880a591199e2257b",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -136673,16 +136651,16 @@
    "rowId": "palette:--social-linkedin",
    "rowType": "palette-role",
    "contentHash": "b3d2e65664acd2e97083c0e8062e5e2e5cd72824e35dc62944f4a75032b85373",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "palette:--social-facebook",
    "rowType": "palette-role",
    "contentHash": "8b66c8e8be28d45c93e8d026e2f0256dffec07ddb64956c6a0e13183fa6d9c21",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -136697,16 +136675,16 @@
    "rowId": "palette:--whatsapp-green",
    "rowType": "palette-role",
    "contentHash": "5419b1b709677db8fc319badde334e53b5ab742c264447b5b7be854d23d78845",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "palette:--text-heading",
    "rowType": "palette-role",
    "contentHash": "ff1f299db04e54b2bd707b7e37e0ac99263f05fc02f3cda7bcc2e7d2bf87a5ed",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -136729,8 +136707,8 @@
    "rowId": "palette:--text-link",
    "rowType": "palette-role",
    "contentHash": "3f1255339dbc634b97408e1ce7e246873331df5419fab6c3aad508f15b9384ac",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -136745,56 +136723,56 @@
    "rowId": "palette:--surface-header",
    "rowType": "palette-role",
    "contentHash": "9c53a3685f1af93e9882e92a7cdaf908781c34421bb290b62bfdb6ba9e3e8c64",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "palette:--surface-topbar",
    "rowType": "palette-role",
    "contentHash": "f8f134b06b6f354de10442da8d5c0e33cf0da7d7ccf23d45ed522917580c8298",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "palette:--surface-section-blue",
    "rowType": "palette-role",
    "contentHash": "b58d70b1bc62f76e1bdbc70476b11d4e88beddec0bc6ceeffb7ff48ff355d045",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "palette:--surface-section-gold",
    "rowType": "palette-role",
    "contentHash": "ed4ef7d3a26a3e7200f8d67dc17e2455c109438385fae903d28f5e59a0eb8c2e",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "palette:--border-accent",
    "rowType": "palette-role",
    "contentHash": "cf7052ef742f73ce248d301495537625e2c5c8ac693a18123a708cd6c8a679ee",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "palette:--selection-bg",
    "rowType": "palette-role",
    "contentHash": "9b05d2165a713f239601ded6fa8f8089287ee2708fdb1c7127e5c2f92b6733d2",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "palette:--selection-fg",
    "rowType": "palette-role",
    "contentHash": "3e9f15f5795db1072998f53bb1476ee15c01229613cf7812afc22abce9eacd43",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -137505,8 +137483,8 @@
    "rowId": "effect:A-01",
    "rowType": "effect",
    "contentHash": "a71a993b079ea2f8711946f560b6c7c3671667b0720993bbbbaeac5244122f79",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -137521,32 +137499,32 @@
    "rowId": "effect:A-25",
    "rowType": "effect",
    "contentHash": "a6b1ed93f1838a7d75e016accafbc711fb999d10c4cd3ef08c80c647bec9f632",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "effect:A-31",
    "rowType": "effect",
    "contentHash": "dc69bdfad5fe3b359fe3568badaf25314c37fb69ad01595b2f16b2d622cc1fcd",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "effect:A-32",
    "rowType": "effect",
    "contentHash": "0472ca6923988593882af87db3edc77843627d690ccc8cf13b2e2c04540e34b8",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "effect:A-33",
    "rowType": "effect",
    "contentHash": "85cf04c0fe65023d77e1b455e233c78c9878fa811188b21d9b72c6df8e06be8b",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -137561,8 +137539,8 @@
    "rowId": "effect:J-13",
    "rowType": "effect",
    "contentHash": "239e5c9ce6f5a5bc45c391efbeed852a7e442677ff7c65ed7d3b719708ee7d06",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -137577,8 +137555,8 @@
    "rowId": "effect:J-31",
    "rowType": "effect",
    "contentHash": "964190f23530a9022e1b6019fe2603fdd7e6f439964e8eace911f305553bfe9e",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -137625,8 +137603,8 @@
    "rowId": "effect:J-218",
    "rowType": "effect",
    "contentHash": "af3750f0b5bd1c5ba2d994fc473b5f4e02ff138983804bf92f8a567314c248d3",
-   "mark": null,
-   "markedOn": null,
+   "mark": "custom-css",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -137641,8 +137619,8 @@
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/39#0",
    "rowType": "skeleton-block",
    "contentHash": "22ef71b124145540a5a8a440a9db5bc4d933c398dacbca557649ffb2154f0bc1",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -137671,8 +137649,8 @@
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/11#0",
    "rowType": "skeleton-block",
    "contentHash": "e7e1e4da5ccbbc548df90b74686ee9b090bf98cb9e9a8f9d72dece28e4fe55ad",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -137709,8 +137687,8 @@
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/18#0",
    "rowType": "skeleton-block",
    "contentHash": "b358014ae2c9a397507f3414071fd0a233fbadb1bc16aa408989bb6a3c1d22a7",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -137935,8 +137913,8 @@
    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/71",
    "rowType": "skeleton-block",
    "contentHash": "e5dd61d16ca3b11d16ba3f298a5150b276bb77f9d69470410dd8182892ddd54c",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -137959,8 +137937,8 @@
    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/74",
    "rowType": "skeleton-block",
    "contentHash": "e510ee21b88c22d906576bfba00c53aed57f65cdf1ebc15eef1a8a8d02c4bf1a",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -138007,16 +137985,16 @@
    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/81#0",
    "rowType": "skeleton-block",
    "contentHash": "e868ad166a8a52312522597b1a07a9bbf2a59ec23b843a52d573c444e2e97a22",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/82#0",
    "rowType": "skeleton-block",
    "contentHash": "b1eadddce43b3943b3923b1bae23b800d2fdd8a24fcfadd083284f226ab23ebb",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -138079,8 +138057,8 @@
    "rowId": "skeleton:sectors-mega-menu:Indus Foods Website v2/92",
    "rowType": "skeleton-block",
    "contentHash": "ed08c32d9089d90837422d0644065c5458cb12460ae52c6c1240825dd629807a",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -138159,8 +138137,8 @@
    "rowId": "skeleton:brands-mega-menu:Indus Foods Website v2/104#0",
    "rowType": "skeleton-block",
    "contentHash": "af91ec1edeab477238c218b52f91da3d2d700fd91c16081c9b521f35de8e397f",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -138222,9 +138200,9 @@
   {
    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/114#0",
    "rowType": "skeleton-block",
-   "contentHash": "586faf83e6864db450ea90fa2c70c31d098bf1cc1d6dd3018e1befa550f44f5f",
-   "mark": null,
-   "markedOn": null,
+   "contentHash": "3b41b9188aebd075b54ce29f5c8b60597339fe0ee4d3139a7b3425189448211a",
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -138254,25 +138232,25 @@
   {
    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/118#0",
    "rowType": "skeleton-block",
-   "contentHash": "2266013e7ee963fb3e6cb140bff6732b988336d7ed5072ae668f7f3b36625c7f",
-   "mark": null,
-   "markedOn": null,
+   "contentHash": "d889e95a42539114662c4573cd6d09fb97b1e3cfe01d88ba506c3e6eb768a3aa",
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/119#0",
    "rowType": "skeleton-block",
-   "contentHash": "751248c90091d9060299f423f87f0cbb468dad66193a8a26da62b54bb598960d",
-   "mark": null,
-   "markedOn": null,
+   "contentHash": "c33b3c2d1504f3eb5f986423f7a01e01d9bb9b513e6bd974bd45b99e42e80ebd",
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/120#0",
    "rowType": "skeleton-block",
-   "contentHash": "12e25128cd1b8766095da020f71c16cc460243e08de74e42b6c661112332d1be",
-   "mark": null,
-   "markedOn": null,
+   "contentHash": "ffd595cd8fbf4e84d96e46ee4c66394766e5ccdc8464872a207394402f51e314",
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -138607,8 +138585,8 @@
    "rowId": "skeleton:footer:Indus Foods Website v2/677",
    "rowType": "skeleton-block",
    "contentHash": "b6a1a014e4b7ae71ffc79a8fa55a75bd3cc6a11d63fb3d854eb26ab28c0bcfa4",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -138791,8 +138769,8 @@
    "rowId": "skeleton:footer:Indus Foods Website v2/712#0",
    "rowType": "skeleton-block",
    "contentHash": "938f195bb5b8d900eb1733679c145b5e667201d9d276838df76d3c048ca025f3",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -138919,8 +138897,8 @@
    "rowId": "skeleton:footer:Indus Foods Website v2/728#0",
    "rowType": "skeleton-block",
    "contentHash": "23cf19dab12b5b59c59a9b0860e3d3ebcfaa576de77d8607304efa6884f77deb",
-   "mark": null,
-   "markedOn": null,
+   "mark": "block:sgs/whatsapp-cta",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -139365,40 +139343,40 @@
    "rowId": "skeleton:page-home:Indus Foods Website v2/260",
    "rowType": "skeleton-block",
    "contentHash": "d1d7a1be22d16dec1be407fb8c0b6b89584cdafe230a9651718513a12b7c539e",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home:Indus Foods Website v2/261",
    "rowType": "skeleton-block",
    "contentHash": "18072075bbbac7a772c84d53a0d28a419c86b31c908d9d245b7d2e1f4e0b8e32",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home:Indus Foods Website v2/262",
    "rowType": "skeleton-block",
    "contentHash": "f2bd8b2ac2c96ac44817639f42ac9a0a3a8366dd9c9a1fa5d6796f6dd7d96012",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home:Indus Foods Website v2/263",
    "rowType": "skeleton-block",
    "contentHash": "bf524a8cf492406d1ebde94e47e16822cb7b9d38abd81cd4162f92cd7a1f5459",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home:Indus Foods Website v2/264",
    "rowType": "skeleton-block",
    "contentHash": "ea07ec5a39b33077bbd784702974c650b2e3902755b37100068498bbb4abaf3a",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -139757,24 +139735,24 @@
    "rowId": "skeleton:page-home:Indus Foods Website v2/312#0",
    "rowType": "skeleton-block",
    "contentHash": "7ad3984785e62d9f29889d8a82bc140de593e7d201beb83c736b37f38a0e25c1",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home:Indus Foods Website v2/313#0",
    "rowType": "skeleton-block",
    "contentHash": "ed554a2631215f251f96081da125de2b3862bae70d44b7a0939c07aca0cdf756",
-   "mark": null,
-   "markedOn": null,
+   "mark": "block:sgs/button",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home:Indus Foods Website v2/314#0",
    "rowType": "skeleton-block",
    "contentHash": "0c02017ef52e4e8a493d33d898865c975b9e603bba0285c229209e47058c1247",
-   "mark": null,
-   "markedOn": null,
+   "mark": "block:sgs/button",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -139965,8 +139943,8 @@
    "rowId": "skeleton:page-about:Indus Foods Website v2/362=sgs/text",
    "rowType": "skeleton-block",
    "contentHash": "70d4bc5625c4bafd3003323767d622e89022ff91b49a12ce892be8fcc19c8377",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -139981,8 +139959,8 @@
    "rowId": "skeleton:page-about:Indus Foods Website v2/363=sgs/text",
    "rowType": "skeleton-block",
    "contentHash": "154aa1dac6699778d9346c2cb49dde37134f6874a94b505023942bedb1347cd3",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -140165,56 +140143,56 @@
    "rowId": "skeleton:page-about:Indus Foods Website v2/446",
    "rowType": "skeleton-block",
    "contentHash": "3bfc87ed61d7ce64b64ed95733f95fc9438e897779d826592e04f87ab00afff7",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/447",
    "rowType": "skeleton-block",
    "contentHash": "1608ec653ddc80ad6124344474abad0fa5327d9137c5e306cf590befdb4c8769",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/448",
    "rowType": "skeleton-block",
    "contentHash": "2d1dde491ce0291b03e0c57e102e501ed93d468ba621a7c246e6ed3842833fe1",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/449",
    "rowType": "skeleton-block",
    "contentHash": "774be29077c03483acee1f60cea1ebc5def6347db87b32600bdaecdc4fd3782a",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/450",
    "rowType": "skeleton-block",
    "contentHash": "5b265c803a0010fa7bad8a98b7da47f35a37d2483232ff28e067e2f9b14155d9",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/451",
    "rowType": "skeleton-block",
    "contentHash": "c9a8cdc3533067a109cf773da12fa4b5a27c5950c25761c1b43d604d843086f5",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/452",
    "rowType": "skeleton-block",
    "contentHash": "73d067be79d38087da9319573e59ca3c9db7efca74b4935f88702782e2b5e3a7",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -140277,8 +140255,8 @@
    "rowId": "skeleton:page-about:Indus Foods Website v2/490=sgs/text",
    "rowType": "skeleton-block",
    "contentHash": "99d434d5d2c7620d93d53402a8801c09322f390670be9adfbc5e6b5c3100cfa8",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -140373,8 +140351,8 @@
    "rowId": "skeleton:page-about:Indus Foods Website v2/524#0",
    "rowType": "skeleton-block",
    "contentHash": "0fa4ee874071a97d32f643dce7a717d4438166a9447b701da02e65cf50415e4f",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -140413,8 +140391,8 @@
    "rowId": "skeleton:page-our-story:Indus Foods Website v2/328#0",
    "rowType": "skeleton-block",
    "contentHash": "b3f21e94629075a1ebee1558bc14f0a57684a7c1f6ce3ecf7dbecb15663eb5a8",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -140517,24 +140495,24 @@
    "rowId": "skeleton:page-our-story:Indus Foods Website v2/388#0",
    "rowType": "skeleton-block",
    "contentHash": "69ec3c67bc30db21a2e5a53c592fae982252d36e565fb119006386995b8e3c78",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-our-story:Indus Foods Website v2/390",
    "rowType": "skeleton-block",
    "contentHash": "cdf55103397876f4ae6873540c4c6fabce9c6faa45cc964aeffaa60047b79a4b",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-our-story:Indus Foods Website v2/391",
    "rowType": "skeleton-block",
    "contentHash": "55465e90eb8af3fd5970724e2b473cd501fbadc918783dc414eb6540010ba6f8",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -140685,8 +140663,8 @@
    "rowId": "skeleton:page-sustainability:Indus Foods Website v2/388#0",
    "rowType": "skeleton-block",
    "contentHash": "582f3d03657d5c4a152b3c9c1cb90c52218980438c8ca615038b11a3d19729c0",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -140821,112 +140799,112 @@
    "rowId": "skeleton:page-careers:Indus Foods Website v2/551#0",
    "rowType": "skeleton-block",
    "contentHash": "1d72de7a69ad4f14dc2b70b51b7248364d3ea4e7782b5031abf27c26bdb1e228",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-careers:Indus Foods Website v2/552#0",
    "rowType": "skeleton-block",
    "contentHash": "59867b35f847c33722e9ed3599342f35bba171e6e556ec3f8b9b298c726cf66c",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-careers:Indus Foods Website v2/553#0",
    "rowType": "skeleton-block",
    "contentHash": "890f26508688b9ab3b5bd44b2fb00eaea9bfdda0fb416c58a7e9c814fdbed905",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-careers:Indus Foods Website v2/555",
    "rowType": "skeleton-block",
    "contentHash": "9e4f12e9acfdace204a5ad46e0ff8ff7d9d5a717db563ee6d6eab6336a76f030",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-careers:Indus Foods Website v2/556",
    "rowType": "skeleton-block",
    "contentHash": "cc8200d90d1192ad68d942f3f5d6bef23fa0d91786fa96ec08159c519fb49246",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-careers:Indus Foods Website v2/560=sgs/form-field-text",
    "rowType": "skeleton-block",
    "contentHash": "4e17a42a045af5f5e18f3fbc5d449a18f2a6787ae4e46e584bb0403193b25d9c",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-careers:Indus Foods Website v2/560=sgs/form-field-email",
    "rowType": "skeleton-block",
    "contentHash": "f25131eaedbdf8ca9049f6d2190583fe030b357a61997948a6626f7faa3c0c82",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-careers:Indus Foods Website v2/560=sgs/form-field-phone",
    "rowType": "skeleton-block",
    "contentHash": "78e596a1ce5fb6c77d09530a2db9042f9d027d9223c446f18ce7c12fcec41d38",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-careers:Indus Foods Website v2/562",
    "rowType": "skeleton-block",
    "contentHash": "5ffed81851c856fba8030d06342a3ab22f8c3f2ef07053e5f369e2bbcdc81f41",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-careers:Indus Foods Website v2/568#0",
    "rowType": "skeleton-block",
    "contentHash": "0dc8706b9cf5651a8b05a8753bae4d967481fd7c0a1f13e4d5c5381242e27080",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-careers:Indus Foods Website v2/566#0",
    "rowType": "skeleton-block",
    "contentHash": "37ed43b0acf2265bd0e711e4c1506e317029893db460ceb48c4cfaacc24da4be",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-careers:Indus Foods Website v2/569#0",
    "rowType": "skeleton-block",
    "contentHash": "6372d333b9bea1952d8c71aa86a925f8099897130483432804d7661e11d2bbdc",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-careers:Indus Foods Website v2/570#0",
    "rowType": "skeleton-block",
    "contentHash": "83af8abd35f44e39427c109e3759c3a7d114f9f504fa468885cd1b0634ccf016",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-careers:Indus Foods Website v2/571#0",
    "rowType": "skeleton-block",
    "contentHash": "d60e463f0f89474fdda4c01b0e6a6d3a632647770a233ea7428416349d0f4015",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -140981,24 +140959,24 @@
    "rowId": "skeleton:page-careers:Indus Foods Website v2/578#0",
    "rowType": "skeleton-block",
    "contentHash": "c4b6fa77081c6762caf6b1b255ba1e8fc1584e4640069aa13831e99d4d0e2987",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-careers:Indus Foods Website v2/580",
    "rowType": "skeleton-block",
    "contentHash": "615127e9057c140d781a6396eef68f99a47fc1b3ca8c4edf196895e1e66a910b",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-careers:Indus Foods Website v2/581",
    "rowType": "skeleton-block",
    "contentHash": "069d9bd9b92e5b4b0faee37811bad3ff2ab9bede6d28f2332fa9acf53744116b",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -141237,16 +141215,16 @@
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/6#0",
    "rowType": "skeleton-block",
    "contentHash": "de190a5eceac5ca0ff529e4a2c5752034c1f5b81c89d2fcf02802c13f0ffc316",
-   "mark": null,
-   "markedOn": null,
+   "mark": "block:sgs/container",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/7#0",
    "rowType": "skeleton-block",
    "contentHash": "8df3fb8c79665db8282834656454b22989e1c098601255ed2421c5a394f21234",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -141453,32 +141431,32 @@
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/86#0",
    "rowType": "skeleton-block",
    "contentHash": "0742e29e0cba6a2f6cfd1b41fbd31520779c9914a4963f095c3b563f82932285",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/87#0",
    "rowType": "skeleton-block",
    "contentHash": "0e2f0715e08ffd6e2a239c742f89d8e1c73b1df4e82be54615f404c05d37159b",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/88#0",
    "rowType": "skeleton-block",
    "contentHash": "65c8c84df77574283c0131bd72464eaca5087bd0ef0be6a6c68e49f480a3e095",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/89#0",
    "rowType": "skeleton-block",
    "contentHash": "7414ac8e9e86a2bba4b54354b35366ac8777cb545ab3b7e103ff1591b4e344c7",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -141493,56 +141471,56 @@
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/93#0",
    "rowType": "skeleton-block",
    "contentHash": "a685a013102b68c2eda573ca17a50522d3daab05ae611979b804f1f278987e3b",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/95",
    "rowType": "skeleton-block",
    "contentHash": "7790519f0771969e7e6ffe2598a39fbdba7f510766b36f92de70fef06ad445f1",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/96",
    "rowType": "skeleton-block",
    "contentHash": "7b562904150799fb0a71ba5fdaefadab7b21b8b4ceca6e605bc6dfc3d241d37e",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/98#0",
    "rowType": "skeleton-block",
    "contentHash": "e7149349805f21971d90b2e51135dd67ebe786c4e06537daed0f4239f17ac6db",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/99#0",
    "rowType": "skeleton-block",
    "contentHash": "eb49e0f4bd7617ebf3f64e727944674a082774be4fb30694cf77f7dc27a10b3f",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/100#0",
    "rowType": "skeleton-block",
    "contentHash": "561caa35145cacdce4a9a4af868e0e8ae122451ec00853a9c6902c49c0cb5e75",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/101#0",
    "rowType": "skeleton-block",
    "contentHash": "3fe4ef46a32ce978690d4e33652f7a9fe6d0296a57efe335981ac788b72aabb5",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -141557,8 +141535,8 @@
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/104#0",
    "rowType": "skeleton-block",
    "contentHash": "a49dbbda913cb705d0cb2a3804d638f55281df6ae9d5642cf99898f3da3c80ca",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -141573,96 +141551,96 @@
    "rowId": "skeleton:page-catalogue:Indus Foods Website v2/551#0",
    "rowType": "skeleton-block",
    "contentHash": "a115673b1cfc7452460d637e0885ab576a78d2b7227a0ea1382463ddfc4a3a6b",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-catalogue:Indus Foods Website v2/552#0",
    "rowType": "skeleton-block",
    "contentHash": "63a5371a043d8fa2deb6053b7ec5d801f3bf4e0d8e454ff31401f2ec4d8d5fae",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-catalogue:Indus Foods Website v2/553#0",
    "rowType": "skeleton-block",
    "contentHash": "bc398c8cf2e3d3167d5fb7c1a5062c216434ce25678b3489c4996281de69179d",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-catalogue:Indus Foods Website v2/555",
    "rowType": "skeleton-block",
    "contentHash": "3b691779d6a5f651282d72c81c2e818971e38dbe3ed1f868e1a774aade5b921a",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-catalogue:Indus Foods Website v2/556",
    "rowType": "skeleton-block",
    "contentHash": "8effcee59c1e6ab8b89de6661db660f07551a89d70f7bf209fd74fe52c4f2bbf",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-catalogue:Indus Foods Website v2/560",
    "rowType": "skeleton-block",
    "contentHash": "312d0bbe70b16acc25847f766f6dc3ab33d02e82aaa54fe463eec1152fd4669b",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-catalogue:Indus Foods Website v2/562",
    "rowType": "skeleton-block",
    "contentHash": "3f3fce536e4c7a32a21150ce8d3091418f773b1af1e705458a8d7b617168f816",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-catalogue:Indus Foods Website v2/566#0",
    "rowType": "skeleton-block",
    "contentHash": "681095ebe2c84d5440962e6e0c3c2eaba24d91ea3da20715c5fc67d82af16e92",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-catalogue:Indus Foods Website v2/569#0",
    "rowType": "skeleton-block",
    "contentHash": "2e2cdee529eeb0a4a9c2450096c69b18299a031ffd2098d3f07518eed0643ea7",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-catalogue:Indus Foods Website v2/570#0",
    "rowType": "skeleton-block",
    "contentHash": "6c701a10786b4a84a75cbc12ad70921f092759bbab5e6453465592d3315453ef",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-catalogue:Indus Foods Website v2/571#0",
    "rowType": "skeleton-block",
    "contentHash": "4999809cc2bf239a497a77731bb4523a02b7cb77e5a9e48ae5c1e9d3ded815bf",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-catalogue:Indus Foods Website v2/578#0",
    "rowType": "skeleton-block",
    "contentHash": "cb919d02c2cd7080bc0c782b0cedc923c5791cb4fd266bfe2897824d4f637bbb",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -141757,16 +141735,16 @@
    "rowId": "skeleton:page-terms:Indus Foods Website v2/643#0",
    "rowType": "skeleton-block",
    "contentHash": "ad22c90b5d4be19d49cea8513c5cd458c624b4a38bdbdc96523d3d788bccb13c",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-terms:Indus Foods Website v2/645",
    "rowType": "skeleton-block",
    "contentHash": "b26d33932261324ebd423caff8f74474dabd63c8cd28ef351b0a0ac7099d2901",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -141789,8 +141767,8 @@
    "rowId": "skeleton:page-terms:Indus Foods Website v2/650",
    "rowType": "skeleton-block",
    "contentHash": "fe414db2d3812de3ce1fea8c200f86b1ea6a389a4683737da854679138f0e5d4",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null,
    "changed": true
   },
@@ -141982,8 +141960,8 @@
    "rowId": "skeleton:page-contact:Indus Foods Website v2/538#0",
    "rowType": "skeleton-block",
    "contentHash": "659e440018048cbf9e7cd40cdd82b35fc556b54ca08e9b73d02f12d53135f1d5",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -142030,40 +142008,40 @@
    "rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/7#0",
    "rowType": "skeleton-block",
    "contentHash": "3174ea6e462d08d9bbcfec8d7e094232a70e6c9306f79e8076f9dbdbeb3ecea0",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/8#0",
    "rowType": "skeleton-block",
    "contentHash": "f1c43f98db5842e340e026a76f639d43b0b40d955ae88335b30378b535021c8e",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/9#0",
    "rowType": "skeleton-block",
    "contentHash": "a60cbf6fee04d860d8fa7b742a6a0193a5454e7ff09a632105adb8c84a368b00",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/10#0",
    "rowType": "skeleton-block",
    "contentHash": "cfdb8afdf00a5dd52bd74478c6e2fc06b8718b882febfb847de8c40230689f74",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/11#0",
    "rowType": "skeleton-block",
    "contentHash": "751e540b25d785f731a57ebf559da817ed75329e11d42e8d780c3c2930789e8d",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -142094,152 +142072,152 @@
    "rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/20#0",
    "rowType": "skeleton-block",
    "contentHash": "42fa6a938c5ccafe4c584a4a0c0d764ee4b7359e6fd05211b29fd87e1de83a87",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/21#0",
    "rowType": "skeleton-block",
    "contentHash": "3e897f8020c00b956a8be5ec9834352616c2cab6360c63ce45290aca9df2e9ee",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/22#0",
    "rowType": "skeleton-block",
    "contentHash": "76c78103bc74c7855c95365ae1e72f39f36272b7ce37ebff0fe1d1ec1a332e47",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/23#0",
    "rowType": "skeleton-block",
    "contentHash": "c1962743e8a8998c78147a36093f3d1c4ad93b6f51422e608a8c04e8c733c1c9",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468/25",
    "rowType": "skeleton-block",
    "contentHash": "28a6682c1c32e047bca5fc7c9a9a01d847d28c401092baf92ff58b2af81977b6",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468/26=sgs/form-field-text",
    "rowType": "skeleton-block",
    "contentHash": "586c9c7a287b4cbe815eef8ceb8946bafff8045c0f1ff32d109338af0e355a0d",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468/26=sgs/form-field-email",
    "rowType": "skeleton-block",
    "contentHash": "b19a0de8a69a150affb65e134c1dfb229e6c1ab48b59f2411dcbedec985125e2",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468/26=sgs/form-field-phone",
    "rowType": "skeleton-block",
    "contentHash": "964f8352ad101164b9f5523fd50b372fe2fd31bd32a4623936204e383d559c1e",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468/27",
    "rowType": "skeleton-block",
    "contentHash": "bf0e3f48a56527a737bbefc7e0f51e323240ebe4939ef864765e82517be8441d",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/30#0",
    "rowType": "skeleton-block",
    "contentHash": "ad351ca44c15b9c61a8d54ff383e9e3871e1cd4b5c91856a06fdfdcf23b436df",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/31#0",
    "rowType": "skeleton-block",
    "contentHash": "be3777b20323943c2653c0c4d8fc380292f2ff3d62d7cbd342c8e2fa6ceb21df",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/32#0",
    "rowType": "skeleton-block",
    "contentHash": "1b52fb4d165c6013e3e240180e852ac8ea1b196fc1cdf47edc00c8c970ea0bf7",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/33#0",
    "rowType": "skeleton-block",
    "contentHash": "399da3cd108f1496ec905e5d7b4e1148c0a6f73b32fae927cd72d26e785d64cd",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/36#0",
    "rowType": "skeleton-block",
    "contentHash": "d1039910c9df8f49679fb10fefa6b9e973389ff4f9601a5a2fef5c2c10bbe13b",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/37#0",
    "rowType": "skeleton-block",
    "contentHash": "195d515eb7925d1991609c3c0e4d7858494f8d198b50902fef6ff9bc578e81c2",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468/39",
    "rowType": "skeleton-block",
    "contentHash": "ab545f852c0c3db22fe1a263323be83b4e6f070e9fbfec303e635e70a1b6521f",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/40#0",
    "rowType": "skeleton-block",
    "contentHash": "651120315d44fdf8879e2f65a09ae94962de604d4cc54bcfafa9a97a1cb32db6",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/41#0",
    "rowType": "skeleton-block",
    "contentHash": "5470a4738c7e4f310312e969ec38f0d1598089a1e1533a56260846e84e3b0f8d",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/42#0",
    "rowType": "skeleton-block",
    "contentHash": "8d577e3d7fa305ca525a71f1221120cd467959e17576c10d92b26cf468d39e2c",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -142510,16 +142488,16 @@
    "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466/33=sgs/container",
    "rowType": "skeleton-block",
    "contentHash": "9dee275770983e84a8fe61071c1e44576743b0d223b8b4d550bc4cc3e2b6c3ce",
-   "mark": null,
-   "markedOn": null,
+   "mark": "remove",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466/33=remove",
    "rowType": "skeleton-block",
    "contentHash": "8175809e9950bb087a7942aed85b980773eee56e283bdaba1cda9aa4ac598c43",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -142582,16 +142560,16 @@
    "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466/95=remove",
    "rowType": "skeleton-block",
    "contentHash": "7c32b695f45e682c7834e27bf0e02b1bd0b542cdeb934241eee3e84b9e285859",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466/96=remove",
    "rowType": "skeleton-block",
    "contentHash": "2c3d278243312766ec1a938754a2dcc1fed000bdef49046e24d8d1c7b160abe8",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -144318,8 +144296,8 @@
    "rowId": "inventory:anim:Indus Foods Website v2.dc.html%7C1310%7Cwaapi:only-ours",
    "rowType": "inventory-diff",
    "contentHash": "dd370871211875ca120f3aac5a041881bf39505316be152fce4e3910fd95df61",
-   "mark": null,
-   "markedOn": null,
+   "mark": "ours",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
@@ -144358,16 +144336,16 @@
    "rowId": "inventory:anim:TradeApplication.dc.html%7C255%7Cwaapi:only-ours",
    "rowType": "inventory-diff",
    "contentHash": "ac46a67265c22715414d972527ef0cd4f596713a4fb3c17ca40b5438c3a7a4e5",
-   "mark": null,
-   "markedOn": null,
+   "mark": "ours",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {
    "rowId": "inventory:anim:EnquiryForm.dc.html%7C99%7Cwaapi:only-ours",
    "rowType": "inventory-diff",
    "contentHash": "c31a83d66b680196a84cbc475eb456f328384780e1a763fb04783030a1e1c426",
-   "mark": null,
-   "markedOn": null,
+   "mark": "ours",
+   "markedOn": "2026-11-01",
    "carriedFrom": null
   },
   {

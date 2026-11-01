@@ -4,7 +4,7 @@ Taken on 2026-10-31T02:29:50.748Z; manifest 1.0, files hash dd9e9aec7ae9a787.
 
 How to mark: put x in a section's `Accept all: [ ]` box to give every row the section's first mark; to mark one row differently, write its mark in that row's Mark cell (a row's own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review indus-foods`.
 
-Rows: 1222; 583 need reading, 639 are confident proposals that Accept all covers (skeleton block choices 605, missing features 34).
+Rows: 1222; 581 need reading, 641 are confident proposals that Accept all covers (skeleton block choices 607, missing features 34).
 
 Not defects counted, not listed: breakpoint 91, dead-code (constant guard) 5, dead-code (data-gated) 7, prop-variant 1, prototype-only 13, reached-when-forced 152, render-wins 552.
 
@@ -17,7 +17,7 @@ Marks per section (first value = Accept all):
 - Draft defects: `accept`, `render-wins`
 - Not defects: unwired code: `not-a-defect`, `defect`
 - Missing features: `map:<block>`, `difference`, `build`, `gap:<wave>`
-- Script effects: `accept`, `block:<slug>`, `difference`
+- Script effects: `accept`, `block:<slug>`, `custom-css`, `difference`
 - Skeleton block choices: `accept`, `block:<slug>`, `remove`
 - Inventory diffs: `ours`, `theirs`
 - Notices: `noted`
@@ -250,7 +250,7 @@ Accept all: [ ]
 | `effect:J-12` | J-12 js-style-write in updateHeader on ref setHeaderEl (js-style-write, scroll-position) is written as the block settings sgs/site-header scrolledOffset, shadowScrolled, shadowScrolledColour | accept |  | accept |
 | `effect:J-13` | J-13 js-style-write in updateHeader on ref setProgEl (js-style-write, scroll-position) is the scroll-progress effect | accept |  | accept |
 | `effect:J-14` | J-14 js-style-write in updateHeader on this._mainEl && this._mainEl.querySelector('[data-hero-img]') (js-style-write, scroll-position) is the parallax effect | accept |  | accept |
-| `effect:J-218` | J-218 waapi-control in IndusLogo.play on this._spin (waapi-control, hover) is not expressed by any SGS effect: framework gap: a hover that speeds up a running animation 14 times (a playback-rate control); the marquee's hover rate is the only SGS playback-rate field | difference | a Spec 38 gap: framework gap: a hover that speeds up a running animation 14 times (a playback-rate control); the marquee's hover rate is the only SGS playback-rate field |  |
+| `effect:J-218` | J-218 waapi-control in IndusLogo.play on this._spin (waapi-control, hover) is not expressed by any SGS effect: framework gap: a hover that speeds up a running animation 14 times (a playback-rate control); the marquee's hover rate is the only SGS playback-rate field | custom-css | a Spec 38 gap: framework gap: a hover that speeds up a running animation 14 times (a playback-rate control); the marquee's hover rate is the only SGS playback-rate field; its CSS equivalent is written to the Custom CSS of the block that draws it | custom-css |
 | `effect:J-31` | J-31 js-scroll in animateAcc on ref setMobEl (js-scroll, state) is written as the block settings sgs/nav-drawer-menu accordionScrollIntoView or sgs/accordion scrollToOpened | accept |  | accept |
 | `effect:J-43` | J-43 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-peek]') (js-style-write, pointer-move) is the cursor-field effect | accept |  | accept |
 | `effect:J-44` | J-44 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-peek]') (js-style-write, pointer-move) is the cursor-field effect | accept |  | accept |
@@ -275,11 +275,10 @@ Accept all: [ ]
 | `skeleton:footer:Indus Foods Website v2/728#0` | footer Indus Foods Website v2/728#0 <a> | block:sgs/button | you chose sgs/button on 2026-10-29; the rules now propose sgs/whatsapp-cta because names and attributes: sgs/whatsapp-cta holds whatsapp (score 1.00, features: floating, link kind whatsapp); fixed to the viewport (bottom-right): variant = floating | block:sgs/whatsapp-cta |
 | `skeleton:sticky-header:Indus Foods Website v2/18#0` | sticky-header Indus Foods Website v2/18#0 <span> "Call" | block:sgs/button | you chose sgs/button on 2026-10-31; the rules now propose sgs/text because of a rule change | accept |
 
-### Needs a decision (rule-changed): block:sgs/container (2)
+### Needs a decision (rule-changed): block:sgs/container (1)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/118#0` | mobile-tablet-drawer Indus Foods Website v2/118#0 <button> | block:sgs/container | you chose sgs/container on 2026-10-29; the rules now propose absorbed because a button or link inside a drawer surface whose click handler writes a falsy value to a state key one of the drawer's own surfaces.json states holds at true (lib/skeleton-handler-opens.mjs::handlerCloses; a handler that also writes the key to an opening value is a toggle, not a close) is the drawer block's own close control (Spec 36 FR-36-6: close is the drawer's chrome, drawn by sgs/nav-drawer above its body), so the block takes it and its look becomes the block's close settings; the draft's button is never built as a second, dead close |  |
 | `skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466/33=sgs/container` | trade-account-application Indus Foods Website v2>TradeApplication@466/33=sgs/container <label> "What kind of business are you?" | block:sgs/container | you chose sgs/container on 2026-10-28; the rules now propose remove because the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19) | remove |
 
 ### Needs a decision (rule-changed): block:sgs/form (1)
@@ -294,12 +293,6 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:page-home:Indus Foods Website v2/313#0` | page-home Indus Foods Website v2/313#0 <a> "Apply For A Trade Account" | block:sgs/icon-list | you chose sgs/icon-list on 2026-10-29; the rules now propose sgs/button because of a rule change | block:sgs/button |
 | `skeleton:page-home:Indus Foods Website v2/314#0` | page-home Indus Foods Website v2/314#0 <a> "Request Our Catalogue" | block:sgs/icon-list | you chose sgs/icon-list on 2026-10-29; the rules now propose sgs/button because of a rule change | block:sgs/button |
-
-### Needs a decision (rule-changed): block:sgs/responsive-logo (1)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/114#0` | mobile-tablet-drawer Indus Foods Website v2/114#0 <indus-logo> | block:sgs/responsive-logo | you chose sgs/responsive-logo on 2026-10-29; the rules now propose absorbed because a logo in a drawer's top row (the row holding the drawer's own close control, not its navigation) is the drawer block's own top-row logo (Spec 36 FR-36-6: sgs/nav-drawer draws its logo from its chrome logo settings above its body), so the block takes it: the logo's carried attachment is the block's logo setting and its look the block's logo settings; the draft's logo is never built as a second logo block |  |
 
 ### Needs a decision (agent-pick): block:sgs/multi-button (1)
 
@@ -324,12 +317,26 @@ Accept all: [ ]
 | `skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466#0/22#0` | trade-account-application Indus Foods Website v2>TradeApplication@466#0/22#0 <div> | unwrap | 1: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) | accept |
 | `skeleton:trade-account-application:Indus Foods Website v2>TradeApplication@466#0/8#0` | trade-account-application Indus Foods Website v2>TradeApplication@466#0/8#0 <div> | unwrap | 1: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) | accept |
 
+### Settled by rule drawerClose: a button or link inside a drawer surface whose click handler writes a falsy value to a state key one of the drawer's own surfaces.json states holds at true (lib/skeleton-handler-opens.mjs::handlerCloses; a handler that also writes the key to an opening value is a toggle, not a close) is the drawer block's own close control (Spec 36 FR-36-6: close is the drawer's chrome, drawn by sgs/nav-drawer above its body), so the block takes it and its look becomes the block's close settings; the draft's button is never built as a second, dead close (3)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/118#0` | mobile-tablet-drawer Indus Foods Website v2/118#0 <button> | absorbed | 1: a button or link inside a drawer surface whose click handler writes a falsy value to a state key one of the drawer's own surfaces.json states holds at true (lib/skeleton-handler-opens.mjs::handlerCloses; a handler that also writes the key to an opening value is a toggle, not a close) is the drawer block's own close control (Spec 36 FR-36-6: close is the drawer's chrome, drawn by sgs/nav-drawer above its body), so the block takes it and its look becomes the block's close settings; the draft's button is never built as a second, dead close | accept |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/119#0` | mobile-tablet-drawer Indus Foods Website v2/119#0 <span> | absorbed | 1: drawn by the element before it: a button or link inside a drawer surface whose click handler writes a falsy value to a state key one of the drawer's own surfaces.json states holds at true (lib/skeleton-handler-opens.mjs::handlerCloses; a handler that also writes the key to an opening value is a toggle, not a close) is the drawer block's own close control (Spec 36 FR-36-6: close is the drawer's chrome, drawn by sgs/nav-drawer above its body), so the block takes it and its look becomes the block's close settings; the draft's button is never built as a second, dead close | accept |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/120#0` | mobile-tablet-drawer Indus Foods Website v2/120#0 <span> | absorbed | 1: drawn by the element before it: a button or link inside a drawer surface whose click handler writes a falsy value to a state key one of the drawer's own surfaces.json states holds at true (lib/skeleton-handler-opens.mjs::handlerCloses; a handler that also writes the key to an opening value is a toggle, not a close) is the drawer block's own close control (Spec 36 FR-36-6: close is the drawer's chrome, drawn by sgs/nav-drawer above its body), so the block takes it and its look becomes the block's close settings; the draft's button is never built as a second, dead close | accept |
+
 ### Settled by rule drawerIconRun: a run of icon-only phone, email and social links in a drawer's top row is one social icons group in the drawer's icons top-row slot, each icon linking its Site Info key (Bean's decision 1, 2026-10-21) (2)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:mobile-tablet-drawer:Indus Foods Website v2/116#0` | mobile-tablet-drawer Indus Foods Website v2/116#0 <a> | block:sgs/social-icons | 1: a run of icon-only phone, email and social links in a drawer's top row is one social icons group in the drawer's icons top-row slot, each icon linking its Site Info key (Bean's decision 1, 2026-10-21) | accept |
 | `skeleton:mobile-tablet-drawer:Indus Foods Website v2/117#0` | mobile-tablet-drawer Indus Foods Website v2/117#0 <a> | absorbed | 1: part of the drawer's top-row icon group: sgs/social-icons draws it from Site Info | accept |
+
+### Settled by rule drawerLogo: a logo in a drawer's top row (the row holding the drawer's own close control, not its navigation) is the drawer block's own top-row logo (Spec 36 FR-36-6: sgs/nav-drawer draws its logo from its chrome logo settings above its body), so the block takes it: the logo's carried attachment is the block's logo setting and its look the block's logo settings; the draft's logo is never built as a second logo block (1)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/114#0` | mobile-tablet-drawer Indus Foods Website v2/114#0 <indus-logo> | absorbed | 1: a logo in a drawer's top row (the row holding the drawer's own close control, not its navigation) is the drawer block's own top-row logo (Spec 36 FR-36-6: sgs/nav-drawer draws its logo from its chrome logo settings above its body), so the block takes it: the logo's carried attachment is the block's logo setting and its look the block's logo settings; the draft's logo is never built as a second logo block | accept |
 
 ### Settled by rule drawerOpener: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener) (4)
 
@@ -538,7 +545,7 @@ Accept all: [ ]
 | `skeleton:sticky-header:Indus Foods Website v2/10#0` | sticky-header Indus Foods Website v2/10#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there | accept |
 | `skeleton:sticky-header:Indus Foods Website v2/41#0` | sticky-header Indus Foods Website v2/41#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there | accept |
 
-### Confident proposals (Accept all covers these) (460)
+### Confident proposals (Accept all covers these) (458)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -615,8 +622,6 @@ Accept all: [ ]
 | `skeleton:mobile-tablet-drawer:Indus Foods Website v2/111#0` | mobile-tablet-drawer Indus Foods Website v2/111#0 <span> | remove | 1: Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01) | accept |
 | `skeleton:mobile-tablet-drawer:Indus Foods Website v2/112#0` | mobile-tablet-drawer Indus Foods Website v2/112#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:mobile-tablet-drawer:Indus Foods Website v2/115#0` | mobile-tablet-drawer Indus Foods Website v2/115#0 <div> | block:sgs/container | 1 | accept |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/119#0` | mobile-tablet-drawer Indus Foods Website v2/119#0 <span> | remove | 1: Bean accepted remove in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01) | accept |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/120#0` | mobile-tablet-drawer Indus Foods Website v2/120#0 <span> | remove | 1: Bean accepted remove in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01) | accept |
 | `skeleton:mobile-tablet-drawer:Indus Foods Website v2/121#0` | mobile-tablet-drawer Indus Foods Website v2/121#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:mobile-tablet-drawer:Indus Foods Website v2/122#0` | mobile-tablet-drawer Indus Foods Website v2/122#0 <nav> | block:sgs/nav-drawer-menu | 1 | accept |
 | `skeleton:mobile-tablet-drawer:Indus Foods Website v2/178#0` | mobile-tablet-drawer Indus Foods Website v2/178#0 <div> | block:sgs/container | 1 | accept |
