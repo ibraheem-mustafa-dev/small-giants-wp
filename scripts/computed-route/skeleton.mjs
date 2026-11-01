@@ -28,6 +28,7 @@ import { loadFacts, decisionsProblems, REPO } from './lib/skeleton-facts.mjs';
 import { proposeSkeleton } from './lib/skeleton-propose.mjs';
 import { loopingKeys, carouselKeys } from './lib/skeleton-rerun.mjs';
 import { isServedInventory, servedDecisions, servedMotion } from './lib/key-space.mjs';
+import { sharedOverrides } from './lib/skeleton-shared-rows.mjs';
 import { reviewHtml } from './lib/skeleton-review.mjs';
 import { calKeysFor, calSettingsFor, calPaintFor, calTextFor, statesOfRecord, thresholdsOf } from './lib/skeleton-context.mjs';
 import { assertCurrent, assertInventoryCurrent, handoffOf, sourcesOf } from './lib/freshness.mjs';
@@ -96,7 +97,7 @@ export function intakeContext( { client, surface, repo = REPO } ) {
 	// The handoff record of the same id carries the states (with the sc-if templates each shows); the draft's width thresholds are intake's.
 	const states = statesOfRecord( { repo, client, id: entry.id } );
 	const thresholds = thresholdsOf( intake.breakpoints );
-	return { slug, id: entry.id ?? null, pageMap: intake.pageMap || [], kind: entry.kind, name: entry.name, rootComponent: entry.inventory?.checks?.rootName || null, motion: loopingKeys( intake.inventory?.animations ), carousels: carouselKeys( intake.inventory?.animations ), states, thresholds };
+	return { slug, skeletons: intake.skeletons || {}, id: entry.id ?? null, pageMap: intake.pageMap || [], kind: entry.kind, name: entry.name, rootComponent: entry.inventory?.checks?.rootName || null, motion: loopingKeys( intake.inventory?.animations ), carousels: carouselKeys( intake.inventory?.animations ), states, thresholds };
 }
 
 // The intake context and the saved client decisions of a surface as propose and review read them: decisions under the intake
@@ -105,8 +106,11 @@ export function surfaceDecisions( { client, surface, repo = REPO, inventory, fil
 	const ctx = intakeContext( { client, surface, repo } );
 	const saved = readDecisions( file );
 	const served = isServedInventory( inventory );
-	const clientDecisions = served ? { ...saved, surfaces: { ...saved.surfaces, [ ctx.slug ]: servedDecisions( saved.surfaces?.[ ctx.slug ], ctx.rootComponent ) } } : saved;
-	return { ctx, saved, served, clientDecisions };
+	// A row intake kept once for several surfaces decides each copy by key (lib/skeleton-shared-rows.mjs); a decision saved on this surface's own row wins.
+	const shared = sharedOverrides( { skeletons: ctx.skeletons, surface: ctx.slug, decisions: saved, rootComponent: served ? ctx.rootComponent : null } );
+	const own = served ? servedDecisions( saved.surfaces?.[ ctx.slug ], ctx.rootComponent ) : saved.surfaces?.[ ctx.slug ];
+	const clientDecisions = { ...saved, surfaces: { ...saved.surfaces, [ ctx.slug ]: { ...shared.decisions, ...own } } };
+	return { ctx, saved, served, clientDecisions, sharedPicks: shared.picks };
 }
 
 // The review table's html for a surface, from the files on disk.
@@ -114,8 +118,8 @@ export function reviewSurface( { client, surface, repo = REPO } ) {
 	const p = skeletonPaths( { client, surface, repo } );
 	const proposal = JSON.parse( fs.readFileSync( p.proposal, 'utf8' ) );
 	const inventory = JSON.parse( fs.readFileSync( p.inventory, 'utf8' ) );
-	const { ctx, clientDecisions } = surfaceDecisions( { client, surface, repo, inventory, file: p.decisions } );
-	return reviewHtml( { inventory, proposal, surface: ctx.slug, clientDecisions, picks: readPicks( p.picks ) } );
+	const { ctx, clientDecisions, sharedPicks } = surfaceDecisions( { client, surface, repo, inventory, file: p.decisions } );
+	return reviewHtml( { inventory, proposal, surface: ctx.slug, clientDecisions, picks: { ...sharedPicks, ...readPicks( p.picks ) } } );
 }
 
 // Runs propose from the files on disk and writes <surface>.skeleton.json and <surface>.proposal.json. Returns the result.
@@ -125,7 +129,7 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	const p = skeletonPaths( { client, surface, repo } );
 	// A proposal is built only from an inventory that still describes the export (lib/freshness.mjs).
 	const inventory = assertInventoryCurrent( JSON.parse( fs.readFileSync( p.inventory, 'utf8' ) ), handoffOf( repo, client ), path.relative( repo, p.inventory ) );
-	const { ctx, saved, served, clientDecisions } = surfaceDecisions( { client, surface, repo, inventory, file: p.decisions } );
+	const { ctx, saved, served, clientDecisions, sharedPicks } = surfaceDecisions( { client, surface, repo, inventory, file: p.decisions } );
 	const facts = loadFacts( { db, client, repo, siteName: siteName || saved.siteName || null } );
 	const bad = decisionsProblems( facts );
 	if ( bad.length ) {
@@ -140,7 +144,7 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	const commerce = commerceOf( readSurface( repo, client, surface ), rows, catalogue, loadShopParts( path.join( repo, 'sites', client, 'build' ) ) );
 	// A loop of products, brands or reviews on any page is a working block (lib/skeleton-loop-blocks.mjs): the page map names the product page, the catalogue the brands.
 	const loops = { rows, brands: catalogue ? filtersOf( catalogue ).brands : [], carousels: served ? servedMotion( ctx.carousels, ctx.rootComponent ) : ctx.carousels };
-	const r = propose( { inventory, facts, formLinks, refs, draftLinks: draftLinksFor( { repo, client } ), surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, commerce, loops, carried: carriedIds( { repo, client, site: readSurface( repo, client, surface ).site, rootComponent: served ? ctx.rootComponent : null } ), scriptOf: ( component ) => componentScript( path.join( repo, 'sites', client, 'handoff' ), component ), saleOf: ( component ) => flowSale( { folder: path.join( repo, 'sites', client, 'handoff' ), component, catalogue } ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: readPicks( p.picks ), calKeys: calKeysFor( readSurface( repo, client, surface ).site ), calSettings: calSettingsFor( readSurface( repo, client, surface ).site ), calPaint: calPaintFor( readSurface( repo, client, surface ).site ), calText: calTextFor( readSurface( repo, client, surface ).site ), states: ctx.states, thresholds: ctx.thresholds, pageMap: ctx.pageMap, surfaceId: ctx.id, db } );
+	const r = propose( { inventory, facts, formLinks, refs, draftLinks: draftLinksFor( { repo, client } ), surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, commerce, loops, carried: carriedIds( { repo, client, site: readSurface( repo, client, surface ).site, rootComponent: served ? ctx.rootComponent : null } ), scriptOf: ( component ) => componentScript( path.join( repo, 'sites', client, 'handoff' ), component ), saleOf: ( component ) => flowSale( { folder: path.join( repo, 'sites', client, 'handoff' ), component, catalogue } ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: { ...sharedPicks, ...readPicks( p.picks ) }, calKeys: calKeysFor( readSurface( repo, client, surface ).site ), calSettings: calSettingsFor( readSurface( repo, client, surface ).site ), calPaint: calPaintFor( readSurface( repo, client, surface ).site ), calText: calTextFor( readSurface( repo, client, surface ).site ), states: ctx.states, thresholds: ctx.thresholds, pageMap: ctx.pageMap, surfaceId: ctx.id, db } );
 	json( p.skeleton, r.skeleton );
 	json( p.proposal, r.proposal );
 	return { ...r, paths: p, facts, inventory, clientDecisions };
