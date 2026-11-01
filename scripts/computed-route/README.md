@@ -3249,7 +3249,8 @@ FR-48-57: the words of a multi-step form's own buttons. The draft's Next and Bac
 ### `lib/form-submit-page.mjs`
 - `FORM_SELECTOR` → `form.sgs-form__inner`; `REQUIRED` → its required controls.
 - `markedValueFor(info, marker)` → `testValueFor`'s value, with every free-text control carrying the marker when one is given.
-- `fillVisible(page, skip, { marker, form })` → fills the reachable required controls of `form` (a selector; a visually hidden tile through its visible label; never the honeypot), leaving the first `skip` empty; with a marker also its empty free-text fields; returns the required controls it cannot fill (a file field).
+- `revealInPage([form, capMs])` → in-page: scrolls the form through the viewport so scroll-driven reveals fire, then waits (capped) for its running animations to end; `fillVisible` runs it first, so `submitForm` finds a button that only gets a box after it scrolls in (nothing is forced visible). Tests: `tests/form-submit-reveal.test.mjs`.
+- `fillVisible(page, skip, { marker, form, revealMs })` → fills the reachable required controls of `form` (a selector; a visually hidden tile through its visible label; never the honeypot), leaving the first `skip` empty; with a marker also its empty free-text fields; returns the required controls it cannot fill (a file field).
 - `stepInPage(form)` → `{ at, of, label, decoys }`: the shown `.sgs-form-step` and the visible Next/Continue buttons that are not the form's own.
 - `submitForm(page, skip, { marker, form, settleMs })` → walks the form's steps with its own Next (`.sgs-form__button--next`, else a button reading Next or Continue) and clicks its submit button; returns `{ steps, decoys }`; throws `stuck on step N of M ("label")…` when a Next click leaves the shown step unchanged, and when neither a submit nor a next button shows.
 
@@ -3273,6 +3274,7 @@ FR-48-57: the words of a multi-step form's own buttons. The draft's Next and Bac
 - `markMegaInPage(mark)`, `markDrawerInPage(mark)` → mark the visible mega triggers and their panels, the visible burger and its drawer.
 - `menuItems({ header, links, pages, examples, headerRows, draftLinks, megaTriggers, base, url })` → the menu check's items; a `sgs_mega_menu` header row passes on the trigger in `megaTriggers` (from `markMegaInPage`) whose panel id ends `-mega-<id>` and whose panel is on the page.
 - `headerRowsOf({ rows, loaded, menuLinks })` → the page-map rows in the header menu as `menuItems` takes them; a product or category row carries the draft's link `text` and the resolved `url` (with its query) instead of a page address, so it is matched by them, never by its title. `addressKey(href, base)` → origin, path and query, for comparing a link with a query.
+- `closedDrawerShowsInPage(mark)` → in-page: `{ shows, display }`, whether the marked `<dialog>` drawer renders although it has no `open` (its CSS display overrides display:none); `drawerItem` fails such a drawer with its own message before clicking, because it covers the burger and its screenshot shows a drawer that was never opened.
 - `megaItems(page, { url, shoot })`, `drawerItem(page, { width, url, shoot })` → one item per mega trigger, one per width.
 - `openDisclosure(page, trigger, target)`, `closeDisclosure(page, trigger, target, closer)` → open by hover, focus and ArrowDown, then a click; close by the close button, Escape, then moving away.
 

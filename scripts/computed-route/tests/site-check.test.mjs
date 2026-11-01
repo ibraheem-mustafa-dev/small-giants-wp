@@ -103,6 +103,19 @@ test( 'MUST FAIL: a drawer that never opens fails', async () => {
 	assert.match( item.error, /did not show after the burger's click/ );
 } );
 
+test( 'MUST FAIL: a drawer that opens after a slow transition passes; a closed dialog that renders anyway fails with its own message', async () => {
+	const slow = drawerHtml( true ).replace( "d.showModal();", "setTimeout( () => d.showModal(), 250 );" );
+	const ok = await pageWith( slow, 375 );
+	const passed = await drawerItem( ok, { width: 375, url: BASE, shoot } );
+	await ok.close();
+	assert.equal( passed.status, 'pass', passed.error );
+	const shown = await pageWith( drawerHtml( true ).replace( '<dialog ', '<dialog style="display:flex;position:fixed;inset:0" ' ), 375 );
+	const failed = await drawerItem( shown, { width: 375, url: BASE, shoot } );
+	await shown.close();
+	assert.equal( failed.status, 'fail' );
+	assert.match( failed.error, /renders while closed/ );
+} );
+
 test( 'MUST FAIL: a drawer that opens from its burger and closes by its close button passes', async () => {
 	const page = await pageWith( drawerHtml( true ), 375 );
 	const item = await drawerItem( page, { width: 375, url: BASE, shoot } );

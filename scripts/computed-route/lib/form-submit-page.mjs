@@ -51,7 +51,8 @@ const controlInfo = ( el ) => {
 // first `skip` empty; with a `marker`, also fills its reachable, still empty free-text controls with it. A control that
 // does not show itself but whose label shows (a tile or chip) is ticked through its label. Returns the reachable
 // required controls left empty: [{ tag, type, name }] (a file field, or a control testValueFor has no value for).
-export async function fillVisible( page, skip = 0, { marker = null, form = FORM_SELECTOR } = {} ) {
+export async function fillVisible( page, skip = 0, { marker = null, form = FORM_SELECTOR, revealMs = 3000 } = {} ) {
+	await page.evaluate( revealInPage, [ form, revealMs ] );
 	const controls = page.locator( requiredIn( form ) );
 	const empty = [];
 	let left = skip;
@@ -106,6 +107,34 @@ export function stepInPage( form ) {
 	const at = steps.findIndex( seen );
 	const decoys = root ? [ ...root.querySelectorAll( 'button' ) ].filter( ( b ) => seen( b ) && ! b.matches( '.sgs-form__button--next, [type="submit"]' ) && /^\s*(next|continue)/i.test( b.textContent ) ).map( ( b ) => b.textContent.replace( /\s+/g, ' ' ).trim() ) : [];
 	return { at, of: steps.length, label: at >= 0 ? steps[ at ].getAttribute( 'data-step-label' ) || steps[ at ].getAttribute( 'aria-label' ) || '' : '', decoys };
+}
+
+// In-page: brings the form `form` through the viewport the way a visitor scrolls to it, so scroll-driven reveals (a
+// control that fades or scales in once it enters view) fire, then waits until the form's running animations and
+// transitions finish, capped at `capMs`. Nothing is forced visible: a control that never reveals stays unseen.
+export async function revealInPage( [ form, capMs ] ) {
+	const root = document.querySelector( form );
+	if ( ! root ) {
+		return;
+	}
+	const frame = () => new Promise( ( r ) => requestAnimationFrame( () => setTimeout( r, 120 ) ) );
+	const top = root.getBoundingClientRect().top + scrollY;
+	const bottom = top + root.getBoundingClientRect().height;
+	const stride = Math.max( 200, Math.floor( innerHeight * 0.6 ) );
+	for ( let y = Math.max( 0, top - innerHeight * 0.3 ); y < bottom + stride; y += stride ) {
+		scrollTo( 0, y );
+		await frame();
+	}
+	root.scrollIntoView( { block: 'center' } );
+	await frame();
+	const start = performance.now();
+	while ( performance.now() - start < capMs ) {
+		const running = root.getAnimations ? root.getAnimations( { subtree: true } ).filter( ( a ) => 'running' === a.playState && Number.isFinite( a.effect?.getComputedTiming().endTime ) ) : [];
+		if ( ! running.length ) {
+			break;
+		}
+		await frame();
+	}
 }
 
 const stepName = ( s ) => `step ${ s.at + 1 } of ${ s.of }${ s.label ? ` ("${ s.label }")` : '' }`;
