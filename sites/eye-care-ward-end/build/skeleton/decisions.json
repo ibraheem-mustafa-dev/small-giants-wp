@@ -41,12 +41,6 @@
 				"reason": "Bean accepted sgs/nav-bar-menu in the intake review on 2026-11-01 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/nav-bar-menu"
 			},
-			"Eye Care Birmingham/17#0": {
-				"block": "sgs/container",
-				"signature": "button|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
 			"Eye Care Birmingham/18#0": {
 				"block": "sgs/container",
 				"signature": "span|",
@@ -58,12 +52,6 @@
 				"signature": "span|Menu",
 				"reason": "Bean accepted sgs/label in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/label"
-			},
-			"Eye Care Birmingham/28#0": {
-				"block": "sgs/container",
-				"signature": "a|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
 			},
 			"Eye Care Birmingham/29#0": {
 				"block": "sgs/responsive-logo",
@@ -116,12 +104,6 @@
 				"block": "sgs/media",
 				"signature": "div|",
 				"reason": "Bean marked block:sgs/media in the intake review on 2026-10-26"
-			},
-			"Eye Care Birmingham/117#0": {
-				"remove": true,
-				"signature": "div|",
-				"reason": "Bean accepted remove in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "remove"
 			},
 			"Eye Care Birmingham/118#0": {
 				"block": "sgs/text",
@@ -787,12 +769,6 @@
 				"reason": "Bean accepted sgs/container in the intake review on 2026-11-01 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/container"
 			},
-			"Eye Care Birmingham/252#0": {
-				"remove": true,
-				"signature": "span|16 frames",
-				"reason": "Bean accepted remove in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "remove"
-			},
 			"Eye Care Birmingham/269#0": {
 				"block": "sgs/container",
 				"signature": "aside|",
@@ -834,12 +810,6 @@
 				"signature": "h1|Sunglasses",
 				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-01 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/heading"
-			},
-			"Eye Care Birmingham/255#0": {
-				"block": "sgs/form-field-select",
-				"signature": "select|",
-				"reason": "Bean accepted sgs/form-field-select in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/form-field-select"
 			},
 			"Eye Care Birmingham/267#0": {
 				"block": "sgs/container",
@@ -3051,18 +3021,6 @@
 				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/text"
 			},
-			"Eye Care Birmingham/1237#0": {
-				"block": "sgs/button",
-				"signature": "button|×",
-				"reason": "Bean accepted sgs/button in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/button"
-			},
-			"Eye Care Birmingham/1238#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
 			"Eye Care Birmingham/1239#0": {
 				"block": "sgs/text",
 				"signature": "p|The quickest way: pick up a pair of glasses you already like the fit of and look at the inside of the left arm. You'll find three numbers printed there.",
@@ -3242,24 +3200,6 @@
 				"signature": "a|",
 				"reason": "Bean accepted sgs/button in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/button"
-			},
-			"Eye Care Birmingham/1232#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Eye Care Birmingham/1233#0": {
-				"remove": true,
-				"signature": "div|",
-				"reason": "Bean accepted remove in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "remove"
-			},
-			"Eye Care Birmingham/1234#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
 			},
 			"Eye Care Birmingham/1241#0": {
 				"block": "sgs/container",
@@ -3564,12 +3504,6 @@
 				"signature": "div|",
 				"reason": "Bean accepted sgs/mega-panel in the intake review on 2026-11-01 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/mega-panel"
-			},
-			"Eye Care Birmingham/54#0": {
-				"block": "sgs/card-grid",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/card-grid in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/card-grid"
 			}
 		},
 		"lens-configurator": {
