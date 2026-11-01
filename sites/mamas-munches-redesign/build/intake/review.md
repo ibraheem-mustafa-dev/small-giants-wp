@@ -4,7 +4,7 @@ Taken on 2026-11-01T20:59:25.918Z; manifest 1.0, files hash a1095c88f61cb88e.
 
 How to mark: put x in a section's `Accept all: [ ]` box to give every row the section's first mark; to mark one row differently, write its mark in that row's Mark cell (a row's own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review mamas-munches-redesign`.
 
-Rows: 1610; 613 need reading, 997 are confident proposals that Accept all covers (skeleton block choices 977, missing features 20).
+Rows: 1609; 612 need reading, 997 are confident proposals that Accept all covers (skeleton block choices 977, missing features 20).
 
 Not defects counted, not listed: breakpoint 6, reached-when-forced 206, render-wins 713.
 
@@ -164,8 +164,7 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `effect:J-08` | J-08 js-scroll in step on ref \|\| this.trackRef (js-scroll, interval) is written as the block settings sgs/testimonial-slider autoplay, dragToScroll, showArrows, showDots | accept |  | accept |
-| `effect:J-08:autoplaySpeed` | J-08 settings: sgs/testimonial-slider autoplay, dragToScroll, showArrows, showDots autoplaySpeed: the timer's interval is not in the record's own code, so the slider's own speed stands (the handoff trigger holds no interval_ms) | difference | a Spec 38 gap: the timer's interval is not in the record's own code, so the slider's own speed stands (the handoff trigger holds no interval_ms) |  |
+| `effect:J-08` | J-08 js-scroll in step on ref \|\| this.trackRef (js-scroll, interval) is written as the block settings sgs/testimonial-slider autoplay, autoplaySpeed, dragToScroll, showArrows, showDots | accept |  | accept |
 
 ## Skeleton block choices (skeleton-block)
 
@@ -189,37 +188,42 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:site-footer:Home>SiteFooter@250#0/3#0` | site-footer Home>SiteFooter@250#0/3#0 <section> | block:sgs/site-footer-row | you chose sgs/site-footer-row on 2026-10-29; the rules now propose sgs/container because of a rule change | accept |
 
+### Needs a decision (agent-pick): block:sgs/responsive-logo (1)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:checkout-header:Checkout/11#0` | checkout-header Checkout/11#0 <img> | block:sgs/responsive-logo | agent pick 0.9: The brand logo image in the checkout header; the logo block.; was block:sgs/responsive-logo 0.66 | accept |
+
+### Needs a decision (agent-pick): block:sgs/site-header (1)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:checkout-header:Checkout/7#0` | checkout-header Checkout/7#0 <header> | block:sgs/site-header | agent pick 0.9: The checkout page's own header spanning the full width; the site header shell.; was block:sgs/site-header 0.58 | accept |
+
+### Needs a decision (agent-pick): block:sgs/text (7)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:checkout-header:Checkout/12#0` | checkout-header Checkout/12#0 <span> "Secure checkout" | block:sgs/text | agent pick 0.65: The Secure checkout line with its padlock glyph at the end of the header row; text.; was block:sgs/text 0.25 | accept |
+| `skeleton:page-help-dc-html:Help/44#0` | page-help-dc-html Help/44#0 <span> "Royal Mail Tracked 48 2–3 days after baking" | block:sgs/text | agent pick 0.85: Bean, 2026-10-31: each delivery option is a container of two text blocks: the name and detail at the left; was block:sgs/text 0.25 | accept |
+| `skeleton:page-help-dc-html:Help/48#0` | page-help-dc-html Help/48#0 <b> "£3.95 Free over £35" | block:sgs/text | agent pick 0.85: Bean, 2026-10-31: each delivery option is a container of two text blocks: the price at the right; was block:sgs/text 0.25 | accept |
+| `skeleton:page-help-dc-html:Help/52#0` | page-help-dc-html Help/52#0 <span> "Royal Mail Tracked 24 The day after baking" | block:sgs/text | agent pick 0.85: Bean, 2026-10-31: each delivery option is a container of two text blocks: the name and detail at the left; was block:sgs/text 0.25 | accept |
+| `skeleton:page-help-dc-html:Help/58#0` | page-help-dc-html Help/58#0 <span> "Taster Trio & gift cards Letterbox-sized" | block:sgs/text | agent pick 0.85: Bean, 2026-10-31: each delivery option is a container of two text blocks: the name and detail at the left; was block:sgs/text 0.25 | accept |
+| `skeleton:page-home-dc-html:Home/192#0` | page-home-dc-html Home/192#0 <div> "We make nourishing food, not medicine. If you’re worried about your supply, your midwife, health visitor or a lactation consultant (IBCLC) is the right person to talk to. Allergens →" | block:sgs/text | agent pick 0.9: Bean, 2026-10-31: a disclaimer paragraph; was block:sgs/text 0.25 | accept |
+| `skeleton:page-signin-dc-html:SignIn/104#0` | page-signin-dc-html SignIn/104#0 <div> "You don’t need an account to order. Checkout works fine as a guest, and you can create one at the end. Go to the shop →" | block:sgs/text | agent pick 0.9: Bean, 2026-10-31: a guest-checkout note; was block:sgs/text 0.25 | accept |
+
 ### Needs a decision (low): block:sgs/multi-button (1)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:sign-in:SignIn/36#0` | sign-in SignIn/36#0 <div> | block:sgs/multi-button | 0.51 | remove |
 
-### Needs a decision (low): block:sgs/responsive-logo (1)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:checkout-header:Checkout/11#0` | checkout-header Checkout/11#0 <img> | block:sgs/responsive-logo | 0.66 | accept |
-
-### Needs a decision (low): block:sgs/site-header (1)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:checkout-header:Checkout/7#0` | checkout-header Checkout/7#0 <header> | block:sgs/site-header | 0.58 | accept |
-
-### Needs a decision (low): block:sgs/text (11)
+### Needs a decision (low): block:sgs/text (4)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:basket-drawer-right:Home>SiteHeader@7#0/130#0` | basket-drawer-right Home>SiteHeader@7#0/130#0 <div> "Your basket (0)" | block:sgs/text | 0.25 | accept |
-| `skeleton:checkout-header:Checkout/12#0` | checkout-header Checkout/12#0 <span> "Secure checkout" | block:sgs/text | 0.25 | accept |
 | `skeleton:page-contact-dc-html:Contact/87#0` | page-contact-dc-html Contact/87#0 <div> "Handmade in Birmingham by a registered food business. No shop to visit, but you’ll sometimes find Zainab at local markets and events." | block:sgs/text | 0.25 | accept |
-| `skeleton:page-help-dc-html:Help/44#0` | page-help-dc-html Help/44#0 <span> "Royal Mail Tracked 48 2–3 days after baking" | block:sgs/text | 0.25 | accept |
-| `skeleton:page-help-dc-html:Help/48#0` | page-help-dc-html Help/48#0 <b> "£3.95 Free over £35" | block:sgs/text | 0.25 | accept |
-| `skeleton:page-help-dc-html:Help/52#0` | page-help-dc-html Help/52#0 <span> "Royal Mail Tracked 24 The day after baking" | block:sgs/text | 0.25 | accept |
-| `skeleton:page-help-dc-html:Help/58#0` | page-help-dc-html Help/58#0 <span> "Taster Trio & gift cards Letterbox-sized" | block:sgs/text | 0.25 | accept |
-| `skeleton:page-home-dc-html:Home/192#0` | page-home-dc-html Home/192#0 <div> "We make nourishing food, not medicine. If you’re worried about your supply, your midwife, health visitor or a lactation consultant (IBCLC) is the right person to talk to. Allergens →" | block:sgs/text | 0.25 | accept |
-| `skeleton:page-signin-dc-html:SignIn/104#0` | page-signin-dc-html SignIn/104#0 <div> "You don’t need an account to order. Checkout works fine as a guest, and you can create one at the end. Go to the shop →" | block:sgs/text | 0.25 | accept |
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/53#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/53#0 <span> "Basket" | block:sgs/text | 0.25 | accept |
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/54#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/54#0 <span> "0" | block:sgs/text | 0.25 | accept |
 

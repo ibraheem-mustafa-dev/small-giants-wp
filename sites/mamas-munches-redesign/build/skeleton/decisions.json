@@ -1787,10 +1787,10 @@
 				"proposed": "sgs/button"
 			},
 			"Home/149#0": {
-				"block": "sgs/multi-button",
+				"remove": true,
 				"signature": "div|",
-				"reason": "Bean accepted sgs/multi-button in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/multi-button"
+				"proposed": "sgs/container",
+				"reason": "Bean marked remove in the intake review on 2026-11-01: the element is absorbed into its parent block"
 			},
 			"Home/235#4": {
 				"block": "sgs/button",
@@ -1803,6 +1803,102 @@
 				"signature": "button|",
 				"reason": "Bean accepted sgs/button in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/button"
+			},
+			"Home/118#1": {
+				"block": "sgs/button",
+				"signature": "button|Every 4 weeks",
+				"proposed": "sgs/button",
+				"reason": "Settled by evidence: sgs/button in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/132#0": {
+				"block": "woocommerce/product-collection",
+				"signature": "div|",
+				"proposed": "woocommerce/product-collection",
+				"reason": "Settled by evidence: woocommerce/product-collection in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/192#0": {
+				"block": "sgs/text",
+				"signature": "div|We make nourishing food, not medicine. If you’re worried about your supply, your midwife, health visitor or a lactation consultant (IBCLC) is the right person to talk to. Allergens →",
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-01: Bean, 2026-10-31: a disclaimer paragraph"
+			},
+			"Home/222#0": {
+				"block": "sgs/testimonial-slider",
+				"signature": "div|",
+				"proposed": "sgs/testimonial-slider",
+				"reason": "Settled by evidence: sgs/testimonial-slider in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/224#0": {
+				"block": "sgs/testimonial",
+				"signature": "article|",
+				"proposed": "sgs/testimonial",
+				"reason": "Settled by evidence: sgs/testimonial in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/224#1": {
+				"block": "sgs/testimonial",
+				"signature": "article|",
+				"proposed": "sgs/testimonial",
+				"reason": "Settled by evidence: sgs/testimonial in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/224#2": {
+				"block": "sgs/testimonial",
+				"signature": "article|",
+				"proposed": "sgs/testimonial",
+				"reason": "Settled by evidence: sgs/testimonial in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/224#3": {
+				"block": "sgs/testimonial",
+				"signature": "article|",
+				"proposed": "sgs/testimonial",
+				"reason": "Settled by evidence: sgs/testimonial in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/224#4": {
+				"block": "sgs/testimonial",
+				"signature": "article|",
+				"proposed": "sgs/testimonial",
+				"reason": "Settled by evidence: sgs/testimonial in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/224#5": {
+				"block": "sgs/testimonial",
+				"signature": "article|",
+				"proposed": "sgs/testimonial",
+				"reason": "Settled by evidence: sgs/testimonial in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/241#0": {
+				"block": "sgs/text",
+				"signature": "p|Can’t see yours? Message Zainab on WhatsApp, or read the full Help & FAQs.",
+				"proposed": "sgs/text",
+				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/243#0": {
+				"block": "sgs/accordion",
+				"signature": "div|",
+				"proposed": "sgs/accordion",
+				"reason": "Settled by evidence: sgs/accordion in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/245#0": {
+				"block": "sgs/accordion-item",
+				"signature": "div|",
+				"proposed": "sgs/accordion-item",
+				"reason": "Settled by evidence: sgs/accordion-item in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/245#1": {
+				"block": "sgs/accordion-item",
+				"signature": "div|",
+				"proposed": "sgs/accordion-item",
+				"reason": "Settled by evidence: sgs/accordion-item in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/245#2": {
+				"block": "sgs/accordion-item",
+				"signature": "div|",
+				"proposed": "sgs/accordion-item",
+				"reason": "Settled by evidence: sgs/accordion-item in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/245#3": {
+				"block": "sgs/accordion-item",
+				"signature": "div|",
+				"proposed": "sgs/accordion-item",
+				"reason": "Settled by evidence: sgs/accordion-item in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			}
 		},
 		"page-shop-dc-html": {
@@ -2202,6 +2298,30 @@
 				"signature": "span|Baby showers, new arrivals and the first 40 days.",
 				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/text"
+			},
+			"Shop/21#0": {
+				"block": "woocommerce/product-filters",
+				"signature": "div|",
+				"proposed": "woocommerce/product-filters",
+				"reason": "Settled by evidence: woocommerce/product-filters in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Shop/28#0": {
+				"block": "woocommerce/product-collection",
+				"signature": "div|",
+				"proposed": "woocommerce/product-collection",
+				"reason": "Settled by evidence: woocommerce/product-collection in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Shop/44#2": {
+				"block": "sgs/text",
+				"signature": "span|A guaranteed slot in every bake",
+				"proposed": "sgs/text",
+				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Shop/44#3": {
+				"block": "sgs/text",
+				"signature": "span|Skip, swap flavours or cancel online",
+				"proposed": "sgs/text",
+				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			}
 		},
 		"page-gifts-dc-html": {
@@ -2619,6 +2739,54 @@
 				"signature": "span|£40",
 				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/button"
+			},
+			"Gifts/15#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"proposed": "sgs/container",
+				"reason": "Settled by evidence: sgs/container in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Gifts/37#0": {
+				"block": "woocommerce/product-collection",
+				"signature": "div|",
+				"proposed": "woocommerce/product-collection",
+				"reason": "Settled by evidence: woocommerce/product-collection in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Gifts/51#1": {
+				"block": "sgs/text",
+				"signature": "div|2",
+				"proposed": "sgs/text",
+				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Gifts/51#2": {
+				"block": "sgs/text",
+				"signature": "div|3",
+				"proposed": "sgs/text",
+				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Gifts/52#1": {
+				"block": "sgs/text",
+				"signature": "div|Write your note",
+				"proposed": "sgs/text",
+				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Gifts/52#2": {
+				"block": "sgs/text",
+				"signature": "div|We bake and post",
+				"proposed": "sgs/text",
+				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Gifts/53#1": {
+				"block": "sgs/text",
+				"signature": "div|Add her address and your message at checkout.",
+				"proposed": "sgs/text",
+				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Gifts/53#2": {
+				"block": "sgs/text",
+				"signature": "div|Baked fresh for her and with her in 3–5 days, no prices inside.",
+				"proposed": "sgs/text",
+				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			}
 		},
 		"page-basket-dc-html": {
@@ -2919,6 +3087,12 @@
 				"signature": "span|",
 				"reason": "Bean accepted remove in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
 				"proposed": "remove"
+			},
+			"Basket/22#0": {
+				"block": "core/post-content",
+				"signature": "div|",
+				"proposed": "core/post-content",
+				"reason": "Settled by evidence: core/post-content in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			}
 		},
 		"page-contact-dc-html": {
@@ -3151,6 +3325,54 @@
 				"signature": "div|Handmade in Birmingham by a registered food business. No shop to visit, but you’ll sometimes find Zainab at local markets and events.",
 				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/text"
+			},
+			"Contact/47#0": {
+				"remove": true,
+				"signature": "div|What’s it about?",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Contact/76#0": {
+				"block": "sgs/accordion",
+				"signature": "div|",
+				"proposed": "sgs/accordion",
+				"reason": "Settled by evidence: sgs/accordion in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Contact/78#0": {
+				"block": "sgs/accordion-item",
+				"signature": "div|",
+				"proposed": "sgs/accordion-item",
+				"reason": "Settled by evidence: sgs/accordion-item in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Contact/78#1": {
+				"block": "sgs/accordion-item",
+				"signature": "div|",
+				"proposed": "sgs/accordion-item",
+				"reason": "Settled by evidence: sgs/accordion-item in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Contact/78#2": {
+				"block": "sgs/accordion-item",
+				"signature": "div|",
+				"proposed": "sgs/accordion-item",
+				"reason": "Settled by evidence: sgs/accordion-item in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Contact/78#3": {
+				"block": "sgs/accordion-item",
+				"signature": "div|",
+				"proposed": "sgs/accordion-item",
+				"reason": "Settled by evidence: sgs/accordion-item in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Contact/86#0": {
+				"block": "sgs/button",
+				"signature": "a|More answers on the Help page",
+				"proposed": "sgs/button",
+				"reason": "Settled by evidence: sgs/button in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Contact/87#0": {
+				"block": "sgs/text",
+				"signature": "div|Handmade in Birmingham by a registered food business. No shop to visit, but you’ll sometimes find Zainab at local markets and events.",
+				"proposed": "sgs/text",
+				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			}
 		},
 		"page-help-dc-html": {
@@ -3671,6 +3893,108 @@
 				"signature": "span|→",
 				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/button"
+			},
+			"Help/26#0": {
+				"block": "sgs/accordion-item",
+				"signature": "div|",
+				"proposed": "sgs/accordion-item",
+				"reason": "Settled by evidence: sgs/accordion-item in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Help/26#1": {
+				"block": "sgs/accordion-item",
+				"signature": "div|",
+				"proposed": "sgs/accordion-item",
+				"reason": "Settled by evidence: sgs/accordion-item in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Help/26#2": {
+				"block": "sgs/accordion-item",
+				"signature": "div|",
+				"proposed": "sgs/accordion-item",
+				"reason": "Settled by evidence: sgs/accordion-item in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Help/26#3": {
+				"block": "sgs/accordion-item",
+				"signature": "div|",
+				"proposed": "sgs/accordion-item",
+				"reason": "Settled by evidence: sgs/accordion-item in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Help/26#4": {
+				"block": "sgs/accordion-item",
+				"signature": "div|",
+				"proposed": "sgs/accordion-item",
+				"reason": "Settled by evidence: sgs/accordion-item in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Help/26#5": {
+				"block": "sgs/accordion-item",
+				"signature": "div|",
+				"proposed": "sgs/accordion-item",
+				"reason": "Settled by evidence: sgs/accordion-item in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Help/26#6": {
+				"block": "sgs/accordion-item",
+				"signature": "div|",
+				"proposed": "sgs/accordion-item",
+				"reason": "Settled by evidence: sgs/accordion-item in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Help/26#7": {
+				"block": "sgs/accordion-item",
+				"signature": "div|",
+				"proposed": "sgs/accordion-item",
+				"reason": "Settled by evidence: sgs/accordion-item in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Help/26#8": {
+				"block": "sgs/accordion-item",
+				"signature": "div|",
+				"proposed": "sgs/accordion-item",
+				"reason": "Settled by evidence: sgs/accordion-item in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Help/26#9": {
+				"block": "sgs/accordion-item",
+				"signature": "div|",
+				"proposed": "sgs/accordion-item",
+				"reason": "Settled by evidence: sgs/accordion-item in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Help/26#10": {
+				"block": "sgs/accordion-item",
+				"signature": "div|",
+				"proposed": "sgs/accordion-item",
+				"reason": "Settled by evidence: sgs/accordion-item in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Help/26#11": {
+				"block": "sgs/accordion-item",
+				"signature": "div|",
+				"proposed": "sgs/accordion-item",
+				"reason": "Settled by evidence: sgs/accordion-item in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Help/44#0": {
+				"block": "sgs/text",
+				"signature": "span|Royal Mail Tracked 48 2–3 days after baking",
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-01: Bean, 2026-10-31: each delivery option is a container of two text blocks: the name and detail at the left"
+			},
+			"Help/48#0": {
+				"block": "sgs/text",
+				"signature": "b|£3.95 Free over £35",
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-01: Bean, 2026-10-31: each delivery option is a container of two text blocks: the price at the right"
+			},
+			"Help/52#0": {
+				"block": "sgs/text",
+				"signature": "span|Royal Mail Tracked 24 The day after baking",
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-01: Bean, 2026-10-31: each delivery option is a container of two text blocks: the name and detail at the left"
+			},
+			"Help/58#0": {
+				"block": "sgs/text",
+				"signature": "span|Taster Trio & gift cards Letterbox-sized",
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-01: Bean, 2026-10-31: each delivery option is a container of two text blocks: the name and detail at the left"
+			},
+			"Help/74#0": {
+				"block": "sgs/text",
+				"signature": "p|Vegan base: no eggs or dairy. Still contains oats, flaxseed and fenugreek, and the same tree nut advice applies. Some flavours and chips may add allergens; each is listed on the product page.",
+				"proposed": "sgs/text",
+				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			}
 		},
 		"page-signin-dc-html": {
@@ -3861,6 +4185,42 @@
 				"signature": "div|See when Zainab bakes your box and when it’s posted.",
 				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/text"
+			},
+			"SignIn/15#0": {
+				"block": "sgs/account",
+				"signature": "div|",
+				"proposed": "sgs/account",
+				"reason": "Settled by evidence: sgs/account in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"SignIn/102#1": {
+				"block": "sgs/text",
+				"signature": "div|Subscriptions on your terms",
+				"proposed": "sgs/text",
+				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"SignIn/102#2": {
+				"block": "sgs/text",
+				"signature": "div|Saved addresses",
+				"proposed": "sgs/text",
+				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"SignIn/103#1": {
+				"block": "sgs/text",
+				"signature": "div|Skip a delivery, pause, change how often or cancel, all online.",
+				"proposed": "sgs/text",
+				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"SignIn/103#2": {
+				"block": "sgs/text",
+				"signature": "div|Keep your own and the new mums you send gifts to.",
+				"proposed": "sgs/text",
+				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"SignIn/104#0": {
+				"block": "sgs/text",
+				"signature": "div|You don’t need an account to order. Checkout works fine as a guest, and you can create one at the end. Go to the shop →",
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-01: Bean, 2026-10-31: a guest-checkout note"
 			}
 		},
 		"page-account-dc-html": {
@@ -3943,6 +4303,12 @@
 				"signature": "a|Create an account",
 				"reason": "Bean accepted sgs/button in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/button"
+			},
+			"Account/19#0": {
+				"block": "sgs/account",
+				"signature": "div|",
+				"proposed": "sgs/account",
+				"reason": "Settled by evidence: sgs/account in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			}
 		},
 		"page-checkout-dc-html": {
@@ -4285,6 +4651,12 @@
 				"signature": "span|",
 				"reason": "Bean accepted remove in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
 				"proposed": "remove"
+			},
+			"Checkout/17#0": {
+				"block": "core/post-content",
+				"signature": "div|",
+				"proposed": "core/post-content",
+				"reason": "Settled by evidence: core/post-content in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			}
 		},
 		"checkout-form": {
@@ -4297,6 +4669,12 @@
 				"block": "sgs/separator",
 				"signature": "span|",
 				"reason": "Bean marked block:sgs/separator in the intake review on 2026-10-26"
+			},
+			"Checkout/31#0": {
+				"block": "core/post-content",
+				"signature": "form|",
+				"proposed": "core/post-content",
+				"reason": "Settled by evidence: core/post-content in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			}
 		},
 		"page-product-dc-html-id-zookies": {
@@ -4714,6 +5092,42 @@
 				"signature": "main|",
 				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/container"
+			},
+			"Product/24#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"proposed": "sgs/container",
+				"reason": "Settled by evidence: sgs/container in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Product/126#0": {
+				"block": "sgs/testimonial-slider",
+				"signature": "div|",
+				"proposed": "sgs/testimonial-slider",
+				"reason": "Settled by evidence: sgs/testimonial-slider in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Product/128#0": {
+				"block": "sgs/testimonial",
+				"signature": "article|",
+				"proposed": "sgs/testimonial",
+				"reason": "Settled by evidence: sgs/testimonial in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Product/128#1": {
+				"block": "sgs/testimonial",
+				"signature": "article|",
+				"proposed": "sgs/testimonial",
+				"reason": "Settled by evidence: sgs/testimonial in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Product/128#2": {
+				"block": "sgs/testimonial",
+				"signature": "article|",
+				"proposed": "sgs/testimonial",
+				"reason": "Settled by evidence: sgs/testimonial in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Product/136#0": {
+				"block": "woocommerce/product-collection",
+				"signature": "div|",
+				"proposed": "woocommerce/product-collection",
+				"reason": "Settled by evidence: woocommerce/product-collection in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			}
 		},
 		"site-header-announcement-strip-bar": {
@@ -4802,10 +5216,10 @@
 				"proposed": "sgs/site-header-row"
 			},
 			"Home>SiteHeader@7#0/16#0": {
-				"block": "sgs/container",
+				"remove": true,
 				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			},
 			"Home>SiteHeader@7#0/21#0": {
 				"block": "sgs/container",
@@ -4842,6 +5256,18 @@
 				"signature": "button|",
 				"reason": "Bean accepted sgs/cart in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/cart"
+			},
+			"Home>SiteHeader@7#0/53#0": {
+				"block": "sgs/text",
+				"signature": "span|Basket",
+				"proposed": "sgs/text",
+				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home>SiteHeader@7#0/54#0": {
+				"block": "sgs/text",
+				"signature": "span|0",
+				"proposed": "sgs/text",
+				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			}
 		},
 		"nav-drawer-left": {
@@ -5110,6 +5536,12 @@
 				"signature": "a|Browse the shop",
 				"reason": "Bean accepted sgs/button in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/button"
+			},
+			"Home>SiteHeader@7#0/130#0": {
+				"block": "sgs/text",
+				"signature": "div|Your basket (0)",
+				"proposed": "sgs/text",
+				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			}
 		},
 		"build-your-zookie": {
@@ -5142,46 +5574,418 @@
 				"signature": "section|",
 				"reason": "Bean accepted sgs/choice-flow in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/choice-flow"
+			},
+			"Home/65#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"proposed": "sgs/container",
+				"reason": "Settled by evidence: sgs/container in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/70#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"proposed": "sgs/container",
+				"reason": "Settled by evidence: sgs/container in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/76#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"proposed": "sgs/container",
+				"reason": "Settled by evidence: sgs/container in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/81#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"proposed": "sgs/container",
+				"reason": "Settled by evidence: sgs/container in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/90#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"proposed": "sgs/container",
+				"reason": "Settled by evidence: sgs/container in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/100#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"proposed": "sgs/container",
+				"reason": "Settled by evidence: sgs/container in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/101#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"proposed": "sgs/container",
+				"reason": "Settled by evidence: sgs/container in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/102#0": {
+				"remove": true,
+				"signature": "div|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/103#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"proposed": "sgs/container",
+				"reason": "Settled by evidence: sgs/container in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/105#0": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/105#1": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/105#2": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/105#3": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/105#4": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/105#5": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/105#6": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/105#7": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/105#8": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/105#9": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/105#10": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/105#11": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/105#12": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/105#13": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/105#14": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/105#15": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/105#16": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/105#17": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/105#18": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/106#0": {
+				"block": "sgs/text",
+				"signature": "div|20 × Classic oat, milk choc chips, strawberry & mango",
+				"proposed": "sgs/text",
+				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/107#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"proposed": "sgs/container",
+				"reason": "Settled by evidence: sgs/container in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/116#0": {
+				"block": "sgs/multi-button",
+				"signature": "div|",
+				"proposed": "sgs/multi-button",
+				"reason": "Settled by evidence: sgs/multi-button in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/118#0": {
+				"block": "sgs/button",
+				"signature": "button|Every 2 weeks",
+				"proposed": "sgs/button",
+				"reason": "Settled by evidence: sgs/button in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/118#1": {
+				"block": "sgs/button",
+				"signature": "button|Every 4 weeks",
+				"proposed": "sgs/button",
+				"reason": "Settled by evidence: sgs/button in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/122#0": {
+				"block": "sgs/button",
+				"signature": "button|Subscribe · £19.35",
+				"proposed": "sgs/button",
+				"reason": "Settled by evidence: sgs/button in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/123#0": {
+				"block": "sgs/text",
+				"signature": "div|Baked fresh for you · with you in 3–5 days · free UK delivery over £35",
+				"proposed": "sgs/text",
+				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/71#0": {
+				"remove": true,
+				"signature": "div|1 · Base",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/72#0": {
+				"block": "sgs/form-field-tiles",
+				"signature": "div|",
+				"proposed": "sgs/form-field-tiles",
+				"reason": "Settled by evidence: sgs/form-field-tiles in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/77#0": {
+				"remove": true,
+				"signature": "div|2 · Chips",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/78#0": {
+				"block": "sgs/form-field-tiles",
+				"signature": "div|",
+				"proposed": "sgs/form-field-tiles",
+				"reason": "Settled by evidence: sgs/form-field-tiles in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/82#0": {
+				"remove": true,
+				"signature": "div|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/83#0": {
+				"remove": true,
+				"signature": "span|3 · Flavours",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/84#0": {
+				"remove": true,
+				"signature": "span|Pick up to 3 and we’ll split your box between them",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/85#0": {
+				"block": "sgs/form-field-tiles",
+				"signature": "div|",
+				"proposed": "sgs/form-field-tiles",
+				"reason": "Settled by evidence: sgs/form-field-tiles in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/89#0": {
+				"remove": true,
+				"signature": "div|Your 20: 10 strawberry · 10 mango",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/91#0": {
+				"remove": true,
+				"signature": "div|4 · How many",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home/92#0": {
+				"block": "sgs/form-field-tiles",
+				"signature": "div|",
+				"proposed": "sgs/form-field-tiles",
+				"reason": "Settled by evidence: sgs/form-field-tiles in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			}
 		},
 		"product-buy-box": {
 			"Product/108#0": {
-				"block": "sgs/form",
+				"remove": true,
 				"signature": "button|Add to basket · £21.50",
-				"reason": "Bean accepted sgs/form in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/form"
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Product/102#0": {
+				"remove": true,
+				"signature": "div|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			}
 		},
 		"gift-finder": {
 			"Gifts/24#0": {
-				"block": "sgs/choice-flow",
+				"remove": true,
 				"signature": "a|Show 4 gifts ↓",
-				"reason": "Bean accepted sgs/choice-flow in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/choice-flow"
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Gifts/15#0": {
+				"remove": true,
+				"signature": "div|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Gifts/16#0": {
+				"remove": true,
+				"signature": "div|What’s the moment?",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Gifts/17#0": {
+				"remove": true,
+				"signature": "div|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Gifts/19#0": {
+				"remove": true,
+				"signature": "button|Baby shower",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Gifts/19#1": {
+				"remove": true,
+				"signature": "button|Just had a baby",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Gifts/19#2": {
+				"remove": true,
+				"signature": "button|Sending love from afar",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Gifts/19#3": {
+				"remove": true,
+				"signature": "button|The first 40 days",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Gifts/20#0": {
+				"remove": true,
+				"signature": "div|Budget",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Gifts/21#0": {
+				"remove": true,
+				"signature": "div|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Gifts/23#0": {
+				"remove": true,
+				"signature": "button|Any",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Gifts/23#1": {
+				"remove": true,
+				"signature": "button|Under £20",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Gifts/23#2": {
+				"remove": true,
+				"signature": "button|£20 and up",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			}
 		},
 		"gift-note-preview": {
 			"Gifts/61#0": {
-				"block": "sgs/form",
+				"remove": true,
 				"signature": "input|",
-				"reason": "Bean accepted sgs/form in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/form"
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Gifts/60#0": {
+				"remove": true,
+				"signature": "label|To",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			}
 		},
 		"help-search-category-chips": {
 			"Help/18#0": {
-				"block": "sgs/form",
+				"remove": true,
 				"signature": "input|",
-				"reason": "Bean accepted sgs/form in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/form"
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Help/13#0": {
+				"remove": true,
+				"signature": "label|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Help/14#0": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			}
 		},
 		"product-gift-note": {
 			"Product/95#0": {
-				"block": "sgs/form-field-checkbox",
+				"remove": true,
 				"signature": "input|",
-				"reason": "Bean accepted sgs/form-field-checkbox in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/form-field-checkbox"
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			},
 			"Product/96#0": {
 				"remove": true,
@@ -5202,16 +6006,28 @@
 				"proposed": "remove"
 			},
 			"Product/100#0": {
-				"block": "sgs/form-field-textarea",
+				"remove": true,
 				"signature": "textarea|",
-				"reason": "Bean accepted sgs/form-field-textarea in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/form-field-textarea"
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			},
 			"Product/101#0": {
 				"remove": true,
 				"signature": "div|200 characters left",
 				"reason": "Bean accepted remove in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
 				"proposed": "remove"
+			},
+			"Product/93#0": {
+				"remove": true,
+				"signature": "div|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Product/94#0": {
+				"remove": true,
+				"signature": "label|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			}
 		},
 		"contact-form": {
@@ -5268,14 +6084,68 @@
 				"signature": "button|Send message →",
 				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/button"
+			},
+			"Contact/44#0": {
+				"block": "sgs/form",
+				"signature": "form|",
+				"proposed": "sgs/form",
+				"reason": "Settled by evidence: sgs/form in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Contact/47#0": {
+				"remove": true,
+				"signature": "div|What’s it about?",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			}
 		},
 		"sign-in": {
 			"SignIn/27#0": {
-				"block": "sgs/form",
+				"block": "sgs/account",
 				"signature": "form|",
-				"reason": "Bean accepted sgs/form in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/form"
+				"proposed": "sgs/account",
+				"reason": "Settled by evidence: block:sgs/account in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"SignIn/28#0": {
+				"remove": true,
+				"signature": "label|Email",
+				"proposed": "unwrap",
+				"reason": "Bean marked remove in the intake review on 2026-11-01: the element is absorbed into its parent block"
+			},
+			"SignIn/29#0": {
+				"remove": true,
+				"signature": "input|",
+				"proposed": "sgs/form-field-email",
+				"reason": "Bean marked remove in the intake review on 2026-11-01: the element is absorbed into its parent block"
+			},
+			"SignIn/32#0": {
+				"remove": true,
+				"signature": "label|Password",
+				"proposed": "unwrap",
+				"reason": "Bean marked remove in the intake review on 2026-11-01: the element is absorbed into its parent block"
+			},
+			"SignIn/33#0": {
+				"remove": true,
+				"signature": "input|",
+				"proposed": "sgs/form-field-text",
+				"reason": "Bean marked remove in the intake review on 2026-11-01: the element is absorbed into its parent block"
+			},
+			"SignIn/36#0": {
+				"remove": true,
+				"signature": "div|",
+				"proposed": "sgs/multi-button",
+				"reason": "Bean marked remove in the intake review on 2026-11-01: the element is absorbed into its parent block"
+			},
+			"SignIn/37#0": {
+				"remove": true,
+				"signature": "button|Sign in →",
+				"proposed": "sgs/button",
+				"reason": "Bean marked remove in the intake review on 2026-11-01: the element is absorbed into its parent block"
+			},
+			"SignIn/38#0": {
+				"remove": true,
+				"signature": "button|Forgotten your password?",
+				"proposed": "sgs/button",
+				"reason": "Bean marked remove in the intake review on 2026-11-01: the element is absorbed into its parent block"
 			}
 		},
 		"create-account": {
@@ -5320,6 +6190,12 @@
 				"signature": "button|Create account →",
 				"reason": "Bean accepted sgs/button in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/button"
+			},
+			"SignIn/40#0": {
+				"block": "sgs/account",
+				"signature": "form|",
+				"proposed": "sgs/account",
+				"reason": "Settled by evidence: sgs/account in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			}
 		},
 		"forgotten-password-flow": {
@@ -5352,6 +6228,204 @@
 				"signature": "button|Send reset link",
 				"reason": "Bean accepted sgs/button in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/button"
+			},
+			"SignIn/60#0": {
+				"block": "sgs/account",
+				"signature": "form|",
+				"proposed": "sgs/account",
+				"reason": "Settled by evidence: sgs/account in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			}
+		},
+		"shop-filter-sort": {
+			"Shop/21#0": {
+				"remove": true,
+				"signature": "div|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Shop/23#0": {
+				"remove": true,
+				"signature": "button|All",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Shop/23#1": {
+				"remove": true,
+				"signature": "button|Zookies",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Shop/23#2": {
+				"remove": true,
+				"signature": "button|Gifts",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Shop/23#3": {
+				"remove": true,
+				"signature": "button|Subscribe",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Shop/23#4": {
+				"remove": true,
+				"signature": "button|Taster",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Shop/23#5": {
+				"remove": true,
+				"signature": "button|Bundles",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Shop/23#6": {
+				"remove": true,
+				"signature": "button|Vegan",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Shop/24#0": {
+				"remove": true,
+				"signature": "span|5",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Shop/24#1": {
+				"remove": true,
+				"signature": "span|1",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Shop/24#2": {
+				"remove": true,
+				"signature": "span|3",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Shop/24#3": {
+				"remove": true,
+				"signature": "span|1",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Shop/24#4": {
+				"remove": true,
+				"signature": "span|1",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Shop/24#5": {
+				"remove": true,
+				"signature": "span|1",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Shop/24#6": {
+				"remove": true,
+				"signature": "span|1",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			}
+		},
+		"basket-gift-note-upsell": {
+			"Basket/48#0": {
+				"remove": true,
+				"signature": "textarea|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			}
+		},
+		"cancel-subscription-confirm": {
+			"Account/130#0": {
+				"remove": true,
+				"signature": "div|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Account/131#0": {
+				"remove": true,
+				"signature": "div|Cancel this subscription?",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Account/132#0": {
+				"remove": true,
+				"signature": "div|You’ll lose 10% off and your guaranteed slot in every bake. Pausing keeps both.",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Account/133#0": {
+				"remove": true,
+				"signature": "div|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Account/134#0": {
+				"remove": true,
+				"signature": "button|Keep it",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Account/135#0": {
+				"remove": true,
+				"signature": "button|Yes, cancel",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			}
+		},
+		"address-form-add-edit": {
+			"Account/161#0": {
+				"block": "sgs/account",
+				"signature": "form|",
+				"proposed": "sgs/account",
+				"reason": "Settled by evidence: sgs/account in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			}
+		},
+		"account-details-change-password": {
+			"Account/32#0": {
+				"block": "sgs/account",
+				"signature": "div|",
+				"proposed": "sgs/account",
+				"reason": "Settled by evidence: sgs/account in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			}
+		},
+		"checkout-header": {
+			"Checkout/7#0": {
+				"block": "sgs/site-header",
+				"signature": "header|",
+				"proposed": "sgs/site-header",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-01: The checkout page's own header spanning the full width; the site header shell."
+			},
+			"Checkout/8#0": {
+				"block": "sgs/site-header-row",
+				"signature": "div|",
+				"proposed": "sgs/site-header-row",
+				"reason": "Settled by evidence: sgs/site-header-row in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Checkout/9#0": {
+				"block": "sgs/button",
+				"signature": "a|← Basket",
+				"proposed": "sgs/button",
+				"reason": "Settled by evidence: sgs/button in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Checkout/10#0": {
+				"block": "sgs/container",
+				"signature": "a|",
+				"proposed": "sgs/container",
+				"reason": "Settled by evidence: sgs/container in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Checkout/11#0": {
+				"block": "sgs/responsive-logo",
+				"signature": "img|",
+				"proposed": "sgs/responsive-logo",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-01: The brand logo image in the checkout header; the logo block."
+			},
+			"Checkout/12#0": {
+				"block": "sgs/text",
+				"signature": "span|Secure checkout",
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-01: The Secure checkout line with its padlock glyph at the end of the header row; text."
 			}
 		}
 	}
