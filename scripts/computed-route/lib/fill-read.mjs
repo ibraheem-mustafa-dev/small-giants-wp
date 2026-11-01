@@ -6,7 +6,7 @@ import path from 'path';
 import { DEFAULT_PROPS, PSEUDO_PROPS, resolveFinder, collectPair } from '../../parity/lib/collect.mjs';
 import { REF_PROPS } from '../../parity/lib/ref-trace.mjs';
 import { PAINT_SRC } from '../../parity/lib/paint.mjs';
-import { openDevtools, settleAnimations, declaredValues } from '../../parity/lib/devtools.mjs';
+import { openDevtools, settleAnimations, triggerArmed, declaredValues } from '../../parity/lib/devtools.mjs';
 import { makeHelpers } from '../../parity/lib/helpers.mjs';
 import { SCOPE_ATTR, scopeFinder, scopeSelector, finderKind } from './fill-skeleton.mjs';
 import { contentType } from './draft.mjs';
@@ -152,7 +152,7 @@ export function applyFlexItems( widths, jobs, items ) {
 
 // Opens one page on the draft at a width (a phone at 375, as the walker reads it), runs the draft's open step (a click
 // on the text of a navigation link in a single-page draft), applies the surface's state opener when it has one
-// (lib/fill-open.mjs::openState: `opened` is its verdict, null without one) and waits for its animations to finish.
+// (lib/fill-open.mjs::openState: `opened` is its verdict, null without one) waits for its animations to finish and plays every armed scroll entrance (`triggerArmed`).
 async function openPage( browser, devices, { url, open, opener = null, width, origin, external, mirror, aborted } ) {
 	const phone = width < 500 ? devices[ 'iPhone 13' ] : {};
 	const ctx = await browser.newContext( { ...phone, viewport: { width, height: width < 500 ? 812 : 900 } } );
@@ -167,6 +167,10 @@ async function openPage( browser, devices, { url, open, opener = null, width, or
 	// The runtime has mounted its components by now: a state is set on a live instance, never before it exists.
 	const opened = opener?.state ? await openState( page, opener, width ) : null;
 	opened && await settleAnimations( page, { floor: 300 } );
+	// A scroll entrance sits paused at its start pose until its element nears the viewport, which the settle above never
+	// waits for: scrolling each into view plays it (the scroll is put back), so every read is the element AT REST, never
+	// the before-reveal state a motion owns (Spec 48 R-47-4).
+	await triggerArmed( page );
 	return { ctx, page, h, opened };
 }
 
