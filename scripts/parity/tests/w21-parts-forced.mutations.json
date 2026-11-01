@@ -1,0 +1,38 @@
+[
+	{
+		"file": "lib/parts.mjs",
+		"find": "if ( ! ( cdp && ! await scriptDriven( cdp, part.i )",
+		"replace": "if ( ! ( false && ! await scriptDriven( cdp, part.i )",
+		"why": "(a) every part read with a real pointer"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "if ( listeners.some( ( l ) => POINTER_EVENTS.has( l.type ) ) ) {",
+		"replace": "if ( false ) {",
+		"why": "(b) a script-driven part read forced, so its JS hover never shows"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "if ( kept?.sig === sig ) {",
+		"replace": "if ( false ) {",
+		"why": "(c) no reuse: every state reads every part again"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "if ( kept?.sig === sig ) {",
+		"replace": "if ( kept ) {",
+		"why": "(c) a changed or moved part keeps its old reading"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "part.abs, rec.rest, rec.layers.rest ] );",
+		"replace": "part.abs ] );",
+		"why": "(c) a resting look that changed does not trigger a re-read"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "const rec = { name: part.name,",
+		"replace": "const rec = { eid: part.eid, name: part.name,",
+		"why": "(d) the cache's element id leaks onto the row"
+	}
+]

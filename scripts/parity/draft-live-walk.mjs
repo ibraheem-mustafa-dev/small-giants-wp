@@ -314,7 +314,7 @@ async function walkSide( browser, side, width, draftStates = null ) {
 		await hoverPass( page, pairs, side, snap, { state, h, RESOLVE, full: header, phone: !! phone.isMobile, cdp, propsFor } );
 		// A ref-traced walk reads every pair's inner interactive parts and effect layers too (lib/parts.mjs).
 		if ( cdp && header && ! lean ) {
-			await partsPass( page, pairs, side, snap, RESOLVE, !! phone.isMobile );
+			await partsPass( page, pairs, side, snap, RESOLVE, !! phone.isMobile, cdp );
 		}
 		if ( header && ! lean ) {
 			await focusPasses( page, pairs, side, snap, RESOLVE, !! phone.isMobile );
