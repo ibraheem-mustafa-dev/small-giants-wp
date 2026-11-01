@@ -3,6 +3,7 @@
 // sampled from the whole-cycle easing curve (the Web Animations API eases once across the iteration; CSS eases each
 // keyframe interval). The expected box content for Mama's A-02 (fixtures/motion-loop-css/A-02.expected.css) was proven
 // against the draft's own WAAPI call in a real browser by .claude/qa/control-gaps/sparkle/compare-twinkle.mjs.
+import { scopeKey } from '../lib/custom-css-writer.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'fs';
@@ -34,7 +35,7 @@ const SHOWN = { loops: [ { css: false, name: null, duration: 2400, delay: 0, dir
 const run = ( records, target = { id: '0:', slot: '', finder: { tpl: 'Site/10#0' } } ) => {
 	const nodes = [ { index: 0, name: 'sgs/icon', targets: [ target ] } ];
 	const flat = [ { name: 'sgs/icon', attributes: {}, ref: 'r0' } ];
-	return { flat, out: motionWrites( { nodes, flat, refOf: ( x ) => x.ref, records, loops: { [ target.id ]: { 1440: SHOWN, 768: SHOWN, 375: SHOWN } }, mdb, schema, rawSnapshot: SNAPSHOT, offers: { qualifying: {}, elementsOf: () => null } } ) };
+	return { flat, out: motionWrites( { nodes, flat, refOf: ( x ) => x.ref, records, loops: { [ target.id ]: { 1440: SHOWN, 768: SHOWN, 375: SHOWN } }, mdb, schema, keyScope: 'acme|surface', rawSnapshot: SNAPSHOT, offers: { qualifying: {}, elementsOf: () => null } } ) };
 };
 
 test( 'MUST FAIL: the CSS for the draft\'s whole-cycle ease-in-out is linear over stops that follow the curve, not the draft\'s three keyframes', () => {
@@ -63,7 +64,7 @@ test( 'MUST FAIL: a linear loop keeps the draft\'s own keyframes, with its delay
 test( 'MUST FAIL: a loop no effect draws is written to the block\'s sgsCustomCss, with a scope id and a note naming the record', () => {
 	const { flat, out } = run( [ FIX.twinkle ] );
 	assert.equal( flat[ 0 ].attributes.sgsCustomCss, EXPECTED );
-	assert.equal( flat[ 0 ].attributes.sgsCustomCssId, 'loopa02' );
+	assert.equal( flat[ 0 ].attributes.sgsCustomCssId, scopeKey( 'acme|surface', 'loopA-02' ) );
 	assert.match( flat[ 0 ].attributes.sgsCustomCssNote, /A-02/ );
 	assert.deepEqual( out.writes.map( ( w ) => [ w.attr, w.how ] ), [ [ 'sgsCustomCss', 'motion-css' ], [ 'sgsCustomCssId', 'motion-css' ], [ 'sgsCustomCssNote', 'motion-css' ] ], JSON.stringify( out.unmapped ) );
 	assert.equal( flat[ 0 ].attributes.sgsMotion, undefined, 'no sgsMotion layer for a loop the CSS box holds' );
@@ -81,7 +82,7 @@ test( 'MUST FAIL: two loops on one block share one box and one id, each keyframe
 	const css = flat[ 0 ].attributes.sgsCustomCss;
 	assert.ok( css.startsWith( EXPECTED ) );
 	assert.match( css, /@keyframes sgs-loop-b-07/ );
-	assert.equal( flat[ 0 ].attributes.sgsCustomCssId, 'loopa02' );
+	assert.equal( flat[ 0 ].attributes.sgsCustomCssId, scopeKey( 'acme|surface', 'loopA-02' ) );
 } );
 
 test( 'MUST FAIL: a loop on a declared part is reported, never written to the block\'s box (the box styles the block, not the part)', () => {
@@ -106,7 +107,7 @@ test( 'MUST FAIL: a second run over a tree that already holds the loop writes no
 	const first = run( [ FIX.twinkle ] );
 	const nodes = [ { index: 0, name: 'sgs/icon', targets: [ { id: '0:', slot: '', finder: { tpl: 'Site/10#0' } } ] } ];
 	const flat = [ { name: 'sgs/icon', attributes: { ...first.flat[ 0 ].attributes }, ref: 'r0' } ];
-	const out = motionWrites( { nodes, flat, refOf: ( x ) => x.ref, records: [ FIX.twinkle ], loops: { '0:': { 1440: SHOWN, 768: SHOWN, 375: SHOWN } }, mdb, schema, rawSnapshot: SNAPSHOT, offers: { qualifying: {}, elementsOf: () => null } } );
+	const out = motionWrites( { nodes, flat, refOf: ( x ) => x.ref, records: [ FIX.twinkle ], loops: { '0:': { 1440: SHOWN, 768: SHOWN, 375: SHOWN } }, mdb, schema, keyScope: 'acme|surface', rawSnapshot: SNAPSHOT, offers: { qualifying: {}, elementsOf: () => null } } );
 	assert.equal( flat[ 0 ].attributes.sgsCustomCss, EXPECTED );
 	assert.equal( ( flat[ 0 ].attributes.sgsCustomCssNote.match( /Loop A-02/g ) || [] ).length, 1 );
 	assert.deepEqual( out.writes.filter( ( w ) => 'motion-css' === w.how ), [] );

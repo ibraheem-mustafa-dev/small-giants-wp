@@ -95,6 +95,8 @@ export async function fillSurface( o ) {
 		throw new Error( 'name the draft with exactly one of --draft-url and --draft-dir' );
 	}
 	const buildDir = path.join( repo, 'sites', o.client, 'build' );
+	// Names this surface in every Custom CSS scope key the passes write, so no two posts of one page share one (lib/custom-css-writer.mjs::scopeKey).
+	const keyScope = `${ o.client }|${ o.surface }`;
 	const surfaces = JSON.parse( fs.readFileSync( path.join( buildDir, 'surfaces.json' ), 'utf8' ) );
 	const entry = surfaces[ o.surface ];
 	if ( ! entry ) {
@@ -230,7 +232,7 @@ export async function fillSurface( o ) {
 		result.unmapped = logos.unmapped;
 		result.notes.push( ...logos.notes );
 		// A per-width difference no single setting holds, then a block's built-in size against the draft's (lib/fill-width-ladder.mjs, lib/fill-dimensions.mjs); their divergence-ledger entries are added to the client's ledger.
-		const ladder = widthLadderWrites( { nodes, flat, refOf, reads, db, unmapped: result.unmapped, calFor, snapshot, scope: o.surface, entries: loadLedger( ledgerFile ) } );
+		const ladder = widthLadderWrites( { nodes, flat, refOf, reads, db, unmapped: result.unmapped, calFor, snapshot, scope: o.surface, keyScope, entries: loadLedger( ledgerFile ) } );
 		addEntries( ledgerFile, ladder.ledger );
 		const dims = dimensionWrites( { nodes, flat, refOf, reads, db, unmapped: ladder.unmapped, calFor, snapshot, scope: o.surface, entries: loadLedger( ledgerFile ) } );
 		addEntries( ledgerFile, dims.ledger );
@@ -239,7 +241,7 @@ export async function fillSurface( o ) {
 		result.unmapped = dims.unmapped;
 		result.notes.push( ...ladder.notes, ...dims.notes );
 		// A step between the read widths that a written per-device setting cannot hold, as a scoped @media rule at the draft's threshold (lib/fill-step-rungs.mjs).
-		const stepRungs = stepRungWrites( { nodes, flat, refOf, reads, writes: result.writes, scope: o.surface, entries: loadLedger( ledgerFile ) } );
+		const stepRungs = stepRungWrites( { nodes, flat, refOf, reads, writes: result.writes, scope: o.surface, keyScope, entries: loadLedger( ledgerFile ) } );
 		addEntries( ledgerFile, stepRungs.ledger );
 		result.writes.push( ...stepRungs.writes );
 		result.notes.push( ...stepRungs.notes );
@@ -247,7 +249,7 @@ export async function fillSurface( o ) {
 		result.customCssGaps = [ ...stepRungs.gaps ];
 		// FR-48-50: content the draft's logic shows or hides by width, written as hiding settings (lib/fill-width-gate.mjs); a snapped
 		// threshold's `breakpoint-snap` entry is added to the client's divergence ledger (the file Fill reads), once.
-		const gates = widthGateWrites( { nodes, flat, refOf, facts, db, scope: o.surface, entries: loadLedger( ledgerFile ), rootComponent: intakeParts.rootComponent } );
+		const gates = widthGateWrites( { nodes, flat, refOf, facts, db, scope: o.surface, keyScope, entries: loadLedger( ledgerFile ), rootComponent: intakeParts.rootComponent } );
 		addEntries( ledgerFile, gates.ledger );
 		result.writes.push( ...gates.writes );
 		result.unmapped.push( ...gates.unmapped );
@@ -301,7 +303,7 @@ export async function fillSurface( o ) {
 		result.unmapped.push( ...refusalRows( { opener: { ...opener, refused: motionRefused }, nodes, flat, refOf } ) );
 		const refused = [ ...readRefused, ...motionRefused ];
 		const entrances = nodes.filter( ( x ) => x.targets.length ).map( ( n ) => ( { node: refOf( flat[ n.index ] ), block: n.name, measured: sampled[ n.targets[ 0 ].id ]?.[ 1440 ] ?? null } ) );
-		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), db, schema: loadMotionSchema(), rawSnapshot, template: templateOf( facts ), draftCss: draftCssOf( o.draftDir, o.draftIndex ), reads, calFor, clientMotion: readDecisions( path.join( skeletonDir( repo, o.client ), 'decisions.json' ) ).motion?.[ o.surface ] || null } );
+		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), db, schema: loadMotionSchema(), rawSnapshot, template: templateOf( facts ), draftCss: draftCssOf( o.draftDir, o.draftIndex ), reads, calFor, keyScope, clientMotion: readDecisions( path.join( skeletonDir( repo, o.client ), 'decisions.json' ) ).motion?.[ o.surface ] || null } );
 		result.writes.push( ...motion.writes );
 		result.unmapped.push( ...motion.unmapped );
 		// The resting timing and rest-length rows a motion part's written hover state holds (lib/fill-motion-settle.mjs).
@@ -332,7 +334,7 @@ export async function fillSurface( o ) {
 		// Rows the element already renders (lib/fill-held.mjs) leave UNMAPPED and are listed under their reason in the report.
 		Object.assign( result, result.settleHeld( result ) );
 		// Every draft declaration no setting of its block holds, applied through that block's Custom CSS as a scoped rule and kept as its gap row (lib/fill-custom-css.mjs).
-		const customCss = customCssWrites( { unmapped: result.unmapped, writes: result.writes, nodes, flat, refOf } );
+		const customCss = customCssWrites( { unmapped: result.unmapped, writes: result.writes, nodes, flat, refOf, keyScope } );
 		result.writes.push( ...customCss.writes );
 		result.unmapped = customCss.unmapped;
 		result.customCssGaps.push( ...customCss.gaps );

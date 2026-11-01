@@ -75,7 +75,7 @@ function placeRules( members ) {
 	return same && members[ 0 ].stretches.length && set !== members[ 0 ].g.slot ? [ { ...members[ 0 ], slot: set, covers: members.length } ] : members.map( ( m ) => ( { ...m, slot: m.g.slot, covers: 0 } ) );
 }
 
-export function stepRungWrites( { nodes, flat, refOf, reads, writes, scope = '', entries = [], date = new Date().toISOString().slice( 0, 10 ) } ) {
+export function stepRungWrites( { nodes, flat, refOf, reads, writes, scope = '', keyScope, entries = [], date = new Date().toISOString().slice( 0, 10 ) } ) {
 	const out = { writes: [], notes: [], ledger: [], gaps: [] };
 	const rules = new Map();
 	const sets = new Map();
@@ -123,7 +123,7 @@ export function stepRungWrites( { nodes, flat, refOf, reads, writes, scope = '',
 		const ruleCss = ( r ) => mediaRule( r.range, `&${ r.slot ? ` ${ r.slot }` : '' } { ${ r.decls.join( ' ' ) } }` );
 		const css = list.map( ruleCss ).join( ' ' );
 		const label = `Step ladder: ${ list.map( ( r ) => `${ r.slot || 'root' } ${ rangeText( r.range ) } ${ r.decls.join( ' ' ) }` ).join( ', ' ) }`;
-		for ( const x of scopedCssPuts( node, { css, index: rec.index, why: 'step ladder', label } ) ) {
+		for ( const x of scopedCssPuts( node, { css, keyScope, index: rec.index, why: 'step ladder', label } ) ) {
 			const { before, after } = setAttr( node, { attr: x.attr, value: x.value } );
 			out.writes.push( { node: ref, index: rec.index, block: rec.name, slot: '', prop: x.prop, attr: x.attr, before, after, widths: [], how: 'width-gate' } );
 		}

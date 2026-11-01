@@ -212,7 +212,7 @@ export function writeNode( n, doc, pending, { flat, ref, schema, out, reads } ) 
 // Writes a node's endless-loop CSS into its Additional CSS box (`sgsCustomCss`, scoped to the block instance by
 // includes/custom-css.php) through the one Custom CSS writer (lib/custom-css-writer.mjs::customCssPuts): appended to what
 // the box holds, with the scope key and a route-written label naming each record. A loop the scoper refuses is a row.
-function writeLoopCss( n, items, { flat, ref, out } ) {
+function writeLoopCss( n, items, { flat, ref, out, keyScope } ) {
 	const node = flat[ n.index ];
 	// A loop the box already holds (a re-run over a written tree) is not added again.
 	const fresh = items.filter( ( i ) => ! ( node.attributes?.sgsCustomCss || '' ).includes( i.css ) );
@@ -220,7 +220,7 @@ function writeLoopCss( n, items, { flat, ref, out } ) {
 		return;
 	}
 	const ids = items.map( ( i ) => i.record.id ).join( ', ' );
-	const puts = customCssPuts( node, { css: fresh.map( ( i ) => i.css ).join( ' ' ), label: fresh.map( ( i ) => `Loop ${ i.record.id }: ${ i.record.name }` ).join( '; ' ), key: `loop${ fresh[ 0 ].record.id }`, why: `loop css ${ ids }` } );
+	const puts = customCssPuts( node, { css: fresh.map( ( i ) => i.css ).join( ' ' ), label: fresh.map( ( i ) => `Loop ${ i.record.id }: ${ i.record.name }` ).join( '; ' ), key: `loop${ fresh[ 0 ].record.id }`, scope: keyScope, why: `loop css ${ ids }` } );
 	if ( puts.refused ) {
 		out.unmapped.push( { node: ref, block: n.name, slot: '', property: 'motion', value: ids, reason: `custom-css-refused: the Custom CSS scoper refuses the loop CSS: ${ puts.refused.join( '; ' ) }` } );
 		return;
@@ -257,7 +257,7 @@ export function sameTriggerResolved( records ) {
 // the entry draft's component (lib/fill-motion.mjs::elementKey); loops: sampleMotion()'s loops by target id; offers:
 // lib/motion-effects.mjs::loadEffectOffers; stateVocab: the `states` table rows that give the words meaning "open"
 // (default: the framework DB's). Returns { writes, unmapped, notes } in the shapes fill-resolve.mjs uses.
-export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null, template = null, draftCss = [], hasAttr: givenHasAttr = undefined, db = null, reads = null, calFor = null, clientMotion = null } ) {
+export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null, template = null, draftCss = [], hasAttr: givenHasAttr = undefined, db = null, reads = null, calFor = null, clientMotion = null, keyScope } ) {
 	const out = { writes: [], unmapped: [], notes: [], site: [], handover: [] };
 	// Every settings write is checked against the framework DB's attributes: the handle given, else the framework DB itself.
 	const hasAttr = givenHasAttr ?? ( db ? hasAttrOf( db ) : undefined );
@@ -408,7 +408,7 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 			}
 		}
 		if ( boxes.length ) {
-			writeLoopCss( n, boxes, { flat, ref, out } );
+			writeLoopCss( n, boxes, { flat, ref, out, keyScope } );
 		}
 		if ( pending.length ) {
 			deferred.push( () => writeNode( n, doc, [ ...new Set( pending ) ], { flat, ref, schema, out, reads } ) );

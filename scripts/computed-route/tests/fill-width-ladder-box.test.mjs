@@ -26,7 +26,7 @@ function world( block = 'sgs/pad' ) {
 	return { flat, nodes, reads: { widths, sweep: {} }, refOf: ( n ) => n.ref };
 }
 const rowOf = ( property, byWidth ) => ( { node: 'n0', block: 'sgs/pad', slot: '', property, value: JSON.stringify( byWidth ), code: ONE_VALUE_EVERY_WIDTH, reason: 'shape: x' } );
-const run = ( w, rows, cal ) => widthLadderWrites( { nodes: w.nodes, flat: w.flat, refOf: w.refOf, reads: w.reads, db, unmapped: rows, calFor: () => cal, scope: 'header', resolver: () => ( { status: 'gap', gap: 'shape', detail: 'x' } ), date: '2026-10-28' } );
+const run = ( w, rows, cal ) => widthLadderWrites( { nodes: w.nodes, flat: w.flat, refOf: w.refOf, reads: w.reads, db, unmapped: rows, calFor: () => cal, keyScope: 'acme|surface', scope: 'header', resolver: () => ( { status: 'gap', gap: 'shape', detail: 'x' } ), date: '2026-10-28' } );
 const cal = ( ...attrs ) => ( { settings: Object.fromEntries( attrs.map( ( a ) => [ a, { slot: '' } ] ) ), elements: {} } );
 
 test( 'MUST FAIL WITHOUT THE BOX BUILDER: four side rows of one padding setting that vary by width compose into per-device sides', () => {

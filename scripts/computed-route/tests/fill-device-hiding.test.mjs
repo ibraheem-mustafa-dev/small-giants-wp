@@ -22,7 +22,7 @@ const BLOCKS = [ [ 'sgs/button', 13 ], [ 'sgs/button', 20 ], [ 'sgs/social-icons
 function writeBar( facts ) {
 	const flat = BLOCKS.map( ( [ name ], i ) => ( { name, attributes: {}, innerBlocks: [], ref: `r${ i }` } ) );
 	const nodes = BLOCKS.map( ( [ name, n ], index ) => ( { index, name, parent: null, node: { draftRef: { tpl: `Page/${ n }#0` } }, children: [], targets: [] } ) );
-	const r = widthGateWrites( { nodes, flat, refOf: ( n ) => n.ref, facts, db, scope: 'header', entries: [], date: '2026-10-22' } );
+	const r = widthGateWrites( { nodes, flat, refOf: ( n ) => n.ref, facts, db, keyScope: 'acme|surface', scope: 'header', entries: [], date: '2026-10-22' } );
 	return { flat, ...r };
 }
 

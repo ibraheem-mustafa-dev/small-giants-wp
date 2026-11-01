@@ -14,7 +14,7 @@ const factsOf = ( ...pairs ) => ( { elements: Object.fromEntries( pairs ) } );
 const run = ( specs, facts = null ) => {
 	const flat = specs.map( ( s, i ) => ( { name: 'sgs/button', attributes: {}, innerBlocks: [], ref: `r${ i }` } ) );
 	const nodes = specs.map( ( s, index ) => ( { index, name: 'sgs/button', parent: null, node: { draftRef: { tpl: `Page/${ s.n }#0` }, ...s.extra }, children: [], targets: [] } ) );
-	return { flat, ...widthGateWrites( { nodes, flat, refOf: ( n ) => n.ref, facts, db, scope: 'header', entries: [], rootComponent: 'Page', date: '2026-10-23' } ) };
+	return { flat, ...widthGateWrites( { nodes, flat, refOf: ( n ) => n.ref, facts, db, keyScope: 'acme|surface', scope: 'header', entries: [], rootComponent: 'Page', date: '2026-10-23' } ) };
 };
 const flags = ( r ) => r.flat.map( ( n ) => Object.keys( n.attributes ).sort() );
 

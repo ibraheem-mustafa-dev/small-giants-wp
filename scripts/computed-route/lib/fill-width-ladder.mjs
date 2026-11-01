@@ -168,12 +168,12 @@ export function valuesAt( row, reads, target, home ) {
 	return out;
 }
 
-export function widthLadderWrites( { nodes, flat, refOf, reads, db, unmapped, calFor = () => null, snapshot = null, scope = '', entries = [], date = new Date().toISOString().slice( 0, 10 ), collapse = collapseAttributes(), resolver } ) {
+export function widthLadderWrites( { nodes, flat, refOf, reads, db, unmapped, calFor = () => null, snapshot = null, scope = '', keyScope, entries = [], date = new Date().toISOString().slice( 0, 10 ), collapse = collapseAttributes(), resolver } ) {
 	const out = { writes: [], unmapped: [], answered: [], notes: [], ledger: [] };
 	const ctx = { reads, db, calFor, snapshot };
 	for ( const row of perNode( unmapped ) ) {
 		const hit = isLadderRow( row ) ? rowTarget( { nodes, flat, refOf }, row ) : null;
-		const done = hit ? ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collapse, resolver } ) : false;
+		const done = hit ? ladder( { row, hit, nodes, flat, ctx, out, scope, keyScope, entries, date, collapse, resolver } ) : false;
 		done ? out.answered.push( answer( row, done ) ) : out.unmapped.push( row );
 	}
 	out.unmapped = regroup( out.unmapped );
@@ -182,7 +182,7 @@ export function widthLadderWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 
 // The read widths a row is settled at when it is written or its effect is the block's own (truthy), or false.
 
-function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collapse, resolver } ) {
+function ladder( { row, hit, nodes, flat, ctx, out, scope, keyScope, entries, date, collapse, resolver } ) {
 	const { rec, target } = hit;
 	const { reads, db } = ctx;
 	const node = flat[ rec.index ];
@@ -294,7 +294,7 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collap
 		e && out.ledger.push( e );
 	}
 	const label = `Width ladder ${ prop }${ state ? ` (${ state })` : '' }: ${ css.ranges.map( ( s ) => `${ rangeText( s.range ) } ${ s.value }` ).join( ', ' ) }`;
-	const puts = scopedCssPuts( node, { css: css.css, index: rec.index, why: `width ladder (${ prop })`, label } );
+	const puts = scopedCssPuts( node, { css: css.css, keyScope, index: rec.index, why: `width ladder (${ prop })`, label } );
 	for ( const x of puts ) {
 		const { before, after } = setAttr( node, { attr: x.attr, value: x.value } );
 		// `covers` and `readSlot` name the property and the element it was read on that the rule answers (`prop` is its label),

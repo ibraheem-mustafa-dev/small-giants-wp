@@ -6,6 +6,7 @@
 // plugin's own scoper (plugins/sgs-blocks/src/utils/custom-css-scope.js, the JS twin of
 // includes/class-custom-css-scoper.php that the editor canvas uses), so a rule the page would refuse is never written.
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 
 const SCOPER = new URL( '../../../plugins/sgs-blocks/src/utils/custom-css-scope.js', import.meta.url );
 // The scoper file imports nothing; it is loaded from its text because the plugin's package.json names no module type,
@@ -22,19 +23,39 @@ export const SAFE_SLOT = /^[\w\s.#>:()+~[\]="'*-]*$/;
 // @container, @layer or @keyframes, a nested rule, a script-capable value, `<`, malformed input); empty when it scopes.
 export const scoperRefusals = ( css ) => scopeCustomCss( css, '.sgs-c-route' ).refused;
 
-// The scope key includes/custom-css.php::sgs_custom_css_uid accepts: 4 to 16 lowercase letters and digits.
-const scopeKey = ( key ) => String( key ).toLowerCase().replace( /[^a-z0-9]/g, '' ).padEnd( 4, '0' ).slice( 0, 16 );
+// The scope key shape includes/custom-css.php::sgs_custom_css_uid accepts: 4 to 16 lowercase letters and digits.
+export const SCOPE_KEY = /^[a-z0-9]{4,16}$/;
+
+// The counter keys earlier runs wrote (`css<index>`, `wgate<index>`, `loop<record id>`, padded to 4 characters). Every
+// surface numbered them from 1, so two posts on one page shared them; a node holding one is re-keyed. An editor key (8
+// hex characters) and a route key (`r` and 11 hex characters) never start with these words.
+export const COUNTER_KEY = /^(css|wgate|loop)[a-z0-9]*$/;
+
+// The scope key a route write gives an instance: `r` and the first 11 hex characters of sha1( `${ scope }|${ key }` ), 12
+// characters. scope names the surface (client and surface); key is the caller's counter. The page class `sgs-c-<key>` is
+// unique across every post of the page because the surfaces' scopes differ, and a re-run of one surface gives the same key.
+export function scopeKey( scope, key ) {
+	return `r${ crypto.createHash( 'sha1' ).update( `${ scope }|${ key }` ).digest( 'hex' ).slice( 0, 11 ) }`;
+}
 
 const labelled = ( label ) => ( String( label ).startsWith( ROUTE_LABEL ) ? label : `${ ROUTE_LABEL }: ${ label }` );
 
-// The three settings that hold a rule on a node (Custom CSS, its scope key and its label): [ { attr, value, prop } ] to
-// write, appending to what the node holds; empty when the node already holds the rule text. A rule the scoper refuses
-// gives an empty list carrying `refused` (the scoper's reasons) and writes nothing. key: the scope key a node with none
-// takes; why: the pass, named in each put's `prop`.
-export function customCssPuts( node, { css, label, key, why } ) {
+// The three settings that hold a rule on a node (Custom CSS, its scope key and its label): [ { attr, value, prop } ]
+// to write, appending to what the node holds; empty when the node already holds the rule text. A rule the scoper refuses
+// gives an empty list carrying `refused` (the scoper's reasons) and writes nothing. scope: the surface's identity
+// (`<client>|<surface>`, required) and key: the caller's counter, which together give the key a node with none takes
+// (scopeKey); a node's own non-route key is kept, an old counter key (COUNTER_KEY) is replaced; why: the pass, named in
+// each put's `prop`.
+export function customCssPuts( node, { css, label, key, scope, why } ) {
+	if ( ! scope || ! String( scope ).trim() ) {
+		throw new Error( `customCssPuts (${ why }): a scope naming the surface is required, so the scope key is unique across the page's posts` );
+	}
 	const had = ( a ) => node.attributes?.[ a ] || '';
+	const held = had( 'sgsCustomCssId' );
+	const stale = COUNTER_KEY.test( held );
+	const keyPut = { attr: 'sgsCustomCssId', value: held && ! stale ? held : scopeKey( scope, key ), prop: `${ why }: scope key` };
 	if ( had( 'sgsCustomCss' ).includes( css ) ) {
-		return [];
+		return stale ? [ keyPut ] : [];
 	}
 	const refused = scoperRefusals( css );
 	if ( refused.length ) {
@@ -42,7 +63,7 @@ export function customCssPuts( node, { css, label, key, why } ) {
 	}
 	return [
 		{ attr: 'sgsCustomCss', value: [ had( 'sgsCustomCss' ), css ].filter( Boolean ).join( ' ' ), prop: `${ why }: scoped rule` },
-		{ attr: 'sgsCustomCssId', value: had( 'sgsCustomCssId' ) || scopeKey( key ), prop: `${ why }: scope key` },
+		keyPut,
 		{ attr: 'sgsCustomCssNote', value: [ had( 'sgsCustomCssNote' ), labelled( label ) ].filter( Boolean ).join( '; ' ), prop: `${ why }: label` },
 	];
 }

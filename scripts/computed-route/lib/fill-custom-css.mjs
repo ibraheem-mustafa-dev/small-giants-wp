@@ -121,9 +121,10 @@ function refusal( row ) {
 }
 
 // unmapped: the run's UNMAPPED rows; writes: the run's writes (a property one of them paints is never also CSS); nodes,
-// flat, refOf: the skeleton nodes, the tree's nodes by index and their refs. Returns { writes, unmapped (
+// flat, refOf: the skeleton nodes, the tree's nodes by index and their refs; keyScope: the surface's identity
+// (`<client>|<surface>`), which makes each scope key unique across the page's posts (custom-css-writer.mjs::scopeKey). Returns { writes, unmapped (
 // every row, a written one carrying `appliedCss` and saying so in its reason), gaps, notes }.
-export function customCssWrites( { unmapped, writes, nodes, flat, refOf } ) {
+export function customCssWrites( { unmapped, writes, nodes, flat, refOf, keyScope } ) {
 	const out = { writes: [], unmapped: [], gaps: [], notes: [] };
 	const recOf = new Map( nodes.map( ( n ) => [ refOf( flat[ n.index ] ), n ] ) );
 	// node -> Map( `${ selector }|${ range }` -> { selector, range, decls: [], rows: [] } )
@@ -180,7 +181,7 @@ export function customCssWrites( { unmapped, writes, nodes, flat, refOf } ) {
 			continue;
 		}
 		const label = `Custom CSS no setting holds: ${ ok.map( ( r ) => `${ r.selector } ${ rangeText( r.range ) } ${ r.decls.join( ' ' ) }` ).join( ', ' ) }`;
-		const puts = customCssPuts( node, { css: ok.map( ( r ) => r.css ).join( ' ' ), label, key: `css${ rec.index }`, why: 'no setting' } );
+		const puts = customCssPuts( node, { css: ok.map( ( r ) => r.css ).join( ' ' ), label, key: `css${ rec.index }`, scope: keyScope, why: 'no setting' } );
 		for ( const x of puts ) {
 			const { before, after } = setAttr( node, { attr: x.attr, value: x.value } );
 			out.writes.push( { node: ref, index: rec.index, block: rec.name, slot: '', prop: x.prop, attr: x.attr, before, after, widths: [], how: 'custom-css' } );

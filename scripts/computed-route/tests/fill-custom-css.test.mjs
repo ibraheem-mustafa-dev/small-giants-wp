@@ -6,7 +6,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { customCssWrites, selectorOf, valueRanges } from '../lib/fill-custom-css.mjs';
-import { customCssPuts, routeWrittenRules, ROUTE_LABEL } from '../lib/custom-css-writer.mjs';
+import { customCssPuts, routeWrittenRules, scopeKey, ROUTE_LABEL } from '../lib/custom-css-writer.mjs';
 import { scopedCssPuts } from '../lib/fill-width-gate.mjs';
 import { fillReport, unmappedList } from '../lib/fill-report.mjs';
 
@@ -15,14 +15,14 @@ const NODES = [ { index: 0, name: 'sgs/container', targets: [] }, { index: 1, na
 const row = ( over ) => ( { node: 'n0', block: 'sgs/container', slot: '', state: null, widths: [ 375, 768, 1440 ], reason: 'no-setting: sgs/container has no setting for clip-path', ...over } );
 const run = ( unmapped, writes = [] ) => {
 	const flat = tree();
-	return { flat, out: customCssWrites( { unmapped, writes, nodes: NODES, flat, refOf: ( n ) => n.ref } ) };
+	return { flat, out: customCssWrites( { unmapped, writes, nodes: NODES, flat, refOf: ( n ) => n.ref, keyScope: 'acme|surface' } ) };
 };
 
 test( 'MUST FAIL: a declaration no setting holds is written to the block\'s Custom CSS, labelled as route-written, and leaves UNMAPPED', () => {
 	const { flat, out } = run( [ row( { property: 'clip-path', value: 'polygon(0 0, 100% 0, 50% 100%)' } ) ] );
 	const a = flat[ 0 ].attributes;
 	assert.equal( a.sgsCustomCss, '& { clip-path: polygon(0 0, 100% 0, 50% 100%); }' );
-	assert.equal( a.sgsCustomCssId, 'css0' );
+	assert.equal( a.sgsCustomCssId, scopeKey( 'acme|surface', 'css0' ) );
 	assert.ok( a.sgsCustomCssNote.startsWith( `${ ROUTE_LABEL }: ` ), a.sgsCustomCssNote );
 	assert.deepEqual( out.writes.map( ( w ) => [ w.attr, w.how ] ), [ [ 'sgsCustomCss', 'custom-css' ], [ 'sgsCustomCssId', 'custom-css' ], [ 'sgsCustomCssNote', 'custom-css' ] ] );
 	// The row stays a gap (Bean 2026-10-31), its code kept and its reason saying the CSS applies it until a setting exists.
@@ -88,10 +88,10 @@ test( 'rows that are not the block\'s to hold stay as they were (negative contro
 
 test( 'MUST FAIL: every Custom CSS writer shares one writer, so each rule is labelled route-written and the report lists it', () => {
 	const node = { attributes: {} };
-	const gate = scopedCssPuts( node, { css: '@media (min-width: 1260px) { & { display: none; } }', label: 'Width gate w < 1260', index: 3, why: 'width gate' } );
+	const gate = scopedCssPuts( node, { css: '@media (min-width: 1260px) { & { display: none; } }', label: 'Width gate w < 1260', index: 3, keyScope: 'acme|header', why: 'width gate' } );
 	assert.equal( gate.find( ( p ) => 'sgsCustomCssNote' === p.attr ).value, `${ ROUTE_LABEL }: Width gate w < 1260` );
-	assert.equal( gate.find( ( p ) => 'sgsCustomCssId' === p.attr ).value, 'wgate3' );
-	assert.deepEqual( customCssPuts( node, { css: '& { color: expression(1); }', label: 'x', key: 'k', why: 'w' } ).refused, [ 'unsafe value: &' ] );
+	assert.equal( gate.find( ( p ) => 'sgsCustomCssId' === p.attr ).value, scopeKey( 'acme|header', 'wgate3' ) );
+	assert.deepEqual( customCssPuts( node, { css: '& { color: expression(1); }', label: 'x', key: 'k', scope: 'acme|header', why: 'w' } ).refused, [ 'unsafe value: &' ] );
 	const { out } = run( [ row( { property: 'clip-path', value: 'circle(50%)' } ) ] );
 	const rules = routeWrittenRules( out.writes );
 	assert.deepEqual( rules.map( ( r ) => [ r.node, r.how, r.css ] ), [ [ 'n0', 'custom-css', '& { clip-path: circle(50%); }' ] ] );
@@ -104,11 +104,51 @@ test( 'MUST FAIL: a declaration the box already holds is not written twice, and 
 	const authored = '& { clip-path: circle(50%); }';
 	const flat = tree();
 	flat[ 0 ].attributes.sgsCustomCss = authored;
-	const again = customCssWrites( { unmapped: [ row( { property: 'clip-path', value: 'circle(50%)' } ) ], writes: [], nodes: NODES, flat, refOf: ( n ) => n.ref } );
+	const again = customCssWrites( { unmapped: [ row( { property: 'clip-path', value: 'circle(50%)' } ) ], writes: [], nodes: NODES, flat, refOf: ( n ) => n.ref, keyScope: 'acme|surface' } );
 	assert.equal( flat[ 0 ].attributes.sgsCustomCss, authored );
 	assert.deepEqual( [ again.writes, again.unmapped.length, again.unmapped[ 0 ].appliedCss ], [ [], 1, undefined ] );
 	// Look-alike: the same declaration on a different selector is a new rule, appended after the author's text.
-	const other = customCssWrites( { unmapped: [ row( { slot: '.sgs-x', property: 'clip-path', value: 'circle(50%)' } ) ], writes: [], nodes: NODES, flat, refOf: ( n ) => n.ref } );
+	const other = customCssWrites( { unmapped: [ row( { slot: '.sgs-x', property: 'clip-path', value: 'circle(50%)' } ) ], writes: [], nodes: NODES, flat, refOf: ( n ) => n.ref, keyScope: 'acme|surface' } );
 	assert.equal( flat[ 0 ].attributes.sgsCustomCss, `${ authored } & .sgs-x { clip-path: circle(50%); }` );
 	assert.equal( other.writes.length, 3 );
+} );
+
+// The scope key is the page class `sgs-c-<key>`: two posts of one page that share it share each other's rules.
+const put = ( node, scope, key ) => customCssPuts( node, { css: '& { color: red; }', label: 'x', key, scope, why: 'w' } ).find( ( p ) => 'sgsCustomCssId' === p.attr )?.value;
+
+test( 'MUST FAIL: two surfaces whose nodes carry the same index get different scope keys', () => {
+	assert.notEqual( put( { attributes: {} }, 'acme|header', 'css11' ), put( { attributes: {} }, 'acme|home', 'css11' ) );
+	assert.notEqual( put( { attributes: {} }, 'acme|header', 'wgate3' ), put( { attributes: {} }, 'acme|footer', 'wgate3' ) );
+	assert.notEqual( put( { attributes: {} }, 'acme|home', 'css11' ), put( { attributes: {} }, 'acme|home', 'css12' ) );
+} );
+
+test( 'MUST FAIL: one surface and caller key give the same scope key on every run', () => {
+	assert.equal( put( { attributes: {} }, 'acme|home', 'css11' ), put( { attributes: {} }, 'acme|home', 'css11' ) );
+	assert.equal( scopeKey( 'acme|home', 'css11' ), scopeKey( 'acme|home', 'css11' ) );
+} );
+
+test( 'MUST FAIL: a node holding an old route counter key is re-keyed, an editor key is kept', () => {
+	for ( const old of [ 'css11', 'wgate3', 'loopa02', 'css0' ] ) {
+		const out = put( { attributes: { sgsCustomCssId: old } }, 'acme|home', 'css11' );
+		assert.equal( out, scopeKey( 'acme|home', 'css11' ), old );
+	}
+	assert.equal( put( { attributes: { sgsCustomCssId: 'k8f3a2b1' } }, 'acme|home', 'css11' ), 'k8f3a2b1' );
+	assert.equal( put( { attributes: { sgsCustomCssId: '8f3a2b1c' } }, 'acme|home', 'css11' ), '8f3a2b1c' );
+	const route = scopeKey( 'acme|home', 'css11' );
+	assert.equal( put( { attributes: { sgsCustomCssId: route } }, 'acme|other', 'css11' ), route, 'a route key already written stays' );
+} );
+
+test( 'MUST FAIL: a node that already holds the rule under an old counter key gets only the new key', () => {
+	const node = { attributes: { sgsCustomCss: '& { color: red; }', sgsCustomCssId: 'css11' } };
+	const puts = customCssPuts( node, { css: '& { color: red; }', label: 'x', key: 'css11', scope: 'acme|home', why: 'w' } );
+	assert.deepEqual( puts.map( ( p ) => p.attr ), [ 'sgsCustomCssId' ] );
+	assert.deepEqual( customCssPuts( { attributes: { sgsCustomCss: '& { color: red; }', sgsCustomCssId: 'k8f3a2b1' } }, { css: '& { color: red; }', label: 'x', key: 'css11', scope: 'acme|home', why: 'w' } ), [] );
+} );
+
+test( 'MUST FAIL: every produced scope key is 4 to 16 lowercase letters and digits, and a missing scope throws', () => {
+	for ( const [ scope, key ] of [ [ 'acme|home', 'css11' ], [ 'a|b', 'wgate0' ], [ 'Client Name|Mega Menu!', 'loopA-02' ], [ 'x', '' ] ] ) {
+		assert.match( scopeKey( scope, key ), /^[a-z0-9]{4,16}$/ );
+		assert.match( put( { attributes: {} }, scope, key ), /^[a-z0-9]{4,16}$/ );
+	}
+	assert.throws( () => customCssPuts( { attributes: {} }, { css: '& { color: red; }', label: 'x', key: 'css1', why: 'w' } ), /scope/ );
 } );
