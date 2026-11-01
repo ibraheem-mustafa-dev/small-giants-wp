@@ -14,7 +14,7 @@
 import fs from 'fs';
 import path from 'path';
 import { openDb } from './db.mjs';
-import { finaliseRequest, readPicks, recordDecision, skeletonDir } from './skeleton-finalise.mjs';
+import { finaliseRequest, readDecisions, readPicks, recordDecision, signatureOf, skeletonDir } from './skeleton-finalise.mjs';
 import { reviewRows, renderReview, readingCounts } from './intake-review.mjs';
 import { refreshIntakeSkeletons } from './skeleton-rerun.mjs';
 import { proposalLabel } from './skeleton-classify.mjs';
@@ -203,8 +203,15 @@ export function dbKnownBlock() {
 export const decisionsFile = ( repo, client ) => path.join( skeletonDir( repo, client ), 'decisions.json' );
 
 // Writes each decision through recordDecision. Returns how many elements were recorded.
+// A decision already saved with the same choice for the same element is left as it is, so its reason, date and `proposed`
+// baseline keep saying who decided and when (a re-applied review never re-stamps an earlier choice as today's).
+export const sameDecision = ( held, d ) => Boolean( held ) && held.signature === signatureOf( d.element )
+	&& Boolean( held.remove ) === Boolean( d.choice.remove ) && ( held.block ?? null ) === ( d.choice.block ?? null )
+	&& JSON.stringify( held.attributes ?? null ) === JSON.stringify( d.choice.attributes ?? null );
+
 export function recordReviewDecisions( decisions, file ) {
-	decisions.forEach( ( d ) => recordDecision( { file, surface: d.surface, element: d.element, choice: d.choice, reason: d.reason, proposed: d.proposed } ) );
+	const held = readDecisions( file ).surfaces || {};
+	decisions.filter( ( d ) => ! sameDecision( held[ d.surface ]?.[ d.element.key ], d ) ).forEach( ( d ) => recordDecision( { file, surface: d.surface, element: d.element, choice: d.choice, reason: d.reason, proposed: d.proposed } ) );
 	return decisions.length;
 }
 

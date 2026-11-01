@@ -14,7 +14,7 @@ import { fileURLToPath } from 'url';
 import { renderReview, parseReview, reviewRows, carryOver, CONFIDENT_HEADING } from '../lib/intake-review.mjs';
 import { recordProblems, parseArgs } from '../lib/intake-run.mjs';
 import { mergeBlocked } from '../lib/intake-run-collapse.mjs';
-import { intakeFinaliseRequest, reviewDecisions } from '../lib/intake-run-finalise.mjs';
+import { intakeFinaliseRequest, reviewDecisions, recordReviewDecisions } from '../lib/intake-run-finalise.mjs';
 import { contextOf, SIBLING_CAP } from '../lib/intake-skeletons.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -301,4 +301,17 @@ test( 'MUST FAIL: an accepted proposal is not typed; a block:<slug> mark is, wha
 	] } }, review: [ { rowId: 'skeleton:page-shop:Shop/1#0', mark: 'accept' }, { rowId: 'skeleton:page-shop:Shop/2#0', mark: 'block:sgs/heading' } ] };
 	const typed = Object.fromEntries( reviewDecisions( intake, '2026-11-01' ).map( ( d ) => [ d.element.key, d.typed ] ) );
 	assert.deepEqual( typed, { 'Shop/1#0': false, 'Shop/2#0': true } );
+} );
+
+// MUST FAIL (qc-council 2026-11-01): re-applying a review re-stamped every saved decision as "Bean accepted … today",
+// erasing when (and by whom) an earlier choice was made.
+test( 'MUST FAIL: re-applying a review leaves an identical saved decision as it was; a changed choice is rewritten', () => {
+	const file = path.join( fs.mkdtempSync( path.join( os.tmpdir(), 'rec-dec-' ) ), 'decisions.json' );
+	const old = { block: 'sgs/button', signature: 'a|Call', reason: 'Bean accepted sgs/button in the intake review on 2026-10-29', proposed: 'sgs/button' };
+	fs.writeFileSync( file, JSON.stringify( { surfaces: { header: { 'H/18#0': old, 'H/19#0': { ...old, signature: 'a|Mail' } } } } ) );
+	const d = ( key, words, block ) => ( { surface: 'header', element: { key, tag: 'a', words }, choice: { block }, reason: `Bean accepted ${ block } in the intake review on 2026-11-01`, proposed: block } );
+	recordReviewDecisions( [ d( 'H/18#0', 'Call', 'sgs/button' ), d( 'H/19#0', 'Mail', 'sgs/text' ) ], file );
+	const saved = JSON.parse( fs.readFileSync( file, 'utf8' ) ).surfaces.header;
+	assert.equal( saved[ 'H/18#0' ].reason, old.reason, 'the earlier choice keeps its own date' );
+	assert.equal( saved[ 'H/19#0' ].block, 'sgs/text', 'negative control: a changed choice is written' );
 } );
