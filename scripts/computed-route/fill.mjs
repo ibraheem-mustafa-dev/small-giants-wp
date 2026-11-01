@@ -37,7 +37,7 @@ import { imageRecords } from './lib/fill-media.mjs';
 import { logoSizeWrites } from './lib/fill-logo-size.mjs';
 import { widthLadderWrites } from './lib/fill-width-ladder.mjs';
 import { stepRungWrites } from './lib/fill-step-rungs.mjs';
-import { customCssWrites } from './lib/fill-custom-css.mjs';
+import { customCssWrites, openedElements } from './lib/fill-custom-css.mjs';
 import { dimensionWrites } from './lib/fill-dimensions.mjs';
 import { scrollbarPatch, mergePatch } from './lib/fill-scrollbar.mjs';
 import { motionWrites } from './lib/fill-motion.mjs';
@@ -335,7 +335,7 @@ export async function fillSurface( o ) {
 		// Rows the element already renders (lib/fill-held.mjs) leave UNMAPPED and are listed under their reason in the report.
 		Object.assign( result, result.settleHeld( result ) );
 		// Every draft declaration no setting of its block holds, applied through that block's Custom CSS as a scoped rule and kept as its gap row (lib/fill-custom-css.mjs).
-		const customCss = customCssWrites( { unmapped: result.unmapped, writes: result.writes, nodes, flat, refOf, keyScope, opened: opener?.state && nodes.length ? { root: refOf( flat[ nodes[ 0 ].index ] ) } : null } );
+		const customCss = customCssWrites( { unmapped: result.unmapped, writes: result.writes, nodes, flat, refOf, keyScope, opened: opener?.state && nodes.length ? openedElements( { nodes, flat, refOf } ) : null } );
 		result.writes.push( ...customCss.writes );
 		result.unmapped = customCss.unmapped;
 		result.customCssGaps.push( ...customCss.gaps );

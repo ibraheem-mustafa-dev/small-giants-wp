@@ -40,10 +40,17 @@ export const STATE_UNHELD = 'state-unheld';
 const PSEUDO_CLASS = { hover: ':hover', focus: ':focus', active: ':active', disabled: ':disabled' };
 const UNSAFE_VALUE = /[{};<]/;
 
-// The open/close machinery of an overlay surface's root: the block owns whether it shows (`dialog:not([open]){display:none}`),
-// so a value read from the OPEN draft is never a resting rule (it would defeat the closed state).
+// The open/close machinery of an element the draft's state shows and hides: the block owns whether it shows
+// (`dialog:not([open]){display:none}`), so a value read from the OPEN draft is never a resting rule (it would defeat the closed state).
+// Two kinds of element are read open: the opened surface's root (`opened.root`, its own element only) and a modal frame's elements
+// (`opened.frame`: the frame's root and each top-level part the frame draws, the scrim and the dialog; a sub-part such as the close
+// control inside the dialog is not toggled, so keeps its display). Both come from the skeleton, never from a block name.
 export const OPEN_MACHINERY = [ 'display', 'visibility', 'opacity', 'pointer-events', 'content-visibility' ];
-export const openMachinery = ( row, opened ) => !! opened && row.node === opened.root && '' === ( row.slot ?? '' ) && OPEN_MACHINERY.includes( row.property );
+const SUB_PART = /[\s>+~]/;
+export const openMachinery = ( row, opened ) => !! opened && OPEN_MACHINERY.includes( row.property ) && (
+	( row.node === opened.root && '' === ( row.slot ?? '' ) )
+	|| ( row.node === opened.frame && ! SUB_PART.test( row.slot ?? '' ) )
+);
 
 const codeOf = ( row ) => String( row.reason || '' ).split( ':' )[ 0 ];
 export const eligible = ( row ) => ( NO_HOLDER.includes( codeOf( row ) ) || STATE_UNHELD === row.code ) && ! /^held:/.test( row.code || '' );
@@ -129,8 +136,9 @@ function refusal( row ) {
 // flat, refOf: the skeleton nodes, the tree's nodes by index and their refs; keyScope: the surface's identity
 // (`<client>|<surface>`), which makes each scope key unique across the page's posts (custom-css-writer.mjs::scopeKey). Returns { writes, unmapped (
 // every row, a written one carrying `appliedCss` and saying so in its reason), gaps, notes }. opened: `{ root }` (the ref
-// of the root node) when the surface was read through its opener (a drawer, modal, mega panel or choice flow read in its
-// open state), else null: the root's open/close machinery is then never written (openMachinery) and each skip is a row and a note.
+// of the root node, and `frame`, the ref of the modal frame node or null) when the surface was read through its opener (a drawer,
+// modal, mega panel or choice flow read in its open state), else null: the open/close machinery of those elements is then never
+// written (openMachinery) and each skip is a row and a note.
 export function customCssWrites( { unmapped, writes, nodes, flat, refOf, keyScope, opened = null } ) {
 	const out = { writes: [], unmapped: [], gaps: [], notes: [] };
 	const recOf = new Map( nodes.map( ( n ) => [ refOf( flat[ n.index ] ), n ] ) );
@@ -139,7 +147,7 @@ export function customCssWrites( { unmapped, writes, nodes, flat, refOf, keyScop
 	for ( const row of perNode( unmapped ) ) {
 		const rec = recOf.get( row.node );
 		if ( eligible( row ) && rec && openMachinery( row, opened ) && ! painted( writes, row ) ) {
-			const reason = 'open-state machinery of an opened surface root; the block owns its open/closed display';
+			const reason = 'open-state machinery of an element the draft state shows and hides; the block owns its open/closed display';
 			out.unmapped.push( { ...row, how: 'custom-css-skipped', reason: `custom-css-skipped: ${ reason } (${ row.reason })` } );
 			out.notes.push( `${ row.node } ${ rec.name }: custom-css-skipped ${ row.property }: ${ reason }` );
 			continue;
@@ -215,4 +223,11 @@ export function customCssWrites( { unmapped, writes, nodes, flat, refOf, keyScop
 	// The rows of several nodes join back into one row per look and reason.
 	out.unmapped = regroup( out.unmapped );
 	return out;
+}
+
+// The elements of an opened surface the state shows and hides, as customCssWrites' `opened`: `root` is the ref of the first node,
+// `frame` the ref of the skeleton's modal frame node (`modalFrame: true`, lib/skeleton-modal-frame.mjs) or null.
+export function openedElements( { nodes, flat, refOf } ) {
+	const frame = nodes.find( ( n ) => true === n.node?.modalFrame );
+	return { root: refOf( flat[ nodes[ 0 ].index ] ), frame: frame ? refOf( flat[ frame.index ] ) : null };
 }

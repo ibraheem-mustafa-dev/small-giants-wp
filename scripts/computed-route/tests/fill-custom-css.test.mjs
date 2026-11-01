@@ -5,7 +5,7 @@
 // lib/custom-css-writer.mjs, so each rule is labelled as route-written and the report lists every one.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { customCssWrites, selectorOf, valueRanges } from '../lib/fill-custom-css.mjs';
+import { customCssWrites, openedElements, selectorOf, valueRanges } from '../lib/fill-custom-css.mjs';
 import { customCssPuts, routeWrittenRules, scopeKey, ROUTE_LABEL } from '../lib/custom-css-writer.mjs';
 import { scopedCssPuts } from '../lib/fill-width-gate.mjs';
 import { fillReport, unmappedList } from '../lib/fill-report.mjs';
@@ -163,7 +163,7 @@ test( 'MUST FAIL: the open/close machinery of an opened surface root is not writ
 	assert.equal( flat[ 0 ].attributes.sgsCustomCss, undefined );
 	assert.deepEqual( out.writes, [] );
 	assert.equal( out.unmapped.length, 5 );
-	assert.ok( out.unmapped.every( ( u ) => /^custom-css-skipped: open-state machinery of an opened surface root; the block owns its open\/closed display/.test( u.reason ) && 'custom-css-skipped' === u.how && ! u.appliedCss ) );
+	assert.ok( out.unmapped.every( ( u ) => /^custom-css-skipped: open-state machinery of an element the draft state shows and hides; the block owns its open\/closed display/.test( u.reason ) && 'custom-css-skipped' === u.how && ! u.appliedCss ) );
 	assert.equal( out.notes.length, 5 );
 	assert.match( out.notes[ 0 ], /n0 sgs\/container: custom-css-skipped display: open-state machinery/ );
 } );
@@ -182,4 +182,34 @@ test( 'MUST FAIL: a descendant of an opened surface keeps its display, and a wid
 	assert.equal( flat[ 1 ].attributes.sgsCustomCss, '& { display: block; }' );
 	assert.equal( flat[ 0 ].attributes.sgsCustomCss, '@media (max-width: 767px) { & { display: none; } }' );
 	assert.equal( out.writes.filter( ( w ) => 'n0' === w.node ).length, 0 );
+} );
+
+// A modal frame's elements are read open too: the frame's root and its top-level parts (the scrim, the dialog) are toggled by the
+// dialog's state, so their display is the block's; a sub-part (the close inside the dialog) and other properties are written.
+test( 'MUST FAIL: the open/close machinery of a modal frame\'s root, scrim and dialog is not written as a resting rule', () => {
+	const slots = [ '', '.sgs-modal__dialog', '@scrim' ];
+	const { flat, out } = runOpened( slots.flatMap( ( slot ) => [ row( { node: 'n1', block: 'sgs/text', slot, property: 'display', value: 'block' } ), row( { node: 'n1', block: 'sgs/text', slot, property: 'opacity', value: '1' } ) ] ), { root: 'n0', frame: 'n1' } );
+	assert.equal( flat[ 1 ].attributes.sgsCustomCss, undefined );
+	assert.deepEqual( out.writes, [] );
+	assert.equal( out.unmapped.filter( ( u ) => 'custom-css-skipped' === u.how ).length, 6 );
+} );
+
+test( 'MUST FAIL: a modal frame keeps a sub-part\'s display, its other properties and a static display on a node the state does not toggle (negative control)', () => {
+	const { flat, out } = runOpened( [
+		row( { node: 'n1', block: 'sgs/text', slot: '.sgs-modal__dialog > .sgs-modal__close', property: 'display', value: 'block' } ),
+		row( { node: 'n1', block: 'sgs/text', slot: '.sgs-modal__dialog', property: 'z-index', value: '3' } ),
+		row( { node: 'n0', slot: '', property: 'display', value: 'flex' } ),
+	], { root: 'n0', frame: 'n1' } );
+	assert.equal( out.unmapped.filter( ( u ) => 'custom-css-skipped' === u.how ).length, 1 );
+	assert.match( flat[ 1 ].attributes.sgsCustomCss, /sgs-modal__close \{ display: block; \}/ );
+	assert.match( flat[ 1 ].attributes.sgsCustomCss, /sgs-modal__dialog \{ z-index: 3; \}/ );
+	const staticFlex = runOpened( [ row( { node: 'n1', block: 'sgs/text', slot: '', property: 'display', value: 'flex' } ) ], null );
+	assert.equal( staticFlex.flat[ 1 ].attributes.sgsCustomCss, '& { display: flex; }' );
+} );
+
+test( 'openedElements names the first node and the skeleton\'s modal frame node', () => {
+	const flat = tree();
+	const nodes = [ { index: 0, node: {} }, { index: 1, node: { modalFrame: true } } ];
+	assert.deepEqual( openedElements( { nodes, flat, refOf: ( n ) => n.ref } ), { root: 'n0', frame: 'n1' } );
+	assert.deepEqual( openedElements( { nodes: [ nodes[ 0 ] ], flat, refOf: ( n ) => n.ref } ), { root: 'n0', frame: null } );
 } );
