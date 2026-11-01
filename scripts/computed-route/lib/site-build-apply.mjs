@@ -78,11 +78,12 @@ if ( $t ) {
 // The PHP storing a post's content marker: the hash of the content as the site holds it now, read back on the site so
 // both sides hash the same text. The site build writes it after each save and the site run after each post it builds.
 export function contentMarkPhp( id ) {
-	if ( ! Number.isInteger( id ) || id <= 0 ) {
+	const n = Number( id );
+	if ( ! Number.isInteger( n ) || n <= 0 ) {
 		throw new Error( `post id "${ id }" is not a post id` );
 	}
 	return `<?php
-update_post_meta( ${ id }, '${ CONTENT_META }', hash( 'sha256', get_post_field( 'post_content', ${ id }, 'raw' ) ) );
+update_post_meta( ${ n }, '${ CONTENT_META }', hash( 'sha256', get_post_field( 'post_content', ${ n }, 'raw' ) ) );
 `;
 }
 
@@ -92,7 +93,7 @@ update_post_meta( ${ id }, '${ CONTENT_META }', hash( 'sha256', get_post_field( 
 // recorded by templateRecordPhp) is built and left unmarked. Returns what `build` returned.
 export async function buildThenMarkPost( { build, postId, runPhp } ) {
 	const said = await build();
-	Number.isInteger( postId ) && runPhp( contentMarkPhp( postId ) );
+	Number( postId ) > 0 && runPhp( contentMarkPhp( postId ) );
 	return said;
 }
 
