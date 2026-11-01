@@ -2,7 +2,7 @@
 // when its rule breaks.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { surfaceReach } from '../site-run.mjs';
+import { surfaceReach, openerRow } from '../site-run.mjs';
 
 const row = ( o ) => ( { parent: null, template: null, postType: 'page', ...o } );
 const ROWS = [
@@ -74,4 +74,21 @@ test( 'MUST FAIL: a shop surface reaches its shop row and /shop/, a product surf
 	assert.equal( liveAddress( product.row, WOO ), null, 'no chosen product: no address, never the home page' );
 	assert.equal( surfaceReach( { key: 'home', entry: {}, skel: null, rows: WOO } ).row.slug, 'home', 'negative control: a plain page keeps its row' );
 	assert.equal( liveAddress( null, WOO ), '/', 'negative control: a surface with no row keeps today\'s address' );
+} );
+
+// MUST FAIL: a modal or flow has no page of its own, so the run read it at the home page, where it is not placed (Eye Care's
+// size guide and lens configurator, 2026-10-28 and 2026-11-01: "no .cr-ref-modal-size-guide-0 on the page").
+test( 'MUST FAIL: a modal or flow surface is read live at a page that opens it, a page before a product', () => {
+	const rows = [
+		{ id: 1, postType: 'page', slug: 'home', route: 'home' },
+		{ id: 2, postType: 'product', slug: 'product', opens: [ { kind: 'flow', slug: 'lens' }, { kind: 'modal', slug: 'size-guide' } ] },
+		{ id: 3, postType: 'page', slug: 'help', route: 'help', opens: [ { kind: 'modal', slug: 'size-guide' } ] },
+		{ id: 118, postType: 'sgs_modal', slug: 'size-guide' },
+		{ id: 120, postType: 'sgs_choice_flow', slug: 'lens' },
+		{ id: 121, postType: 'sgs_modal', slug: 'unopened' },
+	];
+	assert.equal( openerRow( { target: { postId: 118 } }, rows ).slug, 'help' );
+	assert.equal( openerRow( { target: { postId: 120 } }, rows ).slug, 'product', 'a flow only a product opens is read at the product' );
+	assert.equal( openerRow( { target: { postId: 121 } }, rows ), null, 'negative control: a modal nothing opens has no opener' );
+	assert.equal( openerRow( { target: { postId: 1 } }, rows ), null, 'negative control: a page keeps its own row' );
 } );

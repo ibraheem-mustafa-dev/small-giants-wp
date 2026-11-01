@@ -4,7 +4,7 @@ Taken on 2026-10-31T01:32:33.809Z; manifest 1.0, files hash df55d7988b7b72a6.
 
 How to mark: put x in a section's `Accept all: [ ]` box to give every row the section's first mark; to mark one row differently, write its mark in that row's Mark cell (a row's own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review eye-care-ward-end`.
 
-Rows: 1585; 824 need reading, 761 are confident proposals that Accept all covers (skeleton block choices 724, missing features 37).
+Rows: 1585; 726 need reading, 859 are confident proposals that Accept all covers (skeleton block choices 822, missing features 37).
 
 Not defects counted, not listed: breakpoint 46, prop-variant 91, reached-when-forced 242, render-wins 1270.
 
@@ -228,109 +228,6 @@ Accept all: [ ]
 
 Accept all: [ ]
 
-### Changed since the last export (98)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:account-details:Eye Care Birmingham/1096#0` | **changed** account-details Eye Care Birmingham/1096#0 <div> | block:sgs/account | 1: the page map holds this surface as a part of a WooCommerce row, so the row's WooCommerce piece (rules.commerceRegion.roles, the role's owner block, else its block) draws it: the piece is the root and every element in it is absorbed, never cloned as its own form or blocks (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Account details" of the my-account row (owner woocommerce) |  |
-| `skeleton:account-details:Eye Care Birmingham/1097#0` | **changed** account-details Eye Care Birmingham/1097#0 <h2> "Account details" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details:Eye Care Birmingham/1098#0` | **changed** account-details Eye Care Birmingham/1098#0 <form> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details:Eye Care Birmingham/1099#0` | **changed** account-details Eye Care Birmingham/1099#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details:Eye Care Birmingham/1100#0` | **changed** account-details Eye Care Birmingham/1100#0 <label> "First name" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details:Eye Care Birmingham/1101#0` | **changed** account-details Eye Care Birmingham/1101#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details:Eye Care Birmingham/1102#0` | **changed** account-details Eye Care Birmingham/1102#0 <label> "Last name" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details:Eye Care Birmingham/1103#0` | **changed** account-details Eye Care Birmingham/1103#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details:Eye Care Birmingham/1104#0` | **changed** account-details Eye Care Birmingham/1104#0 <label> "Email" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details:Eye Care Birmingham/1105#0` | **changed** account-details Eye Care Birmingham/1105#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details:Eye Care Birmingham/1106#0` | **changed** account-details Eye Care Birmingham/1106#0 <label> "Mobile" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details:Eye Care Birmingham/1107#0` | **changed** account-details Eye Care Birmingham/1107#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details:Eye Care Birmingham/1108#0` | **changed** account-details Eye Care Birmingham/1108#0 <span> "For WhatsApp updates on your orders" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details:Eye Care Birmingham/1109#0` | **changed** account-details Eye Care Birmingham/1109#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details:Eye Care Birmingham/1110#0` | **changed** account-details Eye Care Birmingham/1110#0 <div> "Change password" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details:Eye Care Birmingham/1111#0` | **changed** account-details Eye Care Birmingham/1111#0 <label> "Current password" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details:Eye Care Birmingham/1112#0` | **changed** account-details Eye Care Birmingham/1112#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details:Eye Care Birmingham/1113#0` | **changed** account-details Eye Care Birmingham/1113#0 <label> "New password" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details:Eye Care Birmingham/1114#0` | **changed** account-details Eye Care Birmingham/1114#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details:Eye Care Birmingham/1115#0` | **changed** account-details Eye Care Birmingham/1115#0 <label> "Type it again" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details:Eye Care Birmingham/1116#0` | **changed** account-details Eye Care Birmingham/1116#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details:Eye Care Birmingham/1117#0` | **changed** account-details Eye Care Birmingham/1117#0 <p> "Leave these blank to keep your current password." | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details:Eye Care Birmingham/1118#0` | **changed** account-details Eye Care Birmingham/1118#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:account-details:Eye Care Birmingham/1119#0` | **changed** account-details Eye Care Birmingham/1119#0 <button> "Save changes" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:addresses:Eye Care Birmingham/1056#0` | **changed** addresses Eye Care Birmingham/1056#0 <div> | block:sgs/account | 1: the page map holds this surface as a part of a WooCommerce row, so the row's WooCommerce piece (rules.commerceRegion.roles, the role's owner block, else its block) draws it: the piece is the root and every element in it is absorbed, never cloned as its own form or blocks (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Addresses" of the my-account row (owner woocommerce) |  |
-| `skeleton:addresses:Eye Care Birmingham/1057#0` | **changed** addresses Eye Care Birmingham/1057#0 <h2> "Addresses" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:addresses:Eye Care Birmingham/1058#0` | **changed** addresses Eye Care Birmingham/1058#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:addresses:Eye Care Birmingham/1060` | **changed** addresses Eye Care Birmingham/1060 <div> | absorbed | 1: 2 copies of one template element; drawn by sgs/account: rule ownedPart |  |
-| `skeleton:addresses:Eye Care Birmingham/1061` | **changed** addresses Eye Care Birmingham/1061 <div> | absorbed | 1: 2 copies of one template element; drawn by sgs/account: rule ownedPart |  |
-| `skeleton:addresses:Eye Care Birmingham/1062` | **changed** addresses Eye Care Birmingham/1062 <span> "Delivery address" | absorbed | 1: 2 copies of one template element; drawn by sgs/account: rule ownedPart |  |
-| `skeleton:addresses:Eye Care Birmingham/1064` | **changed** addresses Eye Care Birmingham/1064 <button> "Add" | absorbed | 1: 2 copies of one template element; drawn by sgs/account: rule ownedPart |  |
-| `skeleton:addresses:Eye Care Birmingham/1066` | **changed** addresses Eye Care Birmingham/1066 <p> "No delivery address saved yet." | absorbed | 1: 2 copies of one template element; drawn by sgs/account: rule ownedPart |  |
-| `skeleton:addresses:Eye Care Birmingham/1078#0` | **changed** addresses Eye Care Birmingham/1078#0 <p> "Your delivery address fills in at checkout while you're signed in." | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:bag-drawer:Eye Care Birmingham/1197#0` | **changed** bag-drawer Eye Care Birmingham/1197#0 <span> "Bag (0)" | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart |  |
-| `skeleton:mobile-menu:Eye Care Birmingham/1170#0` | **changed** mobile-menu Eye Care Birmingham/1170#0 <span> "Glasses SOON" | absorbed | 1: drawn by sgs/nav-drawer-menu: rule navigation |  |
-| `skeleton:page-account:Eye Care Birmingham/923#0` | **changed** page-account Eye Care Birmingham/923#0 <div> | block:sgs/account | 1: the account page is an ordinary page (Bean, 2026-10-26; the hand-built reference shop's account page is the theme's page with WooCommerce's account output in it): its sign-in and account forms region is sgs/account, WooCommerce's account piece, which draws the forms, the menu and the dashboard (the account navigation Eye Care Birmingham/924#0 and the panel beside it) |  |
-| `skeleton:page-account:Eye Care Birmingham/924#0` | **changed** page-account Eye Care Birmingham/924#0 <nav> | absorbed | 1: drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-account:Eye Care Birmingham/926` | **changed** page-account Eye Care Birmingham/926 <button> | absorbed | 1: 5 copies of one template element; drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-account:Eye Care Birmingham/927` | **changed** page-account Eye Care Birmingham/927 <span> "Orders" | absorbed | 1: 5 copies of one template element; drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-account:Eye Care Birmingham/928#0` | **changed** page-account Eye Care Birmingham/928#0 <span> "3" | absorbed | 1: drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-account:Eye Care Birmingham/929#0` | **changed** page-account Eye Care Birmingham/929#0 <button> "Sign out" | absorbed | 1: drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-account:Eye Care Birmingham/930#0` | **changed** page-account Eye Care Birmingham/930#0 <div> | absorbed | 1: drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-account:Eye Care Birmingham/932#0` | **changed** page-account Eye Care Birmingham/932#0 <div> | absorbed | 1: drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-account:Eye Care Birmingham/933#0` | **changed** page-account Eye Care Birmingham/933#0 <h2> "Orders" | absorbed | 1: drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-account:Eye Care Birmingham/935#0` | **changed** page-account Eye Care Birmingham/935#0 <div> | absorbed | 1: drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-account:Eye Care Birmingham/937` | **changed** page-account Eye Care Birmingham/937 <button> | absorbed | 1: 3 copies of one template element; drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-account:Eye Care Birmingham/938` | **changed** page-account Eye Care Birmingham/938 <span> | absorbed | 1: 3 copies of one template element; drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-account:Eye Care Birmingham/939` | **changed** page-account Eye Care Birmingham/939 <span> "EC-10471" | absorbed | 1: 3 copies of one template element; drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-account:Eye Care Birmingham/940` | **changed** page-account Eye Care Birmingham/940 <span> "2 October 2026" | absorbed | 1: 3 copies of one template element; drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-account:Eye Care Birmingham/941` | **changed** page-account Eye Care Birmingham/941 <span> "Oakley Holbrook, with prescription lenses" | absorbed | 1: 3 copies of one template element; drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-account:Eye Care Birmingham/942` | **changed** page-account Eye Care Birmingham/942 <span> "Lenses being made" | absorbed | 1: 3 copies of one template element; drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-account:Eye Care Birmingham/943` | **changed** page-account Eye Care Birmingham/943 <span> | absorbed | 1: 3 copies of one template element; drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-account:Eye Care Birmingham/944` | **changed** page-account Eye Care Birmingham/944 <span> "£248" | absorbed | 1: 3 copies of one template element; drawn by sgs/account: rule commerceRegion |  |
-| `skeleton:page-home:Eye Care Birmingham/174#0` | **changed** page-home Eye Care Birmingham/174#0 <div> | block:sgs/google-reviews | 1: a loop of items that each show a rating and a quote, linking to a review provider, is that provider's reviews block (FR-48-83) (google: a loop of 13 items with a rating and a quote, linking to the provider, 14 elements painted in google's own colours (Eye Care Birmingham/200#0 #FBBC04, sgs/google-reviews style.css --sgs-gr-star; Eye Care Birmingham/204#0 #1A73E8, sgs/google-reviews style.css --sgs-gr-blue)); the block's own parts stand beside the element it was placed on, so it is placed over the smallest element holding them: sgs/google-reviews placed on Eye Care Birmingham/189#0 draws its own parts beside it (shows-part count, shows-part arrow, shows-part average, shows-part star, shows-part aggregate-star, shows-part see-all, shows-part write-review, self-moving controls, platform google; at Eye Care Birmingham/205#0, Eye Care Birmingham/175#0) |  |
-| `skeleton:page-home:Eye Care Birmingham/175#0` | **changed** page-home Eye Care Birmingham/175#0 <div> | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
-| `skeleton:page-home:Eye Care Birmingham/176#0` | **changed** page-home Eye Care Birmingham/176#0 <div> | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
-| `skeleton:page-home:Eye Care Birmingham/177#0` | **changed** page-home Eye Care Birmingham/177#0 <img> | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
-| `skeleton:page-home:Eye Care Birmingham/178#0` | **changed** page-home Eye Care Birmingham/178#0 <div> | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
-| `skeleton:page-home:Eye Care Birmingham/179#0` | **changed** page-home Eye Care Birmingham/179#0 <div> "Google Reviews" | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
-| `skeleton:page-home:Eye Care Birmingham/180#0` | **changed** page-home Eye Care Birmingham/180#0 <div> | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
-| `skeleton:page-home:Eye Care Birmingham/181#0` | **changed** page-home Eye Care Birmingham/181#0 <span> "4.7" | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
-| `skeleton:page-home:Eye Care Birmingham/182#0` | **changed** page-home Eye Care Birmingham/182#0 <span> "★★★★★" | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
-| `skeleton:page-home:Eye Care Birmingham/183#0` | **changed** page-home Eye Care Birmingham/183#0 <span> "★★★★★" | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
-| `skeleton:page-home:Eye Care Birmingham/184#0` | **changed** page-home Eye Care Birmingham/184#0 <span> "15 reviews" | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
-| `skeleton:page-home:Eye Care Birmingham/185#0` | **changed** page-home Eye Care Birmingham/185#0 <div> | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
-| `skeleton:page-home:Eye Care Birmingham/186#0` | **changed** page-home Eye Care Birmingham/186#0 <a> "See all reviews" | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
-| `skeleton:page-home:Eye Care Birmingham/187#0` | **changed** page-home Eye Care Birmingham/187#0 <a> "Write a review" | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
-| `skeleton:page-home:Eye Care Birmingham/188#0` | **changed** page-home Eye Care Birmingham/188#0 <div> | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
-| `skeleton:page-home:Eye Care Birmingham/189#0` | **changed** page-home Eye Care Birmingham/189#0 <div> | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
-| `skeleton:page-home:Eye Care Birmingham/205#0` | **changed** page-home Eye Care Birmingham/205#0 <div> | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
-| `skeleton:page-home:Eye Care Birmingham/206#0` | **changed** page-home Eye Care Birmingham/206#0 <p> "Scroll for more — 13 of the 15 reviews left a comment." | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
-| `skeleton:page-home:Eye Care Birmingham/207#0` | **changed** page-home Eye Care Birmingham/207#0 <div> | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
-| `skeleton:page-home:Eye Care Birmingham/208#0` | **changed** page-home Eye Care Birmingham/208#0 <button> | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
-| `skeleton:page-home:Eye Care Birmingham/211#0` | **changed** page-home Eye Care Birmingham/211#0 <button> | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
-| `skeleton:page-product:Eye Care Birmingham/334#0` | **changed** page-product Eye Care Birmingham/334#0 <nav> | block:sgs/breadcrumbs | 1: identified by elimination over the framework DB's block_identity_facts: each fact the draft region shows rules out the blocks that never show it, and the facts few blocks share rank the survivors: sgs/breadcrumbs shows accepts-value /; the next, sgs/container, shows 0 |  |
-| `skeleton:page-product:Eye Care Birmingham/335#0` | **changed** page-product Eye Care Birmingham/335#0 <a> "Home" | absorbed | 1: drawn by sgs/breadcrumbs: rule identity |  |
-| `skeleton:page-product:Eye Care Birmingham/336#0` | **changed** page-product Eye Care Birmingham/336#0 <span> "/" | absorbed | 1: drawn by sgs/breadcrumbs: rule identity |  |
-| `skeleton:page-product:Eye Care Birmingham/337#0` | **changed** page-product Eye Care Birmingham/337#0 <a> "Sunglasses" | absorbed | 1: drawn by sgs/breadcrumbs: rule identity |  |
-| `skeleton:page-product:Eye Care Birmingham/338#0` | **changed** page-product Eye Care Birmingham/338#0 <span> "/" | absorbed | 1: drawn by sgs/breadcrumbs: rule identity |  |
-| `skeleton:page-product:Eye Care Birmingham/339#0` | **changed** page-product Eye Care Birmingham/339#0 <a> "Ray-Ban" | absorbed | 1: drawn by sgs/breadcrumbs: rule identity |  |
-| `skeleton:page-product:Eye Care Birmingham/368#0` | **changed** page-product Eye Care Birmingham/368#0 <span> "RRP £171" | absorbed | 1: drawn by sgs/container: rule commerceRegion |  |
-| `skeleton:page-product:Eye Care Birmingham/400#0` | **changed** page-product Eye Care Birmingham/400#0 <span> "Or 3 payments of £46.33 with Klarna" | absorbed | 1: drawn by sgs/container: rule commerceRegion |  |
-| `skeleton:page-product:Eye Care Birmingham/415#0` | **changed** page-product Eye Care Birmingham/415#0 <div> | block:sgs/tabs | 1: identified by elimination over the framework DB's block_identity_facts: each fact the draft region shows rules out the blocks that never show it, and the facts few blocks share rank the survivors: sgs/tabs shows open-state exactly-one, has-part panel, renders-role tablist, renders-role tab, renders-aria aria-selected; the next, sgs/gallery, shows 4 |  |
-| `skeleton:page-product:Eye Care Birmingham/416#0` | **changed** page-product Eye Care Birmingham/416#0 <div> | absorbed | 1: drawn by sgs/tabs: its own list of controls |  |
-| `skeleton:page-product:Eye Care Birmingham/418` | **changed** page-product Eye Care Birmingham/418 <button> "Description" | absorbed | 1: 3 copies of one template element; drawn by sgs/tabs: the label of its item 1 (sgs/tab) |  |
-| `skeleton:page-product:Eye Care Birmingham/493` | **changed** page-product Eye Care Birmingham/493 <div> | block:sgs/accordion-item | 1: 4 copies of one template element; one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6) |  |
-| `skeleton:page-product:Eye Care Birmingham/494` | **changed** page-product Eye Care Birmingham/494 <button> | absorbed | 1: 4 copies of one template element; drawn by sgs/accordion-item: rule accordionItem |  |
-| `skeleton:page-product:Eye Care Birmingham/495` | **changed** page-product Eye Care Birmingham/495 <span> "Will prescription lenses work in these?" | absorbed | 1: 4 copies of one template element; drawn by sgs/accordion-item: rule accordionItem |  |
-| `skeleton:page-product:Eye Care Birmingham/496` | **changed** page-product Eye Care Birmingham/496 <span> "+" | absorbed | 1: 4 copies of one template element; drawn by sgs/accordion-item: rule accordionItem |  |
-| `skeleton:page-shop:Eye Care Birmingham/252#0` | **changed** page-shop Eye Care Birmingham/252#0 <span> "16 frames" | absorbed | 1: the draft's sort control and result count are WooCommerce's catalog-sorting and product-results-count in a toolbar row at the top of the product collection, as the theme's archive-product copy composes them (the count reads its query from the collection around it); found by the shop parts record's stamps, never by words (FR-48-61, FR-48-87) |  |
-| `skeleton:page-shop:Eye Care Birmingham/254#0` | **changed** page-shop Eye Care Birmingham/254#0 <button> "Filter" | block:sgs/button | 0.75 |  |
-| `skeleton:page-shop:Eye Care Birmingham/255#0` | **changed** page-shop Eye Care Birmingham/255#0 <select> | absorbed | 1: the draft's sort control and result count are WooCommerce's catalog-sorting and product-results-count in a toolbar row at the top of the product collection, as the theme's archive-product copy composes them (the count reads its query from the collection around it); found by the shop parts record's stamps, never by words (FR-48-61, FR-48-87) |  |
-| `skeleton:sign-in-and-register-forms:Eye Care Birmingham/854#0` | **changed** sign-in-and-register-forms Eye Care Birmingham/854#0 <main> | block:sgs/account | 1: the page map holds this surface as a part of a WooCommerce row, so the row's WooCommerce piece (rules.commerceRegion.roles, the role's owner block, else its block) draws it: the piece is the root and every element in it is absorbed, never cloned as its own form or blocks (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Sign-in and register forms" of the my-account row (owner woocommerce) |  |
-| `skeleton:sign-in-and-register-forms:Eye Care Birmingham/856#0` | **changed** sign-in-and-register-forms Eye Care Birmingham/856#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:sign-in-and-register-forms:Eye Care Birmingham/857#0` | **changed** sign-in-and-register-forms Eye Care Birmingham/857#0 <p> "Your account" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:sign-in-and-register-forms:Eye Care Birmingham/858#0` | **changed** sign-in-and-register-forms Eye Care Birmingham/858#0 <h1> "Sign in or create an account" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:sign-in-and-register-forms:Eye Care Birmingham/859#0` | **changed** sign-in-and-register-forms Eye Care Birmingham/859#0 <p> "You don't need an account to order; checkout works as a guest. An account keeps your orders, subscriptions, addresses and saved frames in one place." | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-| `skeleton:sign-in-and-register-forms:Eye Care Birmingham/862#0` | **changed** sign-in-and-register-forms Eye Care Birmingham/862#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
-
 ### Needs a decision (agent-pick): block:sgs/business-info (1)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
@@ -468,7 +365,7 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:page-help:Eye Care Birmingham/644#0` | page-help Eye Care Birmingham/644#0 <div> | block:sgs/accordion | 1: a loop whose items each hold a control that writes a state the item's own conditional panel reads is the accordion, read from the fact record and the logic's syntax tree with aria-expanded as the rendered confirmation, never from words or a surface kind (Spec 48 §3.4, RC6) (a loop of 8 items whose control writes "faqOpen", which the item's own panel reads; one item open at a time) |  |
 
-### Settled by rule accordionItem: one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6) (5)
+### Settled by rule accordionItem: one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6) (9)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -477,6 +374,10 @@ Accept all: [ ]
 | `skeleton:page-help:Eye Care Birmingham/648` | page-help Eye Care Birmingham/648 <span> "Are these frames genuine?" | absorbed | 1: 8 copies of one template element; drawn by sgs/accordion-item: rule accordionItem |  |
 | `skeleton:page-help:Eye Care Birmingham/649` | page-help Eye Care Birmingham/649 <span> "+" | absorbed | 1: 8 copies of one template element; drawn by sgs/accordion-item: rule accordionItem |  |
 | `skeleton:page-help:Eye Care Birmingham/651#0` | page-help Eye Care Birmingham/651#0 <p> "Yes. Everything comes through the brands' authorised UK suppliers to a GOC-registered clinic, boxed with its own case, cloth and warranty card. If a seller can't tell you where their stock comes from, be careful." | absorbed | 1: drawn by sgs/accordion-item: rule accordionItem |  |
+| `skeleton:page-product:Eye Care Birmingham/493` | page-product Eye Care Birmingham/493 <div> | block:sgs/accordion-item | 1: 4 copies of one template element; one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6) |  |
+| `skeleton:page-product:Eye Care Birmingham/494` | page-product Eye Care Birmingham/494 <button> | absorbed | 1: 4 copies of one template element; drawn by sgs/accordion-item: rule accordionItem |  |
+| `skeleton:page-product:Eye Care Birmingham/495` | page-product Eye Care Birmingham/495 <span> "Will prescription lenses work in these?" | absorbed | 1: 4 copies of one template element; drawn by sgs/accordion-item: rule accordionItem |  |
+| `skeleton:page-product:Eye Care Birmingham/496` | page-product Eye Care Birmingham/496 <span> "+" | absorbed | 1: 4 copies of one template element; drawn by sgs/accordion-item: rule accordionItem |  |
 
 ### Settled by rule alignWrapper: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) (1)
 
@@ -484,7 +385,7 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:page-home:Eye Care Birmingham/171#0` | page-home Eye Care Birmingham/171#0 <div> | unwrap | 1: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) | accept |
 
-### Settled by rule blockOwnedPart: the cart page's bag drawer is the cart block's own drawer (sgs/cart displayMode drawer draws its heading, lines, totals, empty message and checkout button: Spec 27, FR-48-87); the page map holds this surface as the drawer part "Your bag" of the cart row (9)
+### Settled by rule blockOwnedPart: the cart page's bag drawer is the cart block's own drawer (sgs/cart displayMode drawer draws its heading, lines, totals, empty message and checkout button: Spec 27, FR-48-87); the page map holds this surface as the drawer part "Your bag" of the cart row (10)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -492,6 +393,7 @@ Accept all: [ ]
 | `skeleton:bag-drawer:Eye Care Birmingham/1194#0` | bag-drawer Eye Care Birmingham/1194#0 <div> | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart | accept |
 | `skeleton:bag-drawer:Eye Care Birmingham/1195#0` | bag-drawer Eye Care Birmingham/1195#0 <div> | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart | accept |
 | `skeleton:bag-drawer:Eye Care Birmingham/1196#0` | bag-drawer Eye Care Birmingham/1196#0 <div> | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart | accept |
+| `skeleton:bag-drawer:Eye Care Birmingham/1197#0` | bag-drawer Eye Care Birmingham/1197#0 <span> "Bag (0)" | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart |  |
 | `skeleton:bag-drawer:Eye Care Birmingham/1199#0` | bag-drawer Eye Care Birmingham/1199#0 <button> "×" | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart | accept |
 | `skeleton:bag-drawer:Eye Care Birmingham/1200#0` | bag-drawer Eye Care Birmingham/1200#0 <div> | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart | accept |
 | `skeleton:bag-drawer:Eye Care Birmingham/1202#0` | bag-drawer Eye Care Birmingham/1202#0 <div> | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart | accept |
@@ -578,10 +480,28 @@ Accept all: [ ]
 | `skeleton:footer:Eye Care Birmingham/1141#0` | footer Eye Care Birmingham/1141#0 <span> "Help" | block:sgs/heading | 1: the first piece of text in a column that sits directly in a header or footer row heads that column (sgs/heading), whatever its type style | accept |
 | `skeleton:footer:Eye Care Birmingham/1147#0` | footer Eye Care Birmingham/1147#0 <span> "Visit or call" | block:sgs/heading | 1: the first piece of text in a column that sits directly in a header or footer row heads that column (sgs/heading), whatever its type style | accept |
 
-### Settled by rule commerceRegion: WooCommerce's product collection draws the shop's products, each in the site's own sgs/product-card, as the hand-built reference shop's archive-product copy has them; its column count is the draft's cards per row at 1440 (a loop of 16 mounted cards showing a price) (144)
+### Settled by rule commerceRegion: WooCommerce's product collection draws the shop's products, each in the site's own sgs/product-card, as the hand-built reference shop's archive-product copy has them; its column count is the draft's cards per row at 1440 (a loop of 16 mounted cards showing a price) (164)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `skeleton:page-account:Eye Care Birmingham/923#0` | page-account Eye Care Birmingham/923#0 <div> | block:sgs/account | 1: the account page is an ordinary page (Bean, 2026-10-26; the hand-built reference shop's account page is the theme's page with WooCommerce's account output in it): its sign-in and account forms region is sgs/account, WooCommerce's account piece, which draws the forms, the menu and the dashboard (the account navigation Eye Care Birmingham/924#0 and the panel beside it) |  |
+| `skeleton:page-account:Eye Care Birmingham/924#0` | page-account Eye Care Birmingham/924#0 <nav> | absorbed | 1: drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-account:Eye Care Birmingham/926` | page-account Eye Care Birmingham/926 <button> | absorbed | 1: 5 copies of one template element; drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-account:Eye Care Birmingham/927` | page-account Eye Care Birmingham/927 <span> "Orders" | absorbed | 1: 5 copies of one template element; drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-account:Eye Care Birmingham/928#0` | page-account Eye Care Birmingham/928#0 <span> "3" | absorbed | 1: drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-account:Eye Care Birmingham/929#0` | page-account Eye Care Birmingham/929#0 <button> "Sign out" | absorbed | 1: drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-account:Eye Care Birmingham/930#0` | page-account Eye Care Birmingham/930#0 <div> | absorbed | 1: drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-account:Eye Care Birmingham/932#0` | page-account Eye Care Birmingham/932#0 <div> | absorbed | 1: drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-account:Eye Care Birmingham/933#0` | page-account Eye Care Birmingham/933#0 <h2> "Orders" | absorbed | 1: drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-account:Eye Care Birmingham/935#0` | page-account Eye Care Birmingham/935#0 <div> | absorbed | 1: drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-account:Eye Care Birmingham/937` | page-account Eye Care Birmingham/937 <button> | absorbed | 1: 3 copies of one template element; drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-account:Eye Care Birmingham/938` | page-account Eye Care Birmingham/938 <span> | absorbed | 1: 3 copies of one template element; drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-account:Eye Care Birmingham/939` | page-account Eye Care Birmingham/939 <span> "EC-10471" | absorbed | 1: 3 copies of one template element; drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-account:Eye Care Birmingham/940` | page-account Eye Care Birmingham/940 <span> "2 October 2026" | absorbed | 1: 3 copies of one template element; drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-account:Eye Care Birmingham/941` | page-account Eye Care Birmingham/941 <span> "Oakley Holbrook, with prescription lenses" | absorbed | 1: 3 copies of one template element; drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-account:Eye Care Birmingham/942` | page-account Eye Care Birmingham/942 <span> "Lenses being made" | absorbed | 1: 3 copies of one template element; drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-account:Eye Care Birmingham/943` | page-account Eye Care Birmingham/943 <span> | absorbed | 1: 3 copies of one template element; drawn by sgs/account: rule commerceRegion |  |
+| `skeleton:page-account:Eye Care Birmingham/944` | page-account Eye Care Birmingham/944 <span> "£248" | absorbed | 1: 3 copies of one template element; drawn by sgs/account: rule commerceRegion |  |
 | `skeleton:page-checkout:Eye Care Birmingham/739#0` | page-checkout Eye Care Birmingham/739#0 <div> | block:core/post-content | 1: the checkout page's content is WooCommerce's Checkout block (kept by site build), which draws the payment form and the order summary (10 entry field(s); the order summary beside them) |  |
 | `skeleton:page-checkout:Eye Care Birmingham/740#0` | page-checkout Eye Care Birmingham/740#0 <div> | absorbed | 1: drawn by core/post-content: rule commerceRegion |  |
 | `skeleton:page-checkout:Eye Care Birmingham/741#0` | page-checkout Eye Care Birmingham/741#0 <section> | absorbed | 1: drawn by core/post-content: rule commerceRegion |  |
@@ -661,6 +581,7 @@ Accept all: [ ]
 | `skeleton:page-product:Eye Care Birmingham/364#0` | page-product Eye Care Birmingham/364#0 <span> "4.9 · 41 reviews" | absorbed | 1: drawn by sgs/container: rule commerceRegion |  |
 | `skeleton:page-product:Eye Care Birmingham/365#0` | page-product Eye Care Birmingham/365#0 <div> | absorbed | 1: drawn by sgs/container: rule commerceRegion |  |
 | `skeleton:page-product:Eye Care Birmingham/366#0` | page-product Eye Care Birmingham/366#0 <span> "£139" | absorbed | 1: drawn by sgs/container: rule commerceRegion |  |
+| `skeleton:page-product:Eye Care Birmingham/368#0` | page-product Eye Care Birmingham/368#0 <span> "RRP £171" | absorbed | 1: drawn by sgs/container: rule commerceRegion |  |
 | `skeleton:page-product:Eye Care Birmingham/370#0` | page-product Eye Care Birmingham/370#0 <span> "You save £32" | absorbed | 1: drawn by sgs/container: rule commerceRegion |  |
 | `skeleton:page-product:Eye Care Birmingham/371#0` | page-product Eye Care Birmingham/371#0 <div> "In stock — dispatched next working day" | absorbed | 1: drawn by sgs/container: rule commerceRegion |  |
 | `skeleton:page-product:Eye Care Birmingham/372#0` | page-product Eye Care Birmingham/372#0 <span> | absorbed | 1: drawn by sgs/container: rule commerceRegion |  |
@@ -689,6 +610,7 @@ Accept all: [ ]
 | `skeleton:page-product:Eye Care Birmingham/397#0` | page-product Eye Care Birmingham/397#0 <span> "Add to bag as they are" | absorbed | 1: drawn by sgs/container: rule commerceRegion |  |
 | `skeleton:page-product:Eye Care Birmingham/398#0` | page-product Eye Care Birmingham/398#0 <span> "£139" | absorbed | 1: drawn by sgs/container: rule commerceRegion |  |
 | `skeleton:page-product:Eye Care Birmingham/399#0` | page-product Eye Care Birmingham/399#0 <div> | absorbed | 1: drawn by sgs/container: rule commerceRegion |  |
+| `skeleton:page-product:Eye Care Birmingham/400#0` | page-product Eye Care Birmingham/400#0 <span> "Or 3 payments of £46.33 with Klarna" | absorbed | 1: drawn by sgs/container: rule commerceRegion |  |
 | `skeleton:page-product:Eye Care Birmingham/402#0` | page-product Eye Care Birmingham/402#0 <span> "·" | absorbed | 1: drawn by sgs/container: rule commerceRegion |  |
 | `skeleton:page-product:Eye Care Birmingham/403#0` | page-product Eye Care Birmingham/403#0 <span> "Apple Pay · Google Pay · PayPal" | absorbed | 1: drawn by sgs/container: rule commerceRegion |  |
 | `skeleton:page-product:Eye Care Birmingham/404#0` | page-product Eye Care Birmingham/404#0 <a> | absorbed | 1: drawn by sgs/container: rule commerceRegion |  |
@@ -903,6 +825,20 @@ Accept all: [ ]
 | `skeleton:page-contact:Eye Care Birmingham/677#0` | page-contact Eye Care Birmingham/677#0 <div> "Mon–Sat 9.30–17.30 Collections by arrangement" | block:sgs/business-info | 1: a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it | accept |
 | `skeleton:page-contact:Eye Care Birmingham/678#0` | page-contact Eye Care Birmingham/678#0 <div> "Hours" | absorbed | 1: drawn by sgs/business-info: rule hoursRows | accept |
 
+### Settled by rule identity: identified by elimination over the framework DB's block_identity_facts: each fact the draft region shows rules out the blocks that never show it, and the facts few blocks share rank the survivors: sgs/breadcrumbs shows accepts-value /; the next, sgs/container, shows 0 (9)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-product:Eye Care Birmingham/334#0` | page-product Eye Care Birmingham/334#0 <nav> | block:sgs/breadcrumbs | 1: identified by elimination over the framework DB's block_identity_facts: each fact the draft region shows rules out the blocks that never show it, and the facts few blocks share rank the survivors: sgs/breadcrumbs shows accepts-value /; the next, sgs/container, shows 0 |  |
+| `skeleton:page-product:Eye Care Birmingham/335#0` | page-product Eye Care Birmingham/335#0 <a> "Home" | absorbed | 1: drawn by sgs/breadcrumbs: rule identity |  |
+| `skeleton:page-product:Eye Care Birmingham/336#0` | page-product Eye Care Birmingham/336#0 <span> "/" | absorbed | 1: drawn by sgs/breadcrumbs: rule identity |  |
+| `skeleton:page-product:Eye Care Birmingham/337#0` | page-product Eye Care Birmingham/337#0 <a> "Sunglasses" | absorbed | 1: drawn by sgs/breadcrumbs: rule identity |  |
+| `skeleton:page-product:Eye Care Birmingham/338#0` | page-product Eye Care Birmingham/338#0 <span> "/" | absorbed | 1: drawn by sgs/breadcrumbs: rule identity |  |
+| `skeleton:page-product:Eye Care Birmingham/339#0` | page-product Eye Care Birmingham/339#0 <a> "Ray-Ban" | absorbed | 1: drawn by sgs/breadcrumbs: rule identity |  |
+| `skeleton:page-product:Eye Care Birmingham/415#0` | page-product Eye Care Birmingham/415#0 <div> | block:sgs/tabs | 1: identified by elimination over the framework DB's block_identity_facts: each fact the draft region shows rules out the blocks that never show it, and the facts few blocks share rank the survivors: sgs/tabs shows open-state exactly-one, has-part panel, renders-role tablist, renders-role tab, renders-aria aria-selected; the next, sgs/gallery, shows 4 |  |
+| `skeleton:page-product:Eye Care Birmingham/416#0` | page-product Eye Care Birmingham/416#0 <div> | absorbed | 1: drawn by sgs/tabs: its own list of controls |  |
+| `skeleton:page-product:Eye Care Birmingham/418` | page-product Eye Care Birmingham/418 <button> "Description" | absorbed | 1: 3 copies of one template element; drawn by sgs/tabs: the label of its item 1 (sgs/tab) |  |
+
 ### Settled by rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number (27)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
@@ -961,7 +897,7 @@ Accept all: [ ]
 | `skeleton:footer:Eye Care Birmingham/1132#0` | footer Eye Care Birmingham/1132#0 <a> | absorbed | 1: drawn by sgs/gallery: rule logoGrid | accept |
 | `skeleton:footer:Eye Care Birmingham/1133#0` | footer Eye Care Birmingham/1133#0 <img> | absorbed | 1: drawn by sgs/gallery: rule logoGrid | accept |
 
-### Settled by rule loopBlocks: a loop of items that show a price and link to a product page is the site's product collection, the block the shop region uses, with its own query (FR-48-83, Spec 27 FR-24-4) (a loop of 4 items showing a price and linking to a product page) (51)
+### Settled by rule loopBlocks: a loop of items that show a price and link to a product page is the site's product collection, the block the shop region uses, with its own query (FR-48-83, Spec 27 FR-24-4) (a loop of 4 items showing a price and linking to a product page) (72)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -975,6 +911,22 @@ Accept all: [ ]
 | `skeleton:page-home:Eye Care Birmingham/134#0` | page-home Eye Care Birmingham/134#0 <div> | block:woocommerce/product-collection | 1: a loop of items that show a price and link to a product page is the site's product collection, the block the shop region uses, with its own query (FR-48-83, Spec 27 FR-24-4) (a loop of 8 items showing a price and linking to a product page) |  |
 | `skeleton:page-home:Eye Care Birmingham/136` | page-home Eye Care Birmingham/136 <div> | absorbed | 1: 8 copies of one template element; drawn by woocommerce/product-collection: rule loopBlocks |  |
 | `skeleton:page-home:Eye Care Birmingham/137` | page-home Eye Care Birmingham/137 <div> | absorbed | 1: 8 copies of one template element; drawn by woocommerce/product-collection: rule loopBlocks |  |
+| `skeleton:page-home:Eye Care Birmingham/174#0` | page-home Eye Care Birmingham/174#0 <div> | block:sgs/google-reviews | 1: a loop of items that each show a rating and a quote, linking to a review provider, is that provider's reviews block (FR-48-83) (google: a loop of 13 items with a rating and a quote, linking to the provider, 14 elements painted in google's own colours (Eye Care Birmingham/200#0 #FBBC04, sgs/google-reviews style.css --sgs-gr-star; Eye Care Birmingham/204#0 #1A73E8, sgs/google-reviews style.css --sgs-gr-blue)); the block's own parts stand beside the element it was placed on, so it is placed over the smallest element holding them: sgs/google-reviews placed on Eye Care Birmingham/189#0 draws its own parts beside it (shows-part count, shows-part arrow, shows-part average, shows-part star, shows-part aggregate-star, shows-part see-all, shows-part write-review, self-moving controls, platform google; at Eye Care Birmingham/205#0, Eye Care Birmingham/175#0) |  |
+| `skeleton:page-home:Eye Care Birmingham/175#0` | page-home Eye Care Birmingham/175#0 <div> | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
+| `skeleton:page-home:Eye Care Birmingham/176#0` | page-home Eye Care Birmingham/176#0 <div> | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
+| `skeleton:page-home:Eye Care Birmingham/177#0` | page-home Eye Care Birmingham/177#0 <img> | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
+| `skeleton:page-home:Eye Care Birmingham/178#0` | page-home Eye Care Birmingham/178#0 <div> | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
+| `skeleton:page-home:Eye Care Birmingham/179#0` | page-home Eye Care Birmingham/179#0 <div> "Google Reviews" | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
+| `skeleton:page-home:Eye Care Birmingham/180#0` | page-home Eye Care Birmingham/180#0 <div> | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
+| `skeleton:page-home:Eye Care Birmingham/181#0` | page-home Eye Care Birmingham/181#0 <span> "4.7" | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
+| `skeleton:page-home:Eye Care Birmingham/182#0` | page-home Eye Care Birmingham/182#0 <span> "★★★★★" | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
+| `skeleton:page-home:Eye Care Birmingham/183#0` | page-home Eye Care Birmingham/183#0 <span> "★★★★★" | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
+| `skeleton:page-home:Eye Care Birmingham/184#0` | page-home Eye Care Birmingham/184#0 <span> "15 reviews" | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
+| `skeleton:page-home:Eye Care Birmingham/185#0` | page-home Eye Care Birmingham/185#0 <div> | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
+| `skeleton:page-home:Eye Care Birmingham/186#0` | page-home Eye Care Birmingham/186#0 <a> "See all reviews" | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
+| `skeleton:page-home:Eye Care Birmingham/187#0` | page-home Eye Care Birmingham/187#0 <a> "Write a review" | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
+| `skeleton:page-home:Eye Care Birmingham/188#0` | page-home Eye Care Birmingham/188#0 <div> | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
+| `skeleton:page-home:Eye Care Birmingham/189#0` | page-home Eye Care Birmingham/189#0 <div> | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
 | `skeleton:page-home:Eye Care Birmingham/191` | page-home Eye Care Birmingham/191 <figure> | absorbed | 1: 13 copies of one template element; drawn by sgs/google-reviews: rule loopBlocks |  |
 | `skeleton:page-home:Eye Care Birmingham/192` | page-home Eye Care Birmingham/192 <div> | absorbed | 1: 13 copies of one template element; drawn by sgs/google-reviews: rule loopBlocks |  |
 | `skeleton:page-home:Eye Care Birmingham/193` | page-home Eye Care Birmingham/193 <span> "A" | absorbed | 1: 13 copies of one template element; drawn by sgs/google-reviews: rule loopBlocks |  |
@@ -988,6 +940,11 @@ Accept all: [ ]
 | `skeleton:page-home:Eye Care Birmingham/201` | page-home Eye Care Birmingham/201 <span> "2 years ago" | absorbed | 1: 13 copies of one template element; drawn by sgs/google-reviews: rule loopBlocks |  |
 | `skeleton:page-home:Eye Care Birmingham/202` | page-home Eye Care Birmingham/202 <blockquote> "Had a lovely experience taking my daughter here. The optician Fatima is very good with children and made the experience enjoyable for my daughter. The receptionist was also very welcoming." | absorbed | 1: 13 copies of one template element; drawn by sgs/google-reviews: rule loopBlocks |  |
 | `skeleton:page-home:Eye Care Birmingham/204#0` | page-home Eye Care Birmingham/204#0 <a> "Read the full review" | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
+| `skeleton:page-home:Eye Care Birmingham/205#0` | page-home Eye Care Birmingham/205#0 <div> | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
+| `skeleton:page-home:Eye Care Birmingham/206#0` | page-home Eye Care Birmingham/206#0 <p> "Scroll for more — 13 of the 15 reviews left a comment." | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
+| `skeleton:page-home:Eye Care Birmingham/207#0` | page-home Eye Care Birmingham/207#0 <div> | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
+| `skeleton:page-home:Eye Care Birmingham/208#0` | page-home Eye Care Birmingham/208#0 <button> | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
+| `skeleton:page-home:Eye Care Birmingham/211#0` | page-home Eye Care Birmingham/211#0 <button> | absorbed | 1: drawn by sgs/google-reviews: rule loopBlocks |  |
 | `skeleton:page-home:Eye Care Birmingham>Frame Card@137#4/33#0` | page-home Eye Care Birmingham>Frame Card@137#4/33#0 <a> "+2" | absorbed | 1: 3 copies of one template element on 3 surfaces; drawn by woocommerce/product-collection: rule loopBlocks |  |
 | `skeleton:page-home:Eye Care Birmingham>Frame Card@137/0` | page-home Eye Care Birmingham>Frame Card@137/0 <div> | absorbed | 1: 30 copies of one template element on 4 surfaces; drawn by woocommerce/product-collection: rule loopBlocks |  |
 | `skeleton:page-home:Eye Care Birmingham>Frame Card@137/1` | page-home Eye Care Birmingham>Frame Card@137/1 <a> | absorbed | 1: 30 copies of one template element on 4 surfaces; drawn by woocommerce/product-collection: rule loopBlocks |  |
@@ -1062,7 +1019,7 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:page-help:Eye Care Birmingham/642#0` | page-help Eye Care Birmingham/642#0 <button> "Size guide" | block:sgs/button | 1: a button or link whose click handler writes the state a draft modal surface opens on (a state key one of its surfaces.json states holds at true, or at the literal the handler writes, lib/skeleton-handler-opens.mjs::opensOnWrites) opens that modal on the clone, and the page map holds the modal as an sgs_modal row: the control is a button linking #<anchor> of the sgs/modal frame the page carries (lib/skeleton-opener.mjs), which opens its modal post on any link to its anchor; the draft's control is never a dead button; it opens S-25 (Size guide), the modal-size-guide row | accept |
 
-### Settled by rule navigation: the navigation inside a header is the menu bar block and inside a drawer the drawer menu block; both draw their items from a WordPress menu (15)
+### Settled by rule navigation: the navigation inside a header is the menu bar block and inside a drawer the drawer menu block; both draw their items from a WordPress menu (16)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -1076,6 +1033,7 @@ Accept all: [ ]
 | `skeleton:mobile-menu:Eye Care Birmingham/1167#0` | mobile-menu Eye Care Birmingham/1167#0 <a> "Sunglasses" | absorbed | 1: drawn by sgs/nav-drawer-menu: rule navigation | accept |
 | `skeleton:mobile-menu:Eye Care Birmingham/1168#0` | mobile-menu Eye Care Birmingham/1168#0 <a> "Brands" | absorbed | 1: drawn by sgs/nav-drawer-menu: rule navigation | accept |
 | `skeleton:mobile-menu:Eye Care Birmingham/1169#0` | mobile-menu Eye Care Birmingham/1169#0 <a> "Prescription lenses" | absorbed | 1: drawn by sgs/nav-drawer-menu: rule navigation | accept |
+| `skeleton:mobile-menu:Eye Care Birmingham/1170#0` | mobile-menu Eye Care Birmingham/1170#0 <span> "Glasses SOON" | absorbed | 1: drawn by sgs/nav-drawer-menu: rule navigation |  |
 | `skeleton:mobile-menu:Eye Care Birmingham/1172#0` | mobile-menu Eye Care Birmingham/1172#0 <nav> | block:sgs/nav-drawer-menu | 1: the navigation inside a header is the menu bar block and inside a drawer the drawer menu block; both draw their items from a WordPress menu | accept |
 | `skeleton:mobile-menu:Eye Care Birmingham/1173#0` | mobile-menu Eye Care Birmingham/1173#0 <a> "About Eye Care" | absorbed | 1: drawn by sgs/nav-drawer-menu: rule navigation | accept |
 | `skeleton:mobile-menu:Eye Care Birmingham/1174#0` | mobile-menu Eye Care Birmingham/1174#0 <a> "Delivery, returns & FAQs" | absorbed | 1: drawn by sgs/nav-drawer-menu: rule navigation | accept |
@@ -1088,6 +1046,50 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:header:Eye Care Birmingham/36#0` | header Eye Care Birmingham/36#0 <a> "About Eye Care" | absorbed | 1: a text link in a header, outside its navigation element, set in the navigation links' own type (the same size, case and tracking) is one of the navigation's items: the menu block draws it from the header menu, never a button |  |
 | `skeleton:header:Eye Care Birmingham/37#0` | header Eye Care Birmingham/37#0 <a> "Help" | absorbed | 1: a text link in a header, outside its navigation element, set in the navigation links' own type (the same size, case and tracking) is one of the navigation's items: the menu block draws it from the header menu, never a button |  |
+
+### Settled by rule ownedPart: the page map holds this surface as a part of a WooCommerce row, so the row's WooCommerce piece (rules.commerceRegion.roles, the role's owner block, else its block) draws it: the piece is the root and every element in it is absorbed, never cloned as its own form or blocks (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Sign-in and register forms" of the my-account row (owner woocommerce) (39)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:account-details:Eye Care Birmingham/1096#0` | account-details Eye Care Birmingham/1096#0 <div> | block:sgs/account | 1: the page map holds this surface as a part of a WooCommerce row, so the row's WooCommerce piece (rules.commerceRegion.roles, the role's owner block, else its block) draws it: the piece is the root and every element in it is absorbed, never cloned as its own form or blocks (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Account details" of the my-account row (owner woocommerce) |  |
+| `skeleton:account-details:Eye Care Birmingham/1097#0` | account-details Eye Care Birmingham/1097#0 <h2> "Account details" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details:Eye Care Birmingham/1098#0` | account-details Eye Care Birmingham/1098#0 <form> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details:Eye Care Birmingham/1099#0` | account-details Eye Care Birmingham/1099#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details:Eye Care Birmingham/1100#0` | account-details Eye Care Birmingham/1100#0 <label> "First name" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details:Eye Care Birmingham/1101#0` | account-details Eye Care Birmingham/1101#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details:Eye Care Birmingham/1102#0` | account-details Eye Care Birmingham/1102#0 <label> "Last name" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details:Eye Care Birmingham/1103#0` | account-details Eye Care Birmingham/1103#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details:Eye Care Birmingham/1104#0` | account-details Eye Care Birmingham/1104#0 <label> "Email" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details:Eye Care Birmingham/1105#0` | account-details Eye Care Birmingham/1105#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details:Eye Care Birmingham/1106#0` | account-details Eye Care Birmingham/1106#0 <label> "Mobile" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details:Eye Care Birmingham/1107#0` | account-details Eye Care Birmingham/1107#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details:Eye Care Birmingham/1108#0` | account-details Eye Care Birmingham/1108#0 <span> "For WhatsApp updates on your orders" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details:Eye Care Birmingham/1109#0` | account-details Eye Care Birmingham/1109#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details:Eye Care Birmingham/1110#0` | account-details Eye Care Birmingham/1110#0 <div> "Change password" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details:Eye Care Birmingham/1111#0` | account-details Eye Care Birmingham/1111#0 <label> "Current password" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details:Eye Care Birmingham/1112#0` | account-details Eye Care Birmingham/1112#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details:Eye Care Birmingham/1113#0` | account-details Eye Care Birmingham/1113#0 <label> "New password" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details:Eye Care Birmingham/1114#0` | account-details Eye Care Birmingham/1114#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details:Eye Care Birmingham/1115#0` | account-details Eye Care Birmingham/1115#0 <label> "Type it again" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details:Eye Care Birmingham/1116#0` | account-details Eye Care Birmingham/1116#0 <input> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details:Eye Care Birmingham/1117#0` | account-details Eye Care Birmingham/1117#0 <p> "Leave these blank to keep your current password." | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details:Eye Care Birmingham/1118#0` | account-details Eye Care Birmingham/1118#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:account-details:Eye Care Birmingham/1119#0` | account-details Eye Care Birmingham/1119#0 <button> "Save changes" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:addresses:Eye Care Birmingham/1056#0` | addresses Eye Care Birmingham/1056#0 <div> | block:sgs/account | 1: the page map holds this surface as a part of a WooCommerce row, so the row's WooCommerce piece (rules.commerceRegion.roles, the role's owner block, else its block) draws it: the piece is the root and every element in it is absorbed, never cloned as its own form or blocks (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Addresses" of the my-account row (owner woocommerce) |  |
+| `skeleton:addresses:Eye Care Birmingham/1057#0` | addresses Eye Care Birmingham/1057#0 <h2> "Addresses" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:addresses:Eye Care Birmingham/1058#0` | addresses Eye Care Birmingham/1058#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:addresses:Eye Care Birmingham/1060` | addresses Eye Care Birmingham/1060 <div> | absorbed | 1: 2 copies of one template element; drawn by sgs/account: rule ownedPart |  |
+| `skeleton:addresses:Eye Care Birmingham/1061` | addresses Eye Care Birmingham/1061 <div> | absorbed | 1: 2 copies of one template element; drawn by sgs/account: rule ownedPart |  |
+| `skeleton:addresses:Eye Care Birmingham/1062` | addresses Eye Care Birmingham/1062 <span> "Delivery address" | absorbed | 1: 2 copies of one template element; drawn by sgs/account: rule ownedPart |  |
+| `skeleton:addresses:Eye Care Birmingham/1064` | addresses Eye Care Birmingham/1064 <button> "Add" | absorbed | 1: 2 copies of one template element; drawn by sgs/account: rule ownedPart |  |
+| `skeleton:addresses:Eye Care Birmingham/1066` | addresses Eye Care Birmingham/1066 <p> "No delivery address saved yet." | absorbed | 1: 2 copies of one template element; drawn by sgs/account: rule ownedPart |  |
+| `skeleton:addresses:Eye Care Birmingham/1078#0` | addresses Eye Care Birmingham/1078#0 <p> "Your delivery address fills in at checkout while you're signed in." | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:sign-in-and-register-forms:Eye Care Birmingham/854#0` | sign-in-and-register-forms Eye Care Birmingham/854#0 <main> | block:sgs/account | 1: the page map holds this surface as a part of a WooCommerce row, so the row's WooCommerce piece (rules.commerceRegion.roles, the role's owner block, else its block) draws it: the piece is the root and every element in it is absorbed, never cloned as its own form or blocks (Bean, 2026-10-30, FR-48-87); the page map holds this surface as the form part "Sign-in and register forms" of the my-account row (owner woocommerce) |  |
+| `skeleton:sign-in-and-register-forms:Eye Care Birmingham/856#0` | sign-in-and-register-forms Eye Care Birmingham/856#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:sign-in-and-register-forms:Eye Care Birmingham/857#0` | sign-in-and-register-forms Eye Care Birmingham/857#0 <p> "Your account" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:sign-in-and-register-forms:Eye Care Birmingham/858#0` | sign-in-and-register-forms Eye Care Birmingham/858#0 <h1> "Sign in or create an account" | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:sign-in-and-register-forms:Eye Care Birmingham/859#0` | sign-in-and-register-forms Eye Care Birmingham/859#0 <p> "You don't need an account to order; checkout works as a guest. An account keeps your orders, subscriptions, addresses and saved frames in one place." | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
+| `skeleton:sign-in-and-register-forms:Eye Care Birmingham/862#0` | sign-in-and-register-forms Eye Care Birmingham/862#0 <div> | absorbed | 1: drawn by sgs/account: rule ownedPart |  |
 
 ### Settled by rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link (9)
 
@@ -1116,6 +1118,13 @@ Accept all: [ ]
 | `skeleton:size-guide:Eye Care Birmingham/1272#0` | size-guide Eye Care Birmingham/1272#0 <span> "Can't find the numbers?" | absorbed | 1: drawn by sgs/whatsapp-cta: rule recognise | accept |
 | `skeleton:size-guide:Eye Care Birmingham/1273#0` | size-guide Eye Care Birmingham/1273#0 <span> "Send me a photo of the inside of the arm and I'll read it for you." | absorbed | 1: drawn by sgs/whatsapp-cta: rule recognise | accept |
 
+### Settled by rule shopToolbar: the draft's sort control and result count are WooCommerce's catalog-sorting and product-results-count in a toolbar row at the top of the product collection, as the theme's archive-product copy composes them (the count reads its query from the collection around it); found by the shop parts record's stamps, never by words (FR-48-61, FR-48-87) (2)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-shop:Eye Care Birmingham/252#0` | page-shop Eye Care Birmingham/252#0 <span> "16 frames" | absorbed | 1: the draft's sort control and result count are WooCommerce's catalog-sorting and product-results-count in a toolbar row at the top of the product collection, as the theme's archive-product copy composes them (the count reads its query from the collection around it); found by the shop parts record's stamps, never by words (FR-48-61, FR-48-87) |  |
+| `skeleton:page-shop:Eye Care Birmingham/255#0` | page-shop Eye Care Birmingham/255#0 <select> | absorbed | 1: the draft's sort control and result count are WooCommerce's catalog-sorting and product-results-count in a toolbar row at the top of the product collection, as the theme's archive-product copy composes them (the count reads its query from the collection around it); found by the shop parts record's stamps, never by words (FR-48-61, FR-48-87) |  |
+
 ### Settled by rule siteInfoLink: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself (4)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
@@ -1138,7 +1147,7 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:mega-menu-sunglasses:Eye Care Birmingham/52#0` | mega-menu-sunglasses Eye Care Birmingham/52#0 <div> | unwrap | 1: 4 copies of one template element on 4 surfaces; a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there | accept |
 
-### Confident proposals (Accept all covers these) (248)
+### Confident proposals (Accept all covers these) (249)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -1367,6 +1376,7 @@ Accept all: [ ]
 | `skeleton:page-shop:Eye Care Birmingham/246#0` | page-shop Eye Care Birmingham/246#0 <main> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-shop:Eye Care Birmingham/250#0` | page-shop Eye Care Birmingham/250#0 <h1> "Sunglasses" | block:sgs/heading | 0.75 | accept |
 | `skeleton:page-shop:Eye Care Birmingham/251#0` | page-shop Eye Care Birmingham/251#0 <div> | block:sgs/container | 1 | accept |
+| `skeleton:page-shop:Eye Care Birmingham/254#0` | page-shop Eye Care Birmingham/254#0 <button> "Filter" | block:sgs/button | 0.75 |  |
 | `skeleton:page-shop:Eye Care Birmingham/267#0` | page-shop Eye Care Birmingham/267#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:page-shop:Eye Care Birmingham/321#0` | page-shop Eye Care Birmingham/321#0 <div> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-shop:Eye Care Birmingham/331#0` | page-shop Eye Care Birmingham/331#0 <p> "Every pair is genuine, bought through the brands' authorised UK suppliers, and comes boxed with its own case and cloth. Prescription lenses can go in any of them." | block:sgs/text | 0.75 | accept |

@@ -48,7 +48,16 @@
     "collection": "live",
     "flags": [],
     "id": null,
-    "opensFlow": "choice-flow-add-prescription-lenses"
+    "opens": [
+      {
+        "kind": "flow",
+        "slug": "choice-flow-add-prescription-lenses"
+      },
+      {
+        "kind": "modal",
+        "slug": "modal-size-guide"
+      }
+    ]
   },
   {
     "route": "lenses",
@@ -81,6 +90,11 @@
     "template": "page",
     "menus": [
       {
+        "menu": "header",
+        "position": 4,
+        "parentItem": null
+      },
+      {
         "menu": "drawer-2",
         "position": 1,
         "parentItem": null
@@ -100,7 +114,7 @@
     "menus": [
       {
         "menu": "header",
-        "position": 4,
+        "position": 5,
         "parentItem": null
       },
       {
@@ -112,7 +126,13 @@
     "postType": "page",
     "collection": "static",
     "flags": [],
-    "id": 111
+    "id": 111,
+    "opens": [
+      {
+        "kind": "modal",
+        "slug": "modal-size-guide"
+      }
+    ]
   },
   {
     "route": "contact",
@@ -167,42 +187,45 @@
     "collection": "static",
     "flags": [],
     "id": 9,
+    "folds": [
+      "account"
+    ],
     "parts": [
       {
         "kind": "form",
         "label": "signIn",
         "owner": "woocommerce",
-        "draftId": "Eye Care Birmingham.dc.html:1677:7 <form>"
+        "draftId": "Eye Care Birmingham.dc.html:1674:7 <form>"
       },
       {
         "kind": "form",
         "label": "register",
         "owner": "woocommerce",
-        "draftId": "Eye Care Birmingham.dc.html:1687:7 <form>"
+        "draftId": "Eye Care Birmingham.dc.html:1684:7 <form>"
       },
       {
         "kind": "form",
         "label": "sendReset",
         "owner": "woocommerce",
-        "draftId": "Eye Care Birmingham.dc.html:1702:7 <form>"
+        "draftId": "Eye Care Birmingham.dc.html:1699:7 <form>"
       },
       {
         "kind": "form",
         "label": "saveReset",
         "owner": "woocommerce",
-        "draftId": "Eye Care Birmingham.dc.html:1725:7 <form>"
+        "draftId": "Eye Care Birmingham.dc.html:1722:7 <form>"
       },
       {
         "kind": "form",
         "label": "save",
         "owner": "woocommerce",
-        "draftId": "Eye Care Birmingham.dc.html:1930:19 <form>"
+        "draftId": "Eye Care Birmingham.dc.html:1927:19 <form>"
       },
       {
         "kind": "form",
         "label": "saveDetails",
         "owner": "woocommerce",
-        "draftId": "Eye Care Birmingham.dc.html:1979:11 <form>"
+        "draftId": "Eye Care Birmingham.dc.html:1976:11 <form>"
       }
     ]
   },
@@ -221,7 +244,7 @@
         "kind": "drawer",
         "label": "Your bag",
         "owner": "block",
-        "draftId": "Eye Care Birmingham.dc.html:2087:5 <div aria-label=\"Your bag\">"
+        "draftId": "Eye Care Birmingham.dc.html:2083:5 <div aria-label=\"Your bag\">"
       }
     ]
   },
@@ -357,7 +380,7 @@
     "menus": [
       {
         "menu": "header",
-        "position": 4,
+        "position": 5,
         "parentItem": null
       }
     ],

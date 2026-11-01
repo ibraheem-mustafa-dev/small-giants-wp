@@ -129,6 +129,18 @@ export function liveAddress( row, rows, shown = {} ) {
 	return { search: '/?s=sgs', 404: '/sgs-no-such-page/', ...shown }[ row.template ] ?? null;
 }
 
+// The row a modal or choice-flow surface is read at live: it has no page of its own, so it is read at a page that opens
+// it (the page map's `opens`, Spec 48 FR-48-30), a page before a product (a product is read at one live product); null
+// for any other surface, or one nothing opens.
+export function openerRow( entry, rows ) {
+	const own = null != entry?.target?.postId ? rows.find( ( r ) => r.id === entry.target.postId ) : null;
+	if ( ! own || ! [ 'sgs_modal', 'sgs_choice_flow' ].includes( own.postType ) ) {
+		return null;
+	}
+	const openers = rows.filter( ( r ) => ( r.opens || [] ).some( ( o ) => o.slug === own.slug ) );
+	return openers.find( ( r ) => 'product' !== r.postType ) ?? openers[ 0 ] ?? null;
+}
+
 // Whether the run reads the order confirmation, which shows only at an order's received page.
 export const needsTestOrder = ( surfaces, keys ) => keys.some( ( k ) => 'order-confirmation' === surfaces[ k ]?.target?.template && 'fill' === surfaces[ k ]?.copy?.from );
 
@@ -265,12 +277,14 @@ export async function main( argv ) {
 		// are never Filled or built over; a template copy read at one of them is. The account page is Filled like any page.
 		const wooPage = isUnwalkedWooPage( entry.target, row ) ? wooContentRole( row ) : null;
 		const base = liveOverride ? liveOverride.replace( /\/+$/, '' ) : liveBase( entry.envFile, entry.envKey );
-		// A product surface is read at one real product of the live site (lib/live-product.mjs), chosen once per run.
-		const pick = 'product' === row?.postType ? liveProduct( draftHeading( build, entry.intakeSurface ) ) : null;
+		// A modal or flow is read at a page that opens it; a product surface at one real product of the live site
+		// (lib/live-product.mjs), chosen once per run.
+		const liveRow = openerRow( entry, rows ) ?? row;
+		const pick = 'product' === liveRow?.postType ? liveProduct( draftHeading( build, entry.intakeSurface ) ) : null;
 		pick?.address && ( shown.product = pick.address );
-		const address = liveAddress( row, rows, shown );
+		const address = liveAddress( liveRow, rows, shown );
 		// A shop or product surface never falls back to the home page: no address stops it, naming why.
-		const noAddress = liveAddressFailure( { entry, row, address, pick } );
+		const noAddress = liveAddressFailure( { entry, row: liveRow, address, pick } );
 		if ( noAddress ) {
 			return note( key, 'inventory', false, 0, noAddress );
 		}
