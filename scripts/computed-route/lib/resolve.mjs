@@ -218,7 +218,11 @@ function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, l
 		return undefined !== hit ? { value: hit } : { error: `${ raw } is not one of ${ def.enum.join( ', ' ) }` };
 	}
 	if ( 'font-weight' === prop ) {
-		return { value: String( raw ) };
+		// A weight is written in the type the setting declares: a number setting (`{ type: 'number' }`) takes 600, every
+		// other weight setting the string "600"; a keyword weight (bold) stays a string.
+		const types = [].concat( def?.type || [] );
+		const n = Number( raw );
+		return { value: types.includes( 'number' ) && ! types.includes( 'string' ) && Number.isFinite( n ) ? n : String( raw ) };
 	}
 	if ( 'font-family' === prop && snapshot ) {
 		// A stack whose first family is a theme preset is written as that preset's slug, so it follows the client's theme.

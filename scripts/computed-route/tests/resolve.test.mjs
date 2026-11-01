@@ -437,3 +437,14 @@ test( 'scrim blur: a measured backdrop-filter blur() writes the length the per-d
 	const list = resolve( { block: 'sgs/nav-drawer', slot: '@scrim', prop: 'backdrop-filter', perWidth: { 1440: 'blur(2px) saturate(1.2)' } }, { db, snapshot, calibration } );
 	assert.ok( list.gap, `expected a gap, got ${ JSON.stringify( list ) }` );
 } );
+
+// A weight is written in the type the setting declares. MUST FAIL: writing every weight as a string made indus-foods'
+// header tree fail the builder's validation ("featuredFontWeight must be number, got \"600\"", 2026-11-01).
+test( 'font-weight: a number setting takes a number, a string setting a string', () => {
+	const slot = '.sgs-nav-bar-menu__link';
+	const at = { 375: '600', 768: '600', 1440: '600', 1920: '600' };
+	const num = resolve( { block: 'sgs/nav-bar-menu', slot, prop: 'font-weight', perWidth: at }, { db, snapshot, calibration: cal( { featuredFontWeight: { slot, property: 'font-weight' } } ) } );
+	assert.deepEqual( num.writes, [ { attr: 'featuredFontWeight', value: 600, merge: 'replace' } ] );
+	const str = resolve( { block: 'sgs/nav-bar-menu', slot, prop: 'font-weight', perWidth: at }, { db, snapshot, calibration: cal( { itemFontWeight: { slot, property: 'font-weight' } } ) } );
+	assert.deepEqual( str.writes, [ { attr: 'itemFontWeight', value: '600', merge: 'replace' } ] );
+} );
