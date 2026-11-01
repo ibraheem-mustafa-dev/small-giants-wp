@@ -244,3 +244,11 @@ test( 'isServedInventory: an inventory of only mounted-host keys is served', () 
 	assert.equal( isServedInventory( { elements: [ { key: 'Root>Form@4#0/7#0' }, { key: 'Root>Form@4#0/8#0' } ] } ), true );
 	assert.equal( isServedInventory( { elements: [ { key: 'Site>Form@4#0/7#0' } ] } ), false );
 } );
+
+// WooCommerce's own cart and checkout pages keep WooCommerce's content; their layout is the template-<slug> surface,
+// which proposes and checks itself. MUST FAIL: proposing the page too ran the built-equals-reviewed check on a proposal
+// nothing uses, and failed Mama's cart (28 rows) and checkout (70 rows) on 2026-11-01.
+test( 'site-run.mjs skips the proposal of a WooCommerce page that keeps WooCommerce content', () => {
+	const t = fs.readFileSync( path.join( ROUTE, 'site-run.mjs' ), 'utf8' );
+	assert.match( t, /wooPage && \[ 'propose', 'fill', 'build', 'walk' \]\.includes\( stage \)/ );
+} );

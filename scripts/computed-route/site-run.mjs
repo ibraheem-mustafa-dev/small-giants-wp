@@ -212,8 +212,9 @@ export async function main( argv ) {
 			return true;
 		}
 		// Fill writes block settings and the walker pairs the draft with the blocks Fill wrote: WooCommerce renders these
-		// pages itself, so neither applies to the page's content; its layout is its template copy's surface.
-		if ( wooPage && [ 'fill', 'build', 'walk' ].includes( stage ) ) {
+		// pages itself, so neither applies to the page's content; its layout is its template copy's surface, which makes
+		// and checks its own proposal, so the page's proposal (and its built-equals-reviewed check) is skipped too.
+		if ( wooPage && [ 'propose', 'fill', 'build', 'walk' ].includes( stage ) ) {
 			note( key, stage, true, 0, `skipped: WooCommerce's own ${ wooPage } page keeps WooCommerce's content (its layout is the template-<slug> surface)` );
 			return 'walk' !== stage;
 		}
