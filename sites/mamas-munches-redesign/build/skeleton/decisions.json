@@ -946,12 +946,6 @@
 				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/button"
 			},
-			"Home/132#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
 			"Home/134#0": {
 				"block": "sgs/container",
 				"signature": "a|",
@@ -1498,48 +1492,6 @@
 				"reason": "Bean accepted sgs/button in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/button"
 			},
-			"Home/222#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Home/224#0": {
-				"block": "sgs/container",
-				"signature": "article|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Home/224#1": {
-				"block": "sgs/container",
-				"signature": "article|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Home/224#2": {
-				"block": "sgs/container",
-				"signature": "article|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Home/224#3": {
-				"block": "sgs/container",
-				"signature": "article|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Home/224#4": {
-				"block": "sgs/container",
-				"signature": "article|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Home/224#5": {
-				"block": "sgs/container",
-				"signature": "article|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
 			"Home/225#0": {
 				"block": "sgs/container",
 				"signature": "div|",
@@ -1762,36 +1714,6 @@
 				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/heading"
 			},
-			"Home/243#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Home/245#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Home/245#1": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Home/245#2": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Home/245#3": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
 			"Home/246#0": {
 				"block": "sgs/container",
 				"signature": "button|When will my order arrive?",
@@ -1957,28 +1879,10 @@
 				"reason": "Bean accepted sgs/form-field-select in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/form-field-select"
 			},
-			"Shop/21#0": {
-				"block": "sgs/option-picker",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/option-picker in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/option-picker"
-			},
 			"Shop/26#0": {
 				"block": "sgs/container",
 				"signature": "div|",
 				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Shop/27#0": {
-				"block": "sgs/text",
-				"signature": "div|5 treats to choose from",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
-			},
-			"Shop/28#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/container"
 			},
 			"Shop/30#0": {
@@ -2458,12 +2362,6 @@
 				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/heading"
 			},
-			"Gifts/37#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
 			"Gifts/39#0": {
 				"block": "sgs/container",
 				"signature": "div|",
@@ -2788,35 +2686,11 @@
 				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/text"
 			},
-			"Basket/22#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Basket/23#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Basket/24#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
 			"Basket/25#0": {
 				"block": "sgs/text",
 				"signature": "div|Add £8.50 more for free UK delivery",
 				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/text"
-			},
-			"Basket/26#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
 			},
 			"Basket/29#0": {
 				"block": "sgs/container",
@@ -2828,18 +2702,6 @@
 				"block": "sgs/container",
 				"signature": "div|",
 				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Basket/31#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Basket/31#1": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/container"
 			},
 			"Basket/32#0": {
@@ -2932,23 +2794,11 @@
 				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/text"
 			},
-			"Basket/41#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
 			"Basket/43#0": {
 				"block": "sgs/form-field-checkbox",
 				"signature": "input|",
 				"reason": "Bean accepted sgs/form-field-checkbox in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/form-field-checkbox"
-			},
-			"Basket/44#0": {
-				"remove": true,
-				"signature": "span|",
-				"reason": "Bean accepted remove in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "remove"
 			},
 			"Basket/45#0": {
 				"block": "sgs/text",
@@ -2961,12 +2811,6 @@
 				"signature": "span|Add a note. The prices stay off the packing slip.",
 				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/text"
-			},
-			"Basket/56#0": {
-				"block": "sgs/container",
-				"signature": "aside|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
 			},
 			"Basket/57#0": {
 				"block": "sgs/heading",
@@ -3236,12 +3080,6 @@
 				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/container"
 			},
-			"Contact/47#0": {
-				"block": "sgs/text",
-				"signature": "div|What’s it about?",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
-			},
 			"Contact/48#0": {
 				"block": "sgs/form-field-tiles",
 				"signature": "div|",
@@ -3383,78 +3221,6 @@
 				"signature": "div|12 answers",
 				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/text"
-			},
-			"Help/26#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Help/26#1": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Help/26#2": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Help/26#3": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Help/26#4": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Help/26#5": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Help/26#6": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Help/26#7": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Help/26#8": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Help/26#9": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Help/26#10": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Help/26#11": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
 			},
 			"Help/27#0": {
 				"block": "sgs/container",
@@ -3952,12 +3718,6 @@
 				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/container"
 			},
-			"SignIn/15#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
 			"SignIn/23#0": {
 				"block": "sgs/multi-button",
 				"signature": "div|",
@@ -4148,12 +3908,6 @@
 				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/container"
 			},
-			"Account/19#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
 			"Account/20#0": {
 				"block": "sgs/heading",
 				"signature": "h2|Sign in to see your orders",
@@ -4195,24 +3949,6 @@
 				"block": "sgs/separator",
 				"signature": "span|",
 				"reason": "Bean marked block:sgs/separator in the intake review on 2026-10-26"
-			},
-			"Checkout/17#0": {
-				"block": "sgs/hero",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/hero in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/hero"
-			},
-			"Checkout/31#0": {
-				"block": "sgs/form",
-				"signature": "form|",
-				"reason": "Bean accepted sgs/form in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/form"
-			},
-			"Checkout/32#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
 			},
 			"Checkout/33#0": {
 				"block": "sgs/text",
@@ -4256,12 +3992,6 @@
 				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/container"
 			},
-			"Checkout/42#0": {
-				"block": "sgs/container",
-				"signature": "fieldset|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
 			"Checkout/43#0": {
 				"block": "sgs/text",
 				"signature": "legend|1 · Your details",
@@ -4280,23 +4010,11 @@
 				"reason": "Bean accepted sgs/form-field-phone in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/form-field-phone"
 			},
-			"Checkout/57#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
 			"Checkout/59#0": {
 				"block": "sgs/form-field-checkbox",
 				"signature": "input|",
 				"reason": "Bean accepted sgs/form-field-checkbox in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/form-field-checkbox"
-			},
-			"Checkout/60#0": {
-				"remove": true,
-				"signature": "span|",
-				"reason": "Bean accepted remove in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "remove"
 			},
 			"Checkout/61#0": {
 				"block": "sgs/text",
@@ -4310,29 +4028,11 @@
 				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/text"
 			},
-			"Checkout/71#0": {
-				"block": "sgs/container",
-				"signature": "fieldset|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Checkout/72#0": {
-				"block": "sgs/text",
-				"signature": "legend|2 · Who’s it for?",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
-			},
 			"Checkout/73#0": {
 				"block": "sgs/form-field-tiles",
 				"signature": "div|",
 				"reason": "Bean accepted sgs/form-field-tiles in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/form-field-tiles"
-			},
-			"Checkout/85#0": {
-				"block": "sgs/container",
-				"signature": "fieldset|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
 			},
 			"Checkout/86#0": {
 				"block": "sgs/text",
@@ -4388,12 +4088,6 @@
 				"reason": "Bean accepted sgs/form-field-tiles in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/form-field-tiles"
 			},
-			"Checkout/106#0": {
-				"block": "sgs/container",
-				"signature": "fieldset|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
 			"Checkout/107#0": {
 				"block": "sgs/text",
 				"signature": "legend|4 · Payment",
@@ -4430,12 +4124,6 @@
 				"reason": "Bean accepted sgs/button in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/button"
 			},
-			"Checkout/121#0": {
-				"block": "sgs/container",
-				"signature": "aside|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
 			"Checkout/122#0": {
 				"block": "sgs/text",
 				"signature": "div|Your order",
@@ -4454,18 +4142,6 @@
 				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/container"
 			},
-			"Checkout/125#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Checkout/125#1": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
 			"Checkout/126#0": {
 				"block": "sgs/text",
 				"signature": "span|1",
@@ -4477,18 +4153,6 @@
 				"signature": "span|1",
 				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/text"
-			},
-			"Checkout/127#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Checkout/127#1": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
 			},
 			"Checkout/128#0": {
 				"block": "sgs/text",
@@ -4997,12 +4661,6 @@
 				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/heading"
 			},
-			"Product/136#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
 			"Product/138#0": {
 				"block": "sgs/container",
 				"signature": "div|",
@@ -5192,12 +4850,6 @@
 				"signature": "img|",
 				"reason": "Bean accepted sgs/responsive-logo in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/responsive-logo"
-			},
-			"Home>SiteHeader@7#0/59#0": {
-				"block": "sgs/button",
-				"signature": "button|×",
-				"reason": "Bean accepted sgs/button in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/button"
 			},
 			"Home>SiteHeader@7#0/61#0": {
 				"block": "sgs/text",
@@ -5411,12 +5063,6 @@
 				"reason": "Bean accepted sgs/container in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/container"
 			},
-			"Home>SiteHeader@7#0/132#0": {
-				"block": "sgs/button",
-				"signature": "button|×",
-				"reason": "Bean accepted sgs/button in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/button"
-			},
 			"Home>SiteHeader@7#0/176#0": {
 				"block": "sgs/container",
 				"signature": "div|",
@@ -5568,12 +5214,6 @@
 				"signature": "div|",
 				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/container"
-			},
-			"Contact/47#0": {
-				"block": "sgs/text",
-				"signature": "div|What’s it about?",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
 			},
 			"Contact/48#0": {
 				"block": "sgs/form-field-tiles",

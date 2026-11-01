@@ -6902,12 +6902,6 @@
 				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/container"
 			},
-			"Indus Foods Website v2/114#0": {
-				"block": "sgs/responsive-logo",
-				"signature": "indus-logo|",
-				"reason": "Bean accepted sgs/responsive-logo in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/responsive-logo"
-			},
 			"Indus Foods Website v2/115#0": {
 				"block": "sgs/container",
 				"signature": "div|",
@@ -6925,12 +6919,6 @@
 				"signature": "a|",
 				"reason": "Bean accepted sgs/business-info in the intake review on 2026-10-20 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/business-info"
-			},
-			"Indus Foods Website v2/118#0": {
-				"block": "sgs/container",
-				"signature": "button|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
 			},
 			"Indus Foods Website v2/119#0": {
 				"remove": true,
