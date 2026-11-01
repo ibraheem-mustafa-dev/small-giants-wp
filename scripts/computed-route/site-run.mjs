@@ -314,6 +314,14 @@ export async function main( argv ) {
 		} ) ) {
 			return;
 		}
+		// WooCommerce's own page keeps WooCommerce's content: nothing after the inventory applies to it (its layout is the
+		// template copy's surface), so each later stage is noted as skipped and the surface ends here.
+		if ( wooPage ) {
+			for ( const s of [ 'propose', 'fill', 'build', 'walk' ] ) {
+				await step( s, async () => null );
+			}
+			return;
+		}
 		if ( ! await step( 'propose', async () => {
 			const r = proposeSurface( { client, surface: key } );
 			if ( r.problems.length ) {
