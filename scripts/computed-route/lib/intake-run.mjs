@@ -354,11 +354,13 @@ export function applyIntakeReview( o, { log = ( l ) => process.stderr.write( `${
 	const problems = [ ...recordProblems( res.intake, ajv ), ...pageMapProblems( pageMap, ajv ).map( ( p ) => `confirmed page map ${ p }` ),
 		...lostIds( Array.isArray( current ) ? current : [], pageMap, marks ).map( ( g ) => `confirmed page map loses the WordPress id of ${ g }; mark that row drop to remove it` ) ];
 	const decisions = reviewDecisions( res.intake, today, inventoryWords( at.dir ) );
+	// A block Bean typed is checked against the framework database; an accepted proposal is the writer's own block, which may be
+	// one the rules place outside it (WooCommerce's product collection and filters, Spec 48 FR-48-83).
 	if ( decisions.length ) {
 		const db = knownBlock ? null : dbKnownBlock();
 		try {
 			const known = knownBlock || db.known;
-			decisions.filter( ( d ) => d.choice.block && ! known( d.choice.block ) ).forEach( ( d ) => problems.push( `skeleton ${ d.surface } ${ d.element.key }: ${ d.choice.block } is not a block in the framework database` ) );
+			decisions.filter( ( d ) => d.typed && d.choice.block && ! known( d.choice.block ) ).forEach( ( d ) => problems.push( `skeleton ${ d.surface } ${ d.element.key }: ${ d.choice.block } is not a block in the framework database` ) );
 		} finally {
 			db?.close();
 		}

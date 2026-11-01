@@ -160,7 +160,8 @@ const proposedLabel = ( r ) => ( r.ruleWould ? r.ruleWould.label : proposalLabel
 // and with each copy's own words (the element signature is tag and words) when they differ and `wordsOf( surface, key )`
 // knows them (the saved inventory, lib/intake-run.mjs::inventoryWords); a copy whose words it does not know is not saved,
 // as a decision under another copy's words would read as stale.
-// Returns [ { surface, element: { key, tag, words }, choice, reason, proposed } ].
+// Returns [ { surface, element: { key, tag, words }, choice, reason, proposed, typed } ], `typed` when Bean wrote the block
+// himself (`block:<slug>`) rather than accepting the writer's proposal.
 export function reviewDecisions( intake, today, wordsOf = () => undefined ) {
 	const marks = new Map( ( intake.review || [] ).map( ( r ) => [ r.rowId, r.mark ] ) );
 	const out = [];
@@ -183,7 +184,7 @@ export function reviewDecisions( intake, today, wordsOf = () => undefined ) {
 				h.keys.forEach( ( key, i ) => {
 					const own = distinct ? wordsOf( h.surface, key ) : r.words ?? '';
 					const words = undefined === own && distinct && h.surface === surface && 0 === i ? r.words ?? '' : own;
-					undefined !== words && out.push( { surface: h.surface, element: { key, tag: r.tag, words }, choice, reason, proposed } );
+					undefined !== words && out.push( { surface: h.surface, element: { key, tag: r.tag, words }, choice, reason, proposed, typed: Boolean( own ) } );
 				} );
 			}
 		}
