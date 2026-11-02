@@ -507,8 +507,8 @@
         },
         "outline": {
           "background": "transparent",
-          "text": "var(--wp--preset--color--primary-text)",
-          "border": "rgba(250, 248, 245, 0.75)",
+          "text": "currentColor",
+          "border": "color-mix(in srgb, currentColor 75%, transparent)",
           "border-width": "1px",
           "border-radius": "0px",
           "padding": "0px 28px 0px 28px",
@@ -516,8 +516,8 @@
           "font-weight": "400",
           "min-height": "52px",
           "hover-background": "rgba(250, 248, 245, 0.14)",
-          "hover-text": "var(--wp--preset--color--primary-text)",
-          "hover-border": "var(--wp--preset--color--primary-text)",
+          "hover-text": "currentColor",
+          "hover-border": "currentColor",
           "hover-transform": "matrix(1, 0, 0, 1, 0, -3)"
         },
         "default": {
