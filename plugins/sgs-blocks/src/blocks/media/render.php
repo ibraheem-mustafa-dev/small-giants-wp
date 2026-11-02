@@ -388,7 +388,7 @@ $caption_sel = $id_wrap . ' .sgs-media__caption';
 
 // Typography (font-size, font-weight, font-style, line-height, responsive tiers,
 // etc.) via the shared helper — fully responsive with all tiers + all properties.
-$caption_typography_css = sgs_typography_css_rule( $attributes, 'caption', $caption_sel, '', false, false, sgs_object_attr_keys( $block ) );
+$caption_typography_css = sgs_typography_css_rule( $attributes, 'caption', $caption_sel );
 if ( '' !== $caption_typography_css ) {
 	$responsive_css .= $caption_typography_css;
 }
@@ -396,7 +396,7 @@ if ( '' !== $caption_typography_css ) {
 // Video time read-out (`0:00 / 0:00`) in the control bar. view.js builds the bar
 // after load; a scoped rule still reaches JS-built markup. style.css keeps the
 // 12px size and line-height 1 inside :where() so this rule wins.
-$video_time_typography_css = sgs_typography_css_rule( $attributes, 'videoTime', $id_wrap . ' .sgs-video__time', '', false, false, sgs_object_attr_keys( $block ) );
+$video_time_typography_css = sgs_typography_css_rule( $attributes, 'videoTime', $id_wrap . ' .sgs-video__time' );
 if ( '' !== $video_time_typography_css ) {
 	$responsive_css .= $video_time_typography_css;
 }
