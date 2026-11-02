@@ -112,6 +112,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import sqlite3
 import subprocess
@@ -633,7 +634,10 @@ def fingerprint(findings: dict[str, list[dict]], pool: set[tuple[str, str]]) -> 
             ("detector7_css_paint_flow.php", "php"),
         ):
             try:
-                _tmp = SCRIPT_DIR / f".{_script}.candidates.json"
+                # A unique file in the temp folder: gates run side by side and one walks the repo.
+                _fd, _name = tempfile.mkstemp(prefix=f"sgs-{_script}-", suffix=".candidates.json")
+                os.close(_fd)
+                _tmp = Path(_name)
                 _tmp.write_text(json.dumps(_pairs), encoding="utf-8")
                 _cmd = [sys.executable if _fn == "python" else "php",
                         str(SCRIPT_DIR / _script), "--candidates", str(_tmp)]
@@ -857,7 +861,9 @@ def _styling_upgrades(rows: list[tuple[str, str]]) -> list[dict]:
         return []
     out = []
     try:
-        tmp = SCRIPT_DIR / ".styling_upgrade.candidates.json"
+        fd, name = tempfile.mkstemp(prefix="sgs-styling-upgrade-", suffix=".candidates.json")
+        os.close(fd)
+        tmp = Path(name)
         tmp.write_text(json.dumps([[b, a] for b, a in rows]), encoding="utf-8")
         proc = subprocess.run(
             ["php", str(SCRIPT_DIR / "detector7_css_paint_flow.php"), "--candidates", str(tmp)],
