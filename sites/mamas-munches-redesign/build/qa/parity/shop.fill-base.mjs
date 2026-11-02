@@ -10,7 +10,7 @@ export default {
 	auto: { root: {"draft":".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"8\"]:not(.sc-host .sc-host *)","live":".cr-ref-shop-0"} },
 	linkRoot: {"draft":".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"8\"]:not(.sc-host .sc-host *)","live":".cr-ref-shop-0"},
 	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:61089/" },
-	live: { url: "http://localhost:8084/" },
+	live: { url: "http://localhost:8084/shop/" },
 	states: [
 		{ name: "mobile", fullPage: true },
 	],

@@ -10,7 +10,7 @@ export default {
 	auto: { root: {"draft":".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"7\"]:not(.sc-host .sc-host *)","live":".cr-ref-product-0"} },
 	linkRoot: {"draft":".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"7\"]:not(.sc-host .sc-host *)","live":".cr-ref-product-0"},
 	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:61088/" },
-	live: { url: "http://localhost:8084/" },
+	live: { url: "http://localhost:8084/product/zookies/" },
 	states: [
 		{ name: "mobile", fullPage: true },
 	],
