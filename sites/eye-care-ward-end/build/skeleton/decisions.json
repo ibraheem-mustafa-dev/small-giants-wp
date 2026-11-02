@@ -412,10 +412,10 @@
 				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
 			},
 			"Eye Care Birmingham/183#0": {
-				"block": "sgs/label",
+				"remove": true,
 				"signature": "span|★★★★★",
-				"proposed": "sgs/label",
-				"reason": "Settled by evidence: block:sgs/label in the intake review on 2026-11-01 (draft code, built page and block facts; sites/eye-care-ward-end/build/intake/review-evidence.md)"
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
 			},
 			"Eye Care Birmingham/184#0": {
 				"remove": true,
@@ -442,10 +442,10 @@
 				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
 			},
 			"Eye Care Birmingham/188#0": {
-				"remove": true,
+				"block": "sgs/container",
 				"signature": "div|",
 				"proposed": "sgs/container",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Settled by evidence on 2026-11-02: the panel holding the sgs/google-reviews block (189#0) and its scroll note (205#0); removing it removed the reviews block (corrects the 2026-11-02 remove)"
 			},
 			"Eye Care Birmingham/206#0": {
 				"remove": true,

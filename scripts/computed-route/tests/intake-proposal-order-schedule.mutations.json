@@ -25,8 +25,8 @@
 	},
 	{
 		"file": "lib/intake-run-stages.mjs",
-		"find": "ctx.skeletonReads = Object.fromEntries(",
-		"replace": "const reads = Object.fromEntries(",
+		"find": "ctx.skeletonReads = want ? Object.fromEntries(",
+		"replace": "const reads = want ? Object.fromEntries(",
 		"why": "the skeletons stage hands the proposals nothing"
 	}
 ]

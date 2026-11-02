@@ -83374,20 +83374,15 @@
      "tag": "img",
      "words": "",
      "block": "sgs/icon",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "The WhatsApp brand glyph alone inside its link button (beside the Instagram and Google glyph links); a glyph on its own is sgs/icon, which carries the brand registry, not a media image.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/media",
-       "score": 0.5,
-       "share": 0.588
-      },
-      {
-       "block": "sgs/responsive-logo",
-       "score": 0.35,
-       "share": 0.412
+       "block": "sgs/icon",
+       "score": 1,
+       "share": 1
       }
      ],
      "action": null,
@@ -83422,27 +83417,7 @@
        "h": 18
       }
      ],
-     "draftId": "Eye Care Birmingham:1191",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/media",
-      "action": null,
-      "confidence": 0.29,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/media",
-        "score": 0.5,
-        "share": 0.588
-       },
-       {
-        "block": "sgs/responsive-logo",
-        "score": 0.35,
-        "share": 0.412
-       }
-      ]
-     }
+     "draftId": "Eye Care Birmingham:1191"
     }
    ],
    "counts": {
@@ -83451,7 +83426,7 @@
     "rows": 21,
     "skeletonNodes": 13,
     "expandedNodes": 13,
-    "low": 1,
+    "low": 0,
     "removed": 8,
     "unresolved": 0,
     "byRule": {
@@ -94037,7 +94012,7 @@
       {
        "draftId": "Eye Care Birmingham:185",
        "tag": "div",
-       "block": "sgs/multi-button"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -94087,22 +94062,11 @@
      "tag": "img",
      "words": "",
      "block": null,
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "Part of the Google reviews summary and its slider arrows, which sgs/google-reviews draws itself (showAggregate, sourceLabel, averageRating, reviewCount, seeAllLabel, writeReviewLabel, showArrows, navPosition in the DB); the review loop beside it is already sgs/google-reviews.",
+     "reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block",
      "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/media",
-       "score": 0.5,
-       "share": 0.588
-      },
-      {
-       "block": "sgs/responsive-logo",
-       "score": 0.35,
-       "share": 0.412
-      }
-     ],
+     "candidates": [],
      "action": "remove",
      "snippet": "<img src=\"assets/google-g.svg\" alt=\"\" aria-hidden=\"true\" width=\"30\" height=\"30\" style=\"display:block\" data-dc-tpl=\"177\">",
      "parent": {
@@ -94114,7 +94078,7 @@
       {
        "draftId": "Eye Care Birmingham:178",
        "tag": "div",
-       "block": "sgs/container"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -94141,27 +94105,7 @@
        "h": 30
       }
      ],
-     "draftId": "Eye Care Birmingham:177",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/media",
-      "action": null,
-      "confidence": 0.29,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/media",
-        "score": 0.5,
-        "share": 0.588
-       },
-       {
-        "block": "sgs/responsive-logo",
-        "score": 0.35,
-        "share": 0.412
-       }
-      ]
-     }
+     "draftId": "Eye Care Birmingham:177"
     },
     {
      "rowId": "skeleton:page-home:Eye Care Birmingham/178#0",
@@ -94183,19 +94127,13 @@
      },
      "tag": "div",
      "words": "",
-     "block": "sgs/container",
-     "confidence": 0.75,
+     "block": null,
+     "confidence": 1,
      "low": false,
-     "reason": null,
+     "reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block",
      "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/container",
-       "score": 0.75,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "candidates": [],
+     "action": "remove",
      "snippet": "<div data-dc-tpl=\"178\"> <div style=\"font-size:13px;color:#5F6368;letter-spacing:.01em\" data-dc-tpl=\"179\">Google Reviews</div> <div style=\"display:flex;align-ite",
      "parent": {
       "draftId": "Eye Care Birmingham:176",
@@ -94206,7 +94144,7 @@
       {
        "draftId": "Eye Care Birmingham:177",
        "tag": "img",
-       "block": "sgs/media"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -94257,29 +94195,23 @@
      "tag": "div",
      "words": "Google Reviews",
      "block": null,
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "Part of the Google reviews summary and its slider arrows, which sgs/google-reviews draws itself (showAggregate, sourceLabel, averageRating, reviewCount, seeAllLabel, writeReviewLabel, showArrows, navPosition in the DB); the review loop beside it is already sgs/google-reviews.",
+     "reason": "inside a removed element (Eye Care Birmingham/178#0)",
      "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/text",
-       "score": 0.25,
-       "share": 1
-      }
-     ],
+     "candidates": [],
      "action": "remove",
      "snippet": "<div style=\"font-size:13px;color:#5F6368;letter-spacing:.01em\" data-dc-tpl=\"179\">Google Reviews</div>",
      "parent": {
       "draftId": "Eye Care Birmingham:178",
       "tag": "div",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "Eye Care Birmingham:180",
        "tag": "div",
-       "block": "sgs/container"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -94306,22 +94238,7 @@
        "h": 19.5
       }
      ],
-     "draftId": "Eye Care Birmingham:179",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Eye Care Birmingham:179"
     },
     {
      "rowId": "skeleton:page-home:Eye Care Birmingham/180#0",
@@ -94344,30 +94261,24 @@
      },
      "tag": "div",
      "words": "",
-     "block": "sgs/container",
+     "block": null,
      "confidence": 1,
      "low": false,
-     "reason": null,
+     "reason": "inside a removed element (Eye Care Birmingham/178#0)",
      "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/container",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "candidates": [],
+     "action": "remove",
      "snippet": "<div style=\"display:flex;align-items:center;gap:10px;margin-top:5px;flex-wrap:wrap\" data-dc-tpl=\"180\"> <span style=\"font-size:32px;line-height:1;color:#202124;f",
      "parent": {
       "draftId": "Eye Care Birmingham:178",
       "tag": "div",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "Eye Care Birmingham:179",
        "tag": "div",
-       "block": "sgs/text"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -94419,34 +94330,28 @@
      "tag": "span",
      "words": "4.7",
      "block": null,
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "Part of the Google reviews summary and its slider arrows, which sgs/google-reviews draws itself (showAggregate, sourceLabel, averageRating, reviewCount, seeAllLabel, writeReviewLabel, showArrows, navPosition in the DB); the review loop beside it is already sgs/google-reviews.",
+     "reason": "inside a removed element (Eye Care Birmingham/178#0)",
      "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/text",
-       "score": 0.25,
-       "share": 1
-      }
-     ],
+     "candidates": [],
      "action": "remove",
      "snippet": "<span style=\"font-size:32px;line-height:1;color:#202124;font-weight:500\" data-dc-tpl=\"181\">4.7</span>",
      "parent": {
       "draftId": "Eye Care Birmingham:180",
       "tag": "div",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "Eye Care Birmingham:182",
        "tag": "span",
-       "block": "sgs/container"
+       "block": null
       },
       {
        "draftId": "Eye Care Birmingham:184",
        "tag": "span",
-       "block": "sgs/text"
+       "block": null
       }
      ],
      "siblingCount": 2,
@@ -94473,22 +94378,7 @@
        "h": 32
       }
      ],
-     "draftId": "Eye Care Birmingham:181",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Eye Care Birmingham:181"
     },
     {
      "rowId": "skeleton:page-home:Eye Care Birmingham/182#0",
@@ -94512,35 +94402,29 @@
      },
      "tag": "span",
      "words": "★★★★★",
-     "block": "sgs/container",
-     "confidence": 0.75,
+     "block": null,
+     "confidence": 1,
      "low": false,
-     "reason": null,
+     "reason": "inside a removed element (Eye Care Birmingham/178#0)",
      "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/container",
-       "score": 0.75,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "candidates": [],
+     "action": "remove",
      "snippet": "<span style=\"position:relative;display:inline-block;font-size:18px;letter-spacing:.12em;line-height:1;color:#DADCE0\" aria-label=\"4.7 out of 5\" data-dc-tpl=\"182\"",
      "parent": {
       "draftId": "Eye Care Birmingham:180",
       "tag": "div",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "Eye Care Birmingham:181",
        "tag": "span",
-       "block": "sgs/text"
+       "block": null
       },
       {
        "draftId": "Eye Care Birmingham:184",
        "tag": "span",
-       "block": "sgs/text"
+       "block": null
       }
      ],
      "siblingCount": 2,
@@ -94592,24 +94476,18 @@
      },
      "tag": "span",
      "words": "★★★★★",
-     "block": "sgs/label",
+     "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
-     "rule": "label",
-     "candidates": [
-      {
-       "block": "sgs/label",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "inside a removed element (Eye Care Birmingham/178#0)",
+     "rule": null,
+     "candidates": [],
+     "action": "remove",
      "snippet": "<span style=\"position:absolute;left:0;top:0;width:94%;overflow:hidden;color:#FBBC04\" data-dc-tpl=\"183\">★★★★★</span>",
      "parent": {
       "draftId": "Eye Care Birmingham:182",
       "tag": "span",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [],
      "siblingCount": 0,
@@ -94661,34 +94539,28 @@
      "tag": "span",
      "words": "15 reviews",
      "block": null,
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "Part of the Google reviews summary and its slider arrows, which sgs/google-reviews draws itself (showAggregate, sourceLabel, averageRating, reviewCount, seeAllLabel, writeReviewLabel, showArrows, navPosition in the DB); the review loop beside it is already sgs/google-reviews.",
+     "reason": "inside a removed element (Eye Care Birmingham/178#0)",
      "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/text",
-       "score": 0.25,
-       "share": 1
-      }
-     ],
+     "candidates": [],
      "action": "remove",
      "snippet": "<span style=\"font-size:13.5px;color:#5F6368\" data-dc-tpl=\"184\">15 reviews</span>",
      "parent": {
       "draftId": "Eye Care Birmingham:180",
       "tag": "div",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "Eye Care Birmingham:181",
        "tag": "span",
-       "block": "sgs/text"
+       "block": null
       },
       {
        "draftId": "Eye Care Birmingham:182",
        "tag": "span",
-       "block": "sgs/container"
+       "block": null
       }
      ],
      "siblingCount": 2,
@@ -94715,22 +94587,7 @@
        "h": 20.3
       }
      ],
-     "draftId": "Eye Care Birmingham:184",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Eye Care Birmingham:184"
     },
     {
      "rowId": "skeleton:page-home:Eye Care Birmingham/185#0",
@@ -94752,22 +94609,19 @@
      "tag": "div",
      "words": "",
      "block": null,
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "Part of the Google reviews summary and its slider arrows, which sgs/google-reviews draws itself (showAggregate, sourceLabel, averageRating, reviewCount, seeAllLabel, writeReviewLabel, showArrows, navPosition in the DB); the review loop beside it is already sgs/google-reviews.",
+     "reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block",
      "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/multi-button",
-       "score": 0.75,
-       "share": 0.682
-      },
-      {
-       "block": "sgs/container",
-       "score": 0.35,
-       "share": 0.318
+     "ruleWould": {
+      "label": "sgs/container",
+      "reason": "",
+      "decision": {
+       "label": "remove",
+       "reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
       }
-     ],
+     },
+     "candidates": [],
      "action": "remove",
      "snippet": "<div style=\"display:flex;gap:10px;flex-wrap:wrap\" data-dc-tpl=\"185\"> <a href=\"{{ gmbHref }}\" target=\"_blank\" rel=\"noopener\" style=\"display:inline-flex;align-ite",
      "parent": {
@@ -94806,27 +94660,7 @@
        "h": 43
       }
      ],
-     "draftId": "Eye Care Birmingham:185",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/multi-button",
-      "action": null,
-      "confidence": 0.51,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/multi-button",
-        "score": 0.75,
-        "share": 0.682
-       },
-       {
-        "block": "sgs/container",
-        "score": 0.35,
-        "share": 0.318
-       }
-      ]
-     }
+     "draftId": "Eye Care Birmingham:185"
     },
     {
      "rowId": "skeleton:page-home:Eye Care Birmingham/186#0",
@@ -94848,30 +94682,24 @@
      },
      "tag": "a",
      "words": "See all reviews",
-     "block": "sgs/button",
-     "confidence": 0.75,
+     "block": null,
+     "confidence": 1,
      "low": false,
-     "reason": null,
+     "reason": "inside a removed element (Eye Care Birmingham/185#0)",
      "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/button",
-       "score": 0.75,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "candidates": [],
+     "action": "remove",
      "snippet": "<a href=\"{{ gmbHref }}\" target=\"_blank\" rel=\"noopener\" style=\"display:inline-flex;align-items:center;min-height:40px;padding:10px 22px;white-space:nowrap;border",
      "parent": {
       "draftId": "Eye Care Birmingham:185",
       "tag": "div",
-      "block": "sgs/multi-button"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "Eye Care Birmingham:187",
        "tag": "a",
-       "block": "sgs/button"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -94920,30 +94748,24 @@
      },
      "tag": "a",
      "words": "Write a review",
-     "block": "sgs/button",
-     "confidence": 0.75,
+     "block": null,
+     "confidence": 1,
      "low": false,
-     "reason": null,
+     "reason": "inside a removed element (Eye Care Birmingham/185#0)",
      "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/button",
-       "score": 0.75,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "candidates": [],
+     "action": "remove",
      "snippet": "<a href=\"{{ gmbHref }}\" target=\"_blank\" rel=\"noopener\" style=\"display:inline-flex;align-items:center;min-height:40px;padding:10px 22px;white-space:nowrap;border",
      "parent": {
       "draftId": "Eye Care Birmingham:185",
       "tag": "div",
-      "block": "sgs/multi-button"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "Eye Care Birmingham:186",
        "tag": "a",
-       "block": "sgs/button"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -95089,7 +94911,7 @@
       {
        "draftId": "Eye Care Birmingham:205",
        "tag": "div",
-       "block": "sgs/container"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -96354,19 +96176,13 @@
      },
      "tag": "div",
      "words": "",
-     "block": "sgs/container",
+     "block": null,
      "confidence": 1,
      "low": false,
-     "reason": null,
+     "reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block",
      "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/container",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "candidates": [],
+     "action": "remove",
      "snippet": "<div style=\"display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:6px\" data-dc-tpl=\"205\"> <p style=\"margin:0;font-size:13px;color:#5",
      "parent": {
       "draftId": "Eye Care Birmingham:188",
@@ -96426,30 +96242,24 @@
      },
      "tag": "p",
      "words": "Scroll for more — 13 of the 15 reviews left a comment.",
-     "block": "sgs/text",
-     "confidence": 0.75,
+     "block": null,
+     "confidence": 1,
      "low": false,
-     "reason": null,
+     "reason": "inside a removed element (Eye Care Birmingham/205#0)",
      "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/text",
-       "score": 0.75,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "candidates": [],
+     "action": "remove",
      "snippet": "<p style=\"margin:0;font-size:13px;color:#5F6368\" data-dc-tpl=\"206\">Scroll for more — 13 of the 15 reviews left a comment.</p>",
      "parent": {
       "draftId": "Eye Care Birmingham:205",
       "tag": "div",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "Eye Care Birmingham:207",
        "tag": "div",
-       "block": "sgs/social-icons"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -96499,34 +96309,23 @@
      "tag": "div",
      "words": "",
      "block": null,
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "Part of the Google reviews summary and its slider arrows, which sgs/google-reviews draws itself (showAggregate, sourceLabel, averageRating, reviewCount, seeAllLabel, writeReviewLabel, showArrows, navPosition in the DB); the review loop beside it is already sgs/google-reviews.",
+     "reason": "inside a removed element (Eye Care Birmingham/205#0)",
      "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/social-icons",
-       "score": 0.75,
-       "share": 0.682
-      },
-      {
-       "block": "sgs/container",
-       "score": 0.35,
-       "share": 0.318
-      }
-     ],
+     "candidates": [],
      "action": "remove",
      "snippet": "<div style=\"display:flex;gap:8px\" data-dc-tpl=\"207\"> <button sc-camel-on-click=\"{{ revPrev }}\" aria-label=\"Previous reviews\" style=\"width:40px;height:40px;borde",
      "parent": {
       "draftId": "Eye Care Birmingham:205",
       "tag": "div",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "Eye Care Birmingham:206",
        "tag": "p",
-       "block": "sgs/text"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -96553,27 +96352,7 @@
        "h": 40
       }
      ],
-     "draftId": "Eye Care Birmingham:207",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/social-icons",
-      "action": null,
-      "confidence": 0.51,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/social-icons",
-        "score": 0.75,
-        "share": 0.682
-       },
-       {
-        "block": "sgs/container",
-        "score": 0.35,
-        "share": 0.318
-       }
-      ]
-     }
+     "draftId": "Eye Care Birmingham:207"
     },
     {
      "rowId": "skeleton:page-home:Eye Care Birmingham/208#0",
@@ -96597,41 +96376,23 @@
      "tag": "button",
      "words": "",
      "block": null,
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "Part of the Google reviews summary and its slider arrows, which sgs/google-reviews draws itself (showAggregate, sourceLabel, averageRating, reviewCount, seeAllLabel, writeReviewLabel, showArrows, navPosition in the DB); the review loop beside it is already sgs/google-reviews.",
-     "rule": "solitaryIcon",
-     "conflict": {
-      "rule": "solitaryIcon",
-      "ruleBlock": "sgs/icon",
-      "dbBlock": "sgs/button",
-      "dbConfidence": 0.75,
-      "why": "a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two"
-     },
-     "candidates": [
-      {
-       "block": "sgs/icon",
-       "score": 1,
-       "share": 0.5
-      },
-      {
-       "block": "sgs/button",
-       "score": 0.75,
-       "share": 0.5
-      }
-     ],
+     "reason": "inside a removed element (Eye Care Birmingham/205#0)",
+     "rule": null,
+     "candidates": [],
      "action": "remove",
      "snippet": "<button sc-camel-on-click=\"{{ revPrev }}\" aria-label=\"Previous reviews\" style=\"width:40px;height:40px;border-radius:50%;border:1px solid #DADCE0;background:#fff",
      "parent": {
       "draftId": "Eye Care Birmingham:207",
       "tag": "div",
-      "block": "sgs/social-icons"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "Eye Care Birmingham:211",
        "tag": "button",
-       "block": "sgs/icon"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -96658,27 +96419,7 @@
        "h": 40
       }
      ],
-     "draftId": "Eye Care Birmingham:208",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/icon",
-      "action": null,
-      "confidence": 0.5,
-      "low": true,
-      "reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text; the framework DB prefers sgs/button (confidence 0.75: html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\"); block_composition: sgs/button is a leaf; the element holds words and no block children); a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two",
-      "candidates": [
-       {
-        "block": "sgs/icon",
-        "score": 1,
-        "share": 0.5
-       },
-       {
-        "block": "sgs/button",
-        "score": 0.75,
-        "share": 0.5
-       }
-      ]
-     }
+     "draftId": "Eye Care Birmingham:208"
     },
     {
      "rowId": "skeleton:page-home:Eye Care Birmingham/211#0",
@@ -96702,41 +96443,23 @@
      "tag": "button",
      "words": "",
      "block": null,
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "Part of the Google reviews summary and its slider arrows, which sgs/google-reviews draws itself (showAggregate, sourceLabel, averageRating, reviewCount, seeAllLabel, writeReviewLabel, showArrows, navPosition in the DB); the review loop beside it is already sgs/google-reviews.",
-     "rule": "solitaryIcon",
-     "conflict": {
-      "rule": "solitaryIcon",
-      "ruleBlock": "sgs/icon",
-      "dbBlock": "sgs/button",
-      "dbConfidence": 0.75,
-      "why": "a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two"
-     },
-     "candidates": [
-      {
-       "block": "sgs/icon",
-       "score": 1,
-       "share": 0.5
-      },
-      {
-       "block": "sgs/button",
-       "score": 0.75,
-       "share": 0.5
-      }
-     ],
+     "reason": "inside a removed element (Eye Care Birmingham/205#0)",
+     "rule": null,
+     "candidates": [],
      "action": "remove",
      "snippet": "<button sc-camel-on-click=\"{{ revNext }}\" aria-label=\"More reviews\" style=\"width:40px;height:40px;border-radius:50%;border:1px solid #DADCE0;background:#fff;col",
      "parent": {
       "draftId": "Eye Care Birmingham:207",
       "tag": "div",
-      "block": "sgs/social-icons"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "Eye Care Birmingham:208",
        "tag": "button",
-       "block": "sgs/icon"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -96763,27 +96486,7 @@
        "h": 40
       }
      ],
-     "draftId": "Eye Care Birmingham:211",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/icon",
-      "action": null,
-      "confidence": 0.5,
-      "low": true,
-      "reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text; the framework DB prefers sgs/button (confidence 0.75: html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\"); block_composition: sgs/button is a leaf; the element holds words and no block children); a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two",
-      "candidates": [
-       {
-        "block": "sgs/icon",
-        "score": 1,
-        "share": 0.5
-       },
-       {
-        "block": "sgs/button",
-        "score": 0.75,
-        "share": 0.5
-       }
-      ]
-     }
+     "draftId": "Eye Care Birmingham:211"
     },
     {
      "rowId": "skeleton:page-home:Eye Care Birmingham/214#0",
@@ -98386,7 +98089,7 @@
       {
        "draftId": "Eye Care Birmingham:235",
        "tag": "span",
-       "block": "sgs/text"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -98434,17 +98137,11 @@
      "tag": "span",
      "words": "The reception or the consulting room — whichever you'd rather show. No portrait needed.",
      "block": null,
-     "confidence": 0.8,
+     "confidence": 1,
      "low": false,
-     "reason": "Designer brief copy inside an image placeholder (whichever you would rather show, no portrait needed); a line that exists only because of the brief is removed.",
+     "reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block",
      "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/text",
-       "score": 0.25,
-       "share": 1
-      }
-     ],
+     "candidates": [],
      "action": "remove",
      "snippet": "<span style=\"font-size:13.5px;max-width:26ch;text-wrap:pretty\" data-dc-tpl=\"235\">The reception or the consulting room — whichever you'd rather show. No portrait",
      "parent": {
@@ -98483,22 +98180,7 @@
        "h": 60.8
       }
      ],
-     "draftId": "Eye Care Birmingham:235",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Eye Care Birmingham:235"
     },
     {
      "rowId": "skeleton:page-home:Eye Care Birmingham/236#0",
@@ -99173,20 +98855,19 @@
     "inventoryElements": 545,
     "parts": 33,
     "rows": 512,
-    "skeletonNodes": 113,
-    "expandedNodes": 113,
-    "low": 20,
-    "removed": 400,
+    "skeletonNodes": 95,
+    "expandedNodes": 95,
+    "low": 11,
+    "removed": 417,
     "unresolved": 0,
     "byRule": {
      "hero": 1,
      "heroInner": 3,
      "decorationLayer": 4,
      "loopBlocks": 376,
-     "label": 10,
+     "label": 9,
      "pillButton": 20,
      "alignWrapper": 1,
-     "solitaryIcon": 2,
      "drawsChildren": 3,
      "recognise": 1
     }
@@ -103855,7 +103536,7 @@
       {
        "draftId": "Eye Care Birmingham:352",
        "tag": "div",
-       "block": "sgs/multi-button"
+       "block": "sgs/container"
       }
      ],
      "siblingCount": 1,
@@ -103990,7 +103671,7 @@
       {
        "draftId": "Eye Care Birmingham:348",
        "tag": "div",
-       "block": "sgs/text"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -104039,17 +103720,11 @@
      "tag": "div",
      "words": "Photography to come front · three-quarter · side · worn",
      "block": null,
-     "confidence": 0.85,
+     "confidence": 1,
      "low": false,
-     "reason": "Photography to come: placeholder brief copy in the gallery frame; removed.",
+     "reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block",
      "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/text",
-       "score": 0.25,
-       "share": 1
-      }
-     ],
+     "candidates": [],
      "action": "remove",
      "snippet": "<div style=\"font-size:12px;letter-spacing:.14em;text-transform:uppercase\" data-dc-tpl=\"348\">Photography to come<br data-dc-tpl=\"349\">front · three-quarter · sid",
      "parent": {
@@ -104088,22 +103763,7 @@
        "h": 36
       }
      ],
-     "draftId": "Eye Care Birmingham:348",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Eye Care Birmingham:348"
     },
     {
      "rowId": "skeleton:page-product:Eye Care Birmingham/351#0",
@@ -104193,20 +103853,15 @@
      "tag": "div",
      "words": "",
      "block": "sgs/container",
-     "confidence": 0.45,
-     "low": true,
-     "reason": "The gallery thumbnails grid (a loop of buttons swapping the main image); on the single-product template this is the product gallery, which no candidate offers, so a container keeps the layout.",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/multi-button",
-       "score": 0.75,
-       "share": 0.682
-      },
-      {
        "block": "sgs/container",
-       "score": 0.35,
-       "share": 0.318
+       "score": 1,
+       "share": 1
       }
      ],
      "action": null,
@@ -104247,27 +103902,7 @@
        "h": 82.3
       }
      ],
-     "draftId": "Eye Care Birmingham:352",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/multi-button",
-      "action": null,
-      "confidence": 0.51,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/multi-button",
-        "score": 0.75,
-        "share": 0.682
-       },
-       {
-        "block": "sgs/container",
-        "score": 0.35,
-        "share": 0.318
-       }
-      ]
-     }
+     "draftId": "Eye Care Birmingham:352"
     },
     {
      "rowId": "skeleton:page-product:Eye Care Birmingham/354",
@@ -104304,7 +103939,7 @@
      "parent": {
       "draftId": "Eye Care Birmingham:352",
       "tag": "div",
-      "block": "sgs/multi-button"
+      "block": "sgs/container"
      },
      "siblings": [
       {
@@ -112539,10 +112174,10 @@
     "inventoryElements": 336,
     "parts": 15,
     "rows": 321,
-    "skeletonNodes": 86,
-    "expandedNodes": 86,
-    "low": 8,
-    "removed": 246,
+    "skeletonNodes": 85,
+    "expandedNodes": 85,
+    "low": 6,
+    "removed": 247,
     "unresolved": 0,
     "byRule": {
      "typedDivider": 2,
@@ -117566,14 +117201,14 @@
      "tag": "div",
      "words": "BSc (Hons)",
      "block": "sgs/heading",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "The 22px Playfair title of each qualification item with its description paragraph below; a title role, sgs/heading.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -117615,22 +117250,7 @@
        "h": 33
       }
      ],
-     "draftId": "Eye Care Birmingham:614",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Eye Care Birmingham:614"
     },
     {
      "rowId": "skeleton:page-about:Eye Care Birmingham/615#0",
@@ -117673,7 +117293,7 @@
       {
        "draftId": "Eye Care Birmingham:614",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       }
      ],
      "siblingCount": 1,
@@ -117794,14 +117414,14 @@
      "tag": "div",
      "words": "MCOptom",
      "block": "sgs/heading",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "The 22px Playfair title of each qualification item with its description paragraph below; a title role, sgs/heading.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -117843,22 +117463,7 @@
        "h": 33
       }
      ],
-     "draftId": "Eye Care Birmingham:617",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Eye Care Birmingham:617"
     },
     {
      "rowId": "skeleton:page-about:Eye Care Birmingham/618#0",
@@ -117901,7 +117506,7 @@
       {
        "draftId": "Eye Care Birmingham:617",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       }
      ],
      "siblingCount": 1,
@@ -118022,14 +117627,14 @@
      "tag": "div",
      "words": "DipTp(IP)",
      "block": "sgs/heading",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "The 22px Playfair title of each qualification item with its description paragraph below; a title role, sgs/heading.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -118071,22 +117676,7 @@
        "h": 33
       }
      ],
-     "draftId": "Eye Care Birmingham:620",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Eye Care Birmingham:620"
     },
     {
      "rowId": "skeleton:page-about:Eye Care Birmingham/621#0",
@@ -118129,7 +117719,7 @@
       {
        "draftId": "Eye Care Birmingham:620",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       }
      ],
      "siblingCount": 1,
@@ -118250,14 +117840,14 @@
      "tag": "div",
      "words": "Paediatric Eye Care",
      "block": "sgs/heading",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "The 22px Playfair title of each qualification item with its description paragraph below; a title role, sgs/heading.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -118299,22 +117889,7 @@
        "h": 33
       }
      ],
-     "draftId": "Eye Care Birmingham:623",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Eye Care Birmingham:623"
     },
     {
      "rowId": "skeleton:page-about:Eye Care Birmingham/624#0",
@@ -118357,7 +117932,7 @@
       {
        "draftId": "Eye Care Birmingham:623",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       }
      ],
      "siblingCount": 1,
@@ -118393,7 +117968,7 @@
     "rows": 25,
     "skeletonNodes": 19,
     "expandedNodes": 19,
-    "low": 6,
+    "low": 2,
     "removed": 6,
     "unresolved": 0,
     "byRule": {
@@ -120476,14 +120051,14 @@
      "tag": "div",
      "words": "Still not answered?",
      "block": "sgs/heading",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "The 24px Playfair title of the still-not-answered card above its text and buttons; sgs/heading.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -120525,22 +120100,7 @@
        "h": 36
       }
      ],
-     "draftId": "Eye Care Birmingham:654",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Eye Care Birmingham:654"
     },
     {
      "rowId": "skeleton:page-help:Eye Care Birmingham/655#0",
@@ -120587,7 +120147,7 @@
       {
        "draftId": "Eye Care Birmingham:654",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       }
      ],
      "siblingCount": 1,
@@ -120874,7 +120434,7 @@
     "rows": 59,
     "skeletonNodes": 43,
     "expandedNodes": 43,
-    "low": 5,
+    "low": 4,
     "removed": 25,
     "unresolved": 0,
     "byRule": {
@@ -129064,14 +128624,14 @@
      "tag": "div",
      "words": "✓",
      "block": "sgs/icon",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "A lone check glyph in a 64px accent circle above the confirmation heading; a glyph on its own is sgs/icon, not text.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/icon",
+       "score": 1,
        "share": 1
       }
      ],
@@ -129123,22 +128683,7 @@
        "h": 64
       }
      ],
-     "draftId": "Eye Care Birmingham:844",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Eye Care Birmingham:844"
     },
     {
      "rowId": "skeleton:page-done:Eye Care Birmingham/845#0",
@@ -129178,7 +128723,7 @@
       {
        "draftId": "Eye Care Birmingham:844",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/icon"
       },
       {
        "draftId": "Eye Care Birmingham:846",
@@ -129255,7 +128800,7 @@
       {
        "draftId": "Eye Care Birmingham:844",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/icon"
       },
       {
        "draftId": "Eye Care Birmingham:845",
@@ -129332,7 +128877,7 @@
       {
        "draftId": "Eye Care Birmingham:844",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/icon"
       },
       {
        "draftId": "Eye Care Birmingham:845",
@@ -129440,7 +128985,7 @@
     "rows": 6,
     "skeletonNodes": 6,
     "expandedNodes": 6,
-    "low": 1,
+    "low": 0,
     "removed": 0,
     "unresolved": 0,
     "byRule": {}
@@ -130922,14 +130467,14 @@
      "tag": "span",
      "words": "Which size am I?",
      "block": "sgs/heading",
-     "confidence": 0.75,
+     "confidence": 1,
      "low": false,
-     "reason": "The 24px Playfair title of the size-guide modal beside its close button; sgs/heading.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -130971,22 +130516,7 @@
        "h": 36
       }
      ],
-     "draftId": "Eye Care Birmingham:1236",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Eye Care Birmingham:1236"
     },
     {
      "rowId": "skeleton:size-guide:Eye Care Birmingham/1237#0",
@@ -131023,7 +130553,7 @@
       {
        "draftId": "Eye Care Birmingham:1236",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       }
      ],
      "siblingCount": 1,
@@ -132108,14 +131638,14 @@
      "tag": "div",
      "words": "Lens width — 42 to 62mm",
      "block": "sgs/heading",
-     "confidence": 0.6,
-     "low": true,
-     "reason": "The medium-weight title of each measurement item with its description paragraph below; a title role, sgs/heading.",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -132157,22 +131687,7 @@
        "h": 23.3
       }
      ],
-     "draftId": "Eye Care Birmingham:1251",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Eye Care Birmingham:1251"
     },
     {
      "rowId": "skeleton:size-guide:Eye Care Birmingham/1252#0",
@@ -132216,7 +131731,7 @@
       {
        "draftId": "Eye Care Birmingham:1251",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       }
      ],
      "siblingCount": 1,
@@ -132340,14 +131855,14 @@
      "tag": "div",
      "words": "Bridge — 14 to 24mm",
      "block": "sgs/heading",
-     "confidence": 0.6,
-     "low": true,
-     "reason": "The medium-weight title of each measurement item with its description paragraph below; a title role, sgs/heading.",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -132389,22 +131904,7 @@
        "h": 23.3
       }
      ],
-     "draftId": "Eye Care Birmingham:1254",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Eye Care Birmingham:1254"
     },
     {
      "rowId": "skeleton:size-guide:Eye Care Birmingham/1255#0",
@@ -132448,7 +131948,7 @@
       {
        "draftId": "Eye Care Birmingham:1254",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       }
      ],
      "siblingCount": 1,
@@ -132572,14 +132072,14 @@
      "tag": "div",
      "words": "Temple — 130 to 150mm",
      "block": "sgs/heading",
-     "confidence": 0.6,
-     "low": true,
-     "reason": "The medium-weight title of each measurement item with its description paragraph below; a title role, sgs/heading.",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -132621,22 +132121,7 @@
        "h": 23.3
       }
      ],
-     "draftId": "Eye Care Birmingham:1257",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Eye Care Birmingham:1257"
     },
     {
      "rowId": "skeleton:size-guide:Eye Care Birmingham/1258#0",
@@ -132680,7 +132165,7 @@
       {
        "draftId": "Eye Care Birmingham:1257",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       }
      ],
      "siblingCount": 1,
@@ -133875,7 +133360,7 @@
     "rows": 42,
     "skeletonNodes": 35,
     "expandedNodes": 35,
-    "low": 13,
+    "low": 9,
     "removed": 8,
     "unresolved": 0,
     "byRule": {
@@ -149598,8 +149083,8 @@
   {
    "rowId": "skeleton:page-home:Eye Care Birmingham/178#0",
    "rowType": "skeleton-block",
-   "contentHash": "654f3b685ca7a13de06c1184e51de54c549826fce7fad02b5b44650a3257e6fa",
-   "mark": "remove",
+   "contentHash": "a41f6d7ea4588659b21fb3a32ba54698082b5caa7e1b1b9967b822aeabe590c7",
+   "mark": "accept",
    "markedOn": "2026-11-02",
    "carriedFrom": null
   },
@@ -149614,8 +149099,8 @@
   {
    "rowId": "skeleton:page-home:Eye Care Birmingham/180#0",
    "rowType": "skeleton-block",
-   "contentHash": "a809fd25833653011173f40d781eb21e2da6c97a308e54048ad4be2a35094e20",
-   "mark": "remove",
+   "contentHash": "60d81a5db8db9f4fad823c2959294a5ff142f0b8da5eb29479041c726b0a0de5",
+   "mark": "accept",
    "markedOn": "2026-11-02",
    "carriedFrom": null
   },
@@ -149630,19 +149115,18 @@
   {
    "rowId": "skeleton:page-home:Eye Care Birmingham/182#0",
    "rowType": "skeleton-block",
-   "contentHash": "69ba974dab8f4bccf5f85747241907d657725aa3b2d5f09cf641adacb45c29eb",
-   "mark": "remove",
+   "contentHash": "e4aec49434c8ce4574568f270af8a38dc8a1cba4c2d5cbf4ad56822c96aa63d6",
+   "mark": "accept",
    "markedOn": "2026-11-02",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home:Eye Care Birmingham/183#0",
    "rowType": "skeleton-block",
-   "contentHash": "5b44fd98c08bdeea196116eedaf412641366f03ae468493f662276a6d780c99a",
+   "contentHash": "3a07c178d395c0b757ed26bc80d1f35143ff6a714b76c66da98ddc8aa13a307a",
    "mark": "accept",
    "markedOn": "2026-11-02",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home:Eye Care Birmingham/184#0",
@@ -149655,7 +149139,7 @@
   {
    "rowId": "skeleton:page-home:Eye Care Birmingham/185#0",
    "rowType": "skeleton-block",
-   "contentHash": "fb1be1c6db164ea8db0ee3b9f1a80f0a0433a2e9d974e2e5123ed454f4960401",
+   "contentHash": "a53150edfa73389ca88e528bdd3a40eda159bbae23724f7a1ffe8fa181effefa",
    "mark": "remove",
    "markedOn": "2026-11-02",
    "carriedFrom": null
@@ -149663,16 +149147,16 @@
   {
    "rowId": "skeleton:page-home:Eye Care Birmingham/186#0",
    "rowType": "skeleton-block",
-   "contentHash": "4756195bf5247e15fd1c279f126251390efff84599d91378e7613ccecb709eb2",
-   "mark": "remove",
+   "contentHash": "e308c21b1bb75fa6a50aa5b2e53837c1aa1c2b9a42281a6a9be27752020efb38",
+   "mark": "accept",
    "markedOn": "2026-11-02",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home:Eye Care Birmingham/187#0",
    "rowType": "skeleton-block",
-   "contentHash": "6dd08af2fff17ed2d31c0243cf0e68cfeacb11f4517352d7b271a40831e9b430",
-   "mark": "remove",
+   "contentHash": "6bc09bedf33c1bbce7413d9a7f500a3c23976e3e7993a9948d3bc436b0e94884",
+   "mark": "accept",
    "markedOn": "2026-11-02",
    "carriedFrom": null
   },
@@ -149680,16 +149164,17 @@
    "rowId": "skeleton:page-home:Eye Care Birmingham/188#0",
    "rowType": "skeleton-block",
    "contentHash": "950a691ae38bfdfca821fc2c2b9f9749f7be19af2d4fddd88c4cb2a27e5138ab",
-   "mark": "remove",
+   "mark": "accept",
    "markedOn": "2026-11-02",
-   "carriedFrom": null
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-home:Eye Care Birmingham/189#0",
    "rowType": "skeleton-block",
    "contentHash": "b15997cb1a8b38763ebda8213a76b09b204752999ef7df4a72c1419499ef553b",
    "mark": "accept",
-   "markedOn": "2026-11-01",
+   "markedOn": "2026-11-02",
    "carriedFrom": null
   },
   {
@@ -149697,7 +149182,7 @@
    "rowType": "skeleton-block",
    "contentHash": "71eaa485eb8ce333ca54536e1e247268ac24cafbf01b776b021796d2ef031737",
    "mark": "accept",
-   "markedOn": "2026-11-01",
+   "markedOn": "2026-11-02",
    "carriedFrom": null
   },
   {
@@ -149705,7 +149190,7 @@
    "rowType": "skeleton-block",
    "contentHash": "542459fe4b786dd3eba8241aa47d23335145674e29854a999c6ab9cf681a5b62",
    "mark": "accept",
-   "markedOn": "2026-11-01",
+   "markedOn": "2026-11-02",
    "carriedFrom": null
   },
   {
@@ -149713,7 +149198,7 @@
    "rowType": "skeleton-block",
    "contentHash": "4fb9e089272b68dc12c60978256c4483986211025c4ee0c452fe6b559834ac7d",
    "mark": "accept",
-   "markedOn": "2026-11-01",
+   "markedOn": "2026-11-02",
    "carriedFrom": null
   },
   {
@@ -149721,7 +149206,7 @@
    "rowType": "skeleton-block",
    "contentHash": "b8a72178e111c59cd6e89159c87a2f9b76e82c360e077b5549f2c27efca295df",
    "mark": "accept",
-   "markedOn": "2026-11-01",
+   "markedOn": "2026-11-02",
    "carriedFrom": null
   },
   {
@@ -149729,7 +149214,7 @@
    "rowType": "skeleton-block",
    "contentHash": "67276ec6e698a0b61e9d528215d5678dd4a18c49c1eeff4556197bfef7206de5",
    "mark": "accept",
-   "markedOn": "2026-11-01",
+   "markedOn": "2026-11-02",
    "carriedFrom": null
   },
   {
@@ -149737,7 +149222,7 @@
    "rowType": "skeleton-block",
    "contentHash": "e5d2494e414a48bc6e8f5b75dd269574381aaa00a78f7eb9e8dccd8e12da03b8",
    "mark": "accept",
-   "markedOn": "2026-11-01",
+   "markedOn": "2026-11-02",
    "carriedFrom": null
   },
   {
@@ -149745,7 +149230,7 @@
    "rowType": "skeleton-block",
    "contentHash": "ffdafe4b3f63484631bbfbb49dec480e9ceda7c7c76933dc8f22e95493f78b8e",
    "mark": "accept",
-   "markedOn": "2026-11-01",
+   "markedOn": "2026-11-02",
    "carriedFrom": null
   },
   {
@@ -149753,7 +149238,7 @@
    "rowType": "skeleton-block",
    "contentHash": "3b690d7551dc8bb2b7f567f8b44cad9c0099031cbb3a9b5f4dc708216988d022",
    "mark": "accept",
-   "markedOn": "2026-11-01",
+   "markedOn": "2026-11-02",
    "carriedFrom": null
   },
   {
@@ -149761,7 +149246,7 @@
    "rowType": "skeleton-block",
    "contentHash": "f64c4c772af132614c51bfc4b9375a943a6c786bccadadfefa1e12d4192166d0",
    "mark": "accept",
-   "markedOn": "2026-11-01",
+   "markedOn": "2026-11-02",
    "carriedFrom": null
   },
   {
@@ -149769,7 +149254,7 @@
    "rowType": "skeleton-block",
    "contentHash": "49f79a89696eb6732cbf275e30129f04eb28aefd3193084bd464d504aa69731a",
    "mark": "accept",
-   "markedOn": "2026-11-01",
+   "markedOn": "2026-11-02",
    "carriedFrom": null
   },
   {
@@ -149777,7 +149262,7 @@
    "rowType": "skeleton-block",
    "contentHash": "f4770748697dab462708888f8efd99f6fa52a3a58cc49b68560bada597f50f27",
    "mark": "accept",
-   "markedOn": "2026-11-01",
+   "markedOn": "2026-11-02",
    "carriedFrom": null
   },
   {
@@ -149785,7 +149270,7 @@
    "rowType": "skeleton-block",
    "contentHash": "f7daeb0ebd47c917c6b3a7306494bf1f272d368762fd3e7fe57d080ff292a507",
    "mark": "accept",
-   "markedOn": "2026-11-01",
+   "markedOn": "2026-11-02",
    "carriedFrom": null
   },
   {
@@ -149793,22 +149278,22 @@
    "rowType": "skeleton-block",
    "contentHash": "84125cff311f9fbd447fe58442b8b729dbc3c6bd734aad69483f830f3d7b153d",
    "mark": "accept",
-   "markedOn": "2026-11-01",
+   "markedOn": "2026-11-02",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home:Eye Care Birmingham/205#0",
    "rowType": "skeleton-block",
-   "contentHash": "9586fd36c325ff437fb0d191e3be3cfefa8606a4380f80c1ff5531806ab5c7a8",
-   "mark": "remove",
+   "contentHash": "5a6f19198869ecbd065edf778414100bc129881dffd0a202d833416089e69ede",
+   "mark": "accept",
    "markedOn": "2026-11-02",
    "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-home:Eye Care Birmingham/206#0",
    "rowType": "skeleton-block",
-   "contentHash": "cb19c3d75af54ee5f136abce575794d4b0a6c48b3e49a8beba978dde68a94e45",
-   "mark": "remove",
+   "contentHash": "6d19a8c5e36e9dfd8085133ab2e71db8a25a3932b8759f010a3d16f07c2fcfe4",
+   "mark": "accept",
    "markedOn": "2026-11-02",
    "carriedFrom": null
   },

@@ -4,7 +4,7 @@ Taken on 2026-10-31T01:32:33.809Z; manifest 1.0, files hash df55d7988b7b72a6.
 
 How to mark: put x in a section's `Accept all: [ ]` box to give every row the section's first mark; to mark one row differently, write its mark in that row's Mark cell (a row's own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review eye-care-ward-end`.
 
-Rows: 1583; 931 need reading, 652 are confident proposals that Accept all covers (skeleton block choices 615, missing features 37).
+Rows: 1583; 910 need reading, 673 are confident proposals that Accept all covers (skeleton block choices 636, missing features 37).
 
 Not defects counted, not listed: breakpoint 46, prop-variant 91, reached-when-forced 242, render-wins 1270.
 
@@ -393,7 +393,7 @@ Accept all: [ ]
 | `skeleton:page-help:Eye Care Birmingham/649` | **changed** page-help Eye Care Birmingham/649 <span> "+" | absorbed | 1: 8 copies of one template element; drawn by sgs/accordion-item: rule accordionItem | accept |
 | `skeleton:page-help:Eye Care Birmingham/651#0` | **changed** page-help Eye Care Birmingham/651#0 <p> "Yes. Everything comes through the brands' authorised UK suppliers to a GOC-registered clinic, boxed with its own case, cloth and warranty card. If a seller can't tell you where their stock comes from, be careful." | absorbed | 1: drawn by sgs/accordion-item: rule accordionItem | accept |
 | `skeleton:page-home:Eye Care Birmingham/174#0` | **changed** page-home Eye Care Birmingham/174#0 <div> | block:sgs/container | you chose sgs/container on 2026-10-30; the rules now propose sgs/google-reviews because a loop of items that each show a rating and a quote, linking to a review provider, is that provider's reviews block (FR-48-83) (google: a loop of 13 items with a rating and a quote, linking to the provider, 14 elements painted in google's own colours (Eye Care Birmingham/200#0 #FBBC04, sgs/google-reviews style.css --sgs-gr-star; Eye Care Birmingham/204#0 #1A73E8, sgs/google-reviews style.css --sgs-gr-blue)); the block's own parts stand beside the element it was placed on, so it is placed over the smallest element holding them: sgs/google-reviews placed on Eye Care Birmingham/189#0 draws its own parts beside it (shows-part count, shows-part arrow, shows-part average, shows-part star, shows-part aggregate-star, shows-part see-all, shows-part write-review, self-moving controls, platform google; at Eye Care Birmingham/205#0, Eye Care Birmingham/175#0) | accept |
-| `skeleton:page-home:Eye Care Birmingham/183#0` | **changed** page-home Eye Care Birmingham/183#0 <span> "★★★★★" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
+| `skeleton:page-home:Eye Care Birmingham/188#0` | **changed** page-home Eye Care Birmingham/188#0 <div> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-home:Eye Care Birmingham/222#0` | **changed** page-home Eye Care Birmingham/222#0 <ol> | block:sgs/container | you chose sgs/container on 2026-10-30; the rules now propose sgs/icon-list because identified by elimination over the framework DB's block_identity_facts: each fact the draft region shows rules out the blocks that never show it, and the facts few blocks share rank the survivors: sgs/icon-list shows implied-role list; the next, sgs/container, shows 0 | accept |
 | `skeleton:page-lenses:Eye Care Birmingham/574#0` | **changed** page-lenses Eye Care Birmingham/574#0 <ul> | block:sgs/container | you chose sgs/container on 2026-10-30; the rules now propose sgs/icon-list because identified by elimination over the framework DB's block_identity_facts: each fact the draft region shows rules out the blocks that never show it, and the facts few blocks share rank the survivors: sgs/icon-list shows implied-role list; the next, sgs/container, shows 0 | accept |
 | `skeleton:page-lenses:Eye Care Birmingham/583#0` | **changed** page-lenses Eye Care Birmingham/583#0 <ol> | block:sgs/container | you chose sgs/container on 2026-10-30; the rules now propose sgs/icon-list because identified by elimination over the framework DB's block_identity_facts: each fact the draft region shows rules out the blocks that never show it, and the facts few blocks share rank the survivors: sgs/icon-list shows implied-role list; the next, sgs/container, shows 0 | accept |
@@ -437,10 +437,11 @@ Accept all: [ ]
 | `skeleton:size-guide:Eye Care Birmingham/1248#0` | **changed** size-guide Eye Care Birmingham/1248#0 <span> "Temple" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
 | `skeleton:size-guide:Eye Care Birmingham/1269#0` | **changed** size-guide Eye Care Birmingham/1269#0 <a> | block:sgs/whatsapp-cta | 1: names and attributes: sgs/whatsapp-cta holds whatsapp (score 1.00, features: flow, link kind whatsapp); in flow: variant = inline | accept |
 
-### Needs a decision (rule-changed): remove (1)
+### Needs a decision (rule-changed): remove (2)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `skeleton:page-home:Eye Care Birmingham/185#0` | page-home Eye Care Birmingham/185#0 <div> | remove | you chose remove on 2026-11-02; the rules now propose sgs/container because of a rule change | remove |
 | `skeleton:page-product:Eye Care Birmingham/418` | page-product Eye Care Birmingham/418 <button> "Description" | remove | you chose remove on 2026-11-01; the rules now propose sgs/gallery because identified by elimination over the framework DB's block_identity_facts: each fact the draft region shows rules out the blocks that never show it, and the facts few blocks share rank the survivors: the facts and the scoring cannot separate sgs/gallery, sgs/post-grid, sgs/tabs; ruled out: sgs/button never shows renders-aria aria-selected (shown at Eye Care Birmingham/418#0); sgs/google-reviews belongs to google, and the region names no platform (its words, links and image labels); sgs/trustpilot-reviews belongs to trustpilot, and the region names no platform (its words, links and image labels) | remove |
 
 ### Needs a decision (agent-pick): block:sgs/business-info (1)
@@ -455,33 +456,11 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:mega-menu-brands:Eye Care Birmingham/72#0` | mega-menu-brands Eye Care Birmingham/72#0 <div> | block:sgs/card-grid | agent pick 0.75: Its children (the Most asked for kicker and the brand items) are drawn by sgs/card-grid (array_item_schema: card-grid holds its items in an attribute), so the holder is that card grid.; was block:sgs/card-grid 0.5 | accept |
 
-### Needs a decision (agent-pick): block:sgs/container (1)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:page-product:Eye Care Birmingham/352#0` | page-product Eye Care Birmingham/352#0 <div> | block:sgs/container | agent pick 0.45: The gallery thumbnails grid (a loop of buttons swapping the main image); on the single-product template this is the product gallery, which no candidate offers, so a container keeps the layout.; was block:sgs/multi-button 0.51 | accept |
-
-### Needs a decision (agent-pick): block:sgs/heading (9)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:page-about:Eye Care Birmingham/614#0` | page-about Eye Care Birmingham/614#0 <div> "BSc (Hons)" | block:sgs/heading | agent pick 0.7: The 22px Playfair title of each qualification item with its description paragraph below; a title role, sgs/heading.; was block:sgs/text 0.25 | accept |
-| `skeleton:page-about:Eye Care Birmingham/617#0` | page-about Eye Care Birmingham/617#0 <div> "MCOptom" | block:sgs/heading | agent pick 0.7: The 22px Playfair title of each qualification item with its description paragraph below; a title role, sgs/heading.; was block:sgs/text 0.25 | accept |
-| `skeleton:page-about:Eye Care Birmingham/620#0` | page-about Eye Care Birmingham/620#0 <div> "DipTp(IP)" | block:sgs/heading | agent pick 0.7: The 22px Playfair title of each qualification item with its description paragraph below; a title role, sgs/heading.; was block:sgs/text 0.25 | accept |
-| `skeleton:page-about:Eye Care Birmingham/623#0` | page-about Eye Care Birmingham/623#0 <div> "Paediatric Eye Care" | block:sgs/heading | agent pick 0.7: The 22px Playfair title of each qualification item with its description paragraph below; a title role, sgs/heading.; was block:sgs/text 0.25 | accept |
-| `skeleton:page-help:Eye Care Birmingham/654#0` | page-help Eye Care Birmingham/654#0 <div> "Still not answered?" | block:sgs/heading | agent pick 0.7: The 24px Playfair title of the still-not-answered card above its text and buttons; sgs/heading.; was block:sgs/text 0.25 | accept |
-| `skeleton:size-guide:Eye Care Birmingham/1236#0` | size-guide Eye Care Birmingham/1236#0 <span> "Which size am I?" | block:sgs/heading | agent pick 0.75: The 24px Playfair title of the size-guide modal beside its close button; sgs/heading.; was block:sgs/text 0.25 | accept |
-| `skeleton:size-guide:Eye Care Birmingham/1251#0` | size-guide Eye Care Birmingham/1251#0 <div> "Lens width — 42 to 62mm" | block:sgs/heading | agent pick 0.6: The medium-weight title of each measurement item with its description paragraph below; a title role, sgs/heading.; was block:sgs/text 0.25 | accept |
-| `skeleton:size-guide:Eye Care Birmingham/1254#0` | size-guide Eye Care Birmingham/1254#0 <div> "Bridge — 14 to 24mm" | block:sgs/heading | agent pick 0.6: The medium-weight title of each measurement item with its description paragraph below; a title role, sgs/heading.; was block:sgs/text 0.25 | accept |
-| `skeleton:size-guide:Eye Care Birmingham/1257#0` | size-guide Eye Care Birmingham/1257#0 <div> "Temple — 130 to 150mm" | block:sgs/heading | agent pick 0.6: The medium-weight title of each measurement item with its description paragraph below; a title role, sgs/heading.; was block:sgs/text 0.25 | accept |
-
-### Needs a decision (agent-pick): block:sgs/icon (3)
+### Needs a decision (agent-pick): block:sgs/icon (1)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:header:Eye Care Birmingham/38#0` | header Eye Care Birmingham/38#0 <button> | block:sgs/icon | agent pick 0.7: An icon-only account button (no words, aria-label from accountLabel) beside the cart; a glyph on its own is sgs/icon (linkable), while sgs/account is the My Account page wrapper, not a header control.; was block:sgs/icon 0.5 | accept |
-| `skeleton:mobile-menu:Eye Care Birmingham/1191#0` | mobile-menu Eye Care Birmingham/1191#0 <img> | block:sgs/icon | agent pick 0.7: The WhatsApp brand glyph alone inside its link button (beside the Instagram and Google glyph links); a glyph on its own is sgs/icon, which carries the brand registry, not a media image.; was block:sgs/media 0.29 | accept |
-| `skeleton:page-done:Eye Care Birmingham/844#0` | page-done Eye Care Birmingham/844#0 <div> "✓" | block:sgs/icon | agent pick 0.7: A lone check glyph in a 64px accent circle above the confirmation heading; a glyph on its own is sgs/icon, not text.; was block:sgs/text 0.25 | accept |
 
 ### Needs a decision (agent-pick): block:sgs/label (11)
 
@@ -561,21 +540,6 @@ Accept all: [ ]
 | `skeleton:page-about:Eye Care Birmingham/609#0` | page-about Eye Care Birmingham/609#0 <a> "Message me" | block:sgs/whatsapp-cta | agent pick 0.85: A wa.me link in WhatsApp green; sgs/whatsapp-cta.; was block:sgs/whatsapp-cta 0.5 | accept |
 | `skeleton:page-contact:Eye Care Birmingham/666#0` | page-contact Eye Care Birmingham/666#0 <a> "WhatsApp 07960 5978" | block:sgs/whatsapp-cta | agent pick 0.85: A wa.me link in WhatsApp green printing the number; sgs/whatsapp-cta.; was block:sgs/whatsapp-cta 0.5 | accept |
 | `skeleton:page-home:Eye Care Birmingham/242#0` | page-home Eye Care Birmingham/242#0 <a> "Message me on WhatsApp" | block:sgs/whatsapp-cta | agent pick 0.85: A wa.me link styled in WhatsApp green with the WhatsApp words; sgs/whatsapp-cta (inline variant) holds exactly this link kind.; was block:sgs/whatsapp-cta 0.5 | accept |
-
-### Needs a decision (agent-pick): remove (10)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:page-home:Eye Care Birmingham/177#0` | page-home Eye Care Birmingham/177#0 <img> | remove | agent pick 0.7: Part of the Google reviews summary and its slider arrows, which sgs/google-reviews draws itself (showAggregate, sourceLabel, averageRating, reviewCount, seeAllLabel, writeReviewLabel, showArrows, navPosition in the DB); the review loop beside it is already sgs/google-reviews.; was block:sgs/media 0.29 | remove |
-| `skeleton:page-home:Eye Care Birmingham/179#0` | page-home Eye Care Birmingham/179#0 <div> "Google Reviews" | remove | agent pick 0.7: Part of the Google reviews summary and its slider arrows, which sgs/google-reviews draws itself (showAggregate, sourceLabel, averageRating, reviewCount, seeAllLabel, writeReviewLabel, showArrows, navPosition in the DB); the review loop beside it is already sgs/google-reviews.; was block:sgs/text 0.25 | remove |
-| `skeleton:page-home:Eye Care Birmingham/181#0` | page-home Eye Care Birmingham/181#0 <span> "4.7" | remove | agent pick 0.7: Part of the Google reviews summary and its slider arrows, which sgs/google-reviews draws itself (showAggregate, sourceLabel, averageRating, reviewCount, seeAllLabel, writeReviewLabel, showArrows, navPosition in the DB); the review loop beside it is already sgs/google-reviews.; was block:sgs/text 0.25 | remove |
-| `skeleton:page-home:Eye Care Birmingham/184#0` | page-home Eye Care Birmingham/184#0 <span> "15 reviews" | remove | agent pick 0.7: Part of the Google reviews summary and its slider arrows, which sgs/google-reviews draws itself (showAggregate, sourceLabel, averageRating, reviewCount, seeAllLabel, writeReviewLabel, showArrows, navPosition in the DB); the review loop beside it is already sgs/google-reviews.; was block:sgs/text 0.25 | remove |
-| `skeleton:page-home:Eye Care Birmingham/185#0` | page-home Eye Care Birmingham/185#0 <div> | remove | agent pick 0.7: Part of the Google reviews summary and its slider arrows, which sgs/google-reviews draws itself (showAggregate, sourceLabel, averageRating, reviewCount, seeAllLabel, writeReviewLabel, showArrows, navPosition in the DB); the review loop beside it is already sgs/google-reviews.; was block:sgs/multi-button 0.51 | remove |
-| `skeleton:page-home:Eye Care Birmingham/207#0` | page-home Eye Care Birmingham/207#0 <div> | remove | agent pick 0.7: Part of the Google reviews summary and its slider arrows, which sgs/google-reviews draws itself (showAggregate, sourceLabel, averageRating, reviewCount, seeAllLabel, writeReviewLabel, showArrows, navPosition in the DB); the review loop beside it is already sgs/google-reviews.; was block:sgs/social-icons 0.51 | remove |
-| `skeleton:page-home:Eye Care Birmingham/208#0` | page-home Eye Care Birmingham/208#0 <button> | remove | agent pick 0.7: Part of the Google reviews summary and its slider arrows, which sgs/google-reviews draws itself (showAggregate, sourceLabel, averageRating, reviewCount, seeAllLabel, writeReviewLabel, showArrows, navPosition in the DB); the review loop beside it is already sgs/google-reviews.; was block:sgs/icon 0.5 | remove |
-| `skeleton:page-home:Eye Care Birmingham/211#0` | page-home Eye Care Birmingham/211#0 <button> | remove | agent pick 0.7: Part of the Google reviews summary and its slider arrows, which sgs/google-reviews draws itself (showAggregate, sourceLabel, averageRating, reviewCount, seeAllLabel, writeReviewLabel, showArrows, navPosition in the DB); the review loop beside it is already sgs/google-reviews.; was block:sgs/icon 0.5 | remove |
-| `skeleton:page-home:Eye Care Birmingham/235#0` | page-home Eye Care Birmingham/235#0 <span> "The reception or the consulting room — whichever you'd rather show. No portrait needed." | remove | agent pick 0.8: Designer brief copy inside an image placeholder (whichever you would rather show, no portrait needed); a line that exists only because of the brief is removed.; was block:sgs/text 0.25 | remove |
-| `skeleton:page-product:Eye Care Birmingham/348#0` | page-product Eye Care Birmingham/348#0 <div> "Photography to come front · three-quarter · side · worn" | remove | agent pick 0.85: Photography to come: placeholder brief copy in the gallery frame; removed.; was block:sgs/text 0.25 | remove |
 
 ### Settled by rule alignWrapper: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) (1)
 
@@ -1128,7 +1092,7 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:mega-menu-sunglasses:Eye Care Birmingham/52#0` | mega-menu-sunglasses Eye Care Birmingham/52#0 <div> | unwrap | 1: 4 copies of one template element on 4 surfaces; a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there | accept |
 
-### Confident proposals (Accept all covers these) (259)
+### Confident proposals (Accept all covers these) (280)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -1183,6 +1147,7 @@ Accept all: [ ]
 | `skeleton:mobile-menu:Eye Care Birmingham/1182#0` | mobile-menu Eye Care Birmingham/1182#0 <a> | block:sgs/icon | 0.9 | accept |
 | `skeleton:mobile-menu:Eye Care Birmingham/1187#0` | mobile-menu Eye Care Birmingham/1187#0 <a> | block:sgs/icon | 0.9 | accept |
 | `skeleton:mobile-menu:Eye Care Birmingham/1190#0` | mobile-menu Eye Care Birmingham/1190#0 <a> | block:sgs/container | 1 | accept |
+| `skeleton:mobile-menu:Eye Care Birmingham/1191#0` | mobile-menu Eye Care Birmingham/1191#0 <img> | block:sgs/icon | 1 | accept |
 | `skeleton:page-about:Eye Care Birmingham/599#0` | page-about Eye Care Birmingham/599#0 <main> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-about:Eye Care Birmingham/603#0` | page-about Eye Care Birmingham/603#0 <h1> "Fatima Nawaz" | block:sgs/heading | 0.75 | accept |
 | `skeleton:page-about:Eye Care Birmingham/604#0` | page-about Eye Care Birmingham/604#0 <p> "BSc (Hons) Optometry · MCOptom · DipTp(IP) · Prof Cert Paediatric Eye Care" | block:sgs/text | 0.75 | accept |
@@ -1191,9 +1156,13 @@ Accept all: [ ]
 | `skeleton:page-about:Eye Care Birmingham/607#0` | page-about Eye Care Birmingham/607#0 <p> "Every prescription order is checked by me before it's made. If a frame won't suit a strong prescription, I'll say so before you pay and suggest something that will." | block:sgs/text | 0.75 | accept |
 | `skeleton:page-about:Eye Care Birmingham/608#0` | page-about Eye Care Birmingham/608#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:page-about:Eye Care Birmingham/611#0` | page-about Eye Care Birmingham/611#0 <button> "Shop the range" | block:sgs/button | 0.75 | accept |
+| `skeleton:page-about:Eye Care Birmingham/614#0` | page-about Eye Care Birmingham/614#0 <div> "BSc (Hons)" | block:sgs/heading | 1 | accept |
 | `skeleton:page-about:Eye Care Birmingham/615#0` | page-about Eye Care Birmingham/615#0 <p> "An honours degree in optometry, a supervised pre-registration year, and registration with the General Optical Council." | block:sgs/text | 0.75 | accept |
+| `skeleton:page-about:Eye Care Birmingham/617#0` | page-about Eye Care Birmingham/617#0 <div> "MCOptom" | block:sgs/heading | 1 | accept |
 | `skeleton:page-about:Eye Care Birmingham/618#0` | page-about Eye Care Birmingham/618#0 <p> "Member of the College of Optometrists, which means ongoing training and a code of clinic beyond the legal minimum." | block:sgs/text | 0.75 | accept |
+| `skeleton:page-about:Eye Care Birmingham/620#0` | page-about Eye Care Birmingham/620#0 <div> "DipTp(IP)" | block:sgs/heading | 1 | accept |
 | `skeleton:page-about:Eye Care Birmingham/621#0` | page-about Eye Care Birmingham/621#0 <p> "Independent Prescriber — a postgraduate qualification allowing me to diagnose eye conditions and prescribe medicine for them. Most opticians can't." | block:sgs/text | 0.75 | accept |
+| `skeleton:page-about:Eye Care Birmingham/623#0` | page-about Eye Care Birmingham/623#0 <div> "Paediatric Eye Care" | block:sgs/heading | 1 | accept |
 | `skeleton:page-about:Eye Care Birmingham/624#0` | page-about Eye Care Birmingham/624#0 <p> "Additional certification in children's vision, which matters when the order is for a child." | block:sgs/text | 0.75 | accept |
 | `skeleton:page-account:Eye Care Birmingham/917#0` | page-account Eye Care Birmingham/917#0 <main> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-account:Eye Care Birmingham/921#0` | page-account Eye Care Birmingham/921#0 <h1> "Hello, Aisha" | block:sgs/heading | 0.75 | accept |
@@ -1210,6 +1179,7 @@ Accept all: [ ]
 | `skeleton:page-contact:Eye Care Birmingham/728#0` | page-contact Eye Care Birmingham/728#0 <span> "644 Washwood Heath Rd, B8 2HQ" | block:sgs/business-info | 0.8 | accept |
 | `skeleton:page-contact:Eye Care Birmingham/730#0` | page-contact Eye Care Birmingham/730#0 <p> "Sketch map — swap for an embedded Google map on the live site." | block:sgs/text | 0.75 | accept |
 | `skeleton:page-done:Eye Care Birmingham/843#0` | page-done Eye Care Birmingham/843#0 <main> | block:sgs/container | 0.75 | accept |
+| `skeleton:page-done:Eye Care Birmingham/844#0` | page-done Eye Care Birmingham/844#0 <div> "✓" | block:sgs/icon | 1 | accept |
 | `skeleton:page-done:Eye Care Birmingham/845#0` | page-done Eye Care Birmingham/845#0 <h1> "Thank you — order EC-10482." | block:sgs/heading | 0.75 | accept |
 | `skeleton:page-done:Eye Care Birmingham/846#0` | page-done Eye Care Birmingham/846#0 <p> "Confirmation is on its way by email and WhatsApp. Frames post within one working day; prescription lenses take 7 to 10." | block:sgs/text | 0.75 | accept |
 | `skeleton:page-done:Eye Care Birmingham/849#0` | page-done Eye Care Birmingham/849#0 <div> | block:sgs/container | 1 | accept |
@@ -1228,6 +1198,7 @@ Accept all: [ ]
 | `skeleton:page-help:Eye Care Birmingham/643#0` | page-help Eye Care Birmingham/643#0 <a> "Contact me" | block:sgs/button | 0.75 | accept |
 | `skeleton:page-help:Eye Care Birmingham/652#0` | page-help Eye Care Birmingham/652#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:page-help:Eye Care Birmingham/653#0` | page-help Eye Care Birmingham/653#0 <div> | block:sgs/container | 0.75 | accept |
+| `skeleton:page-help:Eye Care Birmingham/654#0` | page-help Eye Care Birmingham/654#0 <div> "Still not answered?" | block:sgs/heading | 1 | accept |
 | `skeleton:page-help:Eye Care Birmingham/657#0` | page-help Eye Care Birmingham/657#0 <button> "Contact me" | block:sgs/button | 0.75 | accept |
 | `skeleton:page-home:Eye Care Birmingham/111#0` | page-home Eye Care Birmingham/111#0 <main> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-home:Eye Care Birmingham/118#0` | page-home Eye Care Birmingham/118#0 <p> "40 designer brands · Birmingham" | block:sgs/text | 0.75 | accept |
@@ -1265,14 +1236,21 @@ Accept all: [ ]
 | `skeleton:page-home:Eye Care Birmingham/173#0` | page-home Eye Care Birmingham/173#0 <h2> "What people say" | block:sgs/heading | 0.75 | accept |
 | `skeleton:page-home:Eye Care Birmingham/175#0` | page-home Eye Care Birmingham/175#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:page-home:Eye Care Birmingham/176#0` | page-home Eye Care Birmingham/176#0 <div> | block:sgs/container | 1 | accept |
-| `skeleton:page-home:Eye Care Birmingham/178#0` | page-home Eye Care Birmingham/178#0 <div> | block:sgs/container | 0.75 | remove |
-| `skeleton:page-home:Eye Care Birmingham/180#0` | page-home Eye Care Birmingham/180#0 <div> | block:sgs/container | 1 | remove |
-| `skeleton:page-home:Eye Care Birmingham/182#0` | page-home Eye Care Birmingham/182#0 <span> "★★★★★" | block:sgs/container | 0.75 | remove |
-| `skeleton:page-home:Eye Care Birmingham/186#0` | page-home Eye Care Birmingham/186#0 <a> "See all reviews" | block:sgs/button | 0.75 | remove |
-| `skeleton:page-home:Eye Care Birmingham/187#0` | page-home Eye Care Birmingham/187#0 <a> "Write a review" | block:sgs/button | 0.75 | remove |
-| `skeleton:page-home:Eye Care Birmingham/188#0` | page-home Eye Care Birmingham/188#0 <div> | block:sgs/container | 0.75 | remove |
-| `skeleton:page-home:Eye Care Birmingham/205#0` | page-home Eye Care Birmingham/205#0 <div> | block:sgs/container | 1 | remove |
-| `skeleton:page-home:Eye Care Birmingham/206#0` | page-home Eye Care Birmingham/206#0 <p> "Scroll for more — 13 of the 15 reviews left a comment." | block:sgs/text | 0.75 | remove |
+| `skeleton:page-home:Eye Care Birmingham/177#0` | page-home Eye Care Birmingham/177#0 <img> | remove | 1: Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block | remove |
+| `skeleton:page-home:Eye Care Birmingham/178#0` | page-home Eye Care Birmingham/178#0 <div> | remove | 1: Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block | accept |
+| `skeleton:page-home:Eye Care Birmingham/179#0` | page-home Eye Care Birmingham/179#0 <div> "Google Reviews" | remove | 1: inside a removed element (Eye Care Birmingham/178#0) | remove |
+| `skeleton:page-home:Eye Care Birmingham/180#0` | page-home Eye Care Birmingham/180#0 <div> | remove | 1: inside a removed element (Eye Care Birmingham/178#0) | accept |
+| `skeleton:page-home:Eye Care Birmingham/181#0` | page-home Eye Care Birmingham/181#0 <span> "4.7" | remove | 1: inside a removed element (Eye Care Birmingham/178#0) | remove |
+| `skeleton:page-home:Eye Care Birmingham/182#0` | page-home Eye Care Birmingham/182#0 <span> "★★★★★" | remove | 1: inside a removed element (Eye Care Birmingham/178#0) | accept |
+| `skeleton:page-home:Eye Care Birmingham/183#0` | page-home Eye Care Birmingham/183#0 <span> "★★★★★" | remove | 1: inside a removed element (Eye Care Birmingham/178#0) | accept |
+| `skeleton:page-home:Eye Care Birmingham/184#0` | page-home Eye Care Birmingham/184#0 <span> "15 reviews" | remove | 1: inside a removed element (Eye Care Birmingham/178#0) | remove |
+| `skeleton:page-home:Eye Care Birmingham/186#0` | page-home Eye Care Birmingham/186#0 <a> "See all reviews" | remove | 1: inside a removed element (Eye Care Birmingham/185#0) | accept |
+| `skeleton:page-home:Eye Care Birmingham/187#0` | page-home Eye Care Birmingham/187#0 <a> "Write a review" | remove | 1: inside a removed element (Eye Care Birmingham/185#0) | accept |
+| `skeleton:page-home:Eye Care Birmingham/205#0` | page-home Eye Care Birmingham/205#0 <div> | remove | 1: Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block | accept |
+| `skeleton:page-home:Eye Care Birmingham/206#0` | page-home Eye Care Birmingham/206#0 <p> "Scroll for more — 13 of the 15 reviews left a comment." | remove | 1: inside a removed element (Eye Care Birmingham/205#0) | accept |
+| `skeleton:page-home:Eye Care Birmingham/207#0` | page-home Eye Care Birmingham/207#0 <div> | remove | 1: inside a removed element (Eye Care Birmingham/205#0) | remove |
+| `skeleton:page-home:Eye Care Birmingham/208#0` | page-home Eye Care Birmingham/208#0 <button> | remove | 1: inside a removed element (Eye Care Birmingham/205#0) | remove |
+| `skeleton:page-home:Eye Care Birmingham/211#0` | page-home Eye Care Birmingham/211#0 <button> | remove | 1: inside a removed element (Eye Care Birmingham/205#0) | remove |
 | `skeleton:page-home:Eye Care Birmingham/214#0` | page-home Eye Care Birmingham/214#0 <section> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-home:Eye Care Birmingham/215#0` | page-home Eye Care Birmingham/215#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:page-home:Eye Care Birmingham/216#0` | page-home Eye Care Birmingham/216#0 <div> | block:sgs/container | 0.75 | accept |
@@ -1287,6 +1265,7 @@ Accept all: [ ]
 | `skeleton:page-home:Eye Care Birmingham/231#0` | page-home Eye Care Birmingham/231#0 <section> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-home:Eye Care Birmingham/232#0` | page-home Eye Care Birmingham/232#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:page-home:Eye Care Birmingham/233#0` | page-home Eye Care Birmingham/233#0 <div> | block:sgs/container | 1 | accept |
+| `skeleton:page-home:Eye Care Birmingham/235#0` | page-home Eye Care Birmingham/235#0 <span> "The reception or the consulting room — whichever you'd rather show. No portrait needed." | remove | 1: Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block | remove |
 | `skeleton:page-home:Eye Care Birmingham/236#0` | page-home Eye Care Birmingham/236#0 <div> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-home:Eye Care Birmingham/237#0` | page-home Eye Care Birmingham/237#0 <p> "You're buying from a person" | block:sgs/text | 0.75 | accept |
 | `skeleton:page-home:Eye Care Birmingham/238#0` | page-home Eye Care Birmingham/238#0 <h2> "I'm Fatima Nawaz, and I run the clinic in Birmingham." | block:sgs/heading | 0.75 | accept |
@@ -1328,6 +1307,8 @@ Accept all: [ ]
 | `skeleton:page-product:Eye Care Birmingham/337#0` | page-product Eye Care Birmingham/337#0 <a> "Sunglasses" | block:sgs/button | 0.75 | accept |
 | `skeleton:page-product:Eye Care Birmingham/339#0` | page-product Eye Care Birmingham/339#0 <a> "Ray-Ban" | block:sgs/button | 0.75 | accept |
 | `skeleton:page-product:Eye Care Birmingham/342#0` | page-product Eye Care Birmingham/342#0 <div> | block:sgs/container | 0.75 | accept |
+| `skeleton:page-product:Eye Care Birmingham/348#0` | page-product Eye Care Birmingham/348#0 <div> "Photography to come front · three-quarter · side · worn" | remove | 1: Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block | remove |
+| `skeleton:page-product:Eye Care Birmingham/352#0` | page-product Eye Care Birmingham/352#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:page-product:Eye Care Birmingham/354` | page-product Eye Care Birmingham/354 <button> "Front" | block:sgs/button | 0.75: 4 copies of one template element | accept |
 | `skeleton:page-product:Eye Care Birmingham/414#0` | page-product Eye Care Birmingham/414#0 <section> | block:sgs/container | 1 | accept |
 | `skeleton:page-product:Eye Care Birmingham/420#0` | page-product Eye Care Birmingham/420#0 <div> | block:sgs/container | 0.75 | accept |
@@ -1375,6 +1356,7 @@ Accept all: [ ]
 | `skeleton:page-signin:Eye Care Birmingham/858#0` | page-signin Eye Care Birmingham/858#0 <h1> "Sign in or create an account" | block:sgs/heading | 0.75 | accept |
 | `skeleton:page-signin:Eye Care Birmingham/859#0` | page-signin Eye Care Birmingham/859#0 <p> "You don't need an account to order; checkout works as a guest. An account keeps your orders, subscriptions, addresses and saved frames in one place." | block:sgs/text | 0.75 | accept |
 | `skeleton:size-guide:Eye Care Birmingham/1235#0` | size-guide Eye Care Birmingham/1235#0 <div> | block:sgs/container | 1 | accept |
+| `skeleton:size-guide:Eye Care Birmingham/1236#0` | size-guide Eye Care Birmingham/1236#0 <span> "Which size am I?" | block:sgs/heading | 1 | accept |
 | `skeleton:size-guide:Eye Care Birmingham/1238#0` | size-guide Eye Care Birmingham/1238#0 <div> | block:sgs/container | 0.75 | accept |
 | `skeleton:size-guide:Eye Care Birmingham/1239#0` | size-guide Eye Care Birmingham/1239#0 <p> "The quickest way: pick up a pair of glasses you already like the fit of and look at the inside of the left arm. You'll find three numbers printed there." | block:sgs/text | 0.75 | accept |
 | `skeleton:size-guide:Eye Care Birmingham/1240#0` | size-guide Eye Care Birmingham/1240#0 <div> | block:sgs/container | 0.75 | accept |
@@ -1382,10 +1364,13 @@ Accept all: [ ]
 | `skeleton:size-guide:Eye Care Birmingham/1245#0` | size-guide Eye Care Birmingham/1245#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:size-guide:Eye Care Birmingham/1249#0` | size-guide Eye Care Birmingham/1249#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:size-guide:Eye Care Birmingham/1250#0` | size-guide Eye Care Birmingham/1250#0 <div> | block:sgs/container | 0.75 | accept |
+| `skeleton:size-guide:Eye Care Birmingham/1251#0` | size-guide Eye Care Birmingham/1251#0 <div> "Lens width — 42 to 62mm" | block:sgs/heading | 1 | accept |
 | `skeleton:size-guide:Eye Care Birmingham/1252#0` | size-guide Eye Care Birmingham/1252#0 <p> "The width of one lens at its widest. This is the number that decides whether a frame looks too small or too big on you." | block:sgs/text | 0.75 | accept |
 | `skeleton:size-guide:Eye Care Birmingham/1253#0` | size-guide Eye Care Birmingham/1253#0 <div> | block:sgs/container | 0.75 | accept |
+| `skeleton:size-guide:Eye Care Birmingham/1254#0` | size-guide Eye Care Birmingham/1254#0 <div> "Bridge — 14 to 24mm" | block:sgs/heading | 1 | accept |
 | `skeleton:size-guide:Eye Care Birmingham/1255#0` | size-guide Eye Care Birmingham/1255#0 <p> "The gap between the lenses that sits over your nose. Too narrow and they pinch; too wide and they slide down." | block:sgs/text | 0.75 | accept |
 | `skeleton:size-guide:Eye Care Birmingham/1256#0` | size-guide Eye Care Birmingham/1256#0 <div> | block:sgs/container | 0.75 | accept |
+| `skeleton:size-guide:Eye Care Birmingham/1257#0` | size-guide Eye Care Birmingham/1257#0 <div> "Temple — 130 to 150mm" | block:sgs/heading | 1 | accept |
 | `skeleton:size-guide:Eye Care Birmingham/1258#0` | size-guide Eye Care Birmingham/1258#0 <p> "The length of the arm, ear bend included. I can adjust this in person, so it's the least critical of the three." | block:sgs/text | 0.75 | accept |
 | `skeleton:size-guide:Eye Care Birmingham/1259#0` | size-guide Eye Care Birmingham/1259#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:size-guide:Eye Care Birmingham/1260#0` | size-guide Eye Care Birmingham/1260#0 <div> | block:sgs/container | 1 | accept |

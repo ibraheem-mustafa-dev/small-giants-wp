@@ -1,7 +1,7 @@
 [
 	{ "file": "lib/skeleton-form-link.mjs", "find": "'form' === rec?.kind && rec.parent === scope.id && 'linked' === ref?.kind", "replace": "'form' === rec?.kind && 'linked' === ref?.kind", "why": "a form record on another page is linked here" },
 	{ "file": "lib/skeleton-form-link.mjs", "find": "return [ ...roots ].sort( ( a, b ) => depth( b ) - depth( a ) )[ 0 ] ?? null;", "replace": "return [ ...roots ].sort( ( a, b ) => depth( a ) - depth( b ) )[ 0 ] ?? null;", "why": "the outermost root is taken for the innermost" },
-	{ "file": "lib/skeleton-form-link.mjs", "find": "list.slice( 1 ).forEach( ( e ) => verdicts.set( e.key, { remove: true } ) );", "replace": "list.slice( 1 ).forEach( ( e ) => verdicts.set( e.key, { block, attributes } ) );", "why": "every element under the root becomes its own embed" },
+	{ "file": "lib/skeleton-form-link.mjs", "find": "list.slice( 1 ) ).forEach( ( e ) => verdicts.set( e.key, { remove: true } ) );", "replace": "list.slice( 1 ) ).forEach( ( e ) => verdicts.set( e.key, { block, attributes } ) );", "why": "every element under the root becomes its own embed" },
 	{ "file": "lib/skeleton-form-link.mjs", "find": "if ( at > 0 && recordId && 'linked' === refs[ block ]?.kind ) {", "replace": "if ( at > 0 && recordId ) {", "why": "a frame block is taken for a linked one" },
 	{ "file": "lib/skeleton-form-link.mjs", "find": "const recordId = entry.intakeSurface ? intake?.skeletons?.[ entry.intakeSurface ]?.id : null;", "replace": "const recordId = entry.intakeSurface || null;", "why": "the record id is the intake slug" },
 	{ "file": "lib/skeleton-propose.mjs", "find": "if ( 'formLink' === r.rule ) {", "replace": "if ( false ) {", "why": "the linked embed keeps its draft link, so Fill writes into it" },

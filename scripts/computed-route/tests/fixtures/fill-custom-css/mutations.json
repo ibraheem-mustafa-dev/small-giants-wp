@@ -115,32 +115,32 @@
 	},
 	{
 		"file": "lib/fill-custom-css.mjs",
-		"find": "export const openMachinery = ( row, opened ) => !! opened && row.node === opened.root && '' === ( row.slot ?? '' ) && OPEN_MACHINERY.includes( row.property );",
-		"replace": "export const openMachinery = () => false;",
+		"find": "export const openMachinery = ( row, opened ) => !! opened && OPEN_MACHINERY.includes( row.property ) && (",
+		"replace": "export const openMachinery = ( row, opened ) => false && OPEN_MACHINERY.includes( row.property ) && (",
 		"why": "the old behaviour: an opened surface root's display is written as a resting rule"
 	},
 	{
 		"file": "lib/fill-custom-css.mjs",
-		"find": "export const openMachinery = ( row, opened ) => !! opened && row.node === opened.root && '' === ( row.slot ?? '' ) && OPEN_MACHINERY.includes( row.property );",
-		"replace": "export const openMachinery = ( row ) => OPEN_MACHINERY.includes( row.property ) && '' === ( row.slot ?? '' );",
+		"find": "export const openMachinery = ( row, opened ) => !! opened && OPEN_MACHINERY.includes( row.property ) && (",
+		"replace": "export const openMachinery = ( row, opened ) => ( opened = opened || { root: row.node }, true ) && OPEN_MACHINERY.includes( row.property ) && (",
 		"why": "a surface read at rest would lose its root's display too"
 	},
 	{
 		"file": "lib/fill-custom-css.mjs",
-		"find": "export const openMachinery = ( row, opened ) => !! opened && row.node === opened.root && '' === ( row.slot ?? '' ) && OPEN_MACHINERY.includes( row.property );",
-		"replace": "export const openMachinery = ( row, opened ) => !! opened && OPEN_MACHINERY.includes( row.property );",
+		"find": "( row.node === opened.root && '' === ( row.slot ?? '' ) )",
+		"replace": "( '' === ( row.slot ?? '' ) )",
 		"why": "a descendant's display would be dropped on an opened surface"
 	},
 	{
 		"file": "lib/fill-custom-css.mjs",
-		"find": "export const openMachinery = ( row, opened ) => !! opened && row.node === opened.root && '' === ( row.slot ?? '' ) && OPEN_MACHINERY.includes( row.property );",
-		"replace": "export const openMachinery = ( row, opened ) => !! opened && row.node === opened.root && '' === ( row.slot ?? '' ) && [ 'display', 'visibility', 'opacity', 'pointer-events' ].includes( row.property );",
+		"find": "export const OPEN_MACHINERY = [ 'display', 'visibility', 'opacity', 'pointer-events', 'content-visibility' ];",
+		"replace": "export const OPEN_MACHINERY = [ 'display', 'visibility', 'opacity', 'pointer-events' ];",
 		"why": "content-visibility of the opened root would be written"
 	},
 	{
 		"file": "lib/fill-custom-css.mjs",
-		"find": "export const openMachinery = ( row, opened ) => !! opened && row.node === opened.root && '' === ( row.slot ?? '' ) && OPEN_MACHINERY.includes( row.property );",
-		"replace": "export const openMachinery = ( row, opened ) => !! opened && row.node === opened.root && '' === ( row.slot ?? '' ) && [ 'display', 'visibility', 'opacity', 'pointer-events', 'content-visibility', 'z-index' ].includes( row.property );",
+		"find": "export const OPEN_MACHINERY = [ 'display', 'visibility', 'opacity', 'pointer-events', 'content-visibility' ];",
+		"replace": "export const OPEN_MACHINERY = [ 'display', 'visibility', 'opacity', 'pointer-events', 'content-visibility', 'z-index' ];",
 		"why": "z-index of the opened root would be dropped"
 	}
 ]

@@ -1161,10 +1161,10 @@
 				"reason": "Settled by evidence: sgs/label in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
 			},
 			"Indus Foods Website v2/312#0": {
-				"block": "sgs/container",
+				"block": "sgs/multi-button",
 				"signature": "div|",
-				"proposed": "sgs/container",
-				"reason": "Settled by evidence: sgs/container in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"proposed": "sgs/multi-button",
+				"reason": "Bean marked block:sgs/multi-button in the intake review on 2026-11-02"
 			}
 		},
 		"page-about": {
@@ -2283,9 +2283,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|About Us",
-				"proposed": "remove",
-				"reason": "Settled by evidence: remove in the intake review on 2026-11-02 (draft code, built page and block facts; the form rows follow Bean 2026-11-01: the form stays separate from the page content)"
+				"signature": "span|Our Story",
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/440#0": {
 				"remove": true,
@@ -3114,9 +3114,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
-				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"signature": "span|About Us",
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/411#0": {
 				"block": "sgs/text",
@@ -3715,9 +3715,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/331#0": {
 				"block": "sgs/container",
@@ -3919,27 +3919,27 @@
 			},
 			"Indus Foods Website v2/490#0": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Local food support",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#1": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Ramadan & Eid",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#2": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Local jobs",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#3": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Independent businesses",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/491#0": {
 				"block": "sgs/text",
@@ -4168,9 +4168,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/201#0": {
 				"block": "sgs/container",
@@ -4585,9 +4585,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/354#0": {
 				"block": "sgs/text",
@@ -5167,27 +5167,27 @@
 			},
 			"Indus Foods Website v2/490#0": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Family culture",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#1": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Training",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#2": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Progression",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#3": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|A growing site",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/491#0": {
 				"block": "sgs/text",
@@ -5525,9 +5525,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/336#0": {
 				"block": "sgs/multi-button",
@@ -5990,39 +5990,39 @@
 			},
 			"Indus Foods Website v2/490#0": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Rice & grains",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#1": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Spices & seasonings",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#2": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Oils & ghee",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#3": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Flour & atta",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#4": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Frozen",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#5": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Packaging & housewares",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/491#0": {
 				"block": "sgs/text",
@@ -6426,9 +6426,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/336#0": {
 				"block": "sgs/multi-button",
@@ -6713,33 +6713,33 @@
 			},
 			"Indus Foods Website v2/490#0": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Whole & ground spices",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#1": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Pulses & lentils",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#2": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Nuts & dried fruit",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#3": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Flours",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#4": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Oils & ghee",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/491#0": {
 				"block": "sgs/text",
@@ -7293,9 +7293,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/336#0": {
 				"block": "sgs/multi-button",
@@ -8004,9 +8004,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/336#0": {
 				"block": "sgs/multi-button",
@@ -8661,9 +8661,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/506#0": {
 				"block": "sgs/text",
@@ -9252,9 +9252,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/336#0": {
 				"block": "sgs/multi-button",
@@ -9551,33 +9551,33 @@
 			},
 			"Indus Foods Website v2/490#0": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Rice",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#1": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Flour",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#2": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Spices",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#3": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Lentils & pulses",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#4": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Dried fruit & nuts",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/491#0": {
 				"block": "sgs/text",
@@ -9795,9 +9795,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/336#0": {
 				"block": "sgs/multi-button",
@@ -9986,21 +9986,21 @@
 			},
 			"Indus Foods Website v2/490#0": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Recipe mixes",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#1": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Plain spices",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#2": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Pastes & pickles",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/491#0": {
 				"block": "sgs/text",
@@ -10236,9 +10236,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/336#0": {
 				"block": "sgs/multi-button",
@@ -10427,21 +10427,21 @@
 			},
 			"Indus Foods Website v2/490#0": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Herbs",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#1": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Pulses",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#2": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Pantry staples",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/491#0": {
 				"block": "sgs/text",
@@ -10677,9 +10677,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/336#0": {
 				"block": "sgs/multi-button",
@@ -10868,21 +10868,21 @@
 			},
 			"Indus Foods Website v2/490#0": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Rusks",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#1": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Traditional bakes",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#2": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Delicatessen",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/491#0": {
 				"block": "sgs/text",
@@ -11118,9 +11118,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2>TradeApplication@466#0/14#0": {
 				"remove": true,
@@ -11605,9 +11605,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/201#0": {
 				"block": "sgs/container",
@@ -11935,63 +11935,63 @@
 			},
 			"Indus Foods Website v2/490#0": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Rice & grains",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#1": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Spices & seasonings",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#2": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Lentils & pulses",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#3": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Flour & atta",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#4": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Oils & ghee",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#5": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Dried fruit & nuts",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#6": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Tinned & jarred",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#7": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Frozen",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#8": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Snacks & drinks",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/490#9": {
 				"block": "sgs/heading",
-				"signature": "div|Our Story",
+				"signature": "div|Non-food & packaging",
 				"proposed": "sgs/heading",
-				"reason": "Settled by evidence: sgs/heading in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/491#0": {
 				"block": "sgs/text",
@@ -12167,9 +12167,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/590#0": {
 				"block": "sgs/text",
@@ -12722,9 +12722,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/641#0": {
 				"remove": true,
@@ -13015,9 +13015,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/601#0": {
 				"remove": true,
@@ -13541,9 +13541,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/535#0": {
 				"block": "sgs/business-info",
@@ -14056,9 +14056,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/590#0": {
 				"block": "sgs/text",
@@ -14477,9 +14477,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/604#0": {
 				"block": "sgs/post-grid",
@@ -14972,9 +14972,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/604#0": {
 				"block": "sgs/post-grid",
@@ -15446,9 +15446,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/604#0": {
 				"block": "sgs/post-grid",
@@ -15935,9 +15935,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/604#0": {
 				"block": "sgs/post-grid",
@@ -16409,9 +16409,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/604#0": {
 				"block": "sgs/post-grid",
@@ -16883,9 +16883,9 @@
 			},
 			"Indus Foods Website v2/328#0": {
 				"remove": true,
-				"signature": "span|Certifications",
+				"signature": "span|Our Story",
 				"proposed": "sgs/text",
-				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The current crumb inside the breadcrumb trail; sgs/breadcrumbs draws it itself (showCurrentCrumb, currentColour in the DB) and its sibling crumbs are already absorbed."
 			},
 			"Indus Foods Website v2/604#0": {
 				"block": "sgs/post-grid",
@@ -17394,12 +17394,6 @@
 				"signature": "span|Takes about 5 minutes · Your progress saves automatically",
 				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A short reassurance line beside the Continue button; sgs/text is the only candidate."
 			},
-			"Indus Foods Website v2>TradeApplication@466#0/6#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"proposed": "sgs/container",
-				"reason": "Settled by evidence: block:sgs/container in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
-			},
 			"Indus Foods Website v2>TradeApplication@466#0/9#0": {
 				"block": "sgs/container",
 				"signature": "div|",
@@ -17544,114 +17538,6 @@
 				"reason": "Bean accepted sgs/container in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
 				"proposed": "sgs/container"
 			},
-			"Indus Foods Website v2>TradeApplication@466#0/86#0": {
-				"block": "sgs/container",
-				"signature": "aside|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Indus Foods Website v2>TradeApplication@466#0/87#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Indus Foods Website v2>TradeApplication@466#0/88#0": {
-				"block": "sgs/container",
-				"signature": "button|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Indus Foods Website v2>TradeApplication@466#0/89#0": {
-				"block": "sgs/label",
-				"signature": "span|Have these ready",
-				"reason": "Bean accepted sgs/label in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/label"
-			},
-			"Indus Foods Website v2>TradeApplication@466#0/93#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Indus Foods Website v2>TradeApplication@466#0/96#0": {
-				"block": "sgs/icon",
-				"signature": "span|",
-				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/icon"
-			},
-			"Indus Foods Website v2>TradeApplication@466#0/96#1": {
-				"remove": true,
-				"signature": "span|",
-				"proposed": "remove",
-				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
-			},
-			"Indus Foods Website v2>TradeApplication@466#0/96#2": {
-				"remove": true,
-				"signature": "span|",
-				"proposed": "remove",
-				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
-			},
-			"Indus Foods Website v2>TradeApplication@466#0/96#3": {
-				"remove": true,
-				"signature": "span|",
-				"proposed": "remove",
-				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
-			},
-			"Indus Foods Website v2>TradeApplication@466#0/96#4": {
-				"remove": true,
-				"signature": "span|",
-				"proposed": "remove",
-				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
-			},
-			"Indus Foods Website v2>TradeApplication@466#0/98#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Indus Foods Website v2>TradeApplication@466#0/99#0": {
-				"block": "sgs/heading",
-				"signature": "span|Need a hand?",
-				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/heading"
-			},
-			"Indus Foods Website v2>TradeApplication@466#0/100#0": {
-				"block": "sgs/text",
-				"signature": "p|Our trade team can complete the application with you over the phone.",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
-			},
-			"Indus Foods Website v2>TradeApplication@466#0/101#0": {
-				"block": "sgs/button",
-				"signature": "a|0121 771 4330",
-				"reason": "Bean accepted sgs/button in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/button"
-			},
-			"Indus Foods Website v2>TradeApplication@466#0/91#0": {
-				"block": "sgs/icon",
-				"signature": "span|",
-				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/icon"
-			},
-			"Indus Foods Website v2>TradeApplication@466#0/103#0": {
-				"block": "sgs/container",
-				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
-			},
-			"Indus Foods Website v2>TradeApplication@466#0/104#0": {
-				"block": "sgs/text",
-				"signature": "span|Prefer to apply over the phone?",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
-			},
-			"Indus Foods Website v2>TradeApplication@466#0/105#0": {
-				"block": "sgs/button",
-				"signature": "a|Call 0121 771 4330",
-				"reason": "Bean accepted sgs/button in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/button"
-			},
 			"Indus Foods Website v2>TradeApplication@466#0/19#0": {
 				"remove": true,
 				"signature": "span|1",
@@ -17663,12 +17549,6 @@
 				"signature": "span|Business",
 				"reason": "Bean accepted remove in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
 				"proposed": "remove"
-			},
-			"Indus Foods Website v2>TradeApplication@466#0/95#0": {
-				"block": "sgs/container",
-				"signature": "div|Your trading and registered business name",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
 			},
 			"Indus Foods Website v2>TradeApplication@466#0/7#0": {
 				"block": "sgs/form",
@@ -17754,29 +17634,143 @@
 				"proposed": "remove",
 				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
 			},
+			"Indus Foods Website v2>TradeApplication@466#0/86#0": {
+				"remove": true,
+				"signature": "aside|",
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/87#0": {
+				"remove": true,
+				"signature": "div|",
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/88#0": {
+				"remove": true,
+				"signature": "button|",
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/89#0": {
+				"remove": true,
+				"signature": "span|Have these ready",
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/91#0": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/93#0": {
+				"remove": true,
+				"signature": "div|",
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/95#0": {
+				"remove": true,
+				"signature": "div|Your trading and registered business name",
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
+			},
 			"Indus Foods Website v2>TradeApplication@466#0/95#1": {
 				"remove": true,
 				"signature": "div|Companies House and VAT numbers (if you have them)",
 				"proposed": "remove",
-				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2>TradeApplication@466#0/95#2": {
 				"remove": true,
 				"signature": "div|Business and delivery address",
 				"proposed": "remove",
-				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2>TradeApplication@466#0/95#3": {
 				"remove": true,
 				"signature": "div|Owner or director details",
 				"proposed": "remove",
-				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2>TradeApplication@466#0/95#4": {
 				"remove": true,
 				"signature": "div|Two trade references for a credit account",
 				"proposed": "remove",
-				"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/indus-foods/build/intake/review-evidence.md)"
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/96#0": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/96#1": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/96#2": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/96#3": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/96#4": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/98#0": {
+				"remove": true,
+				"signature": "div|",
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/99#0": {
+				"remove": true,
+				"signature": "span|Need a hand?",
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/100#0": {
+				"remove": true,
+				"signature": "p|Our trade team can complete the application with you over the phone.",
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/101#0": {
+				"remove": true,
+				"signature": "a|0121 771 4330",
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/103#0": {
+				"remove": true,
+				"signature": "div|",
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/104#0": {
+				"remove": true,
+				"signature": "span|Prefer to apply over the phone?",
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/105#0": {
+				"remove": true,
+				"signature": "a|Call 0121 771 4330",
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
 			}
 		},
 		"contact-enquiry": {
@@ -19002,9 +18996,9 @@
 			},
 			"Indus Foods Website v2/81#0": {
 				"block": "sgs/heading",
-				"signature": "div|Six decades of heritage",
+				"signature": "div|Trade with Indus Foods",
 				"proposed": "sgs/text",
-				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The bold 22px title of the feature panel between its kicker (sgs/label) and its description and button; a title role, so sgs/heading (a real block, chosen over the sole text candidate)."
+				"reason": "Bean marked block:sgs/heading in the intake review on 2026-11-02"
 			},
 			"Indus Foods Website v2/82#0": {
 				"block": "sgs/text",
