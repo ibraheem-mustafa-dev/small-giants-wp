@@ -39,10 +39,13 @@ const PAGE_TYPES = { page: 'page_id', shop: 'page_id', post: 'p' };
 // WooCommerce rows with no post of their own, opened through one example the Store API lists.
 export const STORE_EXAMPLES = { product: '/wp-json/wc/store/v1/products?per_page=1', product_cat: '/wp-json/wc/store/v1/products/categories?per_page=1' };
 
-// The page map's ids belong to the site its `page-map.site` names; a mirror (calibration-targets.json `mirrorOf`) shares
-// that site's ids. Any other site's ids are dropped (lib/site-build-map.mjs::rowsForSite).
-export function rowsFor( rows, idsSite, target ) {
-	return rowsForSite( rows, idsSite, idsSite && target.mirrorOf === idsSite ? idsSite : target.site );
+// The page map's ids belong to the site its `page-map.site` names. A mirror and its test site share ids both ways
+// (calibration-targets.json `mirrorOf`): checking the mirror keeps the test site's ids, and checking the test site keeps
+// ids written on its mirror (the clone is built on the mirror and copied with push-to-remote.sh, which keeps post ids).
+// Any other site's ids are dropped (lib/site-build-map.mjs::rowsForSite).
+export function rowsFor( rows, idsSite, target, targets = {} ) {
+	const shared = idsSite && ( target.mirrorOf === idsSite || targets[ idsSite ]?.mirrorOf === target.site );
+	return rowsForSite( rows, idsSite, shared ? idsSite : target.site );
 }
 
 // The rows the page check loads: { pages: [{ key, slug, title, url, menus }], examples: [{ key, slug, kind, url }],
@@ -68,11 +71,11 @@ export function pageTargets( rows, base ) {
 	return out;
 }
 
-// The page map and its ids for `target`: { rows, idsSite }.
-export function readRows( repo, client, target ) {
+// The page map and its ids for `target`: { rows, idsSite }. `targets` is calibration-targets.json, for the mirror pairs.
+export function readRows( repo, client, target, targets = {} ) {
 	const file = path.join( repo, 'sites', client, 'build', 'page-map.json' );
 	const idsSite = readIdsSite( file );
-	return { rows: rowsFor( readPageMap( file ), idsSite, target ), idsSite };
+	return { rows: rowsFor( readPageMap( file ), idsSite, target, targets ), idsSite };
 }
 
 // The client whose functional flows live in scripts/parity/flows: the `sites/<client>` folder their own results go to

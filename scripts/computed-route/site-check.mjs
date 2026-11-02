@@ -11,7 +11,7 @@
 // place of the site (lib/site-check-coming-soon.mjs), the run reports that one failure with the fix command and marks
 // every other check n-a with the reason. A failed check never stops the run. The only write to the site is one submission per form (and, with
 // --with-cart, one basket line in this run's own WooCommerce session).
-// `--site` is a calibration-targets.json key (a local-* mirror shares its test site's page-map ids through `mirrorOf`)
+// `--site` is a calibration-targets.json key (a local-* mirror and its test site share page-map ids through `mirrorOf`)
 // or any `.claude/secrets/<site>.env`; only its WP_URL_* is read.
 // Output: sites/<client>/build/qa/site-check/<stamp>/ (or --out): result.json, result.md and the screenshots.
 // Exit 0 every check passed or n-a, 1 a check failed, 2 usage or the site unreachable.
@@ -84,7 +84,7 @@ async function main() {
 		return 2;
 	}
 	const base = siteBase( target, roots );
-	const { rows, idsSite } = readRows( args.repo, args.client, target );
+	const { rows, idsSite } = readRows( args.repo, args.client, target, targets );
 	const startedAt = new Date().toISOString();
 	const dir = path.resolve( args.out || path.join( args.repo, 'sites', args.client, 'build', 'qa', 'site-check', stampNow() ) );
 	fs.mkdirSync( dir, { recursive: true } );

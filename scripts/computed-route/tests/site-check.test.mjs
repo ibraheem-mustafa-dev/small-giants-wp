@@ -265,5 +265,8 @@ test( 'MUST FAIL: page targets and the flows owner', () => {
 	assert.equal( t.skipped.length, 3 );
 	assert.equal( rowsFor( rows, 'test-site', { site: 'local-test', mirrorOf: 'test-site' } )[ 0 ].id, 5, 'a mirror keeps its test site\'s ids' );
 	assert.equal( rowsFor( rows, 'test-site', { site: 'other' } )[ 0 ].id, null, 'another site\'s ids are dropped' );
+	const pairs = { 'local-test': { mirrorOf: 'test-site' }, 'local-other': { mirrorOf: 'other' } };
+	assert.equal( rowsFor( rows, 'local-test', { site: 'test-site' }, pairs )[ 0 ].id, 5, 'a test site keeps the ids its mirror wrote (pushed with push-to-remote.sh)' );
+	assert.equal( rowsFor( rows, 'local-other', { site: 'test-site' }, pairs )[ 0 ].id, null, 'another mirror\'s ids are dropped' );
 	assert.equal( flowsClient( '/repo/sites/some-client/build/qa/flows' ), 'some-client' );
 } );
