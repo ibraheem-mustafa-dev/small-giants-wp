@@ -9,6 +9,8 @@
 				"root": false,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-move": "",
+					"data-sgs-mh-scale": "",
 					"data-sgs-mc": "translate scale"
 				},
 				"entrance": false
@@ -45,6 +47,7 @@
 				"root": false,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-move": "",
 					"data-sgs-mc": "translate opacity"
 				},
 				"entrance": false
@@ -101,6 +104,7 @@
 				"root": false,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-move": "",
 					"data-sgs-mc": "translate"
 				},
 				"entrance": false
@@ -119,6 +123,7 @@
 				"root": false,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-move": "",
 					"data-sgs-mc": "translate"
 				},
 				"entrance": false
@@ -137,6 +142,7 @@
 				"root": true,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-scale": "",
 					"data-sgs-mc": "scale"
 				},
 				"entrance": false
@@ -155,6 +161,7 @@
 				"root": false,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-move": "",
 					"data-sgs-mc": "translate"
 				},
 				"entrance": false
@@ -173,6 +180,7 @@
 				"root": false,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-scale": "",
 					"data-sgs-mc": "scale"
 				},
 				"entrance": false
@@ -259,6 +267,7 @@
 				"root": true,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-scale": "",
 					"data-sgs-mc": "scale"
 				},
 				"entrance": false
@@ -332,6 +341,7 @@
 				"root": false,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-rotate": "",
 					"data-sgs-mc": "rotate"
 				},
 				"entrance": false
@@ -350,6 +360,8 @@
 				"root": true,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-move": "",
+					"data-sgs-mh-scale": "",
 					"data-sgs-me": "scroll translate transform opacity",
 					"data-sgs-mc": "translate scale transform ::after injected"
 				},
@@ -378,6 +390,7 @@
 				"root": false,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-move": "",
 					"data-sgs-mc": "translate"
 				},
 				"entrance": false
@@ -413,6 +426,7 @@
 				"root": false,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-scale": "",
 					"data-sgs-mc": "scale"
 				},
 				"entrance": false
@@ -465,6 +479,7 @@
 				"root": false,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-move": "",
 					"data-sgs-mc": "translate"
 				},
 				"entrance": false
@@ -483,6 +498,7 @@
 				"root": true,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-scale": "",
 					"data-sgs-mc": "scale"
 				},
 				"entrance": false
@@ -663,6 +679,7 @@
 				"root": true,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-move": "",
 					"data-sgs-mc": "translate"
 				},
 				"entrance": false
@@ -769,6 +786,7 @@
 				"root": true,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-move": "",
 					"data-sgs-mc": "translate"
 				},
 				"entrance": false
@@ -804,6 +822,7 @@
 				"root": false,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-move": "",
 					"data-sgs-mc": "translate"
 				},
 				"entrance": false
@@ -814,6 +833,7 @@
 				"root": false,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-scale": "",
 					"data-sgs-mc": "scale"
 				},
 				"entrance": false
@@ -869,6 +889,7 @@
 				"root": true,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-scale": "",
 					"data-sgs-mc": "scale"
 				},
 				"entrance": false
@@ -1133,6 +1154,7 @@
 				"root": true,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-move": "",
 					"data-sgs-mc": "translate"
 				},
 				"entrance": false
@@ -1151,6 +1173,7 @@
 				"root": true,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-move": "",
 					"data-sgs-mc": "translate"
 				},
 				"entrance": false
@@ -1169,6 +1192,7 @@
 				"root": true,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-move": "",
 					"data-sgs-mc": "translate"
 				},
 				"entrance": false
@@ -1187,6 +1211,7 @@
 				"root": true,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-scale": "",
 					"data-sgs-mc": "scale"
 				},
 				"entrance": false
@@ -1257,6 +1282,7 @@
 				"root": true,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-move": "",
 					"data-sgs-mc": "translate"
 				},
 				"entrance": false
@@ -1458,6 +1484,7 @@
 				"root": true,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-move": "",
 					"data-sgs-mc": "translate"
 				},
 				"entrance": false
@@ -1476,6 +1503,7 @@
 				"root": true,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-move": "",
 					"data-sgs-mc": "translate"
 				},
 				"entrance": false
@@ -1494,6 +1522,7 @@
 				"root": false,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-move": "",
 					"data-sgs-mc": "translate box-shadow"
 				},
 				"entrance": false
@@ -1512,6 +1541,7 @@
 				"root": false,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-move": "",
 					"data-sgs-mc": "translate"
 				},
 				"entrance": false
@@ -1638,6 +1668,7 @@
 				"root": true,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-move": "",
 					"data-sgs-mc": "translate"
 				},
 				"entrance": false
@@ -1722,6 +1753,7 @@
 				"root": false,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-scale": "",
 					"data-sgs-me": "state rotate",
 					"data-sgs-mc": "scale"
 				},
@@ -1741,6 +1773,7 @@
 				"root": true,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-scale": "",
 					"data-sgs-mc": "scale transform"
 				},
 				"entrance": false
@@ -1759,6 +1792,7 @@
 				"root": true,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-scale": "",
 					"data-sgs-mc": "scale transform"
 				},
 				"entrance": false
@@ -1777,6 +1811,7 @@
 				"root": true,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-scale": "",
 					"data-sgs-mc": "scale transform"
 				},
 				"entrance": false
@@ -1795,6 +1830,7 @@
 				"root": false,
 				"attrs": {
 					"data-sgs-mh": "self",
+					"data-sgs-mh-move": "",
 					"data-sgs-mc": "translate"
 				},
 				"entrance": false

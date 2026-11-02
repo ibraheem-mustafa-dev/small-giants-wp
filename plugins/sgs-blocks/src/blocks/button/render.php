@@ -41,6 +41,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-site-info-label.p
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-icon-circle.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-focus.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-press.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-link-underline.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-inner-kses.php';
 
 // ---------------------------------------------------------------------------
@@ -282,6 +283,13 @@ $preset_bg_slug    = isset( $attributes['backgroundColor'] ) ? sanitize_html_cla
 // untouched on hover.
 $text_decoration_hover = isset( $attributes['textDecorationHover'] ) ? sanitize_text_field( $attributes['textDecorationHover'] ) : 'none';
 
+// The shared Button underline (`linkUnderline`, FW-B) owns the whole decoration when it is set ('none' counts as set):
+// the rest `textDecoration` and the hover decoration above are not printed, so the two mechanisms never fight.
+$sgs_btn_underline_owned = '' !== (string) ( $attributes['linkUnderline'] ?? '' );
+if ( $sgs_btn_underline_owned ) {
+	$text_decoration_hover = 'none';
+}
+
 // Border (custom mode only). Box-object interface contract §1/§2: borderWidth
 // is an SGS custom OBJECT attr { top, right, bottom, left } — no WP-native
 // border-width support, no tiers (matches the pre-existing base-only contract).
@@ -472,7 +480,13 @@ if ( '' !== $press_rule ) {
 // track; root prefix '' since this is a single-target block). Always
 // emitted — every button is attribute-driven, there is no separate
 // preset-locked mode any more.
-$scoped_css_parts[] = sgs_typography_css_rule( $attributes, '', ".{$uid}.sgs-button" );
+$sgs_btn_typography_attrs = $attributes;
+if ( $sgs_btn_underline_owned ) {
+	unset( $sgs_btn_typography_attrs['textDecoration'] );
+}
+$scoped_css_parts[] = sgs_typography_css_rule( $sgs_btn_typography_attrs, '', ".{$uid}.sgs-button" );
+// The shared underline settings, the button being itself the link (doubled uid: beats style.css's hover and focus resets).
+$scoped_css_parts[] = sgs_link_underline_css( $attributes, '', ".{$uid}.{$uid}.sgs-button", ' .sgs-button__label', true );
 
 // Base padding/margin/border-radius — Box-object interface contract (b): the
 // block declares __experimentalSkipSerialization on spacing + border.radius
@@ -662,6 +676,10 @@ if ( $has_width_tier || in_array( $width_type, array( 'custom', 'full', 'fit' ),
 $btn_classes = array( 'sgs-button' );
 if ( in_array( $inherit_style, array( 'primary', 'secondary', 'outline', 'link' ), true ) ) {
 	$btn_classes[] = 'sgs-button--' . $inherit_style;
+}
+// builtInHoverLift off: the style's own hover movement is dropped (style.css, .sgs-button--hover-still).
+if ( false === ( $attributes['builtInHoverLift'] ?? true ) ) {
+	$btn_classes[] = 'sgs-button--hover-still';
 }
 
 // WP-native colour support (skip-serialised): re-add the standard preset

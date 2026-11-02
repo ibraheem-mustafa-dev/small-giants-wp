@@ -5,6 +5,10 @@
  * (includes/motion/), never a `style` attribute. The contract with the renderer:
  *
  *   data-sgs-mh="self|root|group|item"    the target holds a hover state; the value is its source (§6.2)
+ *   data-sgs-mh-move, data-sgs-mh-scale, data-sgs-mh-rotate
+ *                                     the target's own hover state (source self) sets a translate, a scale or a rotate;
+ *                                     a stylesheet's own hover movement (the button preset's lift, scale, rotate) drops
+ *                                     only the matching part
  *   --sgs-mh-to-<tx|ty|rot|rx|ry|s|op|blur|gray|bright|indent|w|ring|ring-c|accent|accent-c>
  *                                     the hover state's to-values (per device; registered non-inheriting). Each rotate
  *                                     to-value (Z, X, Y) is the hover angle minus its rest angle, and the grayscale

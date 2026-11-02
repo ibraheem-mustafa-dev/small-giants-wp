@@ -59,7 +59,7 @@ _BLOCKS_DIR = _REPO_ROOT / "plugins" / "sgs-blocks" / "src" / "blocks"
 _SITES_DIR = _REPO_ROOT / "sites"
 
 # ---------------------------------------------------------------------------
-# Fixed vocabulary (Spec 32 FR-32-9) — 6 colour + 6 geometry + 7 motion = 19
+# Fixed vocabulary (Spec 32 FR-32-9) — 6 colour + 6 geometry + 10 motion = 22
 # ---------------------------------------------------------------------------
 _ROLE_VOCABULARY: frozenset[str] = frozenset({
     # colour roles
@@ -79,6 +79,9 @@ _ROLE_VOCABULARY: frozenset[str] = frozenset({
     "hover-transform", "hover-transition", "hover-easing",
     "hover-easing-colour", "hover-easing-shadow",
     "active-transform", "active-shadow",
+    # the three movements of hover-transform, derived by
+    # includes/class-sgs-button-hover-parts.php (button/style.css composes them)
+    "hover-lift", "hover-scale", "hover-rotate",
 })
 
 # Component roles (Spec 32 FR-32-9): a component whose painted parts are not a

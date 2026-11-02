@@ -25,6 +25,7 @@ import {
 	TypographyControls,
 	ResponsiveOverride,
 	SgsColourPanel,
+	LinkUnderlineControl,
 	ShadowControl,
 	shadowAttrKeys,
 	SgsLengthControl,
@@ -41,7 +42,7 @@ import {
 	ToggleGroupControl,
 	ToggleGroupControlOption,
 } from '../../components/primitives';
-import { usePreviewTier } from '../../utils';
+import { usePreviewTier, linkUnderlinePreviewCss } from '../../utils';
 import {
 	buttonPreviewStyle,
 	labelCollapsedAt,
@@ -91,11 +92,6 @@ const WIDTH_OPTIONS_TIER = [
 	...WIDTH_OPTIONS,
 ];
 
-const UNDERLINE_HOVER_OPTIONS = [
-	{ label: __( 'No', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Underline', 'sgs-blocks' ), value: 'underline' },
-];
-
 const TEXT_TRANSFORM_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: '' },
 	{ label: __( 'Uppercase', 'sgs-blocks' ), value: 'uppercase' },
@@ -105,7 +101,6 @@ const TEXT_TRANSFORM_OPTIONS = [
 
 const TEXT_DECORATION_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Underline', 'sgs-blocks' ), value: 'underline' },
 	{ label: __( 'Overline', 'sgs-blocks' ), value: 'overline' },
 	{ label: __( 'Strike-through', 'sgs-blocks' ), value: 'line-through' },
 ];
@@ -162,7 +157,11 @@ export default function Edit( {
 		borderColourGradient,
 		borderColourHover,
 		borderColourHoverGradient,
-		textDecorationHover,
+		linkUnderline,
+		linkUnderlineThickness,
+		linkUnderlineColour,
+		linkUnderlineColourHover,
+		linkUnderlineOffset,
 		fontWeightHover,
 		borderStyle,
 		borderWidth,
@@ -251,6 +250,10 @@ export default function Edit( {
 	if ( widthType?.desktop === 'full' ) {
 		blockClasses.push( 'sgs-button--full' );
 	}
+	// render.php's class: the style's own hover movement is off, so the Motion hover moves the button alone.
+	if ( attributes.builtInHoverLift === false ) {
+		blockClasses.push( 'sgs-button--hover-still' );
+	}
 	// Keyboard focus: render.php's class (none for a refused Signature), and Signature's host border width.
 	const { focusClass, signatureRefused } = buttonFocusState( attributes );
 	const focusPreview = useFocusPreview();
@@ -261,6 +264,28 @@ export default function Edit( {
 		'sgs-focus--signature' === focusClass
 			? focusHostBorder( { borderWidth, borderStyle, inheritStyle } )
 			: '';
+	// The shared Button underline, previewed through the same rules render.php prints (self mode, doubled class).
+	const underlineUid = `sgs-btn-ul-${ clientId }`;
+	const underlineCss = linkUnderlinePreviewCss(
+		`.${ underlineUid }.${ underlineUid }.sgs-button`,
+		{
+			mode: linkUnderline,
+			thickness: linkUnderlineThickness,
+			colour: linkUnderlineColour,
+			colourHover: linkUnderlineColourHover,
+			offset: linkUnderlineOffset,
+			self: true,
+			paint: ' .sgs-button__label',
+			ownsBackground: !! (
+				attributes.colourBackgroundHover ||
+				attributes.colourBackgroundGradient ||
+				attributes.colourBackgroundHoverGradient
+			),
+		}
+	);
+	if ( underlineCss ) {
+		blockClasses.push( underlineUid );
+	}
 	const blockProps = useBlockProps( {
 		className: blockClasses.join( ' ' ),
 		style: hostBorder
@@ -1088,10 +1113,49 @@ export default function Edit( {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					{ /* One "Underline" group: the shared Button underline first; the old
+					   decoration select is only for an overline or strike-through, and is
+					   switched off while the Button underline is set (render.php prints one
+					   or the other, never both). A saved `underline` value is still printed
+					   when the Button underline is unset. */ }
+					<LinkUnderlineControl
+						wording="button"
+						mode={ linkUnderline }
+						thickness={ linkUnderlineThickness }
+						colour={ linkUnderlineColour }
+						colourHover={ linkUnderlineColourHover }
+						offset={ linkUnderlineOffset }
+						onModeChange={ ( val ) =>
+							setAttributes( { linkUnderline: val } )
+						}
+						onThicknessChange={ ( val ) =>
+							setAttributes( { linkUnderlineThickness: val } )
+						}
+						onColourChange={ ( val ) =>
+							setAttributes( { linkUnderlineColour: val } )
+						}
+						onColourHoverChange={ ( val ) =>
+							setAttributes( { linkUnderlineColourHover: val } )
+						}
+						onOffsetChange={ ( val ) =>
+							setAttributes( { linkUnderlineOffset: val } )
+						}
+					/>
 					<SelectControl
-						label={ __( 'Text decoration', 'sgs-blocks' ) }
-						value={ textDecoration }
+						label={ __( 'Overline / strike-through', 'sgs-blocks' ) }
+						value={
+							'underline' === textDecoration ? '' : textDecoration
+						}
 						options={ TEXT_DECORATION_OPTIONS }
+						disabled={ !! linkUnderline }
+						help={
+							linkUnderline
+								? __(
+										'Controlled by Button underline above.',
+										'sgs-blocks'
+								  )
+								: undefined
+						}
 						onChange={ ( val ) =>
 							setAttributes( { textDecoration: val } )
 						}
@@ -1136,32 +1200,10 @@ export default function Edit( {
 					label={ __( 'Hover effects', 'sgs-blocks' ) }
 					resetAll={ () =>
 						setAttributes( {
-							textDecorationHover: 'none',
 							fontWeightHover: '',
 						} )
 					}
 				>
-					<ToolsPanelItem
-						label={ __( 'Underline on hover', 'sgs-blocks' ) }
-						hasValue={ () =>
-							( textDecorationHover || 'none' ) !== 'none'
-						}
-						onDeselect={ () =>
-							setAttributes( { textDecorationHover: 'none' } )
-						}
-						isShownByDefault
-					>
-						<SelectControl
-							label={ __( 'Underline on hover', 'sgs-blocks' ) }
-							value={ textDecorationHover || 'none' }
-							options={ UNDERLINE_HOVER_OPTIONS }
-							onChange={ ( val ) =>
-								setAttributes( { textDecorationHover: val } )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
 					<ToolsPanelItem
 						label={ __( 'Weight on hover', 'sgs-blocks' ) }
 						hasValue={ () => !! fontWeightHover }
@@ -1399,6 +1441,7 @@ export default function Edit( {
 			   The label is now RichText on-canvas (matching core/button) instead of a
 			   sidebar TextControl. */ }
 			<span { ...blockProps }>
+				{ underlineCss && <style>{ underlineCss }</style> }
 				{ backgroundLayerStyle && (
 					<span aria-hidden="true" style={ backgroundLayerStyle } />
 				) }

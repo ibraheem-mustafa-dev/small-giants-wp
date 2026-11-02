@@ -23,8 +23,17 @@ const MODE_HELP = {
 	always: __( 'This styles the links inside the text. Text decoration under Typography styles the whole text.', 'sgs-blocks' ),
 };
 
+// The wording when the control styles a whole element that is itself the link (a button), not the links in its text.
+const BUTTON_MODE_HELP = {
+	none: __( 'The button shows no underline.', 'sgs-blocks' ),
+	hover: __( 'An underline appears under the button text when it is hovered or focused with the keyboard.', 'sgs-blocks' ),
+	sweep: __( 'No underline until the button is hovered or focused with the keyboard, then a line slides in under the label. Not used when the button has a hover fill, a gradient or an image.', 'sgs-blocks' ),
+	always: __( 'The whole button text is underlined, at rest, on hover and on keyboard focus.', 'sgs-blocks' ),
+};
+
 /**
  * @param {Object}   props
+ * @param {string}   [props.wording]              'links' (the links inside the text, the default) or 'button' (the whole button).
  * @param {string}   [props.mode]                 '', 'none', 'always', 'hover' or 'sweep'.
  * @param {string}   [props.thickness]            The line's thickness (a CSS length).
  * @param {string}   [props.colour]               The line's colour at rest (a palette slug or any CSS colour).
@@ -38,6 +47,7 @@ const MODE_HELP = {
  * @return {Element} The control.
  */
 export default function LinkUnderlineControl( {
+	wording = 'links',
 	mode = '',
 	thickness = '',
 	colour = '',
@@ -51,12 +61,14 @@ export default function LinkUnderlineControl( {
 } ) {
 	const hasLine = 'always' === mode || 'hover' === mode || 'sweep' === mode;
 	const hasGap = 'always' === mode || 'hover' === mode;
+	const isButton = 'button' === wording;
+	const help = isButton ? BUTTON_MODE_HELP : MODE_HELP;
 	return (
 		<>
 			<SelectControl
 				__next40pxDefaultSize
 				__nextHasNoMarginBottom
-				label={ __( 'Link underline', 'sgs-blocks' ) }
+				label={ isButton ? __( 'Button underline', 'sgs-blocks' ) : __( 'Link underline', 'sgs-blocks' ) }
 				value={ mode }
 				options={ [
 					{ label: __( 'Theme default', 'sgs-blocks' ), value: '' },
@@ -65,7 +77,7 @@ export default function LinkUnderlineControl( {
 					{ label: __( 'Shows on hover', 'sgs-blocks' ), value: 'hover' },
 					{ label: __( 'Slides in on hover', 'sgs-blocks' ), value: 'sweep' },
 				] }
-				help={ MODE_HELP[ mode ] }
+				help={ help[ mode ] }
 				onChange={ ( next ) => onModeChange( next ) }
 			/>
 			{ hasLine && (
@@ -80,7 +92,7 @@ export default function LinkUnderlineControl( {
 			{ hasLine && (
 				<DesignTokenPicker
 					label={ __( 'Underline colour', 'sgs-blocks' ) }
-					help={ __( 'Leave empty to draw the underline in the link colour.', 'sgs-blocks' ) }
+					help={ isButton ? __( 'Leave empty to draw the underline in the button text colour.', 'sgs-blocks' ) : __( 'Leave empty to draw the underline in the link colour.', 'sgs-blocks' ) }
 					states={ [
 						{
 							key: 'normal',

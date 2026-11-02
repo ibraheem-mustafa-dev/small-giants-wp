@@ -162,7 +162,7 @@ final class Sgs_Motion_Renderer {
 	 */
 	private static function note_features( array $attrs, bool $layers ): void {
 		$css = $layers;
-		foreach ( array( 'data-sgs-mh', 'data-sgs-mc', 'data-sgs-me', 'data-sgs-hover-group', 'data-sgs-mroot', 'data-sgs-mitem' ) as $key ) {
+		foreach ( array( 'data-sgs-mh', 'data-sgs-mh-move', 'data-sgs-mh-scale', 'data-sgs-mh-rotate', 'data-sgs-mc', 'data-sgs-me', 'data-sgs-hover-group', 'data-sgs-mroot', 'data-sgs-mitem' ) as $key ) {
 			$css = $css || isset( $attrs[ $key ] );
 		}
 		if ( $css ) {

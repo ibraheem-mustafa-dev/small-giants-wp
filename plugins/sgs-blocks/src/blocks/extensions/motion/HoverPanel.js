@@ -33,6 +33,7 @@ import {
 	sourceOptionsFor,
 } from './hover/hover-write';
 import HoverEffects from './hover/HoverEffects';
+import HoverToggleRow from './hover/HoverToggleRow';
 import HoverFineTune from './hover/HoverFineTune';
 import FocusState, { focusAvailable } from './hover/FocusState';
 import PresetThumbnailGrid from './thumbnails/PresetThumbnailGrid';
@@ -156,6 +157,9 @@ export default function HoverPanel( { blockName, clientId, elements, motion, lay
 				>
 					{ notice }
 				</Notice>
+			) }
+			{ target === ROOT_TARGET && (
+				<HoverToggleRow blockName={ blockName } clientId={ clientId } />
 			) }
 			<PanelBody
 				title={ __( 'Fine-tune', 'sgs-blocks' ) }

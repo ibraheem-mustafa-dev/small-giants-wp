@@ -63,6 +63,16 @@ final class Sgs_Motion_Emitter {
 		'shadowEasing'   => 'shadow-easing',
 	);
 
+	/**
+	 * The hover fields that move the element, by the marker each one sets (see `hover_part_markers`).
+	 */
+	const HOVER_PART_MARKERS = array(
+		'translateX' => 'data-sgs-mh-move',
+		'translateY' => 'data-sgs-mh-move',
+		'scale'      => 'data-sgs-mh-scale',
+		'rotate'     => 'data-sgs-mh-rotate',
+	);
+
 	const MH_PREFIX = '--sgs-mh-';
 	const ME_PREFIX = '--sgs-me-';
 
@@ -107,6 +117,7 @@ final class Sgs_Motion_Emitter {
 		}
 		if ( is_array( $state ) ) {
 			$attrs['data-sgs-mh'] = (string) ( $state['source'] ?? 'self' );
+			$attrs               += self::hover_part_markers( $state );
 			self::hover_state( $state, $decls, $trans, $channels, $explicit );
 		}
 		foreach ( $element['hover']['effects'] ?? array() as $layer ) {
@@ -184,6 +195,30 @@ final class Sgs_Motion_Emitter {
 			'attrs'    => $attrs,
 			'entrance' => $entrance,
 		);
+	}
+
+	/**
+	 * The hover movements a state's own element performs, as markers: a stylesheet that paints a hover movement of its own
+	 * (the button preset's lift, scale and rotate) reads them to drop only the matching part, so the preset and the motion
+	 * state never both lift. Only a state whose source is `self` qualifies: a hover driven by the root, an item or a group
+	 * moves another element. Rest effects, parallax and magnet are not hover movements and never set a marker.
+	 *
+	 * @param array<string,mixed> $state The hover state.
+	 * @return array<string,string> Marker attribute => empty value.
+	 */
+	public static function hover_part_markers( array $state ): array {
+		if ( 'self' !== (string) ( $state['source'] ?? 'self' ) ) {
+			return array();
+		}
+		$markers = array();
+		foreach ( self::tier_values( $state ) as $values ) {
+			foreach ( self::HOVER_PART_MARKERS as $key => $marker ) {
+				if ( isset( $values[ $key ] ) && '' !== $values[ $key ] ) {
+					$markers[ $marker ] = '';
+				}
+			}
+		}
+		return $markers;
 	}
 
 	/**

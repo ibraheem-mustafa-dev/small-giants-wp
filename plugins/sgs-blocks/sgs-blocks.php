@@ -306,6 +306,10 @@ require_once SGS_BLOCKS_PATH . 'includes/custom-css.php';
 // re-show the Appearance > Customize link for a block theme (wp-admin/menu.php:246).
 require_once SGS_BLOCKS_PATH . 'includes/class-button-presets-customiser.php';
 
+// Button preset hover transform split into lift, scale and rotate (a button's own Motion hover replaces only the matching part).
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-button-hover-parts.php';
+\SGS\Blocks\Sgs_Button_Hover_Parts::register();
+
 // Scoped-CSS consolidation (Spec 32 §6.2 / FR-32-11) — lifts every SGS block's
 // per-instance <style> tag into ONE consolidated output (front end only; editor
 // keeps inline). Loads AFTER custom-css.php so its render_block residual filter

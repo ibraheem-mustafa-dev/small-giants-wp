@@ -130,11 +130,13 @@
 	background-color: var(--sgs-btn-bg-hover, var(--sgs-btn-bg, var(--sgs-mb-btn-bg-hover-default, var(--sgs-mb-btn-bg-default, transparent))));
 	background-image: var(--sgs-btn-bg-hover-image, var(--sgs-btn-bg-image, var(--sgs-mb-btn-bg-hover-image-default, var(--sgs-mb-btn-bg-image-default, none))));
 	border-color: var(--sgs-btn-border-hover, var(--sgs-btn-border, var(--sgs-mb-btn-border-default, transparent)));
-	/* Preset hover transform (FR-33-4 open-bag "transform-lift"): applied from the client's
-	   buttonPresets hover-transform token, then the site-wide buttonPresets.default
-	   hover-transform; `none` fallback = no lift when neither is set.
-	   Reduced-motion forces transform:none !important. */
-	transform: var(--sgs-btn-transform-hover, var(--wp--custom--button-presets--default--hover-transform, none));
+	/* Preset hover movement (FR-33-4 open-bag "transform-lift"): the preset's lift, scale and
+	   rotate parts (Sgs_Button_Hover_Parts splits buttonPresets hover-transform), each falling
+	   back to the site-wide buttonPresets.default part. No part set = every var() is empty, the
+	   declaration is invalid at computed-value time and transform stays `none`. A button's own
+	   Motion hover (data-sgs-mh-move / -scale / -rotate) or builtInHoverLift off empties the
+	   matching part below. Reduced-motion forces transform:none !important. */
+	transform: var(--sgs-btn-lift-hover, var(--wp--custom--button-presets--default--hover-lift,)) var(--sgs-btn-scale-hover, var(--wp--custom--button-presets--default--hover-scale,)) var(--sgs-btn-rotate-hover, var(--wp--custom--button-presets--default--hover-rotate,));
 }
 
 /*
@@ -179,7 +181,9 @@
 	--sgs-btn-color-hover: var(--wp--custom--button-presets--primary--hover-text, var(--wp--preset--color--text-inverse));
 	--sgs-btn-bg-hover: var(--wp--custom--button-presets--primary--hover-background, var(--wp--preset--color--text));
 	--sgs-btn-border-hover: var(--wp--custom--button-presets--primary--hover-border, var(--wp--preset--color--text));
-	--sgs-btn-transform-hover: var(--wp--custom--button-presets--primary--hover-transform, var(--wp--custom--button-presets--default--hover-transform, none));
+	--sgs-btn-lift-hover: var(--wp--custom--button-presets--primary--hover-lift, var(--wp--custom--button-presets--default--hover-lift,));
+	--sgs-btn-scale-hover: var(--wp--custom--button-presets--primary--hover-scale, var(--wp--custom--button-presets--default--hover-scale,));
+	--sgs-btn-rotate-hover: var(--wp--custom--button-presets--primary--hover-rotate, var(--wp--custom--button-presets--default--hover-rotate,));
 	--sgs-btn-transition-duration: var(--wp--custom--button-presets--primary--hover-transition, var(--wp--custom--button-presets--default--hover-transition, 0.18s));
 	--sgs-btn-transition-easing: var(--wp--custom--button-presets--primary--hover-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease)));
 	--sgs-btn-transition-easing-colour: var(--wp--custom--button-presets--primary--hover-easing-colour, var(--wp--custom--button-presets--default--hover-easing-colour, var(--sgs-btn-transition-easing)));
@@ -204,7 +208,9 @@
 	--sgs-btn-color-hover: var(--wp--custom--button-presets--secondary--hover-text, var(--wp--preset--color--text-inverse));
 	--sgs-btn-bg-hover: var(--wp--custom--button-presets--secondary--hover-background, var(--wp--preset--color--primary));
 	--sgs-btn-border-hover: var(--wp--custom--button-presets--secondary--hover-border, var(--wp--preset--color--primary));
-	--sgs-btn-transform-hover: var(--wp--custom--button-presets--secondary--hover-transform, var(--wp--custom--button-presets--default--hover-transform, none));
+	--sgs-btn-lift-hover: var(--wp--custom--button-presets--secondary--hover-lift, var(--wp--custom--button-presets--default--hover-lift,));
+	--sgs-btn-scale-hover: var(--wp--custom--button-presets--secondary--hover-scale, var(--wp--custom--button-presets--default--hover-scale,));
+	--sgs-btn-rotate-hover: var(--wp--custom--button-presets--secondary--hover-rotate, var(--wp--custom--button-presets--default--hover-rotate,));
 	--sgs-btn-transition-duration: var(--wp--custom--button-presets--secondary--hover-transition, var(--wp--custom--button-presets--default--hover-transition, 0.18s));
 	--sgs-btn-transition-easing: var(--wp--custom--button-presets--secondary--hover-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease)));
 	--sgs-btn-transition-easing-colour: var(--wp--custom--button-presets--secondary--hover-easing-colour, var(--wp--custom--button-presets--default--hover-easing-colour, var(--sgs-btn-transition-easing)));
@@ -229,7 +235,9 @@
 	--sgs-btn-color-hover: var(--wp--custom--button-presets--outline--hover-text, var(--wp--preset--color--text));
 	--sgs-btn-bg-hover: var(--wp--custom--button-presets--outline--hover-background, var(--wp--preset--color--surface-alt));
 	--sgs-btn-border-hover: var(--wp--custom--button-presets--outline--hover-border, var(--wp--preset--color--primary));
-	--sgs-btn-transform-hover: var(--wp--custom--button-presets--outline--hover-transform, var(--wp--custom--button-presets--default--hover-transform, none));
+	--sgs-btn-lift-hover: var(--wp--custom--button-presets--outline--hover-lift, var(--wp--custom--button-presets--default--hover-lift,));
+	--sgs-btn-scale-hover: var(--wp--custom--button-presets--outline--hover-scale, var(--wp--custom--button-presets--default--hover-scale,));
+	--sgs-btn-rotate-hover: var(--wp--custom--button-presets--outline--hover-rotate, var(--wp--custom--button-presets--default--hover-rotate,));
 	--sgs-btn-transition-duration: var(--wp--custom--button-presets--outline--hover-transition, var(--wp--custom--button-presets--default--hover-transition, 0.18s));
 	--sgs-btn-transition-easing: var(--wp--custom--button-presets--outline--hover-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease)));
 	--sgs-btn-transition-easing-colour: var(--wp--custom--button-presets--outline--hover-easing-colour, var(--wp--custom--button-presets--default--hover-easing-colour, var(--sgs-btn-transition-easing)));
@@ -249,7 +257,28 @@
 	--sgs-btn-color-hover: currentColor;
 	--sgs-btn-bg-hover: transparent;
 	--sgs-btn-border-hover: transparent;
-	--sgs-btn-transform-hover: none;
+	--sgs-btn-lift-hover: ;
+	--sgs-btn-scale-hover: ;
+	--sgs-btn-rotate-hover: ;
+}
+
+/* A button's own Motion hover movement replaces only the matching part of the preset's hover
+   movement, and builtInHoverLift off (class sgs-button--hover-still) drops all three. Specificity
+   0,2,0 beats the preset classes and the per-instance rule. The empty value keeps `transform: none`
+   when every part is dropped (an identity function would create a containing block). */
+.sgs-button[data-sgs-mh-move],
+.sgs-button.sgs-button--hover-still {
+	--sgs-btn-lift-hover: ;
+}
+
+.sgs-button[data-sgs-mh-scale],
+.sgs-button.sgs-button--hover-still {
+	--sgs-btn-scale-hover: ;
+}
+
+.sgs-button[data-sgs-mh-rotate],
+.sgs-button.sgs-button--hover-still {
+	--sgs-btn-rotate-hover: ;
 }
 
 /* Width modifiers (D288 — the button IS the block root now, no wrapper div).

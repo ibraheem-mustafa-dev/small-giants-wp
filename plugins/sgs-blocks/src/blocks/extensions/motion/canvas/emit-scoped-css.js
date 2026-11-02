@@ -263,6 +263,38 @@ function effectTransition( layer, trans ) {
 	} );
 }
 
+const HOVER_PART_MARKERS = {
+	translateX: 'data-sgs-mh-move',
+	translateY: 'data-sgs-mh-move',
+	scale: 'data-sgs-mh-scale',
+	rotate: 'data-sgs-mh-rotate',
+};
+
+/**
+ * The hover movements a state's own element performs, as markers (twin of
+ * `Sgs_Motion_Emitter::hover_part_markers`): only a `self` source qualifies, and a value in any tier counts.
+ *
+ * @param {Object} state The hover state.
+ * @return {Object<string,string>} Marker attribute => empty value.
+ */
+export function hoverPartMarkers( state ) {
+	const markers = {};
+	if ( String( state.source ?? 'self' ) !== 'self' ) {
+		return markers;
+	}
+	[ state.values, state.devices?.tablet, state.devices?.mobile ].forEach( ( values ) => {
+		if ( ! values || typeof values !== 'object' ) {
+			return;
+		}
+		Object.entries( HOVER_PART_MARKERS ).forEach( ( [ key, marker ] ) => {
+			if ( values[ key ] !== undefined && values[ key ] !== null && values[ key ] !== '' ) {
+				markers[ marker ] = '';
+			}
+		} );
+	} );
+	return markers;
+}
+
 /**
  * Emit one target.
  *
@@ -280,6 +312,7 @@ export function emitTarget( element, selector, context = {} ) {
 	const state = element?.hover?.state;
 	if ( state && typeof state === 'object' && ! Array.isArray( state ) ) {
 		attrs[ 'data-sgs-mh' ] = String( state.source ?? 'self' );
+		Object.assign( attrs, hoverPartMarkers( state ) );
 		hoverState( state, decls, trans, channels );
 	}
 	listOf( element?.hover?.effects ).forEach( ( layer ) => {

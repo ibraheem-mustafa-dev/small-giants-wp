@@ -26,7 +26,13 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
-			"motion": true,
+			"motion": {
+				"hoverToggle": {
+					"attribute": "builtInHoverLift",
+					"label": "Button style's built-in lift",
+					"help": "Your button style lifts slightly on hover. Turn off to use only the movement set here."
+				}
+			},
 			"enabledExtensions": [
 				"childSizing"
 			],
@@ -63,6 +69,10 @@
 						"css:font-style": "fontStyle",
 						"css:text-transform": "textTransform",
 						"css:text-decoration": "textDecoration",
+						"css:text-decoration-link": "linkUnderline",
+						"css:text-decoration-thickness-link": "linkUnderlineThickness",
+						"css:text-decoration-color-link": "linkUnderlineColour",
+						"css:text-decoration-offset-link": "linkUnderlineOffset",
 						"css:color": "colourText",
 						"css:color-gradient": "colourTextGradient",
 						"css:background-color": "colourBackground",
@@ -97,6 +107,8 @@
 								"css:border-color-gradient": "borderColourHoverGradient",
 								"css:box-shadow": "boxShadowHover",
 								"css:font-weight": "fontWeightHover",
+								"css:transform": "builtInHoverLift",
+								"css:text-decoration-color-link": "linkUnderlineColourHover",
 								"css:-webkit-text-stroke-color": "textStrokeColourHover"
 							}
 						}
@@ -259,6 +271,38 @@
 			"type": "string",
 			"default": ""
 		},
+		"linkUnderline": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"always",
+				"hover",
+				"sweep"
+			],
+			"default": "",
+			"description": "How the whole button is underlined: '' the button style's own decoration, none, always, hover (an underline on hover and keyboard focus), or sweep (a line sweeps in under the label on hover and keyboard focus). sgs_link_underline_css() in self mode. Set, it replaces textDecoration and textDecorationHover."
+		},
+		"linkUnderlineThickness": {
+			"type": "string",
+			"default": "",
+			"description": "Thickness of the button underline for always, hover and sweep (a CSS length); empty uses the browser's (the sweep's theme thickness)."
+		},
+		"linkUnderlineColour": {
+			"type": "string",
+			"default": "",
+			"description": "The button underline's colour for always, hover and sweep (a palette slug or any CSS colour); empty draws it in the button's own text colour."
+		},
+		"linkUnderlineColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "The button underline's colour while the button is hovered or focused with the keyboard (a palette slug or any CSS colour); empty keeps the colour it has at rest."
+		},
+		"linkUnderlineOffset": {
+			"type": "string",
+			"default": "",
+			"description": "Gap between the button text and its underline for always and hover (a CSS length); empty uses the browser's. The sweep is a background line, so it ignores the gap."
+		},
 		"textDecoration": {
 			"type": "string",
 			"default": ""
@@ -324,6 +368,11 @@
 		"colourBackgroundGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"builtInHoverLift": {
+			"type": "boolean",
+			"default": true,
+			"description": "Whether the button style's own hover movement (its lift, scale or rotate) plays. Off adds class sgs-button--hover-still, which drops all three; the Motion hover then moves the button alone."
 		},
 		"colourBackgroundHover": {
 			"type": "string",

@@ -310,6 +310,7 @@ The full emitted contract, shared by the renderer (`includes/motion/`) and the s
 | Name | Set by | Meaning |
 |---|---|---|
 | `data-sgs-mh="self\|root\|group"` | renderer, on the target | the target holds a hover state; the value is its source (§6.2) |
+| `data-sgs-mh-move`, `data-sgs-mh-scale`, `data-sgs-mh-rotate` | renderer, on the target, only when the hover state's source is `self` | the state sets a translate (X or Y), a scale or a rotate. A stylesheet that paints its own hover movement reads them to drop only the matching part: `sgs/button`'s preset lift, scale and rotate (`includes/class-sgs-button-hover-parts.php` splits the preset's `hover-transform` token into `hover-lift`, `hover-scale` and `hover-rotate`; `src/blocks/button/style.css` composes them), so a hover scale alone never removes the preset lift. Rest effects, parallax and magnet never set them. `sgs/button`'s `builtInHoverLift` off (class `sgs-button--hover-still`) drops all three parts |
 | `data-sgs-mc="<channels>"` | renderer, on the target | the union of the `x-sgs-writes` channels of the element's non-entrance owners; the stylesheet declares a channel property only where it is named |
 | `data-sgs-me="<trigger> <channels>"` | renderer, on the target | an entrance: trigger `load\|scroll\|open\|state`, then the channels it touches |
 | `--sgs-me-from-*`, `--sgs-me-to-*`, `--sgs-me-dur`, `--sgs-me-delay`, `--sgs-me-ease`, `--sgs-me-start` | renderer, in the scoped rule | the entrance's values and timing; to-values default to the identity |
