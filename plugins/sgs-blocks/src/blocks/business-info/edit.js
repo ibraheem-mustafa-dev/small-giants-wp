@@ -76,6 +76,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		hoursShowClosed,
 		hoursClosedLabel,
 		hoursCondensedInline,
+		hoursDayNames,
 		hoursRowJustify,
 		addressLink,
 		linkUnderline,
@@ -519,6 +520,31 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 						{ 'condensed' === hoursLayout && (
 							<>
+								<SelectControl
+									label={ __( 'Day names', 'sgs-blocks' ) }
+									value={ hoursDayNames || 'short' }
+									options={ [
+										{
+											label: __(
+												'Short (Mon – Thu)',
+												'sgs-blocks'
+											),
+											value: 'short',
+										},
+										{
+											label: __(
+												'Long (Monday – Thursday)',
+												'sgs-blocks'
+											),
+											value: 'long',
+										},
+									] }
+									onChange={ ( val ) =>
+										setAttributes( { hoursDayNames: val } )
+									}
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
 								<ToggleControl
 									label={ __( 'One line', 'sgs-blocks' ) }
 									help={ __(

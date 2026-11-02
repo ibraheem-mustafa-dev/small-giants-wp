@@ -121,7 +121,8 @@
 						"css:background-color": "dotColour",
 						"css:background-image": "dotColourGradient",
 						"css:width": "dotSize",
-						"css:height": "dotSize"
+						"css:height": "dotSize",
+						"css:border-radius": "lineRadius"
 					},
 					"_note": "The opt-in leading dot (`dot`), painted as a decorative `::before` on the label root (render.php): an empty `content`, so the label text stays the accessible text. dotGap (on the label element) is its margin-inline-end to the text."
 				}
@@ -342,6 +343,30 @@
 			"type": "string",
 			"default": "8px",
 			"description": "Space between the dot and the text: a CSS length (default 8px) or a spacing preset slug (e.g. '20'), read through sgs_css_length_value(); empty uses 8px."
+		},
+		"markerShape": {
+			"type": "string",
+			"enum": [
+				"dot",
+				"line"
+			],
+			"default": "dot",
+			"description": "Shape of the leading marker when `dot` is on: a round dot (dotSize) or a short line (lineLength x lineThickness, lineRadius). Colour (dotColour, dotColourGradient) and gap (dotGap) are shared."
+		},
+		"lineLength": {
+			"type": "string",
+			"default": "28px",
+			"description": "Line marker length as a CSS length; empty uses 28px. Only read when markerShape is line."
+		},
+		"lineThickness": {
+			"type": "string",
+			"default": "2px",
+			"description": "Line marker thickness as a CSS length; empty uses 2px. Only read when markerShape is line."
+		},
+		"lineRadius": {
+			"type": "string",
+			"default": "0",
+			"description": "Line marker corner radius as a CSS length; empty or 0 is square. Only read when markerShape is line."
 		},
 		"textWrap": {
 			"type": "string",

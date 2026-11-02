@@ -56,8 +56,17 @@ export function labelDotPreviewCss( selector, attributes = {} ) {
 	if ( ! attributes.dot ) {
 		return '';
 	}
-	const size = safeLength( sgsLengthPreview( attributes.dotSize ) ) || '7px';
 	const gap = safeLength( gapVar( attributes.dotGap ) ) || '8px';
 	const paint = dotPaint( attributes.dotColour, attributes.dotColourGradient );
+	if ( 'line' === attributes.markerShape ) {
+		const length =
+			safeLength( gapVar( attributes.lineLength ) ) || '28px';
+		const thickness =
+			safeLength( gapVar( attributes.lineThickness ) ) || '2px';
+		const radius =
+			safeLength( gapVar( attributes.lineRadius ) ) || '0';
+		return `${ selector }::before{content:"";display:inline-block;flex-shrink:0;width:${ length };height:${ thickness };border-radius:${ radius };vertical-align:middle;margin-inline-end:${ gap };${ paint };}`;
+	}
+	const size = safeLength( sgsLengthPreview( attributes.dotSize ) ) || '7px';
 	return `${ selector }::before{content:"";display:inline-block;flex-shrink:0;width:${ size };height:${ size };border-radius:50%;vertical-align:middle;margin-inline-end:${ gap };${ paint };}`;
 }

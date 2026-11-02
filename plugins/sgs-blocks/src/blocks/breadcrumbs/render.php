@@ -80,6 +80,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 $separator                   = $attributes['separator'] ?? '/';
 $show_home                   = $attributes['showHome'] ?? true;
 $home_label                  = $attributes['homeLabel'] ?? 'Home';
+$middle_crumb_label          = sanitize_text_field( (string) ( $attributes['middleCrumbLabel'] ?? '' ) );
+$middle_crumb_url            = esc_url( (string) ( $attributes['middleCrumbUrl'] ?? '' ) );
 $product_page_crumbs_raw     = $attributes['productPageCrumbs'] ?? 'none';
 $product_page_crumbs         = in_array( $product_page_crumbs_raw, array( 'none', 'category', 'brand', 'both' ), true ) ? $product_page_crumbs_raw : 'none';
 $show_archive_crumb          = ! isset( $attributes['showArchiveCrumb'] ) || (bool) $attributes['showArchiveCrumb'];
@@ -387,6 +389,16 @@ if ( $show_home ) {
 	);
 }
 
+// Middle crumb: one author-named crumb straight after Home. An empty URL renders it
+// unlinked. It stands in for the page-ancestor crumbs. Both the visible list and the
+// BreadcrumbList JSON-LD below read this same $crumbs array.
+if ( '' !== $middle_crumb_label ) {
+	$crumbs[] = array(
+		'label' => esc_html( $middle_crumb_label ),
+		'url'   => $middle_crumb_url,
+	);
+}
+
 // Build hierarchy based on context.
 if ( is_singular() ) {
 	$post = get_queried_object();
@@ -414,7 +426,7 @@ if ( is_singular() ) {
 		}
 
 		// Page ancestors.
-		if ( $post->post_parent ) {
+		if ( $post->post_parent && '' === $middle_crumb_label ) {
 			$ancestors = array_reverse( get_post_ancestors( $post->ID ) );
 			foreach ( $ancestors as $ancestor_id ) {
 				$crumbs[] = array(
@@ -510,6 +522,12 @@ foreach ( $crumbs as $i => $crumb ) {
 			'<li class="sgs-breadcrumbs__item sgs-breadcrumbs__item--current" aria-current="page">%s</li>',
 			$crumb['label']
 		);
+	} elseif ( '' === $crumb['url'] ) {
+		$items_html .= sprintf(
+			'<li class="sgs-breadcrumbs__item">%s%s</li>',
+			$crumb['label'],
+			$sep_html
+		);
 	} else {
 		$items_html .= sprintf(
 			'<li class="sgs-breadcrumbs__item"><a href="%s">%s</a>%s</li>',
@@ -523,12 +541,15 @@ foreach ( $crumbs as $i => $crumb ) {
 // Schema.org BreadcrumbList.
 $schema_items = array();
 foreach ( $crumbs as $i => $crumb ) {
-	$schema_items[] = array(
+	$schema_item = array(
 		'@type'    => 'ListItem',
 		'position' => $i + 1,
 		'name'     => wp_strip_all_tags( $crumb['label'] ),
-		'item'     => $crumb['url'] ?: null,
 	);
+	if ( '' !== $crumb['url'] ) {
+		$schema_item['item'] = $crumb['url'];
+	}
+	$schema_items[] = $schema_item;
 }
 
 $schema = array(

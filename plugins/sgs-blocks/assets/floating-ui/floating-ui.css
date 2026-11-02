@@ -3,18 +3,8 @@
  *
  * CSS custom properties (--btt-bg, --btt-icon, --btt-pos, --rp-colour,
  * --rp-height, and --rp-gradient when set) are set in a scoped style block by the PHP renderer from Customiser values.
- * Defaults here serve as a fallback only.
+ * Each consumer rule below carries its own var(--x, default) fallback; this file sets no defaults on the wrapper, so the inline Customiser values always win.
  */
-
-/* ── Wrapper ────────────────────────────────────────────────────────────────── */
-
-.sgs-floating-ui {
-	--btt-bg:    #0f7e80;
-	--btt-icon:  #ffffff;
-	--btt-pos:   right;
-	--rp-colour: #0f7e80;
-	--rp-height: 4px;
-}
 
 /* ── Reading Progress bar ───────────────────────────────────────────────────── */
 

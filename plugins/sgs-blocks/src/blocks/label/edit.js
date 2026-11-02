@@ -28,7 +28,12 @@ import {
 	isCssGradient,
 	sgsBorderPreview,
 } from '../../utils';
-import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import {
+	ToolsPanel,
+	ToolsPanelItem,
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 import { labelDotPreviewCss } from './dot-preview';
 import EndShapePanel from './EndShapePanel';
 import {
@@ -225,6 +230,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		dot,
 		dotSize,
 		dotGap,
+		markerShape,
+		lineLength,
+		lineThickness,
+		lineRadius,
 	} = attributes;
 
 	const previewTier = usePreviewTier();
@@ -474,22 +483,85 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 					{ dot && (
 						<>
-							<SgsLengthControl
-								scale="font-size"
-								label={ __( 'Dot size', 'sgs-blocks' ) }
-								value={ dotSize ?? '' }
-								units={ SGS_LENGTH_UNITS }
+							<ToggleGroupControl
+								label={ __( 'Marker shape', 'sgs-blocks' ) }
+								value={ markerShape || 'dot' }
 								onChange={ ( val ) =>
-									setAttributes( {
-										dotSize: sgsNormaliseLength( val ),
-									} )
+									setAttributes( { markerShape: val } )
 								}
-								presets={ false }
-							/>
+								isBlock
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							>
+								<ToggleGroupControlOption
+									value="dot"
+									label={ __( 'Dot', 'sgs-blocks' ) }
+								/>
+								<ToggleGroupControlOption
+									value="line"
+									label={ __( 'Line', 'sgs-blocks' ) }
+								/>
+							</ToggleGroupControl>
+							{ 'line' === markerShape ? (
+								<>
+									<SgsLengthControl
+										presets
+										label={ __(
+											'Line length',
+											'sgs-blocks'
+										) }
+										value={ lineLength ?? '' }
+										onChange={ ( val ) =>
+											setAttributes( {
+												lineLength: val ?? '',
+											} )
+										}
+									/>
+									<SgsLengthControl
+										presets
+										label={ __(
+											'Line thickness',
+											'sgs-blocks'
+										) }
+										value={ lineThickness ?? '' }
+										onChange={ ( val ) =>
+											setAttributes( {
+												lineThickness: val ?? '',
+											} )
+										}
+									/>
+									<SgsLengthControl
+										presets
+										label={ __(
+											'Line corner radius',
+											'sgs-blocks'
+										) }
+										value={ lineRadius ?? '' }
+										onChange={ ( val ) =>
+											setAttributes( {
+												lineRadius: val ?? '',
+											} )
+										}
+									/>
+								</>
+							) : (
+								<SgsLengthControl
+									scale="font-size"
+									label={ __( 'Dot size', 'sgs-blocks' ) }
+									value={ dotSize ?? '' }
+									units={ SGS_LENGTH_UNITS }
+									onChange={ ( val ) =>
+										setAttributes( {
+											dotSize: sgsNormaliseLength( val ),
+										} )
+									}
+									presets={ false }
+								/>
+							) }
 							<SgsLengthControl
 								presets
 								label={ __(
-									'Space between dot and text',
+									'Space between marker and text',
 									'sgs-blocks'
 								) }
 								value={ dotGap ?? '' }

@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, ToggleControl, SelectControl } from '@wordpress/components';
+import { PanelBody, ToggleControl, SelectControl, TextControl } from '@wordpress/components';
 import { FlexWrapControl, SgsColourPanel, textRow, ResponsiveBoxControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, SgsLengthControl } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, usePreviewTier, tierBoxLonghands, sgsLengthPreview, sgsBorderPreview } from '../../utils';
 
@@ -52,6 +52,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		separator,
 		showHome,
 		homeLabel,
+		middleCrumbLabel,
+		middleCrumbUrl,
 		productPageCrumbs,
 		showArchiveCrumb,
 		showCurrentCrumb,
@@ -156,6 +158,23 @@ export default function Edit( { attributes, setAttributes } ) {
 							onChange={ ( val ) => setAttributes( { homeLabel: val } ) }
 						/>
 					) }
+					<TextControl
+						label={ __( 'Middle crumb label', 'sgs-blocks' ) }
+						help={ __( 'One extra crumb straight after Home, replacing the parent-page crumbs. Leave empty for none.', 'sgs-blocks' ) }
+						value={ middleCrumbLabel ?? '' }
+						onChange={ ( val ) => setAttributes( { middleCrumbLabel: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<TextControl
+						label={ __( 'Middle crumb link', 'sgs-blocks' ) }
+						help={ __( 'Where the middle crumb links to. Leave empty to show it as plain text.', 'sgs-blocks' ) }
+						type="url"
+						value={ middleCrumbUrl ?? '' }
+						onChange={ ( val ) => setAttributes( { middleCrumbUrl: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 					<SelectControl
 						label={ __( 'Separator', 'sgs-blocks' ) }
 						value={ separator }
@@ -284,6 +303,16 @@ export default function Edit( { attributes, setAttributes } ) {
 					{ showHome && (
 						<li className="sgs-breadcrumbs__item" style={ gapStyle }>
 							<AuthoredText as="a" href="#" style={ linkPaint } value={ homeLabel } />
+							<span className="sgs-breadcrumbs__separator" aria-hidden="true" style={ separatorPaint }>{ separator }</span>
+						</li>
+					) }
+					{ middleCrumbLabel && (
+						<li className="sgs-breadcrumbs__item" style={ gapStyle }>
+							{ middleCrumbUrl ? (
+								<a href="#" style={ linkPaint }>{ middleCrumbLabel }</a>
+							) : (
+								<span>{ middleCrumbLabel }</span>
+							) }
 							<span className="sgs-breadcrumbs__separator" aria-hidden="true" style={ separatorPaint }>{ separator }</span>
 						</li>
 					) }

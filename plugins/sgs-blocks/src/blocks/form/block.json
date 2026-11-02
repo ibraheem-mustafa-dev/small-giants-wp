@@ -213,6 +213,30 @@
 					"absentIn": [ "single-step" ],
 					"absentWhy": "The step navigation, progress bar and step labels print only for a multi-step form (more than one sgs/form-step)."
 				},
+				"next-button": {
+					"selector": ".sgs-form__button--next",
+					"label": "Next-step button",
+					"order": 4,
+					"clusters": [
+						"fill"
+					],
+					"prefix": "next",
+					"attrMap": {
+						"css:background-color": "nextColourBackground",
+						"css:background-image": "nextColourBackgroundGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "nextColourBackgroundHover",
+								"css:background-image": "nextColourBackgroundHoverGradient"
+							}
+						}
+					},
+					"_note": "The multi-step form's Next button (.sgs-form__button--next), the twin of prev-button. render.php calls sgs_button_element_style_css() with prefix 'next'. Its typography is the shared nav-button surface.",
+					"absentIn": [ "single-step" ],
+					"absentWhy": "The step navigation, progress bar and step labels print only for a multi-step form (more than one sgs/form-step)."
+				},
 				"progress-bar": {
 					"label": "Progress bar",
 					"order": 4,
@@ -1377,6 +1401,22 @@
 			"default": ""
 		},
 		"prevColourBackgroundHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"nextColourBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"nextColourBackgroundHover": {
+			"type": "string",
+			"default": ""
+		},
+		"nextColourBackgroundGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"nextColourBackgroundHoverGradient": {
 			"type": "string",
 			"default": ""
 		},

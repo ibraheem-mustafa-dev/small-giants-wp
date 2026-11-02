@@ -316,6 +316,9 @@ $uid      = 'sgs-ilist-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $root_sel = '.' . $uid . '.wp-block-sgs-icon-list';
 $icon_sel = $root_sel . ' .sgs-icon-list__icon';
 $text_sel = $root_sel . ' .sgs-icon-list__text';
+// A linked item's <a> sits inside the text span; the theme's link colour would otherwise win over the
+// text colour the span inherits, so the link takes the same text-colour rules.
+$text_link_sel = $text_sel . ' .sgs-icon-list__item-link';
 // Heading id for FR-36-26a `aria-labelledby`. NOT derived from $uid: the uid
 // is md5($attributes), so two blocks with byte-identical attributes share it —
 // harmless for the class-scoped CSS (identical blocks want identical styling)
@@ -430,24 +433,29 @@ $sgs_ilist_text_hover_resolved  = sgs_resolve_text_colour_or_gradient(
 $sgs_ilist_text_normal_decl     = sgs_text_colour_decl( $sgs_ilist_text_normal_resolved );
 $sgs_ilist_text_hover_decl      = sgs_text_colour_decl( $sgs_ilist_text_hover_resolved );
 if ( '' !== $sgs_ilist_text_normal_decl || '' !== $sgs_ilist_text_hover_decl ) {
-	$scoped_css[] = sgs_emit_state_colour_css(
-		$text_sel,
-		'' !== $sgs_ilist_text_normal_decl ? array( $sgs_ilist_text_normal_decl ) : array(),
-		'' !== $sgs_ilist_text_hover_decl ? array( $sgs_ilist_text_hover_decl ) : array()
-	);
+	foreach ( array( $text_sel, $text_link_sel ) as $sgs_ilist_text_colour_sel ) {
+		$scoped_css[] = sgs_emit_state_colour_css(
+			$sgs_ilist_text_colour_sel,
+			'' !== $sgs_ilist_text_normal_decl ? array( $sgs_ilist_text_normal_decl ) : array(),
+			'' !== $sgs_ilist_text_hover_decl ? array( $sgs_ilist_text_hover_decl ) : array()
+		);
+	}
 }
 // Gradient companion rule — a no-op for a flat colour, MANDATORY beside
 // sgs_text_colour_decl(): its gradient branch has no @supports fallback of
 // its own.
 
-$sgs_ilist_text_grad_css = sgs_text_colour_gradient_fallback_rule( $text_sel, $sgs_ilist_text_normal_resolved );
+$sgs_ilist_text_grad_css = sgs_text_colour_gradient_fallback_rule( $text_sel, $sgs_ilist_text_normal_resolved )
+	. sgs_text_colour_gradient_fallback_rule( $text_link_sel, $sgs_ilist_text_normal_resolved );
 if ( '' !== $sgs_ilist_text_grad_css ) {
 	$scoped_css[] = $sgs_ilist_text_grad_css;
 }
 if ( '' !== $sgs_ilist_text_hover_resolved && $sgs_ilist_text_hover_resolved !== $sgs_ilist_text_normal_resolved ) {
 	$sgs_ilist_text_grad_hover_css = sgs_hover_media_wrap(
 		sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $text_sel . ':hover', $sgs_ilist_text_hover_resolved )
-	) . sgs_text_colour_gradient_fallback_rule( $text_sel . ':focus-visible', $sgs_ilist_text_hover_resolved );
+		. sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $text_link_sel . ':hover', $sgs_ilist_text_hover_resolved )
+	) . sgs_text_colour_gradient_fallback_rule( $text_sel . ':focus-visible', $sgs_ilist_text_hover_resolved )
+		. sgs_text_colour_gradient_fallback_rule( $text_link_sel . ':focus-visible', $sgs_ilist_text_hover_resolved );
 	if ( '' !== $sgs_ilist_text_grad_hover_css ) {
 		$scoped_css[] = $sgs_ilist_text_grad_hover_css;
 	}

@@ -287,6 +287,10 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	// `form/edit.js`) — see that file for the fix.
 	'prevColourBackgroundHover',
 	'prevColourBackgroundHoverGradient',
+	// `sgs/form.nextColourBackgroundHover`/`nextColourBackgroundHoverGradient` — the Next button's
+	// hover values, the twin of the Previous pair above (a `:hover` rule the canvas never simulates).
+	'nextColourBackgroundHover',
+	'nextColourBackgroundHoverGradient',
 	// `sgs/cart`'s mini-cart panel colours (2026-09-05) — `panelBg`/
 	// `panelTextColour` paint a native `<dialog>` (FR-36-10) built server-side
 	// and opened only by a frontend click; `edit.js` renders no panel preview

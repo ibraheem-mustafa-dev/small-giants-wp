@@ -240,6 +240,7 @@ switch ( $display_type ) {
 		$hours_closed_label_raw = isset( $attributes['hoursClosedLabel'] ) ? trim( (string) $attributes['hoursClosedLabel'] ) : '';
 		$hours_closed_label     = '' !== $hours_closed_label_raw ? $hours_closed_label_raw : __( 'Closed', 'sgs-blocks' );
 		$hours_condensed_inline = ! empty( $attributes['hoursCondensedInline'] );
+		$hours_long_names       = 'long' === ( $attributes['hoursDayNames'] ?? 'short' );
 
 		$rows     = '';
 		$has_rows = false;
@@ -247,14 +248,16 @@ switch ( $display_type ) {
 		if ( 'condensed' === $hours_layout ) {
 			// Consecutive days sharing the same hours fold into one row (Mon-Sat, Sun); the grouping is shared
 			// with sgs/icon-list's Site Info items (includes/helpers-site-info-items.php).
-			$hours_condensed_groups = sgs_site_info_hours_groups( $hours_show_closed, $hours_closed_label );
+			$hours_condensed_groups = sgs_site_info_hours_groups( $hours_show_closed, $hours_closed_label, $hours_long_names );
 
 			$hours_slugs  = array( 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun' );
-			$hours_shorts = array( __( 'Mon', 'sgs-blocks' ), __( 'Tue', 'sgs-blocks' ), __( 'Wed', 'sgs-blocks' ), __( 'Thu', 'sgs-blocks' ), __( 'Fri', 'sgs-blocks' ), __( 'Sat', 'sgs-blocks' ), __( 'Sun', 'sgs-blocks' ) );
+			$hours_shorts = $hours_long_names
+				? array_values( $days )
+				: array( __( 'Mon', 'sgs-blocks' ), __( 'Tue', 'sgs-blocks' ), __( 'Wed', 'sgs-blocks' ), __( 'Thu', 'sgs-blocks' ), __( 'Fri', 'sgs-blocks' ), __( 'Sat', 'sgs-blocks' ), __( 'Sun', 'sgs-blocks' ) );
 			foreach ( $hours_condensed_groups as $hours_group ) {
 				$hours_first = (int) array_search( $hours_group['start'], $hours_shorts, true );
 				$hours_last  = (int) array_search( $hours_group['end'], $hours_shorts, true );
-				$hours_day_text = sgs_site_info_hours_day_text( $hours_group );
+				$hours_day_text = sgs_site_info_hours_day_text( $hours_group, $hours_long_names );
 				$has_rows       = true;
 				$rows          .= sprintf(
 					'<div class="sgs-business-hours__row" data-days="%s"><dt class="sgs-business-hours__day">%s</dt><dd class="sgs-business-hours__time">%s</dd></div>',

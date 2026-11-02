@@ -601,6 +601,17 @@ if ( '' !== $sgs_form_prev_css ) {
 	$sgs_form_supports_css .= $sgs_form_prev_css;
 }
 
+// Next-button colours — the same helper and attribute shapes as Previous, prefix 'next'.
+$sgs_form_next_css = function_exists( 'sgs_button_element_style_css' )
+	? sgs_button_element_style_css( $attributes, 'next', '.' . $sgs_form_uid . ' .sgs-form__button--next' )
+	: '';
+if ( '' !== $sgs_form_next_css ) {
+	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
+		$sgs_form_supports_classes[] = $sgs_form_uid;
+	}
+	$sgs_form_supports_css .= $sgs_form_next_css;
+}
+
 // Tile border — routed through the shared sgs_border_states_css() emitter
 // (helpers-colour-variants.php) so a gradient sibling comes free: that helper
 // owns the flat-vs-gradient branch (a masked ::before ring only when a

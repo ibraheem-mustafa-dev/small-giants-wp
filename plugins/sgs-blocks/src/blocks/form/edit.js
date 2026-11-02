@@ -121,6 +121,10 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		prevColourBackgroundHover,
 		prevColourBackgroundGradient,
 		prevColourBackgroundHoverGradient,
+		nextColourBackground,
+		nextColourBackgroundHover,
+		nextColourBackgroundGradient,
+		nextColourBackgroundHoverGradient,
 		tileBorderColour,
 		tileBorderColourHover,
 		tileBorderColourGradient,
@@ -195,6 +199,13 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	const prevButtonStyle = backgroundPaintPreview(
 		prevColourBackground,
 		prevColourBackgroundGradient,
+		palette
+	);
+
+	// Next-button canvas preview: the twin of the Previous preview above (resting state only).
+	const nextButtonStyle = backgroundPaintPreview(
+		nextColourBackground,
+		nextColourBackgroundGradient,
 		palette
 	);
 
@@ -578,6 +589,32 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 								gradientValue: prevColourBackgroundHoverGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( { prevColourBackgroundHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'next-button-background',
+						label: __( 'Next button background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: nextColourBackground,
+								onChange: ( val ) => setAttributes( { nextColourBackground: val ?? '' } ),
+								linked: true,
+								gradientValue: nextColourBackgroundGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { nextColourBackgroundGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: nextColourBackgroundHover,
+								onChange: ( val ) => setAttributes( { nextColourBackgroundHover: val ?? '' } ),
+								linked: true,
+								gradientValue: nextColourBackgroundHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { nextColourBackgroundHoverGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -1374,6 +1411,13 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						style={ prevButtonStyle }
 					>
 						<AuthoredText value={ attributes.prevLabel || __( 'Previous', 'sgs-blocks' ) } />
+					</button>
+					<button
+						type="button"
+						className="sgs-form__button sgs-form__button--next"
+						style={ nextButtonStyle }
+					>
+						<AuthoredText value={ attributes.nextLabel || __( 'Next', 'sgs-blocks' ) } />
 					</button>
 					{ ! ownSubmit && (
 						<button

@@ -30,10 +30,19 @@ if ( ! function_exists( 'sgs_site_info_hours_groups' ) ) {
 	 *
 	 * @param bool   $show_closed  Whether a day with no hours gets a group.
 	 * @param string $closed_label Text shown for a day with no hours.
-	 * @return array<int,array{start:string,end:string,value:string}> Groups in day order; start and end are short day names.
+	 * @param bool   $long_names   True for full day names (Monday); the default is short names (Mon).
+	 * @return array<int,array{start:string,end:string,value:string}> Groups in day order; start and end are short day names, or full day names when $long_names.
 	 */
-	function sgs_site_info_hours_groups( bool $show_closed = false, string $closed_label = '' ): array {
-		$short = array(
+	function sgs_site_info_hours_groups( bool $show_closed = false, string $closed_label = '', bool $long_names = false ): array {
+		$short = $long_names ? array(
+			'mon' => __( 'Monday', 'sgs-blocks' ),
+			'tue' => __( 'Tuesday', 'sgs-blocks' ),
+			'wed' => __( 'Wednesday', 'sgs-blocks' ),
+			'thu' => __( 'Thursday', 'sgs-blocks' ),
+			'fri' => __( 'Friday', 'sgs-blocks' ),
+			'sat' => __( 'Saturday', 'sgs-blocks' ),
+			'sun' => __( 'Sunday', 'sgs-blocks' ),
+		) : array(
 			'mon' => __( 'Mon', 'sgs-blocks' ),
 			'tue' => __( 'Tue', 'sgs-blocks' ),
 			'wed' => __( 'Wed', 'sgs-blocks' ),
@@ -75,13 +84,18 @@ if ( ! function_exists( 'sgs_site_info_hours_groups' ) ) {
 
 if ( ! function_exists( 'sgs_site_info_hours_day_text' ) ) {
 	/**
-	 * The day span of one hours group: "Mon" for a single day, "Mon–Sat" for a run.
+	 * The day span of one hours group: "Mon" for a single day, "Mon–Sat" for a run; with $long_names (a group
+	 * built with full day names) a run joins with a spaced en dash: "Monday – Thursday".
 	 *
-	 * @param array{start:string,end:string,value:string} $group One entry of sgs_site_info_hours_groups().
+	 * @param array{start:string,end:string,value:string} $group      One entry of sgs_site_info_hours_groups().
+	 * @param bool                                        $long_names True when the group holds full day names.
 	 * @return string Plain text.
 	 */
-	function sgs_site_info_hours_day_text( array $group ): string {
-		return $group['start'] === $group['end'] ? $group['start'] : $group['start'] . "\u{2013}" . $group['end'];
+	function sgs_site_info_hours_day_text( array $group, bool $long_names = false ): string {
+		if ( $group['start'] === $group['end'] ) {
+			return $group['start'];
+		}
+		return $group['start'] . ( $long_names ? " \u{2013} " : "\u{2013}" ) . $group['end'];
 	}
 }
 

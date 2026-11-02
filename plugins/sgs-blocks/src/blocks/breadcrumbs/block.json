@@ -195,6 +195,16 @@
 			"type": "string",
 			"default": "Home"
 		},
+		"middleCrumbLabel": {
+			"type": "string",
+			"default": "",
+			"description": "Text of one extra crumb inserted straight after Home (and in the BreadcrumbList JSON-LD). Empty adds none. When set it replaces the page-ancestor crumbs."
+		},
+		"middleCrumbUrl": {
+			"type": "string",
+			"default": "",
+			"description": "Link for the middle crumb. Empty renders the crumb as plain text, unlinked."
+		},
 		"productPageCrumbs": {
 			"type": "string",
 			"enum": [

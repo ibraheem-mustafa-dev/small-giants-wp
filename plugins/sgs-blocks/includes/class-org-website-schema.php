@@ -419,7 +419,8 @@ final class Org_Website_Schema {
 		$split = \preg_split( '/\s*(?:<br\s*\/?>|\r\n|\r|\n)\s*/i', $raw );
 		$lines = array();
 		foreach ( (array) $split as $line ) {
-			$clean = \sanitize_text_field( (string) $line );
+			// A line ends in a comma when the editor writes "street,<br>town,<br>country"; the comma is a separator, not part of the value.
+			$clean = \trim( \sanitize_text_field( (string) $line ), " \t," );
 			if ( '' !== $clean ) {
 				$lines[] = $clean;
 			}
@@ -566,13 +567,12 @@ final class Org_Website_Schema {
 	 * Build an openingHoursSpecification array from the Site Info opening-hours
 	 * fields (mon..sun, free text). Only emitted on a LocalBusiness node.
 	 *
-	 * Each day's stored value is operator free text with no enforced format, so
-	 * parsing is deliberately conservative: a day is emitted ONLY when its value
-	 * contains EXACTLY two time tokens that resolve to a progressing HH:MM–HH:MM
-	 * range. A day that is empty, "closed", split-hours ("9–12, 2–5"), or an
-	 * ambiguous bare 12-hour shorthand ("9–5" that meant 9am–5pm) is OMITTED —
-	 * the schema has no "closed" property and emitting guessed or contradictory
-	 * hours is worse than omission. Guarded by class_exists().
+	 * Each day's stored value is operator free text with no enforced format. Every
+	 * "start - end" range in it becomes one OpeningHoursSpecification, so split hours
+	 * ("9:30am - 12pm, 2:30 - 5pm") give two nodes. A day that is empty or closed
+	 * emits none (the schema has no "closed" property). The range rules are the
+	 * ones the open-status script uses (src/blocks/business-info/open-status-logic.js
+	 * ::parseDay); keep the two in step. Guarded by class_exists().
 	 *
 	 * @return array<int,array<string,string>> OpeningHoursSpecification nodes (may be empty).
 	 */
@@ -598,61 +598,119 @@ final class Org_Website_Schema {
 				continue;
 			}
 
-			// Extract every "H", "H:MM" or "H.MM" token with optional am/pm. The
-			// hour digit is mandatory, so no empty matches. A valid single-range
-			// day yields exactly two tokens (open, close).
-			if ( ! \preg_match_all( '/(\d{1,2})(?:[:.](\d{2}))?\s*(am|pm)?/i', $raw, $matches, \PREG_SET_ORDER ) ) {
-				continue;
+			foreach ( self::parse_day_ranges( $raw ) as $range ) {
+				$specs[] = array(
+					'@type'     => 'OpeningHoursSpecification',
+					'dayOfWeek' => $day_name,
+					'opens'     => $range[0],
+					'closes'    => $range[1],
+				);
 			}
-			if ( 2 !== \count( $matches ) ) {
-				continue;
-			}
-
-			$opens  = self::parse_time_token( $matches[0] );
-			$closes = self::parse_time_token( $matches[1] );
-			if ( null === $opens || null === $closes ) {
-				continue;
-			}
-
-			// Reject non-progressing ranges (close at or before open) — this
-			// catches the common "9–5" (no am/pm) that parses to 09:00–05:00.
-			if ( \strcmp( $closes, $opens ) <= 0 ) {
-				continue;
-			}
-
-			$specs[] = array(
-				'@type'     => 'OpeningHoursSpecification',
-				'dayOfWeek' => $day_name,
-				'opens'     => $opens,
-				'closes'    => $closes,
-			);
 		}
 
 		return $specs;
 	}
 
 	/**
-	 * Resolve one regex time-token match to a 24-hour "HH:MM" string, honouring an
-	 * explicit am/pm suffix, or null when the value falls outside 24-hour range.
+	 * Parse one day's free-text hours into 24-hour "HH:MM" ranges, mirroring
+	 * open-status-logic.js::parseDay: a meridiem on one end borrows to the other end
+	 * when that keeps the range forward ("9-5pm" is 09:00-17:00, "9am-5" is 09:00-17:00),
+	 * a bare "9-5" closes in the afternoon, "Closed" before any range empties the day,
+	 * "24 hours" is the whole day, and an end at or before its start runs past midnight.
 	 *
-	 * @param array<int,string> $token preg match: [full, hour, minute?, meridiem?].
-	 * @return string|null "HH:MM" or null when out of range.
+	 * @param string $text One day's stored hours.
+	 * @return array<int,array{0:string,1:string}> [opens, closes] pairs in order.
 	 */
-	private static function parse_time_token( array $token ): ?string {
-		$hour     = (int) $token[1];
-		$minute   = isset( $token[2] ) && '' !== $token[2] ? (int) $token[2] : 0;
-		$meridiem = isset( $token[3] ) ? \strtolower( $token[3] ) : '';
-
-		if ( 'pm' === $meridiem && $hour < 12 ) {
-			$hour += 12;
-		} elseif ( 'am' === $meridiem && 12 === $hour ) {
-			$hour = 0;
+	private static function parse_day_ranges( string $text ): array {
+		$source = \trim( $text );
+		if ( '' === $source ) {
+			return array();
+		}
+		$closed_re = '/\b(closed|shut)\b/i';
+		if ( \preg_match( '/\b(24\s*(?:hours?|hrs?|h)|open\s*24|all\s*day)\b/i', $source ) && ! \preg_match( $closed_re, $source ) ) {
+			return array( array( '00:00', '23:59' ) );
 		}
 
-		if ( $hour < 0 || $hour > 23 || $minute < 0 || $minute > 59 ) {
-			return null;
+		$time     = '(\d{1,2})(?:\s*[:.]\s*(\d{2}))?\s*(a\.?m\.?|p\.?m\.?)?';
+		$range_re = '/' . $time . '\s*(?:-|\x{2013}|\x{2014}|to|until|till)\s*' . $time . '/iu';
+
+		if ( \preg_match( $closed_re, $source, $closed, \PREG_OFFSET_CAPTURE ) && ! \preg_match( $range_re, \substr( $source, 0, $closed[0][1] ) ) ) {
+			return array();
+		}
+		if ( ! \preg_match_all( $range_re, $source, $all, \PREG_SET_ORDER ) ) {
+			return array();
 		}
 
-		return \sprintf( '%02d:%02d', $hour, $minute );
+		$ranges = array();
+		foreach ( $all as $m ) {
+			$m         = \array_pad( $m, 7, '' );
+			$s_mer     = self::meridiem_of( $m[3] );
+			$e_mer     = self::meridiem_of( $m[6] );
+			$start     = self::to_minutes( $m[1], $m[2], '' !== $s_mer ? $s_mer : $e_mer );
+			if ( '' === $s_mer && '' !== $e_mer ) {
+				$end_probe = self::to_minutes( $m[4], $m[5], $e_mer );
+				if ( $start >= $end_probe ) {
+					$s_mer = 'pm' === $e_mer ? 'am' : 'pm';
+					$start = self::to_minutes( $m[1], $m[2], $s_mer );
+				}
+			}
+			if ( '' === $e_mer && '' !== $s_mer ) {
+				$e_mer = $s_mer;
+				if ( self::to_minutes( $m[4], $m[5], $e_mer ) <= $start ) {
+					$e_mer = 'pm';
+				}
+			}
+			$end = self::to_minutes( $m[4], $m[5], $e_mer );
+			if ( '' === $s_mer && '' === $e_mer && $end <= $start && (int) $m[4] >= 1 && (int) $m[4] <= 8 && (int) $m[1] >= 5 && (int) $m[1] <= 12 ) {
+				$end = self::to_minutes( $m[4], $m[5], 'pm' );
+			}
+			if ( $end <= $start ) {
+				$end += 1440;
+			}
+			if ( $start >= 1440 || $end <= $start || (int) $m[1] > 23 || (int) $m[4] > 23 ) {
+				continue;
+			}
+			$ranges[] = array( self::clock( $start ), self::clock( $end % 1440 ) );
+		}
+		return $ranges;
+	}
+
+	/**
+	 * Normalise a captured meridiem ("a.m.", "PM") to '', 'am' or 'pm'.
+	 *
+	 * @param string $raw Captured text.
+	 * @return string '', 'am' or 'pm'.
+	 */
+	private static function meridiem_of( string $raw ): string {
+		return '' === $raw ? '' : \strtolower( \str_replace( '.', '', $raw ) );
+	}
+
+	/**
+	 * One clock reading as minutes after midnight, honouring am/pm.
+	 *
+	 * @param string $hours    Hour digits.
+	 * @param string $minutes  Minute digits or ''.
+	 * @param string $meridiem '', 'am' or 'pm'.
+	 * @return int Minutes after midnight.
+	 */
+	private static function to_minutes( string $hours, string $minutes, string $meridiem ): int {
+		$h = (int) $hours;
+		$m = '' !== $minutes ? (int) $minutes : 0;
+		if ( 'am' === $meridiem && 12 === $h ) {
+			$h = 0;
+		} elseif ( 'pm' === $meridiem && $h < 12 ) {
+			$h += 12;
+		}
+		return $h * 60 + $m;
+	}
+
+	/**
+	 * Minutes after midnight as "HH:MM".
+	 *
+	 * @param int $minutes Minutes after midnight (0-1439).
+	 * @return string "HH:MM".
+	 */
+	private static function clock( int $minutes ): string {
+		return \sprintf( '%02d:%02d', \intdiv( $minutes, 60 ) % 24, $minutes % 60 );
 	}
 }
