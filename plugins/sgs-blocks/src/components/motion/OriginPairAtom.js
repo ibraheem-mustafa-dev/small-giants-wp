@@ -6,7 +6,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { __experimentalNumberControl as NumberControl } from '@wordpress/components';
+import { NumberControl } from '../primitives';
 import AtomFrame from './AtomFrame';
 import { validateField } from './field-types';
 

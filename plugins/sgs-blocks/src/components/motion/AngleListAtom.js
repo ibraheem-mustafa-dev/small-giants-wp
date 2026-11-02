@@ -14,11 +14,8 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { speak } from '@wordpress/a11y';
 import { useRef, useState } from '@wordpress/element';
-import {
-	Button,
-	ToggleControl,
-	__experimentalNumberControl as NumberControl,
-} from '@wordpress/components';
+import { Button, ToggleControl } from '@wordpress/components';
+import { NumberControl } from '../primitives';
 import AngleAtom from './AngleAtom';
 import AtomFrame from './AtomFrame';
 import { boundsOf, sameValue } from './atom-utils';
