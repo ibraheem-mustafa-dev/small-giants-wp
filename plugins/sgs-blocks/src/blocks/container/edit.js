@@ -164,6 +164,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		textColourHover,
 		textColourHoverGradient,
 		headingColour,
+		headingColourGradient,
 		gridAutoRows = '',
 		flexDirection = '',
 		flexWrap = 'wrap',
@@ -471,13 +472,16 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// "Heading colour" (render.php prints the same rule on the page).
 	// The resolved colour goes into an editor <style>: a value that could close the rule
 	// (the server's sgs_css_value_has_breakout set) prints nothing.
+	// A gradient wins over the flat colour, painted through background-clip:text as render.php does.
+	const headingUnsafe = ( v ) =>
+		/[;{}<>"'`\\]|url\s*\(|expression\s*\(|@/i.test( v );
+	const headingGradientCss = String( headingColourGradient ?? '' ).trim();
 	const headingColourCss = headingColour
 		? String( resolveColourToken( headingColour, colourPalette ) ?? '' )
 		: '';
-	if (
-		headingColourCss &&
-		! /[;{}<>"'`\\]|url\s*\(|expression\s*\(|@/i.test( headingColourCss )
-	) {
+	if ( headingGradientCss && ! headingUnsafe( headingGradientCss ) ) {
+		gridItemScopedCss += `#block-${ clientId } :where(h1,h2,h3,h4,h5,h6){background-image:${ headingGradientCss };-webkit-background-clip:text;background-clip:text;color:transparent}`;
+	} else if ( headingColourCss && ! headingUnsafe( headingColourCss ) ) {
 		gridItemScopedCss += `#block-${ clientId } :where(h1,h2,h3,h4,h5,h6){color:${ headingColourCss }}`;
 	}
 
@@ -740,6 +744,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
                  theme heading colour (and the automatic on-dark colour on a dark ground). */
 							key: 'headings',
 							label: __( 'Heading colour', 'sgs-blocks' ),
+							gradientCapable: true,
 							states: [
 								{
 									key: 'normal',
@@ -750,6 +755,11 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 											headingColour: val ?? '',
 										} ),
 									linked: true,
+									gradientValue: headingColourGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( {
+											headingColourGradient: val ?? '',
+										} ),
 								},
 							],
 						},

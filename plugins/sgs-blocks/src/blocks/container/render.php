@@ -174,7 +174,7 @@ if ( '' !== $sgs_container_hover_text ) {
 	}
 }
 
-$sgs_container_heading_value = sgs_colour_value( (string) ( $attributes['headingColour'] ?? '' ) );
+$sgs_container_heading_value = sgs_resolve_text_colour_or_gradient( (string) ( $attributes['headingColour'] ?? '' ), (string) ( $attributes['headingColourGradient'] ?? '' ) );
 
 if ( $sgs_container_resting_decls || $sgs_container_hover_decls || '' !== $sgs_container_heading_value ) {
 	// The uid is normally minted by the style-engine branch above, but that
@@ -198,7 +198,9 @@ if ( $sgs_container_resting_decls || $sgs_container_hover_decls || '' !== $sgs_c
 	// beats the automatic on-dark heading colour (0,0,1) and loses to a heading block's own
 	// scoped (0,2,0) colour.
 	if ( '' !== $sgs_container_heading_value ) {
-		$sgs_container_supports_css .= '.' . $sgs_container_supports_uid . ' :where(h1,h2,h3,h4,h5,h6){color:' . $sgs_container_heading_value . '}';
+		$sgs_container_heading_sel   = '.' . $sgs_container_supports_uid . ' :where(h1,h2,h3,h4,h5,h6)';
+		$sgs_container_supports_css .= $sgs_container_heading_sel . '{' . sgs_text_colour_decl( $sgs_container_heading_value ) . '}'
+			. sgs_text_colour_gradient_fallback_rule( $sgs_container_heading_sel, $sgs_container_heading_value );
 	}
 }
 
