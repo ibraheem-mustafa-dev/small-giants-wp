@@ -49,7 +49,7 @@ final class GalleryLinkedTileTest extends TestCase {
 		return array_merge(
 			array(
 				'mediaItems'     => $items,
-				'layout'         => 'grid',
+				'layout'         => array(),
 				'columns'        => array(
 					'desktop' => 4,
 					'tablet'  => 2,

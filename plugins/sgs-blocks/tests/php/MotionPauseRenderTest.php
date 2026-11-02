@@ -184,7 +184,7 @@ final class MotionPauseRenderTest extends TestCase {
 		$html = $this->html(
 			'sgs/gallery',
 			array(
-				'layout'              => 'carousel',
+				'layout'              => array( 'desktop' => 'carousel', 'tablet' => 'carousel', 'mobile' => 'carousel' ),
 				'carouselAutoplay'    => true,
 				'carouselPauseButton' => true,
 				'mediaItems'          => $this->gallery_items(),
@@ -195,14 +195,14 @@ final class MotionPauseRenderTest extends TestCase {
 
 	public function test_gallery_prints_no_button_without_autoplay_or_outside_the_carousel(): void {
 		$items = $this->gallery_items();
-		$this->assertSame( '', $this->pause_button( $this->html( 'sgs/gallery', array( 'layout' => 'carousel', 'mediaItems' => $items ) ) ) );
+		$this->assertSame( '', $this->pause_button( $this->html( 'sgs/gallery', array( 'layout' => array( 'desktop' => 'carousel', 'tablet' => 'carousel', 'mobile' => 'carousel' ), 'mediaItems' => $items ) ) ) );
 		$this->assertSame(
 			'',
 			$this->pause_button(
 				$this->html(
 					'sgs/gallery',
 					array(
-						'layout'              => 'grid',
+						'layout'              => array(),
 						'carouselAutoplay'    => true,
 						'carouselPauseButton' => true,
 						'mediaItems'          => $items,
@@ -347,7 +347,7 @@ final class MotionPauseRenderTest extends TestCase {
 			'trust-bar'          => $this->html( 'sgs/trust-bar', array_merge( $this->marquee_layer(), array( 'items' => $this->trust_items() ) ) ),
 			'brand-strip'        => $this->html( 'sgs/brand-strip', array_merge( $this->marquee_layer(), array( 'logos' => $this->brand_logos() ) ) ),
 			'testimonial-slider' => $this->html( 'sgs/testimonial-slider', array( 'autoplay' => true ), $this->testimonials( 3 ) ),
-			'gallery'            => $this->html( 'sgs/gallery', array( 'layout' => 'carousel', 'carouselAutoplay' => true, 'mediaItems' => $this->gallery_items() ) ),
+			'gallery'            => $this->html( 'sgs/gallery', array( 'layout' => array( 'desktop' => 'carousel', 'tablet' => 'carousel', 'mobile' => 'carousel' ), 'carouselAutoplay' => true, 'mediaItems' => $this->gallery_items() ) ),
 			'post-grid'          => $this->html( 'sgs/post-grid', array( 'layout' => 'carousel', 'carouselAutoplay' => true ) ),
 			'trustpilot-reviews' => $this->html( 'sgs/trustpilot-reviews', array( 'variant' => 'carousel', 'autoplay' => true, 'dataSource' => 'placeholder' ) ),
 			'google-reviews'     => $this->google_reviews( array( 'autoplay' => true ) ),
