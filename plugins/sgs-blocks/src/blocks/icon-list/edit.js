@@ -540,6 +540,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		color: colourVar( attributes.descriptionColour ) || undefined,
 		...elementPreview.description,
 	};
+	// A linked row in the flex marker modes carries its vertical padding on the link
+	// (render.php prints the same rules), so the whole padded row is the click target.
+	const linkFillsRow =
+		!! itemPaddingBlock && [ 'icon', 'emoji' ].includes( markerType || 'icon' );
 	const itemStyle = {
 		...elementPreview.item,
 		...( itemPaddingBlock ? { paddingBlock: itemPaddingBlock } : {} ),
@@ -620,12 +624,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		return (
 			<li
 				key={ index }
-				className="sgs-icon-list__item"
-				style={
-					siteInfoItem?.hidden
-						? { ...itemStyle, opacity: 0.5 }
-						: itemStyle
+				className={
+					'sgs-icon-list__item' +
+					( shownItem.url ? ' sgs-icon-list__item--linked' : '' )
 				}
+				style={ {
+					...itemStyle,
+					...( linkFillsRow && shownItem.url
+						? { paddingBlock: 0 }
+						: {} ),
+					...( siteInfoItem?.hidden ? { opacity: 0.5 } : {} ),
+				} }
 			>
 				{ showMarkerIcon && (
 					<span
@@ -641,10 +650,30 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						/>
 					</span>
 				) }
-				<span className="sgs-icon-list__text" style={ textStyle }>
+				<span
+					className="sgs-icon-list__text"
+					style={ {
+						...textStyle,
+						...( linkFillsRow && shownItem.url
+							? {
+									alignSelf: 'stretch',
+									display: 'flex',
+									alignItems: 'center',
+							  }
+							: {} ),
+					} }
+				>
 					{ shownItem.url ? (
 						<a
 							href={ shownItem.url }
+							style={
+								linkFillsRow
+									? {
+											display: 'block',
+											paddingBlock: itemPaddingBlock,
+									  }
+									: undefined
+							}
 							className="sgs-icon-list__item-link"
 							onClick={ ( event ) => event.preventDefault() }
 							tabIndex={ -1 }

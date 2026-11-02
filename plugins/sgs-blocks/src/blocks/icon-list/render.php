@@ -416,6 +416,15 @@ if ( '' !== $icon_bg_colour ) {
 // option-picker's precedent for overriding a static default). ---
 if ( '' !== $item_padding_block ) {
 	$scoped_css[] = "{$item_row_sel}{padding-block:{$item_padding_block};}";
+	// A linked row in the flex marker modes (icon, emoji) carries that padding on
+	// the link instead, so the whole padded row is the click target. The <li>
+	// keeps its box: the stretched text span plus the link's padding sum to the
+	// old padded height. Unlinked rows and the list-item modes keep the rule above.
+	if ( in_array( $marker_type, array( 'icon', 'emoji' ), true ) ) {
+		$scoped_css[] = "{$item_row_sel}.sgs-icon-list__item--linked{padding-block:0;}";
+		$scoped_css[] = "{$item_row_sel}.sgs-icon-list__item--linked .sgs-icon-list__text{align-self:stretch;display:flex;align-items:center;}";
+		$scoped_css[] = "{$item_row_sel} .sgs-icon-list__item-link{display:block;padding-block:{$item_padding_block};}";
+	}
 }
 // Text colour (flat-or-gradient, resting + hover) — scoped to the item text
 // element, never the root <ul>, matching the block's declared css:color slot.
@@ -765,7 +774,8 @@ foreach ( $resolved_items as $item ) {
 	}
 
 	$items_html .= sprintf(
-		'<li class="sgs-icon-list__item">%s<span class="sgs-icon-list__text">%s</span></li>',
+		'<li class="sgs-icon-list__item%s">%s<span class="sgs-icon-list__text">%s</span></li>',
+		$item_url ? ' sgs-icon-list__item--linked' : '',
 		$marker_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built by sgs_list_marker_render() from $render_icon()/esc_html output.
 		$text_content // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above.
 	);
