@@ -155,8 +155,21 @@
                                                             "left": "0px"
                                                         }
                                                     },
-                                                    "sgsCustomCss": "& { transform: rotate(-2deg); transform-origin: left; }",
-                                                    "sgsCustomCssNote": "Draft eyebrow is rotated -2deg about its left edge; Text has no rotation setting."
+                                                    "sgsMotion": {
+                                                        "v": 1,
+                                                        "elements": {
+                                                            "root": {
+                                                                "hover": {
+                                                                    "state": {
+                                                                        "values": {
+                                                                            "restRotate": -2,
+                                                                            "restOrigin": "left"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
                                                 }
                                             },
                                             {
@@ -178,7 +191,10 @@
                                                     "lineHeight": {
                                                         "desktop": 1.05
                                                     },
-                                                    "lineHeightUnit": ""
+                                                    "lineHeightUnit": "",
+                                                    "letterSpacing": {
+                                                        "desktop": "0px"
+                                                    }
                                                 }
                                             }
                                         ]
@@ -229,6 +245,9 @@
                                                         }
                                                     }
                                                 }
+                                            },
+                                            "iconSize": {
+                                                "desktop": 20
                                             }
                                         }
                                     }
@@ -237,7 +256,11 @@
                             {
                                 "name": "sgs/gallery",
                                 "attributes": {
-                                    "layout": "grid",
+                                    "layout": {
+                                        "desktop": "grid",
+                                        "tablet": "grid",
+                                        "mobile": "scroll"
+                                    },
                                     "mediaItems": [
                                         {
                                             "id": 96,
@@ -315,8 +338,51 @@
                                         }
                                     },
                                     "tileColour": "mm-pink-soft",
-                                    "sgsCustomCss": "& .sgs-gallery__item { transition: transform .25s ease; } & .sgs-gallery__item:nth-child(1) { transform: rotate(-2deg); } & .sgs-gallery__item:nth-child(2) { transform: rotate(1.5deg); } & .sgs-gallery__item:nth-child(3) { transform: rotate(-1deg); } & .sgs-gallery__item:nth-child(4) { transform: rotate(2deg); } & .sgs-gallery__item:nth-child(5) { transform: rotate(-1.5deg); } & .sgs-gallery__item:nth-child(6) { transform: rotate(1deg); } & .sgs-gallery__item:hover, & .sgs-gallery__item:focus-within { transform: none; } @media (max-width: 767px) { & { margin-left: -20px; margin-right: -20px; padding: 8px 20px 12px; } & .sgs-gallery__grid { grid-auto-flow: column; grid-template-columns: none; grid-auto-columns: 147px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; } & .sgs-gallery__item { scroll-snap-align: start; } } @media (prefers-reduced-motion: reduce) { & .sgs-gallery__item { transition: none; } }",
-                                    "sgsCustomCssNote": "Tile rotations (-2, 1.5, -1, 2, -1.5, 1deg) that straighten on hover or focus, and the mobile sideways scroller of 147px tiles with its -20px side margins and 8px 20px 12px padding (a mobile-tier padding or margin on the Gallery is read through the Gallery container query, so it also fires at 768 inside a 704px band): the Gallery has no rotation or per-tier scroller setting."
+                                    "sgsMotion": {
+                                        "v": 1,
+                                        "elements": {
+                                            "item": {
+                                                "hover": {
+                                                    "state": {
+                                                        "values": {
+                                                            "restRotate": [
+                                                                -2,
+                                                                1.5,
+                                                                -1,
+                                                                2,
+                                                                -1.5,
+                                                                1
+                                                            ],
+                                                            "rotate": 0,
+                                                            "translateY": -6,
+                                                            "duration": 250,
+                                                            "easing": "token:easing.ease"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "shadowHover": "6px 6px 0 0",
+                                    "scrollItemWidth": {
+                                        "mobile": "147px"
+                                    },
+                                    "scrollInset": {
+                                        "mobile": "20px"
+                                    },
+                                    "margin": {
+                                        "mobile": {
+                                            "left": "-20px",
+                                            "right": "-20px"
+                                        }
+                                    },
+                                    "padding": {
+                                        "mobile": {
+                                            "top": "8px",
+                                            "bottom": "12px"
+                                        }
+                                    },
+                                    "shadowHoverColour": "#3A2A22"
                                 }
                             }
                         ]
@@ -579,7 +645,7 @@
                                                     "sgsCustomCssId": "wgate13",
                                                     "sgsCustomCssNote": "Width ladder text-align: 0-767px center, 768px and up left",
                                                     "sgsFocusRests": true,
-                                                    "label": "Build your box →",
+                                                    "label": "Build your box",
                                                     "minHeight": {
                                                         "desktop": "60px"
                                                     },
@@ -608,7 +674,10 @@
                                                                 }
                                                             }
                                                         }
-                                                    }
+                                                    },
+                                                    "icon": "arrow-right",
+                                                    "iconPosition": "after",
+                                                    "url": "/#build"
                                                 }
                                             }
                                         ]
@@ -671,14 +740,14 @@
                         "desktop": "1320px"
                     },
                     "gridTemplateColumns": {
-                        "desktop": "minmax(0,1fr) minmax(0,1fr) minmax(0,1.3fr)",
-                        "tablet": "minmax(0,1fr) minmax(0,1fr) minmax(0,1.3fr)",
-                        "mobile": "minmax(0,1fr) minmax(0,1fr)"
+                        "desktop": "minmax(0,1fr) calc((100% - 96px) * 13 / 33)",
+                        "tablet": "minmax(0,1fr) calc((100% - 64px) * 13 / 33)",
+                        "mobile": "minmax(0,1fr)"
                     },
                     "gap": {
                         "desktop": "48px",
                         "tablet": "32px",
-                        "mobile": "32px 20px"
+                        "mobile": "32px"
                     },
                     "padding": {
                         "desktop": {
@@ -707,212 +776,201 @@
                     {
                         "name": "sgs/container",
                         "attributes": {
-                            "layout": "stack",
-                            "tagName": "nav",
-                            "ariaLabel": "Shop",
+                            "layout": "grid",
                             "contentWidth": {
                                 "desktop": "full"
                             },
+                            "gridTemplateColumns": {
+                                "desktop": "minmax(0,1fr) minmax(0,1fr)"
+                            },
                             "gap": {
-                                "desktop": "2px"
-                            },
-                            "padding": {
-                                "desktop": {
-                                    "top": "0px",
-                                    "right": "0px",
-                                    "bottom": "0px",
-                                    "left": "0px"
-                                }
-                            },
-                            "minHeight": {
-                                "desktop": "0px"
-                            },
-                            "textColourHover": "primary-text"
-                        },
-                        "innerBlocks": [
-                            {
-                                "name": "sgs/text",
-                                "attributes": {
-                                    "text": "shop",
-                                    "fontFamily": "caveat",
-                                    "fontSize": {
-                                        "desktop": 24
-                                    },
-                                    "lineHeight": {
-                                        "desktop": 1.25
-                                    },
-                                    "textColour": "mm-script",
-                                    "textColourHover": "mm-script",
-                                    "margin": {
-                                        "desktop": {
-                                            "top": "0px",
-                                            "bottom": "4px"
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                "name": "sgs/icon-list",
-                                "attributes": {
-                                    "items": [
-                                        {
-                                            "text": "All Zookies",
-                                            "url": "/shop/"
-                                        },
-                                        {
-                                            "text": "Build your box",
-                                            "url": "/#build"
-                                        },
-                                        {
-                                            "text": "Subscribe & save",
-                                            "url": "/product/zookies/"
-                                        },
-                                        {
-                                            "text": "Gifts",
-                                            "url": "/gifts/"
-                                        },
-                                        {
-                                            "text": "Taster Trio",
-                                            "url": "/product/taster-trio/"
-                                        }
-                                    ],
-                                    "sgsMotion": {
-                                        "v": 1,
-                                        "elements": {
-                                            "root": {
-                                                "hover": {
-                                                    "state": {
-                                                        "values": {
-                                                            "translateX": 4,
-                                                            "duration": "token:duration.fast",
-                                                            "easing": "token:easing.ease"
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    },
-                                    "markerType": "none",
-                                    "linkUnderline": "none",
-                                    "itemFontSize": {
-                                        "desktop": 17
-                                    },
-                                    "itemFontWeight": "600",
-                                    "itemPaddingBlock": "6px",
-                                    "itemLineHeight": 1.2,
-                                    "itemLineHeightUnit": "",
-                                    "textElLineHeight": {
-                                        "desktop": 1.2
-                                    },
-                                    "textElLineHeightUnit": "",
-                                    "gap": "2",
-                                    "textColour": "mm-cocoa",
-                                    "textColourHover": "mm-cocoa"
-                                }
+                                "desktop": "48px",
+                                "tablet": "32px",
+                                "mobile": "0px 20px"
                             }
-                        ]
-                    },
-                    {
-                        "name": "sgs/container",
-                        "attributes": {
-                            "layout": "stack",
-                            "tagName": "nav",
-                            "ariaLabel": "Help",
-                            "contentWidth": {
-                                "desktop": "full"
-                            },
-                            "gap": {
-                                "desktop": "2px"
-                            },
-                            "padding": {
-                                "desktop": {
-                                    "top": "0px",
-                                    "right": "0px",
-                                    "bottom": "0px",
-                                    "left": "0px"
-                                }
-                            },
-                            "minHeight": {
-                                "desktop": "0px"
-                            },
-                            "textColourHover": "primary-text"
                         },
                         "innerBlocks": [
                             {
-                                "name": "sgs/text",
+                                "name": "sgs/container",
                                 "attributes": {
-                                    "text": "help",
-                                    "fontFamily": "caveat",
-                                    "fontSize": {
-                                        "desktop": 24
+                                    "layout": "stack",
+                                    "tagName": "nav",
+                                    "ariaLabel": "Shop",
+                                    "contentWidth": {
+                                        "desktop": "full"
                                     },
-                                    "lineHeight": {
-                                        "desktop": 1.25
+                                    "gap": {
+                                        "desktop": "2px"
                                     },
-                                    "textColour": "mm-script",
-                                    "textColourHover": "mm-script",
-                                    "margin": {
+                                    "padding": {
                                         "desktop": {
                                             "top": "0px",
-                                            "bottom": "4px"
+                                            "right": "0px",
+                                            "bottom": "0px",
+                                            "left": "0px"
                                         }
-                                    }
-                                }
-                            },
-                            {
-                                "name": "sgs/icon-list",
-                                "attributes": {
-                                    "items": [
-                                        {
-                                            "text": "FAQs",
-                                            "url": "/help/"
-                                        },
-                                        {
-                                            "text": "Delivery",
-                                            "url": "/help/#delivery"
-                                        },
-                                        {
-                                            "text": "Allergens",
-                                            "url": "/help/#allergens"
-                                        },
-                                        {
-                                            "text": "Contact",
-                                            "url": "/contact/"
-                                        }
-                                    ],
-                                    "sgsMotion": {
-                                        "v": 1,
-                                        "elements": {
-                                            "root": {
-                                                "hover": {
-                                                    "state": {
-                                                        "values": {
-                                                            "translateX": 4,
-                                                            "duration": "token:duration.fast",
-                                                            "easing": "token:easing.ease"
-                                                        }
-                                                    }
+                                    },
+                                    "minHeight": {
+                                        "desktop": "0px"
+                                    },
+                                    "textColourHover": "primary-text"
+                                },
+                                "innerBlocks": [
+                                    {
+                                        "name": "sgs/text",
+                                        "attributes": {
+                                            "text": "shop",
+                                            "fontFamily": "caveat",
+                                            "fontSize": {
+                                                "desktop": 24
+                                            },
+                                            "lineHeight": {
+                                                "desktop": 1.25
+                                            },
+                                            "textColour": "mm-script",
+                                            "textColourHover": "mm-script",
+                                            "margin": {
+                                                "desktop": {
+                                                    "top": "0px",
+                                                    "bottom": "4px"
                                                 }
                                             }
                                         }
                                     },
-                                    "markerType": "none",
-                                    "linkUnderline": "none",
-                                    "itemFontSize": {
-                                        "desktop": 17
+                                    {
+                                        "name": "sgs/icon-list",
+                                        "attributes": {
+                                            "sgsMotion": {
+                                                "v": 1,
+                                                "elements": {
+                                                    "item-link": {
+                                                        "hover": {
+                                                            "state": {
+                                                                "values": {
+                                                                    "translateX": 4,
+                                                                    "duration": "token:duration.fast",
+                                                                    "easing": "token:easing.ease"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "markerType": "none",
+                                            "linkUnderline": "hover",
+                                            "itemFontSize": {
+                                                "desktop": 17
+                                            },
+                                            "itemFontWeight": "600",
+                                            "itemPaddingBlock": "6px",
+                                            "itemLineHeight": 1.2,
+                                            "itemLineHeightUnit": "",
+                                            "textElLineHeight": {
+                                                "desktop": 1.2
+                                            },
+                                            "textElLineHeightUnit": "",
+                                            "gap": "2",
+                                            "textColour": "mm-cocoa",
+                                            "textColourHover": "mm-cocoa",
+                                            "linkUnderlineColourHover": "mm-paper",
+                                            "linkUnderlineThickness": "2px",
+                                            "linkUnderlineOffset": "4px",
+                                            "source": "menu",
+                                            "menuRef": 32
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "sgs/container",
+                                "attributes": {
+                                    "layout": "stack",
+                                    "tagName": "nav",
+                                    "ariaLabel": "Help",
+                                    "contentWidth": {
+                                        "desktop": "full"
                                     },
-                                    "itemFontWeight": "600",
-                                    "itemPaddingBlock": "6px",
-                                    "itemLineHeight": 1.2,
-                                    "itemLineHeightUnit": "",
-                                    "textElLineHeight": {
-                                        "desktop": 1.2
+                                    "gap": {
+                                        "desktop": "2px"
                                     },
-                                    "textElLineHeightUnit": "",
-                                    "gap": "2",
-                                    "textColour": "mm-cocoa",
-                                    "textColourHover": "mm-cocoa"
-                                }
+                                    "padding": {
+                                        "desktop": {
+                                            "top": "0px",
+                                            "right": "0px",
+                                            "bottom": "0px",
+                                            "left": "0px"
+                                        }
+                                    },
+                                    "minHeight": {
+                                        "desktop": "0px"
+                                    },
+                                    "textColourHover": "primary-text"
+                                },
+                                "innerBlocks": [
+                                    {
+                                        "name": "sgs/text",
+                                        "attributes": {
+                                            "text": "help",
+                                            "fontFamily": "caveat",
+                                            "fontSize": {
+                                                "desktop": 24
+                                            },
+                                            "lineHeight": {
+                                                "desktop": 1.25
+                                            },
+                                            "textColour": "mm-script",
+                                            "textColourHover": "mm-script",
+                                            "margin": {
+                                                "desktop": {
+                                                    "top": "0px",
+                                                    "bottom": "4px"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "sgs/icon-list",
+                                        "attributes": {
+                                            "sgsMotion": {
+                                                "v": 1,
+                                                "elements": {
+                                                    "item-link": {
+                                                        "hover": {
+                                                            "state": {
+                                                                "values": {
+                                                                    "translateX": 4,
+                                                                    "duration": "token:duration.fast",
+                                                                    "easing": "token:easing.ease"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "markerType": "none",
+                                            "linkUnderline": "hover",
+                                            "itemFontSize": {
+                                                "desktop": 17
+                                            },
+                                            "itemFontWeight": "600",
+                                            "itemPaddingBlock": "6px",
+                                            "itemLineHeight": 1.2,
+                                            "itemLineHeightUnit": "",
+                                            "textElLineHeight": {
+                                                "desktop": 1.2
+                                            },
+                                            "textElLineHeightUnit": "",
+                                            "gap": "2",
+                                            "textColour": "mm-cocoa",
+                                            "textColourHover": "mm-cocoa",
+                                            "linkUnderlineColourHover": "mm-paper",
+                                            "linkUnderlineThickness": "2px",
+                                            "linkUnderlineOffset": "4px",
+                                            "source": "menu",
+                                            "menuRef": 29
+                                        }
+                                    }
+                                ]
                             }
                         ]
                     },
@@ -938,8 +996,6 @@
                             "minHeight": {
                                 "desktop": "0px"
                             },
-                            "sgsCustomCss": "@media (max-width: 767px) { & { grid-column: 1 / -1; } }",
-                            "sgsCustomCssNote": "Draft: the say hello group spans both mobile columns; the Container has no grid-column setting.",
                             "textColourHover": "primary-text"
                         },
                         "innerBlocks": [
@@ -988,7 +1044,6 @@
                                     "minHeight": {
                                         "desktop": "auto"
                                     },
-                                    "textDecoration": "underline",
                                     "colourTextHover": "primary-text",
                                     "colourBackground": "#00000000",
                                     "colourBackgroundHover": "surface-alt",
@@ -1007,7 +1062,12 @@
                                             "bottomRight": "8px",
                                             "bottomLeft": "8px"
                                         }
-                                    }
+                                    },
+                                    "inheritStyle": "link",
+                                    "linkUnderline": "always",
+                                    "linkUnderlineColour": "mm-sparkle",
+                                    "linkUnderlineThickness": "2px",
+                                    "linkUnderlineOffset": "4px"
                                 }
                             },
                             {
@@ -1317,7 +1377,8 @@
                                             "colourText": "mm-cocoa",
                                             "minHeight": {
                                                 "desktop": "24px"
-                                            }
+                                            },
+                                            "builtInHoverLift": false
                                         }
                                     },
                                     {
@@ -1357,7 +1418,8 @@
                                             "colourText": "mm-cocoa",
                                             "minHeight": {
                                                 "desktop": "24px"
-                                            }
+                                            },
+                                            "builtInHoverLift": false
                                         }
                                     }
                                 ]
@@ -1402,7 +1464,10 @@
                                     "textWrap": "nowrap",
                                     "textAlign": "center",
                                     "sgsCustomCss": "@media (min-width: 1024px) { & { text-align: right; justify-self: end; } }",
-                                    "sgsCustomCssNote": "Draft: attribution is end-aligned at 1440, centred below 1024."
+                                    "sgsCustomCssNote": "Draft: attribution is end-aligned at 1440, centred below 1024.",
+                                    "linkMinHeight": {
+                                        "desktop": "24px"
+                                    }
                                 }
                             }
                         ]
