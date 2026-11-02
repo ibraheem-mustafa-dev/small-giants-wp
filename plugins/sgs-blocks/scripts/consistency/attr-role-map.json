@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 9516,
+    "row_count": 9517,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -3901,6 +3901,7 @@
     "sgs/gallery::sgsObjectFit": "layout",
     "sgs/gallery::sgsObjectPosition": "layout",
     "sgs/gallery::shadowHover": "visual",
+    "sgs/gallery::shadowHoverColour": "color",
     "sgs/gallery::showCaptions": "boolean-visibility",
     "sgs/gallery::tileBorderColour": "color",
     "sgs/gallery::tileBorderColourGradient": "colour-gradient",
