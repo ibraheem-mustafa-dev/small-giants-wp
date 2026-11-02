@@ -354,13 +354,19 @@
 			}
 		},
 		"layout": {
-			"type": "string",
-			"default": "grid",
-			"enum": [
-				"grid",
-				"masonry",
-				"carousel"
-			]
+			"type": "object",
+			"default": {},
+			"description": "The gallery layout per device: {desktop, tablet, mobile}, each grid, masonry, scroll (a swipe row) or carousel (arrows and dots). An empty tier inherits the tier above and an empty object is a grid. A carousel is honoured only when all three tiers are carousel; otherwise each carousel tier is a swipe row (sgs_gallery_layout_tiers())."
+		},
+		"scrollItemWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Width of one card in a swipe row, per device: a CSS length or a percentage (78% shows a peek of the next card). Empty is one column's width. Printed as --sgs-scroll-item-width."
+		},
+		"scrollInset": {
+			"type": "object",
+			"default": {},
+			"description": "Edge padding of a swipe row, per device (a CSS length): printed as padding-inline and scroll-padding-inline on the grid, so cards run to the screen edge while the first card lines up with the page content."
 		},
 		"columns": {
 			"type": "object",
@@ -658,7 +664,7 @@
 	"render": "file:./render.php",
 	"example": {
 		"attributes": {
-			"layout": "grid",
+			"layout": {},
 			"columns": 3,
 			"enableLightbox": true,
 			"gap": "16"

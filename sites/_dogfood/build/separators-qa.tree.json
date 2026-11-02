@@ -1128,7 +1128,7 @@
  {
   "name": "sgs/gallery",
   "attributes": {
-   "layout": "grid",
+   "layout": {},
    "separators": {
     "row": {
      "style": "solid",

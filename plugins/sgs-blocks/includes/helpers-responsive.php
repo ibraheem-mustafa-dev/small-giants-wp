@@ -796,9 +796,10 @@ if ( ! function_exists( 'sgs_emit_tier_rules_map' ) ) {
 	 * @param array  $css_by_value  Map of resolved state => CSS declarations (no selector/braces).
 	 * @param string $css_fallback  CSS emitted for any resolved state absent from the map. Default '' (emit nothing).
 	 * @param string $default       State used when desktop inherits/is missing (§6b guard). Default 'off'.
+	 * @param array  $opts          { container?: bool } also print each tier as an `@container` query. Default none.
 	 * @return string CSS text (no <style> wrapper); '' when nothing resolves to non-empty declarations.
 	 */
-	function sgs_emit_tier_rules_map( $uid_selector, $value, array $css_by_value, $css_fallback = '', $default = 'off' ) {
+	function sgs_emit_tier_rules_map( $uid_selector, $value, array $css_by_value, $css_fallback = '', $default = 'off', array $opts = array() ) {
 		$css_for_state = function ( $state ) use ( $css_by_value, $css_fallback ) {
 			// A non-scalar resolved value can never be an array key; treat it as
 			// unmapped rather than letting PHP raise on the lookup.
@@ -812,6 +813,11 @@ if ( ! function_exists( 'sgs_emit_tier_rules_map' ) ) {
 		$tablet  = sgs_resolve_tier( $value, 'tablet', $default );
 		$mobile  = sgs_resolve_tier( $value, 'mobile', $default );
 
+		// `$opts['container']` also prints each tier as an `@container` query beside its `@media` rule, so a block
+		// reused in a narrow column takes its narrower tier (the same option as sgs_emit_responsive_css()). Off
+		// (the default), the output is the `@media` rules only, byte for byte as before.
+		$with_container = ! empty( $opts['container'] );
+
 		$css = '';
 
 		$desktop_css = $css_for_state( $desktop['value'] );
@@ -822,14 +828,18 @@ if ( ! function_exists( 'sgs_emit_tier_rules_map' ) ) {
 		if ( $tablet['value'] !== $desktop['value'] ) {
 			$tablet_css = $css_for_state( $tablet['value'] );
 			if ( '' !== $tablet_css ) {
-				$css .= '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){' . $uid_selector . '{' . $tablet_css . '}}';
+				foreach ( SGS_Breakpoints::tier_at_rules( SGS_Breakpoints::TABLET_MAX, $with_container ) as $prefix ) {
+					$css .= $prefix . $uid_selector . '{' . $tablet_css . '}}';
+				}
 			}
 		}
 
 		if ( $mobile['value'] !== $tablet['value'] ) {
 			$mobile_css = $css_for_state( $mobile['value'] );
 			if ( '' !== $mobile_css ) {
-				$css .= '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . $uid_selector . '{' . $mobile_css . '}}';
+				foreach ( SGS_Breakpoints::tier_at_rules( SGS_Breakpoints::MOBILE_MAX, $with_container ) as $prefix ) {
+					$css .= $prefix . $uid_selector . '{' . $mobile_css . '}}';
+				}
 			}
 		}
 

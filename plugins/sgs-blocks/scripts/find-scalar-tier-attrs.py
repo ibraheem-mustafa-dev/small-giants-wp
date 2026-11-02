@@ -7,6 +7,9 @@ touches (.claude/plans/2026-11-02-header-framework-batch.md rule 2):
   sgs/nav-bar-menu  justifyContent  string  -> {"desktop": "<string>"}
   sgs/cart          showZero        bool    -> {"desktop": <bool>}
   sgs/cart          iconSize        number  -> {"desktop": <number>}
+  sgs/gallery       layout          string  -> grid {}, masonry {"desktop": "masonry"},
+                                              carousel {"desktop","tablet","mobile": "carousel"}
+                                              (footer framework batch, FW-E: a carousel stays one)
 
 A hit is a block of that name whose attribute is a scalar (not an object). Three
 readers: JSON trees (walked as data), block-comment markup in PHP/HTML patterns
@@ -34,9 +37,22 @@ SCOPES = [
 TARGETS = {
     'sgs/nav-bar-menu': ('justifyContent',),
     'sgs/cart': ('showZero', 'iconSize'),
+    'sgs/gallery': ('layout',),
 }
+
+
+def convert(name, attr, value):
+    """The object shape of an old scalar value: `{"desktop": value}`, except the gallery layout, whose
+    `grid` is the default (an empty object) and whose `carousel` is a uniform carousel (all three tiers)."""
+    if (name, attr) == ('sgs/gallery', 'layout') and isinstance(value, str):
+        if value == 'grid':
+            return {}
+        if value == 'carousel':
+            return {'desktop': 'carousel', 'tablet': 'carousel', 'mobile': 'carousel'}
+    return {'desktop': value}
+
 EXTS = ('.json', '.php', '.html', '.mjs', '.js', '.py')
-MARKUP_RE = re.compile(r'<!--\s*wp:(sgs/nav-bar-menu|sgs/cart)\s*(\{.*?\})\s*/?-->', re.S)
+MARKUP_RE = re.compile(r'<!--\s*wp:(sgs/nav-bar-menu|sgs/cart|sgs/gallery)\s*(\{.*?\})\s*/?-->', re.S)
 LITERAL_BLOCK_RE = re.compile(r'''(['"])(sgs/[a-z0-9-]+)\1''')
 SCALAR_JSON_RE = r'(["\']?)%s\1(\s*[:=]\s*)(true|false|True|False|-?\d+(?:\.\d+)?|"[^"\n]*"|\'[^\'\n]*\')'
 
@@ -62,7 +78,7 @@ def walk_json(node, hits, fix):
                         if attr in bag and is_scalar(bag[attr]):
                             hits.append((name, attr, bag[attr]))
                             if fix:
-                                bag[attr] = {'desktop': bag[attr]}
+                                bag[attr] = convert(name, attr, bag[attr])
         for v in node.values():
             walk_json(v, hits, fix)
     elif isinstance(node, list):
@@ -76,7 +92,7 @@ def scan_file(rel, fix):
         text = path.read_bytes().decode('utf8')
     except (UnicodeDecodeError, OSError):
         return []
-    if 'sgs/nav-bar-menu' not in text and 'sgs/cart' not in text:
+    if not any(block in text for block in TARGETS):
         return []
     hits = []
     new_text = text
@@ -103,7 +119,7 @@ def scan_file(rel, fix):
         for attr in TARGETS[name]:
             if attr in attrs and is_scalar(attrs[attr]):
                 hits.append((name, attr, attrs[attr]))
-                attrs[attr] = {'desktop': attrs[attr]}
+                attrs[attr] = convert(name, attr, attrs[attr])
                 changed = True
         if not changed:
             return m.group(0)
@@ -122,7 +138,11 @@ def scan_file(rel, fix):
                 edits.append((pos + m.start(3), pos + m.end(3), name, attr, m.group(3)))
     for start, end, name, attr, raw in sorted(edits, reverse=True):
         hits.append((name, attr, raw))
-        new_text = new_text[:start] + '{"desktop":' + raw + '}' + new_text[end:]
+        try:
+            value = json.loads(raw) if raw[:1] in '"-0123456789tf' else raw.strip("'")
+        except ValueError:
+            value = raw.strip("'\"")
+        new_text = new_text[:start] + json.dumps(convert(name, attr, value), separators=(',', ':')) + new_text[end:]
     if fix and new_text != text:
         path.write_bytes(new_text.encode('utf8'))
     return [(rel, *h) for h in hits]

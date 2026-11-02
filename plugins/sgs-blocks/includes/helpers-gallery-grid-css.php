@@ -21,7 +21,7 @@ if ( ! function_exists( 'sgs_gallery_wrapper_attributes' ) ) {
 	/**
 	 * The gallery's attributes as SGS_Container_Wrapper should see them.
 	 *
-	 * `layout` (grid / masonry / carousel), `columns` and the grid settings describe the image
+	 * `layout` (a per-device grid / masonry / scroll / carousel), `columns` and the grid settings describe the image
 	 * grid, not the wrapper's own layout mode, and `separators` are drawn on the image grid by the
 	 * block.
 	 *
@@ -53,10 +53,13 @@ if ( ! function_exists( 'sgs_gallery_grid_layout_css' ) ) {
 	 *
 	 * @param string $grid_sel   The image grid's scoped selector.
 	 * @param array  $attributes Block attributes.
-	 * @return string CSS, or '' when the layout is not grid or nothing is set.
+	 * @return string CSS, or '' when the desktop layout is not grid or nothing is set.
 	 */
 	function sgs_gallery_grid_layout_css( string $grid_sel, array $attributes ): string {
-		if ( 'grid' !== ( $attributes['layout'] ?? 'grid' ) ) {
+		// The grid settings belong to the grid layout: they print when the desktop tier is a grid. A tier that
+		// resolves to another layout takes that layout's own full declarations (`sgs_gallery_layout_css`), which
+		// are printed after these and so win at that tier.
+		if ( 'grid' !== sgs_gallery_layout_tiers( $attributes )['desktop'] ) {
 			return '';
 		}
 
@@ -98,5 +101,141 @@ if ( ! function_exists( 'sgs_gallery_grid_layout_css' ) ) {
 			$css = $grid_sel . '{' . implode( ';', $decls ) . '}' . $css;
 		}
 		return $css;
+	}
+}
+
+if ( ! function_exists( 'sgs_gallery_layout_tiers' ) ) {
+	/**
+	 * The gallery's layout at each device tier, after the carousel rewrite.
+	 *
+	 * `layout` is a `{desktop, tablet, mobile}` object; an empty tier inherits the tier above and an empty object is a
+	 * grid (`sgs_resolve_tier`). A stored value that is not one of the four layouts is a grid. A carousel is one
+	 * piece of markup and script for the whole block (arrows, dots, autoplay, `view.js` binds once at load), so it is
+	 * honoured only when all three tiers resolve to it; otherwise every carousel tier is a swipe row (`scroll`).
+	 * Everything downstream reads this rewritten set. A scalar `layout` (the shape before this was per device) is not
+	 * read: the saved content is re-saved by `scripts/migrate-gallery-layout.py`, never read back here (FP-14).
+	 *
+	 * @param array $attributes Block attributes.
+	 * @return array{desktop:string,tablet:string,mobile:string,carousel:bool,rewritten:bool,scroll:bool}
+	 */
+	function sgs_gallery_layout_tiers( array $attributes ): array {
+		$stored = is_array( $attributes['layout'] ?? null ) ? $attributes['layout'] : array();
+		$tiers  = array();
+		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
+			$value           = sgs_resolve_tier( $stored, $tier, 'grid' )['value'];
+			$tiers[ $tier ] = is_string( $value ) && in_array( $value, array( 'grid', 'masonry', 'scroll', 'carousel' ), true ) ? $value : 'grid';
+		}
+		$carousel_tiers = count( array_keys( $tiers, 'carousel', true ) );
+		$uniform        = 3 === $carousel_tiers;
+		$rewritten      = $carousel_tiers > 0 && ! $uniform;
+		if ( $rewritten ) {
+			foreach ( $tiers as $tier => $value ) {
+				if ( 'carousel' === $value ) {
+					$tiers[ $tier ] = 'scroll';
+				}
+			}
+		}
+		return $tiers + array(
+			'carousel'  => $uniform,
+			'rewritten' => $rewritten,
+			'scroll'    => in_array( 'scroll', array( $tiers['desktop'], $tiers['tablet'], $tiers['mobile'] ), true ),
+		);
+	}
+}
+
+if ( ! function_exists( 'sgs_gallery_layout_declarations' ) ) {
+	/**
+	 * The full declarations that make the image grid one layout at one device tier, resetting every property the other
+	 * layouts set, so a narrower tier can switch from any layout to any other (the static stylesheet paints only the
+	 * desktop layout). The column count is the tier's own custom property (`--sgs-columns-tablet`, `--sgs-columns-mobile`):
+	 * the stylesheet reads those per tier, `--sgs-columns` is the desktop count only.
+	 *
+	 * @param string $tier `tablet` or `mobile`.
+	 * @return array<string,string> Layout => declarations for `.sgs-gallery__grid`.
+	 */
+	function sgs_gallery_layout_declarations( string $tier ): array {
+		$cols   = 'tablet' === $tier ? 'var(--sgs-columns-tablet,2)' : 'var(--sgs-columns-mobile,1)';
+		$column = 'calc((100% - (' . $cols . ' - 1) * var(--sgs-gap)) / ' . $cols . ')';
+		$reset  = 'column-count:auto;column-gap:var(--sgs-gap);scrollbar-width:auto;';
+		return array(
+			'grid'    => 'display:grid;grid-template-columns:repeat(' . $cols . ',1fr);grid-auto-flow:row;grid-auto-columns:auto;overflow-x:visible;scroll-snap-type:none;' . $reset,
+			'masonry' => 'display:block;column-count:' . $cols . ';column-gap:var(--sgs-gap);grid-template-columns:none;grid-auto-flow:row;grid-auto-columns:auto;overflow-x:visible;scroll-snap-type:none;scrollbar-width:auto;',
+			'scroll'  => 'display:grid;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:var(--sgs-scroll-item-width,' . $column . ');overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;column-count:auto;column-gap:var(--sgs-gap);',
+		);
+	}
+}
+
+if ( ! function_exists( 'sgs_gallery_layout_css' ) ) {
+	/**
+	 * The per-device layout override rules, on the image grid and its items.
+	 *
+	 * Only a tier that differs from the one above prints (a uniform layout prints nothing: the stylesheet's static rules
+	 * paint the desktop layout). Each tier is printed as `@media` and `@container`, so a gallery in a column narrower
+	 * than 768px takes its mobile layout (the gallery root is the query container). A carousel is never overridden: it
+	 * is only honoured when uniform.
+	 *
+	 * @param string $grid_sel   The image grid's scoped selector.
+	 * @param array  $attributes Block attributes.
+	 * @return string CSS, or '' when the layout is the same at every tier.
+	 */
+	function sgs_gallery_layout_css( string $grid_sel, array $attributes ): string {
+		$tiers = sgs_gallery_layout_tiers( $attributes );
+		if ( $tiers['carousel'] || ( $tiers['desktop'] === $tiers['tablet'] && $tiers['tablet'] === $tiers['mobile'] ) ) {
+			return '';
+		}
+		// `base` is the desktop layout (painted by the stylesheet). A tier that equals the desktop layout with no
+		// deviation above it stays `base`; one that returns to it after a different tier names it (`<layout>:<tier>`),
+		// to reset it with that tier's own column count.
+		$value           = array(
+			'desktop' => 'base',
+			'tablet'  => $tiers['tablet'] === $tiers['desktop'] ? 'base' : $tiers['tablet'] . ':tablet',
+		);
+		$value['mobile'] = ( $tiers['mobile'] === $tiers['desktop'] && 'base' === $value['tablet'] ) ? 'base' : $tiers['mobile'] . ':mobile';
+
+		$grid_css = array( 'base' => '' );
+		$item_css = array( 'base' => '' );
+		foreach ( array( 'tablet', 'mobile' ) as $tier ) {
+			foreach ( sgs_gallery_layout_declarations( $tier ) as $layout => $decls ) {
+				$grid_css[ $layout . ':' . $tier ] = $decls;
+				$item_css[ $layout . ':' . $tier ] = 'masonry' === $layout ? 'break-inside:avoid;margin-bottom:var(--sgs-gap);' : 'break-inside:auto;margin-bottom:0;';
+			}
+		}
+		$opts = array( 'container' => true );
+		return sgs_emit_tier_rules_map( $grid_sel, $value, $grid_css, '', 'base', $opts )
+			. sgs_emit_tier_rules_map( $grid_sel . ' .sgs-gallery__item', $value, $item_css, '', 'base', $opts );
+	}
+}
+
+if ( ! function_exists( 'sgs_gallery_scroll_css' ) ) {
+	/**
+	 * The swipe row's own settings on the image grid: the width of a card (`scrollItemWidth`, printed as
+	 * `--sgs-scroll-item-width`) and the edge padding that lets cards run to the screen edge while the first card
+	 * lines up with the page (`scrollInset`, as `padding-inline` and `scroll-padding-inline`), per device, through the
+	 * container-aware responsive emitter.
+	 *
+	 * @param string $grid_sel   The image grid's scoped selector.
+	 * @param array  $attributes Block attributes.
+	 * @return string CSS, or '' when the swipe row is not used at any tier or nothing is set.
+	 */
+	function sgs_gallery_scroll_css( string $grid_sel, array $attributes ): string {
+		if ( ! sgs_gallery_layout_tiers( $attributes )['scroll'] ) {
+			return '';
+		}
+		$specs = array();
+		foreach ( array(
+			'scrollItemWidth' => array( '--sgs-scroll-item-width' ),
+			'scrollInset'     => array( 'padding-inline', 'scroll-padding-inline' ),
+		) as $attr => $props ) {
+			if ( isset( $attributes[ $attr ] ) && is_array( $attributes[ $attr ] ) ) {
+				foreach ( $props as $prop ) {
+					$specs[] = array(
+						'value'     => $attributes[ $attr ],
+						'css'       => $prop,
+						'transform' => 'sgs_css_length_value',
+					);
+				}
+			}
+		}
+		return $specs ? sgs_emit_responsive_css( $grid_sel, $specs, array( 'container' => true ) ) : '';
 	}
 }

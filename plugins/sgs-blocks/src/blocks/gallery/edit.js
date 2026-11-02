@@ -55,6 +55,7 @@ import { isTileMode, tilePreviewStyle, tileColourRow } from './tile-preview';
 import useGalleryItems from './use-gallery-items';
 import ImagesPanel from './components/ImagesPanel';
 import LayoutSettingsPanel from './components/LayoutSettingsPanel';
+import { galleryLayoutTiers } from './layout-tiers';
 import GalleryHoverEffectsPanel from './components/GalleryHoverEffectsPanel';
 import GalleryContentPanel from './components/GalleryContentPanel';
 import GalleryCarouselPanel from './components/GalleryCarouselPanel';
@@ -117,6 +118,11 @@ export default function Edit( { attributes, setAttributes } ) {
 	// preview would always show the desktop tier while the operator edits
 	// tablet/mobile.
 	const previewTier = usePreviewTier();
+	// The layout is per device: `tierLayout` is what the previewed device shows, `layoutTiers.desktop` the wrapper class
+	// (render.php's `sgs-gallery--<desktop layout after the carousel rewrite>`).
+	const layoutTiers = galleryLayoutTiers( layout );
+	const tierLayout = layoutTiers[ previewTier ] ?? layoutTiers.desktop;
+	const canvasLayout = layoutTiers.carousel ? 'carousel' : tierLayout;
 	const [ colourPalette ] = useSettings( 'color.palette' );
 
 	// gap is a TIER OBJECT — resolve the desktop tier (what the canvas shows)
@@ -237,29 +243,55 @@ export default function Edit( { attributes, setAttributes } ) {
 	} );
 
 	const blockProps = useBlockProps( {
-		className: `sgs-gallery sgs-gallery--${ layout }${
+		className: `sgs-gallery sgs-gallery--${ layoutTiers.desktop }${
 			isTileMode( attributes ) ? ' sgs-gallery--tile' : ''
 		}`,
 		style: inlineStyles,
 	} );
 
+	// The previewed device's column count (render.php's stylesheet reads each tier's own count).
+	let tierColumns = columnsDesktop;
+	if ( 'tablet' === previewTier ) {
+		tierColumns = columnsTabletTier;
+	} else if ( 'mobile' === previewTier ) {
+		tierColumns = columnsMobileTier;
+	}
+
 	// Grid columns style for the editor preview.
 	const previewGridStyle = {
-		display: layout === 'masonry' ? 'block' : 'grid',
+		display: tierLayout === 'masonry' ? 'block' : 'grid',
 		gridTemplateColumns:
-			layout === 'grid' || layout === 'carousel'
-				? `repeat( ${ columnsDesktop }, 1fr )`
+			tierLayout === 'grid' || tierLayout === 'carousel'
+				? `repeat( ${ tierColumns }, 1fr )`
 				: undefined,
-		columnCount: layout === 'masonry' ? columnsDesktop : undefined,
+		columnCount: tierLayout === 'masonry' ? tierColumns : undefined,
 		gap: /^\d+$/.test( String( gapDesktop ) )
 			? gapDesktop + 'px'
 			: gapDesktop || '16px',
 	};
 	// The grid layout's grid settings paint the image grid (render.php:
 	// sgs_gallery_grid_layout_css()), never the outer element.
-	if ( 'grid' === layout ) {
+	if ( 'scroll' === tierLayout ) {
+		// The swipe row (style.css `.sgs-gallery--scroll`, resolved for the previewed device): one card per column
+		// width unless a card width is set, and the edge padding that lets cards run to the screen edge.
+		const cardWidth = resolveResponsiveTier( attributes.scrollItemWidth, previewTier )?.value;
+		const inset = resolveResponsiveTier( attributes.scrollInset, previewTier )?.value;
+		previewGridStyle.gridAutoFlow = 'column';
+		previewGridStyle.gridTemplateColumns = 'none';
+		previewGridStyle.gridAutoColumns =
+			typeof cardWidth === 'string' && cardWidth
+				? cardWidth
+				: `calc( ( 100% - ${ tierColumns - 1 } * var( --sgs-gap, 16px ) ) / ${ tierColumns } )`;
+		previewGridStyle.overflowX = 'auto';
+		previewGridStyle.scrollSnapType = 'x mandatory';
+		if ( typeof inset === 'string' && inset ) {
+			previewGridStyle.paddingInline = inset;
+			previewGridStyle.scrollPaddingInline = inset;
+		}
+	}
+	if ( 'grid' === tierLayout ) {
 		applyGridLayoutPreview( previewGridStyle, {
-			layout,
+			layout: tierLayout,
 			alignItems: attributes.alignItems,
 			justifyItems: attributes.justifyItems,
 			alignContent: attributes.alignContent,
@@ -282,7 +314,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const separatorsCanvas = useSeparatorsCanvas( {
 		separators: attributes.separators,
 		device: previewTier,
-		active: 'grid' === layout,
+		active: 'grid' === tierLayout,
 		deps: [ columns, gap, items.length ],
 	} );
 	const gridStyle = { ...previewGridStyle, ...separatorsCanvas.style };
@@ -423,7 +455,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				/>
 
 				<GalleryCarouselPanel
-					attributes={ attributes }
+					attributes={ { ...attributes, layout: layoutTiers.carousel ? 'carousel' : layoutTiers.desktop } }
 					setAttributes={ setAttributes }
 					set={ set }
 				/>
@@ -434,7 +466,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<GalleryCanvas
-				attributes={ attributes }
+				attributes={ { ...attributes, layout: canvasLayout } }
 				blockProps={ blockProps }
 				hasBandProps={ hasBandProps }
 				bandStyle={ bandStyle }

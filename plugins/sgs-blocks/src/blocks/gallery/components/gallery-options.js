@@ -13,7 +13,8 @@ export { EASING_OPTIONS };
 export const LAYOUT_OPTIONS = [
 	{ label: __( 'Grid', 'sgs-blocks' ), value: 'grid' },
 	{ label: __( 'Masonry', 'sgs-blocks' ), value: 'masonry' },
-	{ label: __( 'Carousel', 'sgs-blocks' ), value: 'carousel' },
+	{ label: __( 'Swipe row (no arrows)', 'sgs-blocks' ), value: 'scroll' },
+	{ label: __( 'Carousel (arrows and dots)', 'sgs-blocks' ), value: 'carousel' },
 ];
 
 // C19 ratio-mode adoption (2026-08-27) — reuses MediaSizingPanel's shared

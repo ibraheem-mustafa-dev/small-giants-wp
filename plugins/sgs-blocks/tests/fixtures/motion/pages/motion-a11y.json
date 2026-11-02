@@ -92,7 +92,7 @@
 			{
 				"name": "sgs/gallery",
 				"attributes": {
-					"layout": "grid",
+					"layout": {},
 					"columns": {
 						"desktop": 2,
 						"tablet": 2,

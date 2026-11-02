@@ -40,7 +40,11 @@ $sgs_css_ratio = static function ( $value ) {
 // Normalise attributes with safe defaults.
 // -------------------------------------------------------------------------
 $images          = (array) ( $attributes['mediaItems'] ?? [] );
-$layout          = sanitize_key( $attributes['layout'] ?? 'grid' );
+// `layout` is a per-device object (grid, masonry, scroll, carousel); `sgs_gallery_layout_tiers` resolves each tier and
+// rewrites a carousel that is not a carousel at every tier to a swipe row (`scroll`). `$layout` is the desktop tier after
+// that rewrite, so it is `carousel` exactly when the whole block is one, and everything below reads that set.
+$sgs_gal_tiers   = sgs_gallery_layout_tiers( $attributes );
+$layout          = $sgs_gal_tiers['desktop'];
 // `columns` is a TIER OBJECT (Spec 35 pass 4, 2026-08-11) — read each tier via
 // the normaliser, never the raw attribute (absint() on an unresolved array
 // throws "Array to int conversion" and would emit e.g. `columns:0`, the
@@ -105,6 +109,9 @@ $drag_momentum  = (bool) ( $attributes['dragMomentum'] ?? true );
 $loop_carousel = (bool) ( $attributes['loopCarousel'] ?? false );
 
 $grid_fx_attr = '';
+// A swipe row at any device tier is a scrollable region: focusable, so the arrow keys scroll it, and named. The markup is
+// the same at every width, so the region is declared whenever some tier is a swipe row.
+$sgs_gal_scroll_attr = $sgs_gal_tiers['scroll'] ? ' tabindex="0" role="region" aria-label="' . esc_attr__( 'Gallery, swipe row', 'sgs-blocks' ) . '"' : '';
 if ( 'carousel' === $layout && $drag_to_scroll ) {
 	$grid_fx_attr = ' data-sgs-fx="draggable"';
 	if ( ! $drag_momentum ) {
@@ -445,7 +452,7 @@ ob_start();
 	<?php /* ----------------------------------------------------------------
 	       Gallery grid / masonry / carousel inner track
 	       ---------------------------------------------------------------- */ ?>
-	<div class="sgs-gallery__grid"<?php echo $grid_fx_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $grid_fx_attr is built entirely from literal strings above, no dynamic value. ?>>
+	<div class="sgs-gallery__grid"<?php echo $sgs_gal_scroll_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal string built above. ?><?php echo $grid_fx_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $grid_fx_attr is built entirely from literal strings above, no dynamic value. ?>>
 
 		<?php
 		if ( empty( $images ) ) :
@@ -851,6 +858,9 @@ if ( $enable_lightbox ) {
 // the grid layout's grid settings are printed on the image grid instead.
 $sgs_wrapper_attributes  = sgs_gallery_wrapper_attributes( $attributes );
 $gallery_responsive_css .= sgs_gallery_grid_layout_css( $root_sel . ' .sgs-gallery__grid', $attributes );
+// A device tier whose layout differs from the desktop one (and the swipe row's card width and edge padding).
+$gallery_responsive_css .= sgs_gallery_layout_css( $root_sel . ' .sgs-gallery__grid', $attributes );
+$gallery_responsive_css .= sgs_gallery_scroll_css( $root_sel . ' .sgs-gallery__grid', $attributes );
 
 // Lines between the grid layout's items: the shared Separators setting
 // (includes/helpers-separators.php), flow path, on the image grid. Masonry and carousel

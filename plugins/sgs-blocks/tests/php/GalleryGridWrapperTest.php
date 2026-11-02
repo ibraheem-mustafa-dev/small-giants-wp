@@ -1,6 +1,6 @@
 <?php
 /**
- * sgs/gallery: the image grid fills the block. The gallery's own `layout:"grid"` and `columns`
+ * sgs/gallery: the image grid fills the block. The gallery's own `layout` (a per-device object) and `columns`
  * must never reach SGS_Container_Wrapper as the wrapper's layout mode, or the wrapper makes the
  * block root a grid and the image grid lands in its first cell (1/N of the width). The Layout
  * panel's grid settings paint the image grid.
@@ -29,7 +29,7 @@ final class GalleryGridWrapperTest extends TestCase {
 	private const WRAPPER_GRID = '/\.sgs-container-[0-9a-f]+(>\.sgs-container__inner)?\{[^}]*(display:grid|grid-template-columns)/';
 
 	public function test_a_grid_gallery_root_is_not_a_grid(): void {
-		$out = $this->render_block( 'sgs/gallery', array( 'layout' => 'grid', 'columns' => array( 'desktop' => 4, 'tablet' => 3, 'mobile' => 2 ) ) );
+		$out = $this->render_block( 'sgs/gallery', array( 'layout' => array(), 'columns' => array( 'desktop' => 4, 'tablet' => 3, 'mobile' => 2 ) ) );
 
 		$this->assertStringContainsString( 'class="sgs-gallery__grid"', $out['html'], 'positive control: the image grid rendered' );
 		$this->assertStringContainsString( '--sgs-columns-desktop:4', $out['css'], 'the image grid still gets its column count' );
@@ -41,7 +41,7 @@ final class GalleryGridWrapperTest extends TestCase {
 		$out = $this->render_block(
 			'sgs/gallery',
 			array(
-				'layout'              => 'grid',
+				'layout'              => array(),
 				'gridTemplateColumns' => array(
 					'desktop' => '2fr 1fr',
 					'mobile'  => '1fr',
@@ -60,8 +60,11 @@ final class GalleryGridWrapperTest extends TestCase {
 	}
 
 	public function test_masonry_and_carousel_print_no_grid_settings(): void {
-		foreach ( array( 'masonry', 'carousel' ) as $layout ) {
-			$out = $this->render_block( 'sgs/gallery', array( 'layout' => $layout, 'gridAutoRows' => '200px' ) );
+		foreach ( array(
+			'masonry'  => array( 'desktop' => 'masonry' ),
+			'carousel' => array( 'desktop' => 'carousel', 'tablet' => 'carousel', 'mobile' => 'carousel' ),
+		) as $layout => $stored ) {
+			$out = $this->render_block( 'sgs/gallery', array( 'layout' => $stored, 'gridAutoRows' => '200px' ) );
 			$this->assertStringContainsString( 'sgs-gallery--' . $layout, $out['html'], "positive control: the $layout gallery rendered" );
 			$this->assertStringNotContainsString( 'grid-auto-rows', $out['css'], $layout );
 		}
@@ -85,7 +88,7 @@ final class GalleryGridWrapperTest extends TestCase {
 			$meta       = json_decode( (string) file_get_contents( $block_json ), true );
 			$layout     = $meta['attributes']['layout'] ?? null;
 			$checked[]  = basename( dirname( $render ) );
-			if ( null === $layout || array() === array_diff( (array) ( $layout['enum'] ?? array() ), $wrapper_layouts ) ) {
+			if ( null === $layout || 'object' === ( $layout['type'] ?? '' ) && 'gallery' !== basename( dirname( $render ) ) || array() === array_diff( (array) ( $layout['enum'] ?? array() ), $wrapper_layouts ) && 'gallery' !== basename( dirname( $render ) ) ) {
 				continue;
 			}
 			$strips = 1 === preg_match( "/unset\\(\\s*\\\$\\w+\\[\\s*'layout'\\s*\\]/", $source ) || false !== strpos( $source, 'sgs_gallery_wrapper_attributes(' );

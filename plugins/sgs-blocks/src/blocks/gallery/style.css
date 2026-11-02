@@ -110,6 +110,31 @@
 	flex-shrink:       0;
 }
 
+/* ==========================================================================
+   Swipe row layout (native scroll-snap, no arrows, no script)
+   One card per column width by default (--sgs-scroll-item-width overrides it: a percentage shows a peek of the next
+   card). The layout is a per-device choice, so a tier that differs from the desktop one resets these properties in the
+   block's own scoped rules (includes/helpers-gallery-grid-css.php::sgs_gallery_layout_declarations).
+   ========================================================================== */
+
+.sgs-gallery--scroll .sgs-gallery__grid {
+	display:                grid;
+	grid-auto-flow:         column;
+	grid-auto-columns:      var( --sgs-scroll-item-width, calc( ( 100% - ( var( --sgs-columns ) - 1 ) * var( --sgs-gap ) ) / var( --sgs-columns ) ) );
+	overflow-x:             auto;
+	scroll-snap-type:       x mandatory;
+	-webkit-overflow-scrolling: touch;
+	scrollbar-width:        none;
+}
+
+.sgs-gallery--scroll .sgs-gallery__grid::-webkit-scrollbar {
+	display: none;
+}
+
+.sgs-gallery--scroll .sgs-gallery__item {
+	scroll-snap-align: start;
+}
+
 /* Carousel prev/next arrows */
 .sgs-gallery__carousel-prev,
 .sgs-gallery__carousel-next {
@@ -650,6 +675,11 @@
 		column-count: var( --sgs-columns-tablet, 2 );
 	}
 
+	/* The swipe row's card is one column wide at this device's column count (a set card width wins). */
+	.sgs-gallery--scroll .sgs-gallery__grid {
+		grid-auto-columns: var( --sgs-scroll-item-width, calc( ( 100% - ( var( --sgs-columns-tablet, 2 ) - 1 ) * var( --sgs-gap ) ) / var( --sgs-columns-tablet, 2 ) ) );
+	}
+
 	.sgs-gallery--carousel .sgs-gallery__grid {
 		grid-template-columns: repeat(
 			var( --sgs-columns-tablet, 2 ),
@@ -666,6 +696,10 @@
 
 	.sgs-gallery--masonry .sgs-gallery__grid {
 		column-count: var( --sgs-columns-mobile, 1 );
+	}
+
+	.sgs-gallery--scroll .sgs-gallery__grid {
+		grid-auto-columns: var( --sgs-scroll-item-width, calc( ( 100% - ( var( --sgs-columns-mobile, 1 ) - 1 ) * var( --sgs-gap ) ) / var( --sgs-columns-mobile, 1 ) ) );
 	}
 
 	.sgs-gallery--carousel .sgs-gallery__grid {
