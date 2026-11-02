@@ -3,12 +3,12 @@ doc_type: plan
 title: Footer framework batch (Mama's Round 3): settings on sgs/button, sgs/icon-list, motion and sgs/gallery, then alignment per breakpoint on every block
 status: active
 created: 2026-11-02
-governs: sites/mamas-munches-redesign/build/qa/fix-catalogue.md rows R3-FWA, R3-FWB, R3-FWC, R3-FWD, R3-FWE, R3-FWF (parked, FW-F series), R3-FWG
+governs: sites/mamas-munches-redesign/build/qa/fix-catalogue.md rows R3-FWA, R3-FWB, R3-FWC, R3-FWD, R3-FWE, R3-FWF, R3-FWG, R3-FWH
 ---
 
 # Footer framework batch
 
-**Status (2026-11-02):** council-revised (spec-lawyer, regression red-teamer, editor-UX realist), ready to build FW-A to FW-E; FW-F its own later series.
+**Status (2026-11-02):** FW-A, FW-B, FW-C, FW-D, FW-E, FW-G and FW-H built, committed (through `16fa7612e`), reseeded and deployed to mamas-test (`397ab4ecc`); Mama's footer on them is live and checked at 375/768/1440. Open: the fresh-code review fixes (hover-parts identity fill, gallery sweep byte-identity, swipe-row inset per tier, six minor items), then FW-F as its own commit series in this round.
 
 **Why (Bean, 2026-11-02):** Mama's footer differs from its draft in six places no existing setting can express. Bean approved all six as framework items on the same ruling as the header batch: no Custom CSS where a framework fix makes sense, every change universal (a restaurant, a wedding planner and a law firm), every existing block on every other site renders exactly as today. This plan follows `.claude/plans/2026-11-02-header-framework-batch.md` (its "Rules for every addition" apply here unchanged and are restated where they bite).
 
@@ -135,9 +135,9 @@ governs: sites/mamas-munches-redesign/build/qa/fix-catalogue.md rows R3-FWA, R3-
 
 **Negative controls.** Indus header, footer, drawer and mega trees; Eye Care header and footer; the canary's framework header/footer; a default gallery and a gallery in a 400px column on desktop; each at 375, 768 and 1440 (computed styles of every element before and after). Expected changes only: blocks whose box is 480 to 767px wide at a 768 screen now take Tablet values (list every one found and show Bean before deploying).
 
-## FW-F (R3-FWF, parked) every alignment attribute per breakpoint: its own later series
+## FW-F (R3-FWF) every alignment attribute per breakpoint: its own commit series
 
-**Ruling (Bean).** All alignment attributes in one series: the bare `textAlign` and `alignItems` and every prefixed `*TextAlign` (about 170 across 37 blocks, counted from `block.json` by the census), through the shared `includes/helpers-typography.php::sgs_typography_css_rule` and `src/components/TypographyControls.js`. It ships after the footer, in its own later session. Mama's footer rows that need per-device alignment keep their Custom CSS until then: row R3-FWF is parked in `sites/mamas-munches-redesign/build/qa/fix-catalogue.md` with that reason, and the Custom CSS is removed in the FW-F session's last step.
+**Ruling (Bean).** All alignment attributes in one series: the bare `textAlign` and `alignItems` and every prefixed `*TextAlign` (about 170 across 37 blocks, counted from `block.json` by the census), through the shared `includes/helpers-typography.php::sgs_typography_css_rule` and `src/components/TypographyControls.js`. It runs in this round as its own commit series after the FW-A to FW-H review fixes land (Bean 2026-11-02: in the shared typography helper font size, line height and letter spacing are already per-device objects; text alignment, text wrap and writing mode are the base-only exceptions, `helpers-typography.php::sgs_typography_css_rule`). Mama's footer keeps its per-width alignment Custom CSS until the series lands; its last step replaces that Custom CSS with the new settings.
 
 **Inventory (the census is the source; counts are from `block.json` on 2026-11-02).** Bare `textAlign` is a scalar on 18 blocks (`accordion`, `breadcrumbs`, `business-info`, `button`, `collapsible-text`, `container`, `countdown-timer`, `form`, `heading`, `icon`, `info-box`, `label`, `notice-banner`, `product-faq`, `table-of-contents`, `team-member`, `testimonial-slider`, `text`); `sgs/hero` is already an object; `sgs/counter` uses core `supports.typography.textAlign` (out of scope, core owns that shape). Bare `alignItems` is a scalar on 17 blocks (`accordion`, `card-grid`, `container`, `feature-grid` default `stretch`, `form-field-tiles`, `form`, `gallery`, `google-reviews`, `hero`, `post-grid`, `pricing-table`, `site-footer`, `site-footer-row` default `top`, `site-header-row` default `center`, `tabs`, `trust-bar` default `start`, `trustpilot-reviews`); `sgs/multi-button` is already an object. That is 35 scalar bare declarations. Emission today: `textAlign` and every `*TextAlign` through `sgs_typography_css_rule`; blocks that also read the bare key in their own `render.php` (`container`, `heading`, `icon`, `info-box`, `team-member`, `countdown-timer`, `notice-banner`, `collapsible-text`, `card-grid` through `render-native-css.php`), the container wrapper (`includes/class-sgs-container-wrapper.php`), `feature-grid/render.php` and `includes/helpers-gallery-grid-css.php` for `alignItems`.
 
