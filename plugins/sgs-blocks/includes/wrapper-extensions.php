@@ -18,3 +18,4 @@ defined( 'ABSPATH' ) || exit;
 require_once __DIR__ . '/hover-effects/block-link.php';
 require_once __DIR__ . '/child-sizing.php';
 require_once __DIR__ . '/time-text.php';
+require_once __DIR__ . '/load-more-core.php';
