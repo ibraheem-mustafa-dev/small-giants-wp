@@ -389,5 +389,32 @@
       "tier": 1024,
       "distance": 16
     }
+  },
+  {
+    "id": "D-24",
+    "scope": "footer",
+    "node": "cr-ref-footer-22",
+    "state": "*",
+    "property": "layout",
+    "widths": [
+      768
+    ],
+    "expected": {
+      "rule": "bean-ruling"
+    },
+    "reason": "At tablet the draft centres the footer logo but leaves the company text and social icons left-aligned, which looks off. The site centres the text and social icons under the logo at tablet instead.",
+    "decided": "2026-11-02 Bean ruling (Indus round 2, R2-15)"
+  },
+  {
+    "id": "D-25",
+    "scope": "*",
+    "node": "image-slot credit",
+    "state": "*",
+    "property": "content",
+    "expected": {
+      "rule": "bean-ruling"
+    },
+    "reason": "The draft's 'Photo on Unsplash' chips are the design tool's placeholder-photo credit. Neither they nor a footer 'Placeholder photography via Unsplash' credit are built, because the client's own photography replaces the placeholders.",
+    "decided": "2026-11-02 Bean ruling (Indus round 2)"
   }
 ]
