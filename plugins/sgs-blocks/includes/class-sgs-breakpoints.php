@@ -9,8 +9,9 @@
  * Standard (matches ~/.claude/rules/visual-standards.md + the existing SGS
  * device-tier convention): mobile = base up to 767px, tablet = up to 1023px,
  * desktop = 1024px and up. Emission uses max-width tiers (mobile-first-up):
- *   - tablet override:  @media/@container (max-width: TABLET_MAX)   → <=1023px
- *   - mobile override:  @media/@container (max-width: MOBILE_MAX)   → <=767px
+ *   - tablet override:  @media (max-width: TABLET_MAX)   → <=1023px screens
+ *   - mobile override:  @media (max-width: MOBILE_MAX)   → <=767px screens, plus @container (max-width: CONTAINER_MOBILE_MAX)
+ *                       for a block in a box narrower than 480px (FW-H: tiers follow the screen)
  * A block MAY additionally declare a fourth CUSTOM-px tier (e.g. a per-instance
  * collapse breakpoint) — that value is per-instance, but it is still emitted
  * through this same helper so the query grammar stays consistent.
@@ -34,6 +35,9 @@ if ( ! class_exists( 'SGS_Breakpoints' ) ) {
 		/** Mobile tier upper bound in px (override applies at <= this width). */
 		const MOBILE_MAX = 767;
 
+		/** A box narrower than this (px) takes the Mobile tier's values even on a wider screen (the Mobile `@container` copy). */
+		const CONTAINER_MOBILE_MAX = 479;
+
 		/**
 		 * Return the max-width (px, integer) for a named device tier.
 		 *
@@ -50,6 +54,26 @@ if ( ! class_exists( 'SGS_Breakpoints' ) ) {
 				default:
 					return null;
 			}
+		}
+
+		/**
+		 * The box width under which a tier's rule also applies as an `@container` query, or null when it never does.
+		 *
+		 * Device tiers follow the SCREEN (`@media`): a header, footer or gallery at a 768px screen is Tablet even though
+		 * its content box is about 704px wide. The container copy exists only so a block in a genuinely narrow box (a
+		 * sidebar, a narrow column on a wide screen) still takes its Mobile values: the Mobile tier, under
+		 * CONTAINER_MOBILE_MAX. The Tablet tier has no container rule. A custom-px tier a block declares keeps the
+		 * same px for its container copy.
+		 *
+		 * @param int $max_px The tier's screen max-width.
+		 * @return int|null The container max-width, or null for no container rule.
+		 */
+		public static function container_max( $max_px ) {
+			$max_px = (int) $max_px;
+			if ( self::TABLET_MAX === $max_px ) {
+				return null;
+			}
+			return self::MOBILE_MAX === $max_px ? self::CONTAINER_MOBILE_MAX : $max_px;
 		}
 
 		/**
@@ -75,7 +99,10 @@ if ( ! class_exists( 'SGS_Breakpoints' ) ) {
 			$max_px = (int) $max_px;
 			$rules  = array( '@media (max-width:' . $max_px . 'px){' );
 			if ( $with_container ) {
-				$rules[] = '@container (max-width:' . $max_px . 'px){';
+				$container = self::container_max( $max_px );
+				if ( null !== $container ) {
+					$rules[] = '@container (max-width:' . $container . 'px){';
+				}
 			}
 			return $rules;
 		}

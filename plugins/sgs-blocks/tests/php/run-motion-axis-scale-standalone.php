@@ -145,6 +145,8 @@ const GOLDEN = <<<'JSON'
 		"css": ".sgs-m-test{--sgs-mh-to-s:1.05;--sgs-mh-to-ty:-4px;transition:--sgs-mh-s 200ms var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, --sgs-mh-ty 200ms var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms;}@media (max-width:767px){.sgs-m-test{--sgs-mh-to-s:1.02;}}",
 		"attrs": {
 			"data-sgs-mh": "self",
+			"data-sgs-mh-move": "",
+			"data-sgs-mh-scale": "",
 			"data-sgs-mc": "translate scale"
 		}
 	}

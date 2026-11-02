@@ -2,9 +2,11 @@
  * sgs/account — frontend + editor styles.
  *
  * Layout: `.sgs-account` is an inline-size container; the sidebar/tabs menu
- * layout is switched per tier via `@container` queries reading the
- * `sgs-account--{tier}-{sidebar|tabs}` modifier classes render.php sets from
- * the `navLayout` tier-object attribute. Every colour/typography/spacing
+ * layout is switched per tier by the `sgs-account--{tier}-{sidebar|tabs}`
+ * modifier classes render.php sets from the `navLayout` tier-object attribute.
+ * Device tiers follow the SCREEN (`@media`, like every SGS tier); the Mobile
+ * tier also applies in a box narrower than 480px (`@container sgs-account`), so
+ * an account in a narrow column still takes its Mobile layout (FW-H). Every colour/typography/spacing
  * value is fed in through custom properties render.php's scoped `<style>`
  * sets (Spec 32 — no inline `style=""`); every declaration below has a
  * token-based fallback so an unset control still paints correctly.
@@ -46,7 +48,7 @@
 	display: block;
 }
 
-@container sgs-account (min-width: 1024px) {
+@media (min-width: 1024px) {
 	.sgs-account--desktop-sidebar .sgs-account__wc:has(> nav.woocommerce-MyAccount-navigation) {
 		display: grid;
 		grid-template-columns: var(--sgs-account-menu-width, 240px) 1fr;
@@ -95,7 +97,7 @@
 
 /* Active item — sidebar (desktop tier only): a surface-alt ground, an accent
    BAR (a ground, never a bare dot) and bold text, never colour alone. */
-@container sgs-account (min-width: 1024px) {
+@media (min-width: 1024px) {
 	/* The bold default is kept at (0,2,1): above a theme's bare `a` rule, below the
 	   Menu weight control's (0,3,1), so a client's weight wins. */
 	:where(.sgs-account--desktop-sidebar) .woocommerce-MyAccount-navigation-link.is-active > a {
@@ -119,7 +121,7 @@
 }
 
 /* -- Menu (tabs layout, tablet + mobile) ---------------------------------- */
-@container sgs-account (max-width: 1023px) {
+@media (max-width: 1023px) {
 	.sgs-account--tablet-tabs nav.woocommerce-MyAccount-navigation ul,
 	.sgs-account--mobile-tabs nav.woocommerce-MyAccount-navigation ul {
 		flex-direction: row;
@@ -158,7 +160,48 @@
 	}
 }
 
-@container sgs-account (max-width: 767px) {
+/* A box narrower than 480px takes the Mobile tabs layout on any screen. */
+@container sgs-account (max-width: 479px) {
+	.sgs-account--mobile-tabs nav.woocommerce-MyAccount-navigation ul {
+		flex-direction: row;
+		overflow-x: auto;
+		scroll-snap-type: x proximity;
+		/* Room for the focus ring inside the scroller, which clips overflow. */
+		padding: 0.25rem;
+		scrollbar-width: none;
+	}
+	.sgs-account--mobile-tabs nav.woocommerce-MyAccount-navigation ul::-webkit-scrollbar {
+		display: none;
+	}
+	.sgs-account--mobile-tabs nav.woocommerce-MyAccount-navigation li {
+		flex: 0 0 auto;
+		scroll-snap-align: start;
+	}
+	.sgs-account--mobile-tabs nav.woocommerce-MyAccount-navigation a {
+		border-radius: 999px;
+		background: var(--wp--preset--color--surface-alt, #f0f0f0);
+		white-space: nowrap;
+	}
+	:where(.sgs-account--tablet-tabs, .sgs-account--mobile-tabs) .woocommerce-MyAccount-navigation-link.is-active > a {
+		font-weight: 700;
+	}
+	.sgs-account--mobile-tabs nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a {
+		/* Inverted palette ink: text on surface is the one pair every client
+		   palette guarantees for contrast (a brand accent fill with inverse
+		   text can fail, e.g. a yellow accent). The Active item colours
+		   override both. */
+		background: var(--wp--preset--color--text);
+		color: var(--wp--preset--color--surface, #fff);
+	}
+}
+
+@media (max-width: 767px) {
+	.sgs-account--mobile-tabs .sgs-account__wc {
+		display: block;
+	}
+}
+
+@container sgs-account (max-width: 479px) {
 	.sgs-account--mobile-tabs .sgs-account__wc {
 		display: block;
 	}

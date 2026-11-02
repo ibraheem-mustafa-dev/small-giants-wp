@@ -57,9 +57,8 @@ if ( ! function_exists( 'sgs_container_scroll_row_css' ) ) {
 	 * offset, glow) without moving anything. Band padding on
 	 * those sides is added to, not replaced.
 	 *
-	 * With `$with_container`, each tier also matches as an `@container` query,
-	 * the same OR the framework's other tier rules use
-	 * (SGS_Breakpoints::tier_at_rules).
+	 * With `$with_container`, the Mobile tier also matches as an `@container` query under a 480px box, the same
+	 * rule the framework's other tier rules use (SGS_Breakpoints::tier_at_rules); Desktop and Tablet follow the screen.
 	 *
 	 * @param string $row_sel        Selector of the element whose direct children are the items.
 	 * @param array  $attributes     Block attributes.
@@ -100,10 +99,9 @@ if ( ! function_exists( 'sgs_container_scroll_row_css' ) ) {
 			$rules = $row_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;' . $pad_css . '}'
 				. $row_sel . '>*{flex:0 0 ' . $width . ';min-width:0;scroll-snap-align:start;}';
 			$css  .= sgs_tier_exact_media_css( array( $tier ), $rules );
-			if ( $with_container ) {
-				foreach ( sgs_tier_media_queries( array( $tier ) ) as $query ) {
-					$css .= '@container ' . $query . '{' . $rules . '}';
-				}
+			// Tiers follow the screen; only the Mobile tier also applies in a box narrower than 480px (FW-H).
+			if ( $with_container && 'mobile' === $tier ) {
+				$css .= '@container (max-width:' . SGS_Breakpoints::CONTAINER_MOBILE_MAX . 'px){' . $rules . '}';
 			}
 		}
 		return $css;

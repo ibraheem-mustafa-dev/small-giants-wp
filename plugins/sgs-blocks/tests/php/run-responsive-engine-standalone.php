@@ -69,7 +69,9 @@ ok( 1023 === SGS_Breakpoints::max_for_tier( 'tablet' ), 'max_for_tier(tablet)' )
 ok( null === SGS_Breakpoints::max_for_tier( 'desktop' ), 'max_for_tier(desktop) = null' );
 ok( array( '@media (max-width:767px){' ) === SGS_Breakpoints::tier_at_rules( 767 ), 'tier_at_rules media-only' );
 $cq = SGS_Breakpoints::tier_at_rules( 1023, true );
-ok( in_array( '@container (max-width:1023px){', $cq, true ) && in_array( '@media (max-width:1023px){', $cq, true ), 'tier_at_rules with container' );
+ok( array( '@media (max-width:1023px){' ) === $cq, 'tier_at_rules tablet: no container rule (tiers follow the screen)' );
+$cq = SGS_Breakpoints::tier_at_rules( 767, true );
+ok( in_array( '@container (max-width:479px){', $cq, true ) && in_array( '@media (max-width:767px){', $cq, true ), 'tier_at_rules mobile with container: a 480px box' );
 
 // ── Scalar tier-diff ────────────────────────────────────────────────────────────
 $css = sgs_emit_responsive_css(
@@ -196,7 +198,7 @@ $css = sgs_emit_responsive_css(
 	array( 'container' => true )
 );
 contains( $css, '@media (max-width:767px){.x{gap:10px;}}', 'container mode: media fallback present' );
-contains( $css, '@container (max-width:767px){.x{gap:10px;}}', 'container mode: container query present' );
+contains( $css, '@container (max-width:479px){.x{gap:10px;}}', 'container mode: mobile container query present (480px box)' );
 
 // ── Transform ─────────────────────────────────────────────────────────────────────
 $css = sgs_emit_responsive_css(

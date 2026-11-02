@@ -51,7 +51,7 @@ final class MotionRendererTest extends TestCase {
 		$this->assertStringNotContainsString( '--sgs-mh-rot', $css, 'only the owners present are listed' );
 		$this->assertStringNotContainsString( ' style=', $out );
 		$this->assertStringNotContainsString( '<style', $out, 'the front end sends the CSS through the collector' );
-		$this->assertStringContainsString( '<div data-sgs-mc="translate scale" data-sgs-mh="self" class="sgs-hero__media">', $out );
+		$this->assertMatchesRegularExpression( '/<div data-sgs-mc="translate scale"(?: data-sgs-mh-(?:move|scale)="")+ data-sgs-mh="self" class="sgs-hero__media">/', $out, 'a hover translate and scale also stamp the self-source hover part markers' );
 		$this->assertStringNotContainsString( 'data-sgs-mroot', $out );
 	}
 
@@ -89,7 +89,7 @@ final class MotionRendererTest extends TestCase {
 		$out    = $this->render( $motion );
 		$scope  = $this->scope( $out );
 		$this->assertStringContainsString( '.' . $scope . ' p.lede{--sgs-mh-to-tx:4px;', $this->css() );
-		$this->assertStringContainsString( '<p data-sgs-mc="translate" data-sgs-mh="self" class="lede">', $out );
+		$this->assertStringContainsString( '<p data-sgs-mc="translate" data-sgs-mh-move="" data-sgs-mh="self" class="lede">', $out );
 	}
 
 	public function test_happy_declared_part_selector_finds_the_real_element(): void {
@@ -102,7 +102,7 @@ final class MotionRendererTest extends TestCase {
 		$scope  = $this->scope( $out );
 		$this->assertStringContainsString( '.' . $scope . ' .sgs-testimonial__quote{--sgs-mh-to-ty:-4px;', $this->css(), 'the part resolves to its declared selector' );
 		$this->assertStringNotContainsString( 'sgs-testimonial__quote-text', $this->css(), 'not the part key as a class' );
-		$this->assertStringContainsString( '<blockquote data-sgs-mc="translate" data-sgs-mh="self" class="sgs-testimonial__quote">', $out, 'data-sgs-mh lands on the real element' );
+		$this->assertStringContainsString( '<blockquote data-sgs-mc="translate" data-sgs-mh-move="" data-sgs-mh="self" class="sgs-testimonial__quote">', $out, 'data-sgs-mh lands on the real element' );
 		$this->assertStringNotContainsString( '<cite data-sgs-mh', $out, 'the sibling is untouched' );
 	}
 
@@ -118,7 +118,7 @@ final class MotionRendererTest extends TestCase {
 		$this->assertSame( 1, substr_count( $out, 'data-sgs-mh=' ), 'exactly one element is stamped' );
 		$this->assertStringContainsString( '.' . $scope . ' > .sgs-container__content-band{--sgs-mh-to-ty:-4px;', $this->css(), 'the band rule uses the child combinator' );
 		$this->assertStringNotContainsString( '.' . $scope . ' .sgs-container__content-band{', $this->css(), 'no descendant-form rule' );
-		$this->assertStringContainsString( '"><div data-sgs-mc="translate" data-sgs-mh="self" class="' . $band . '"><div class="wp-block-sgs-container"><div class="' . $band . '"><p>', $out, 'the outer band is stamped and the nested band is not' );
+		$this->assertStringContainsString( '"><div data-sgs-mc="translate" data-sgs-mh-move="" data-sgs-mh="self" class="' . $band . '"><div class="wp-block-sgs-container"><div class="' . $band . '"><p>', $out, 'the outer band is stamped and the nested band is not' );
 	}
 
 	public function test_edge_container_inner_part_is_its_own_band_only(): void {

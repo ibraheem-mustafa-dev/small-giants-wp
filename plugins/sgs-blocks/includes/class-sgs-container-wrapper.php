@@ -3405,9 +3405,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				}
 
 				if ( $obj_inner_props && '' !== $grid_sel ) {
-					// `container` adds an @container copy of each tier rule ALONGSIDE the
-					// @media one (class-sgs-breakpoints.php:74-81 emits both, never one
-					// instead of the other) — so the tiers apply either way. But an
+					// `container` adds an @container copy of the MOBILE tier rule (under a 480px box) ALONGSIDE the
+					// @media one (SGS_Breakpoints::tier_at_rules; Desktop and Tablet follow the screen, FW-H) —
+					// so the tiers apply either way. But an
 					// @container query can only match inside a query container, and
 					// container-type is emitted above only under $container_queries. Passing
 					// the flag through means a non-opted block gets the working @media

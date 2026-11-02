@@ -35,10 +35,16 @@ final class ResponsiveOverrideEngineTest extends TestCase {
 		$this->assertSame( array( '@media (max-width:767px){' ), $rules );
 	}
 
-	public function test_tier_at_rules_adds_container_when_requested(): void {
-		$rules = SGS_Breakpoints::tier_at_rules( 1023, true );
-		$this->assertContains( '@media (max-width:1023px){', $rules );
-		$this->assertContains( '@container (max-width:1023px){', $rules );
+	public function test_tier_at_rules_adds_a_container_copy_for_the_mobile_tier_only(): void {
+		$tablet = SGS_Breakpoints::tier_at_rules( 1023, true );
+		$this->assertSame( array( '@media (max-width:1023px){' ), $tablet, 'tablet follows the screen: no container rule' );
+
+		$mobile = SGS_Breakpoints::tier_at_rules( 767, true );
+		$this->assertContains( '@media (max-width:767px){', $mobile );
+		$this->assertContains( '@container (max-width:479px){', $mobile, 'mobile also applies in a box narrower than 480px' );
+		$this->assertNotContains( '@container (max-width:767px){', $mobile );
+
+		$this->assertSame( array( '@media (max-width:767px){' ), SGS_Breakpoints::tier_at_rules( 767 ), 'option off: media only' );
 	}
 
 	// ── Scalar tier-diff emission ──────────────────────────────────────────────
@@ -194,7 +200,8 @@ final class ResponsiveOverrideEngineTest extends TestCase {
 			array( 'container' => true )
 		);
 		$this->assertStringContainsString( '@media (max-width:767px){.x{gap:10px;}}', $css );
-		$this->assertStringContainsString( '@container (max-width:767px){.x{gap:10px;}}', $css );
+		$this->assertStringContainsString( '@container (max-width:479px){.x{gap:10px;}}', $css );
+		$this->assertStringNotContainsString( '@container (max-width:767px)', $css );
 	}
 
 	// ── Transform (colour-style) ────────────────────────────────────────────────

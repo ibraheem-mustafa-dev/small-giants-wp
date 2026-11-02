@@ -2,7 +2,7 @@
 /**
  * sgs/gallery: the layout per device (grid, masonry, swipe row, carousel).
  *
- * Positive controls: a tier that differs prints its own full declarations as @media and @container, a swipe row is a
+ * Positive controls: a tier that differs prints its own full declarations as @media (Mobile also as @container under 480px), a swipe row is a
  * focusable named region and takes its card width and edge padding, a mixed carousel is rewritten to a swipe row before
  * anything reads it. Negative controls: a uniform layout prints no override, an old scalar `layout` is not read (it
  * renders the grid default), and `sgs_emit_tier_rules_map` without the container option prints `@media` only.
@@ -76,7 +76,7 @@ final class GalleryLayoutTiersTest extends TestCase {
 		$css = $out['css'];
 
 		$this->assertMatchesRegularExpression( '/@media \(max-width:767px\)\{[^{]*\.sgs-gallery__grid\{display:grid;grid-template-columns:none;grid-auto-flow:column;/', $css );
-		$this->assertMatchesRegularExpression( '/@container \(max-width:767px\)\{[^{]*\.sgs-gallery__grid\{display:grid;grid-template-columns:none;grid-auto-flow:column;/', $css );
+		$this->assertMatchesRegularExpression( '/@container \(max-width:479px\)\{[^{]*\.sgs-gallery__grid\{display:grid;grid-template-columns:none;grid-auto-flow:column;/', $css );
 		$this->assertStringContainsString( '--sgs-scroll-item-width:78%;', $css );
 		$this->assertStringContainsString( 'padding-inline:20px;scroll-padding-inline:20px;', $css );
 		$this->assertSame( 0, preg_match( '/max-width:1023px\)\{[^{]*\.sgs-gallery__grid\{display:/', $css ), 'the tablet tier inherits desktop: no tablet layout rule' );
@@ -123,7 +123,7 @@ final class GalleryLayoutTiersTest extends TestCase {
 			'option off: the original output, byte for byte'
 		);
 		$this->assertSame(
-			'.s{x:1;}@media (max-width:1023px){.s{x:2;}}@container (max-width:1023px){.s{x:2;}}@media (max-width:767px){.s{x:3;}}@container (max-width:767px){.s{x:3;}}',
+			'.s{x:1;}@media (max-width:1023px){.s{x:2;}}@media (max-width:767px){.s{x:3;}}@container (max-width:479px){.s{x:3;}}',
 			sgs_emit_tier_rules_map( '.s', $value, $map, '', 'off', array( 'container' => true ) )
 		);
 	}
