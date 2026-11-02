@@ -24,6 +24,23 @@
 
 **Open rows: 77 = 29 Solve + 48 Fix.** Solve by surface: site-wide 4 (S4, S5, S6, S11), header 1, mega menus 3, phone drawer 1, footer 5, home 3, shop 1, product 4, Help 5, Contact 2. Fix by surface: site-wide 1 (S1), header 1, mega menus 4, phone drawer 1, bag drawer 1, footer 4, floating WhatsApp 1, home 3, shop 3, product 10, Help 3, Contact 1, checkout 8, confirmation 2, content 2, computed route 3.
 
+## Finishing stream, round 1 (2026-11-02, approved by Bean)
+
+eye-care-test is finished by hand from 2026-11-02 (plan `2026-11-02-clone-finishing-streams.md`): each round is investigated and proven first, approved by Bean, then fixed. Baseline captures: `E:/sgs-tmp/vision/eye-care-ward-end/compare/` (product pairs on gucci-oversized-cat-eye). Bean dropped from this round: the side gutter (fixed by the Mama's session), the footer "Glasses — arriving soon" line (N48), footer styles (29, 30), the photo saving tag (N33B), the reviews strip and "No reviews yet" (S7), the colourway note (a draft note).
+
+| Ref | What is wrong | Proven cause | Fix | Type | Status |
+|---|---|---|---|---|---|
+| R1-1 | Trust bar wraps to two rows at 768 | `build/blocks/trust-bar/view.js` is 0 bytes: `overflow-drop.js` is imported for its side effect and `package.json::sideEffects` does not list it, so webpack drops it; overflowMode "drop" has never run on any site. The header's marquee runs below 768 only (`belowBreakpoint: mobile`) | Keep the module (sideEffects), add a build check that fails on a 0-byte built script; Bean: the header trust bar scrolls on tablet and phone (`belowBreakpoint: tablet`) | framework repair + tree | open |
+| R1-2 | Colour tiles show flat colours, not each colour's frame photo | `option-picker/render.php` rebuilds `$valid_items` with key and label only, dropping `optionItems[].image` that `buybox` passes (`picker-variation-swatch.php::sgs_buybox_variation_image_map` returns Black and Havana photos for product 76); a direct render with an image still prints `--has-colour` | Carry the sanitised image URL through validation | framework repair | open |
+| R1-11 | Trust bar 106px tall on product pages | `woocommerce.css::.single-product .wp-block-sgs-trust-bar` (0,2,0) pads every product-page trust bar 2rem, the header's included, over the block's own padding | Scope to `main` inside `:where()` so a block's own padding wins and an unset PDP-content bar keeps the 2rem | framework repair | open |
+| R1-4 | "Add to bag as they are" and Help "Call" text invisible | `theme-snapshot.json::settings.custom.buttonPresets.outline` text is `primary-text` (paper) with a paper border, re-extracted 2026-10-24 (`082eeb3ae`) over Bean's 2026-09-25 decision (`20d2fe142`: the outline preset follows its section's text colour) | Restore `currentColor` text and the `color-mix(currentColor 75%)` border; push the snapshot | client token | open |
+| R1-5 | Trust bar text 14px bold; draft 12.5px regular | Header row 1: never set | label size 12.5px, weight 400 | tree | open |
+| R1-6 | "Glasses SOON" in the header and phone menus | Bean 2026-11-02: remove it (as N48 did in the footer). Menu item 195 is the header's `splitAfterItemId` | Move the split to item 194 (Lenses), delete item 195, remove it from drawer 203 | content | open |
+| R1-7 | No account icon in the header | Never added; `sgs/account` exists | Add `sgs/account` beside the bag | tree | open |
+| R1-8 | Phone: "BAG" word pill; draft a bag icon with the count on its corner | to confirm while fixing (no per-device trigger setting found on `sgs/cart`) | The block's setting if one exists, else Custom CSS on the block | tree | open |
+| R1-9 | "See all {brand}" link missing beside "More from {brand}" | Never added | Add a brand-bound link | tree | open |
+| R1-10 | Card "Polarised" tag is plain text; draft an outlined pill | to confirm while fixing | The card's attribute-tag border settings | tree | open |
+
 ## Four build rules for every item
 
 1. **Step 0: rebuild every page from its layout file first.** The live header is older than `header.tree.json`: the file has asked for an 18px wordmark that shrinks to 15px since 30 September, and the live one is 16px with no shrink. Every tree is rebuilt through `wp-build-page.js` before any item is judged, so no fix chases a stale page.
