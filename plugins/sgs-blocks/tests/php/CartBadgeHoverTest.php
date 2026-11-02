@@ -31,6 +31,8 @@ final class CartBadgeHoverTest extends TestCase {
 			. ' require ' . var_export( $root . '/includes/render-helpers.php', true ) . ';'
 			. ' $attributes = ' . var_export( $attributes, true ) . ';'
 			. ' $sel = ".sgs-cart-x"; $uid = "sgs-cart-x"; $has_panel = false; $badge_colour = ""; $badge_text_colour = ""; $scoped_css = array();'
+			// render.php's per-tier trigger state for a default (icon at every width) cart.
+			. ' $trigger_tiers = array( "lg" => "icon", "md" => "icon", "sm" => "icon" ); $trigger_mixed = false; $trigger_has_pill = false; $trigger_ranges = array( "pill" => array(), "icon" => array() );'
 			. ' require ' . var_export( $root . '/src/blocks/cart/render-scoped-css.php', true ) . ';'
 			. ' echo implode( "\n", array_filter( $scoped_css ) );';
 		file_put_contents( $script, $code );
