@@ -40,6 +40,11 @@ EXEMPT = {
         "this field is only the typed fallback for an empty Site Info field, so a second source "
         "would be a second Site Info mechanism on the same link."
     ),
+    ("src/blocks/breadcrumbs/edit.js", "Middle crumb link"): (
+        "A breadcrumb crumb names a section of the site's own page hierarchy, so its link is always a page on "
+        "the same site; the contact sources (phone, email, WhatsApp, map) have no meaning in a breadcrumb trail, "
+        "and the BreadcrumbList JSON-LD needs a plain page URL."
+    ),
 }
 
 OPEN_TAG = re.compile(r"<LinkPopoverField\b")
