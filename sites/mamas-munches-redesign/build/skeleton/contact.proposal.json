@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-28T06:35:28.612Z",
-	"inventory": "2026-10-28T06:35:28.381Z",
-	"source": "http://127.0.0.1:58717/",
+	"generated": "2026-11-02T04:50:35.641Z",
+	"inventory": "2026-11-02T01:08:15.779Z",
+	"source": "http://127.0.0.1:51161/",
 	"surface": "page-contact-dc-html",
 	"siteName": null,
 	"surfaceParts": [
@@ -12,6 +12,15 @@
 			"openedBy": "Load",
 			"roots": [
 				"Contact/43"
+			]
+		},
+		{
+			"id": "S-59",
+			"kind": "accordion",
+			"name": "Contact FAQ list",
+			"openedBy": "Question button",
+			"roots": [
+				"Contact/78"
 			]
 		}
 	],
@@ -38,13 +47,13 @@
 		"rule": 1
 	},
 	"counts": {
-		"inventoryElements": 66,
+		"inventoryElements": 85,
 		"parts": 10,
-		"rows": 56,
-		"skeletonNodes": 26,
-		"expandedNodes": 26,
-		"low": 5,
-		"removed": 27,
+		"rows": 75,
+		"skeletonNodes": 37,
+		"expandedNodes": 37,
+		"low": 3,
+		"removed": 44,
 		"unresolved": 0,
 		"byRule": {
 			"hero": 1,
@@ -54,8 +63,428 @@
 			"solitaryIcon": 3,
 			"cardTitle": 3,
 			"formLink": 20,
-			"drawsChildren": 4
+			"accordion": 1,
+			"accordionItem": 25
 		}
+	},
+	"partPairing": {
+		"paired": 24,
+		"unpaired": [
+			{
+				"key": "Root/8#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/8#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/8#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/9#0",
+				"block": "sgs/hero",
+				"slot": ".sgs-hero__bg-img",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/9#0",
+				"block": "sgs/hero",
+				"slot": ".sgs-hero__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/9#0",
+				"block": "sgs/hero",
+				"slot": ".sgs-hero__video-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/9#0",
+				"block": "sgs/hero",
+				"slot": ".sgs-hero__media > .sgs-hero__split-media",
+				"reason": ".sgs-hero__media: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/9#0",
+				"block": "sgs/hero",
+				"slot": ".sgs-hero__media",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/13#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/14#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/17#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/17#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/17#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/18#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/18#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/18#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/19#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/19#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/19#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/20#0",
+				"block": "sgs/icon",
+				"slot": ".sgs-icon__shape > .sgs-icon__glyph",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root/24#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/25#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/26#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/26#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/26#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/27#0",
+				"block": "sgs/icon",
+				"slot": ".sgs-icon__shape > .sgs-icon__glyph",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root/32#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/33#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/34#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/34#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/34#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/35#0",
+				"block": "sgs/icon",
+				"slot": ".sgs-icon__shape > .sgs-icon__glyph",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root/39#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/40#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/40#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-info__link",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/40#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1) > .sgs-business-hours__day",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/40#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon > svg",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/40#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2) > .sgs-business-hours__day",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/40#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3) > .sgs-business-hours__day",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/40#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4) > .sgs-business-hours__day",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/40#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1)",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/40#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2)",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/40#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3)",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/40#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4)",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/41#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/41#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/41#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/42#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/42#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/42#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root/42#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(1)",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/42#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(2)",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/74#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/74#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/74#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/76#0",
+				"block": "sgs/accordion",
+				"slot": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/76#0",
+				"block": "sgs/accordion",
+				"slot": ".sgs-container:nth-of-type(2) > .sgs-accordion-item__header",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/76#0",
+				"block": "sgs/accordion",
+				"slot": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/76#0",
+				"block": "sgs/accordion",
+				"slot": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open > svg",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/76#0",
+				"block": "sgs/accordion",
+				"slot": ".sgs-container:nth-of-type(2) > .sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open > svg",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/76#0",
+				"block": "sgs/accordion",
+				"slot": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__content",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/76#0",
+				"block": "sgs/accordion",
+				"slot": ".sgs-container:nth-of-type(2) > .sgs-accordion-item__content",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/85#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/85#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/85#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/85#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/86#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/86#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon > svg",
+				"reason": ".sgs-button__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/87#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			}
+		]
 	},
 	"widthAlternatives": [],
 	"problems": [],
@@ -74,6 +503,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -93,6 +523,14 @@
 			"snippet": "<main data-dc-tpl=\"8\"> <section style=\"background:#F5C2C8;border-bottom:2px solid #3A2A22;padding:{{ L.heroPad }};overflow:hidden\" data-dc-tpl=\"9\"> <div style=\"max-width:1240px;margin:0 auto;display:grid;grid-template-columns:{{ L.heroCols }};gap:{{ L.gap }};align-items:center\" data-dc-tpl=\"10\"> <div style=\"display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"11\"> <div data-reveal=\"\" style=\"f",
 			"attributes": {
 				"tagName": "main"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/9#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/17#0"
+				}
 			}
 		},
 		{
@@ -114,6 +552,7 @@
 				"kind": "presence",
 				"detail": "the hero image: choose it in the hero's split media setting"
 			},
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/hero",
@@ -132,6 +571,11 @@
 			"snippet": "<section style=\"background:#F5C2C8;border-bottom:2px solid #3A2A22;padding:{{ L.heroPad }};overflow:hidden\" data-dc-tpl=\"9\"> <div style=\"max-width:1240px;margin:0 auto;display:grid;grid-template-columns:{{ L.heroCols }};gap:{{ L.gap }};align-items:center\" data-dc-tpl=\"10\"> <div style=\"display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"11\"> <div data-reveal=\"\" style=\"font-family:'Caveat',cur",
 			"attributes": {
 				"variant": "split"
+			},
+			"slots": {
+				".sgs-hero__content": {
+					"tpl": "Root/11#0"
+				}
 			}
 		},
 		{
@@ -142,7 +586,7 @@
 			"words": "",
 			"block": null,
 			"action": "unwrap",
-			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays; an element another rule owns (a form, the commerce region, a loop or accordion, the filter rail) and everything below it is never the hero's inner",
 			"source": "rule heroInner",
 			"confidence": 1,
 			"low": false,
@@ -165,7 +609,7 @@
 			"words": "",
 			"block": null,
 			"action": "unwrap",
-			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays; an element another rule owns (a form, the commerce region, a loop or accordion, the filter rail) and everything below it is never the hero's inner",
 			"source": "rule heroInner",
 			"confidence": 1,
 			"low": false,
@@ -186,21 +630,21 @@
 			"tag": "div",
 			"depth": 4,
 			"words": "pop the kettle on ☕",
-			"block": "sgs/text",
+			"block": "sgs/label",
 			"action": null,
 			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/text",
-					"score": 0.25,
+					"block": "sgs/label",
+					"score": 1,
 					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1)."
 					]
 				}
 			],
@@ -228,6 +672,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -246,7 +691,8 @@
 			},
 			"snippet": "<h1 data-reveal=\"\" style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.025em\" data-dc-tpl=\"13\">Say hello to Zainab</h1>",
 			"attributes": {
-				"content": "Say hello to Zainab"
+				"content": "Say hello to Zainab",
+				"level": "h1"
 			}
 		},
 		{
@@ -263,6 +709,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -292,7 +739,7 @@
 			"words": "",
 			"block": null,
 			"action": "absorbed",
-			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays; an element another rule owns (a form, the commerce region, a loop or accordion, the filter rail) and everything below it is never the hero's inner",
 			"source": "rule heroInner",
 			"confidence": 1,
 			"low": false,
@@ -345,6 +792,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -366,6 +814,14 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/18#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/41#0"
+				}
 			}
 		},
 		{
@@ -382,6 +838,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -403,6 +860,14 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/19#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/26#0"
+				}
 			}
 		},
 		{
@@ -419,6 +884,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "wholeCardLink",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -439,6 +905,14 @@
 				"tagName": "div",
 				"layout": "stack",
 				"sgsBlockLink": "#whatsapp"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/20#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/24#0"
+				}
 			}
 		},
 		{
@@ -455,6 +929,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "solitaryIcon",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/icon",
@@ -477,6 +952,9 @@
 			"slots": {
 				".sgs-icon__shape > .sgs-icon__glyph > svg": {
 					"tpl": "Root/21#0"
+				},
+				".sgs-icon__shape": {
+					"tpl": "Root/20#0"
 				}
 			}
 		},
@@ -494,6 +972,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "cardTitle",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -528,6 +1007,7 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -562,6 +1042,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "wholeCardLink",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -582,6 +1063,14 @@
 				"tagName": "div",
 				"layout": "stack",
 				"sgsBlockLink": "https://www.instagram.com/mamasmunches/"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/27#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/32#0"
+				}
 			}
 		},
 		{
@@ -598,6 +1087,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "solitaryIcon",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/icon",
@@ -619,6 +1109,9 @@
 			"slots": {
 				".sgs-icon__shape > .sgs-icon__glyph > svg": {
 					"tpl": "Root/28#0"
+				},
+				".sgs-icon__shape": {
+					"tpl": "Root/27#0"
 				}
 			}
 		},
@@ -636,6 +1129,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "cardTitle",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -670,6 +1164,7 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -704,6 +1199,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "wholeCardLink",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -724,6 +1220,14 @@
 				"tagName": "div",
 				"layout": "stack",
 				"sgsBlockLinkSource": "email"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/35#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/39#0"
+				}
 			}
 		},
 		{
@@ -740,6 +1244,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "solitaryIcon",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/icon",
@@ -761,6 +1266,9 @@
 			"slots": {
 				".sgs-icon__shape > .sgs-icon__glyph > svg": {
 					"tpl": "Root/36#0"
+				},
+				".sgs-icon__shape": {
+					"tpl": "Root/35#0"
 				}
 			}
 		},
@@ -778,6 +1286,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "cardTitle",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -812,6 +1321,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/business-info",
@@ -856,6 +1366,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -877,6 +1388,14 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/42#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/74#0"
+				}
 			}
 		},
 		{
@@ -893,6 +1412,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -928,6 +1448,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "formLink",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form",
@@ -947,7 +1468,11 @@
 			"attributes": {
 				"formIsLinked": true,
 				"formId": "form-send"
-			}
+			},
+			"slotNotes": [
+				"sgs/form-field-text \"How many cookies, roughly?\" is built from the fact record (Contact/62): the draft shows it only while {{ showBulk }}, so no rendered element carries it",
+				"sgs/form-field-date \"Date needed\" is built from the fact record (Contact/64): the draft shows it only while {{ showBulk }}, so no rendered element carries it"
+			]
 		},
 		{
 			"order": 26,
@@ -961,7 +1486,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/45#0 (sgs/heading) no longer applies: sgs/form draws this element",
 			"rule": "formLink",
 			"into": "Root/44#0",
 			"candidates": [],
@@ -985,7 +1510,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/46#0 (sgs/container) no longer applies: sgs/form draws this element",
 			"rule": "formLink",
 			"into": "Root/44#0",
 			"candidates": [],
@@ -1009,7 +1534,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/47#0 (remove) no longer applies: sgs/form draws this element",
 			"rule": "formLink",
 			"into": "Root/44#0",
 			"candidates": [],
@@ -1033,7 +1558,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/48#0 (sgs/form-field-tiles) no longer applies: sgs/form draws this element",
 			"rule": "formLink",
 			"into": "Root/44#0",
 			"candidates": [],
@@ -1174,7 +1699,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/51#0 (sgs/container) no longer applies: sgs/form draws this element",
 			"rule": "formLink",
 			"into": "Root/44#0",
 			"candidates": [],
@@ -1222,7 +1747,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/53#0 (sgs/form-field-text) no longer applies: sgs/form draws this element",
 			"rule": "formLink",
 			"into": "Root/44#0",
 			"candidates": [],
@@ -1270,7 +1795,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/55#0 (sgs/form-field-email) no longer applies: sgs/form draws this element",
 			"rule": "formLink",
 			"into": "Root/44#0",
 			"candidates": [],
@@ -1318,7 +1843,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/58#0 (sgs/form-field-text) no longer applies: sgs/form draws this element",
 			"rule": "formLink",
 			"into": "Root/44#0",
 			"candidates": [],
@@ -1366,7 +1891,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/66#0 (sgs/form-field-textarea) no longer applies: sgs/form draws this element",
 			"rule": "formLink",
 			"into": "Root/44#0",
 			"candidates": [],
@@ -1390,7 +1915,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/67#0 (sgs/button) no longer applies: sgs/form draws this element",
 			"rule": "formLink",
 			"into": "Root/44#0",
 			"candidates": [],
@@ -1416,13 +1941,14 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 6 block children",
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
 						"no row block fits: a generic wrapper",
 						"block_capabilities: sgs/container lists \"flex\" (draft display)"
 					]
@@ -1433,10 +1959,18 @@
 				"375": "shots/Root_74_0@375.png",
 				"1440": "shots/Root_74_0@1440.png"
 			},
-			"snippet": "<div style=\"display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"74\"> <div data-reveal=\"\" style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"75\">quick answers</div> <sc-for list=\"{{ quick }}\" as=\"q\" hint-placeholder-count=\"0\" data-dc-tpl=\"76\"> <a data-reveal=\"\" href=\"{{ q.href }}\" style=\"display:flex;justify-content:space-between;align-items:center;ga",
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"74\"> <div data-reveal=\"\" style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"75\">quick answers</div> <div style=\"display:flex;flex-direction:column;gap:12px\" data-dc-tpl=\"76\"> <sc-for list=\"{{ faqs }}\" as=\"f\" hint-placeholder-count=\"0\" data-dc-tpl=\"77\"> <div style=\"border:2px solid #3A2A2",
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/75#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/76#0"
+				}
 			}
 		},
 		{
@@ -1445,21 +1979,21 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "quick answers",
-			"block": "sgs/text",
+			"block": "sgs/label",
 			"action": null,
 			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/text",
-					"score": 0.25,
+					"block": "sgs/label",
+					"score": 1,
 					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: A handwritten eyebrow above the quick-answer links; sgs/label."
 					]
 				}
 			],
@@ -1475,267 +2009,731 @@
 		},
 		{
 			"order": 47,
-			"key": "Root/77#0",
-			"tag": "a",
+			"key": "Root/76#0",
+			"tag": "div",
 			"depth": 5,
-			"words": "When will my order arrive?",
-			"block": "sgs/icon-list",
+			"words": "",
+			"block": "sgs/accordion",
 			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.7,
+			"reason": "a loop whose items each hold a control that writes a state the item's own conditional panel reads is the accordion, read from the fact record and the logic's syntax tree with aria-expanded as the rendered confirmation, never from words or a surface kind (Spec 48 §3.4, RC6) (a loop of 4 items whose control writes \"faq\", which the item's own panel reads; one item open at a time)",
+			"source": "rule accordion",
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "accordion",
+			"acceptedDecision": true,
 			"candidates": [
 				{
-					"block": "sgs/icon-list",
-					"score": 1.15,
-					"share": 0.697,
+					"block": "sgs/accordion",
+					"score": 1,
+					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
-						"block_capabilities: sgs/icon-list lists \"list\"",
-						"4 bare text links, one above the next"
-					]
-				},
-				{
-					"block": "sgs/button",
-					"score": 0.5,
-					"share": 0.303,
-					"evidence": [
-						"html_tag_to_core_block: a -> sgs/button (each link on its own)"
+						"rule accordion: a loop whose items each hold a control that writes a state the item's own conditional panel reads is the accordion, read from the fact record and the logic's syntax tree with aria-expanded as the rendered confirmation, never from words or a surface kind (Spec 48 §3.4, RC6) (a loop of 4 items whose control writes \"faq\", which the item's own panel reads; one item open at a time)"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_77_0@375.png",
-				"1440": "shots/Root_77_0@1440.png"
+				"375": "shots/Root_76_0@375.png",
+				"1440": "shots/Root_76_0@1440.png"
 			},
-			"snippet": "<a data-reveal=\"\" href=\"{{ q.href }}\" style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:64px;padding:12px 18px;background:#FFFAF0;border:2px solid #3A2A22;border-radius:20px;text-decoration:none;color:#3A2A22;font-family:'Young Serif',serif;font-size:18px;transition:transform .25s cubic-bezier(.3,1.4,.5,1), box-shadow .25s\" style-hover=\"transform:translate(-3",
-			"attributes": {},
-			"unit": "list",
-			"item": {
-				"text": "When will my order arrive?",
-				"url": "/help/#delivery"
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:12px\" data-dc-tpl=\"76\"> <sc-for list=\"{{ faqs }}\" as=\"f\" hint-placeholder-count=\"0\" data-dc-tpl=\"77\"> <div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"78\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"w",
+			"attributes": {
+				"layout": "stack",
+				"allowMultiple": false,
+				"defaultOpen": 0
 			}
 		},
 		{
 			"order": 48,
 			"key": "Root/78#0",
-			"tag": "span",
+			"tag": "div",
 			"depth": 6,
-			"words": "→",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/icon-list: the list item's marker",
-			"source": null,
+			"words": "",
+			"block": "sgs/accordion-item",
+			"action": null,
+			"reason": "one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)",
+			"source": "rule accordionItem",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "drawsChildren",
-			"into": "Root/77#0",
-			"candidates": [],
+			"rule": "accordionItem",
+			"acceptedDecision": true,
+			"candidates": [
+				{
+					"block": "sgs/accordion-item",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule accordionItem: one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_78_0@375.png",
 				"1440": "shots/Root_78_0@1440.png"
 			},
-			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:34px;height:34px;border-radius:999px;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-family:Karla\" data-dc-tpl=\"78\">→</span>",
-			"attributes": {}
-		},
-		{
-			"order": 49,
-			"key": "Root/77#1",
-			"tag": "a",
-			"depth": 5,
-			"words": "What allergens are in them?",
-			"block": "sgs/icon-list",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.7,
-			"low": false,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/icon-list",
-					"score": 1.15,
-					"share": 0.697,
-					"evidence": [
-						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
-						"block_capabilities: sgs/icon-list lists \"list\"",
-						"4 bare text links, one above the next"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {
-				"375": "shots/Root_77_1@375.png",
-				"1440": "shots/Root_77_1@1440.png"
-			},
-			"snippet": "<a data-reveal=\"\" href=\"{{ q.href }}\" style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:64px;padding:12px 18px;background:#FFFAF0;border:2px solid #3A2A22;border-radius:20px;text-decoration:none;color:#3A2A22;font-family:'Young Serif',serif;font-size:18px;transition:transform .25s cubic-bezier(.3,1.4,.5,1), box-shadow .25s\" style-hover=\"transform:translate(-3",
-			"attributes": {},
-			"unit": "list",
-			"item": {
-				"text": "What allergens are in them?",
-				"url": "/help/#allergens"
+			"snippet": "<div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"78\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-a",
+			"attributes": {
+				"title": "Ordering & delivery",
+				"isOpen": true
 			}
 		},
 		{
-			"order": 50,
-			"key": "Root/78#1",
-			"tag": "span",
-			"depth": 6,
-			"words": "→",
+			"order": 49,
+			"key": "Root/79#0",
+			"tag": "button",
+			"depth": 7,
+			"words": "",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/icon-list: the list item's marker",
+			"reason": "drawn by sgs/accordion-item: rule accordionItem",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "drawsChildren",
-			"into": "Root/77#1",
+			"rule": "accordionItem",
+			"into": "Root/78#0",
 			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_79_0@375.png",
+				"1440": "shots/Root_79_0@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer\" data-dc-tpl=\"79\"><span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"80\"><span style=\"font-size:12px;font-weight:700;letter",
+			"attributes": {}
+		},
+		{
+			"order": 50,
+			"key": "Root/80#0",
+			"tag": "span",
+			"depth": 8,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "accordionItem",
+			"into": "Root/78#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_80_0@375.png",
+				"1440": "shots/Root_80_0@1440.png"
+			},
+			"snippet": "<span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"80\"><span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"81\">{{ f.cat }}</span><span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"82\">{{ f.q }}</span></span>",
+			"attributes": {}
+		},
+		{
+			"order": 51,
+			"key": "Root/81#0",
+			"tag": "span",
+			"depth": 9,
+			"words": "Ordering & delivery",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "accordionItem",
+			"into": "Root/78#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_81_0@375.png",
+				"1440": "shots/Root_81_0@1440.png"
+			},
+			"snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"81\">{{ f.cat }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 52,
+			"key": "Root/82#0",
+			"tag": "span",
+			"depth": 9,
+			"words": "When will my order arrive?",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "accordionItem",
+			"into": "Root/78#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_82_0@375.png",
+				"1440": "shots/Root_82_0@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"82\">{{ f.q }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 53,
+			"key": "Root/83#0",
+			"tag": "span",
+			"depth": 8,
+			"words": "+",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "accordionItem",
+			"into": "Root/78#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_83_0@375.png",
+				"1440": "shots/Root_83_0@1440.png"
+			},
+			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)\" data-dc-tpl=\"83\">+</span>",
+			"attributes": {}
+		},
+		{
+			"order": 54,
+			"key": "Root/85#0",
+			"tag": "p",
+			"depth": 7,
+			"words": "Zainab bakes every order fresh when it comes in, then posts it with Royal Mail Tracked. Most orders are with you in 3–5 days.",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "accordionItem",
+			"into": "Root/78#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_85_0@375.png",
+				"1440": "shots/Root_85_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0;padding:0 20px 20px;font-size:16px;line-height:1.6;max-width:700px\" data-dc-tpl=\"85\">{{ f.a }}</p>",
+			"attributes": {}
+		},
+		{
+			"order": 55,
+			"key": "Root/78#1",
+			"tag": "div",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/accordion-item",
+			"action": null,
+			"reason": "one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)",
+			"source": "rule accordionItem",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "accordionItem",
+			"acceptedDecision": true,
+			"candidates": [
+				{
+					"block": "sgs/accordion-item",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule accordionItem: one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_78_1@375.png",
 				"1440": "shots/Root_78_1@1440.png"
 			},
-			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:34px;height:34px;border-radius:999px;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-family:Karla\" data-dc-tpl=\"78\">→</span>",
-			"attributes": {}
-		},
-		{
-			"order": 51,
-			"key": "Root/77#2",
-			"tag": "a",
-			"depth": 5,
-			"words": "How does Subscribe & save work?",
-			"block": "sgs/icon-list",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.7,
-			"low": false,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/icon-list",
-					"score": 1.15,
-					"share": 0.697,
-					"evidence": [
-						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
-						"block_capabilities: sgs/icon-list lists \"list\"",
-						"4 bare text links, one above the next"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {
-				"375": "shots/Root_77_2@375.png",
-				"1440": "shots/Root_77_2@1440.png"
-			},
-			"snippet": "<a data-reveal=\"\" href=\"{{ q.href }}\" style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:64px;padding:12px 18px;background:#FFFAF0;border:2px solid #3A2A22;border-radius:20px;text-decoration:none;color:#3A2A22;font-family:'Young Serif',serif;font-size:18px;transition:transform .25s cubic-bezier(.3,1.4,.5,1), box-shadow .25s\" style-hover=\"transform:translate(-3",
-			"attributes": {},
-			"unit": "list",
-			"item": {
-				"text": "How does Subscribe & save work?",
-				"url": "/help/"
+			"snippet": "<div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"78\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-a",
+			"attributes": {
+				"title": "Ingredients & allergens"
 			}
 		},
 		{
-			"order": 52,
-			"key": "Root/78#2",
-			"tag": "span",
-			"depth": 6,
-			"words": "→",
+			"order": 56,
+			"key": "Root/79#1",
+			"tag": "button",
+			"depth": 7,
+			"words": "",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/icon-list: the list item's marker",
+			"reason": "drawn by sgs/accordion-item: rule accordionItem",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "drawsChildren",
-			"into": "Root/77#2",
+			"rule": "accordionItem",
+			"into": "Root/78#1",
 			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_79_1@375.png",
+				"1440": "shots/Root_79_1@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer\" data-dc-tpl=\"79\"><span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"80\"><span style=\"font-size:12px;font-weight:700;letter",
+			"attributes": {}
+		},
+		{
+			"order": 57,
+			"key": "Root/80#1",
+			"tag": "span",
+			"depth": 8,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "accordionItem",
+			"into": "Root/78#1",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_80_1@375.png",
+				"1440": "shots/Root_80_1@1440.png"
+			},
+			"snippet": "<span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"80\"><span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"81\">{{ f.cat }}</span><span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"82\">{{ f.q }}</span></span>",
+			"attributes": {}
+		},
+		{
+			"order": 58,
+			"key": "Root/81#1",
+			"tag": "span",
+			"depth": 9,
+			"words": "Ingredients & allergens",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "accordionItem",
+			"into": "Root/78#1",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_81_1@375.png",
+				"1440": "shots/Root_81_1@1440.png"
+			},
+			"snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"81\">{{ f.cat }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 59,
+			"key": "Root/82#1",
+			"tag": "span",
+			"depth": 9,
+			"words": "What allergens are in them?",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "accordionItem",
+			"into": "Root/78#1",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_82_1@375.png",
+				"1440": "shots/Root_82_1@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"82\">{{ f.q }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 60,
+			"key": "Root/83#1",
+			"tag": "span",
+			"depth": 8,
+			"words": "+",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "accordionItem",
+			"into": "Root/78#1",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_83_1@375.png",
+				"1440": "shots/Root_83_1@1440.png"
+			},
+			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)\" data-dc-tpl=\"83\">+</span>",
+			"attributes": {}
+		},
+		{
+			"order": 61,
+			"key": "Root/78#2",
+			"tag": "div",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/accordion-item",
+			"action": null,
+			"reason": "one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)",
+			"source": "rule accordionItem",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "accordionItem",
+			"acceptedDecision": true,
+			"candidates": [
+				{
+					"block": "sgs/accordion-item",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule accordionItem: one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_78_2@375.png",
 				"1440": "shots/Root_78_2@1440.png"
 			},
-			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:34px;height:34px;border-radius:999px;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-family:Karla\" data-dc-tpl=\"78\">→</span>",
+			"snippet": "<div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"78\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-a",
+			"attributes": {
+				"title": "Subscriptions"
+			}
+		},
+		{
+			"order": 62,
+			"key": "Root/79#2",
+			"tag": "button",
+			"depth": 7,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "accordionItem",
+			"into": "Root/78#2",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_79_2@375.png",
+				"1440": "shots/Root_79_2@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer\" data-dc-tpl=\"79\"><span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"80\"><span style=\"font-size:12px;font-weight:700;letter",
 			"attributes": {}
 		},
 		{
-			"order": 53,
-			"key": "Root/77#3",
-			"tag": "a",
-			"depth": 5,
-			"words": "Can I send them as a gift?",
-			"block": "sgs/icon-list",
-			"action": null,
-			"reason": null,
+			"order": 63,
+			"key": "Root/80#2",
+			"tag": "span",
+			"depth": 8,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/accordion-item: rule accordionItem",
 			"source": null,
-			"confidence": 0.7,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "accordionItem",
+			"into": "Root/78#2",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_80_2@375.png",
+				"1440": "shots/Root_80_2@1440.png"
+			},
+			"snippet": "<span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"80\"><span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"81\">{{ f.cat }}</span><span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"82\">{{ f.q }}</span></span>",
+			"attributes": {}
+		},
+		{
+			"order": 64,
+			"key": "Root/81#2",
+			"tag": "span",
+			"depth": 9,
+			"words": "Subscriptions",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "accordionItem",
+			"into": "Root/78#2",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_81_2@375.png",
+				"1440": "shots/Root_81_2@1440.png"
+			},
+			"snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"81\">{{ f.cat }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 65,
+			"key": "Root/82#2",
+			"tag": "span",
+			"depth": 9,
+			"words": "How does Subscribe & save work?",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "accordionItem",
+			"into": "Root/78#2",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_82_2@375.png",
+				"1440": "shots/Root_82_2@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"82\">{{ f.q }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 66,
+			"key": "Root/83#2",
+			"tag": "span",
+			"depth": 8,
+			"words": "+",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "accordionItem",
+			"into": "Root/78#2",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_83_2@375.png",
+				"1440": "shots/Root_83_2@1440.png"
+			},
+			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)\" data-dc-tpl=\"83\">+</span>",
+			"attributes": {}
+		},
+		{
+			"order": 67,
+			"key": "Root/78#3",
+			"tag": "div",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/accordion-item",
+			"action": null,
+			"reason": "one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)",
+			"source": "rule accordionItem",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "accordionItem",
+			"acceptedDecision": true,
 			"candidates": [
 				{
-					"block": "sgs/icon-list",
-					"score": 1.15,
-					"share": 0.697,
+					"block": "sgs/accordion-item",
+					"score": 1,
+					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
-						"block_capabilities: sgs/icon-list lists \"list\"",
-						"4 bare text links, one above the next"
+						"rule accordionItem: one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_77_3@375.png",
-				"1440": "shots/Root_77_3@1440.png"
+				"375": "shots/Root_78_3@375.png",
+				"1440": "shots/Root_78_3@1440.png"
 			},
-			"snippet": "<a data-reveal=\"\" href=\"{{ q.href }}\" style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:64px;padding:12px 18px;background:#FFFAF0;border:2px solid #3A2A22;border-radius:20px;text-decoration:none;color:#3A2A22;font-family:'Young Serif',serif;font-size:18px;transition:transform .25s cubic-bezier(.3,1.4,.5,1), box-shadow .25s\" style-hover=\"transform:translate(-3",
-			"attributes": {},
-			"unit": "list",
-			"item": {
-				"text": "Can I send them as a gift?",
-				"url": "/help/"
+			"snippet": "<div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"78\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-a",
+			"attributes": {
+				"title": "Gifting"
 			}
 		},
 		{
-			"order": 54,
-			"key": "Root/78#3",
-			"tag": "span",
-			"depth": 6,
-			"words": "→",
+			"order": 68,
+			"key": "Root/79#3",
+			"tag": "button",
+			"depth": 7,
+			"words": "",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/icon-list: the list item's marker",
+			"reason": "drawn by sgs/accordion-item: rule accordionItem",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "drawsChildren",
-			"into": "Root/77#3",
+			"rule": "accordionItem",
+			"into": "Root/78#3",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_78_3@375.png",
-				"1440": "shots/Root_78_3@1440.png"
+				"375": "shots/Root_79_3@375.png",
+				"1440": "shots/Root_79_3@1440.png"
 			},
-			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:34px;height:34px;border-radius:999px;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-family:Karla\" data-dc-tpl=\"78\">→</span>",
+			"snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer\" data-dc-tpl=\"79\"><span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"80\"><span style=\"font-size:12px;font-weight:700;letter",
 			"attributes": {}
 		},
 		{
-			"order": 55,
-			"key": "Root/79#0",
+			"order": 69,
+			"key": "Root/80#3",
+			"tag": "span",
+			"depth": 8,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "accordionItem",
+			"into": "Root/78#3",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_80_3@375.png",
+				"1440": "shots/Root_80_3@1440.png"
+			},
+			"snippet": "<span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"80\"><span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"81\">{{ f.cat }}</span><span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"82\">{{ f.q }}</span></span>",
+			"attributes": {}
+		},
+		{
+			"order": 70,
+			"key": "Root/81#3",
+			"tag": "span",
+			"depth": 9,
+			"words": "Gifting",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "accordionItem",
+			"into": "Root/78#3",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_81_3@375.png",
+				"1440": "shots/Root_81_3@1440.png"
+			},
+			"snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"81\">{{ f.cat }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 71,
+			"key": "Root/82#3",
+			"tag": "span",
+			"depth": 9,
+			"words": "Can I send them as a gift?",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "accordionItem",
+			"into": "Root/78#3",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_82_3@375.png",
+				"1440": "shots/Root_82_3@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"82\">{{ f.q }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 72,
+			"key": "Root/83#3",
+			"tag": "span",
+			"depth": 8,
+			"words": "+",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "accordionItem",
+			"into": "Root/78#3",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_83_3@375.png",
+				"1440": "shots/Root_83_3@1440.png"
+			},
+			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)\" data-dc-tpl=\"83\">+</span>",
+			"attributes": {}
+		},
+		{
+			"order": 73,
+			"key": "Root/86#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "More answers on the Help page",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"acceptedDecision": true,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_86_0@375.png",
+				"1440": "shots/Root_86_0@1440.png"
+			},
+			"snippet": "<a href=\"Help.dc.html\" style=\"align-self:flex-start;display:inline-flex;align-items:center;min-height:44px;font-size:15px;font-weight:700;color:#3A2A22;text-decoration:underline;text-underline-offset:4px\" data-dc-tpl=\"86\">More answers on the Help page</a>",
+			"attributes": {
+				"label": "More answers on the Help page",
+				"url": "/help/"
+			},
+			"slots": {
+				".sgs-button__label": {
+					"tpl": "Root/86#0"
+				}
+			}
+		},
+		{
+			"order": 74,
+			"key": "Root/87#0",
 			"tag": "div",
 			"depth": 5,
 			"words": "Handmade in Birmingham by a registered food business. No shop to visit, but you’ll sometimes find Zainab at local markets and events.",
@@ -1747,6 +2745,7 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -1759,10 +2758,10 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_79_0@375.png",
-				"1440": "shots/Root_79_0@1440.png"
+				"375": "shots/Root_87_0@375.png",
+				"1440": "shots/Root_87_0@1440.png"
 			},
-			"snippet": "<div data-reveal=\"\" style=\"border:2px dashed #3A2A22;border-radius:20px;padding:16px 18px;font-size:15px;line-height:1.55\" data-dc-tpl=\"79\">Handmade in Birmingham by a registered food business. No shop to visit, but you’ll sometimes find Zainab at local markets and events.</div>",
+			"snippet": "<div data-reveal=\"\" style=\"border:2px dashed #3A2A22;border-radius:20px;padding:16px 18px;font-size:15px;line-height:1.55\" data-dc-tpl=\"87\">Handmade in Birmingham by a registered food business. No shop to visit, but you’ll sometimes find Zainab at local markets and events.</div>",
 			"attributes": {
 				"text": "Handmade in Birmingham by a registered food business. No shop to visit, but you’ll sometimes find Zainab at local markets and events."
 			}

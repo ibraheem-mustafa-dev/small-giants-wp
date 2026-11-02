@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-28T06:41:27.769Z",
-	"inventory": "2026-10-28T06:41:27.663Z",
-	"source": "http://127.0.0.1:57904/#@state/page=signin",
+	"generated": "2026-11-02T04:38:26.497Z",
+	"inventory": "2026-11-01T22:17:13.521Z",
+	"source": "http://127.0.0.1:52426/#@state/page=signin",
 	"surface": "page-signin",
 	"siteName": "Eye Care Birmingham",
 	"surfaceParts": [
@@ -11,7 +11,7 @@
 			"name": "Sign-in and register forms",
 			"openedBy": "Default view of the sign-in page",
 			"roots": [
-				"Eye Care Birmingham/857"
+				"Eye Care Birmingham/855"
 			]
 		},
 		{
@@ -20,7 +20,7 @@
 			"name": "Forgotten-password flow",
 			"openedBy": "\"Forgotten your password?\" on the sign-in form",
 			"roots": [
-				"Eye Care Birmingham/886"
+				"Eye Care Birmingham/884"
 			]
 		}
 	],
@@ -40,7 +40,7 @@
 		"rule": 1
 	},
 	"commerceRegion": {
-		"key": "Root/864#0",
+		"key": "Root/862#0",
 		"role": "account",
 		"block": "sgs/account"
 	},
@@ -50,7 +50,7 @@
 		"rows": 27,
 		"skeletonNodes": 6,
 		"expandedNodes": 6,
-		"low": 0,
+		"low": 1,
 		"removed": 21,
 		"unresolved": 0,
 		"byRule": {
@@ -59,12 +59,83 @@
 			"commerceRegion": 22
 		}
 	},
+	"partPairing": {
+		"paired": 2,
+		"unpaired": [
+			{
+				"key": "Root/854#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/854#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/854#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root/854#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(2)",
+				"reason": "no inner block of this node stands at this place"
+			},
+			{
+				"key": "Root/856#0",
+				"block": "sgs/hero",
+				"slot": ".sgs-hero__bg-img",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/856#0",
+				"block": "sgs/hero",
+				"slot": ".sgs-hero__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/856#0",
+				"block": "sgs/hero",
+				"slot": ".sgs-hero__video-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/856#0",
+				"block": "sgs/hero",
+				"slot": ".sgs-hero__media > .sgs-hero__split-media",
+				"reason": ".sgs-hero__media: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/856#0",
+				"block": "sgs/hero",
+				"slot": ".sgs-hero__media",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/858#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/859#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			}
+		]
+	},
 	"widthAlternatives": [],
 	"problems": [],
 	"rows": [
 		{
 			"order": 0,
-			"key": "Root/856#0",
+			"key": "Root/854#0",
 			"tag": "main",
 			"depth": 0,
 			"words": "",
@@ -76,6 +147,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -89,17 +161,22 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_856_0@375.png",
-				"1440": "shots/Root_856_0@1440.png"
+				"375": "shots/Root_854_0@375.png",
+				"1440": "shots/Root_854_0@1440.png"
 			},
-			"snippet": "<main class=\"sgs-page-signin\" data-screen-label=\"Sign in\" style=\"max-width:1100px;margin:0 auto;padding: {{ pagePad }}\" data-dc-tpl=\"856\"> <sc-if value=\"{{ authSignin }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"857\"> <div style=\"animation:rise .5s both\" data-dc-tpl=\"858\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152)\" data",
+			"snippet": "<main class=\"sgs-page-signin\" data-screen-label=\"Sign in\" style=\"max-width:1100px;margin:0 auto;padding: {{ pagePad }}\" data-dc-tpl=\"854\"> <sc-if value=\"{{ authSignin }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"855\"> <div style=\"animation:rise .5s both\" data-dc-tpl=\"856\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152)\" data",
 			"attributes": {
 				"tagName": "main"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/856#0"
+				}
 			}
 		},
 		{
 			"order": 1,
-			"key": "Root/858#0",
+			"key": "Root/856#0",
 			"tag": "div",
 			"depth": 1,
 			"words": "",
@@ -111,6 +188,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "hero",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/hero",
@@ -123,49 +201,71 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_858_0@375.png",
-				"1440": "shots/Root_858_0@1440.png"
+				"375": "shots/Root_856_0@375.png",
+				"1440": "shots/Root_856_0@1440.png"
 			},
-			"snippet": "<div style=\"animation:rise .5s both\" data-dc-tpl=\"858\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152)\" data-dc-tpl=\"859\">Your account</p> <h1 style=\"margin:0 0 12px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.05\" data-dc-tpl=\"860\">Sign in or create an account</h1> <p style=\"margin:0 0 32",
-			"attributes": {}
+			"snippet": "<div style=\"animation:rise .5s both\" data-dc-tpl=\"856\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152)\" data-dc-tpl=\"857\">Your account</p> <h1 style=\"margin:0 0 12px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.05\" data-dc-tpl=\"858\">Sign in or create an account</h1> <p style=\"margin:0 0 32",
+			"attributes": {},
+			"slots": {
+				".sgs-hero__content": {
+					"tpl": "Root/856#0"
+				}
+			}
 		},
 		{
 			"order": 2,
-			"key": "Root/859#0",
+			"key": "Root/857#0",
 			"tag": "p",
 			"depth": 2,
 			"words": "Your account",
 			"block": "sgs/label",
 			"action": null,
-			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number; the framework DB prefers sgs/text (confidence 0.75: html_tag_to_core_block: p -> sgs/text (\"Paragraph text\"); block_composition: sgs/text is a leaf; the element holds words and no block children); a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two",
 			"source": "rule label",
-			"confidence": 1,
-			"low": false,
+			"confidence": 0.5,
+			"low": true,
 			"stale": null,
 			"rule": "label",
+			"conflict": {
+				"rule": "label",
+				"ruleBlock": "sgs/label",
+				"dbBlock": "sgs/text",
+				"dbConfidence": 0.75,
+				"why": "a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two"
+			},
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/label",
 					"score": 1,
-					"share": 1,
+					"share": 0.5,
 					"evidence": [
 						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				},
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 0.5,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_859_0@375.png",
-				"1440": "shots/Root_859_0@1440.png"
+				"375": "shots/Root_857_0@375.png",
+				"1440": "shots/Root_857_0@1440.png"
 			},
-			"snippet": "<p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152)\" data-dc-tpl=\"859\">Your account</p>",
+			"snippet": "<p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152)\" data-dc-tpl=\"857\">Your account</p>",
 			"attributes": {
 				"text": "Your account"
 			}
 		},
 		{
 			"order": 3,
-			"key": "Root/860#0",
+			"key": "Root/858#0",
 			"tag": "h1",
 			"depth": 2,
 			"words": "Sign in or create an account",
@@ -177,6 +277,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -190,17 +291,18 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_860_0@375.png",
-				"1440": "shots/Root_860_0@1440.png"
+				"375": "shots/Root_858_0@375.png",
+				"1440": "shots/Root_858_0@1440.png"
 			},
-			"snippet": "<h1 style=\"margin:0 0 12px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.05\" data-dc-tpl=\"860\">Sign in or create an account</h1>",
+			"snippet": "<h1 style=\"margin:0 0 12px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.05\" data-dc-tpl=\"858\">Sign in or create an account</h1>",
 			"attributes": {
-				"content": "Sign in or create an account"
+				"content": "Sign in or create an account",
+				"level": "h1"
 			}
 		},
 		{
 			"order": 4,
-			"key": "Root/861#0",
+			"key": "Root/859#0",
 			"tag": "p",
 			"depth": 2,
 			"words": "You don't need an account to order; checkout works as a guest. An account keeps your orders, subscriptions, addresses and saved frames in one place.",
@@ -212,6 +314,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -225,17 +328,17 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_861_0@375.png",
-				"1440": "shots/Root_861_0@1440.png"
+				"375": "shots/Root_859_0@375.png",
+				"1440": "shots/Root_859_0@1440.png"
 			},
-			"snippet": "<p style=\"margin:0 0 32px;max-width:60ch;color:#5E584F;font-size:16px;text-wrap:pretty\" data-dc-tpl=\"861\">You don't need an account to order; checkout works as a guest. An account keeps your orders, subscriptions, addresses and saved frames in one place.</p>",
+			"snippet": "<p style=\"margin:0 0 32px;max-width:60ch;color:#5E584F;font-size:16px;text-wrap:pretty\" data-dc-tpl=\"859\">You don't need an account to order; checkout works as a guest. An account keeps your orders, subscriptions, addresses and saved frames in one place.</p>",
 			"attributes": {
 				"text": "You don't need an account to order; checkout works as a guest. An account keeps your orders, subscriptions, addresses and saved frames in one place."
 			}
 		},
 		{
 			"order": 5,
-			"key": "Root/864#0",
+			"key": "Root/862#0",
 			"tag": "div",
 			"depth": 1,
 			"words": "",
@@ -247,6 +350,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "commerceRegion",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/account",
@@ -259,15 +363,15 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_864_0@375.png",
-				"1440": "shots/Root_864_0@1440.png"
+				"375": "shots/Root_862_0@375.png",
+				"1440": "shots/Root_862_0@1440.png"
 			},
-			"snippet": "<div style=\"display:grid;grid-template-columns: {{ authCols }};gap:1px;background:#E6E1DA;border:1px solid #E6E1DA;animation:rise .6s both\" data-dc-tpl=\"864\"> <form sc-camel-on-submit=\"{{ signIn }}\" style=\"background:#fff;padding: {{ authPad }};display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"865\"> <h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;lin",
+			"snippet": "<div style=\"display:grid;grid-template-columns: {{ authCols }};gap:1px;background:#E6E1DA;border:1px solid #E6E1DA;animation:rise .6s both\" data-dc-tpl=\"862\"> <form sc-camel-on-submit=\"{{ signIn }}\" style=\"background:#fff;padding: {{ authPad }};display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"863\"> <h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;lin",
 			"attributes": {}
 		},
 		{
 			"order": 6,
-			"key": "Root/865#0",
+			"key": "Root/863#0",
 			"tag": "form",
 			"depth": 2,
 			"words": "",
@@ -279,19 +383,19 @@
 			"low": false,
 			"stale": null,
 			"rule": "commerceRegion",
-			"into": "Root/864#0",
+			"into": "Root/862#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_865_0@375.png",
-				"1440": "shots/Root_865_0@1440.png"
+				"375": "shots/Root_863_0@375.png",
+				"1440": "shots/Root_863_0@1440.png"
 			},
-			"snippet": "<form sc-camel-on-submit=\"{{ signIn }}\" style=\"background:#fff;padding: {{ authPad }};display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"865\"> <h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;line-height:1.1;margin-bottom:4px\" data-dc-tpl=\"866\">Sign in</h2> <label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-t",
+			"snippet": "<form sc-camel-on-submit=\"{{ signIn }}\" style=\"background:#fff;padding: {{ authPad }};display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"863\"> <h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;line-height:1.1;margin-bottom:4px\" data-dc-tpl=\"864\">Sign in</h2> <label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-t",
 			"attributes": {}
 		},
 		{
 			"order": 7,
-			"key": "Root/866#0",
+			"key": "Root/864#0",
 			"tag": "h2",
 			"depth": 3,
 			"words": "Sign in",
@@ -303,19 +407,19 @@
 			"low": false,
 			"stale": null,
 			"rule": "commerceRegion",
-			"into": "Root/864#0",
+			"into": "Root/862#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_866_0@375.png",
-				"1440": "shots/Root_866_0@1440.png"
+				"375": "shots/Root_864_0@375.png",
+				"1440": "shots/Root_864_0@1440.png"
 			},
-			"snippet": "<h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;line-height:1.1;margin-bottom:4px\" data-dc-tpl=\"866\">Sign in</h2>",
+			"snippet": "<h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;line-height:1.1;margin-bottom:4px\" data-dc-tpl=\"864\">Sign in</h2>",
 			"attributes": {}
 		},
 		{
 			"order": 8,
-			"key": "Root/867#0",
+			"key": "Root/865#0",
 			"tag": "label",
 			"depth": 3,
 			"words": "Email",
@@ -327,19 +431,19 @@
 			"low": false,
 			"stale": null,
 			"rule": "commerceRegion",
-			"into": "Root/864#0",
+			"into": "Root/862#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_867_0@375.png",
-				"1440": "shots/Root_867_0@1440.png"
+				"375": "shots/Root_865_0@375.png",
+				"1440": "shots/Root_865_0@1440.png"
 			},
-			"snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"867\">Email<input name=\"email\" type=\"email\" required=\"{{ true }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"868\"></label>",
+			"snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"865\">Email<input name=\"email\" type=\"email\" required=\"{{ true }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"866\"></label>",
 			"attributes": {}
 		},
 		{
 			"order": 9,
-			"key": "Root/868#0",
+			"key": "Root/866#0",
 			"tag": "input",
 			"depth": 4,
 			"words": "",
@@ -351,19 +455,19 @@
 			"low": false,
 			"stale": null,
 			"rule": "commerceRegion",
-			"into": "Root/864#0",
+			"into": "Root/862#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_868_0@375.png",
-				"1440": "shots/Root_868_0@1440.png"
+				"375": "shots/Root_866_0@375.png",
+				"1440": "shots/Root_866_0@1440.png"
 			},
-			"snippet": "<input name=\"email\" type=\"email\" required=\"{{ true }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"868\">",
+			"snippet": "<input name=\"email\" type=\"email\" required=\"{{ true }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"866\">",
 			"attributes": {}
 		},
 		{
 			"order": 10,
-			"key": "Root/869#0",
+			"key": "Root/867#0",
 			"tag": "label",
 			"depth": 3,
 			"words": "Password",
@@ -375,19 +479,19 @@
 			"low": false,
 			"stale": null,
 			"rule": "commerceRegion",
-			"into": "Root/864#0",
+			"into": "Root/862#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_869_0@375.png",
-				"1440": "shots/Root_869_0@1440.png"
+				"375": "shots/Root_867_0@375.png",
+				"1440": "shots/Root_867_0@1440.png"
 			},
-			"snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"869\">Password<input name=\"password\" type=\"password\" required=\"{{ true }}\" sc-camel-auto-complete=\"current-password\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"870\"></label>",
+			"snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"867\">Password<input name=\"password\" type=\"password\" required=\"{{ true }}\" sc-camel-auto-complete=\"current-password\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"868\"></label>",
 			"attributes": {}
 		},
 		{
 			"order": 11,
-			"key": "Root/870#0",
+			"key": "Root/868#0",
 			"tag": "input",
 			"depth": 4,
 			"words": "",
@@ -397,21 +501,21 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/868#0 (sgs/form-field-email) no longer applies: sgs/account draws this element",
 			"rule": "commerceRegion",
-			"into": "Root/864#0",
+			"into": "Root/862#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_870_0@375.png",
-				"1440": "shots/Root_870_0@1440.png"
+				"375": "shots/Root_868_0@375.png",
+				"1440": "shots/Root_868_0@1440.png"
 			},
-			"snippet": "<input name=\"password\" type=\"password\" required=\"{{ true }}\" sc-camel-auto-complete=\"current-password\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"870\">",
+			"snippet": "<input name=\"password\" type=\"password\" required=\"{{ true }}\" sc-camel-auto-complete=\"current-password\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"868\">",
 			"attributes": {}
 		},
 		{
 			"order": 12,
-			"key": "Root/871#0",
+			"key": "Root/869#0",
 			"tag": "div",
 			"depth": 3,
 			"words": "",
@@ -423,19 +527,19 @@
 			"low": false,
 			"stale": null,
 			"rule": "commerceRegion",
-			"into": "Root/864#0",
+			"into": "Root/862#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_871_0@375.png",
-				"1440": "shots/Root_871_0@1440.png"
+				"375": "shots/Root_869_0@375.png",
+				"1440": "shots/Root_869_0@1440.png"
 			},
-			"snippet": "<div style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap\" data-dc-tpl=\"871\"> <label style=\"display:flex;gap:10px;align-items:center;font-size:14px;color:#4A453E;cursor:pointer;min-height:44px\" data-dc-tpl=\"872\"><input type=\"checkbox\" style=\"accent-color:#141414;width:16px;height:16px;margin:0\" data-dc-tpl=\"873\">Keep me signed in</label> <button type=\"button",
+			"snippet": "<div style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap\" data-dc-tpl=\"869\"> <label style=\"display:flex;gap:10px;align-items:center;font-size:14px;color:#4A453E;cursor:pointer;min-height:44px\" data-dc-tpl=\"870\"><input type=\"checkbox\" style=\"accent-color:#141414;width:16px;height:16px;margin:0\" data-dc-tpl=\"871\">Keep me signed in</label> <button type=\"button",
 			"attributes": {}
 		},
 		{
 			"order": 13,
-			"key": "Root/872#0",
+			"key": "Root/870#0",
 			"tag": "label",
 			"depth": 4,
 			"words": "Keep me signed in",
@@ -447,18 +551,18 @@
 			"low": false,
 			"stale": null,
 			"rule": "commerceRegion",
-			"into": "Root/864#0",
+			"into": "Root/862#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_872_0@1440.png"
+				"1440": "shots/Root_870_0@1440.png"
 			},
-			"snippet": "<label style=\"display:flex;gap:10px;align-items:center;font-size:14px;color:#4A453E;cursor:pointer;min-height:44px\" data-dc-tpl=\"872\"><input type=\"checkbox\" style=\"accent-color:#141414;width:16px;height:16px;margin:0\" data-dc-tpl=\"873\">Keep me signed in</label>",
+			"snippet": "<label style=\"display:flex;gap:10px;align-items:center;font-size:14px;color:#4A453E;cursor:pointer;min-height:44px\" data-dc-tpl=\"870\"><input type=\"checkbox\" style=\"accent-color:#141414;width:16px;height:16px;margin:0\" data-dc-tpl=\"871\">Keep me signed in</label>",
 			"attributes": {}
 		},
 		{
 			"order": 14,
-			"key": "Root/873#0",
+			"key": "Root/871#0",
 			"tag": "input",
 			"depth": 5,
 			"words": "",
@@ -470,18 +574,18 @@
 			"low": false,
 			"stale": null,
 			"rule": "commerceRegion",
-			"into": "Root/864#0",
+			"into": "Root/862#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_873_0@1440.png"
+				"1440": "shots/Root_871_0@1440.png"
 			},
-			"snippet": "<input type=\"checkbox\" style=\"accent-color:#141414;width:16px;height:16px;margin:0\" data-dc-tpl=\"873\">",
+			"snippet": "<input type=\"checkbox\" style=\"accent-color:#141414;width:16px;height:16px;margin:0\" data-dc-tpl=\"871\">",
 			"attributes": {}
 		},
 		{
 			"order": 15,
-			"key": "Root/874#0",
+			"key": "Root/872#0",
 			"tag": "button",
 			"depth": 4,
 			"words": "Forgotten your password?",
@@ -493,19 +597,19 @@
 			"low": false,
 			"stale": null,
 			"rule": "commerceRegion",
-			"into": "Root/864#0",
+			"into": "Root/862#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_874_0@375.png",
-				"1440": "shots/Root_874_0@1440.png"
+				"375": "shots/Root_872_0@375.png",
+				"1440": "shots/Root_872_0@1440.png"
 			},
-			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ goForgot }}\" style=\"background:none;border:0;padding:0;border-bottom:1px solid #141414;color:#141414;font-size:13.5px\" data-dc-tpl=\"874\">Forgotten your password?</button>",
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ goForgot }}\" style=\"background:none;border:0;padding:0;border-bottom:1px solid #141414;color:#141414;font-size:13.5px\" data-dc-tpl=\"872\">Forgotten your password?</button>",
 			"attributes": {}
 		},
 		{
 			"order": 16,
-			"key": "Root/875#0",
+			"key": "Root/873#0",
 			"tag": "button",
 			"depth": 3,
 			"words": "Sign in",
@@ -517,19 +621,19 @@
 			"low": false,
 			"stale": null,
 			"rule": "commerceRegion",
-			"into": "Root/864#0",
+			"into": "Root/862#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_875_0@375.png",
-				"1440": "shots/Root_875_0@1440.png"
+				"375": "shots/Root_873_0@375.png",
+				"1440": "shots/Root_873_0@1440.png"
 			},
-			"snippet": "<button type=\"submit\" style=\"background:#141414;color:#FAF8F5;border:0;min-height:52px;padding:0 26px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;transition:background .2s\" style-hover=\"background:#2a2a2a\" data-dc-tpl=\"875\">Sign in</button>",
+			"snippet": "<button type=\"submit\" style=\"background:#141414;color:#FAF8F5;border:0;min-height:52px;padding:0 26px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;transition:background .2s\" style-hover=\"background:#2a2a2a\" data-dc-tpl=\"873\">Sign in</button>",
 			"attributes": {}
 		},
 		{
 			"order": 17,
-			"key": "Root/876#0",
+			"key": "Root/874#0",
 			"tag": "form",
 			"depth": 2,
 			"words": "",
@@ -541,19 +645,19 @@
 			"low": false,
 			"stale": null,
 			"rule": "commerceRegion",
-			"into": "Root/864#0",
+			"into": "Root/862#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_876_0@375.png",
-				"1440": "shots/Root_876_0@1440.png"
+				"375": "shots/Root_874_0@375.png",
+				"1440": "shots/Root_874_0@1440.png"
 			},
-			"snippet": "<form sc-camel-on-submit=\"{{ register }}\" style=\"background:#fff;padding: {{ authPad }};display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"876\"> <h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;line-height:1.1;margin-bottom:4px\" data-dc-tpl=\"877\">New here?</h2> <label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-",
+			"snippet": "<form sc-camel-on-submit=\"{{ register }}\" style=\"background:#fff;padding: {{ authPad }};display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"874\"> <h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;line-height:1.1;margin-bottom:4px\" data-dc-tpl=\"875\">New here?</h2> <label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-",
 			"attributes": {}
 		},
 		{
 			"order": 18,
-			"key": "Root/877#0",
+			"key": "Root/875#0",
 			"tag": "h2",
 			"depth": 3,
 			"words": "New here?",
@@ -565,19 +669,19 @@
 			"low": false,
 			"stale": null,
 			"rule": "commerceRegion",
-			"into": "Root/864#0",
+			"into": "Root/862#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_877_0@375.png",
-				"1440": "shots/Root_877_0@1440.png"
+				"375": "shots/Root_875_0@375.png",
+				"1440": "shots/Root_875_0@1440.png"
 			},
-			"snippet": "<h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;line-height:1.1;margin-bottom:4px\" data-dc-tpl=\"877\">New here?</h2>",
+			"snippet": "<h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;line-height:1.1;margin-bottom:4px\" data-dc-tpl=\"875\">New here?</h2>",
 			"attributes": {}
 		},
 		{
 			"order": 19,
-			"key": "Root/878#0",
+			"key": "Root/876#0",
 			"tag": "label",
 			"depth": 3,
 			"words": "First name",
@@ -589,19 +693,19 @@
 			"low": false,
 			"stale": null,
 			"rule": "commerceRegion",
-			"into": "Root/864#0",
+			"into": "Root/862#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_878_0@375.png",
-				"1440": "shots/Root_878_0@1440.png"
+				"375": "shots/Root_876_0@375.png",
+				"1440": "shots/Root_876_0@1440.png"
 			},
-			"snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"878\">First name<input name=\"first\" required=\"{{ true }}\" sc-camel-auto-complete=\"given-name\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"879\"></label>",
+			"snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"876\">First name<input name=\"first\" required=\"{{ true }}\" sc-camel-auto-complete=\"given-name\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"877\"></label>",
 			"attributes": {}
 		},
 		{
 			"order": 20,
-			"key": "Root/879#0",
+			"key": "Root/877#0",
 			"tag": "input",
 			"depth": 4,
 			"words": "",
@@ -613,19 +717,19 @@
 			"low": false,
 			"stale": null,
 			"rule": "commerceRegion",
-			"into": "Root/864#0",
+			"into": "Root/862#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_879_0@375.png",
-				"1440": "shots/Root_879_0@1440.png"
+				"375": "shots/Root_877_0@375.png",
+				"1440": "shots/Root_877_0@1440.png"
 			},
-			"snippet": "<input name=\"first\" required=\"{{ true }}\" sc-camel-auto-complete=\"given-name\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"879\">",
+			"snippet": "<input name=\"first\" required=\"{{ true }}\" sc-camel-auto-complete=\"given-name\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"877\">",
 			"attributes": {}
 		},
 		{
 			"order": 21,
-			"key": "Root/880#0",
+			"key": "Root/878#0",
 			"tag": "label",
 			"depth": 3,
 			"words": "Email",
@@ -637,19 +741,19 @@
 			"low": false,
 			"stale": null,
 			"rule": "commerceRegion",
-			"into": "Root/864#0",
+			"into": "Root/862#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_880_0@375.png",
-				"1440": "shots/Root_880_0@1440.png"
+				"375": "shots/Root_878_0@375.png",
+				"1440": "shots/Root_878_0@1440.png"
 			},
-			"snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"880\">Email<input name=\"email\" type=\"email\" required=\"{{ true }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"881\"></label>",
+			"snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"878\">Email<input name=\"email\" type=\"email\" required=\"{{ true }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"879\"></label>",
 			"attributes": {}
 		},
 		{
 			"order": 22,
-			"key": "Root/881#0",
+			"key": "Root/879#0",
 			"tag": "input",
 			"depth": 4,
 			"words": "",
@@ -659,21 +763,21 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/879#0 (sgs/form-field-text) no longer applies: sgs/account draws this element",
 			"rule": "commerceRegion",
-			"into": "Root/864#0",
+			"into": "Root/862#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_881_0@375.png",
-				"1440": "shots/Root_881_0@1440.png"
+				"375": "shots/Root_879_0@375.png",
+				"1440": "shots/Root_879_0@1440.png"
 			},
-			"snippet": "<input name=\"email\" type=\"email\" required=\"{{ true }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"881\">",
+			"snippet": "<input name=\"email\" type=\"email\" required=\"{{ true }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"879\">",
 			"attributes": {}
 		},
 		{
 			"order": 23,
-			"key": "Root/882#0",
+			"key": "Root/880#0",
 			"tag": "label",
 			"depth": 3,
 			"words": "Password",
@@ -685,19 +789,19 @@
 			"low": false,
 			"stale": null,
 			"rule": "commerceRegion",
-			"into": "Root/864#0",
+			"into": "Root/862#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_882_0@375.png",
-				"1440": "shots/Root_882_0@1440.png"
+				"375": "shots/Root_880_0@375.png",
+				"1440": "shots/Root_880_0@1440.png"
 			},
-			"snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"882\">Password<input name=\"password\" type=\"password\" required=\"{{ true }}\" sc-camel-min-length=\"8\" sc-camel-auto-complete=\"new-password\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"883\"><span style=\"font-size:12.",
+			"snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"880\">Password<input name=\"password\" type=\"password\" required=\"{{ true }}\" sc-camel-min-length=\"8\" sc-camel-auto-complete=\"new-password\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"881\"><span style=\"font-size:12.",
 			"attributes": {}
 		},
 		{
 			"order": 24,
-			"key": "Root/883#0",
+			"key": "Root/881#0",
 			"tag": "input",
 			"depth": 4,
 			"words": "",
@@ -707,21 +811,21 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/881#0 (sgs/form-field-email) no longer applies: sgs/account draws this element",
 			"rule": "commerceRegion",
-			"into": "Root/864#0",
+			"into": "Root/862#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_883_0@375.png",
-				"1440": "shots/Root_883_0@1440.png"
+				"375": "shots/Root_881_0@375.png",
+				"1440": "shots/Root_881_0@1440.png"
 			},
-			"snippet": "<input name=\"password\" type=\"password\" required=\"{{ true }}\" sc-camel-min-length=\"8\" sc-camel-auto-complete=\"new-password\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"883\">",
+			"snippet": "<input name=\"password\" type=\"password\" required=\"{{ true }}\" sc-camel-min-length=\"8\" sc-camel-auto-complete=\"new-password\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"881\">",
 			"attributes": {}
 		},
 		{
 			"order": 25,
-			"key": "Root/884#0",
+			"key": "Root/882#0",
 			"tag": "span",
 			"depth": 4,
 			"words": "8 characters or more",
@@ -733,19 +837,19 @@
 			"low": false,
 			"stale": null,
 			"rule": "commerceRegion",
-			"into": "Root/864#0",
+			"into": "Root/862#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_884_0@375.png",
-				"1440": "shots/Root_884_0@1440.png"
+				"375": "shots/Root_882_0@375.png",
+				"1440": "shots/Root_882_0@1440.png"
 			},
-			"snippet": "<span style=\"font-size:12.5px;color:#77716A\" data-dc-tpl=\"884\">8 characters or more</span>",
+			"snippet": "<span style=\"font-size:12.5px;color:#77716A\" data-dc-tpl=\"882\">8 characters or more</span>",
 			"attributes": {}
 		},
 		{
 			"order": 26,
-			"key": "Root/885#0",
+			"key": "Root/883#0",
 			"tag": "button",
 			"depth": 3,
 			"words": "Create account",
@@ -757,14 +861,14 @@
 			"low": false,
 			"stale": null,
 			"rule": "commerceRegion",
-			"into": "Root/864#0",
+			"into": "Root/862#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_885_0@375.png",
-				"1440": "shots/Root_885_0@1440.png"
+				"375": "shots/Root_883_0@375.png",
+				"1440": "shots/Root_883_0@1440.png"
 			},
-			"snippet": "<button type=\"submit\" style=\"background:none;color:#141414;border:1px solid #141414;min-height:52px;padding:0 26px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;transition:background .25s,color .25s\" style-hover=\"background:#141414;color:#FAF8F5\" data-dc-tpl=\"885\">Create account</button>",
+			"snippet": "<button type=\"submit\" style=\"background:none;color:#141414;border:1px solid #141414;min-height:52px;padding:0 26px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;transition:background .25s,color .25s\" style-hover=\"background:#141414;color:#FAF8F5\" data-dc-tpl=\"883\">Create account</button>",
 			"attributes": {}
 		}
 	]

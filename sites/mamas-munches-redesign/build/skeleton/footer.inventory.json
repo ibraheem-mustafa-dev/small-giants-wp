@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-28T06:44:58.980Z",
-  "source": "http://127.0.0.1:55059/",
+  "generated": "2026-11-02T01:21:52.249Z",
+  "source": "http://127.0.0.1:52267/",
   "root": "footer",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
@@ -131,16 +131,83 @@
       "srcTag": "footer",
       "srcOwnText": "",
       "snippet": "<footer sc-camel-on-focus=\"{{ focusIn }}\" sc-camel-on-blur=\"{{ focusOut }}\" style=\"font-family:'Karla',system-ui,sans-serif;color:#3A2A22\" data-dc-tpl=\"2\"> <section aria-label=\"Instagram\" style=\"background:#FBF3DC;padding:{{ igPad }}\" data-dc-tpl=\"3\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"4\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-betw",
+      "flow": [
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/3#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/18#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/19#0"
+        }
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "375px",
+          "height": "1441.33px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "768px",
+          "height": "1479.75px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "1440px",
+          "height": "1314.59px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 0,
-          "y": 8884.9,
+          "y": 8910.9,
           "w": 375,
           "h": 1441.3
         },
         "768": {
           "x": 0,
-          "y": 8031.5,
+          "y": 8059.5,
           "w": 768,
           "h": 1479.8
         },
@@ -163,6 +230,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_2_0@375.png",
@@ -192,16 +264,76 @@
       "srcTag": "section",
       "srcOwnText": "",
       "snippet": "<section aria-label=\"Instagram\" style=\"background:#FBF3DC;padding:{{ igPad }}\" data-dc-tpl=\"3\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"4\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:24px\" data-dc-tpl=\"5\"> <div data-dc-tpl=\"6\"> <div style=\"font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform",
+      "flow": [
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/4#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "375px",
+          "height": "420.078px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "48px",
+          "padding-right": "20px",
+          "padding-bottom": "48px",
+          "padding-left": "20px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "768px",
+          "height": "693.75px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "64px",
+          "padding-right": "32px",
+          "padding-bottom": "64px",
+          "padding-left": "32px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "1440px",
+          "height": "482.594px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "88px",
+          "padding-right": "40px",
+          "padding-bottom": "88px",
+          "padding-left": "40px"
+        }
+      },
       "box": {
         "375": {
           "x": 0,
-          "y": 8884.9,
+          "y": 8910.9,
           "w": 375,
           "h": 420.1
         },
         "768": {
           "x": 0,
-          "y": 8031.5,
+          "y": 8059.5,
           "w": 768,
           "h": 693.8
         },
@@ -224,6 +356,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_3_0@375.png",
@@ -252,16 +389,80 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"4\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:24px\" data-dc-tpl=\"5\"> <div data-dc-tpl=\"6\"> <div style=\"font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform:rotate(-2deg);transform-origin:left\" data-dc-tpl=\"7\">fresh out the oven…</div> <h2 style=\"margi",
+      "flow": [
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/5#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/14#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "335px",
+          "height": "324.078px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "704px",
+          "height": "565.75px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "1240px",
+          "height": "306.594px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
-          "y": 8932.9,
+          "y": 8958.9,
           "w": 335,
           "h": 324.1
         },
         "768": {
           "x": 32,
-          "y": 8095.5,
+          "y": 8123.5,
           "w": 704,
           "h": 565.8
         },
@@ -284,6 +485,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_4_0@375.png",
@@ -312,16 +518,80 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:24px\" data-dc-tpl=\"5\"> <div data-dc-tpl=\"6\"> <div style=\"font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform:rotate(-2deg);transform-origin:left\" data-dc-tpl=\"7\">fresh out the oven…</div> <h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;f",
+      "flow": [
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/6#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/9#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "335px",
+          "height": "132.688px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "704px",
+          "height": "77.0938px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "1240px",
+          "height": "87.5938px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
-          "y": 8932.9,
+          "y": 8958.9,
           "w": 335,
           "h": 132.7
         },
         "768": {
           "x": 32,
-          "y": 8095.5,
+          "y": 8123.5,
           "w": 704,
           "h": 77.1
         },
@@ -344,6 +614,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_5_0@375.png",
@@ -370,16 +645,80 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div data-dc-tpl=\"6\"> <div style=\"font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform:rotate(-2deg);transform-origin:left\" data-dc-tpl=\"7\">fresh out the oven…</div> <h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ h2 }};line-height:1.05\" data-dc-tpl=\"8\">@mamasmunches</h2> </div>",
+      "flow": [
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/7#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/8#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "315.531px",
+          "height": "68.6875px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "389.766px",
+          "height": "77.0938px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "482.562px",
+          "height": "87.5938px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
-          "y": 8932.9,
+          "y": 8958.9,
           "w": 315.5,
           "h": 68.7
         },
         "768": {
           "x": 32,
-          "y": 8095.5,
+          "y": 8123.5,
           "w": 389.8,
           "h": 77.1
         },
@@ -402,6 +741,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_6_0@375.png",
@@ -430,16 +774,70 @@
       "srcTag": "div",
       "srcOwnText": "fresh out the oven…",
       "snippet": "<div style=\"font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform:rotate(-2deg);transform-origin:left\" data-dc-tpl=\"7\">fresh out the oven…</div>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "26px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "315.531px",
+          "height": "33px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "26px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "389.766px",
+          "height": "33px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "26px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "482.562px",
+          "height": "33px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 19.4,
-          "y": 8921.9,
+          "y": 8947.9,
           "w": 316.5,
           "h": 44
         },
         "768": {
           "x": 31.4,
-          "y": 8081.9,
+          "y": 8109.9,
           "w": 390.7,
           "h": 46.6
         },
@@ -462,6 +860,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_7_0@375.png",
@@ -490,16 +893,70 @@
       "srcTag": "h2",
       "srcOwnText": "@mamasmunches",
       "snippet": "<h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ h2 }};line-height:1.05\" data-dc-tpl=\"8\">@mamasmunches</h2>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "34px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "35.7px",
+          "width": "315.531px",
+          "height": "35.6875px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "42px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "44.1px",
+          "width": "389.766px",
+          "height": "44.0938px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "52px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "54.6px",
+          "width": "482.562px",
+          "height": "54.5938px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
-          "y": 8965.9,
+          "y": 8991.9,
           "w": 315.5,
           "h": 35.7
         },
         "768": {
           "x": 32,
-          "y": 8128.5,
+          "y": 8156.5,
           "w": 389.8,
           "h": 44.1
         },
@@ -522,6 +979,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_8_0@375.png",
@@ -552,16 +1014,77 @@
       "srcTag": "a",
       "srcOwnText": "Follow along",
       "snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" style=\"height:52px;padding:0 22px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;color:#3A2A22;font-weight:700;font-size:16px;display:flex;align-items:center;gap:10px;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s\" style-hover=\"background:#F9CF6E;transform:translate(-2px,-",
+      "flow": [
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/10#0"
+        },
+        " Follow along "
+      ],
+      "textLeads": false,
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "172.844px",
+          "height": "52px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "0px",
+          "padding-right": "22px",
+          "padding-bottom": "0px",
+          "padding-left": "22px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "172.844px",
+          "height": "52px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "0px",
+          "padding-right": "22px",
+          "padding-bottom": "0px",
+          "padding-left": "22px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "172.844px",
+          "height": "52px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "0px",
+          "padding-right": "22px",
+          "padding-bottom": "0px",
+          "padding-left": "22px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
-          "y": 9013.6,
+          "y": 9039.6,
           "w": 172.8,
           "h": 52
         },
         "768": {
           "x": 563.2,
-          "y": 8120.5,
+          "y": 8148.5,
           "w": 172.8,
           "h": 52
         },
@@ -584,6 +1107,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_9_0@375.png",
@@ -613,16 +1141,69 @@
       "srcTag": "svg",
       "srcOwnText": "",
       "snippet": "<svg width=\"20\" height=\"20\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:2\" data-dc-tpl=\"10\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\" data-dc-tpl=\"11\"></rect><circle cx=\"12\" cy=\"12\" r=\"4\" data-dc-tpl=\"12\"></circle><circle cx=\"17.5\" cy=\"6.5\" r=\"1.2\" style=\"fill:currentColor;stroke:none\" data-dc-tpl=\"13\"></circle></svg>",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "20px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "20px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "20px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 44,
-          "y": 9029.6,
+          "y": 9055.6,
           "w": 20,
           "h": 20
         },
         "768": {
           "x": 587.2,
-          "y": 8136.5,
+          "y": 8164.5,
           "w": 20,
           "h": 20
         },
@@ -645,6 +1226,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_SiteFooter_250_0_10_0@1440.png"
@@ -670,16 +1256,69 @@
       "srcTag": "rect",
       "srcOwnText": "",
       "snippet": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\" data-dc-tpl=\"11\"></rect>",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "18px",
+          "height": "18px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "18px",
+          "height": "18px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "18px",
+          "height": "18px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 46.5,
-          "y": 9032.1,
+          "y": 9058.1,
           "w": 15,
           "h": 15
         },
         "768": {
           "x": 589.7,
-          "y": 8139,
+          "y": 8167,
           "w": 15,
           "h": 15
         },
@@ -702,6 +1341,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "inline",
+        "768": "inline",
+        "1440": "inline"
+      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_SiteFooter_250_0_11_0@1440.png"
@@ -727,16 +1371,69 @@
       "srcTag": "circle",
       "srcOwnText": "",
       "snippet": "<circle cx=\"12\" cy=\"12\" r=\"4\" data-dc-tpl=\"12\"></circle>",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "auto",
+          "height": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "auto",
+          "height": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "auto",
+          "height": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 50.7,
-          "y": 9036.2,
+          "y": 9062.2,
           "w": 6.7,
           "h": 6.7
         },
         "768": {
           "x": 593.8,
-          "y": 8143.2,
+          "y": 8171.2,
           "w": 6.7,
           "h": 6.7
         },
@@ -759,6 +1456,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "inline",
+        "768": "inline",
+        "1440": "inline"
+      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_SiteFooter_250_0_12_0@1440.png"
@@ -786,16 +1488,69 @@
       "srcTag": "circle",
       "srcOwnText": "",
       "snippet": "<circle cx=\"17.5\" cy=\"6.5\" r=\"1.2\" style=\"fill:currentColor;stroke:none\" data-dc-tpl=\"13\"></circle>",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "auto",
+          "height": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "auto",
+          "height": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "auto",
+          "height": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 57.6,
-          "y": 9034,
+          "y": 9060,
           "w": 2,
           "h": 2
         },
         "768": {
           "x": 600.7,
-          "y": 8141,
+          "y": 8169,
           "w": 2,
           "h": 2
         },
@@ -818,6 +1573,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "inline",
+        "768": "inline",
+        "1440": "inline"
+      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_SiteFooter_250_0_13_0@1440.png"
@@ -845,16 +1605,69 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:grid;grid-auto-flow:{{ flow }};grid-auto-columns:{{ autoCols }};grid-template-columns:{{ igCols }};gap:14px;overflow-x:{{ ovx }};scroll-snap-type:x mandatory;scrollbar-width:none;margin:{{ bleedM }};padding:{{ bleedP }}\" data-dc-tpl=\"14\"> <sc-for list=\"{{ posts }}\" as=\"p\" hint-placeholder-count=\"0\" data-dc-tpl=\"15\"> <a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "375px",
+          "height": "167.391px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "8px",
+          "padding-right": "20px",
+          "padding-bottom": "12px",
+          "padding-left": "20px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "704px",
+          "height": "464.656px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "1240px",
+          "height": "195px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 0,
-          "y": 9089.6,
+          "y": 9115.6,
           "w": 375,
           "h": 167.4
         },
         "768": {
           "x": 32,
-          "y": 8196.5,
+          "y": 8224.5,
           "w": 704,
           "h": 464.7
         },
@@ -877,6 +1690,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "grid",
+        "768": "grid",
+        "1440": "grid"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_14_0@375.png",
@@ -914,16 +1732,69 @@
       "srcTag": "a",
       "srcOwnText": "",
       "snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"View on Instagram\" style=\"position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-6px);box-sh",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "147.391px",
+          "height": "147.391px",
+          "border-top-left-radius": "18px",
+          "border-top-right-radius": "18px",
+          "border-bottom-right-radius": "18px",
+          "border-bottom-left-radius": "18px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "225.328px",
+          "height": "225.328px",
+          "border-top-left-radius": "18px",
+          "border-top-right-radius": "18px",
+          "border-bottom-right-radius": "18px",
+          "border-bottom-left-radius": "18px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "195px",
+          "height": "195px",
+          "border-top-left-radius": "18px",
+          "border-top-right-radius": "18px",
+          "border-bottom-right-radius": "18px",
+          "border-bottom-left-radius": "18px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 0.5,
-          "y": 9095,
+          "y": 9121,
           "w": 152.4,
           "h": 152.4
         },
         "768": {
           "x": 28.1,
-          "y": 8192.7,
+          "y": 8220.7,
           "w": 233.1,
           "h": 233.1
         },
@@ -946,6 +1817,11 @@
         "1440": "relative"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_16_0@375.png",
@@ -981,16 +1857,69 @@
       "srcTag": "img",
       "srcOwnText": "",
       "snippet": "<img src=\"{{ p.src }}\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\" data-dc-tpl=\"17\">",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "143.391px",
+          "height": "143.391px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "221.328px",
+          "height": "221.328px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "191px",
+          "height": "191px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 2.5,
-          "y": 9097.1,
+          "y": 9123.1,
           "w": 148.3,
           "h": 148.3
         },
         "768": {
           "x": 30.2,
-          "y": 8194.8,
+          "y": 8222.8,
           "w": 228.9,
           "h": 228.9
         },
@@ -1013,6 +1942,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_17_0@375.png",
@@ -1050,16 +1984,69 @@
       "srcTag": "a",
       "srcOwnText": "",
       "snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"View on Instagram\" style=\"position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-6px);box-sh",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "147.391px",
+          "height": "147.391px",
+          "border-top-left-radius": "18px",
+          "border-top-right-radius": "18px",
+          "border-bottom-right-radius": "18px",
+          "border-bottom-left-radius": "18px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "225.328px",
+          "height": "225.328px",
+          "border-top-left-radius": "18px",
+          "border-top-right-radius": "18px",
+          "border-bottom-right-radius": "18px",
+          "border-bottom-left-radius": "18px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "195px",
+          "height": "195px",
+          "border-top-left-radius": "18px",
+          "border-top-right-radius": "18px",
+          "border-bottom-right-radius": "18px",
+          "border-bottom-left-radius": "18px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 162.5,
-          "y": 9095.7,
+          "y": 9121.7,
           "w": 151.2,
           "h": 151.2
         },
         "768": {
           "x": 268.4,
-          "y": 8193.6,
+          "y": 8221.6,
           "w": 231.1,
           "h": 231.1
         },
@@ -1082,6 +2069,11 @@
         "1440": "relative"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_16_1@375.png",
@@ -1117,16 +2109,69 @@
       "srcTag": "img",
       "srcOwnText": "",
       "snippet": "<img src=\"{{ p.src }}\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\" data-dc-tpl=\"17\">",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "143.391px",
+          "height": "143.391px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "221.328px",
+          "height": "221.328px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "191px",
+          "height": "191px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 164.5,
-          "y": 9097.7,
+          "y": 9123.7,
           "w": 147.1,
           "h": 147.1
         },
         "768": {
           "x": 270.5,
-          "y": 8195.7,
+          "y": 8223.7,
           "w": 227,
           "h": 227
         },
@@ -1149,6 +2194,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_17_1@375.png",
@@ -1186,16 +2236,69 @@
       "srcTag": "a",
       "srcOwnText": "",
       "snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"View on Instagram\" style=\"position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-6px);box-sh",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "147.391px",
+          "height": "147.391px",
+          "border-top-left-radius": "18px",
+          "border-top-right-radius": "18px",
+          "border-bottom-right-radius": "18px",
+          "border-bottom-left-radius": "18px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "225.328px",
+          "height": "225.328px",
+          "border-top-left-radius": "18px",
+          "border-top-right-radius": "18px",
+          "border-bottom-right-radius": "18px",
+          "border-bottom-left-radius": "18px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "195px",
+          "height": "195px",
+          "border-top-left-radius": "18px",
+          "border-top-right-radius": "18px",
+          "border-bottom-right-radius": "18px",
+          "border-bottom-left-radius": "18px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 324.5,
-          "y": 9096.3,
+          "y": 9122.3,
           "w": 149.9,
           "h": 149.9
         },
         "768": {
           "x": 508.7,
-          "y": 8194.6,
+          "y": 8222.6,
           "w": 229.2,
           "h": 229.2
         },
@@ -1218,6 +2321,11 @@
         "1440": "relative"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_16_2@375.png",
@@ -1253,16 +2361,69 @@
       "srcTag": "img",
       "srcOwnText": "",
       "snippet": "<img src=\"{{ p.src }}\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\" data-dc-tpl=\"17\">",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "143.391px",
+          "height": "143.391px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "221.328px",
+          "height": "221.328px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "191px",
+          "height": "191px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 326.5,
-          "y": 9098.3,
+          "y": 9124.3,
           "w": 145.9,
           "h": 145.9
         },
         "768": {
           "x": 510.7,
-          "y": 8196.6,
+          "y": 8224.6,
           "w": 225.2,
           "h": 225.2
         },
@@ -1285,6 +2446,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_17_2@375.png",
@@ -1322,16 +2488,69 @@
       "srcTag": "a",
       "srcOwnText": "",
       "snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"View on Instagram\" style=\"position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-6px);box-sh",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "147.391px",
+          "height": "147.391px",
+          "border-top-left-radius": "18px",
+          "border-top-right-radius": "18px",
+          "border-bottom-right-radius": "18px",
+          "border-bottom-left-radius": "18px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "225.328px",
+          "height": "225.328px",
+          "border-top-left-radius": "18px",
+          "border-top-right-radius": "18px",
+          "border-bottom-right-radius": "18px",
+          "border-bottom-left-radius": "18px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "195px",
+          "height": "195px",
+          "border-top-left-radius": "18px",
+          "border-top-right-radius": "18px",
+          "border-bottom-right-radius": "18px",
+          "border-bottom-left-radius": "18px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 484.6,
-          "y": 9095,
+          "y": 9121,
           "w": 152.4,
           "h": 152.4
         },
         "768": {
           "x": 28.1,
-          "y": 8432,
+          "y": 8460,
           "w": 233.1,
           "h": 233.1
         },
@@ -1354,6 +2573,11 @@
         "1440": "relative"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_16_3@375.png",
@@ -1389,16 +2613,69 @@
       "srcTag": "img",
       "srcOwnText": "",
       "snippet": "<img src=\"{{ p.src }}\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\" data-dc-tpl=\"17\">",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "143.391px",
+          "height": "143.391px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "221.328px",
+          "height": "221.328px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "191px",
+          "height": "191px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 486.7,
-          "y": 9097.1,
+          "y": 9123.1,
           "w": 148.3,
           "h": 148.3
         },
         "768": {
           "x": 30.2,
-          "y": 8434.1,
+          "y": 8462.1,
           "w": 228.9,
           "h": 228.9
         },
@@ -1421,6 +2698,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_17_3@375.png",
@@ -1458,16 +2740,69 @@
       "srcTag": "a",
       "srcOwnText": "",
       "snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"View on Instagram\" style=\"position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-6px);box-sh",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "147.391px",
+          "height": "147.391px",
+          "border-top-left-radius": "18px",
+          "border-top-right-radius": "18px",
+          "border-bottom-right-radius": "18px",
+          "border-bottom-left-radius": "18px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "225.328px",
+          "height": "225.328px",
+          "border-top-left-radius": "18px",
+          "border-top-right-radius": "18px",
+          "border-bottom-right-radius": "18px",
+          "border-bottom-left-radius": "18px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "195px",
+          "height": "195px",
+          "border-top-left-radius": "18px",
+          "border-top-right-radius": "18px",
+          "border-bottom-right-radius": "18px",
+          "border-bottom-left-radius": "18px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 646.7,
-          "y": 9095.7,
+          "y": 9121.7,
           "w": 151.2,
           "h": 151.2
         },
         "768": {
           "x": 268.4,
-          "y": 8433,
+          "y": 8461,
           "w": 231.1,
           "h": 231.1
         },
@@ -1490,6 +2825,11 @@
         "1440": "relative"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_16_4@375.png",
@@ -1525,16 +2865,69 @@
       "srcTag": "img",
       "srcOwnText": "",
       "snippet": "<img src=\"{{ p.src }}\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\" data-dc-tpl=\"17\">",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "143.391px",
+          "height": "143.391px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "221.328px",
+          "height": "221.328px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "191px",
+          "height": "191px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 648.7,
-          "y": 9097.7,
+          "y": 9123.7,
           "w": 147.1,
           "h": 147.1
         },
         "768": {
           "x": 270.5,
-          "y": 8435,
+          "y": 8463,
           "w": 227,
           "h": 227
         },
@@ -1557,6 +2950,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_17_4@375.png",
@@ -1594,16 +2992,69 @@
       "srcTag": "a",
       "srcOwnText": "",
       "snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"View on Instagram\" style=\"position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-6px);box-sh",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "147.391px",
+          "height": "147.391px",
+          "border-top-left-radius": "18px",
+          "border-top-right-radius": "18px",
+          "border-bottom-right-radius": "18px",
+          "border-bottom-left-radius": "18px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "225.328px",
+          "height": "225.328px",
+          "border-top-left-radius": "18px",
+          "border-top-right-radius": "18px",
+          "border-bottom-right-radius": "18px",
+          "border-bottom-left-radius": "18px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "195px",
+          "height": "195px",
+          "border-top-left-radius": "18px",
+          "border-top-right-radius": "18px",
+          "border-bottom-right-radius": "18px",
+          "border-bottom-left-radius": "18px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 808.7,
-          "y": 9096.3,
+          "y": 9122.3,
           "w": 149.9,
           "h": 149.9
         },
         "768": {
           "x": 508.7,
-          "y": 8433.9,
+          "y": 8461.9,
           "w": 229.2,
           "h": 229.2
         },
@@ -1626,6 +3077,11 @@
         "1440": "relative"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_16_5@375.png",
@@ -1661,16 +3117,69 @@
       "srcTag": "img",
       "srcOwnText": "",
       "snippet": "<img src=\"{{ p.src }}\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\" data-dc-tpl=\"17\">",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "143.391px",
+          "height": "143.391px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "221.328px",
+          "height": "221.328px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "191px",
+          "height": "191px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 810.7,
-          "y": 9098.3,
+          "y": 9124.3,
           "w": 145.9,
           "h": 145.9
         },
         "768": {
           "x": 510.7,
-          "y": 8436,
+          "y": 8464,
           "w": 225.2,
           "h": 225.2
         },
@@ -1693,6 +3202,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_17_5@375.png",
@@ -1722,16 +3236,73 @@
       "srcTag": "div",
       "srcOwnText": "{{ tagline }}",
       "snippet": "<div aria-hidden=\"true\" sc-camel-on-mouse-enter=\"{{ tagIn }}\" sc-camel-on-mouse-leave=\"{{ tagOut }}\" style=\"background:#F9CF6E;border-top:2px solid #3A2A22;border-bottom:2px solid #3A2A22;overflow:hidden;padding:14px 0\" data-dc-tpl=\"18\">{{ tagline }}</div>",
+      "flow": [
+        "boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦"
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "375px",
+          "height": "67px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "14px",
+          "padding-right": "0px",
+          "padding-bottom": "14px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "768px",
+          "height": "79px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "14px",
+          "padding-right": "0px",
+          "padding-bottom": "14px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "1440px",
+          "height": "79px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "14px",
+          "padding-right": "0px",
+          "padding-bottom": "14px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 0,
-          "y": 9305,
+          "y": 9331,
           "w": 375,
           "h": 67
         },
         "768": {
           "x": 0,
-          "y": 8725.2,
+          "y": 8753.2,
           "w": 768,
           "h": 79
         },
@@ -1754,6 +3325,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_18_0@375.png",
@@ -1782,16 +3358,76 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"background:#F5C2C8;padding:{{ mainPad }};overflow:hidden\" data-dc-tpl=\"19\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"20\"> <div style=\"display:grid;grid-template-columns:{{ topCols }};gap:28px;align-items:center;padding-bottom:{{ topGap }};border-bottom:2px dashed rgba(58,42,34,.28)\" data-dc-tpl=\"21\"> <div style=\"display:flex;flex-direction:column;gap:18px;align-items:{{",
+      "flow": [
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/20#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "375px",
+          "height": "954.25px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "48px",
+          "padding-right": "20px",
+          "padding-bottom": "24px",
+          "padding-left": "20px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "768px",
+          "height": "707px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "64px",
+          "padding-right": "32px",
+          "padding-bottom": "28px",
+          "padding-left": "32px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "1440px",
+          "height": "753px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "80px",
+          "padding-right": "40px",
+          "padding-bottom": "32px",
+          "padding-left": "40px"
+        }
+      },
       "box": {
         "375": {
           "x": 0,
-          "y": 9372,
+          "y": 9398,
           "w": 375,
           "h": 954.3
         },
         "768": {
           "x": 0,
-          "y": 8804.2,
+          "y": 8832.2,
           "w": 768,
           "h": 707
         },
@@ -1814,6 +3450,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_19_0@375.png",
@@ -1842,16 +3483,88 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"20\"> <div style=\"display:grid;grid-template-columns:{{ topCols }};gap:28px;align-items:center;padding-bottom:{{ topGap }};border-bottom:2px dashed rgba(58,42,34,.28)\" data-dc-tpl=\"21\"> <div style=\"display:flex;flex-direction:column;gap:18px;align-items:{{ ctaAlign }};text-align:{{ ctaText }}\" data-dc-tpl=\"22\"> <h2 style=\"margin:0;font-family",
+      "flow": [
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/21#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/27#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/54#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/55#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "335px",
+          "height": "882.25px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "704px",
+          "height": "615px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "1240px",
+          "height": "641px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
-          "y": 9420,
+          "y": 9446,
           "w": 335,
           "h": 882.3
         },
         "768": {
           "x": 32,
-          "y": 8868.2,
+          "y": 8896.2,
           "w": 704,
           "h": 615
         },
@@ -1874,6 +3587,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_20_0@375.png",
@@ -1902,16 +3620,80 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:grid;grid-template-columns:{{ topCols }};gap:28px;align-items:center;padding-bottom:{{ topGap }};border-bottom:2px dashed rgba(58,42,34,.28)\" data-dc-tpl=\"21\"> <div style=\"display:flex;flex-direction:column;gap:18px;align-items:{{ ctaAlign }};text-align:{{ ctaText }}\" data-dc-tpl=\"22\"> <h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ ctaS",
+      "flow": [
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/22#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/26#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "335px",
+          "height": "357.25px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "36px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "704px",
+          "height": "236px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "44px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "1240px",
+          "height": "296px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "56px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
-          "y": 9420,
+          "y": 9446,
           "w": 335,
           "h": 357.3
         },
         "768": {
           "x": 32,
-          "y": 8868.2,
+          "y": 8896.2,
           "w": 704,
           "h": 236
         },
@@ -1934,6 +3716,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "grid",
+        "768": "grid",
+        "1440": "grid"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_21_0@375.png",
@@ -1962,16 +3749,80 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:flex;flex-direction:column;gap:18px;align-items:{{ ctaAlign }};text-align:{{ ctaText }}\" data-dc-tpl=\"22\"> <h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ ctaSize }};line-height:1;letter-spacing:-0.02em;text-wrap:balance\" data-dc-tpl=\"23\">Hungry? Of course you are.</h2> <a href=\"Home.dc.html#build\" style=\"height:60px;padding:0 30px;borde",
+      "flow": [
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/23#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/24#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "335px",
+          "height": "158px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "526px",
+          "height": "190px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "1022px",
+          "height": "238px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
-          "y": 9420,
+          "y": 9446,
           "w": 335,
           "h": 158
         },
         "768": {
           "x": 32,
-          "y": 8868.2,
+          "y": 8896.2,
           "w": 526,
           "h": 190
         },
@@ -1994,6 +3845,11 @@
         "1440": "static"
       },
       "flexDirection": "column",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_22_0@375.png",
@@ -2022,16 +3878,70 @@
       "srcTag": "h2",
       "srcOwnText": "Hungry? Of course you are.",
       "snippet": "<h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ ctaSize }};line-height:1;letter-spacing:-0.02em;text-wrap:balance\" data-dc-tpl=\"23\">Hungry? Of course you are.</h2>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "40px",
+          "font-weight": "400",
+          "letter-spacing": "-0.8px",
+          "text-transform": "none",
+          "line-height": "40px",
+          "width": "335px",
+          "height": "80px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "56px",
+          "font-weight": "400",
+          "letter-spacing": "-1.12px",
+          "text-transform": "none",
+          "line-height": "56px",
+          "width": "526px",
+          "height": "112px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "80px",
+          "font-weight": "400",
+          "letter-spacing": "-1.6px",
+          "text-transform": "none",
+          "line-height": "80px",
+          "width": "1022px",
+          "height": "160px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
-          "y": 9420,
+          "y": 9446,
           "w": 335,
           "h": 80
         },
         "768": {
           "x": 32,
-          "y": 8868.2,
+          "y": 8896.2,
           "w": 526,
           "h": 112
         },
@@ -2054,6 +3964,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_23_0@375.png",
@@ -2084,16 +3999,76 @@
       "srcTag": "a",
       "srcOwnText": "Build your box",
       "snippet": "<a href=\"Home.dc.html#build\" style=\"height:60px;padding:0 30px;border-radius:999px;border:2px solid #3A2A22;background:#EE8088;color:#3A2A22;font-weight:700;font-size:17px;display:flex;align-items:center;gap:10px;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s\" style-hover=\"background:#F9CF6E;transform:translate(-2px,-2px);box-shadow:6px 6",
+      "flow": [
+        "Build your box ",
+        {
+          "key": "Root>SiteFooter@250#0/25#0"
+        }
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "205.125px",
+          "height": "60px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "0px",
+          "padding-right": "30px",
+          "padding-bottom": "0px",
+          "padding-left": "30px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "205.125px",
+          "height": "60px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "0px",
+          "padding-right": "30px",
+          "padding-bottom": "0px",
+          "padding-left": "30px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "205.125px",
+          "height": "60px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "0px",
+          "padding-right": "30px",
+          "padding-bottom": "0px",
+          "padding-left": "30px"
+        }
+      },
       "box": {
         "375": {
           "x": 84.9,
-          "y": 9518,
+          "y": 9544,
           "w": 205.1,
           "h": 60
         },
         "768": {
           "x": 32,
-          "y": 8998.2,
+          "y": 9026.2,
           "w": 205.1,
           "h": 60
         },
@@ -2116,6 +4091,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_24_0@375.png",
@@ -2144,16 +4124,70 @@
       "srcTag": "span",
       "srcOwnText": "→",
       "snippet": "<span aria-hidden=\"true\" data-dc-tpl=\"25\">→</span>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "14.6719px",
+          "height": "22px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "14.6719px",
+          "height": "22px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "14.6719px",
+          "height": "22px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 243.4,
-          "y": 9537,
+          "y": 9563,
           "w": 14.7,
           "h": 22
         },
         "768": {
           "x": 190.5,
-          "y": 9017.2,
+          "y": 9045.2,
           "w": 14.7,
           "h": 22
         },
@@ -2176,6 +4210,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_SiteFooter_250_0_25_0@1440.png"
@@ -2206,16 +4245,69 @@
       "srcTag": "img",
       "srcOwnText": "",
       "snippet": "<img src=\"assets/logo-round.png\" alt=\"Mama's Munches\" style=\"width:{{ logoW }};justify-self:{{ logoJust }};transform:rotate(-8deg);transition:transform .6s cubic-bezier(.3,1.6,.5,1)\" style-hover=\"transform:rotate(6deg) scale(1.05)\" data-dc-tpl=\"26\">",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "140px",
+          "height": "133.25px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "150px",
+          "height": "142.766px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "190px",
+          "height": "180.844px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 108.9,
-          "y": 9596.9,
+          "y": 9622.9,
           "w": 157.2,
           "h": 151.4
         },
         "768": {
           "x": 576.8,
-          "y": 8882.1,
+          "y": 8910.1,
           "w": 168.4,
           "h": 162.3
         },
@@ -2238,6 +4330,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_26_0@375.png",
@@ -2266,16 +4363,84 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:grid;grid-template-columns:{{ cols }};gap:{{ gap }};padding:{{ colsPad }}\" data-dc-tpl=\"27\"> <nav aria-label=\"Shop\" style=\"display:flex;flex-direction:column;gap:2px\" data-dc-tpl=\"28\"> <div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px\" data-dc-tpl=\"29\">shop</div> <a href=\"Shop.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17p",
+      "flow": [
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/28#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/35#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/41#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "335px",
+          "height": "426px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "36px",
+          "padding-right": "0px",
+          "padding-bottom": "28px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "704px",
+          "height": "280px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "44px",
+          "padding-right": "0px",
+          "padding-bottom": "32px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "1240px",
+          "height": "300px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "56px",
+          "padding-right": "0px",
+          "padding-bottom": "40px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
-          "y": 9777.2,
+          "y": 9803.2,
           "w": 335,
           "h": 426
         },
         "768": {
           "x": 32,
-          "y": 9104.2,
+          "y": 9132.2,
           "w": 704,
           "h": 280
         },
@@ -2298,6 +4463,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "grid",
+        "768": "grid",
+        "1440": "grid"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_27_0@375.png",
@@ -2327,16 +4497,96 @@
       "srcTag": "nav",
       "srcOwnText": "",
       "snippet": "<nav aria-label=\"Shop\" style=\"display:flex;flex-direction:column;gap:2px\" data-dc-tpl=\"28\"> <div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px\" data-dc-tpl=\"29\">shop</div> <a href=\"Shop.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;te",
+      "flow": [
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/29#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/30#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/31#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/32#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/33#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/34#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "157.5px",
+          "height": "204px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "193.938px",
+          "height": "204px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "346.656px",
+          "height": "204px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
-          "y": 9813.2,
+          "y": 9839.2,
           "w": 157.5,
           "h": 204
         },
         "768": {
           "x": 32,
-          "y": 9148.2,
+          "y": 9176.2,
           "w": 193.9,
           "h": 204
         },
@@ -2359,6 +4609,11 @@
         "1440": "static"
       },
       "flexDirection": "column",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_28_0@375.png",
@@ -2387,16 +4642,70 @@
       "srcTag": "div",
       "srcOwnText": "shop",
       "snippet": "<div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px\" data-dc-tpl=\"29\">shop</div>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "24px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "157.5px",
+          "height": "30px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "24px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "193.938px",
+          "height": "30px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "24px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "346.656px",
+          "height": "30px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
-          "y": 9813.2,
+          "y": 9839.2,
           "w": 157.5,
           "h": 30
         },
         "768": {
           "x": 32,
-          "y": 9148.2,
+          "y": 9176.2,
           "w": 193.9,
           "h": 30
         },
@@ -2419,6 +4728,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_29_0@375.png",
@@ -2449,16 +4763,70 @@
       "srcTag": "a",
       "srcOwnText": "All Zookies",
       "snippet": "<a href=\"Shop.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"30\">All Zookies</a>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "157.5px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "193.938px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "346.656px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
-          "y": 9849.2,
+          "y": 9875.2,
           "w": 157.5,
           "h": 32
         },
         "768": {
           "x": 32,
-          "y": 9184.2,
+          "y": 9212.2,
           "w": 193.9,
           "h": 32
         },
@@ -2481,6 +4849,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_30_0@375.png",
@@ -2511,16 +4884,70 @@
       "srcTag": "a",
       "srcOwnText": "Build your box",
       "snippet": "<a href=\"Home.dc.html#build\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"31\">Build your box</a>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "157.5px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "193.938px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "346.656px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
-          "y": 9883.2,
+          "y": 9909.2,
           "w": 157.5,
           "h": 32
         },
         "768": {
           "x": 32,
-          "y": 9218.2,
+          "y": 9246.2,
           "w": 193.9,
           "h": 32
         },
@@ -2543,6 +4970,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_31_0@375.png",
@@ -2573,16 +5005,70 @@
       "srcTag": "a",
       "srcOwnText": "Subscribe & save",
       "snippet": "<a href=\"Product.dc.html?id=zookies&amp;sub=1\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"32\">Subscribe &amp; save</a>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "157.5px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "193.938px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "346.656px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
-          "y": 9917.2,
+          "y": 9943.2,
           "w": 157.5,
           "h": 32
         },
         "768": {
           "x": 32,
-          "y": 9252.2,
+          "y": 9280.2,
           "w": 193.9,
           "h": 32
         },
@@ -2605,6 +5091,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_32_0@375.png",
@@ -2635,16 +5126,70 @@
       "srcTag": "a",
       "srcOwnText": "Gifts",
       "snippet": "<a href=\"Gifts.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"33\">Gifts</a>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "157.5px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "193.938px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "346.656px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
-          "y": 9951.2,
+          "y": 9977.2,
           "w": 157.5,
           "h": 32
         },
         "768": {
           "x": 32,
-          "y": 9286.2,
+          "y": 9314.2,
           "w": 193.9,
           "h": 32
         },
@@ -2667,6 +5212,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_33_0@375.png",
@@ -2697,16 +5247,70 @@
       "srcTag": "a",
       "srcOwnText": "Taster Trio",
       "snippet": "<a href=\"Product.dc.html?id=trial\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"34\">Taster Trio</a>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "157.5px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "193.938px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "346.656px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
-          "y": 9985.2,
+          "y": 10011.2,
           "w": 157.5,
           "h": 32
         },
         "768": {
           "x": 32,
-          "y": 9320.2,
+          "y": 9348.2,
           "w": 193.9,
           "h": 32
         },
@@ -2729,6 +5333,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_34_0@375.png",
@@ -2758,16 +5367,92 @@
       "srcTag": "nav",
       "srcOwnText": "",
       "snippet": "<nav aria-label=\"Help\" style=\"display:flex;flex-direction:column;gap:2px\" data-dc-tpl=\"35\"> <div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px\" data-dc-tpl=\"36\">help</div> <a href=\"Help.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;te",
+      "flow": [
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/36#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/37#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/38#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/39#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/40#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "157.5px",
+          "height": "204px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "193.938px",
+          "height": "204px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "346.672px",
+          "height": "204px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 197.5,
-          "y": 9813.2,
+          "y": 9839.2,
           "w": 157.5,
           "h": 204
         },
         "768": {
           "x": 257.9,
-          "y": 9148.2,
+          "y": 9176.2,
           "w": 193.9,
           "h": 204
         },
@@ -2790,6 +5475,11 @@
         "1440": "static"
       },
       "flexDirection": "column",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_35_0@375.png",
@@ -2818,16 +5508,70 @@
       "srcTag": "div",
       "srcOwnText": "help",
       "snippet": "<div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px\" data-dc-tpl=\"36\">help</div>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "24px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "157.5px",
+          "height": "30px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "24px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "193.938px",
+          "height": "30px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "24px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "346.672px",
+          "height": "30px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 197.5,
-          "y": 9813.2,
+          "y": 9839.2,
           "w": 157.5,
           "h": 30
         },
         "768": {
           "x": 257.9,
-          "y": 9148.2,
+          "y": 9176.2,
           "w": 193.9,
           "h": 30
         },
@@ -2850,6 +5594,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_36_0@375.png",
@@ -2880,16 +5629,70 @@
       "srcTag": "a",
       "srcOwnText": "FAQs",
       "snippet": "<a href=\"Help.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"37\">FAQs</a>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "157.5px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "193.938px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "346.672px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 197.5,
-          "y": 9849.2,
+          "y": 9875.2,
           "w": 157.5,
           "h": 32
         },
         "768": {
           "x": 257.9,
-          "y": 9184.2,
+          "y": 9212.2,
           "w": 193.9,
           "h": 32
         },
@@ -2912,6 +5715,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_37_0@375.png",
@@ -2942,16 +5750,70 @@
       "srcTag": "a",
       "srcOwnText": "Delivery",
       "snippet": "<a href=\"Help.dc.html#delivery\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"38\">Delivery</a>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "157.5px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "193.938px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "346.672px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 197.5,
-          "y": 9883.2,
+          "y": 9909.2,
           "w": 157.5,
           "h": 32
         },
         "768": {
           "x": 257.9,
-          "y": 9218.2,
+          "y": 9246.2,
           "w": 193.9,
           "h": 32
         },
@@ -2974,6 +5836,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_38_0@375.png",
@@ -3004,16 +5871,70 @@
       "srcTag": "a",
       "srcOwnText": "Allergens",
       "snippet": "<a href=\"Help.dc.html#allergens\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"39\">Allergens</a>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "157.5px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "193.938px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "346.672px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 197.5,
-          "y": 9917.2,
+          "y": 9943.2,
           "w": 157.5,
           "h": 32
         },
         "768": {
           "x": 257.9,
-          "y": 9252.2,
+          "y": 9280.2,
           "w": 193.9,
           "h": 32
         },
@@ -3036,6 +5957,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_39_0@375.png",
@@ -3066,16 +5992,70 @@
       "srcTag": "a",
       "srcOwnText": "Contact",
       "snippet": "<a href=\"Contact.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"40\">Contact</a>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "157.5px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "193.938px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "346.672px",
+          "height": "32px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "6px",
+          "padding-right": "0px",
+          "padding-bottom": "6px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 197.5,
-          "y": 9951.2,
+          "y": 9977.2,
           "w": 157.5,
           "h": 32
         },
         "768": {
           "x": 257.9,
-          "y": 9286.2,
+          "y": 9314.2,
           "w": 193.9,
           "h": 32
         },
@@ -3098,6 +6078,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_40_0@375.png",
@@ -3126,16 +6111,84 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:flex;flex-direction:column;gap:12px;grid-column:{{ helloSpan }}\" data-dc-tpl=\"41\"> <div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444\" data-dc-tpl=\"42\">say hello</div> <a href=\"mailto:Zainab@mamasmunches.com\" style=\"align-self:flex-start;color:#3A2A22;font-size:17px;font-weight:700;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:",
+      "flow": [
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/42#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/43#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/44#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "335px",
+          "height": "126px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "252.109px",
+          "height": "204px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "450.656px",
+          "height": "204px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
-          "y": 10049.2,
+          "y": 10075.2,
           "w": 335,
           "h": 126
         },
         "768": {
           "x": 483.9,
-          "y": 9148.2,
+          "y": 9176.2,
           "w": 252.1,
           "h": 204
         },
@@ -3158,6 +6211,11 @@
         "1440": "static"
       },
       "flexDirection": "column",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_41_0@375.png",
@@ -3186,16 +6244,70 @@
       "srcTag": "div",
       "srcOwnText": "say hello",
       "snippet": "<div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444\" data-dc-tpl=\"42\">say hello</div>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "24px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "335px",
+          "height": "30px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "24px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "252.109px",
+          "height": "30px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "24px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "450.656px",
+          "height": "30px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
-          "y": 10049.2,
+          "y": 10075.2,
           "w": 335,
           "h": 30
         },
         "768": {
           "x": 483.9,
-          "y": 9148.2,
+          "y": 9176.2,
           "w": 252.1,
           "h": 30
         },
@@ -3218,6 +6330,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_42_0@375.png",
@@ -3248,16 +6365,70 @@
       "srcTag": "a",
       "srcOwnText": "Zainab@mamasmunches.com",
       "snippet": "<a href=\"mailto:Zainab@mamasmunches.com\" style=\"align-self:flex-start;color:#3A2A22;font-size:17px;font-weight:700;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px;text-decoration-color:#E86A75;word-break:break-all;padding:2px 6px;margin-left:-6px;border-radius:8px;transition:background .2s, text-decoration-color .2s\" style-hover=\"background:#FFFAF0;text-decoration",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "261.125px",
+          "height": "24px",
+          "border-top-left-radius": "8px",
+          "border-top-right-radius": "8px",
+          "border-bottom-right-radius": "8px",
+          "border-bottom-left-radius": "8px",
+          "padding-top": "2px",
+          "padding-right": "6px",
+          "padding-bottom": "2px",
+          "padding-left": "6px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "258.109px",
+          "height": "44px",
+          "border-top-left-radius": "8px",
+          "border-top-right-radius": "8px",
+          "border-bottom-right-radius": "8px",
+          "border-bottom-left-radius": "8px",
+          "padding-top": "2px",
+          "padding-right": "6px",
+          "padding-bottom": "2px",
+          "padding-left": "6px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "261.125px",
+          "height": "24px",
+          "border-top-left-radius": "8px",
+          "border-top-right-radius": "8px",
+          "border-bottom-right-radius": "8px",
+          "border-bottom-left-radius": "8px",
+          "padding-top": "2px",
+          "padding-right": "6px",
+          "padding-bottom": "2px",
+          "padding-left": "6px"
+        }
+      },
       "box": {
         "375": {
           "x": 14,
-          "y": 10091.2,
+          "y": 10117.2,
           "w": 261.1,
           "h": 24
         },
         "768": {
           "x": 477.9,
-          "y": 9190.2,
+          "y": 9218.2,
           "w": 258.1,
           "h": 44
         },
@@ -3280,6 +6451,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_SiteFooter_250_0_43_0@1440.png"
@@ -3307,16 +6483,69 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:flex;gap:10px\" data-dc-tpl=\"44\"> <a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"Instagram\" style=\"width:48px;height:48px;border-radius:999px;border:2px solid #3A2A22;background:radial-gradient(circle at 30% 107%, #FDF497 0%, #FD5949 45%, #D6249F 60%, #285AEB 90%);color:#FFFFFF;display:flex;align-items:center;justify-content:center;box-shadow:3px 3px 0 #3A2A22;tra",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "335px",
+          "height": "48px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "252.109px",
+          "height": "48px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "450.656px",
+          "height": "48px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
-          "y": 10127.2,
+          "y": 10153.2,
           "w": 335,
           "h": 48
         },
         "768": {
           "x": 483.9,
-          "y": 9246.2,
+          "y": 9274.2,
           "w": 252.1,
           "h": 48
         },
@@ -3339,6 +6568,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_44_0@375.png",
@@ -3370,16 +6604,69 @@
       "srcTag": "a",
       "srcOwnText": "",
       "snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"Instagram\" style=\"width:48px;height:48px;border-radius:999px;border:2px solid #3A2A22;background:radial-gradient(circle at 30% 107%, #FDF497 0%, #FD5949 45%, #D6249F 60%, #285AEB 90%);color:#FFFFFF;display:flex;align-items:center;justify-content:center;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "48px",
+          "height": "48px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "48px",
+          "height": "48px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "48px",
+          "height": "48px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
-          "y": 10127.2,
+          "y": 10153.2,
           "w": 48,
           "h": 48
         },
         "768": {
           "x": 483.9,
-          "y": 9246.2,
+          "y": 9274.2,
           "w": 48,
           "h": 48
         },
@@ -3402,6 +6689,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_SiteFooter_250_0_45_0@1440.png"
@@ -3430,16 +6722,69 @@
       "srcTag": "svg",
       "srcOwnText": "",
       "snippet": "<svg width=\"20\" height=\"20\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:2\" data-dc-tpl=\"46\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\" data-dc-tpl=\"47\"></rect><circle cx=\"12\" cy=\"12\" r=\"4\" data-dc-tpl=\"48\"></circle><circle cx=\"17.5\" cy=\"6.5\" r=\"1.2\" style=\"fill:currentColor;stroke:none\" data-dc-tpl=\"49\"></circle></svg>",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "20px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "20px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "20px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 34,
-          "y": 10141.2,
+          "y": 10167.2,
           "w": 20,
           "h": 20
         },
         "768": {
           "x": 497.9,
-          "y": 9260.2,
+          "y": 9288.2,
           "w": 20,
           "h": 20
         },
@@ -3462,6 +6807,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_SiteFooter_250_0_46_0@1440.png"
@@ -3487,16 +6837,69 @@
       "srcTag": "rect",
       "srcOwnText": "",
       "snippet": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\" data-dc-tpl=\"47\"></rect>",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "18px",
+          "height": "18px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "18px",
+          "height": "18px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "18px",
+          "height": "18px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 36.5,
-          "y": 10143.7,
+          "y": 10169.7,
           "w": 15,
           "h": 15
         },
         "768": {
           "x": 500.4,
-          "y": 9262.7,
+          "y": 9290.7,
           "w": 15,
           "h": 15
         },
@@ -3519,6 +6922,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "inline",
+        "768": "inline",
+        "1440": "inline"
+      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_SiteFooter_250_0_47_0@1440.png"
@@ -3544,16 +6952,69 @@
       "srcTag": "circle",
       "srcOwnText": "",
       "snippet": "<circle cx=\"12\" cy=\"12\" r=\"4\" data-dc-tpl=\"48\"></circle>",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "auto",
+          "height": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "auto",
+          "height": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "auto",
+          "height": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 40.7,
-          "y": 10147.9,
+          "y": 10173.9,
           "w": 6.7,
           "h": 6.7
         },
         "768": {
           "x": 504.5,
-          "y": 9266.9,
+          "y": 9294.9,
           "w": 6.7,
           "h": 6.7
         },
@@ -3576,6 +7037,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "inline",
+        "768": "inline",
+        "1440": "inline"
+      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_SiteFooter_250_0_48_0@1440.png"
@@ -3603,16 +7069,69 @@
       "srcTag": "circle",
       "srcOwnText": "",
       "snippet": "<circle cx=\"17.5\" cy=\"6.5\" r=\"1.2\" style=\"fill:currentColor;stroke:none\" data-dc-tpl=\"49\"></circle>",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "auto",
+          "height": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "auto",
+          "height": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "auto",
+          "height": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 47.6,
-          "y": 10145.6,
+          "y": 10171.6,
           "w": 2,
           "h": 2
         },
         "768": {
           "x": 511.5,
-          "y": 9264.6,
+          "y": 9292.6,
           "w": 2,
           "h": 2
         },
@@ -3635,6 +7154,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "inline",
+        "768": "inline",
+        "1440": "inline"
+      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_SiteFooter_250_0_49_0@1440.png"
@@ -3665,16 +7189,69 @@
       "srcTag": "a",
       "srcOwnText": "",
       "snippet": "<a href=\"Contact.dc.html\" aria-label=\"WhatsApp\" style=\"width:48px;height:48px;border-radius:999px;border:2px solid #3A2A22;background:#25D366;color:#FFFFFF;display:flex;align-items:center;justify-content:center;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s\" style-hover=\"transform:translate(-2px,-2px) rotate(-8deg);box-shadow:5px 5px 0 #3A2A22\" data-dc-tpl=\"5",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "48px",
+          "height": "48px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "48px",
+          "height": "48px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "48px",
+          "height": "48px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 78,
-          "y": 10127.2,
+          "y": 10153.2,
           "w": 48,
           "h": 48
         },
         "768": {
           "x": 541.9,
-          "y": 9246.2,
+          "y": 9274.2,
           "w": 48,
           "h": 48
         },
@@ -3697,6 +7274,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_SiteFooter_250_0_50_0@1440.png"
@@ -3725,16 +7307,69 @@
       "srcTag": "svg",
       "srcOwnText": "",
       "snippet": "<svg width=\"20\" height=\"20\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round\" data-dc-tpl=\"51\"><path d=\"M4 20l1.3-4A8 8 0 1 1 8.5 19Z\" data-dc-tpl=\"52\"></path><path d=\"M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 .8a4 4 0 0 1-2-2l.8-1-1-2Z\" style=\"fill:currentColor;stroke:none\" data-dc-tpl=\"53\"></path></svg>",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "20px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "20px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "20px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 92,
-          "y": 10141.2,
+          "y": 10167.2,
           "w": 20,
           "h": 20
         },
         "768": {
           "x": 555.9,
-          "y": 9260.2,
+          "y": 9288.2,
           "w": 20,
           "h": 20
         },
@@ -3757,6 +7392,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_SiteFooter_250_0_51_0@1440.png"
@@ -3782,16 +7422,69 @@
       "srcTag": "path",
       "srcOwnText": "",
       "snippet": "<path d=\"M4 20l1.3-4A8 8 0 1 1 8.5 19Z\" data-dc-tpl=\"52\"></path>",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "auto",
+          "height": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "auto",
+          "height": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "auto",
+          "height": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 95.3,
-          "y": 10144.4,
+          "y": 10170.4,
           "w": 13.5,
           "h": 13.4
         },
         "768": {
           "x": 559.2,
-          "y": 9263.4,
+          "y": 9291.4,
           "w": 13.5,
           "h": 13.4
         },
@@ -3814,6 +7507,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "inline",
+        "768": "inline",
+        "1440": "inline"
+      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_SiteFooter_250_0_52_0@1440.png"
@@ -3841,16 +7539,69 @@
       "srcTag": "path",
       "srcOwnText": "",
       "snippet": "<path d=\"M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 .8a4 4 0 0 1-2-2l.8-1-1-2Z\" style=\"fill:currentColor;stroke:none\" data-dc-tpl=\"53\"></path>",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "auto",
+          "height": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "auto",
+          "height": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "auto",
+          "height": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 99.5,
-          "y": 10148.1,
+          "y": 10174.1,
           "w": 5.4,
           "h": 5.6
         },
         "768": {
           "x": 563.4,
-          "y": 9267.1,
+          "y": 9295.1,
           "w": 5.4,
           "h": 5.6
         },
@@ -3873,6 +7624,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "inline",
+        "768": "inline",
+        "1440": "inline"
+      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_SiteFooter_250_0_53_0@1440.png"
@@ -3900,16 +7656,69 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"height:8px\" data-dc-tpl=\"54\"></div>",
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "335px",
+          "height": "8px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "704px",
+          "height": "8px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "1240px",
+          "height": "8px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
-          "y": 10203.2,
+          "y": 10229.2,
           "w": 335,
           "h": 8
         },
         "768": {
           "x": 32,
-          "y": 9384.2,
+          "y": 9412.2,
           "w": 704,
           "h": 8
         },
@@ -3932,6 +7741,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_54_0@375.png",
@@ -3960,16 +7774,84 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:grid;grid-template-columns:{{ bottomCols }};align-items:center;gap:10px 24px;font-size:14px;padding-top:18px;border-top:2px dashed rgba(58,42,34,.28);text-align:center\" data-dc-tpl=\"55\"> <span style=\"justify-self:{{ leftJust }}\" data-dc-tpl=\"56\">© 2026 Mama’s Munches · Registered food business</span> <span style=\"display:flex;justify-content:center;gap:18px\" data-dc-tpl=\"57\"><a",
+      "flow": [
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/56#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/57#0"
+        },
+        " ",
+        {
+          "key": "Root>SiteFooter@250#0/60#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "14px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "335px",
+          "height": "91px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "18px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "14px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "704px",
+          "height": "91px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "18px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "14px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "1240px",
+          "height": "37px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "18px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
-          "y": 10211.2,
+          "y": 10237.2,
           "w": 335,
           "h": 91
         },
         "768": {
           "x": 32,
-          "y": 9392.2,
+          "y": 9420.2,
           "w": 704,
           "h": 91
         },
@@ -3992,6 +7874,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "grid",
+        "768": "grid",
+        "1440": "grid"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_55_0@375.png",
@@ -4020,16 +7907,70 @@
       "srcTag": "span",
       "srcOwnText": "© 2026 Mama’s Munches · Registered food business",
       "snippet": "<span style=\"justify-self:{{ leftJust }}\" data-dc-tpl=\"56\">© 2026 Mama’s Munches · Registered food business</span>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "14px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "332.922px",
+          "height": "17px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "14px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "332.922px",
+          "height": "17px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "14px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "332.922px",
+          "height": "17px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 21,
-          "y": 10231.2,
+          "y": 10257.2,
           "w": 332.9,
           "h": 17
         },
         "768": {
           "x": 217.5,
-          "y": 9412.2,
+          "y": 9440.2,
           "w": 332.9,
           "h": 17
         },
@@ -4052,6 +7993,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_SiteFooter_250_0_56_0@1440.png"
@@ -4079,16 +8025,77 @@
       "srcTag": "span",
       "srcOwnText": "",
       "snippet": "<span style=\"display:flex;justify-content:center;gap:18px\" data-dc-tpl=\"57\"><a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"58\">Privacy</a><a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"59\">Terms</a></span>",
+      "flow": [
+        {
+          "key": "Root>SiteFooter@250#0/58#0"
+        },
+        {
+          "key": "Root>SiteFooter@250#0/59#0"
+        }
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "14px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "335px",
+          "height": "17px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "14px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "704px",
+          "height": "17px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "14px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "102.141px",
+          "height": "17px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
-          "y": 10258.2,
+          "y": 10284.2,
           "w": 335,
           "h": 17
         },
         "768": {
           "x": 32,
-          "y": 9439.2,
+          "y": 9467.2,
           "w": 704,
           "h": 17
         },
@@ -4111,6 +8118,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_57_0@375.png",
@@ -4140,16 +8152,70 @@
       "srcTag": "a",
       "srcOwnText": "Privacy",
       "snippet": "<a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"58\">Privacy</a>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "14px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "45.4688px",
+          "height": "17px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "14px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "45.4688px",
+          "height": "17px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "14px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "45.4688px",
+          "height": "17px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 136.4,
-          "y": 10258.2,
+          "y": 10284.2,
           "w": 45.5,
           "h": 17
         },
         "768": {
           "x": 332.9,
-          "y": 9439.2,
+          "y": 9467.2,
           "w": 45.5,
           "h": 17
         },
@@ -4172,6 +8238,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_58_0@375.png",
@@ -4201,16 +8272,70 @@
       "srcTag": "a",
       "srcOwnText": "Terms",
       "snippet": "<a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"59\">Terms</a>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "14px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "38.6719px",
+          "height": "17px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "14px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "38.6719px",
+          "height": "17px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "14px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "38.6719px",
+          "height": "17px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 199.9,
-          "y": 10258.2,
+          "y": 10284.2,
           "w": 38.7,
           "h": 17
         },
         "768": {
           "x": 396.4,
-          "y": 9439.2,
+          "y": 9467.2,
           "w": 38.7,
           "h": 17
         },
@@ -4233,6 +8358,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_59_0@375.png",
@@ -4263,16 +8393,70 @@
       "srcTag": "a",
       "srcOwnText": "Website by Small Giants Studio",
       "snippet": "<a href=\"https://smallgiantsstudio.com\" style=\"justify-self:{{ rightJust }};color:#3A2A22;font-weight:700;text-decoration:none;white-space:nowrap\" style-hover=\"text-decoration:underline\" data-dc-tpl=\"60\">Website by Small Giants Studio</a>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "14px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "210.609px",
+          "height": "17px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "14px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "210.609px",
+          "height": "17px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "14px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "210.609px",
+          "height": "17px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 82.2,
-          "y": 10285.2,
+          "y": 10311.2,
           "w": 210.6,
           "h": 17
         },
         "768": {
           "x": 278.7,
-          "y": 9466.2,
+          "y": 9494.2,
           "w": 210.6,
           "h": 17
         },
@@ -4295,11 +8479,53 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_SiteFooter_250_0_60_0@375.png",
         "1440": "shots/Root_SiteFooter_250_0_60_0@1440.png"
       }
     }
-  ]
+  ],
+  "sources": {
+    "files": {
+      "Account.dc.html": "569c41da66b4296faa81347c53f0d5d922d7bca67aed70fdb23df5efee8d01b5",
+      "Basket.dc.html": "f4520e82997834a44f5c99b456e3b9ca4a9fcdab575314d4b266bb2c8945bb8e",
+      "Checkout.dc.html": "19b5c1fec140b77d22c72b5110d1a675f2aa985330b72803e5cd3a7570d8891b",
+      "Confirmation.dc.html": "ddfcd751828e19d938d173826d514e40830a97221e4c6fa19e03c7836053f046",
+      "Contact.dc.html": "bcb3e4bcc8e1fdddb9abf777afab9396c7d06f809ba7b9cbd64a722205607b85",
+      "Gifts.dc.html": "c653d9aa8ca4475d3f1cfc45bd1f691341abd57ed56bedf07ee3cbfde2e227a9",
+      "Help.dc.html": "e705fc78ad76548eada464f2feee868d8ae5a40a8632c0e7f13a841f87bb55d6",
+      "Home.dc.html": "c25fa7cf4d35f8a68895902d7413f0534c7932cb3d8ca0bab692843bdf0282ca",
+      "Product.dc.html": "8100f5944df6e5191dc960779a192e7b5116417ffefc39270247c08b04936960",
+      "ProductCard.dc.html": "2f393444d81d0d03701e01e790a5aa5a49e0ecb46ba8ab2071f7193e34211f30",
+      "README.md": "09a85b34b22187e5be6458af75461cbd11e0536d95d868812d4ef7b247cd5163",
+      "Shop.dc.html": "0dabe1dff85052f3258910eca5f86e3d0aa23746907450bf855912fd2c378a80",
+      "SignIn.dc.html": "df5318346b9d9c84d026ea73bd034cd4a83dd5fe71fd3abd0e6f32cd716c1926",
+      "SiteFooter.dc.html": "7a3f377969e9e4c48d67080bdf5aed13509e7b583de0e0deed71f81b49b45b9b",
+      "SiteHeader.dc.html": "46e9c1365470b53cd9f3c8577f48ff93e97b663ae70a736af1eeb3ae9f02d0f2",
+      "animations.json": "10cff8410cac5c7ab9d50558203278fc1ea3acd0d47744b254b24024aac2743f",
+      "assets/logo-horizontal.png": "55fd2eef5bfbd2ae7aa067b3cfdfd5f0c2170185540935d152cac25bd8dad49c",
+      "assets/logo-round.png": "d1c039733af429dcaf0b2c8a051248cc1702c9501db1fcaf44d58eb427ce7815",
+      "assets/photo-bags-pink.jpg": "3aee33ac0ff61ff2005175c225879567d0591a9180a22e71543fc72e72179334",
+      "assets/photo-bun-case.jpg": "9875e09f8751f4f974025ad72aee8a773fec2262646e302d59a05209b197335d",
+      "assets/photo-gift-heart.jpg": "7825c0c1f5aaaf160cd0c4b4aab58b0824f99cfa9b927ca5f96fad2f308e3479",
+      "assets/photo-hero-mug.jpg": "6f5411ae2730cd6edf90b6a2c71e5714f6f6d9b4dcedf778a083a4538afa7cdf",
+      "assets/photo-pair-love.jpg": "c100f3ec56b7133a8ec26bb64dfa09d10f6dbc4499468ceabaf4acbeb2ced6f0",
+      "assets/photo-tray-love.jpg": "dc2306611ac203dbef6579eee755cf0d4bb6fb250f25216fd88caf17c423f63c",
+      "store.js": "5136ec82d5671747da32799d692b6c4ff5a39c2f0514e2398cc0a1a7a1545179",
+      "support.js": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe",
+      "surfaces.json": "4d7d9f56be27fc79b9e498b285a8e8304ec7068899f10e78f0264a6cf354e9ab",
+      "tokens/colors.css": "ef63ad226532ea7fac236ae01c9f0ab6afe09766644ec6eb64048c19b2ebf899",
+      "tokens/spacing.css": "f2ee00b6ce5813407d7938c18ad869209a6c92bb861a56355f540a66399bf5fa",
+      "tokens/typography.css": "805e2a943a3484599ae1f0e4bd379d207e688ec48237113ea135eb03250e97df"
+    },
+    "route": {
+      "commit": "c7b9372ff87779727f538697e5cac12afe50b1c8"
+    }
+  }
 }

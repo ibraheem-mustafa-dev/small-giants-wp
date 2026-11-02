@@ -7,14 +7,44 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-about-0",
-          "textColour": "custom-ink",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
+          },
+          "gridItemTextColour": "slate",
+          "gridItemBackground": "brand-gold-light",
+          "gridItemPadding": {
+            "mobile": {
+              "top": "32px",
+              "right": "20px",
+              "bottom": "52px",
+              "left": "20px"
+            },
+            "desktop": {
+              "top": "44px",
+              "right": "40px",
+              "bottom": "88px",
+              "left": "40px"
+            },
+            "tablet": {
+              "right": "32px",
+              "bottom": "72px",
+              "left": "32px"
+            }
           },
           "contentWidth": {
             "desktop": "full"
           },
-          "textColourHover": "custom-ink"
+          "textColourHover": "ink",
+          "padding": {
+            "desktop": {
+              "right": "0px",
+              "left": "0px"
+            }
+          },
+          "sgsCustomCss": "@media (max-width: 767px) { & .sgs-container__inner > p:nth-of-type(1) { min-height: 520px; } } @media (min-width: 768px) and (max-width: 1023px) { & .sgs-container__inner > p:nth-of-type(1) { min-height: 560px; } } @media (min-width: 1024px) { & .sgs-container__inner > p:nth-of-type(1) { min-height: 620px; } } & .sgs-container__inner > p:nth-of-type(1) { overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { overflow-x: clip; overflow-y: clip; position: relative; }",
+          "sgsCustomCssId": "r4eacbd6a951",
+          "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) 0-767px min-height: 520px;, & .sgs-container__inner > p:nth-of-type(1) 768-1023px min-height: 560px;, & .sgs-container__inner > p:nth-of-type(1) 1024px and up min-height: 620px;, & .sgs-container__inner > p:nth-of-type(1) every width overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width overflow-x: clip; overflow-y: clip; position: relative;"
         }
       }
     ],
@@ -24,14 +54,44 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-our-story-0",
-          "textColour": "custom-ink",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
+          },
+          "gridItemTextColour": "slate",
+          "gridItemBackgroundGradient": "linear-gradient(135deg, rgb(235, 221, 120) 0%, rgb(227, 211, 95) 50%, rgb(216, 202, 80) 100%)",
+          "gridItemPadding": {
+            "mobile": {
+              "top": "32px",
+              "right": "20px",
+              "bottom": "52px",
+              "left": "20px"
+            },
+            "desktop": {
+              "top": "44px",
+              "right": "40px",
+              "bottom": "88px",
+              "left": "40px"
+            },
+            "tablet": {
+              "right": "32px",
+              "bottom": "72px",
+              "left": "32px"
+            }
           },
           "contentWidth": {
             "desktop": "full"
           },
-          "textColourHover": "custom-ink"
+          "textColourHover": "ink",
+          "padding": {
+            "desktop": {
+              "right": "0px",
+              "left": "0px"
+            }
+          },
+          "sgsCustomCss": "@media (prefers-reduced-motion: no-preference){ & #sunrays_spin { animation: sgs-loop-a-40 40s linear infinite; } } @keyframes sgs-loop-a-40 { 0%{rotate:0deg} 100%{rotate:360deg} } & .sgs-container__inner > p:nth-of-type(1) { overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { overflow-x: clip; overflow-y: clip; position: relative; }",
+          "sgsCustomCssId": "r135acc5c510",
+          "sgsCustomCssNote": "Written by the cloning route: Loop A-40: Web Animation in setHeroSvgEl on #sunrays_spin; Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width overflow-x: clip; overflow-y: clip; position: relative;"
         }
       }
     ],
@@ -41,14 +101,44 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-certifications-0",
-          "textColour": "custom-ink",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
+          },
+          "gridItemTextColour": "slate",
+          "gridItemBackgroundGradient": "linear-gradient(135deg, rgb(235, 221, 120) 0%, rgb(227, 211, 95) 50%, rgb(216, 202, 80) 100%)",
+          "gridItemPadding": {
+            "mobile": {
+              "top": "32px",
+              "right": "20px",
+              "bottom": "52px",
+              "left": "20px"
+            },
+            "desktop": {
+              "top": "44px",
+              "right": "40px",
+              "bottom": "88px",
+              "left": "40px"
+            },
+            "tablet": {
+              "right": "32px",
+              "bottom": "72px",
+              "left": "32px"
+            }
           },
           "contentWidth": {
             "desktop": "full"
           },
-          "textColourHover": "custom-ink"
+          "textColourHover": "ink",
+          "padding": {
+            "desktop": {
+              "right": "0px",
+              "left": "0px"
+            }
+          },
+          "sgsCustomCss": "@media (prefers-reduced-motion: no-preference){ & #sunrays_spin { animation: sgs-loop-a-40 40s linear infinite; } } @keyframes sgs-loop-a-40 { 0%{rotate:0deg} 100%{rotate:360deg} } & .sgs-container__inner > p:nth-of-type(1) { overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { overflow-x: clip; overflow-y: clip; position: relative; }",
+          "sgsCustomCssId": "r05aa402c024",
+          "sgsCustomCssNote": "Written by the cloning route: Loop A-40: Web Animation in setHeroSvgEl on #sunrays_spin; Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width overflow-x: clip; overflow-y: clip; position: relative;"
         }
       }
     ],
@@ -58,14 +148,44 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-community-0",
-          "textColour": "custom-ink",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
+          },
+          "gridItemTextColour": "slate",
+          "gridItemBackgroundGradient": "linear-gradient(135deg, rgb(235, 221, 120) 0%, rgb(227, 211, 95) 50%, rgb(216, 202, 80) 100%)",
+          "gridItemPadding": {
+            "mobile": {
+              "top": "32px",
+              "right": "20px",
+              "bottom": "52px",
+              "left": "20px"
+            },
+            "desktop": {
+              "top": "44px",
+              "right": "40px",
+              "bottom": "88px",
+              "left": "40px"
+            },
+            "tablet": {
+              "right": "32px",
+              "bottom": "72px",
+              "left": "32px"
+            }
           },
           "contentWidth": {
             "desktop": "full"
           },
-          "textColourHover": "custom-ink"
+          "textColourHover": "ink",
+          "padding": {
+            "desktop": {
+              "right": "0px",
+              "left": "0px"
+            }
+          },
+          "sgsCustomCss": "@media (prefers-reduced-motion: no-preference){ & #sunrays_spin { animation: sgs-loop-a-40 40s linear infinite; } } @keyframes sgs-loop-a-40 { 0%{rotate:0deg} 100%{rotate:360deg} } & .sgs-container__inner > p:nth-of-type(1) { overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { overflow-x: clip; overflow-y: clip; position: relative; }",
+          "sgsCustomCssId": "rbdbfbd4bab3",
+          "sgsCustomCssNote": "Written by the cloning route: Loop A-40: Web Animation in setHeroSvgEl on #sunrays_spin; Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width overflow-x: clip; overflow-y: clip; position: relative;"
         }
       }
     ],
@@ -75,14 +195,44 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-sustainability-0",
-          "textColour": "custom-ink",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
+          },
+          "gridItemTextColour": "slate",
+          "gridItemBackgroundGradient": "linear-gradient(135deg, rgb(235, 221, 120) 0%, rgb(227, 211, 95) 50%, rgb(216, 202, 80) 100%)",
+          "gridItemPadding": {
+            "mobile": {
+              "top": "32px",
+              "right": "20px",
+              "bottom": "52px",
+              "left": "20px"
+            },
+            "desktop": {
+              "top": "44px",
+              "right": "40px",
+              "bottom": "88px",
+              "left": "40px"
+            },
+            "tablet": {
+              "right": "32px",
+              "bottom": "72px",
+              "left": "32px"
+            }
           },
           "contentWidth": {
             "desktop": "full"
           },
-          "textColourHover": "custom-ink"
+          "textColourHover": "ink",
+          "padding": {
+            "desktop": {
+              "right": "0px",
+              "left": "0px"
+            }
+          },
+          "sgsCustomCss": "@media (prefers-reduced-motion: no-preference){ & #sunrays_spin { animation: sgs-loop-a-40 40s linear infinite; } } @keyframes sgs-loop-a-40 { 0%{rotate:0deg} 100%{rotate:360deg} } & .sgs-container__inner > p:nth-of-type(1) { overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { overflow-x: clip; overflow-y: clip; position: relative; }",
+          "sgsCustomCssId": "r105e158fe43",
+          "sgsCustomCssNote": "Written by the cloning route: Loop A-40: Web Animation in setHeroSvgEl on #sunrays_spin; Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width overflow-x: clip; overflow-y: clip; position: relative;"
         }
       }
     ],
@@ -92,14 +242,44 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-careers-0",
-          "textColour": "custom-ink",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
+          },
+          "gridItemTextColour": "slate",
+          "gridItemBackgroundGradient": "linear-gradient(135deg, rgb(235, 221, 120) 0%, rgb(227, 211, 95) 50%, rgb(216, 202, 80) 100%)",
+          "gridItemPadding": {
+            "mobile": {
+              "top": "32px",
+              "right": "20px",
+              "bottom": "52px",
+              "left": "20px"
+            },
+            "desktop": {
+              "top": "44px",
+              "right": "40px",
+              "bottom": "88px",
+              "left": "40px"
+            },
+            "tablet": {
+              "right": "32px",
+              "bottom": "72px",
+              "left": "32px"
+            }
           },
           "contentWidth": {
             "desktop": "full"
           },
-          "textColourHover": "custom-ink"
+          "textColourHover": "ink",
+          "padding": {
+            "desktop": {
+              "right": "0px",
+              "left": "0px"
+            }
+          },
+          "sgsCustomCss": "@media (prefers-reduced-motion: no-preference){ & #sunrays_spin { animation: sgs-loop-a-40 40s linear infinite; } } @keyframes sgs-loop-a-40 { 0%{rotate:0deg} 100%{rotate:360deg} } & .sgs-container__inner > p:nth-of-type(1) { overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { overflow-x: clip; overflow-y: clip; position: relative; }",
+          "sgsCustomCssId": "re0cc0a51122",
+          "sgsCustomCssNote": "Written by the cloning route: Loop A-40: Web Animation in setHeroSvgEl on #sunrays_spin; Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width overflow-x: clip; overflow-y: clip; position: relative;"
         }
       }
     ],
@@ -109,14 +289,44 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-food-service-0",
-          "textColour": "custom-ink",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
+          },
+          "gridItemTextColour": "slate",
+          "gridItemBackgroundGradient": "linear-gradient(rgb(231, 215, 102) 0%, rgb(216, 202, 80) 100%)",
+          "gridItemPadding": {
+            "mobile": {
+              "top": "32px",
+              "right": "20px",
+              "bottom": "52px",
+              "left": "20px"
+            },
+            "desktop": {
+              "top": "44px",
+              "right": "40px",
+              "bottom": "88px",
+              "left": "40px"
+            },
+            "tablet": {
+              "right": "32px",
+              "bottom": "72px",
+              "left": "32px"
+            }
           },
           "contentWidth": {
             "desktop": "full"
           },
-          "textColourHover": "custom-ink"
+          "textColourHover": "ink",
+          "padding": {
+            "desktop": {
+              "right": "0px",
+              "left": "0px"
+            }
+          },
+          "sgsCustomCss": "@media (prefers-reduced-motion: no-preference){ & #sunrays_spin { animation: sgs-loop-a-40 40s linear infinite; } } @keyframes sgs-loop-a-40 { 0%{rotate:0deg} 100%{rotate:360deg} } & .sgs-container__inner > p:nth-of-type(1) { overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { overflow-x: clip; overflow-y: clip; position: relative; }",
+          "sgsCustomCssId": "r96f84bdf4de",
+          "sgsCustomCssNote": "Written by the cloning route: Loop A-40: Web Animation in setHeroSvgEl on #sunrays_spin; Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width overflow-x: clip; overflow-y: clip; position: relative;"
         }
       }
     ],
@@ -126,14 +336,44 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-manufacturing-0",
-          "textColour": "custom-ink",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
+          },
+          "gridItemTextColour": "slate",
+          "gridItemBackgroundGradient": "linear-gradient(to left bottom, rgb(46, 173, 226) 0%, rgb(216, 202, 80) 100%)",
+          "gridItemPadding": {
+            "mobile": {
+              "top": "32px",
+              "right": "20px",
+              "bottom": "52px",
+              "left": "20px"
+            },
+            "desktop": {
+              "top": "44px",
+              "right": "40px",
+              "bottom": "88px",
+              "left": "40px"
+            },
+            "tablet": {
+              "right": "32px",
+              "bottom": "72px",
+              "left": "32px"
+            }
           },
           "contentWidth": {
             "desktop": "full"
           },
-          "textColourHover": "custom-ink"
+          "textColourHover": "ink",
+          "padding": {
+            "desktop": {
+              "right": "0px",
+              "left": "0px"
+            }
+          },
+          "sgsCustomCss": "@media (prefers-reduced-motion: no-preference){ & #sunrays_spin { animation: sgs-loop-a-40 40s linear infinite; } } @keyframes sgs-loop-a-40 { 0%{rotate:0deg} 100%{rotate:360deg} } & .sgs-container__inner > p:nth-of-type(1) { overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { overflow-x: clip; overflow-y: clip; position: relative; }",
+          "sgsCustomCssId": "r298e0b0f7ca",
+          "sgsCustomCssNote": "Written by the cloning route: Loop A-40: Web Animation in setHeroSvgEl on #sunrays_spin; Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width overflow-x: clip; overflow-y: clip; position: relative;"
         }
       }
     ],
@@ -143,14 +383,44 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-retail-0",
-          "textColour": "custom-ink",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
+          },
+          "gridItemTextColour": "surface-white",
+          "gridItemBackgroundGradient": "linear-gradient(to right bottom, rgb(46, 173, 226) 0%, rgb(10, 126, 168) 100%)",
+          "gridItemPadding": {
+            "mobile": {
+              "top": "32px",
+              "right": "20px",
+              "bottom": "52px",
+              "left": "20px"
+            },
+            "desktop": {
+              "top": "44px",
+              "right": "40px",
+              "bottom": "88px",
+              "left": "40px"
+            },
+            "tablet": {
+              "right": "32px",
+              "bottom": "72px",
+              "left": "32px"
+            }
           },
           "contentWidth": {
             "desktop": "full"
           },
-          "textColourHover": "custom-ink"
+          "textColourHover": "ink",
+          "padding": {
+            "desktop": {
+              "right": "0px",
+              "left": "0px"
+            }
+          },
+          "sgsCustomCss": "@media (prefers-reduced-motion: no-preference){ & #sunrays_spin { animation: sgs-loop-a-40 40s linear infinite; } } @keyframes sgs-loop-a-40 { 0%{rotate:0deg} 100%{rotate:360deg} } & .sgs-container__inner > p:nth-of-type(1) { overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { overflow-x: clip; overflow-y: clip; position: relative; }",
+          "sgsCustomCssId": "r1876acf484f",
+          "sgsCustomCssNote": "Written by the cloning route: Loop A-40: Web Animation in setHeroSvgEl on #sunrays_spin; Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width overflow-x: clip; overflow-y: clip; position: relative;"
         }
       }
     ],
@@ -160,14 +430,44 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-wholesale-0",
-          "textColour": "custom-ink",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
+          },
+          "gridItemTextColour": "surface-white",
+          "gridItemBackgroundGradient": "linear-gradient(to left bottom, rgb(216, 202, 80) 0%, rgb(10, 126, 168) 100%)",
+          "gridItemPadding": {
+            "mobile": {
+              "top": "32px",
+              "right": "20px",
+              "bottom": "52px",
+              "left": "20px"
+            },
+            "desktop": {
+              "top": "44px",
+              "right": "40px",
+              "bottom": "88px",
+              "left": "40px"
+            },
+            "tablet": {
+              "right": "32px",
+              "bottom": "72px",
+              "left": "32px"
+            }
           },
           "contentWidth": {
             "desktop": "full"
           },
-          "textColourHover": "custom-ink"
+          "textColourHover": "ink",
+          "padding": {
+            "desktop": {
+              "right": "0px",
+              "left": "0px"
+            }
+          },
+          "sgsCustomCss": "@media (prefers-reduced-motion: no-preference){ & #sunrays_spin { animation: sgs-loop-a-40 40s linear infinite; } } @keyframes sgs-loop-a-40 { 0%{rotate:0deg} 100%{rotate:360deg} } & .sgs-container__inner > p:nth-of-type(1) { overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { overflow-x: clip; overflow-y: clip; position: relative; }",
+          "sgsCustomCssId": "rf1167c1d724",
+          "sgsCustomCssNote": "Written by the cloning route: Loop A-40: Web Animation in setHeroSvgEl on #sunrays_spin; Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width overflow-x: clip; overflow-y: clip; position: relative;"
         }
       }
     ],
@@ -177,14 +477,44 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-brands-0",
-          "textColour": "custom-ink",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
+          },
+          "gridItemTextColour": "slate",
+          "gridItemBackgroundGradient": "linear-gradient(135deg, rgb(235, 221, 120) 0%, rgb(227, 211, 95) 50%, rgb(216, 202, 80) 100%)",
+          "gridItemPadding": {
+            "mobile": {
+              "top": "32px",
+              "right": "20px",
+              "bottom": "52px",
+              "left": "20px"
+            },
+            "desktop": {
+              "top": "44px",
+              "right": "40px",
+              "bottom": "88px",
+              "left": "40px"
+            },
+            "tablet": {
+              "right": "32px",
+              "bottom": "72px",
+              "left": "32px"
+            }
           },
           "contentWidth": {
             "desktop": "full"
           },
-          "textColourHover": "custom-ink"
+          "textColourHover": "ink",
+          "padding": {
+            "desktop": {
+              "right": "0px",
+              "left": "0px"
+            }
+          },
+          "sgsCustomCss": "@media (prefers-reduced-motion: no-preference){ & #sunrays_spin { animation: sgs-loop-a-40 40s linear infinite; } } @keyframes sgs-loop-a-40 { 0%{rotate:0deg} 100%{rotate:360deg} } & .sgs-container__inner > p:nth-of-type(1) { overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { overflow-x: clip; overflow-y: clip; position: relative; }",
+          "sgsCustomCssId": "rc63c812c9d0",
+          "sgsCustomCssNote": "Written by the cloning route: Loop A-40: Web Animation in setHeroSvgEl on #sunrays_spin; Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width overflow-x: clip; overflow-y: clip; position: relative;"
         }
       }
     ],
@@ -194,14 +524,44 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-sanam-0",
-          "textColour": "custom-ink",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
+          },
+          "gridItemTextColour": "slate",
+          "gridItemBackgroundGradient": "linear-gradient(135deg, rgb(235, 221, 120) 0%, rgb(227, 211, 95) 50%, rgb(216, 202, 80) 100%)",
+          "gridItemPadding": {
+            "mobile": {
+              "top": "32px",
+              "right": "20px",
+              "bottom": "52px",
+              "left": "20px"
+            },
+            "desktop": {
+              "top": "44px",
+              "right": "40px",
+              "bottom": "88px",
+              "left": "40px"
+            },
+            "tablet": {
+              "right": "32px",
+              "bottom": "72px",
+              "left": "32px"
+            }
           },
           "contentWidth": {
             "desktop": "full"
           },
-          "textColourHover": "custom-ink"
+          "textColourHover": "ink",
+          "padding": {
+            "desktop": {
+              "right": "0px",
+              "left": "0px"
+            }
+          },
+          "sgsCustomCss": "@media (prefers-reduced-motion: no-preference){ & #sunrays_spin { animation: sgs-loop-a-40 40s linear infinite; } } @keyframes sgs-loop-a-40 { 0%{rotate:0deg} 100%{rotate:360deg} } & .sgs-container__inner > p:nth-of-type(1) { overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { overflow-x: clip; overflow-y: clip; position: relative; }",
+          "sgsCustomCssId": "rb91891b58ce",
+          "sgsCustomCssNote": "Written by the cloning route: Loop A-40: Web Animation in setHeroSvgEl on #sunrays_spin; Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width overflow-x: clip; overflow-y: clip; position: relative;"
         }
       }
     ],
@@ -211,14 +571,44 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-shan-0",
-          "textColour": "custom-ink",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
+          },
+          "gridItemTextColour": "slate",
+          "gridItemBackgroundGradient": "linear-gradient(135deg, rgb(235, 221, 120) 0%, rgb(227, 211, 95) 50%, rgb(216, 202, 80) 100%)",
+          "gridItemPadding": {
+            "mobile": {
+              "top": "32px",
+              "right": "20px",
+              "bottom": "52px",
+              "left": "20px"
+            },
+            "desktop": {
+              "top": "44px",
+              "right": "40px",
+              "bottom": "88px",
+              "left": "40px"
+            },
+            "tablet": {
+              "right": "32px",
+              "bottom": "72px",
+              "left": "32px"
+            }
           },
           "contentWidth": {
             "desktop": "full"
           },
-          "textColourHover": "custom-ink"
+          "textColourHover": "ink",
+          "padding": {
+            "desktop": {
+              "right": "0px",
+              "left": "0px"
+            }
+          },
+          "sgsCustomCss": "@media (prefers-reduced-motion: no-preference){ & #sunrays_spin { animation: sgs-loop-a-40 40s linear infinite; } } @keyframes sgs-loop-a-40 { 0%{rotate:0deg} 100%{rotate:360deg} } & .sgs-container__inner > p:nth-of-type(1) { overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { overflow-x: clip; overflow-y: clip; position: relative; }",
+          "sgsCustomCssId": "r6b491bf90be",
+          "sgsCustomCssNote": "Written by the cloning route: Loop A-40: Web Animation in setHeroSvgEl on #sunrays_spin; Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width overflow-x: clip; overflow-y: clip; position: relative;"
         }
       }
     ],
@@ -228,14 +618,44 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-green-leaf-0",
-          "textColour": "custom-ink",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
+          },
+          "gridItemTextColour": "slate",
+          "gridItemBackgroundGradient": "linear-gradient(135deg, rgb(235, 221, 120) 0%, rgb(227, 211, 95) 50%, rgb(216, 202, 80) 100%)",
+          "gridItemPadding": {
+            "mobile": {
+              "top": "32px",
+              "right": "20px",
+              "bottom": "52px",
+              "left": "20px"
+            },
+            "desktop": {
+              "top": "44px",
+              "right": "40px",
+              "bottom": "88px",
+              "left": "40px"
+            },
+            "tablet": {
+              "right": "32px",
+              "bottom": "72px",
+              "left": "32px"
+            }
           },
           "contentWidth": {
             "desktop": "full"
           },
-          "textColourHover": "custom-ink"
+          "textColourHover": "ink",
+          "padding": {
+            "desktop": {
+              "right": "0px",
+              "left": "0px"
+            }
+          },
+          "sgsCustomCss": "@media (prefers-reduced-motion: no-preference){ & #sunrays_spin { animation: sgs-loop-a-40 40s linear infinite; } } @keyframes sgs-loop-a-40 { 0%{rotate:0deg} 100%{rotate:360deg} } & .sgs-container__inner > p:nth-of-type(1) { overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { overflow-x: clip; overflow-y: clip; position: relative; }",
+          "sgsCustomCssId": "r80ef488cd57",
+          "sgsCustomCssNote": "Written by the cloning route: Loop A-40: Web Animation in setHeroSvgEl on #sunrays_spin; Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width overflow-x: clip; overflow-y: clip; position: relative;"
         }
       }
     ],
@@ -245,14 +665,44 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-lemon-tree-0",
-          "textColour": "custom-ink",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
+          },
+          "gridItemTextColour": "slate",
+          "gridItemBackgroundGradient": "linear-gradient(135deg, rgb(235, 221, 120) 0%, rgb(227, 211, 95) 50%, rgb(216, 202, 80) 100%)",
+          "gridItemPadding": {
+            "mobile": {
+              "top": "32px",
+              "right": "20px",
+              "bottom": "52px",
+              "left": "20px"
+            },
+            "desktop": {
+              "top": "44px",
+              "right": "40px",
+              "bottom": "88px",
+              "left": "40px"
+            },
+            "tablet": {
+              "right": "32px",
+              "bottom": "72px",
+              "left": "32px"
+            }
           },
           "contentWidth": {
             "desktop": "full"
           },
-          "textColourHover": "custom-ink"
+          "textColourHover": "ink",
+          "padding": {
+            "desktop": {
+              "right": "0px",
+              "left": "0px"
+            }
+          },
+          "sgsCustomCss": "@media (prefers-reduced-motion: no-preference){ & #sunrays_spin { animation: sgs-loop-a-40 40s linear infinite; } } @keyframes sgs-loop-a-40 { 0%{rotate:0deg} 100%{rotate:360deg} } & .sgs-container__inner > p:nth-of-type(1) { overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { overflow-x: clip; overflow-y: clip; position: relative; }",
+          "sgsCustomCssId": "r1616ec81885",
+          "sgsCustomCssNote": "Written by the cloning route: Loop A-40: Web Animation in setHeroSvgEl on #sunrays_spin; Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width overflow-x: clip; overflow-y: clip; position: relative;"
         }
       }
     ],
@@ -262,14 +712,44 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-apply-0",
-          "textColour": "custom-ink",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
+          },
+          "gridItemTextColour": "slate",
+          "gridItemBackgroundGradient": "linear-gradient(135deg, rgb(235, 221, 120) 0%, rgb(227, 211, 95) 50%, rgb(216, 202, 80) 100%)",
+          "gridItemPadding": {
+            "mobile": {
+              "top": "32px",
+              "right": "20px",
+              "bottom": "52px",
+              "left": "20px"
+            },
+            "desktop": {
+              "top": "44px",
+              "right": "40px",
+              "bottom": "88px",
+              "left": "40px"
+            },
+            "tablet": {
+              "right": "32px",
+              "bottom": "72px",
+              "left": "32px"
+            }
           },
           "contentWidth": {
             "desktop": "full"
           },
-          "textColourHover": "custom-ink"
+          "textColourHover": "ink",
+          "padding": {
+            "desktop": {
+              "right": "0px",
+              "left": "0px"
+            }
+          },
+          "sgsCustomCss": "@media (prefers-reduced-motion: no-preference){ & #sunrays_spin { animation: sgs-loop-a-40 40s linear infinite; } } @keyframes sgs-loop-a-40 { 0%{rotate:0deg} 100%{rotate:360deg} } & .sgs-container__inner > p:nth-of-type(1) { overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { overflow-x: clip; overflow-y: clip; position: relative; }",
+          "sgsCustomCssId": "r54249162ba0",
+          "sgsCustomCssNote": "Written by the cloning route: Loop A-40: Web Animation in setHeroSvgEl on #sunrays_spin; Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width overflow-x: clip; overflow-y: clip; position: relative;"
         }
       }
     ],
@@ -279,14 +759,44 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-catalogue-0",
-          "textColour": "custom-ink",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
+          },
+          "gridItemTextColour": "slate",
+          "gridItemBackgroundGradient": "linear-gradient(135deg, rgb(235, 221, 120) 0%, rgb(227, 211, 95) 50%, rgb(216, 202, 80) 100%)",
+          "gridItemPadding": {
+            "mobile": {
+              "top": "32px",
+              "right": "20px",
+              "bottom": "52px",
+              "left": "20px"
+            },
+            "desktop": {
+              "top": "44px",
+              "right": "40px",
+              "bottom": "88px",
+              "left": "40px"
+            },
+            "tablet": {
+              "right": "32px",
+              "bottom": "72px",
+              "left": "32px"
+            }
           },
           "contentWidth": {
             "desktop": "full"
           },
-          "textColourHover": "custom-ink"
+          "textColourHover": "ink",
+          "padding": {
+            "desktop": {
+              "right": "0px",
+              "left": "0px"
+            }
+          },
+          "sgsCustomCss": "@media (prefers-reduced-motion: no-preference){ & #sunrays_spin { animation: sgs-loop-a-40 40s linear infinite; } } @keyframes sgs-loop-a-40 { 0%{rotate:0deg} 100%{rotate:360deg} } & .sgs-container__inner > p:nth-of-type(1) { overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { overflow-x: clip; overflow-y: clip; position: relative; }",
+          "sgsCustomCssId": "r318f41339d5",
+          "sgsCustomCssNote": "Written by the cloning route: Loop A-40: Web Animation in setHeroSvgEl on #sunrays_spin; Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width overflow-x: clip; overflow-y: clip; position: relative;"
         }
       }
     ],
@@ -296,14 +806,44 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-delivery-0",
-          "textColour": "custom-ink",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
+          },
+          "gridItemTextColour": "slate",
+          "gridItemBackgroundGradient": "linear-gradient(135deg, rgb(235, 221, 120) 0%, rgb(227, 211, 95) 50%, rgb(216, 202, 80) 100%)",
+          "gridItemPadding": {
+            "mobile": {
+              "top": "32px",
+              "right": "20px",
+              "bottom": "52px",
+              "left": "20px"
+            },
+            "desktop": {
+              "top": "44px",
+              "right": "40px",
+              "bottom": "88px",
+              "left": "40px"
+            },
+            "tablet": {
+              "right": "32px",
+              "bottom": "72px",
+              "left": "32px"
+            }
           },
           "contentWidth": {
             "desktop": "full"
           },
-          "textColourHover": "custom-ink"
+          "textColourHover": "ink",
+          "padding": {
+            "desktop": {
+              "right": "0px",
+              "left": "0px"
+            }
+          },
+          "sgsCustomCss": "@media (prefers-reduced-motion: no-preference){ & #sunrays_spin { animation: sgs-loop-a-40 40s linear infinite; } } @keyframes sgs-loop-a-40 { 0%{rotate:0deg} 100%{rotate:360deg} } & .sgs-container__inner > p:nth-of-type(1) { overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { overflow-x: clip; overflow-y: clip; position: relative; }",
+          "sgsCustomCssId": "r6a758c62591",
+          "sgsCustomCssNote": "Written by the cloning route: Loop A-40: Web Animation in setHeroSvgEl on #sunrays_spin; Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width overflow-x: clip; overflow-y: clip; position: relative;"
         }
       }
     ],
@@ -313,14 +853,44 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-terms-0",
-          "textColour": "custom-ink",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
+          },
+          "gridItemTextColour": "slate",
+          "gridItemBackgroundGradient": "linear-gradient(135deg, rgb(235, 221, 120) 0%, rgb(227, 211, 95) 50%, rgb(216, 202, 80) 100%)",
+          "gridItemPadding": {
+            "mobile": {
+              "top": "32px",
+              "right": "20px",
+              "bottom": "52px",
+              "left": "20px"
+            },
+            "desktop": {
+              "top": "44px",
+              "right": "40px",
+              "bottom": "88px",
+              "left": "40px"
+            },
+            "tablet": {
+              "right": "32px",
+              "bottom": "72px",
+              "left": "32px"
+            }
           },
           "contentWidth": {
             "desktop": "full"
           },
-          "textColourHover": "custom-ink"
+          "textColourHover": "ink",
+          "padding": {
+            "desktop": {
+              "right": "0px",
+              "left": "0px"
+            }
+          },
+          "sgsCustomCss": "@media (prefers-reduced-motion: no-preference){ & #sunrays_spin { animation: sgs-loop-a-40 40s linear infinite; } } @keyframes sgs-loop-a-40 { 0%{rotate:0deg} 100%{rotate:360deg} } & .sgs-container__inner > p:nth-of-type(1) { overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { overflow-x: clip; overflow-y: clip; position: relative; }",
+          "sgsCustomCssId": "r99d069aeea9",
+          "sgsCustomCssNote": "Written by the cloning route: Loop A-40: Web Animation in setHeroSvgEl on #sunrays_spin; Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width overflow-x: clip; overflow-y: clip; position: relative;"
         }
       }
     ],
@@ -330,14 +900,44 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-contact-0",
-          "textColour": "custom-ink",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
+          },
+          "gridItemTextColour": "slate",
+          "gridItemBackgroundGradient": "linear-gradient(135deg, rgb(235, 221, 120) 0%, rgb(227, 211, 95) 50%, rgb(216, 202, 80) 100%)",
+          "gridItemPadding": {
+            "mobile": {
+              "top": "32px",
+              "right": "20px",
+              "bottom": "52px",
+              "left": "20px"
+            },
+            "desktop": {
+              "top": "44px",
+              "right": "40px",
+              "bottom": "88px",
+              "left": "40px"
+            },
+            "tablet": {
+              "right": "32px",
+              "bottom": "72px",
+              "left": "32px"
+            }
           },
           "contentWidth": {
             "desktop": "full"
           },
-          "textColourHover": "custom-ink"
+          "textColourHover": "ink",
+          "padding": {
+            "desktop": {
+              "right": "0px",
+              "left": "0px"
+            }
+          },
+          "sgsCustomCss": "@media (prefers-reduced-motion: no-preference){ & #sunrays_spin { animation: sgs-loop-a-40 40s linear infinite; } } @keyframes sgs-loop-a-40 { 0%{rotate:0deg} 100%{rotate:360deg} } & .sgs-container__inner > p:nth-of-type(1) { overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { overflow-x: clip; overflow-y: clip; position: relative; }",
+          "sgsCustomCssId": "rf9b2f1dcbe0",
+          "sgsCustomCssNote": "Written by the cloning route: Loop A-40: Web Animation in setHeroSvgEl on #sunrays_spin; Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width overflow-x: clip; overflow-y: clip; position: relative;"
         }
       }
     ],
@@ -347,14 +947,44 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-faqs-0",
-          "textColour": "custom-ink",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
+          },
+          "gridItemTextColour": "slate",
+          "gridItemBackgroundGradient": "linear-gradient(135deg, rgb(235, 221, 120) 0%, rgb(227, 211, 95) 50%, rgb(216, 202, 80) 100%)",
+          "gridItemPadding": {
+            "mobile": {
+              "top": "32px",
+              "right": "20px",
+              "bottom": "52px",
+              "left": "20px"
+            },
+            "desktop": {
+              "top": "44px",
+              "right": "40px",
+              "bottom": "88px",
+              "left": "40px"
+            },
+            "tablet": {
+              "right": "32px",
+              "bottom": "72px",
+              "left": "32px"
+            }
           },
           "contentWidth": {
             "desktop": "full"
           },
-          "textColourHover": "custom-ink"
+          "textColourHover": "ink",
+          "padding": {
+            "desktop": {
+              "right": "0px",
+              "left": "0px"
+            }
+          },
+          "sgsCustomCss": "@media (prefers-reduced-motion: no-preference){ & #sunrays_spin { animation: sgs-loop-a-40 40s linear infinite; } } @keyframes sgs-loop-a-40 { 0%{rotate:0deg} 100%{rotate:360deg} } & .sgs-container__inner > p:nth-of-type(1) { overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { overflow-x: clip; overflow-y: clip; position: relative; }",
+          "sgsCustomCssId": "r410b7495b87",
+          "sgsCustomCssNote": "Written by the cloning route: Loop A-40: Web Animation in setHeroSvgEl on #sunrays_spin; Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width overflow-x: clip; overflow-y: clip; position: relative;"
         }
       }
     ]

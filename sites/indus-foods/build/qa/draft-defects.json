@@ -1,6 +1,6 @@
 {
 	"client": "indus-foods",
-	"takenOn": "2026-10-27T15:06:37.428Z",
+	"takenOn": "2026-10-31T02:29:50.748Z",
 	"defects": [
 		{
 			"id": "defect:Indus Foods Website v2:87",
@@ -84,6 +84,24 @@
 				1440
 			],
 			"built": [
+				{
+					"state": "hover",
+					"prop": "color",
+					"values": {
+						"375": "#2C3E50",
+						"768": "#2C3E50",
+						"1440": "#2C3E50"
+					}
+				},
+				{
+					"state": "hover",
+					"prop": "color",
+					"values": {
+						"375": "#2C3E50",
+						"768": "#2C3E50",
+						"1440": "#2C3E50"
+					}
+				},
 				{
 					"state": "hover",
 					"prop": "color",

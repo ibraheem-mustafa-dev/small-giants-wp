@@ -3,7 +3,7 @@
 		"name": "sgs/site-footer",
 		"attributes": {},
 		"draftRef": {
-			"tpl": "Root/1124#0"
+			"tpl": "Root/1122#0"
 		},
 		"draftFingerprint": {
 			"tag": "footer",
@@ -11,7 +11,7 @@
 			"styleHash": "906c2415",
 			"parentTags": [],
 			"textHash": "1505",
-			"line": 1999
+			"line": 1996
 		},
 		"innerBlocks": [
 			{
@@ -28,7 +28,7 @@
 					"rowSlot": "columns"
 				},
 				"draftRef": {
-					"tpl": "Root/1125#0"
+					"tpl": "Root/1123#0"
 				},
 				"draftFingerprint": {
 					"tag": "div",
@@ -38,7 +38,7 @@
 						"footer"
 					],
 					"textHash": "1505",
-					"line": 2000
+					"line": 1997
 				},
 				"innerBlocks": [
 					{
@@ -47,7 +47,7 @@
 							"tagName": "div"
 						},
 						"draftRef": {
-							"tpl": "Root/1126#0"
+							"tpl": "Root/1124#0"
 						},
 						"draftFingerprint": {
 							"tag": "div",
@@ -58,26 +58,28 @@
 								"div"
 							],
 							"textHash": "1505",
-							"line": 2001
+							"line": 1998
 						},
 						"innerBlocks": [
 							{
 								"name": "sgs/responsive-logo",
-								"attributes": {},
+								"attributes": {
+									"logoId": 491
+								},
 								"draftRef": {
-									"tpl": "Root/1127#0"
+									"tpl": "Root/1125#0"
 								},
 								"draftFingerprint": {
-									"tag": "div",
+									"tag": "img",
 									"cls": "",
-									"styleHash": "58056218",
+									"styleHash": "8b059f85",
 									"parentTags": [
 										"footer",
 										"div",
 										"div"
 									],
-									"textHash": "a8dc18c9",
-									"line": 2002
+									"textHash": "1505",
+									"line": 1999
 								},
 								"innerBlocks": [],
 								"handover": [
@@ -94,7 +96,7 @@
 									"text": "Designer eyewear from an independent optician in Birmingham."
 								},
 								"draftRef": {
-									"tpl": "Root/1129#0"
+									"tpl": "Root/1126#0"
 								},
 								"draftFingerprint": {
 									"tag": "p",
@@ -106,7 +108,7 @@
 										"div"
 									],
 									"textHash": "bdb0a0d9",
-									"line": 2004
+									"line": 2000
 								},
 								"innerBlocks": []
 							},
@@ -114,7 +116,7 @@
 								"name": "sgs/gallery",
 								"attributes": {},
 								"draftRef": {
-									"tpl": "Root/1130#0"
+									"tpl": "Root/1127#0"
 								},
 								"draftFingerprint": {
 									"tag": "div",
@@ -126,11 +128,19 @@
 										"div"
 									],
 									"textHash": "1505",
-									"line": 2005
+									"line": 2001
 								},
 								"innerBlocks": []
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/1125#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/1126#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -139,7 +149,7 @@
 							"layout": "stack"
 						},
 						"draftRef": {
-							"tpl": "Root/1137#0"
+							"tpl": "Root/1134#0"
 						},
 						"draftFingerprint": {
 							"tag": "div",
@@ -150,7 +160,7 @@
 								"div"
 							],
 							"textHash": "1505",
-							"line": 2017
+							"line": 2013
 						},
 						"innerBlocks": [
 							{
@@ -159,7 +169,7 @@
 									"content": "Shop"
 								},
 								"draftRef": {
-									"tpl": "Root/1138#0"
+									"tpl": "Root/1135#0"
 								},
 								"draftFingerprint": {
 									"tag": "span",
@@ -171,27 +181,30 @@
 										"div"
 									],
 									"textHash": "7c8a2f61",
-									"line": 2017
+									"line": 2013
 								},
 								"innerBlocks": []
 							},
 							{
 								"name": "sgs/icon-list",
 								"attributes": {
+									"markerType": "none",
 									"items": [
 										{
-											"text": "Sunglasses"
+											"text": "Sunglasses",
+											"url": "/shop/"
 										},
 										{
 											"text": "All brands"
 										},
 										{
-											"text": "Prescription lenses"
+											"text": "Prescription lenses",
+											"url": "/prescription-lenses/"
 										}
 									]
 								},
 								"draftRef": {
-									"tpl": "Root/1139#0"
+									"tpl": "Root/1136#0"
 								},
 								"draftFingerprint": {
 									"tag": "a",
@@ -203,28 +216,40 @@
 										"div"
 									],
 									"textHash": "a820011",
-									"line": 2017
+									"line": 2013
 								},
 								"innerBlocks": [],
 								"handover": [
 									{
 										"owner": "behaviour",
 										"kind": "link",
-										"detail": "draft link \"Sunglasses\" is \"#\": its destination is not in the draft, url left empty"
-									},
-									{
-										"owner": "behaviour",
-										"kind": "link",
 										"detail": "draft link \"All brands\" is \"#\": its destination is not in the draft, url left empty"
-									},
-									{
-										"owner": "behaviour",
-										"kind": "link",
-										"detail": "draft link \"Prescription lenses\" is \"#\": its destination is not in the draft, url left empty"
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text": {
+										"tpl": "Root/1136#0"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)": {
+										"tpl": "Root/1136#0"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2)": {
+										"tpl": "Root/1137#0"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3)": {
+										"tpl": "Root/1138#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/1135#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/1136#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -233,7 +258,7 @@
 							"layout": "stack"
 						},
 						"draftRef": {
-							"tpl": "Root/1143#0"
+							"tpl": "Root/1140#0"
 						},
 						"draftFingerprint": {
 							"tag": "div",
@@ -244,7 +269,7 @@
 								"div"
 							],
 							"textHash": "1505",
-							"line": 2018
+							"line": 2014
 						},
 						"innerBlocks": [
 							{
@@ -253,7 +278,7 @@
 									"content": "Help"
 								},
 								"draftRef": {
-									"tpl": "Root/1144#0"
+									"tpl": "Root/1141#0"
 								},
 								"draftFingerprint": {
 									"tag": "span",
@@ -265,30 +290,34 @@
 										"div"
 									],
 									"textHash": "7c860174",
-									"line": 2018
+									"line": 2014
 								},
 								"innerBlocks": []
 							},
 							{
 								"name": "sgs/icon-list",
 								"attributes": {
+									"markerType": "none",
 									"items": [
 										{
-											"text": "Delivery & returns"
+											"text": "Delivery & returns",
+											"url": "/help/"
 										},
 										{
-											"text": "FAQs"
+											"text": "FAQs",
+											"url": "/help/"
 										},
 										{
 											"text": "Size guide"
 										},
 										{
-											"text": "Contact"
+											"text": "Contact",
+											"url": "/contact/"
 										}
 									]
 								},
 								"draftRef": {
-									"tpl": "Root/1145#0"
+									"tpl": "Root/1142#0"
 								},
 								"draftFingerprint": {
 									"tag": "a",
@@ -300,33 +329,43 @@
 										"div"
 									],
 									"textHash": "628d2966",
-									"line": 2018
+									"line": 2014
 								},
 								"innerBlocks": [],
 								"handover": [
 									{
 										"owner": "behaviour",
 										"kind": "link",
-										"detail": "draft link \"Delivery & returns\" is \"#\": its destination is not in the draft, url left empty"
-									},
-									{
-										"owner": "behaviour",
-										"kind": "link",
-										"detail": "draft link \"FAQs\" is \"#\": its destination is not in the draft, url left empty"
-									},
-									{
-										"owner": "behaviour",
-										"kind": "link",
 										"detail": "draft link \"Size guide\" is \"#\": its destination is not in the draft, url left empty"
-									},
-									{
-										"owner": "behaviour",
-										"kind": "link",
-										"detail": "draft link \"Contact\" is \"#\": its destination is not in the draft, url left empty"
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text": {
+										"tpl": "Root/1142#0"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)": {
+										"tpl": "Root/1142#0"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2)": {
+										"tpl": "Root/1143#0"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3)": {
+										"tpl": "Root/1144#0"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4)": {
+										"tpl": "Root/1145#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/1141#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/1142#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -335,7 +374,7 @@
 							"layout": "stack"
 						},
 						"draftRef": {
-							"tpl": "Root/1149#0"
+							"tpl": "Root/1146#0"
 						},
 						"draftFingerprint": {
 							"tag": "div",
@@ -346,7 +385,7 @@
 								"div"
 							],
 							"textHash": "1505",
-							"line": 2019
+							"line": 2015
 						},
 						"innerBlocks": [
 							{
@@ -355,7 +394,7 @@
 									"content": "Visit or call"
 								},
 								"draftRef": {
-									"tpl": "Root/1150#0"
+									"tpl": "Root/1147#0"
 								},
 								"draftFingerprint": {
 									"tag": "span",
@@ -367,16 +406,18 @@
 										"div"
 									],
 									"textHash": "dba88f4b",
-									"line": 2020
+									"line": 2016
 								},
 								"innerBlocks": []
 							},
 							{
 								"name": "sgs/icon-list",
 								"attributes": {
+									"markerType": "none",
 									"items": [
 										{
-											"text": "About Eye Care"
+											"text": "About Eye Care",
+											"url": "/about/"
 										},
 										{
 											"text": "",
@@ -390,7 +431,7 @@
 									]
 								},
 								"draftRef": {
-									"tpl": "Root/1151#0"
+									"tpl": "Root/1148#0"
 								},
 								"draftFingerprint": {
 									"tag": "a",
@@ -402,16 +443,23 @@
 										"div"
 									],
 									"textHash": "34b72d44",
-									"line": 2021
+									"line": 2017
 								},
 								"innerBlocks": [],
-								"handover": [
-									{
-										"owner": "behaviour",
-										"kind": "link",
-										"detail": "draft link \"About Eye Care\" is \"#\": its destination is not in the draft, url left empty"
+								"draftSlots": {
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text": {
+										"tpl": "Root/1148#0"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)": {
+										"tpl": "Root/1148#0"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2)": {
+										"tpl": "Root/1149#0"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3)": {
+										"tpl": "Root/1150#0"
 									}
-								]
+								}
 							},
 							{
 								"name": "sgs/business-info",
@@ -419,7 +467,7 @@
 									"displayType": "hours"
 								},
 								"draftRef": {
-									"tpl": "Root/1155#0"
+									"tpl": "Root/1152#0"
 								},
 								"draftFingerprint": {
 									"tag": "span",
@@ -431,7 +479,7 @@
 										"div"
 									],
 									"textHash": "811f1cb0",
-									"line": 2024
+									"line": 2020
 								},
 								"innerBlocks": [],
 								"handover": [
@@ -442,7 +490,15 @@
 									}
 								]
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/1147#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/1148#0"
+							}
+						}
 					}
 				]
 			},
@@ -453,7 +509,7 @@
 					"rowSlot": "bottom"
 				},
 				"draftRef": {
-					"tpl": "Root/1156#0"
+					"tpl": "Root/1153#0"
 				},
 				"draftFingerprint": {
 					"tag": "div",
@@ -463,7 +519,7 @@
 						"footer"
 					],
 					"textHash": "1505",
-					"line": 2027
+					"line": 2023
 				},
 				"innerBlocks": [
 					{
@@ -473,7 +529,7 @@
 							"copyrightPrefix": ""
 						},
 						"draftRef": {
-							"tpl": "Root/1157#0"
+							"tpl": "Root/1154#0"
 						},
 						"draftFingerprint": {
 							"tag": "span",
@@ -484,7 +540,7 @@
 								"div"
 							],
 							"textHash": "57bfe239",
-							"line": 2028
+							"line": 2024
 						},
 						"innerBlocks": [],
 						"handover": [
@@ -501,7 +557,7 @@
 							"layout": "flex"
 						},
 						"draftRef": {
-							"tpl": "Root/1158#0"
+							"tpl": "Root/1155#0"
 						},
 						"draftFingerprint": {
 							"tag": "span",
@@ -512,7 +568,7 @@
 								"div"
 							],
 							"textHash": "1505",
-							"line": 2029
+							"line": 2025
 						},
 						"innerBlocks": [
 							{
@@ -521,7 +577,7 @@
 									"label": "Privacy"
 								},
 								"draftRef": {
-									"tpl": "Root/1159#0"
+									"tpl": "Root/1156#0"
 								},
 								"draftFingerprint": {
 									"tag": "a",
@@ -533,7 +589,7 @@
 										"span"
 									],
 									"textHash": "cf47b943",
-									"line": 2029
+									"line": 2025
 								},
 								"innerBlocks": [],
 								"handover": [
@@ -542,7 +598,12 @@
 										"kind": "link",
 										"detail": "draft link is \"#\": destination not in the draft, url left empty"
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-button__label": {
+										"tpl": "Root/1156#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/button",
@@ -550,7 +611,7 @@
 									"label": "Terms"
 								},
 								"draftRef": {
-									"tpl": "Root/1160#0"
+									"tpl": "Root/1157#0"
 								},
 								"draftFingerprint": {
 									"tag": "a",
@@ -562,7 +623,7 @@
 										"span"
 									],
 									"textHash": "d92b8f8",
-									"line": 2029
+									"line": 2025
 								},
 								"innerBlocks": [],
 								"handover": [
@@ -571,17 +632,32 @@
 										"kind": "link",
 										"detail": "draft link is \"#\": destination not in the draft, url left empty"
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-button__label": {
+										"tpl": "Root/1157#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-button:nth-of-type(1)": {
+								"tpl": "Root/1156#0"
+							},
+							".sgs-button:nth-of-type(2)": {
+								"tpl": "Root/1157#0"
+							}
+						}
 					},
 					{
-						"name": "sgs/button",
+						"name": "sgs/whatsapp-cta",
 						"attributes": {
+							"variant": "floating",
+							"floatingHideLabelBelow": 768,
 							"label": "Ask me anything"
 						},
 						"draftRef": {
-							"tpl": "Root/1161#0"
+							"tpl": "Root/1158#0"
 						},
 						"draftFingerprint": {
 							"tag": "a",
@@ -589,9 +665,14 @@
 							"styleHash": "341774d3",
 							"parentTags": [],
 							"textHash": "1505",
-							"line": 2033
+							"line": 2029
 						},
-						"innerBlocks": []
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-whatsapp-cta__label": {
+								"tpl": "Root/1160#0"
+							}
+						}
 					}
 				]
 			}

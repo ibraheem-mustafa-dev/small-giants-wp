@@ -1,9 +1,11 @@
 [
 	{
 		"name": "sgs/form",
-		"attributes": {},
+		"attributes": {
+			"anchor": "form-submit-contact"
+		},
 		"draftRef": {
-			"tpl": "Root/682#0"
+			"tpl": "Root/680#0"
 		},
 		"draftFingerprint": {
 			"tag": "form",
@@ -11,16 +13,17 @@
 			"styleHash": "72138329",
 			"parentTags": [],
 			"textHash": "1505",
-			"line": 1456
+			"line": 1453
 		},
 		"innerBlocks": [
 			{
 				"name": "sgs/heading",
 				"attributes": {
-					"content": "Or send me a message"
+					"content": "Or send me a message",
+					"level": "h2"
 				},
 				"draftRef": {
-					"tpl": "Root/683#0"
+					"tpl": "Root/681#0"
 				},
 				"draftFingerprint": {
 					"tag": "h2",
@@ -30,7 +33,7 @@
 						"form"
 					],
 					"textHash": "34bdb466",
-					"line": 1457
+					"line": 1454
 				},
 				"innerBlocks": []
 			},
@@ -40,7 +43,7 @@
 					"text": "I answer these myself, usually the same day."
 				},
 				"draftRef": {
-					"tpl": "Root/684#0"
+					"tpl": "Root/682#0"
 				},
 				"draftFingerprint": {
 					"tag": "p",
@@ -50,7 +53,7 @@
 						"form"
 					],
 					"textHash": "24d34621",
-					"line": 1458
+					"line": 1455
 				},
 				"innerBlocks": []
 			},
@@ -61,7 +64,7 @@
 					"layout": "grid"
 				},
 				"draftRef": {
-					"tpl": "Root/685#0"
+					"tpl": "Root/683#0"
 				},
 				"draftFingerprint": {
 					"tag": "div",
@@ -71,7 +74,7 @@
 						"form"
 					],
 					"textHash": "1505",
-					"line": 1459
+					"line": 1456
 				},
 				"innerBlocks": [
 					{
@@ -79,6 +82,56 @@
 						"attributes": {
 							"required": true
 						},
+						"draftRef": {
+							"tpl": "Root/684#0"
+						},
+						"draftFingerprint": {
+							"tag": "input",
+							"cls": "",
+							"styleHash": "6f47842b",
+							"parentTags": [
+								"form",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 1457
+						},
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-form-field__input": {
+								"tpl": "Root/684#0"
+							}
+						}
+					},
+					{
+						"name": "sgs/form-field-email",
+						"attributes": {
+							"required": true
+						},
+						"draftRef": {
+							"tpl": "Root/685#0"
+						},
+						"draftFingerprint": {
+							"tag": "input",
+							"cls": "",
+							"styleHash": "6f47842b",
+							"parentTags": [
+								"form",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 1458
+						},
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-form-field__input": {
+								"tpl": "Root/685#0"
+							}
+						}
+					},
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {},
 						"draftRef": {
 							"tpl": "Root/686#0"
 						},
@@ -91,7 +144,7 @@
 								"div"
 							],
 							"textHash": "1505",
-							"line": 1460
+							"line": 1459
 						},
 						"innerBlocks": [],
 						"draftSlots": {
@@ -101,60 +154,10 @@
 						}
 					},
 					{
-						"name": "sgs/form-field-email",
-						"attributes": {
-							"required": true
-						},
-						"draftRef": {
-							"tpl": "Root/687#0"
-						},
-						"draftFingerprint": {
-							"tag": "input",
-							"cls": "",
-							"styleHash": "6f47842b",
-							"parentTags": [
-								"form",
-								"div"
-							],
-							"textHash": "1505",
-							"line": 1461
-						},
-						"innerBlocks": [],
-						"draftSlots": {
-							".sgs-form-field__input": {
-								"tpl": "Root/687#0"
-							}
-						}
-					},
-					{
-						"name": "sgs/form-field-text",
-						"attributes": {},
-						"draftRef": {
-							"tpl": "Root/688#0"
-						},
-						"draftFingerprint": {
-							"tag": "input",
-							"cls": "",
-							"styleHash": "6f47842b",
-							"parentTags": [
-								"form",
-								"div"
-							],
-							"textHash": "1505",
-							"line": 1462
-						},
-						"innerBlocks": [],
-						"draftSlots": {
-							".sgs-form-field__input": {
-								"tpl": "Root/688#0"
-							}
-						}
-					},
-					{
 						"name": "sgs/form-field-select",
 						"attributes": {},
 						"draftRef": {
-							"tpl": "Root/689#0"
+							"tpl": "Root/687#0"
 						},
 						"draftFingerprint": {
 							"tag": "select",
@@ -165,22 +168,30 @@
 								"div"
 							],
 							"textHash": "1505",
-							"line": 1463
+							"line": 1460
 						},
 						"innerBlocks": [],
 						"draftSlots": {
 							".sgs-form-field__input": {
-								"tpl": "Root/689#0"
+								"tpl": "Root/687#0"
 							}
 						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/684#0"
+					},
+					".sgs-container__inner > p:nth-of-type(2)": {
+						"tpl": "Root/685#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/form-field-textarea",
 				"attributes": {},
 				"draftRef": {
-					"tpl": "Root/696#0"
+					"tpl": "Root/694#0"
 				},
 				"draftFingerprint": {
 					"tag": "textarea",
@@ -190,12 +201,12 @@
 						"form"
 					],
 					"textHash": "1505",
-					"line": 1472
+					"line": 1469
 				},
 				"innerBlocks": [],
 				"draftSlots": {
 					".sgs-form-field__input": {
-						"tpl": "Root/696#0"
+						"tpl": "Root/694#0"
 					}
 				}
 			},
@@ -206,7 +217,7 @@
 					"layout": "flex"
 				},
 				"draftRef": {
-					"tpl": "Root/697#0"
+					"tpl": "Root/695#0"
 				},
 				"draftFingerprint": {
 					"tag": "div",
@@ -216,7 +227,7 @@
 						"form"
 					],
 					"textHash": "1505",
-					"line": 1473
+					"line": 1470
 				},
 				"innerBlocks": [
 					{
@@ -225,7 +236,7 @@
 							"label": "Send message"
 						},
 						"draftRef": {
-							"tpl": "Root/698#0"
+							"tpl": "Root/696#0"
 						},
 						"draftFingerprint": {
 							"tag": "button",
@@ -236,11 +247,21 @@
 								"div"
 							],
 							"textHash": "5b4a5872",
-							"line": 1474
+							"line": 1471
 						},
-						"innerBlocks": []
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-button__label": {
+								"tpl": "Root/696#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/696#0"
+					}
+				}
 			}
 		]
 	}

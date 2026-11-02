@@ -3,32 +3,6 @@
     "tpl": "Root/1235#0",
     "fingerprint": {
       "tag": "div",
-      "cls": "sgs-size-guide",
-      "styleHash": "a3d8ff89",
-      "parentTags": [],
-      "textHash": "1505",
-      "line": 2120
-    },
-    "draft": "10edcc3a998d8e4f"
-  },
-  "cr-ref-modal-size-guide-1": {
-    "tpl": "Root/1237#0",
-    "fingerprint": {
-      "tag": "div",
-      "cls": "",
-      "styleHash": "aa3e4e73",
-      "parentTags": [
-        "div"
-      ],
-      "textHash": "1505",
-      "line": 2122
-    },
-    "draft": "10edcc3a998d8e4f"
-  },
-  "cr-ref-modal-size-guide-2": {
-    "tpl": "Root/1238#0",
-    "fingerprint": {
-      "tag": "div",
       "cls": "",
       "styleHash": "a324480f",
       "parentTags": [
@@ -36,12 +10,15 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 2123
+      "line": 2119
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/1236#0"
+    },
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-3": {
-    "tpl": "Root/1239#0",
+  "cr-ref-modal-size-guide-1": {
+    "tpl": "Root/1236#0",
     "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -52,28 +29,31 @@
         "div"
       ],
       "textHash": "12a11827",
-      "line": 2124
+      "line": 2120
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-4": {
-    "tpl": "Root/1240#0",
+  "cr-ref-modal-size-guide-2": {
+    "tpl": "Root/1238#0",
     "fingerprint": {
-      "tag": "button",
+      "tag": "div",
       "cls": "",
-      "styleHash": "e18ab6fc",
+      "styleHash": "c9feff1b",
       "parentTags": [
-        "div",
         "div",
         "div"
       ],
-      "textHash": "2b572",
-      "line": 2125
+      "textHash": "1505",
+      "line": 2123
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/1239#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/1240#0"
+    },
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-5": {
-    "tpl": "Root/1242#0",
+  "cr-ref-modal-size-guide-3": {
+    "tpl": "Root/1239#0",
     "fingerprint": {
       "tag": "p",
       "cls": "",
@@ -84,12 +64,12 @@
         "div"
       ],
       "textHash": "2d923389",
-      "line": 2128
+      "line": 2124
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-6": {
-    "tpl": "Root/1243#0",
+  "cr-ref-modal-size-guide-4": {
+    "tpl": "Root/1240#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -100,12 +80,16 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 2129
+      "line": 2125
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/1241#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/1245#0"
+    },
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-7": {
-    "tpl": "Root/1244#0",
+  "cr-ref-modal-size-guide-5": {
+    "tpl": "Root/1241#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -117,12 +101,16 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 2130
+      "line": 2126
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/1242#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/1243#0"
+    },
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-8": {
-    "tpl": "Root/1245#0",
+  "cr-ref-modal-size-guide-6": {
+    "tpl": "Root/1242#0",
     "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -135,12 +123,12 @@
         "div"
       ],
       "textHash": "5967a5",
-      "line": 2131
+      "line": 2127
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-9": {
-    "tpl": "Root/1246#0",
+  "cr-ref-modal-size-guide-7": {
+    "tpl": "Root/1243#0",
     "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -153,12 +141,12 @@
         "div"
       ],
       "textHash": "67c0c347",
-      "line": 2131
+      "line": 2127
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-10": {
-    "tpl": "Root/1247#0",
+  "cr-ref-modal-size-guide-8": {
+    "tpl": "Root/1244#0",
     "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -171,12 +159,12 @@
         "div"
       ],
       "textHash": "b866d30",
-      "line": 2131
+      "line": 2127
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-11": {
-    "tpl": "Root/1248#0",
+  "cr-ref-modal-size-guide-9": {
+    "tpl": "Root/1245#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -188,12 +176,16 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 2133
+      "line": 2129
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/1246#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/1247#0"
+    },
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-12": {
-    "tpl": "Root/1249#0",
+  "cr-ref-modal-size-guide-10": {
+    "tpl": "Root/1246#0",
     "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -206,12 +198,12 @@
         "div"
       ],
       "textHash": "b57a21d7",
-      "line": 2134
+      "line": 2130
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-13": {
-    "tpl": "Root/1250#0",
+  "cr-ref-modal-size-guide-11": {
+    "tpl": "Root/1247#0",
     "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -224,12 +216,12 @@
         "div"
       ],
       "textHash": "a08083fa",
-      "line": 2134
+      "line": 2130
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-14": {
-    "tpl": "Root/1251#0",
+  "cr-ref-modal-size-guide-12": {
+    "tpl": "Root/1248#0",
     "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -242,12 +234,12 @@
         "div"
       ],
       "textHash": "bff4df40",
-      "line": 2134
+      "line": 2130
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-15": {
-    "tpl": "Root/1252#0",
+  "cr-ref-modal-size-guide-13": {
+    "tpl": "Root/1249#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -258,12 +250,16 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 2137
+      "line": 2133
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/1250#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/1253#0"
+    },
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-16": {
-    "tpl": "Root/1253#0",
+  "cr-ref-modal-size-guide-14": {
+    "tpl": "Root/1250#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -275,12 +271,16 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 2138
+      "line": 2134
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/1251#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/1252#0"
+    },
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-17": {
-    "tpl": "Root/1254#0",
+  "cr-ref-modal-size-guide-15": {
+    "tpl": "Root/1251#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -293,12 +293,12 @@
         "div"
       ],
       "textHash": "5e2fe17a",
-      "line": 2138
+      "line": 2134
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-18": {
-    "tpl": "Root/1255#0",
+  "cr-ref-modal-size-guide-16": {
+    "tpl": "Root/1252#0",
     "fingerprint": {
       "tag": "p",
       "cls": "",
@@ -311,12 +311,12 @@
         "div"
       ],
       "textHash": "627f8fe3",
-      "line": 2138
+      "line": 2134
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-19": {
-    "tpl": "Root/1256#0",
+  "cr-ref-modal-size-guide-17": {
+    "tpl": "Root/1253#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -328,12 +328,16 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 2139
+      "line": 2135
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/1254#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/1255#0"
+    },
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-20": {
-    "tpl": "Root/1257#0",
+  "cr-ref-modal-size-guide-18": {
+    "tpl": "Root/1254#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -346,12 +350,12 @@
         "div"
       ],
       "textHash": "91dd4216",
-      "line": 2139
+      "line": 2135
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-21": {
-    "tpl": "Root/1258#0",
+  "cr-ref-modal-size-guide-19": {
+    "tpl": "Root/1255#0",
     "fingerprint": {
       "tag": "p",
       "cls": "",
@@ -364,12 +368,12 @@
         "div"
       ],
       "textHash": "a450e46d",
-      "line": 2139
+      "line": 2135
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-22": {
-    "tpl": "Root/1259#0",
+  "cr-ref-modal-size-guide-20": {
+    "tpl": "Root/1256#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -381,12 +385,16 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 2140
+      "line": 2136
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/1257#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/1258#0"
+    },
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-23": {
-    "tpl": "Root/1260#0",
+  "cr-ref-modal-size-guide-21": {
+    "tpl": "Root/1257#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -399,12 +407,12 @@
         "div"
       ],
       "textHash": "739ca8a9",
-      "line": 2140
+      "line": 2136
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-24": {
-    "tpl": "Root/1261#0",
+  "cr-ref-modal-size-guide-22": {
+    "tpl": "Root/1258#0",
     "fingerprint": {
       "tag": "p",
       "cls": "",
@@ -417,12 +425,12 @@
         "div"
       ],
       "textHash": "e95d3f17",
-      "line": 2140
+      "line": 2136
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-25": {
-    "tpl": "Root/1262#0",
+  "cr-ref-modal-size-guide-23": {
+    "tpl": "Root/1259#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -433,12 +441,16 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 2142
+      "line": 2138
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/1260#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/1263#0"
+    },
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-26": {
-    "tpl": "Root/1263#0",
+  "cr-ref-modal-size-guide-24": {
+    "tpl": "Root/1260#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -450,12 +462,16 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 2143
+      "line": 2139
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/1261#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/1262#0"
+    },
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-27": {
-    "tpl": "Root/1264#0",
+  "cr-ref-modal-size-guide-25": {
+    "tpl": "Root/1261#0",
     "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -468,12 +484,12 @@
         "div"
       ],
       "textHash": "dcd9ada",
-      "line": 2143
+      "line": 2139
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-28": {
-    "tpl": "Root/1265#0",
+  "cr-ref-modal-size-guide-26": {
+    "tpl": "Root/1262#0",
     "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -486,12 +502,12 @@
         "div"
       ],
       "textHash": "e384c0ae",
-      "line": 2143
+      "line": 2139
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-29": {
-    "tpl": "Root/1266#0",
+  "cr-ref-modal-size-guide-27": {
+    "tpl": "Root/1263#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -503,12 +519,16 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 2144
+      "line": 2140
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/1264#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/1265#0"
+    },
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-30": {
-    "tpl": "Root/1267#0",
+  "cr-ref-modal-size-guide-28": {
+    "tpl": "Root/1264#0",
     "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -521,12 +541,12 @@
         "div"
       ],
       "textHash": "9dc79c78",
-      "line": 2144
+      "line": 2140
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-31": {
-    "tpl": "Root/1268#0",
+  "cr-ref-modal-size-guide-29": {
+    "tpl": "Root/1265#0",
     "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -539,12 +559,12 @@
         "div"
       ],
       "textHash": "a523c9da",
-      "line": 2144
+      "line": 2140
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-32": {
-    "tpl": "Root/1269#0",
+  "cr-ref-modal-size-guide-30": {
+    "tpl": "Root/1266#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -556,12 +576,16 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 2145
+      "line": 2141
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/1267#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/1268#0"
+    },
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-33": {
-    "tpl": "Root/1270#0",
+  "cr-ref-modal-size-guide-31": {
+    "tpl": "Root/1267#0",
     "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -574,12 +598,12 @@
         "div"
       ],
       "textHash": "d004ab8",
-      "line": 2145
+      "line": 2141
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-34": {
-    "tpl": "Root/1271#0",
+  "cr-ref-modal-size-guide-32": {
+    "tpl": "Root/1268#0",
     "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -592,12 +616,12 @@
         "div"
       ],
       "textHash": "7415665c",
-      "line": 2145
+      "line": 2141
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-modal-size-guide-35": {
-    "tpl": "Root/1272#0",
+  "cr-ref-modal-size-guide-33": {
+    "tpl": "Root/1269#0",
     "fingerprint": {
       "tag": "a",
       "cls": "scpo",
@@ -608,8 +632,29 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 2147
+      "line": 2143
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-whatsapp-cta__label": "Root/1272#0",
+      ".sgs-whatsapp-cta__icon": "Root/1270#0"
+    },
+    "draft": "9fdd17eaaf271355"
+  },
+  "cr-ref-modal-size-guide-34": {
+    "tpl": "Root/1232#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "sgs-size-guide",
+      "styleHash": "a3d8ff89",
+      "parentTags": [],
+      "textHash": "1505",
+      "line": 2116
+    },
+    "slots": {
+      "@scrim": "Root/1233#0",
+      ".sgs-modal__dialog": "Root/1234#0",
+      ".sgs-modal__dialog > .sgs-modal__close": "Root/1237#0"
+    },
+    "draft": "9fdd17eaaf271355"
   }
 }

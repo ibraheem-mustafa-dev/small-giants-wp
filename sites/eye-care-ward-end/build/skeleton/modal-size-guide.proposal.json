@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-28T06:46:43.736Z",
-	"inventory": "2026-10-27T13:41:00.573Z",
-	"source": "http://127.0.0.1:63054/Eye%20Care%20Birmingham.dc.html",
+	"generated": "2026-11-02T05:11:07.493Z",
+	"inventory": "2026-10-31T00:43:24.216Z",
+	"source": "http://127.0.0.1:52302/Eye%20Care%20Birmingham.dc.html",
 	"surface": "size-guide",
 	"siteName": "Eye Care Birmingham",
 	"surfaceParts": [],
@@ -24,25 +24,445 @@
 		"inventoryElements": 42,
 		"parts": 0,
 		"rows": 42,
-		"skeletonNodes": 36,
-		"expandedNodes": 36,
-		"low": 16,
-		"removed": 6,
+		"skeletonNodes": 35,
+		"expandedNodes": 35,
+		"low": 9,
+		"removed": 8,
 		"unresolved": 0,
 		"byRule": {
-			"decorationLayer": 1,
-			"alignWrapper": 1,
-			"pillButton": 5
+			"modalFrame": 4,
+			"label": 3,
+			"recognise": 5
 		}
+	},
+	"partPairing": {
+		"paired": 27,
+		"unpaired": [
+			{
+				"key": "Root/1235#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1235#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1235#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root/1235#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(2)",
+				"reason": "no inner block of this node stands at this place"
+			},
+			{
+				"key": "Root/1236#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1238#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1238#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1238#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1239#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1240#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1240#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1240#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1241#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1241#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1241#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1242#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1243#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1244#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1245#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1245#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1245#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1249#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1249#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1249#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1250#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1250#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1250#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1251#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1252#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1253#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1253#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1253#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1254#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1255#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1256#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1256#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1256#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1257#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1258#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1259#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1259#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1259#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1260#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1260#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1260#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1261#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1262#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1263#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1263#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1263#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1264#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1265#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1266#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1266#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1266#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1267#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1268#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1269#0",
+				"block": "sgs/whatsapp-cta",
+				"slot": ".sgs-whatsapp-cta__card-text > .sgs-whatsapp-cta__card-title",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/1269#0",
+				"block": "sgs/whatsapp-cta",
+				"slot": ".sgs-whatsapp-cta__card-text > .sgs-whatsapp-cta__card-subline",
+				"reason": "the draft has no element of its own here"
+			}
+		]
 	},
 	"widthAlternatives": [],
 	"problems": [],
 	"rows": [
 		{
 			"order": 0,
-			"key": "Root/1235#0",
+			"key": "Root/1232#0",
 			"tag": "div",
 			"depth": 0,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "the modal's full-viewport overlay: the sgs/modal frame draws the overlay, so its children are the post's content",
+			"source": "rule modalFrame",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "modalFrame",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div class=\"sgs-size-guide\" style=\"position:fixed;inset:0;z-index:78;display:flex;align-items:center;justify-content:center;padding: {{ modalPad }}\" data-dc-tpl=\"1232\"> <div sc-camel-on-click=\"{{ closeModal }}\" style=\"position:absolute;inset:0;background:rgba(20,20,20,.5);animation:fade .25s both\" data-dc-tpl=\"1233\"></div> <div role=\"dialog\" aria-label=\"Size guide\" style=\"position:relative;backgro",
+			"attributes": {}
+		},
+		{
+			"order": 1,
+			"key": "Root/1233#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "the modal's backdrop (an empty layer covering the overlay): its fill becomes the frame's scrim settings",
+			"source": "rule modalFrame",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "modalFrame",
+			"into": "Root/1232#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div sc-camel-on-click=\"{{ closeModal }}\" style=\"position:absolute;inset:0;background:rgba(20,20,20,.5);animation:fade .25s both\" data-dc-tpl=\"1233\"></div>",
+			"attributes": {}
+		},
+		{
+			"order": 2,
+			"key": "Root/1234#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "the modal's panel (the element declaring role dialog): the sgs/modal frame draws the panel and its paint becomes the frame's dialog settings, so its children are the post's content",
+			"source": "rule modalFrame",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "modalFrame",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div role=\"dialog\" aria-label=\"Size guide\" style=\"position:relative;background:#FAF8F5;border:1px solid #E6E1DA;width:100%;max-width:720px;max-height:88%;overflow:auto;box-shadow:0 30px 70px rgba(0,0,0,.3);animation:zoomIn .3s both\" data-dc-tpl=\"1234\"> <div style=\"display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;border-bottom:1px solid #E6E1DA;position:stick",
+			"attributes": {}
+		},
+		{
+			"order": 3,
+			"key": "Root/1235#0",
+			"tag": "div",
+			"depth": 2,
 			"words": "",
 			"block": "sgs/container",
 			"action": null,
@@ -52,6 +472,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -66,66 +487,71 @@
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<div class=\"sgs-size-guide\" style=\"position:fixed;inset:0;z-index:78;display:flex;align-items:center;justify-content:center;padding: {{ modalPad }}\" data-dc-tpl=\"1235\"> <div sc-camel-on-click=\"{{ closeModal }}\" style=\"position:absolute;inset:0;background:rgba(20,20,20,.5);animation:fade .25s both\" data-dc-tpl=\"1236\"></div> <div role=\"dialog\" aria-label=\"Size guide\" style=\"position:relative;backgro",
+			"snippet": "<div style=\"display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;border-bottom:1px solid #E6E1DA;position:sticky;top:0;background:#FAF8F5;z-index:2\" data-dc-tpl=\"1235\"> <span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:24px\" data-dc-tpl=\"1236\">Which size am I?</span> <button sc-camel-on-click=\"{{ closeModal }}\" aria-label=\"Close\" style=",
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/1236#0"
+				}
 			}
 		},
 		{
-			"order": 1,
+			"order": 4,
 			"key": "Root/1236#0",
-			"tag": "div",
-			"depth": 1,
-			"words": "",
-			"block": null,
-			"action": "remove",
-			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
-			"source": "rule decorationLayer",
-			"confidence": 1,
-			"low": false,
-			"stale": null,
-			"rule": "decorationLayer",
-			"candidates": [],
-			"parts": [],
-			"screenshots": {},
-			"snippet": "<div sc-camel-on-click=\"{{ closeModal }}\" style=\"position:absolute;inset:0;background:rgba(20,20,20,.5);animation:fade .25s both\" data-dc-tpl=\"1236\"></div>",
-			"attributes": {}
-		},
-		{
-			"order": 2,
-			"key": "Root/1237#0",
-			"tag": "div",
-			"depth": 1,
-			"words": "",
-			"block": "sgs/container",
+			"tag": "span",
+			"depth": 3,
+			"words": "Which size am I?",
+			"block": "sgs/heading",
 			"action": null,
 			"reason": null,
-			"source": null,
-			"confidence": 0.75,
+			"source": "client decision",
+			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/container",
-					"score": 0.75,
+					"block": "sgs/heading",
+					"score": 1,
 					"share": 1,
 					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper"
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: The 24px Playfair title of the size-guide modal beside its close button; sgs/heading."
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<div role=\"dialog\" aria-label=\"Size guide\" style=\"position:relative;background:#FAF8F5;border:1px solid #E6E1DA;width:100%;max-width:720px;max-height:88%;overflow:auto;box-shadow:0 30px 70px rgba(0,0,0,.3);animation:zoomIn .3s both\" data-dc-tpl=\"1237\"> <div style=\"display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;border-bottom:1px solid #E6E1DA;position:stick",
+			"snippet": "<span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:24px\" data-dc-tpl=\"1236\">Which size am I?</span>",
 			"attributes": {
-				"tagName": "div"
+				"content": "Which size am I?"
 			}
 		},
 		{
-			"order": 3,
+			"order": 5,
+			"key": "Root/1237#0",
+			"tag": "button",
+			"depth": 3,
+			"words": "×",
+			"block": null,
+			"action": "absorbed",
+			"reason": "the modal's close control (its click handler writes a falsy value to the state the modal opens on): the sgs/modal frame draws the close and its look becomes the frame's close settings; the draft's button is never built as a second, dead close",
+			"source": "rule modalFrame",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "modalFrame",
+			"into": "Root/1232#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ closeModal }}\" aria-label=\"Close\" style=\"background:none;border:0;font-size:28px;min-width:44px;min-height:44px;color:#141414\" data-dc-tpl=\"1237\">×</button>",
+			"attributes": {}
+		},
+		{
+			"order": 6,
 			"key": "Root/1238#0",
 			"tag": "div",
 			"depth": 2,
@@ -134,116 +560,40 @@
 			"action": null,
 			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {},
-			"snippet": "<div style=\"display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;border-bottom:1px solid #E6E1DA;position:sticky;top:0;background:#FAF8F5;z-index:2\" data-dc-tpl=\"1238\"> <span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:24px\" data-dc-tpl=\"1239\">Which size am I?</span> <button sc-camel-on-click=\"{{ closeModal }}\" aria-label=\"Close\" style=",
-			"attributes": {
-				"tagName": "div",
-				"layout": "flex"
-			}
-		},
-		{
-			"order": 4,
-			"key": "Root/1239#0",
-			"tag": "span",
-			"depth": 3,
-			"words": "Which size am I?",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {},
-			"snippet": "<span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:24px\" data-dc-tpl=\"1239\">Which size am I?</span>",
-			"attributes": {
-				"text": "Which size am I?"
-			}
-		},
-		{
-			"order": 5,
-			"key": "Root/1240#0",
-			"tag": "button",
-			"depth": 3,
-			"words": "×",
-			"block": "sgs/button",
-			"action": null,
-			"reason": null,
-			"source": null,
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
-					"block": "sgs/button",
+					"block": "sgs/container",
 					"score": 0.75,
 					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
-						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+						"block_composition: sgs/container is a wrapper-shell; element has 5 block children",
+						"no row block fits: a generic wrapper"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<button sc-camel-on-click=\"{{ closeModal }}\" aria-label=\"Close\" style=\"background:none;border:0;font-size:28px;min-width:44px;min-height:44px;color:#141414\" data-dc-tpl=\"1240\">×</button>",
+			"snippet": "<div style=\"padding:24px\" data-dc-tpl=\"1238\"> <p style=\"margin:0 0 20px;font-size:16px;color:#4A453E;text-wrap:pretty\" data-dc-tpl=\"1239\">The quickest way: pick up a pair of glasses you already like the fit of and look at the inside of the left arm. You'll find three numbers printed there.</p> <div style=\"background:#fff;border:1px solid #E6E1DA;padding:22px;text-align:center;margin-bottom:22px\" d",
 			"attributes": {
-				"label": "×"
+				"tagName": "div"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/1239#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/1240#0"
+				}
 			}
 		},
 		{
-			"order": 6,
-			"key": "Root/1241#0",
-			"tag": "div",
-			"depth": 2,
-			"words": "",
-			"block": null,
-			"action": "unwrap",
-			"reason": "a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13)",
-			"source": "rule alignWrapper",
-			"confidence": 1,
-			"low": false,
-			"stale": null,
-			"rule": "alignWrapper",
-			"candidates": [],
-			"parts": [],
-			"screenshots": {},
-			"snippet": "<div style=\"padding:24px\" data-dc-tpl=\"1241\"> <p style=\"margin:0 0 20px;font-size:16px;color:#4A453E;text-wrap:pretty\" data-dc-tpl=\"1242\">The quickest way: pick up a pair of glasses you already like the fit of and look at the inside of the left arm. You'll find three numbers printed there.</p> <div style=\"background:#fff;border:1px solid #E6E1DA;padding:22px;text-align:center;margin-bottom:22px\" d",
-			"attributes": {}
-		},
-		{
 			"order": 7,
-			"key": "Root/1242#0",
+			"key": "Root/1239#0",
 			"tag": "p",
 			"depth": 3,
 			"words": "The quickest way: pick up a pair of glasses you already like the fit of and look at the inside of the left arm. You'll find three numbers printed there.",
@@ -255,6 +605,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -268,14 +619,14 @@
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<p style=\"margin:0 0 20px;font-size:16px;color:#4A453E;text-wrap:pretty\" data-dc-tpl=\"1242\">The quickest way: pick up a pair of glasses you already like the fit of and look at the inside of the left arm. You'll find three numbers printed there.</p>",
+			"snippet": "<p style=\"margin:0 0 20px;font-size:16px;color:#4A453E;text-wrap:pretty\" data-dc-tpl=\"1239\">The quickest way: pick up a pair of glasses you already like the fit of and look at the inside of the left arm. You'll find three numbers printed there.</p>",
 			"attributes": {
 				"text": "The quickest way: pick up a pair of glasses you already like the fit of and look at the inside of the left arm. You'll find three numbers printed there."
 			}
 		},
 		{
 			"order": 8,
-			"key": "Root/1243#0",
+			"key": "Root/1240#0",
 			"tag": "div",
 			"depth": 3,
 			"words": "",
@@ -287,6 +638,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -300,14 +652,22 @@
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<div style=\"background:#fff;border:1px solid #E6E1DA;padding:22px;text-align:center;margin-bottom:22px\" data-dc-tpl=\"1243\"> <div style=\"display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:baseline;font-family:'Playfair Display',serif;font-weight:500;font-size:32px;letter-spacing:.04em\" data-dc-tpl=\"1244\"> <span data-dc-tpl=\"1245\">55</span><span data-dc-tpl=\"1246\">▫ 18</",
+			"snippet": "<div style=\"background:#fff;border:1px solid #E6E1DA;padding:22px;text-align:center;margin-bottom:22px\" data-dc-tpl=\"1240\"> <div style=\"display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:baseline;font-family:'Playfair Display',serif;font-weight:500;font-size:32px;letter-spacing:.04em\" data-dc-tpl=\"1241\"> <span data-dc-tpl=\"1242\">55</span><span data-dc-tpl=\"1243\">▫ 18</",
 			"attributes": {
 				"tagName": "div"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/1241#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/1245#0"
+				}
 			}
 		},
 		{
 			"order": 9,
-			"key": "Root/1244#0",
+			"key": "Root/1241#0",
 			"tag": "div",
 			"depth": 4,
 			"words": "",
@@ -319,6 +679,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -333,15 +694,23 @@
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<div style=\"display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:baseline;font-family:'Playfair Display',serif;font-weight:500;font-size:32px;letter-spacing:.04em\" data-dc-tpl=\"1244\"> <span data-dc-tpl=\"1245\">55</span><span data-dc-tpl=\"1246\">▫ 18</span><span data-dc-tpl=\"1247\">137</span> </div>",
+			"snippet": "<div style=\"display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:baseline;font-family:'Playfair Display',serif;font-weight:500;font-size:32px;letter-spacing:.04em\" data-dc-tpl=\"1241\"> <span data-dc-tpl=\"1242\">55</span><span data-dc-tpl=\"1243\">▫ 18</span><span data-dc-tpl=\"1244\">137</span> </div>",
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/1242#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/1243#0"
+				}
 			}
 		},
 		{
 			"order": 10,
-			"key": "Root/1245#0",
+			"key": "Root/1242#0",
 			"tag": "span",
 			"depth": 5,
 			"words": "55",
@@ -353,6 +722,7 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -365,14 +735,14 @@
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<span data-dc-tpl=\"1245\">55</span>",
+			"snippet": "<span data-dc-tpl=\"1242\">55</span>",
 			"attributes": {
 				"text": "55"
 			}
 		},
 		{
 			"order": 11,
-			"key": "Root/1246#0",
+			"key": "Root/1243#0",
 			"tag": "span",
 			"depth": 5,
 			"words": "▫ 18",
@@ -384,6 +754,7 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -396,14 +767,14 @@
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<span data-dc-tpl=\"1246\">▫ 18</span>",
+			"snippet": "<span data-dc-tpl=\"1243\">▫ 18</span>",
 			"attributes": {
 				"text": "▫ 18"
 			}
 		},
 		{
 			"order": 12,
-			"key": "Root/1247#0",
+			"key": "Root/1244#0",
 			"tag": "span",
 			"depth": 5,
 			"words": "137",
@@ -415,6 +786,7 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -427,14 +799,14 @@
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<span data-dc-tpl=\"1247\">137</span>",
+			"snippet": "<span data-dc-tpl=\"1244\">137</span>",
 			"attributes": {
 				"text": "137"
 			}
 		},
 		{
 			"order": 13,
-			"key": "Root/1248#0",
+			"key": "Root/1245#0",
 			"tag": "div",
 			"depth": 4,
 			"words": "",
@@ -446,6 +818,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -460,108 +833,119 @@
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<div style=\"display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#77716A\" data-dc-tpl=\"1248\"> <span data-dc-tpl=\"1249\">Lens width</span><span data-dc-tpl=\"1250\">Bridge</span><span data-dc-tpl=\"1251\">Temple</span> </div>",
+			"snippet": "<div style=\"display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#77716A\" data-dc-tpl=\"1245\"> <span data-dc-tpl=\"1246\">Lens width</span><span data-dc-tpl=\"1247\">Bridge</span><span data-dc-tpl=\"1248\">Temple</span> </div>",
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/1246#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/1247#0"
+				}
 			}
 		},
 		{
 			"order": 14,
-			"key": "Root/1249#0",
+			"key": "Root/1246#0",
 			"tag": "span",
 			"depth": 5,
 			"words": "Lens width",
-			"block": "sgs/text",
+			"block": "sgs/label",
 			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "label",
+			"acceptedDecision": true,
 			"candidates": [
 				{
-					"block": "sgs/text",
-					"score": 0.25,
+					"block": "sgs/label",
+					"score": 1,
 					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<span data-dc-tpl=\"1249\">Lens width</span>",
+			"snippet": "<span data-dc-tpl=\"1246\">Lens width</span>",
 			"attributes": {
 				"text": "Lens width"
 			}
 		},
 		{
 			"order": 15,
-			"key": "Root/1250#0",
+			"key": "Root/1247#0",
 			"tag": "span",
 			"depth": 5,
 			"words": "Bridge",
-			"block": "sgs/text",
+			"block": "sgs/label",
 			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "label",
+			"acceptedDecision": true,
 			"candidates": [
 				{
-					"block": "sgs/text",
-					"score": 0.25,
+					"block": "sgs/label",
+					"score": 1,
 					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<span data-dc-tpl=\"1250\">Bridge</span>",
+			"snippet": "<span data-dc-tpl=\"1247\">Bridge</span>",
 			"attributes": {
 				"text": "Bridge"
 			}
 		},
 		{
 			"order": 16,
-			"key": "Root/1251#0",
+			"key": "Root/1248#0",
 			"tag": "span",
 			"depth": 5,
 			"words": "Temple",
-			"block": "sgs/text",
+			"block": "sgs/label",
 			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "label",
+			"acceptedDecision": true,
 			"candidates": [
 				{
-					"block": "sgs/text",
-					"score": 0.25,
+					"block": "sgs/label",
+					"score": 1,
 					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<span data-dc-tpl=\"1251\">Temple</span>",
+			"snippet": "<span data-dc-tpl=\"1248\">Temple</span>",
 			"attributes": {
 				"text": "Temple"
 			}
 		},
 		{
 			"order": 17,
-			"key": "Root/1252#0",
+			"key": "Root/1249#0",
 			"tag": "div",
 			"depth": 3,
 			"words": "",
@@ -573,6 +957,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -587,14 +972,127 @@
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<div style=\"display:flex;flex-direction:column;gap:1px;background:#E6E1DA;border:1px solid #E6E1DA;margin-bottom:22px\" data-dc-tpl=\"1252\"> <div style=\"background:#fff;padding:18px 20px\" data-dc-tpl=\"1253\"><div style=\"font-size:15.5px;font-weight:500\" data-dc-tpl=\"1254\">Lens width — 42 to 62mm</div><p style=\"margin:5px 0 0;font-size:14.5px;color:#5E584F;text-wrap:pretty\" data-dc-tpl=\"1255\">The widt",
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:1px;background:#E6E1DA;border:1px solid #E6E1DA;margin-bottom:22px\" data-dc-tpl=\"1249\"> <div style=\"background:#fff;padding:18px 20px\" data-dc-tpl=\"1250\"><div style=\"font-size:15.5px;font-weight:500\" data-dc-tpl=\"1251\">Lens width — 42 to 62mm</div><p style=\"margin:5px 0 0;font-size:14.5px;color:#5E584F;text-wrap:pretty\" data-dc-tpl=\"1252\">The widt",
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/1250#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/1253#0"
+				}
 			}
 		},
 		{
 			"order": 18,
+			"key": "Root/1250#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"acceptedDecision": true,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"background:#fff;padding:18px 20px\" data-dc-tpl=\"1250\"><div style=\"font-size:15.5px;font-weight:500\" data-dc-tpl=\"1251\">Lens width — 42 to 62mm</div><p style=\"margin:5px 0 0;font-size:14.5px;color:#5E584F;text-wrap:pretty\" data-dc-tpl=\"1252\">The width of one lens at its widest. This is the number that decides whether a frame looks too small or too big on you.</p></div>",
+			"attributes": {
+				"tagName": "div"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/1251#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/1252#0"
+				}
+			}
+		},
+		{
+			"order": 19,
+			"key": "Root/1251#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "Lens width — 42 to 62mm",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: The medium-weight title of each measurement item with its description paragraph below; a title role, sgs/heading."
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"font-size:15.5px;font-weight:500\" data-dc-tpl=\"1251\">Lens width — 42 to 62mm</div>",
+			"attributes": {
+				"content": "Lens width — 42 to 62mm"
+			}
+		},
+		{
+			"order": 20,
+			"key": "Root/1252#0",
+			"tag": "p",
+			"depth": 5,
+			"words": "The width of one lens at its widest. This is the number that decides whether a frame looks too small or too big on you.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"acceptedDecision": true,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<p style=\"margin:5px 0 0;font-size:14.5px;color:#5E584F;text-wrap:pretty\" data-dc-tpl=\"1252\">The width of one lens at its widest. This is the number that decides whether a frame looks too small or too big on you.</p>",
+			"attributes": {
+				"text": "The width of one lens at its widest. This is the number that decides whether a frame looks too small or too big on you."
+			}
+		},
+		{
+			"order": 21,
 			"key": "Root/1253#0",
 			"tag": "div",
 			"depth": 4,
@@ -607,6 +1105,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -620,48 +1119,56 @@
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<div style=\"background:#fff;padding:18px 20px\" data-dc-tpl=\"1253\"><div style=\"font-size:15.5px;font-weight:500\" data-dc-tpl=\"1254\">Lens width — 42 to 62mm</div><p style=\"margin:5px 0 0;font-size:14.5px;color:#5E584F;text-wrap:pretty\" data-dc-tpl=\"1255\">The width of one lens at its widest. This is the number that decides whether a frame looks too small or too big on you.</p></div>",
+			"snippet": "<div style=\"background:#fff;padding:18px 20px\" data-dc-tpl=\"1253\"><div style=\"font-size:15.5px;font-weight:500\" data-dc-tpl=\"1254\">Bridge — 14 to 24mm</div><p style=\"margin:5px 0 0;font-size:14.5px;color:#5E584F;text-wrap:pretty\" data-dc-tpl=\"1255\">The gap between the lenses that sits over your nose. Too narrow and they pinch; too wide and they slide down.</p></div>",
 			"attributes": {
 				"tagName": "div"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/1254#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/1255#0"
+				}
 			}
 		},
 		{
-			"order": 19,
+			"order": 22,
 			"key": "Root/1254#0",
 			"tag": "div",
 			"depth": 5,
-			"words": "Lens width — 42 to 62mm",
-			"block": "sgs/text",
+			"words": "Bridge — 14 to 24mm",
+			"block": "sgs/heading",
 			"action": null,
 			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/text",
-					"score": 0.25,
+					"block": "sgs/heading",
+					"score": 1,
 					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: The medium-weight title of each measurement item with its description paragraph below; a title role, sgs/heading."
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<div style=\"font-size:15.5px;font-weight:500\" data-dc-tpl=\"1254\">Lens width — 42 to 62mm</div>",
+			"snippet": "<div style=\"font-size:15.5px;font-weight:500\" data-dc-tpl=\"1254\">Bridge — 14 to 24mm</div>",
 			"attributes": {
-				"text": "Lens width — 42 to 62mm"
+				"content": "Bridge — 14 to 24mm"
 			}
 		},
 		{
-			"order": 20,
+			"order": 23,
 			"key": "Root/1255#0",
 			"tag": "p",
 			"depth": 5,
-			"words": "The width of one lens at its widest. This is the number that decides whether a frame looks too small or too big on you.",
+			"words": "The gap between the lenses that sits over your nose. Too narrow and they pinch; too wide and they slide down.",
 			"block": "sgs/text",
 			"action": null,
 			"reason": null,
@@ -670,6 +1177,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -683,13 +1191,13 @@
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<p style=\"margin:5px 0 0;font-size:14.5px;color:#5E584F;text-wrap:pretty\" data-dc-tpl=\"1255\">The width of one lens at its widest. This is the number that decides whether a frame looks too small or too big on you.</p>",
+			"snippet": "<p style=\"margin:5px 0 0;font-size:14.5px;color:#5E584F;text-wrap:pretty\" data-dc-tpl=\"1255\">The gap between the lenses that sits over your nose. Too narrow and they pinch; too wide and they slide down.</p>",
 			"attributes": {
-				"text": "The width of one lens at its widest. This is the number that decides whether a frame looks too small or too big on you."
+				"text": "The gap between the lenses that sits over your nose. Too narrow and they pinch; too wide and they slide down."
 			}
 		},
 		{
-			"order": 21,
+			"order": 24,
 			"key": "Root/1256#0",
 			"tag": "div",
 			"depth": 4,
@@ -702,6 +1210,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -715,140 +1224,53 @@
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<div style=\"background:#fff;padding:18px 20px\" data-dc-tpl=\"1256\"><div style=\"font-size:15.5px;font-weight:500\" data-dc-tpl=\"1257\">Bridge — 14 to 24mm</div><p style=\"margin:5px 0 0;font-size:14.5px;color:#5E584F;text-wrap:pretty\" data-dc-tpl=\"1258\">The gap between the lenses that sits over your nose. Too narrow and they pinch; too wide and they slide down.</p></div>",
+			"snippet": "<div style=\"background:#fff;padding:18px 20px\" data-dc-tpl=\"1256\"><div style=\"font-size:15.5px;font-weight:500\" data-dc-tpl=\"1257\">Temple — 130 to 150mm</div><p style=\"margin:5px 0 0;font-size:14.5px;color:#5E584F;text-wrap:pretty\" data-dc-tpl=\"1258\">The length of the arm, ear bend included. I can adjust this in person, so it's the least critical of the three.</p></div>",
 			"attributes": {
 				"tagName": "div"
-			}
-		},
-		{
-			"order": 22,
-			"key": "Root/1257#0",
-			"tag": "div",
-			"depth": 5,
-			"words": "Bridge — 14 to 24mm",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
-					]
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/1257#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/1258#0"
 				}
-			],
-			"parts": [],
-			"screenshots": {},
-			"snippet": "<div style=\"font-size:15.5px;font-weight:500\" data-dc-tpl=\"1257\">Bridge — 14 to 24mm</div>",
-			"attributes": {
-				"text": "Bridge — 14 to 24mm"
-			}
-		},
-		{
-			"order": 23,
-			"key": "Root/1258#0",
-			"tag": "p",
-			"depth": 5,
-			"words": "The gap between the lenses that sits over your nose. Too narrow and they pinch; too wide and they slide down.",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.75,
-			"low": false,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
-						"block_composition: sgs/text is a leaf; the element holds words and no block children"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {},
-			"snippet": "<p style=\"margin:5px 0 0;font-size:14.5px;color:#5E584F;text-wrap:pretty\" data-dc-tpl=\"1258\">The gap between the lenses that sits over your nose. Too narrow and they pinch; too wide and they slide down.</p>",
-			"attributes": {
-				"text": "The gap between the lenses that sits over your nose. Too narrow and they pinch; too wide and they slide down."
-			}
-		},
-		{
-			"order": 24,
-			"key": "Root/1259#0",
-			"tag": "div",
-			"depth": 4,
-			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.75,
-			"low": false,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {},
-			"snippet": "<div style=\"background:#fff;padding:18px 20px\" data-dc-tpl=\"1259\"><div style=\"font-size:15.5px;font-weight:500\" data-dc-tpl=\"1260\">Temple — 130 to 150mm</div><p style=\"margin:5px 0 0;font-size:14.5px;color:#5E584F;text-wrap:pretty\" data-dc-tpl=\"1261\">The length of the arm, ear bend included. I can adjust this in person, so it's the least critical of the three.</p></div>",
-			"attributes": {
-				"tagName": "div"
 			}
 		},
 		{
 			"order": 25,
-			"key": "Root/1260#0",
+			"key": "Root/1257#0",
 			"tag": "div",
 			"depth": 5,
 			"words": "Temple — 130 to 150mm",
-			"block": "sgs/text",
+			"block": "sgs/heading",
 			"action": null,
 			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/text",
-					"score": 0.25,
+					"block": "sgs/heading",
+					"score": 1,
 					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: The medium-weight title of each measurement item with its description paragraph below; a title role, sgs/heading."
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<div style=\"font-size:15.5px;font-weight:500\" data-dc-tpl=\"1260\">Temple — 130 to 150mm</div>",
+			"snippet": "<div style=\"font-size:15.5px;font-weight:500\" data-dc-tpl=\"1257\">Temple — 130 to 150mm</div>",
 			"attributes": {
-				"text": "Temple — 130 to 150mm"
+				"content": "Temple — 130 to 150mm"
 			}
 		},
 		{
 			"order": 26,
-			"key": "Root/1261#0",
+			"key": "Root/1258#0",
 			"tag": "p",
 			"depth": 5,
 			"words": "The length of the arm, ear bend included. I can adjust this in person, so it's the least critical of the three.",
@@ -860,6 +1282,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -873,14 +1296,14 @@
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<p style=\"margin:5px 0 0;font-size:14.5px;color:#5E584F;text-wrap:pretty\" data-dc-tpl=\"1261\">The length of the arm, ear bend included. I can adjust this in person, so it's the least critical of the three.</p>",
+			"snippet": "<p style=\"margin:5px 0 0;font-size:14.5px;color:#5E584F;text-wrap:pretty\" data-dc-tpl=\"1258\">The length of the arm, ear bend included. I can adjust this in person, so it's the least critical of the three.</p>",
 			"attributes": {
 				"text": "The length of the arm, ear bend included. I can adjust this in person, so it's the least critical of the three."
 			}
 		},
 		{
 			"order": 27,
-			"key": "Root/1262#0",
+			"key": "Root/1259#0",
 			"tag": "div",
 			"depth": 3,
 			"words": "",
@@ -892,6 +1315,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -906,14 +1330,129 @@
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<div style=\"display:flex;flex-direction:column;gap:1px;background:#E6E1DA;border:1px solid #E6E1DA;margin-bottom:22px\" data-dc-tpl=\"1262\"> <div style=\"background:#fff;padding:16px 20px;display:flex;justify-content:space-between;gap:12px;font-size:15px\" data-dc-tpl=\"1263\"><span data-dc-tpl=\"1264\">Small</span><span style=\"color:#5E584F\" data-dc-tpl=\"1265\">lens width up to 52mm</span></div> <div styl",
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:1px;background:#E6E1DA;border:1px solid #E6E1DA;margin-bottom:22px\" data-dc-tpl=\"1259\"> <div style=\"background:#fff;padding:16px 20px;display:flex;justify-content:space-between;gap:12px;font-size:15px\" data-dc-tpl=\"1260\"><span data-dc-tpl=\"1261\">Small</span><span style=\"color:#5E584F\" data-dc-tpl=\"1262\">lens width up to 52mm</span></div> <div styl",
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/1260#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/1263#0"
+				}
 			}
 		},
 		{
 			"order": 28,
+			"key": "Root/1260#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"acceptedDecision": true,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"background:#fff;padding:16px 20px;display:flex;justify-content:space-between;gap:12px;font-size:15px\" data-dc-tpl=\"1260\"><span data-dc-tpl=\"1261\">Small</span><span style=\"color:#5E584F\" data-dc-tpl=\"1262\">lens width up to 52mm</span></div>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/1261#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/1262#0"
+				}
+			}
+		},
+		{
+			"order": 29,
+			"key": "Root/1261#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Small",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"acceptedDecision": true,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span data-dc-tpl=\"1261\">Small</span>",
+			"attributes": {
+				"text": "Small"
+			}
+		},
+		{
+			"order": 30,
+			"key": "Root/1262#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "lens width up to 52mm",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"acceptedDecision": true,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"color:#5E584F\" data-dc-tpl=\"1262\">lens width up to 52mm</span>",
+			"attributes": {
+				"text": "lens width up to 52mm"
+			}
+		},
+		{
+			"order": 31,
 			"key": "Root/1263#0",
 			"tag": "div",
 			"depth": 4,
@@ -926,6 +1465,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -940,18 +1480,26 @@
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<div style=\"background:#fff;padding:16px 20px;display:flex;justify-content:space-between;gap:12px;font-size:15px\" data-dc-tpl=\"1263\"><span data-dc-tpl=\"1264\">Small</span><span style=\"color:#5E584F\" data-dc-tpl=\"1265\">lens width up to 52mm</span></div>",
+			"snippet": "<div style=\"background:#fff;padding:16px 20px;display:flex;justify-content:space-between;gap:12px;font-size:15px\" data-dc-tpl=\"1263\"><span data-dc-tpl=\"1264\">Medium</span><span style=\"color:#5E584F\" data-dc-tpl=\"1265\">53 to 57mm</span></div>",
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/1264#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/1265#0"
+				}
 			}
 		},
 		{
-			"order": 29,
+			"order": 32,
 			"key": "Root/1264#0",
 			"tag": "span",
 			"depth": 5,
-			"words": "Small",
+			"words": "Medium",
 			"block": "sgs/text",
 			"action": null,
 			"reason": null,
@@ -960,6 +1508,7 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -972,17 +1521,17 @@
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<span data-dc-tpl=\"1264\">Small</span>",
+			"snippet": "<span data-dc-tpl=\"1264\">Medium</span>",
 			"attributes": {
-				"text": "Small"
+				"text": "Medium"
 			}
 		},
 		{
-			"order": 30,
+			"order": 33,
 			"key": "Root/1265#0",
 			"tag": "span",
 			"depth": 5,
-			"words": "lens width up to 52mm",
+			"words": "53 to 57mm",
 			"block": "sgs/text",
 			"action": null,
 			"reason": null,
@@ -991,6 +1540,7 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -1003,13 +1553,13 @@
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<span style=\"color:#5E584F\" data-dc-tpl=\"1265\">lens width up to 52mm</span>",
+			"snippet": "<span style=\"color:#5E584F\" data-dc-tpl=\"1265\">53 to 57mm</span>",
 			"attributes": {
-				"text": "lens width up to 52mm"
+				"text": "53 to 57mm"
 			}
 		},
 		{
-			"order": 31,
+			"order": 34,
 			"key": "Root/1266#0",
 			"tag": "div",
 			"depth": 4,
@@ -1022,6 +1572,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1036,111 +1587,23 @@
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<div style=\"background:#fff;padding:16px 20px;display:flex;justify-content:space-between;gap:12px;font-size:15px\" data-dc-tpl=\"1266\"><span data-dc-tpl=\"1267\">Medium</span><span style=\"color:#5E584F\" data-dc-tpl=\"1268\">53 to 57mm</span></div>",
+			"snippet": "<div style=\"background:#fff;padding:16px 20px;display:flex;justify-content:space-between;gap:12px;font-size:15px\" data-dc-tpl=\"1266\"><span data-dc-tpl=\"1267\">Large</span><span style=\"color:#5E584F\" data-dc-tpl=\"1268\">58mm and above</span></div>",
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
-			}
-		},
-		{
-			"order": 32,
-			"key": "Root/1267#0",
-			"tag": "span",
-			"depth": 5,
-			"words": "Medium",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/1267#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/1268#0"
 				}
-			],
-			"parts": [],
-			"screenshots": {},
-			"snippet": "<span data-dc-tpl=\"1267\">Medium</span>",
-			"attributes": {
-				"text": "Medium"
-			}
-		},
-		{
-			"order": 33,
-			"key": "Root/1268#0",
-			"tag": "span",
-			"depth": 5,
-			"words": "53 to 57mm",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {},
-			"snippet": "<span style=\"color:#5E584F\" data-dc-tpl=\"1268\">53 to 57mm</span>",
-			"attributes": {
-				"text": "53 to 57mm"
-			}
-		},
-		{
-			"order": 34,
-			"key": "Root/1269#0",
-			"tag": "div",
-			"depth": 4,
-			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {},
-			"snippet": "<div style=\"background:#fff;padding:16px 20px;display:flex;justify-content:space-between;gap:12px;font-size:15px\" data-dc-tpl=\"1269\"><span data-dc-tpl=\"1270\">Large</span><span style=\"color:#5E584F\" data-dc-tpl=\"1271\">58mm and above</span></div>",
-			"attributes": {
-				"tagName": "div",
-				"layout": "flex"
 			}
 		},
 		{
 			"order": 35,
-			"key": "Root/1270#0",
+			"key": "Root/1267#0",
 			"tag": "span",
 			"depth": 5,
 			"words": "Large",
@@ -1152,6 +1615,7 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -1164,14 +1628,14 @@
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<span data-dc-tpl=\"1270\">Large</span>",
+			"snippet": "<span data-dc-tpl=\"1267\">Large</span>",
 			"attributes": {
 				"text": "Large"
 			}
 		},
 		{
 			"order": 36,
-			"key": "Root/1271#0",
+			"key": "Root/1268#0",
 			"tag": "span",
 			"depth": 5,
 			"words": "58mm and above",
@@ -1183,6 +1647,7 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -1195,124 +1660,134 @@
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<span style=\"color:#5E584F\" data-dc-tpl=\"1271\">58mm and above</span>",
+			"snippet": "<span style=\"color:#5E584F\" data-dc-tpl=\"1268\">58mm and above</span>",
 			"attributes": {
 				"text": "58mm and above"
 			}
 		},
 		{
 			"order": 37,
-			"key": "Root/1272#0",
+			"key": "Root/1269#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "",
-			"block": "sgs/button",
+			"block": "sgs/whatsapp-cta",
 			"action": null,
-			"reason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link",
-			"source": "rule pillButton",
+			"reason": "names and attributes: sgs/whatsapp-cta holds whatsapp (score 1.00, features: flow, link kind whatsapp); in flow: variant = inline",
+			"source": "rule recognise",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "pillButton",
+			"rule": "recognise",
+			"acceptedDecision": true,
 			"candidates": [
 				{
-					"block": "sgs/button",
+					"block": "sgs/whatsapp-cta",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link"
+						"rule recognise: names and attributes: sgs/whatsapp-cta holds whatsapp (score 1.00, features: flow, link kind whatsapp); in flow: variant = inline"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<a href=\"https://wa.me/4479605978\" target=\"_blank\" rel=\"noopener\" style=\"display:flex;gap:14px;align-items:center;background:#E9F9EF;border:1px solid #B7E5C7;padding:16px 18px;transition:background .25s\" style-hover=\"background:#DCF4E5;color:#0F2E1C\" data-dc-tpl=\"1272\"> <span style=\"width:36px;height:36px;border-radius:50%;background:#25D366;color:#fff;display:inline-flex;align-items:center;justif",
+			"snippet": "<a href=\"https://wa.me/4479605978\" target=\"_blank\" rel=\"noopener\" style=\"display:flex;gap:14px;align-items:center;background:#E9F9EF;border:1px solid #B7E5C7;padding:16px 18px;transition:background .25s\" style-hover=\"background:#DCF4E5;color:#0F2E1C\" data-dc-tpl=\"1269\"> <span style=\"width:36px;height:36px;border-radius:50%;background:#25D366;color:#fff;display:inline-flex;align-items:center;justif",
 			"attributes": {
+				"variant": "inline",
 				"label": "Can't find the numbers? Send me a photo of the inside of the arm and I'll read it for you."
+			},
+			"slots": {
+				".sgs-whatsapp-cta__label": {
+					"tpl": "Root/1272#0"
+				},
+				".sgs-whatsapp-cta__icon": {
+					"tpl": "Root/1270#0"
+				}
 			}
 		},
 		{
 			"order": 38,
-			"key": "Root/1273#0",
+			"key": "Root/1270#0",
 			"tag": "span",
 			"depth": 4,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/button: rule pillButton",
+			"reason": "drawn by sgs/whatsapp-cta: rule recognise",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "pillButton",
-			"into": "Root/1272#0",
+			"rule": "recognise",
+			"into": "Root/1269#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<span style=\"width:36px;height:36px;border-radius:50%;background:#25D366;color:#fff;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0\" data-dc-tpl=\"1273\"> <img src=\"assets/whatsapp-white.svg\" alt=\"\" aria-hidden=\"true\" width=\"19\" height=\"19\" style=\"display:block\" data-dc-tpl=\"1274\"> </span>",
+			"snippet": "<span style=\"width:36px;height:36px;border-radius:50%;background:#25D366;color:#fff;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0\" data-dc-tpl=\"1270\"> <img src=\"assets/whatsapp-white.svg\" alt=\"\" aria-hidden=\"true\" width=\"19\" height=\"19\" style=\"display:block\" data-dc-tpl=\"1271\"> </span>",
 			"attributes": {}
 		},
 		{
 			"order": 39,
-			"key": "Root/1274#0",
+			"key": "Root/1271#0",
 			"tag": "img",
 			"depth": 5,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/button: rule pillButton",
+			"reason": "drawn by sgs/whatsapp-cta: rule recognise",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "pillButton",
-			"into": "Root/1272#0",
+			"rule": "recognise",
+			"into": "Root/1269#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<img src=\"assets/whatsapp-white.svg\" alt=\"\" aria-hidden=\"true\" width=\"19\" height=\"19\" style=\"display:block\" data-dc-tpl=\"1274\">",
+			"snippet": "<img src=\"assets/whatsapp-white.svg\" alt=\"\" aria-hidden=\"true\" width=\"19\" height=\"19\" style=\"display:block\" data-dc-tpl=\"1271\">",
 			"attributes": {}
 		},
 		{
 			"order": 40,
-			"key": "Root/1275#0",
+			"key": "Root/1272#0",
 			"tag": "span",
 			"depth": 4,
 			"words": "Can't find the numbers?",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/button: rule pillButton",
+			"reason": "drawn by sgs/whatsapp-cta: rule recognise",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "pillButton",
-			"into": "Root/1272#0",
+			"rule": "recognise",
+			"into": "Root/1269#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<span style=\"font-size:14.5px;color:#12301E;text-wrap:pretty\" data-dc-tpl=\"1275\">Can't find the numbers?<span style=\"display:block;font-size:13px;color:#2F5C3F;margin-top:2px\" data-dc-tpl=\"1276\">Send me a photo of the inside of the arm and I'll read it for you.</span></span>",
+			"snippet": "<span style=\"font-size:14.5px;color:#12301E;text-wrap:pretty\" data-dc-tpl=\"1272\">Can't find the numbers?<span style=\"display:block;font-size:13px;color:#2F5C3F;margin-top:2px\" data-dc-tpl=\"1273\">Send me a photo of the inside of the arm and I'll read it for you.</span></span>",
 			"attributes": {}
 		},
 		{
 			"order": 41,
-			"key": "Root/1276#0",
+			"key": "Root/1273#0",
 			"tag": "span",
 			"depth": 5,
 			"words": "Send me a photo of the inside of the arm and I'll read it for you.",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/button: rule pillButton",
+			"reason": "drawn by sgs/whatsapp-cta: rule recognise",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "pillButton",
-			"into": "Root/1272#0",
+			"rule": "recognise",
+			"into": "Root/1269#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
-			"snippet": "<span style=\"display:block;font-size:13px;color:#2F5C3F;margin-top:2px\" data-dc-tpl=\"1276\">Send me a photo of the inside of the arm and I'll read it for you.</span>",
+			"snippet": "<span style=\"display:block;font-size:13px;color:#2F5C3F;margin-top:2px\" data-dc-tpl=\"1273\">Send me a photo of the inside of the arm and I'll read it for you.</span>",
 			"attributes": {}
 		}
 	]

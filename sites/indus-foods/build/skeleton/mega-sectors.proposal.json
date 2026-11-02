@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-28T06:48:50.630Z",
-	"inventory": "2026-10-27T13:51:47.280Z",
-	"source": "http://127.0.0.1:49333/Indus%20Foods%20Website%20v2.dc.html",
+	"generated": "2026-11-02T05:00:12.568Z",
+	"inventory": "2026-10-31T01:39:57.463Z",
+	"source": "http://127.0.0.1:58295/Indus%20Foods%20Website%20v2.dc.html",
 	"surface": "sectors-mega-menu",
 	"siteName": null,
 	"surfaceParts": [],
@@ -20,24 +20,429 @@
 		"logo": 0.5,
 		"rule": 1
 	},
-	"builtPost": {
-		"site": "sandybrown",
-		"postType": "sgs_mega_menu",
-		"postId": 4443,
-		"title": "[QA] Indus mega: Sectors"
-	},
 	"counts": {
 		"inventoryElements": 29,
 		"parts": 0,
 		"rows": 29,
 		"skeletonNodes": 29,
 		"expandedNodes": 29,
-		"low": 0,
+		"low": 4,
 		"removed": 0,
 		"unresolved": 0,
 		"byRule": {
-			"clientBuiltSurface": 29
+			"megaGridContainer": 1,
+			"wholeCardLink": 4,
+			"mediaElement": 4,
+			"cardTitle": 4,
+			"cardAction": 4
 		}
+	},
+	"partPairing": {
+		"paired": 30,
+		"unpaired": [
+			{
+				"key": "Root/85#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/85#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/85#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/87#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/87#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/87#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/88#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/88#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/88#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/88#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(2)",
+				"reason": "no inner block of this node stands at this place"
+			},
+			{
+				"key": "Root/89#0",
+				"block": "sgs/media",
+				"slot": ".sgs-media__caption",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/89#0",
+				"block": "sgs/media",
+				"slot": ".sgs-video > .sgs-video__bar > .sgs-video__time",
+				"reason": ".sgs-video: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/90#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/90#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/90#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/91#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/92#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/93#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/93#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon > svg",
+				"reason": ".sgs-button__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/87#1",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/87#1",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/87#1",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/88#1",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/88#1",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/88#1",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/88#1",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(2)",
+				"reason": "no inner block of this node stands at this place"
+			},
+			{
+				"key": "Root/89#1",
+				"block": "sgs/media",
+				"slot": ".sgs-media__caption",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/89#1",
+				"block": "sgs/media",
+				"slot": ".sgs-video > .sgs-video__bar > .sgs-video__time",
+				"reason": ".sgs-video: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/90#1",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/90#1",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/90#1",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/91#1",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/92#1",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/93#1",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/93#1",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon > svg",
+				"reason": ".sgs-button__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/87#2",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/87#2",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/87#2",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/88#2",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/88#2",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/88#2",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/88#2",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(2)",
+				"reason": "no inner block of this node stands at this place"
+			},
+			{
+				"key": "Root/89#2",
+				"block": "sgs/media",
+				"slot": ".sgs-media__caption",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/89#2",
+				"block": "sgs/media",
+				"slot": ".sgs-video > .sgs-video__bar > .sgs-video__time",
+				"reason": ".sgs-video: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/90#2",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/90#2",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/90#2",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/91#2",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/92#2",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/93#2",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/93#2",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon > svg",
+				"reason": ".sgs-button__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/87#3",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/87#3",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/87#3",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/88#3",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/88#3",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/88#3",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/88#3",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(2)",
+				"reason": "no inner block of this node stands at this place"
+			},
+			{
+				"key": "Root/89#3",
+				"block": "sgs/media",
+				"slot": ".sgs-media__caption",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/89#3",
+				"block": "sgs/media",
+				"slot": ".sgs-video > .sgs-video__bar > .sgs-video__time",
+				"reason": ".sgs-video: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/90#3",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/90#3",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/90#3",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/91#3",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/92#3",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/93#3",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/93#3",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon > svg",
+				"reason": ".sgs-button__icon: the draft has no element of its own here"
+			}
+		]
 	},
 	"widthAlternatives": [],
 	"problems": [],
@@ -55,7 +460,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "megaGridContainer",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -73,11 +479,13 @@
 				"tagName": "div",
 				"layout": "grid"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/87#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/87#1"
+				}
 			}
 		},
 		{
@@ -93,7 +501,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "wholeCardLink",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -111,11 +520,13 @@
 				"tagName": "div",
 				"layout": "stack"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/88#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/90#0"
+				}
 			}
 		},
 		{
@@ -131,7 +542,8 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -149,11 +561,10 @@
 			"attributes": {
 				"tagName": "div"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/89#0"
+				}
 			}
 		},
 		{
@@ -169,7 +580,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "mediaElement",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/media",
@@ -184,11 +596,10 @@
 			"screenshots": {},
 			"snippet": "<image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot>",
 			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
+			"slots": {
+				".sgs-media__img": {
+					"tpl": "Root/89#0"
+				}
 			}
 		},
 		{
@@ -204,7 +615,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -224,11 +636,13 @@
 				"tagName": "div",
 				"layout": "stack"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/91#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/92#0"
+				}
 			}
 		},
 		{
@@ -244,7 +658,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "cardTitle",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -260,12 +675,6 @@
 			"snippet": "<div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div>",
 			"attributes": {
 				"content": "Food Service"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
 			}
 		},
 		{
@@ -279,9 +688,10 @@
 			"reason": null,
 			"source": null,
 			"confidence": 0.25,
-			"low": false,
+			"low": true,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -297,12 +707,6 @@
 			"snippet": "<div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div>",
 			"attributes": {
 				"text": "Quality ingredients for venues, caterers & events across the UK."
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
 			}
 		},
 		{
@@ -318,7 +722,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "cardAction",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -336,11 +741,10 @@
 				"label": "Explore Food Service",
 				"url": "/food-service/"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
+			"slots": {
+				".sgs-button__label": {
+					"tpl": "Root/93#0"
+				}
 			}
 		},
 		{
@@ -356,7 +760,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "wholeCardLink",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -374,11 +779,13 @@
 				"tagName": "div",
 				"layout": "stack"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/88#1"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/90#1"
+				}
 			}
 		},
 		{
@@ -394,7 +801,8 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -412,11 +820,10 @@
 			"attributes": {
 				"tagName": "div"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/89#1"
+				}
 			}
 		},
 		{
@@ -432,7 +839,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "mediaElement",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/media",
@@ -447,11 +855,10 @@
 			"screenshots": {},
 			"snippet": "<image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot>",
 			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
+			"slots": {
+				".sgs-media__img": {
+					"tpl": "Root/89#1"
+				}
 			}
 		},
 		{
@@ -467,7 +874,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -487,11 +895,13 @@
 				"tagName": "div",
 				"layout": "stack"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/91#1"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/92#1"
+				}
 			}
 		},
 		{
@@ -507,7 +917,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "cardTitle",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -523,12 +934,6 @@
 			"snippet": "<div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div>",
 			"attributes": {
 				"content": "Manufacturing"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
 			}
 		},
 		{
@@ -542,9 +947,10 @@
 			"reason": null,
 			"source": null,
 			"confidence": 0.25,
-			"low": false,
+			"low": true,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -560,12 +966,6 @@
 			"snippet": "<div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div>",
 			"attributes": {
 				"text": "High-quality, healthy & delicious food products at scale."
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
 			}
 		},
 		{
@@ -581,7 +981,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "cardAction",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -597,13 +998,12 @@
 			"snippet": "<div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-weight:700;font-size:15px;\" data-dc-tpl=\"93\">{{ card.cta }} {{ arrowIcon }}</div>",
 			"attributes": {
 				"label": "Explore Manufacturing",
-				"url": "/manufacturing/"
+				"url": "/food-service/manufacturing/"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
+			"slots": {
+				".sgs-button__label": {
+					"tpl": "Root/93#1"
+				}
 			}
 		},
 		{
@@ -619,7 +1019,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "wholeCardLink",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -637,11 +1038,13 @@
 				"tagName": "div",
 				"layout": "stack"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/88#2"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/90#2"
+				}
 			}
 		},
 		{
@@ -657,7 +1060,8 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -675,11 +1079,10 @@
 			"attributes": {
 				"tagName": "div"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/89#2"
+				}
 			}
 		},
 		{
@@ -695,7 +1098,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "mediaElement",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/media",
@@ -710,11 +1114,10 @@
 			"screenshots": {},
 			"snippet": "<image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot>",
 			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
+			"slots": {
+				".sgs-media__img": {
+					"tpl": "Root/89#2"
+				}
 			}
 		},
 		{
@@ -730,7 +1133,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -750,11 +1154,13 @@
 				"tagName": "div",
 				"layout": "stack"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/91#2"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/92#2"
+				}
 			}
 		},
 		{
@@ -770,7 +1176,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "cardTitle",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -786,12 +1193,6 @@
 			"snippet": "<div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div>",
 			"attributes": {
 				"content": "Retail"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
 			}
 		},
 		{
@@ -805,9 +1206,10 @@
 			"reason": null,
 			"source": null,
 			"confidence": 0.25,
-			"low": false,
+			"low": true,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -823,12 +1225,6 @@
 			"snippet": "<div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div>",
 			"attributes": {
 				"text": "Retail-ready packaging for independent & national retailers."
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
 			}
 		},
 		{
@@ -844,7 +1240,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "cardAction",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -860,13 +1257,12 @@
 			"snippet": "<div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-weight:700;font-size:15px;\" data-dc-tpl=\"93\">{{ card.cta }} {{ arrowIcon }}</div>",
 			"attributes": {
 				"label": "Explore Retail",
-				"url": "/retail/"
+				"url": "/food-service/retail/"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
+			"slots": {
+				".sgs-button__label": {
+					"tpl": "Root/93#2"
+				}
 			}
 		},
 		{
@@ -882,7 +1278,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "wholeCardLink",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -900,11 +1297,13 @@
 				"tagName": "div",
 				"layout": "stack"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/88#3"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/90#3"
+				}
 			}
 		},
 		{
@@ -920,7 +1319,8 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -938,11 +1338,10 @@
 			"attributes": {
 				"tagName": "div"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/89#3"
+				}
 			}
 		},
 		{
@@ -958,7 +1357,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "mediaElement",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/media",
@@ -973,11 +1373,10 @@
 			"screenshots": {},
 			"snippet": "<image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot>",
 			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
+			"slots": {
+				".sgs-media__img": {
+					"tpl": "Root/89#3"
+				}
 			}
 		},
 		{
@@ -993,7 +1392,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1013,11 +1413,13 @@
 				"tagName": "div",
 				"layout": "stack"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/91#3"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/92#3"
+				}
 			}
 		},
 		{
@@ -1033,7 +1435,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "cardTitle",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -1049,12 +1452,6 @@
 			"snippet": "<div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div>",
 			"attributes": {
 				"content": "Wholesale"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
 			}
 		},
 		{
@@ -1068,9 +1465,10 @@
 			"reason": null,
 			"source": null,
 			"confidence": 0.25,
-			"low": false,
+			"low": true,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -1086,12 +1484,6 @@
 			"snippet": "<div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div>",
 			"attributes": {
 				"text": "Reliable stock levels & fast delivery across the whole of the UK."
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
 			}
 		},
 		{
@@ -1107,7 +1499,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "cardAction",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -1123,13 +1516,12 @@
 			"snippet": "<div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-weight:700;font-size:15px;\" data-dc-tpl=\"93\">{{ card.cta }} {{ arrowIcon }}</div>",
 			"attributes": {
 				"label": "Explore Wholesale",
-				"url": "/wholesale/"
+				"url": "/food-service/wholesale/"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4443,
-				"title": "[QA] Indus mega: Sectors"
+			"slots": {
+				".sgs-button__label": {
+					"tpl": "Root/93#3"
+				}
 			}
 		}
 	]

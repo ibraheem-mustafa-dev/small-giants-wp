@@ -54,7 +54,7 @@
 								"div",
 								"div"
 							],
-							"textHash": "3d70cc34",
+							"textHash": "6a733075",
 							"line": 16
 						},
 						"innerBlocks": [
@@ -81,8 +81,47 @@
 									"line": 16
 								},
 								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "up for a night feed? we see you, mama",
+									"sgsTimeText": [
+										{
+											"start": 0,
+											"end": 5,
+											"text": "up for a night feed? we see you, mama"
+										},
+										{
+											"start": 5,
+											"end": 12,
+											"text": "good morning, mama"
+										},
+										{
+											"start": 12,
+											"end": 17,
+											"text": "good afternoon, mama"
+										},
+										{
+											"start": 17,
+											"end": 21,
+											"text": "good evening, mama"
+										},
+										{
+											"start": 21,
+											"end": 24,
+											"text": "up late feeding? we see you, mama"
+										}
+									]
+								},
+								"innerBlocks": []
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/13#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -107,6 +146,13 @@
 						},
 						"innerBlocks": [
 							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Made for the mum who needs it"
+								},
+								"innerBlocks": []
+							},
+							{
 								"name": "sgs/container",
 								"attributes": {
 									"tagName": "div"
@@ -128,9 +174,25 @@
 									"textHash": "7c6fc200",
 									"line": 17
 								},
-								"innerBlocks": []
+								"innerBlocks": [
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "most"
+										},
+										"innerBlocks": []
+									}
+								]
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__image-bg": {
+								"tpl": "Root/15#0"
+							},
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/17#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/text",
@@ -180,6 +242,7 @@
 							{
 								"name": "sgs/button",
 								"attributes": {
+									"url": "#build",
 									"label": "Build your box →"
 								},
 								"draftRef": {
@@ -199,7 +262,12 @@
 									"textHash": "7a4fe9f7",
 									"line": 20
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-button__icon > svg": {
+										"tpl": "Root/22#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/button",
@@ -224,9 +292,22 @@
 									"textHash": "10bdc6c4",
 									"line": 21
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-button__label": {
+										"tpl": "Root/23#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-button:nth-of-type(1)": {
+								"tpl": "Root/21#0"
+							},
+							".sgs-button:nth-of-type(2)": {
+								"tpl": "Root/23#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/multi-button",
@@ -253,6 +334,7 @@
 							{
 								"name": "sgs/button",
 								"attributes": {
+									"url": "#reviews",
 									"label": "4.3 on Trustpilot ★★★★★"
 								},
 								"draftRef": {
@@ -272,7 +354,12 @@
 									"textHash": "3fe9ad57",
 									"line": 24
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-button__icon > svg": {
+										"tpl": "Root/26#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/button",
@@ -297,9 +384,22 @@
 									"textHash": "147aee63",
 									"line": 25
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-button__label": {
+										"tpl": "Root/27#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-button:nth-of-type(1)": {
+								"tpl": "Root/25#0"
+							},
+							".sgs-button:nth-of-type(2)": {
+								"tpl": "Root/27#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/text",
@@ -444,10 +544,18 @@
 								},
 								"innerBlocks": []
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/39#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/40#0"
+							}
+						}
 					},
 					{
-						"name": "sgs/text",
+						"name": "sgs/label",
 						"attributes": {
 							"text": "baked with love"
 						},
@@ -495,7 +603,12 @@
 								"kind": "presence",
 								"detail": "the strip's items are built by the draft's code (its template holds one text binding): add each item to the trust bar"
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-trust-bar__title": {
+								"tpl": "Root/42#0"
+							}
+						}
 					}
 				],
 				"handover": [
@@ -504,7 +617,12 @@
 						"kind": "presence",
 						"detail": "the hero image: choose it in the hero's split media setting"
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-hero__content": {
+						"tpl": "Root/11#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -529,7 +647,8 @@
 					{
 						"name": "sgs/heading",
 						"attributes": {
-							"content": "Who are we baking for today?"
+							"content": "Who are we baking for today?",
+							"level": "h2"
 						},
 						"draftRef": {
 							"tpl": "Root/45#0"
@@ -613,7 +732,12 @@
 											"textHash": "1505",
 											"line": 47
 										},
-										"innerBlocks": []
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-media__img": {
+												"tpl": "Root/48#0"
+											}
+										}
 									},
 									{
 										"name": "sgs/container",
@@ -640,9 +764,9 @@
 										},
 										"innerBlocks": [
 											{
-												"name": "sgs/heading",
+												"name": "sgs/label",
 												"attributes": {
-													"content": "for me ✦"
+													"text": "for me ✦"
 												},
 												"draftRef": {
 													"tpl": "Root/50#0"
@@ -665,9 +789,9 @@
 												"innerBlocks": []
 											},
 											{
-												"name": "sgs/text",
+												"name": "sgs/heading",
 												"attributes": {
-													"text": "I’m feeding a little one"
+													"content": "I’m feeding a little one"
 												},
 												"draftRef": {
 													"tpl": "Root/51#0"
@@ -740,6 +864,13 @@
 												},
 												"innerBlocks": [
 													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Build your box"
+														},
+														"innerBlocks": []
+													},
+													{
 														"name": "sgs/button",
 														"attributes": {
 															"label": "→",
@@ -764,13 +895,39 @@
 															"textHash": "29437",
 															"line": 52
 														},
-														"innerBlocks": []
+														"innerBlocks": [],
+														"draftSlots": {
+															".sgs-button__label": {
+																"tpl": "Root/54#0"
+															}
+														}
 													}
-												]
+												],
+												"draftSlots": {
+													".sgs-container__inner > p:nth-of-type(1)": {
+														"tpl": "Root/54#0"
+													}
+												}
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/50#0"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/51#0"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/48#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/49#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/container",
@@ -815,7 +972,12 @@
 											"textHash": "1505",
 											"line": 56
 										},
-										"innerBlocks": []
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-media__img": {
+												"tpl": "Root/56#0"
+											}
+										}
 									},
 									{
 										"name": "sgs/container",
@@ -842,9 +1004,9 @@
 										},
 										"innerBlocks": [
 											{
-												"name": "sgs/heading",
+												"name": "sgs/label",
 												"attributes": {
-													"content": "for her ♥"
+													"text": "for her ♥"
 												},
 												"draftRef": {
 													"tpl": "Root/58#0"
@@ -867,9 +1029,9 @@
 												"innerBlocks": []
 											},
 											{
-												"name": "sgs/text",
+												"name": "sgs/heading",
 												"attributes": {
-													"text": "I’m spoiling a new mum"
+													"content": "I’m spoiling a new mum"
 												},
 												"draftRef": {
 													"tpl": "Root/59#0"
@@ -942,6 +1104,13 @@
 												},
 												"innerBlocks": [
 													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Shop gifts"
+														},
+														"innerBlocks": []
+													},
+													{
 														"name": "sgs/button",
 														"attributes": {
 															"label": "→",
@@ -966,17 +1135,59 @@
 															"textHash": "29437",
 															"line": 61
 														},
-														"innerBlocks": []
+														"innerBlocks": [],
+														"draftSlots": {
+															".sgs-button__label": {
+																"tpl": "Root/62#0"
+															}
+														}
 													}
-												]
+												],
+												"draftSlots": {
+													".sgs-container__inner > p:nth-of-type(1)": {
+														"tpl": "Root/62#0"
+													}
+												}
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/58#0"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/59#0"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/56#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/57#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/47#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/55#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/45#0"
+					},
+					".sgs-container__inner > p:nth-of-type(2)": {
+						"tpl": "Root/46#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -1091,7 +1302,7 @@
 										},
 										"innerBlocks": [
 											{
-												"name": "sgs/text",
+												"name": "sgs/label",
 												"attributes": {
 													"text": "gifts for new mums"
 												},
@@ -1117,7 +1328,8 @@
 											{
 												"name": "sgs/heading",
 												"attributes": {
-													"content": "A gift she’ll actually eat"
+													"content": "A gift she’ll actually eat",
+													"level": "h2"
 												},
 												"draftRef": {
 													"tpl": "Root/129#0"
@@ -1138,11 +1350,20 @@
 												},
 												"innerBlocks": []
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/128#0"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/129#0"
+											}
+										}
 									},
 									{
 										"name": "sgs/button",
 										"attributes": {
+											"url": "/gifts/",
 											"label": "All gifts →"
 										},
 										"draftRef": {
@@ -1161,1045 +1382,77 @@
 											"textHash": "12407acb",
 											"line": 114
 										},
-										"innerBlocks": []
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-button__icon > svg": {
+												"tpl": "Root/131#0"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/127#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/130#0"
+									}
+								}
 							},
 							{
-								"name": "sgs/container",
+								"name": "woocommerce/product-collection",
 								"attributes": {
+									"queryId": 0,
+									"query": {
+										"inherit": false,
+										"perPage": 4,
+										"isProductCollectionBlock": true
+									},
 									"tagName": "div",
-									"layout": "grid"
-								},
-								"draftRef": {
-									"tpl": "Root/132#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "bae487c5",
-									"parentTags": [
-										"main",
-										"section",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 116
+									"displayLayout": {
+										"type": "flex",
+										"columns": 2,
+										"shrinkColumns": true
+									},
+									"queryContextIncludes": [
+										"collection"
+									]
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div",
-											"layout": "stack"
-										},
-										"draftRef": {
-											"tpl": "Root/134#0"
-										},
-										"draftFingerprint": {
-											"tag": "a",
-											"cls": "scp9",
-											"styleHash": "5a421096",
-											"parentTags": [
-												"main",
-												"section",
-												"div",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 118
-										},
+										"name": "woocommerce/product-template",
+										"attributes": {},
 										"innerBlocks": [
 											{
-												"name": "sgs/container",
+												"name": "sgs/product-card",
 												"attributes": {
-													"tagName": "div"
+													"sourceMode": "wc-product"
 												},
+												"innerBlocks": [],
 												"draftRef": {
-													"tpl": "Root/135#0"
+													"tpl": "Root/134#0"
 												},
 												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "5c3e3c72",
+													"tag": "a",
+													"cls": "scp9",
+													"styleHash": "5a421096",
 													"parentTags": [
 														"main",
 														"section",
 														"div",
-														"div",
-														"a"
+														"div"
 													],
 													"textHash": "1505",
-													"line": 119
+													"line": 118
 												},
-												"innerBlocks": [
-													{
-														"name": "sgs/media",
-														"attributes": {},
-														"draftRef": {
-															"tpl": "Root/136#0"
-														},
-														"draftFingerprint": {
-															"tag": "div",
-															"cls": "",
-															"styleHash": "9c21a629",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"a",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 119
-														},
-														"innerBlocks": []
+												"draftSlots": {
+													".sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__title > .sgs-focus-source": {
+														"tpl": "Root/139#0"
 													},
-													{
-														"name": "sgs/label",
-														"attributes": {
-															"text": "Just had a baby"
-														},
-														"draftRef": {
-															"tpl": "Root/137#0"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "2b49169b",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"a",
-																"div"
-															],
-															"textHash": "af211b29",
-															"line": 119
-														},
-														"innerBlocks": []
+													".sgs-product-card__body": {
+														"tpl": "Root/135#0"
 													}
-												]
-											},
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "stack"
-												},
-												"draftRef": {
-													"tpl": "Root/138#0"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "2820ce14",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"a"
-													],
-													"textHash": "1505",
-													"line": 120
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "New Baby Gift Box"
-														},
-														"draftRef": {
-															"tpl": "Root/139#0"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "3103275d",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"a",
-																"div"
-															],
-															"textHash": "eacd19e8",
-															"line": 121
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "A mix of Zookies, gift-boxed with your note."
-														},
-														"draftRef": {
-															"tpl": "Root/140#0"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "f3875593",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"a",
-																"div"
-															],
-															"textHash": "35f2e9bb",
-															"line": 122
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/container",
-														"attributes": {
-															"tagName": "div",
-															"layout": "flex"
-														},
-														"draftRef": {
-															"tpl": "Root/141#0"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "35167dd",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"a",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 123
-														},
-														"innerBlocks": [
-															{
-																"name": "sgs/text",
-																"attributes": {
-																	"text": "£15"
-																},
-																"draftRef": {
-																	"tpl": "Root/142#0"
-																},
-																"draftFingerprint": {
-																	"tag": "span",
-																	"cls": "",
-																	"styleHash": "fe6e953a",
-																	"parentTags": [
-																		"main",
-																		"section",
-																		"div",
-																		"div",
-																		"a",
-																		"div",
-																		"span"
-																	],
-																	"textHash": "b8414e2",
-																	"line": 123
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "→",
-																	"url": "/product/new-baby-gift-box/"
-																},
-																"draftRef": {
-																	"tpl": "Root/143#0"
-																},
-																"draftFingerprint": {
-																	"tag": "span",
-																	"cls": "",
-																	"styleHash": "4beaf345",
-																	"parentTags": [
-																		"main",
-																		"section",
-																		"div",
-																		"div",
-																		"a",
-																		"div",
-																		"span"
-																	],
-																	"textHash": "29437",
-																	"line": 123
-																},
-																"innerBlocks": []
-															}
-														]
-													}
-												]
-											}
-										]
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div",
-											"layout": "stack"
-										},
-										"draftRef": {
-											"tpl": "Root/134#1"
-										},
-										"draftFingerprint": {
-											"tag": "a",
-											"cls": "scp9",
-											"styleHash": "8fda62db",
-											"parentTags": [
-												"main",
-												"section",
-												"div",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 118
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div"
-												},
-												"draftRef": {
-													"tpl": "Root/135#1"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "5c3e3c72",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"a"
-													],
-													"textHash": "1505",
-													"line": 119
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/media",
-														"attributes": {},
-														"draftRef": {
-															"tpl": "Root/136#1"
-														},
-														"draftFingerprint": {
-															"tag": "div",
-															"cls": "",
-															"styleHash": "f6421370",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"a",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 119
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/label",
-														"attributes": {
-															"text": "First 40 days"
-														},
-														"draftRef": {
-															"tpl": "Root/137#1"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "2b49169b",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"a",
-																"div"
-															],
-															"textHash": "96879414",
-															"line": 119
-														},
-														"innerBlocks": []
-													}
-												]
-											},
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "stack"
-												},
-												"draftRef": {
-													"tpl": "Root/138#1"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "2820ce14",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"a"
-													],
-													"textHash": "1505",
-													"line": 120
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "40-Day Care Bundle"
-														},
-														"draftRef": {
-															"tpl": "Root/139#1"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "3103275d",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"a",
-																"div"
-															],
-															"textHash": "550b4971",
-															"line": 121
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "Six weekly deliveries through the postnatal weeks."
-														},
-														"draftRef": {
-															"tpl": "Root/140#1"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "f3875593",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"a",
-																"div"
-															],
-															"textHash": "5af93b9",
-															"line": 122
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/container",
-														"attributes": {
-															"tagName": "div",
-															"layout": "flex"
-														},
-														"draftRef": {
-															"tpl": "Root/141#1"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "35167dd",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"a",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 123
-														},
-														"innerBlocks": [
-															{
-																"name": "sgs/text",
-																"attributes": {
-																	"text": "£42"
-																},
-																"draftRef": {
-																	"tpl": "Root/142#1"
-																},
-																"draftFingerprint": {
-																	"tag": "span",
-																	"cls": "",
-																	"styleHash": "fe6e953a",
-																	"parentTags": [
-																		"main",
-																		"section",
-																		"div",
-																		"div",
-																		"a",
-																		"div",
-																		"span"
-																	],
-																	"textHash": "b841400",
-																	"line": 123
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "→",
-																	"url": "/product/40-day-care-bundle/"
-																},
-																"draftRef": {
-																	"tpl": "Root/143#1"
-																},
-																"draftFingerprint": {
-																	"tag": "span",
-																	"cls": "",
-																	"styleHash": "4beaf345",
-																	"parentTags": [
-																		"main",
-																		"section",
-																		"div",
-																		"div",
-																		"a",
-																		"div",
-																		"span"
-																	],
-																	"textHash": "29437",
-																	"line": 123
-																},
-																"innerBlocks": []
-															}
-														]
-													}
-												]
-											}
-										]
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div",
-											"layout": "stack"
-										},
-										"draftRef": {
-											"tpl": "Root/134#2"
-										},
-										"draftFingerprint": {
-											"tag": "a",
-											"cls": "scp9",
-											"styleHash": "a99a406f",
-											"parentTags": [
-												"main",
-												"section",
-												"div",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 118
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div"
-												},
-												"draftRef": {
-													"tpl": "Root/135#2"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "67b756fd",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"a"
-													],
-													"textHash": "1505",
-													"line": 119
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/media",
-														"attributes": {},
-														"draftRef": {
-															"tpl": "Root/136#2"
-														},
-														"draftFingerprint": {
-															"tag": "div",
-															"cls": "",
-															"styleHash": "2ab101bf",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"a",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 119
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/label",
-														"attributes": {
-															"text": "Baby shower"
-														},
-														"draftRef": {
-															"tpl": "Root/137#2"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "2b49169b",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"a",
-																"div"
-															],
-															"textHash": "5a93489",
-															"line": 119
-														},
-														"innerBlocks": []
-													}
-												]
-											},
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "stack"
-												},
-												"draftRef": {
-													"tpl": "Root/138#2"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "2820ce14",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"a"
-													],
-													"textHash": "1505",
-													"line": 120
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "Gift card"
-														},
-														"draftRef": {
-															"tpl": "Root/139#2"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "3103275d",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"a",
-																"div"
-															],
-															"textHash": "fd69eb2d",
-															"line": 121
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "She redeems it once baby arrives."
-														},
-														"draftRef": {
-															"tpl": "Root/140#2"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "f3875593",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"a",
-																"div"
-															],
-															"textHash": "c062fb92",
-															"line": 122
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/container",
-														"attributes": {
-															"tagName": "div",
-															"layout": "flex"
-														},
-														"draftRef": {
-															"tpl": "Root/141#2"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "35167dd",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"a",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 123
-														},
-														"innerBlocks": [
-															{
-																"name": "sgs/text",
-																"attributes": {
-																	"text": "from £15"
-																},
-																"draftRef": {
-																	"tpl": "Root/142#2"
-																},
-																"draftFingerprint": {
-																	"tag": "span",
-																	"cls": "",
-																	"styleHash": "fe6e953a",
-																	"parentTags": [
-																		"main",
-																		"section",
-																		"div",
-																		"div",
-																		"a",
-																		"div",
-																		"span"
-																	],
-																	"textHash": "3bcabe14",
-																	"line": 123
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "→",
-																	"url": "/product/baby-shower-gift-card/"
-																},
-																"draftRef": {
-																	"tpl": "Root/143#2"
-																},
-																"draftFingerprint": {
-																	"tag": "span",
-																	"cls": "",
-																	"styleHash": "4beaf345",
-																	"parentTags": [
-																		"main",
-																		"section",
-																		"div",
-																		"div",
-																		"a",
-																		"div",
-																		"span"
-																	],
-																	"textHash": "29437",
-																	"line": 123
-																},
-																"innerBlocks": []
-															}
-														]
-													}
-												]
-											}
-										]
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div",
-											"layout": "stack"
-										},
-										"draftRef": {
-											"tpl": "Root/134#3"
-										},
-										"draftFingerprint": {
-											"tag": "a",
-											"cls": "scp9",
-											"styleHash": "b7aa8d07",
-											"parentTags": [
-												"main",
-												"section",
-												"div",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 118
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div"
-												},
-												"draftRef": {
-													"tpl": "Root/135#3"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "5c3e3c72",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"a"
-													],
-													"textHash": "1505",
-													"line": 119
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/media",
-														"attributes": {},
-														"draftRef": {
-															"tpl": "Root/136#3"
-														},
-														"draftFingerprint": {
-															"tag": "div",
-															"cls": "",
-															"styleHash": "b27ba3f2",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"a",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 119
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/label",
-														"attributes": {
-															"text": "Thinking of you"
-														},
-														"draftRef": {
-															"tpl": "Root/137#3"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "2b49169b",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"a",
-																"div"
-															],
-															"textHash": "68c84ebf",
-															"line": 119
-														},
-														"innerBlocks": []
-													}
-												]
-											},
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "stack"
-												},
-												"draftRef": {
-													"tpl": "Root/138#3"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "2820ce14",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"a"
-													],
-													"textHash": "1505",
-													"line": 120
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "Taster Trio"
-														},
-														"draftRef": {
-															"tpl": "Root/139#3"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "3103275d",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"a",
-																"div"
-															],
-															"textHash": "70e26b00",
-															"line": 121
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "3 Zookies through the letterbox. No one needs to be in."
-														},
-														"draftRef": {
-															"tpl": "Root/140#3"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "f3875593",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"a",
-																"div"
-															],
-															"textHash": "1495b536",
-															"line": 122
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/container",
-														"attributes": {
-															"tagName": "div",
-															"layout": "flex"
-														},
-														"draftRef": {
-															"tpl": "Root/141#3"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "35167dd",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"a",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 123
-														},
-														"innerBlocks": [
-															{
-																"name": "sgs/text",
-																"attributes": {
-																	"text": "£5"
-																},
-																"draftRef": {
-																	"tpl": "Root/142#3"
-																},
-																"draftFingerprint": {
-																	"tag": "span",
-																	"cls": "",
-																	"styleHash": "fe6e953a",
-																	"parentTags": [
-																		"main",
-																		"section",
-																		"div",
-																		"div",
-																		"a",
-																		"div",
-																		"span"
-																	],
-																	"textHash": "5955f3",
-																	"line": 123
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "→",
-																	"url": "/product/taster-trio/"
-																},
-																"draftRef": {
-																	"tpl": "Root/143#3"
-																},
-																"draftFingerprint": {
-																	"tag": "span",
-																	"cls": "",
-																	"styleHash": "4beaf345",
-																	"parentTags": [
-																		"main",
-																		"section",
-																		"div",
-																		"div",
-																		"a",
-																		"div",
-																		"span"
-																	],
-																	"textHash": "29437",
-																	"line": 123
-																},
-																"innerBlocks": []
-															}
-														]
-													}
-												]
+												}
 											}
 										]
 									}
@@ -2226,192 +1479,7 @@
 									"textHash": "1505",
 									"line": 129
 								},
-								"innerBlocks": [
-									{
-										"name": "sgs/multi-button",
-										"attributes": {
-											"layout": "flex"
-										},
-										"draftRef": {
-											"tpl": "Root/146#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "73ae4a2e",
-											"parentTags": [
-												"main",
-												"section",
-												"div",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 130
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/button",
-												"attributes": {},
-												"draftRef": {
-													"tpl": "Root/148#0"
-												},
-												"draftFingerprint": {
-													"tag": "button",
-													"cls": "",
-													"styleHash": "412f9ce6",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 130
-												},
-												"innerBlocks": []
-											},
-											{
-												"name": "sgs/button",
-												"attributes": {},
-												"draftRef": {
-													"tpl": "Root/148#1"
-												},
-												"draftFingerprint": {
-													"tag": "button",
-													"cls": "",
-													"styleHash": "cc522f5e",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 130
-												},
-												"innerBlocks": []
-											},
-											{
-												"name": "sgs/button",
-												"attributes": {},
-												"draftRef": {
-													"tpl": "Root/148#2"
-												},
-												"draftFingerprint": {
-													"tag": "button",
-													"cls": "",
-													"styleHash": "cc522f5e",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 130
-												},
-												"innerBlocks": []
-											},
-											{
-												"name": "sgs/button",
-												"attributes": {},
-												"draftRef": {
-													"tpl": "Root/148#3"
-												},
-												"draftFingerprint": {
-													"tag": "button",
-													"cls": "",
-													"styleHash": "cc522f5e",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 130
-												},
-												"innerBlocks": []
-											}
-										]
-									},
-									{
-										"name": "sgs/multi-button",
-										"attributes": {
-											"layout": "flex"
-										},
-										"draftRef": {
-											"tpl": "Root/149#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "e88c8477",
-											"parentTags": [
-												"main",
-												"section",
-												"div",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 131
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/button",
-												"attributes": {
-													"label": "←"
-												},
-												"draftRef": {
-													"tpl": "Root/150#0"
-												},
-												"draftFingerprint": {
-													"tag": "button",
-													"cls": "",
-													"styleHash": "d1388d2",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"div"
-													],
-													"textHash": "29435",
-													"line": 132
-												},
-												"innerBlocks": []
-											},
-											{
-												"name": "sgs/button",
-												"attributes": {
-													"label": "→"
-												},
-												"draftRef": {
-													"tpl": "Root/151#0"
-												},
-												"draftFingerprint": {
-													"tag": "button",
-													"cls": "",
-													"styleHash": "d1388d2",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"div"
-													],
-													"textHash": "29437",
-													"line": 133
-												},
-												"innerBlocks": []
-											}
-										]
-									}
-								]
+								"innerBlocks": []
 							},
 							{
 								"name": "sgs/container",
@@ -2505,7 +1573,15 @@
 												},
 												"innerBlocks": []
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/155#0"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/156#0"
+											}
+										}
 									},
 									{
 										"name": "sgs/container",
@@ -2586,9 +1662,9 @@
 												},
 												"innerBlocks": [
 													{
-														"name": "sgs/heading",
+														"name": "sgs/label",
 														"attributes": {
-															"content": "Baby shower coming up?"
+															"text": "Baby shower coming up?"
 														},
 														"draftRef": {
 															"tpl": "Root/160#0"
@@ -2635,15 +1711,52 @@
 														},
 														"innerBlocks": []
 													}
-												]
+												],
+												"draftSlots": {
+													".sgs-container__inner > p:nth-of-type(1)": {
+														"tpl": "Root/160#0"
+													},
+													".sgs-container__inner > p:nth-of-type(2)": {
+														"tpl": "Root/161#0"
+													}
+												}
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/158#0"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/159#0"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/153#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/157#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/126#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/145#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/125#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -2688,9 +1801,9 @@
 						},
 						"innerBlocks": [
 							{
-								"name": "sgs/text",
+								"name": "sgs/heading",
 								"attributes": {
-									"text": "Zainab’s Zookie recipe"
+									"content": "Zainab’s Zookie recipe"
 								},
 								"draftRef": {
 									"tpl": "Root/166#0"
@@ -2781,9 +1894,9 @@
 										},
 										"innerBlocks": [
 											{
-												"name": "sgs/text",
+												"name": "sgs/icon",
 												"attributes": {
-													"text": "✓"
+													"brandName": "✓"
 												},
 												"draftRef": {
 													"tpl": "Root/170#0"
@@ -2803,7 +1916,12 @@
 													"textHash": "292b6",
 													"line": 158
 												},
-												"innerBlocks": []
+												"innerBlocks": [],
+												"draftSlots": {
+													".sgs-icon__shape": {
+														"tpl": "Root/170#0"
+													}
+												}
 											},
 											{
 												"name": "sgs/container",
@@ -2830,9 +1948,9 @@
 												},
 												"innerBlocks": [
 													{
-														"name": "sgs/text",
+														"name": "sgs/heading",
 														"attributes": {
-															"text": "Oats"
+															"content": "Oats"
 														},
 														"draftRef": {
 															"tpl": "Root/172#0"
@@ -2881,9 +1999,25 @@
 														},
 														"innerBlocks": []
 													}
-												]
+												],
+												"draftSlots": {
+													".sgs-container__inner > p:nth-of-type(1)": {
+														"tpl": "Root/172#0"
+													},
+													".sgs-container__inner > p:nth-of-type(2)": {
+														"tpl": "Root/173#0"
+													}
+												}
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/170#0"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/171#0"
+											}
+										}
 									},
 									{
 										"name": "sgs/container",
@@ -2910,9 +2044,9 @@
 										},
 										"innerBlocks": [
 											{
-												"name": "sgs/text",
+												"name": "sgs/icon",
 												"attributes": {
-													"text": "✓"
+													"brandName": "✓"
 												},
 												"draftRef": {
 													"tpl": "Root/175#0"
@@ -2932,7 +2066,12 @@
 													"textHash": "292b6",
 													"line": 159
 												},
-												"innerBlocks": []
+												"innerBlocks": [],
+												"draftSlots": {
+													".sgs-icon__shape": {
+														"tpl": "Root/175#0"
+													}
+												}
 											},
 											{
 												"name": "sgs/container",
@@ -2959,9 +2098,9 @@
 												},
 												"innerBlocks": [
 													{
-														"name": "sgs/text",
+														"name": "sgs/heading",
 														"attributes": {
-															"text": "Brewer’s yeast"
+															"content": "Brewer’s yeast"
 														},
 														"draftRef": {
 															"tpl": "Root/177#0"
@@ -3010,9 +2149,25 @@
 														},
 														"innerBlocks": []
 													}
-												]
+												],
+												"draftSlots": {
+													".sgs-container__inner > p:nth-of-type(1)": {
+														"tpl": "Root/177#0"
+													},
+													".sgs-container__inner > p:nth-of-type(2)": {
+														"tpl": "Root/178#0"
+													}
+												}
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/175#0"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/176#0"
+											}
+										}
 									},
 									{
 										"name": "sgs/container",
@@ -3039,9 +2194,9 @@
 										},
 										"innerBlocks": [
 											{
-												"name": "sgs/text",
+												"name": "sgs/icon",
 												"attributes": {
-													"text": "✓"
+													"brandName": "✓"
 												},
 												"draftRef": {
 													"tpl": "Root/180#0"
@@ -3061,7 +2216,12 @@
 													"textHash": "292b6",
 													"line": 160
 												},
-												"innerBlocks": []
+												"innerBlocks": [],
+												"draftSlots": {
+													".sgs-icon__shape": {
+														"tpl": "Root/180#0"
+													}
+												}
 											},
 											{
 												"name": "sgs/container",
@@ -3088,9 +2248,9 @@
 												},
 												"innerBlocks": [
 													{
-														"name": "sgs/text",
+														"name": "sgs/heading",
 														"attributes": {
-															"text": "Flaxseed"
+															"content": "Flaxseed"
 														},
 														"draftRef": {
 															"tpl": "Root/182#0"
@@ -3139,9 +2299,25 @@
 														},
 														"innerBlocks": []
 													}
-												]
+												],
+												"draftSlots": {
+													".sgs-container__inner > p:nth-of-type(1)": {
+														"tpl": "Root/182#0"
+													},
+													".sgs-container__inner > p:nth-of-type(2)": {
+														"tpl": "Root/183#0"
+													}
+												}
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/180#0"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/181#0"
+											}
+										}
 									},
 									{
 										"name": "sgs/container",
@@ -3168,9 +2344,9 @@
 										},
 										"innerBlocks": [
 											{
-												"name": "sgs/text",
+												"name": "sgs/icon",
 												"attributes": {
-													"text": "✓"
+													"brandName": "✓"
 												},
 												"draftRef": {
 													"tpl": "Root/185#0"
@@ -3190,7 +2366,12 @@
 													"textHash": "292b6",
 													"line": 161
 												},
-												"innerBlocks": []
+												"innerBlocks": [],
+												"draftSlots": {
+													".sgs-icon__shape": {
+														"tpl": "Root/185#0"
+													}
+												}
 											},
 											{
 												"name": "sgs/container",
@@ -3217,9 +2398,9 @@
 												},
 												"innerBlocks": [
 													{
-														"name": "sgs/text",
+														"name": "sgs/heading",
 														"attributes": {
-															"text": "Fenugreek"
+															"content": "Fenugreek"
 														},
 														"draftRef": {
 															"tpl": "Root/187#0"
@@ -3268,13 +2449,45 @@
 														},
 														"innerBlocks": []
 													}
-												]
+												],
+												"draftSlots": {
+													".sgs-container__inner > p:nth-of-type(1)": {
+														"tpl": "Root/187#0"
+													},
+													".sgs-container__inner > p:nth-of-type(2)": {
+														"tpl": "Root/188#0"
+													}
+												}
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/185#0"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/186#0"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/169#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/174#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/166#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/167#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -3301,7 +2514,8 @@
 							{
 								"name": "sgs/heading",
 								"attributes": {
-									"content": "Proper ingredients, from generations of mums"
+									"content": "Proper ingredients, from generations of mums",
+									"level": "h2"
 								},
 								"draftRef": {
 									"tpl": "Root/190#0"
@@ -3345,9 +2559,9 @@
 								"innerBlocks": []
 							},
 							{
-								"name": "sgs/container",
+								"name": "sgs/text",
 								"attributes": {
-									"tagName": "div"
+									"text": "We make nourishing food, not medicine. If you’re worried about your supply, your midwife, health visitor or a lactation consultant (IBCLC) is the right person to talk to. <a href=\"/help/#allergens\"><strong>Allergens →</strong></a>"
 								},
 								"draftRef": {
 									"tpl": "Root/192#0"
@@ -3365,37 +2579,32 @@
 									"textHash": "9f208121",
 									"line": 167
 								},
-								"innerBlocks": [
-									{
-										"name": "sgs/button",
-										"attributes": {
-											"label": "Allergens →",
-											"url": "/help/#allergens"
-										},
-										"draftRef": {
-											"tpl": "Root/193#0"
-										},
-										"draftFingerprint": {
-											"tag": "a",
-											"cls": "",
-											"styleHash": "a99853ab",
-											"parentTags": [
-												"main",
-												"section",
-												"div",
-												"div",
-												"div"
-											],
-											"textHash": "1c09885e",
-											"line": 167
-										},
-										"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									"a": {
+										"tpl": "Root/193#0"
 									}
-								]
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/190#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/191#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/164#0"
+					},
+					".sgs-container__inner > p:nth-of-type(2)": {
+						"tpl": "Root/189#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -3477,7 +2686,12 @@
 											"textHash": "1505",
 											"line": 177
 										},
-										"innerBlocks": []
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-media__img": {
+												"tpl": "Root/199#0"
+											}
+										}
 									},
 									{
 										"name": "sgs/text",
@@ -3502,7 +2716,15 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/199#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/200#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/container",
@@ -3527,7 +2749,7 @@
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/text",
+										"name": "sgs/label",
 										"attributes": {
 											"text": "our story"
 										},
@@ -3665,13 +2887,39 @@
 												},
 												"innerBlocks": []
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/207#0"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/202#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/203#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/196#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/201#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/195#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -3757,7 +3005,7 @@
 										},
 										"innerBlocks": [
 											{
-												"name": "sgs/text",
+												"name": "sgs/label",
 												"attributes": {
 													"text": "real mums, real words"
 												},
@@ -3783,7 +3031,8 @@
 											{
 												"name": "sgs/heading",
 												"attributes": {
-													"content": "Loved by mums, and the people who love them"
+													"content": "Loved by mums, and the people who love them",
+													"level": "h2"
 												},
 												"draftRef": {
 													"tpl": "Root/213#0"
@@ -3804,7 +3053,15 @@
 												},
 												"innerBlocks": []
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/212#0"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/213#0"
+											}
+										}
 									},
 									{
 										"name": "sgs/container",
@@ -3929,10 +3186,30 @@
 																	"line": 200
 																},
 																"innerBlocks": []
+															},
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "8 on Trustpilot ↗"
+																},
+																"innerBlocks": []
 															}
-														]
+														],
+														"draftSlots": {
+															".sgs-container__inner > p:nth-of-type(1)": {
+																"tpl": "Root/218#0"
+															}
+														}
 													}
-												]
+												],
+												"draftSlots": {
+													".sgs-container__inner > p:nth-of-type(1)": {
+														"tpl": "Root/216#0"
+													},
+													".sgs-container__inner > p:nth-of-type(2)": {
+														"tpl": "Root/217#0"
+													}
+												}
 											},
 											{
 												"name": "sgs/multi-button",
@@ -3980,7 +3257,12 @@
 															"textHash": "29435",
 															"line": 202
 														},
-														"innerBlocks": []
+														"innerBlocks": [],
+														"draftSlots": {
+															".sgs-button__label": {
+																"tpl": "Root/220#0"
+															}
+														}
 													},
 													{
 														"name": "sgs/button",
@@ -4005,20 +3287,46 @@
 															"textHash": "29437",
 															"line": 203
 														},
-														"innerBlocks": []
+														"innerBlocks": [],
+														"draftSlots": {
+															".sgs-button__label": {
+																"tpl": "Root/221#0"
+															}
+														}
 													}
-												]
+												],
+												"draftSlots": {
+													".sgs-button:nth-of-type(1)": {
+														"tpl": "Root/220#0"
+													},
+													".sgs-button:nth-of-type(2)": {
+														"tpl": "Root/221#0"
+													}
+												}
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/215#0"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/219#0"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/211#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/214#0"
+									}
+								}
 							},
 							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "grid"
-								},
+								"name": "sgs/testimonial-slider",
+								"attributes": {},
 								"draftRef": {
 									"tpl": "Root/222#0"
 								},
@@ -4036,11 +3344,8 @@
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "article",
-											"layout": "stack"
-										},
+										"name": "sgs/testimonial",
+										"attributes": {},
 										"draftRef": {
 											"tpl": "Root/224#0"
 										},
@@ -4057,215 +3362,28 @@
 											"textHash": "1505",
 											"line": 209
 										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root/225#0"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "d3567b6d",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"article"
-													],
-													"textHash": "1505",
-													"line": 210
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/label",
-														"attributes": {
-															"text": "★★★★★"
-														},
-														"draftRef": {
-															"tpl": "Root/226#0"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "b91a04b7",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"article",
-																"div"
-															],
-															"textHash": "af1300e0",
-															"line": 210
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "“"
-														},
-														"draftRef": {
-															"tpl": "Root/227#0"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "383d5b18",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"article",
-																"div"
-															],
-															"textHash": "295b9",
-															"line": 210
-														},
-														"innerBlocks": []
-													}
-												]
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-testimonial__rating-meta > .sgs-testimonial__date": {
+												"tpl": "Root/232#0"
 											},
-											{
-												"name": "sgs/heading",
-												"attributes": {
-													"content": "Healthy and filling snack"
-												},
-												"draftRef": {
-													"tpl": "Root/228#0"
-												},
-												"draftFingerprint": {
-													"tag": "h3",
-													"cls": "",
-													"styleHash": "612412e4",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"article"
-													],
-													"textHash": "d0d87ed0",
-													"line": 211
-												},
-												"innerBlocks": []
+											".sgs-testimonial__quote": {
+												"tpl": "Root/229#0"
 											},
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "I received the strawberry and milk chocolate chip cookies. I gave half of them to my SIL, who is also postpartum. They were fresh, soft and delicious! … I think these would be lovely to gift a new Mum."
-												},
-												"draftRef": {
-													"tpl": "Root/229#0"
-												},
-												"draftFingerprint": {
-													"tag": "p",
-													"cls": "",
-													"styleHash": "9ec33ca5",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"article"
-													],
-													"textHash": "61c35df3",
-													"line": 212
-												},
-												"innerBlocks": []
+											".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__name": {
+												"tpl": "Root/231#0"
 											},
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root/230#0"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "95b54968",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"article"
-													],
-													"textHash": "1505",
-													"line": 213
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "KA"
-														},
-														"draftRef": {
-															"tpl": "Root/231#0"
-														},
-														"draftFingerprint": {
-															"tag": "b",
-															"cls": "",
-															"styleHash": "1505",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"article",
-																"div"
-															],
-															"textHash": "5973ef",
-															"line": 213
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "June 2026 · Trustpilot"
-														},
-														"draftRef": {
-															"tpl": "Root/232#0"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "1505",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"article",
-																"div"
-															],
-															"textHash": "34d3445a",
-															"line": 213
-														},
-														"innerBlocks": []
-													}
-												]
+											".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__role": {
+												"tpl": "Root/226#0"
+											},
+											".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__org": {
+												"tpl": "Root/227#0"
 											}
-										]
+										}
 									},
 									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "article",
-											"layout": "stack"
-										},
+										"name": "sgs/testimonial",
+										"attributes": {},
 										"draftRef": {
 											"tpl": "Root/224#1"
 										},
@@ -4282,215 +3400,28 @@
 											"textHash": "1505",
 											"line": 209
 										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root/225#1"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "d3567b6d",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"article"
-													],
-													"textHash": "1505",
-													"line": 210
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/label",
-														"attributes": {
-															"text": "★★★★★"
-														},
-														"draftRef": {
-															"tpl": "Root/226#1"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "b91a04b7",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"article",
-																"div"
-															],
-															"textHash": "af1300e0",
-															"line": 210
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "“"
-														},
-														"draftRef": {
-															"tpl": "Root/227#1"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "383d5b18",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"article",
-																"div"
-															],
-															"textHash": "295b9",
-															"line": 210
-														},
-														"innerBlocks": []
-													}
-												]
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-testimonial__rating-meta > .sgs-testimonial__date": {
+												"tpl": "Root/232#1"
 											},
-											{
-												"name": "sgs/heading",
-												"attributes": {
-													"content": "Sweet, soft, addictive"
-												},
-												"draftRef": {
-													"tpl": "Root/228#1"
-												},
-												"draftFingerprint": {
-													"tag": "h3",
-													"cls": "",
-													"styleHash": "612412e4",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"article"
-													],
-													"textHash": "be1e863e",
-													"line": 211
-												},
-												"innerBlocks": []
+											".sgs-testimonial__quote": {
+												"tpl": "Root/229#1"
 											},
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "Sweet, soft oat cookies that are seriously addictive—and perfect for a lactating mum who’s constantly hungry. … The cookies are generously sized, so one was usually enough to keep me full."
-												},
-												"draftRef": {
-													"tpl": "Root/229#1"
-												},
-												"draftFingerprint": {
-													"tag": "p",
-													"cls": "",
-													"styleHash": "9ec33ca5",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"article"
-													],
-													"textHash": "d717b754",
-													"line": 212
-												},
-												"innerBlocks": []
+											".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__name": {
+												"tpl": "Root/231#1"
 											},
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root/230#1"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "95b54968",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"article"
-													],
-													"textHash": "1505",
-													"line": 213
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "mariahzaini"
-														},
-														"draftRef": {
-															"tpl": "Root/231#1"
-														},
-														"draftFingerprint": {
-															"tag": "b",
-															"cls": "",
-															"styleHash": "1505",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"article",
-																"div"
-															],
-															"textHash": "df29822e",
-															"line": 213
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "January 2026 · Trustpilot"
-														},
-														"draftRef": {
-															"tpl": "Root/232#1"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "1505",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"article",
-																"div"
-															],
-															"textHash": "57cb2694",
-															"line": 213
-														},
-														"innerBlocks": []
-													}
-												]
+											".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__role": {
+												"tpl": "Root/226#1"
+											},
+											".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__org": {
+												"tpl": "Root/227#1"
 											}
-										]
+										}
 									},
 									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "article",
-											"layout": "stack"
-										},
+										"name": "sgs/testimonial",
+										"attributes": {},
 										"draftRef": {
 											"tpl": "Root/224#2"
 										},
@@ -4507,215 +3438,28 @@
 											"textHash": "1505",
 											"line": 209
 										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root/225#2"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "d3567b6d",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"article"
-													],
-													"textHash": "1505",
-													"line": 210
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/label",
-														"attributes": {
-															"text": "★★★★★"
-														},
-														"draftRef": {
-															"tpl": "Root/226#2"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "b91a04b7",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"article",
-																"div"
-															],
-															"textHash": "af1300e0",
-															"line": 210
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "“"
-														},
-														"draftRef": {
-															"tpl": "Root/227#2"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "383d5b18",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"article",
-																"div"
-															],
-															"textHash": "295b9",
-															"line": 210
-														},
-														"innerBlocks": []
-													}
-												]
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-testimonial__rating-meta > .sgs-testimonial__date": {
+												"tpl": "Root/232#2"
 											},
-											{
-												"name": "sgs/heading",
-												"attributes": {
-													"content": "Works like magic!"
-												},
-												"draftRef": {
-													"tpl": "Root/228#2"
-												},
-												"draftFingerprint": {
-													"tag": "h3",
-													"cls": "",
-													"styleHash": "612412e4",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"article"
-													],
-													"textHash": "764719c",
-													"line": 211
-												},
-												"innerBlocks": []
+											".sgs-testimonial__quote": {
+												"tpl": "Root/229#2"
 											},
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "I was gifted these lactation cookies right after giving birth … They were such a comforting treat during those early postpartum days and made me feel really supported as a new mum."
-												},
-												"draftRef": {
-													"tpl": "Root/229#2"
-												},
-												"draftFingerprint": {
-													"tag": "p",
-													"cls": "",
-													"styleHash": "9ec33ca5",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"article"
-													],
-													"textHash": "47f11829",
-													"line": 212
-												},
-												"innerBlocks": []
+											".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__name": {
+												"tpl": "Root/231#2"
 											},
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root/230#2"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "95b54968",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"article"
-													],
-													"textHash": "1505",
-													"line": 213
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "Mrs MIM"
-														},
-														"draftRef": {
-															"tpl": "Root/231#2"
-														},
-														"draftFingerprint": {
-															"tag": "b",
-															"cls": "",
-															"styleHash": "1505",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"article",
-																"div"
-															],
-															"textHash": "6fe6f260",
-															"line": 213
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "January 2026 · Trustpilot"
-														},
-														"draftRef": {
-															"tpl": "Root/232#2"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "1505",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"article",
-																"div"
-															],
-															"textHash": "57cb2694",
-															"line": 213
-														},
-														"innerBlocks": []
-													}
-												]
+											".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__role": {
+												"tpl": "Root/226#2"
+											},
+											".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__org": {
+												"tpl": "Root/227#2"
 											}
-										]
+										}
 									},
 									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "article",
-											"layout": "stack"
-										},
+										"name": "sgs/testimonial",
+										"attributes": {},
 										"draftRef": {
 											"tpl": "Root/224#3"
 										},
@@ -4732,215 +3476,28 @@
 											"textHash": "1505",
 											"line": 209
 										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root/225#3"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "d3567b6d",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"article"
-													],
-													"textHash": "1505",
-													"line": 210
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/label",
-														"attributes": {
-															"text": "★★★★★"
-														},
-														"draftRef": {
-															"tpl": "Root/226#3"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "b91a04b7",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"article",
-																"div"
-															],
-															"textHash": "af1300e0",
-															"line": 210
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "“"
-														},
-														"draftRef": {
-															"tpl": "Root/227#3"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "383d5b18",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"article",
-																"div"
-															],
-															"textHash": "295b9",
-															"line": 210
-														},
-														"innerBlocks": []
-													}
-												]
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-testimonial__rating-meta > .sgs-testimonial__date": {
+												"tpl": "Root/232#3"
 											},
-											{
-												"name": "sgs/heading",
-												"attributes": {
-													"content": "I met Mama’s Munches at the Summer Souk"
-												},
-												"draftRef": {
-													"tpl": "Root/228#3"
-												},
-												"draftFingerprint": {
-													"tag": "h3",
-													"cls": "",
-													"styleHash": "612412e4",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"article"
-													],
-													"textHash": "6a25646e",
-													"line": 211
-												},
-												"innerBlocks": []
+											".sgs-testimonial__quote": {
+												"tpl": "Root/229#3"
 											},
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "The cookies were absolutely delicious! I had my stall next to hers and I swear I ate half of her strawberry and chocolate cookies ahaha! … What a treat for postpartum mums"
-												},
-												"draftRef": {
-													"tpl": "Root/229#3"
-												},
-												"draftFingerprint": {
-													"tag": "p",
-													"cls": "",
-													"styleHash": "9ec33ca5",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"article"
-													],
-													"textHash": "7e067414",
-													"line": 212
-												},
-												"innerBlocks": []
+											".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__name": {
+												"tpl": "Root/231#3"
 											},
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root/230#3"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "95b54968",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"article"
-													],
-													"textHash": "1505",
-													"line": 213
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "Tamanna"
-														},
-														"draftRef": {
-															"tpl": "Root/231#3"
-														},
-														"draftFingerprint": {
-															"tag": "b",
-															"cls": "",
-															"styleHash": "1505",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"article",
-																"div"
-															],
-															"textHash": "b5d60afd",
-															"line": 213
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "July 2026 · Trustpilot"
-														},
-														"draftRef": {
-															"tpl": "Root/232#3"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "1505",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"article",
-																"div"
-															],
-															"textHash": "88d21084",
-															"line": 213
-														},
-														"innerBlocks": []
-													}
-												]
+											".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__role": {
+												"tpl": "Root/226#3"
+											},
+											".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__org": {
+												"tpl": "Root/227#3"
 											}
-										]
+										}
 									},
 									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "article",
-											"layout": "stack"
-										},
+										"name": "sgs/testimonial",
+										"attributes": {},
 										"draftRef": {
 											"tpl": "Root/224#4"
 										},
@@ -4957,215 +3514,28 @@
 											"textHash": "1505",
 											"line": 209
 										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root/225#4"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "d3567b6d",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"article"
-													],
-													"textHash": "1505",
-													"line": 210
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/label",
-														"attributes": {
-															"text": "★★★★★"
-														},
-														"draftRef": {
-															"tpl": "Root/226#4"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "b91a04b7",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"article",
-																"div"
-															],
-															"textHash": "af1300e0",
-															"line": 210
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "“"
-														},
-														"draftRef": {
-															"tpl": "Root/227#4"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "383d5b18",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"article",
-																"div"
-															],
-															"textHash": "295b9",
-															"line": 210
-														},
-														"innerBlocks": []
-													}
-												]
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-testimonial__rating-meta > .sgs-testimonial__date": {
+												"tpl": "Root/232#4"
 											},
-											{
-												"name": "sgs/heading",
-												"attributes": {
-													"content": "Such a healthy and yummy treat"
-												},
-												"draftRef": {
-													"tpl": "Root/228#4"
-												},
-												"draftFingerprint": {
-													"tag": "h3",
-													"cls": "",
-													"styleHash": "612412e4",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"article"
-													],
-													"textHash": "bec19b64",
-													"line": 211
-												},
-												"innerBlocks": []
+											".sgs-testimonial__quote": {
+												"tpl": "Root/229#4"
 											},
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "We bought the marshmallow and raisin one and my little one absolutely demolished them! Will deffo be buying more in the future!"
-												},
-												"draftRef": {
-													"tpl": "Root/229#4"
-												},
-												"draftFingerprint": {
-													"tag": "p",
-													"cls": "",
-													"styleHash": "9ec33ca5",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"article"
-													],
-													"textHash": "66cdf4f7",
-													"line": 212
-												},
-												"innerBlocks": []
+											".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__name": {
+												"tpl": "Root/231#4"
 											},
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root/230#4"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "95b54968",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"article"
-													],
-													"textHash": "1505",
-													"line": 213
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "Lisha Mehmood"
-														},
-														"draftRef": {
-															"tpl": "Root/231#4"
-														},
-														"draftFingerprint": {
-															"tag": "b",
-															"cls": "",
-															"styleHash": "1505",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"article",
-																"div"
-															],
-															"textHash": "4858713",
-															"line": 213
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "July 2026 · Trustpilot"
-														},
-														"draftRef": {
-															"tpl": "Root/232#4"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "1505",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"article",
-																"div"
-															],
-															"textHash": "88d21084",
-															"line": 213
-														},
-														"innerBlocks": []
-													}
-												]
+											".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__role": {
+												"tpl": "Root/226#4"
+											},
+											".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__org": {
+												"tpl": "Root/227#4"
 											}
-										]
+										}
 									},
 									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "article",
-											"layout": "stack"
-										},
+										"name": "sgs/testimonial",
+										"attributes": {},
 										"draftRef": {
 											"tpl": "Root/224#5"
 										},
@@ -5182,208 +3552,24 @@
 											"textHash": "1505",
 											"line": 209
 										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root/225#5"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "d3567b6d",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"article"
-													],
-													"textHash": "1505",
-													"line": 210
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/label",
-														"attributes": {
-															"text": "★★★★★"
-														},
-														"draftRef": {
-															"tpl": "Root/226#5"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "b91a04b7",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"article",
-																"div"
-															],
-															"textHash": "af1300e0",
-															"line": 210
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "“"
-														},
-														"draftRef": {
-															"tpl": "Root/227#5"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "383d5b18",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"article",
-																"div"
-															],
-															"textHash": "295b9",
-															"line": 210
-														},
-														"innerBlocks": []
-													}
-												]
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-testimonial__rating-meta > .sgs-testimonial__date": {
+												"tpl": "Root/232#5"
 											},
-											{
-												"name": "sgs/heading",
-												"attributes": {
-													"content": "Soo delicious and filling"
-												},
-												"draftRef": {
-													"tpl": "Root/228#5"
-												},
-												"draftFingerprint": {
-													"tag": "h3",
-													"cls": "",
-													"styleHash": "612412e4",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"article"
-													],
-													"textHash": "c83b5a75",
-													"line": 211
-												},
-												"innerBlocks": []
+											".sgs-testimonial__quote": {
+												"tpl": "Root/229#5"
 											},
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "The cookies were soo delicious and filling! I have nearly finished half the box and I only bought them two days ago!"
-												},
-												"draftRef": {
-													"tpl": "Root/229#5"
-												},
-												"draftFingerprint": {
-													"tag": "p",
-													"cls": "",
-													"styleHash": "9ec33ca5",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"article"
-													],
-													"textHash": "48619ad6",
-													"line": 212
-												},
-												"innerBlocks": []
+											".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__name": {
+												"tpl": "Root/231#5"
 											},
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root/230#5"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "95b54968",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"article"
-													],
-													"textHash": "1505",
-													"line": 213
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "R B"
-														},
-														"draftRef": {
-															"tpl": "Root/231#5"
-														},
-														"draftFingerprint": {
-															"tag": "b",
-															"cls": "",
-															"styleHash": "1505",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"article",
-																"div"
-															],
-															"textHash": "b881395",
-															"line": 213
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "February 2026 · Trustpilot"
-														},
-														"draftRef": {
-															"tpl": "Root/232#5"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "1505",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"article",
-																"div"
-															],
-															"textHash": "376e322",
-															"line": 213
-														},
-														"innerBlocks": []
-													}
-												]
+											".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__role": {
+												"tpl": "Root/226#5"
+											},
+											".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__org": {
+												"tpl": "Root/227#5"
 											}
-										]
+										}
 									}
 								]
 							},
@@ -5410,7 +3596,10 @@
 								"innerBlocks": [
 									{
 										"name": "sgs/button",
-										"attributes": {},
+										"attributes": {
+											"label": "",
+											"ariaLabel": "Go to review 1"
+										},
 										"draftRef": {
 											"tpl": "Root/235#0"
 										},
@@ -5431,7 +3620,10 @@
 									},
 									{
 										"name": "sgs/button",
-										"attributes": {},
+										"attributes": {
+											"label": "",
+											"ariaLabel": "Go to review 2"
+										},
 										"draftRef": {
 											"tpl": "Root/235#1"
 										},
@@ -5452,7 +3644,10 @@
 									},
 									{
 										"name": "sgs/button",
-										"attributes": {},
+										"attributes": {
+											"label": "",
+											"ariaLabel": "Go to review 3"
+										},
 										"draftRef": {
 											"tpl": "Root/235#2"
 										},
@@ -5473,7 +3668,10 @@
 									},
 									{
 										"name": "sgs/button",
-										"attributes": {},
+										"attributes": {
+											"label": "",
+											"ariaLabel": "Go to review 4"
+										},
 										"draftRef": {
 											"tpl": "Root/235#3"
 										},
@@ -5494,7 +3692,10 @@
 									},
 									{
 										"name": "sgs/button",
-										"attributes": {},
+										"attributes": {
+											"label": "",
+											"ariaLabel": "Go to review 5"
+										},
 										"draftRef": {
 											"tpl": "Root/235#4"
 										},
@@ -5515,7 +3716,10 @@
 									},
 									{
 										"name": "sgs/button",
-										"attributes": {},
+										"attributes": {
+											"label": "",
+											"ariaLabel": "Go to review 6"
+										},
 										"draftRef": {
 											"tpl": "Root/235#5"
 										},
@@ -5534,11 +3738,32 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-button:nth-of-type(1)": {
+										"tpl": "Root/235#0"
+									},
+									".sgs-button:nth-of-type(2)": {
+										"tpl": "Root/235#1"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/210#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/222#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/209#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -5584,7 +3809,7 @@
 						},
 						"innerBlocks": [
 							{
-								"name": "sgs/text",
+								"name": "sgs/label",
 								"attributes": {
 									"text": "ask away"
 								},
@@ -5609,7 +3834,8 @@
 							{
 								"name": "sgs/heading",
 								"attributes": {
-									"content": "Questions mums ask"
+									"content": "Questions mums ask",
+									"level": "h2"
 								},
 								"draftRef": {
 									"tpl": "Root/240#0"
@@ -5630,9 +3856,9 @@
 								"innerBlocks": []
 							},
 							{
-								"name": "sgs/container",
+								"name": "sgs/text",
 								"attributes": {
-									"tagName": "div"
+									"text": "Can’t see yours? Message Zainab on WhatsApp, or read the full <a href=\"/help/\"><strong>Help &amp; FAQs</strong></a>."
 								},
 								"draftRef": {
 									"tpl": "Root/241#0"
@@ -5650,41 +3876,29 @@
 									"textHash": "ccb9d8e0",
 									"line": 228
 								},
-								"innerBlocks": [
-									{
-										"name": "sgs/button",
-										"attributes": {
-											"label": "Help & FAQs",
-											"url": "/help/"
-										},
-										"draftRef": {
-											"tpl": "Root/242#0"
-										},
-										"draftFingerprint": {
-											"tag": "a",
-											"cls": "",
-											"styleHash": "a99853ab",
-											"parentTags": [
-												"main",
-												"section",
-												"div",
-												"div",
-												"p"
-											],
-											"textHash": "5dbe7c57",
-											"line": 228
-										},
-										"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									"a": {
+										"tpl": "Root/242#0"
 									}
-								]
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/239#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/240#0"
+							}
+						}
 					},
 					{
-						"name": "sgs/container",
+						"name": "sgs/accordion",
 						"attributes": {
-							"tagName": "div",
-							"layout": "stack"
+							"layout": "stack",
+							"allowMultiple": false,
+							"defaultOpen": 0
 						},
 						"draftRef": {
 							"tpl": "Root/243#0"
@@ -5703,9 +3917,10 @@
 						},
 						"innerBlocks": [
 							{
-								"name": "sgs/container",
+								"name": "sgs/accordion-item",
 								"attributes": {
-									"tagName": "div"
+									"title": "When will my order arrive?",
+									"isOpen": true
 								},
 								"draftRef": {
 									"tpl": "Root/245#0"
@@ -5725,61 +3940,11 @@
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div",
-											"layout": "flex"
-										},
-										"draftRef": {
-											"tpl": "Root/246#0"
-										},
-										"draftFingerprint": {
-											"tag": "button",
-											"cls": "",
-											"styleHash": "d4233854",
-											"parentTags": [
-												"main",
-												"section",
-												"div",
-												"div",
-												"div"
-											],
-											"textHash": "8333fb51",
-											"line": 233
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "+"
-												},
-												"draftRef": {
-													"tpl": "Root/247#0"
-												},
-												"draftFingerprint": {
-													"tag": "span",
-													"cls": "",
-													"styleHash": "de52cbd5",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"div",
-														"button"
-													],
-													"textHash": "2b58e",
-													"line": 233
-												},
-												"innerBlocks": []
-											}
-										]
-									},
-									{
 										"name": "sgs/text",
 										"attributes": {
 											"text": "Zainab bakes every order fresh when it comes in, then posts it with Royal Mail Tracked. Most orders are with you in 3–5 days."
 										},
+										"innerBlocks": [],
 										"draftRef": {
 											"tpl": "Root/249#0"
 										},
@@ -5796,15 +3961,14 @@
 											],
 											"textHash": "f3666877",
 											"line": 234
-										},
-										"innerBlocks": []
+										}
 									}
 								]
 							},
 							{
-								"name": "sgs/container",
+								"name": "sgs/accordion-item",
 								"attributes": {
-									"tagName": "div"
+									"title": "Are they OK to eat while breastfeeding?"
 								},
 								"draftRef": {
 									"tpl": "Root/245#1"
@@ -5824,18 +3988,18 @@
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/container",
+										"name": "sgs/text",
 										"attributes": {
-											"tagName": "div",
-											"layout": "flex"
+											"text": "They’re made from everyday food ingredients. Fenugreek isn’t right for everyone, so if you or your baby are sensitive to it, or you have a health condition, check with your midwife or GP first."
 										},
+										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/246#1"
+											"tpl": "Root/249#0"
 										},
 										"draftFingerprint": {
-											"tag": "button",
+											"tag": "p",
 											"cls": "",
-											"styleHash": "d4233854",
+											"styleHash": "5e6af7e9",
 											"parentTags": [
 												"main",
 												"section",
@@ -5843,43 +4007,16 @@
 												"div",
 												"div"
 											],
-											"textHash": "da3910ed",
-											"line": 233
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "+"
-												},
-												"draftRef": {
-													"tpl": "Root/247#1"
-												},
-												"draftFingerprint": {
-													"tag": "span",
-													"cls": "",
-													"styleHash": "a22b5a04",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"div",
-														"button"
-													],
-													"textHash": "2b58e",
-													"line": 233
-												},
-												"innerBlocks": []
-											}
-										]
+											"textHash": "f3666877",
+											"line": 234
+										}
 									}
 								]
 							},
 							{
-								"name": "sgs/container",
+								"name": "sgs/accordion-item",
 								"attributes": {
-									"tagName": "div"
+									"title": "How does Subscribe & save work?"
 								},
 								"draftRef": {
 									"tpl": "Root/245#2"
@@ -5899,18 +4036,18 @@
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/container",
+										"name": "sgs/text",
 										"attributes": {
-											"tagName": "div",
-											"layout": "flex"
+											"text": "Build your box and choose every 2 or 4 weeks. You get 10% off every box and free delivery on 20 and 40 packs. Skip, swap flavours or cancel online whenever you like."
 										},
+										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/246#2"
+											"tpl": "Root/249#0"
 										},
 										"draftFingerprint": {
-											"tag": "button",
+											"tag": "p",
 											"cls": "",
-											"styleHash": "d4233854",
+											"styleHash": "5e6af7e9",
 											"parentTags": [
 												"main",
 												"section",
@@ -5918,43 +4055,16 @@
 												"div",
 												"div"
 											],
-											"textHash": "862ec2d9",
-											"line": 233
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "+"
-												},
-												"draftRef": {
-													"tpl": "Root/247#2"
-												},
-												"draftFingerprint": {
-													"tag": "span",
-													"cls": "",
-													"styleHash": "a22b5a04",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"div",
-														"button"
-													],
-													"textHash": "2b58e",
-													"line": 233
-												},
-												"innerBlocks": []
-											}
-										]
+											"textHash": "f3666877",
+											"line": 234
+										}
 									}
 								]
 							},
 							{
-								"name": "sgs/container",
+								"name": "sgs/accordion-item",
 								"attributes": {
-									"tagName": "div"
+									"title": "What allergens do they contain?"
 								},
 								"draftRef": {
 									"tpl": "Root/245#3"
@@ -5974,18 +4084,18 @@
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/container",
+										"name": "sgs/text",
 										"attributes": {
-											"tagName": "div",
-											"layout": "flex"
+											"text": "Oats (gluten), eggs, milk and fenugreek, a legume that may cross-react with peanut or soy allergies. Made in a kitchen that also handles tree nuts. The vegan base has no eggs or dairy."
 										},
+										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/246#3"
+											"tpl": "Root/249#0"
 										},
 										"draftFingerprint": {
-											"tag": "button",
+											"tag": "p",
 											"cls": "",
-											"styleHash": "d4233854",
+											"styleHash": "5e6af7e9",
 											"parentTags": [
 												"main",
 												"section",
@@ -5993,43 +4103,32 @@
 												"div",
 												"div"
 											],
-											"textHash": "7526e1a2",
-											"line": 233
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "+"
-												},
-												"draftRef": {
-													"tpl": "Root/247#3"
-												},
-												"draftFingerprint": {
-													"tag": "span",
-													"cls": "",
-													"styleHash": "a22b5a04",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"div",
-														"button"
-													],
-													"textHash": "2b58e",
-													"line": 233
-												},
-												"innerBlocks": []
-											}
-										]
+											"textHash": "f3666877",
+											"line": 234
+										}
 									}
 								]
 							}
 						]
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/238#0"
+					},
+					".sgs-container__inner > p:nth-of-type(2)": {
+						"tpl": "Root/243#0"
+					}
+				}
 			}
-		]
+		],
+		"draftSlots": {
+			".sgs-container__inner > p:nth-of-type(1)": {
+				"tpl": "Root/9#0"
+			},
+			".sgs-container__inner > p:nth-of-type(2)": {
+				"tpl": "Root/44#0"
+			}
+		}
 	}
 ]

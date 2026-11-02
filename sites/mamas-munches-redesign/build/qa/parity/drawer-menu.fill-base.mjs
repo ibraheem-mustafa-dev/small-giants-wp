@@ -9,8 +9,8 @@ export default {
 	// The surface's own element on each side: the automatic text and moved-run collection and the links run inside it.
 	auto: { root: {"draft":".sc-host[data-sc-name=\"Root\"] .sc-host[data-sc-name=\"SiteHeader\"][data-dc-tpl=\"7\"] [data-dc-tpl=\"56\"]:not(.sc-host .sc-host .sc-host *)","live":".cr-ref-drawer-menu-0"} },
 	linkRoot: {"draft":".sc-host[data-sc-name=\"Root\"] .sc-host[data-sc-name=\"SiteHeader\"][data-dc-tpl=\"7\"] [data-dc-tpl=\"56\"]:not(.sc-host .sc-host .sc-host *)","live":".cr-ref-drawer-menu-0"},
-	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:55059/", open: async ( h ) => {
-		const ways = [{"op":"set","patch":{"nav":true},"bounds":[]}];
+	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:58682/", open: async ( h ) => {
+		const ways = [{"op":"set","patch":{"nav":true},"bounds":[]},{"op":"reach","patch":{"calls":[{"ident":"dcLogic","args":"{ nav: true }","component":"SiteHeader"}],"keep":[]},"bounds":[]}];
 		const at = {"375":0,"768":0,"1024":0,"1440":0,"1920":0};
 		const width = h.page.viewportSize?.()?.width ?? null;
 		const fits = ( bounds, width ) => null == width || ( bounds || [] ).every( ( b ) => ( null == b.min || width >= b.min ) && ( null == b.max || width <= b.max ) );
@@ -21,6 +21,38 @@ export default {
 	const snap = slot ? ( slots[ slot ] ||= new Map() ) : ( window.__sgsStateSnap ||= new Map() );
 	const values = [];
 	let count = 0;
+	// A store call (`MM.cart.setGift({ on: true })`, lib/intake-store-calls.mjs) runs once, before any logic call, on a global the
+	// draft itself defines (a plain object, never a built-in such as Math, JSON, console or document), by plain property names only; the page's storage is kept first so
+	// `restore` puts it back. A call that cannot run reaches nothing.
+	if ( 'reach' === op && patch.calls.some( ( c ) => c.store ) ) {
+		window.__sgsStoreSnap ||= Object.fromEntries( Object.entries( localStorage ) );
+		for ( const c of patch.calls.filter( ( x ) => x.store ) ) {
+			const found = Object.getOwnPropertyDescriptor( window, c.ident )?.value;
+			const root = found && '[object Object]' === Object.prototype.toString.call( found ) && Object.getPrototypeOf( found ) === Object.prototype ? found : null;
+			let obj = root;
+			for ( const seg of c.path.slice( 0, -1 ) ) {
+				obj = obj && 'object' === typeof obj ? obj[ seg ] : null;
+			}
+			const fn = obj ? obj[ c.path.at( -1 ) ] : null;
+			if ( ! root || 'object' !== typeof root || 'function' !== typeof fn ) {
+				return 0;
+			}
+			try {
+				fn.apply( obj, c.args );
+			} catch {
+				return 0;
+			}
+		}
+		if ( ! patch.calls.some( ( c ) => ! c.store ) ) {
+			return 1;
+		}
+	}
+	if ( 'restore' === op && window.__sgsStoreSnap ) {
+		localStorage.clear();
+		Object.entries( window.__sgsStoreSnap ).forEach( ( [ k, v ] ) => localStorage.setItem( k, v ) );
+		window.dispatchEvent( new Event( 'storage' ) );
+		delete window.__sgsStoreSnap;
+	}
 	for ( const host of document.querySelectorAll( '.sc-host' ) ) {
 		const name = host.dataset.scName;
 		if ( comp && name !== comp ) {
@@ -42,7 +74,7 @@ export default {
 			const keep = patch.keep || [];
 			const was = Object.fromEntries( keep.map( ( k ) => [ k, logic.state[ k ] ] ) );
 			try {
-				patch.calls.forEach( ( c ) => new Function( c.ident, `${ c.ident }.setState(${ c.args });` )( logic ) );
+				patch.calls.filter( ( c ) => ! c.store && ( ! c.component || c.component === name ) ).forEach( ( c ) => new Function( c.ident, `${ c.ident }.setState(${ c.args });` )( logic ) );
 				keep.length && logic.setState( was );
 				count++;
 			} catch {
@@ -72,7 +104,7 @@ export default {
 		await h.page.waitForTimeout( 900 );
 	} },
 	live: { url: "http://localhost:8084/", open: async ( h ) => {
-		const ways = [{"op":"set","patch":{"nav":true},"bounds":[]}];
+		const ways = [{"op":"set","patch":{"nav":true},"bounds":[]},{"op":"reach","patch":{"calls":[{"ident":"dcLogic","args":"{ nav: true }","component":"SiteHeader"}],"keep":[]},"bounds":[]}];
 		const at = {"375":0,"768":0,"1024":0,"1440":0,"1920":0};
 		const width = h.page.viewportSize?.()?.width ?? null;
 		const fits = ( bounds, width ) => null == width || ( bounds || [] ).every( ( b ) => ( null == b.min || width >= b.min ) && ( null == b.max || width <= b.max ) );
@@ -84,11 +116,11 @@ export default {
 		return { clicked: false, id: null, why: `no ${ root } on the page` };
 	}
 	for ( let a = el; a && a !== document.documentElement; a = a.parentElement ) {
-		const controls = a.id ? [ ...document.querySelectorAll( '[aria-controls]' ) ].filter( ( b ) => ! a.contains( b ) && b.getAttribute( 'aria-controls' ).split( /\s+/ ).includes( a.id ) ) : [];
+		const controls = a.id ? [ ...document.querySelectorAll( '[aria-controls], [data-sgs-modal-open], a[href^="#"]' ) ].filter( ( b ) => ! a.contains( b ) && ( ( b.getAttribute( 'aria-controls' ) || '' ).split( /\s+/ ).includes( a.id ) || a.id === b.getAttribute( 'data-sgs-modal-open' ) || '#' + a.id === b.getAttribute( 'href' ) ) ) : [];
 		if ( ! controls.length ) {
 			continue;
 		}
-		if ( a.open || controls.some( ( b ) => 'true' === b.getAttribute( 'aria-expanded' ) ) ) {
+		if ( a.open || a.querySelector( 'dialog[open]' ) || controls.some( ( b ) => 'true' === b.getAttribute( 'aria-expanded' ) ) ) {
 			return { clicked: false, id: a.id, why: `#${ a.id } is open already` };
 		}
 		( controls.find( ( b ) => b.getClientRects().length ) || controls[ 0 ] ).click();
@@ -103,7 +135,7 @@ export default {
 	states: [
 		{ name: "open-drawer-slides-in-contents-stagger-in-from-the-left", fullPage: true, draft: async ( h ) => {
 		
-		const ways = [{"op":"set","patch":{"nav":true},"bounds":[]}];
+		const ways = [{"op":"set","patch":{"nav":true},"bounds":[]},{"op":"reach","patch":{"calls":[{"ident":"dcLogic","args":"{ nav: true }","component":"SiteHeader"}],"keep":[]},"bounds":[]}];
 		const width = h.page.viewportSize?.()?.width ?? null;
 		const fits = ( bounds, width ) => null == width || ( bounds || [] ).every( ( b ) => ( null == b.min || width >= b.min ) && ( null == b.max || width <= b.max ) );
 		const way = [375,768,1440,1920].includes( width ) ? null : ways.find( ( w ) => fits( w.bounds, width ) );
@@ -113,6 +145,38 @@ export default {
 	const snap = slot ? ( slots[ slot ] ||= new Map() ) : ( window.__sgsStateSnap ||= new Map() );
 	const values = [];
 	let count = 0;
+	// A store call (`MM.cart.setGift({ on: true })`, lib/intake-store-calls.mjs) runs once, before any logic call, on a global the
+	// draft itself defines (a plain object, never a built-in such as Math, JSON, console or document), by plain property names only; the page's storage is kept first so
+	// `restore` puts it back. A call that cannot run reaches nothing.
+	if ( 'reach' === op && patch.calls.some( ( c ) => c.store ) ) {
+		window.__sgsStoreSnap ||= Object.fromEntries( Object.entries( localStorage ) );
+		for ( const c of patch.calls.filter( ( x ) => x.store ) ) {
+			const found = Object.getOwnPropertyDescriptor( window, c.ident )?.value;
+			const root = found && '[object Object]' === Object.prototype.toString.call( found ) && Object.getPrototypeOf( found ) === Object.prototype ? found : null;
+			let obj = root;
+			for ( const seg of c.path.slice( 0, -1 ) ) {
+				obj = obj && 'object' === typeof obj ? obj[ seg ] : null;
+			}
+			const fn = obj ? obj[ c.path.at( -1 ) ] : null;
+			if ( ! root || 'object' !== typeof root || 'function' !== typeof fn ) {
+				return 0;
+			}
+			try {
+				fn.apply( obj, c.args );
+			} catch {
+				return 0;
+			}
+		}
+		if ( ! patch.calls.some( ( c ) => ! c.store ) ) {
+			return 1;
+		}
+	}
+	if ( 'restore' === op && window.__sgsStoreSnap ) {
+		localStorage.clear();
+		Object.entries( window.__sgsStoreSnap ).forEach( ( [ k, v ] ) => localStorage.setItem( k, v ) );
+		window.dispatchEvent( new Event( 'storage' ) );
+		delete window.__sgsStoreSnap;
+	}
 	for ( const host of document.querySelectorAll( '.sc-host' ) ) {
 		const name = host.dataset.scName;
 		if ( comp && name !== comp ) {
@@ -134,7 +198,7 @@ export default {
 			const keep = patch.keep || [];
 			const was = Object.fromEntries( keep.map( ( k ) => [ k, logic.state[ k ] ] ) );
 			try {
-				patch.calls.forEach( ( c ) => new Function( c.ident, `${ c.ident }.setState(${ c.args });` )( logic ) );
+				patch.calls.filter( ( c ) => ! c.store && ( ! c.component || c.component === name ) ).forEach( ( c ) => new Function( c.ident, `${ c.ident }.setState(${ c.args });` )( logic ) );
 				keep.length && logic.setState( was );
 				count++;
 			} catch {

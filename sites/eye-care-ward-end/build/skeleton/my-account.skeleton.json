@@ -5,7 +5,7 @@
 			"tagName": "main"
 		},
 		"draftRef": {
-			"tpl": "Root/856#0"
+			"tpl": "Root/854#0"
 		},
 		"draftFingerprint": {
 			"tag": "main",
@@ -13,14 +13,14 @@
 			"styleHash": "e0705001",
 			"parentTags": [],
 			"textHash": "1505",
-			"line": 1658
+			"line": 1655
 		},
 		"innerBlocks": [
 			{
 				"name": "sgs/hero",
 				"attributes": {},
 				"draftRef": {
-					"tpl": "Root/858#0"
+					"tpl": "Root/856#0"
 				},
 				"draftFingerprint": {
 					"tag": "div",
@@ -30,7 +30,7 @@
 						"main"
 					],
 					"textHash": "1505",
-					"line": 1660
+					"line": 1657
 				},
 				"innerBlocks": [
 					{
@@ -39,7 +39,7 @@
 							"text": "Your account"
 						},
 						"draftRef": {
-							"tpl": "Root/859#0"
+							"tpl": "Root/857#0"
 						},
 						"draftFingerprint": {
 							"tag": "p",
@@ -50,17 +50,18 @@
 								"div"
 							],
 							"textHash": "e5ea9ef5",
-							"line": 1661
+							"line": 1658
 						},
 						"innerBlocks": []
 					},
 					{
 						"name": "sgs/heading",
 						"attributes": {
-							"content": "Sign in or create an account"
+							"content": "Sign in or create an account",
+							"level": "h1"
 						},
 						"draftRef": {
-							"tpl": "Root/860#0"
+							"tpl": "Root/858#0"
 						},
 						"draftFingerprint": {
 							"tag": "h1",
@@ -71,7 +72,7 @@
 								"div"
 							],
 							"textHash": "3d13afa6",
-							"line": 1662
+							"line": 1659
 						},
 						"innerBlocks": []
 					},
@@ -81,7 +82,7 @@
 							"text": "You don't need an account to order; checkout works as a guest. An account keeps your orders, subscriptions, addresses and saved frames in one place."
 						},
 						"draftRef": {
-							"tpl": "Root/861#0"
+							"tpl": "Root/859#0"
 						},
 						"draftFingerprint": {
 							"tag": "p",
@@ -92,17 +93,27 @@
 								"div"
 							],
 							"textHash": "7f899c21",
-							"line": 1663
+							"line": 1660
 						},
 						"innerBlocks": []
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-hero__content": {
+						"tpl": "Root/856#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/account",
 				"attributes": {},
 				"innerBlocks": []
 			}
-		]
+		],
+		"draftSlots": {
+			".sgs-container__inner > p:nth-of-type(1)": {
+				"tpl": "Root/856#0"
+			}
+		}
 	}
 ]

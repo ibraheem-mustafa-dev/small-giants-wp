@@ -23,6 +23,10 @@
       "textHash": "1505",
       "line": 14
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root>EnquiryForm@468#0/8#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root>EnquiryForm@468#0/9#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-form-enquiry-2": {
@@ -56,21 +60,6 @@
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-form-enquiry-4": {
-    "tpl": "Root>EnquiryForm@468#0/10#0",
-    "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "d2c9c594",
-      "parentTags": [
-        "form",
-        "div"
-      ],
-      "textHash": "d5c85a24",
-      "line": 17
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-enquiry-5": {
     "tpl": "Root>EnquiryForm@468#0/11#0",
     "fingerprint": {
       "tag": "div",
@@ -82,9 +71,12 @@
       "textHash": "1505",
       "line": 19
     },
+    "slots": {
+      ".sgs-form-field__group > .sgs-container": "Root>EnquiryForm@468#0/11#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-enquiry-6": {
+  "cr-ref-form-enquiry-5": {
     "tpl": "Root>EnquiryForm@468#0/20#0",
     "fingerprint": {
       "tag": "div",
@@ -96,9 +88,13 @@
       "textHash": "1505",
       "line": 30
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root>EnquiryForm@468#0/21#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root>EnquiryForm@468#0/22#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-enquiry-7": {
+  "cr-ref-form-enquiry-6": {
     "tpl": "Root>EnquiryForm@468#0/21#0",
     "fingerprint": {
       "tag": "span",
@@ -113,7 +109,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-enquiry-8": {
+  "cr-ref-form-enquiry-7": {
     "tpl": "Root>EnquiryForm@468#0/22#0",
     "fingerprint": {
       "tag": "h3",
@@ -128,7 +124,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-enquiry-9": {
+  "cr-ref-form-enquiry-8": {
     "tpl": "Root>EnquiryForm@468#0/23#0",
     "fingerprint": {
       "tag": "div",
@@ -140,9 +136,13 @@
       "textHash": "1505",
       "line": 34
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root>EnquiryForm@468#0/25#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root>EnquiryForm@468#0/25#1"
+    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-enquiry-10": {
+  "cr-ref-form-enquiry-9": {
     "tpl": "Root>EnquiryForm@468#0/25#0",
     "fingerprint": {
       "tag": "div",
@@ -155,9 +155,12 @@
       "textHash": "1505",
       "line": 36
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root>EnquiryForm@468#0/26#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-enquiry-11": {
+  "cr-ref-form-enquiry-10": {
     "tpl": "Root>EnquiryForm@468#0/26#0",
     "fingerprint": {
       "tag": "input",
@@ -176,7 +179,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-enquiry-12": {
+  "cr-ref-form-enquiry-11": {
     "tpl": "Root>EnquiryForm@468#0/25#1",
     "fingerprint": {
       "tag": "div",
@@ -189,9 +192,12 @@
       "textHash": "1505",
       "line": 36
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root>EnquiryForm@468#0/26#1"
+    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-enquiry-13": {
+  "cr-ref-form-enquiry-12": {
     "tpl": "Root>EnquiryForm@468#0/26#1",
     "fingerprint": {
       "tag": "input",
@@ -210,7 +216,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-enquiry-14": {
+  "cr-ref-form-enquiry-13": {
     "tpl": "Root>EnquiryForm@468#0/25#2",
     "fingerprint": {
       "tag": "div",
@@ -223,9 +229,12 @@
       "textHash": "1505",
       "line": 36
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root>EnquiryForm@468#0/26#2"
+    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-enquiry-15": {
+  "cr-ref-form-enquiry-14": {
     "tpl": "Root>EnquiryForm@468#0/26#2",
     "fingerprint": {
       "tag": "input",
@@ -244,7 +253,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-enquiry-16": {
+  "cr-ref-form-enquiry-15": {
     "tpl": "Root>EnquiryForm@468#0/25#3",
     "fingerprint": {
       "tag": "div",
@@ -257,9 +266,12 @@
       "textHash": "1505",
       "line": 36
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root>EnquiryForm@468#0/26#3"
+    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-enquiry-17": {
+  "cr-ref-form-enquiry-16": {
     "tpl": "Root>EnquiryForm@468#0/26#3",
     "fingerprint": {
       "tag": "input",
@@ -278,7 +290,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-enquiry-18": {
+  "cr-ref-form-enquiry-17": {
     "tpl": "Root>EnquiryForm@468#0/30#0",
     "fingerprint": {
       "tag": "div",
@@ -291,9 +303,12 @@
       "textHash": "1505",
       "line": 42
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root>EnquiryForm@468#0/31#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-enquiry-19": {
+  "cr-ref-form-enquiry-18": {
     "tpl": "Root>EnquiryForm@468#0/31#0",
     "fingerprint": {
       "tag": "textarea",
@@ -312,7 +327,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-enquiry-20": {
+  "cr-ref-form-enquiry-19": {
     "tpl": "Root>EnquiryForm@468#0/36#0",
     "fingerprint": {
       "tag": "div",
@@ -324,24 +339,13 @@
       "textHash": "1505",
       "line": 50
     },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-enquiry-21": {
-    "tpl": "Root>EnquiryForm@468#0/37#0",
-    "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "83026f48",
-      "parentTags": [
-        "form",
-        "div"
-      ],
-      "textHash": "1c2c80c",
-      "line": 51
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root>EnquiryForm@468#0/39#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root>EnquiryForm@468#0/39#1"
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-enquiry-22": {
+  "cr-ref-form-enquiry-20": {
     "tpl": "Root>EnquiryForm@468#0/39#0",
     "fingerprint": {
       "tag": "button",
@@ -354,9 +358,12 @@
       "textHash": "bfda129",
       "line": 53
     },
+    "slots": {
+      ".sgs-button__label": "Root>EnquiryForm@468#0/39#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-enquiry-23": {
+  "cr-ref-form-enquiry-21": {
     "tpl": "Root>EnquiryForm@468#0/39#1",
     "fingerprint": {
       "tag": "button",
@@ -369,9 +376,12 @@
       "textHash": "de11eb9",
       "line": 53
     },
+    "slots": {
+      ".sgs-button__label": "Root>EnquiryForm@468#0/39#1"
+    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-enquiry-24": {
+  "cr-ref-form-enquiry-22": {
     "tpl": "Root>EnquiryForm@468#0/39#2",
     "fingerprint": {
       "tag": "button",
@@ -384,9 +394,12 @@
       "textHash": "71fcb1bd",
       "line": 53
     },
+    "slots": {
+      ".sgs-button__label": "Root>EnquiryForm@468#0/39#2"
+    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-enquiry-25": {
+  "cr-ref-form-enquiry-23": {
     "tpl": "Root>EnquiryForm@468#0/40#0",
     "fingerprint": {
       "tag": "div",
@@ -398,9 +411,13 @@
       "textHash": "1505",
       "line": 57
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root>EnquiryForm@468#0/41#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root>EnquiryForm@468#0/42#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-enquiry-26": {
+  "cr-ref-form-enquiry-24": {
     "tpl": "Root>EnquiryForm@468#0/41#0",
     "fingerprint": {
       "tag": "span",
@@ -415,7 +432,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-enquiry-27": {
+  "cr-ref-form-enquiry-25": {
     "tpl": "Root>EnquiryForm@468#0/42#0",
     "fingerprint": {
       "tag": "button",
@@ -427,6 +444,9 @@
       ],
       "textHash": "5b4a5872",
       "line": 59
+    },
+    "slots": {
+      ".sgs-button__label": "Root>EnquiryForm@468#0/42#0"
     },
     "draft": "0fe5aee1c396a997"
   }

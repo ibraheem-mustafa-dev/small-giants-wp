@@ -9,7 +9,10 @@
       "textHash": "1505",
       "line": 11
     },
-    "draft": "4cd995654ff1103b"
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/9#0"
+    },
+    "draft": "8a4e3beea02443ed"
   },
   "cr-ref-template-cart-1": {
     "tpl": "Root/9#0",
@@ -23,7 +26,10 @@
       "textHash": "1505",
       "line": 12
     },
-    "draft": "4cd995654ff1103b"
+    "slots": {
+      ".sgs-hero__content": "Root/9#0"
+    },
+    "draft": "8a4e3beea02443ed"
   },
   "cr-ref-template-cart-2": {
     "tpl": "Root/10#0",
@@ -38,7 +44,7 @@
       "textHash": "fda2b7a6",
       "line": 13
     },
-    "draft": "4cd995654ff1103b"
+    "draft": "8a4e3beea02443ed"
   },
   "cr-ref-template-cart-3": {
     "tpl": "Root/11#0",
@@ -53,22 +59,6 @@
       "textHash": "a7a6b6de",
       "line": 14
     },
-    "draft": "4cd995654ff1103b"
-  },
-  "cr-ref-template-cart-4": {
-    "tpl": "Root/12#0",
-    "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "fd852d6a",
-      "parentTags": [
-        "main",
-        "div",
-        "h1"
-      ],
-      "textHash": "2b597",
-      "line": 14
-    },
-    "draft": "4cd995654ff1103b"
+    "draft": "8a4e3beea02443ed"
   }
 }

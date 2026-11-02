@@ -19,12 +19,18 @@
 				"attributes": {
 					"rowSlot": "top"
 				},
-				"innerBlocks": []
-			},
-			{
-				"name": "sgs/site-footer-row",
-				"attributes": {
-					"rowSlot": "columns"
+				"draftRef": {
+					"tpl": "Root>SiteFooter@250#0/3#0"
+				},
+				"draftFingerprint": {
+					"tag": "section",
+					"cls": "",
+					"styleHash": "92132ddb",
+					"parentTags": [
+						"footer"
+					],
+					"textHash": "1505",
+					"line": 4
 				},
 				"innerBlocks": [
 					{
@@ -72,7 +78,7 @@
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/text",
+										"name": "sgs/label",
 										"attributes": {
 											"text": "fresh out the oven…"
 										},
@@ -98,7 +104,8 @@
 									{
 										"name": "sgs/heading",
 										"attributes": {
-											"content": "@mamasmunches"
+											"content": "@mamasmunches",
+											"level": "h2"
 										},
 										"draftRef": {
 											"tpl": "Root>SiteFooter@250#0/8#0"
@@ -119,7 +126,15 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root>SiteFooter@250#0/7#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root>SiteFooter@250#0/8#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/button",
@@ -147,10 +162,21 @@
 								"draftSlots": {
 									".sgs-button__icon > svg": {
 										"tpl": "Root>SiteFooter@250#0/10#0"
+									},
+									".sgs-button__label": {
+										"tpl": "Root>SiteFooter@250#0/9#0"
 									}
 								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root>SiteFooter@250#0/6#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root>SiteFooter@250#0/9#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/gallery",
@@ -170,7 +196,18 @@
 							"textHash": "1505",
 							"line": 16
 						},
-						"innerBlocks": []
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(1)": {
+								"tpl": "Root>SiteFooter@250#0/16#0"
+							},
+							".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(2)": {
+								"tpl": "Root>SiteFooter@250#0/16#1"
+							},
+							".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(3)": {
+								"tpl": "Root>SiteFooter@250#0/16#2"
+							}
+						}
 					},
 					{
 						"name": "sgs/trust-bar",
@@ -197,8 +234,39 @@
 								"kind": "presence",
 								"detail": "the strip's items are built by the draft's code (its template holds one text binding): add each item to the trust bar"
 							}
-						]
-					},
+						],
+						"draftSlots": {
+							".sgs-trust-bar__title": {
+								"tpl": "Root>SiteFooter@250#0/18#0"
+							}
+						}
+					}
+				],
+				"draftSlots": {
+					".sgs-container__inner": {
+						"tpl": "Root>SiteFooter@250#0/4#0"
+					}
+				}
+			},
+			{
+				"name": "sgs/site-footer-row",
+				"attributes": {
+					"rowSlot": "columns"
+				},
+				"draftRef": {
+					"tpl": "Root>SiteFooter@250#0/19#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "8ec5a5c3",
+					"parentTags": [
+						"footer"
+					],
+					"textHash": "1505",
+					"line": 28
+				},
+				"innerBlocks": [
 					{
 						"name": "sgs/container",
 						"attributes": {
@@ -247,7 +315,8 @@
 									{
 										"name": "sgs/heading",
 										"attributes": {
-											"content": "Hungry? Of course you are."
+											"content": "Hungry? Of course you are.",
+											"level": "h2"
 										},
 										"draftRef": {
 											"tpl": "Root>SiteFooter@250#0/23#0"
@@ -271,6 +340,7 @@
 									{
 										"name": "sgs/button",
 										"attributes": {
+											"url": "/#build",
 											"label": "Build your box →"
 										},
 										"draftRef": {
@@ -290,9 +360,22 @@
 											"textHash": "7a4fe9f7",
 											"line": 33
 										},
-										"innerBlocks": []
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-button__icon > svg": {
+												"tpl": "Root>SiteFooter@250#0/25#0"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root>SiteFooter@250#0/23#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root>SiteFooter@250#0/24#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/responsive-logo",
@@ -324,7 +407,15 @@
 									}
 								]
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root>SiteFooter@250#0/22#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root>SiteFooter@250#0/26#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -398,6 +489,7 @@
 									{
 										"name": "sgs/icon-list",
 										"attributes": {
+											"markerType": "none",
 											"items": [
 												{
 													"text": "All Zookies",
@@ -445,9 +537,37 @@
 												"kind": "link",
 												"detail": "draft link \"Product.dc.html?id=zookies&sub=1\" opens /product/zookies/; its draft query ?sub=1 has no site address and is dropped"
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text": {
+												"tpl": "Root>SiteFooter@250#0/30#0"
+											},
+											".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)": {
+												"tpl": "Root>SiteFooter@250#0/30#0"
+											},
+											".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2)": {
+												"tpl": "Root>SiteFooter@250#0/31#0"
+											},
+											".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3)": {
+												"tpl": "Root>SiteFooter@250#0/32#0"
+											},
+											".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4)": {
+												"tpl": "Root>SiteFooter@250#0/33#0"
+											},
+											".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5)": {
+												"tpl": "Root>SiteFooter@250#0/34#0"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root>SiteFooter@250#0/29#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root>SiteFooter@250#0/30#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/container",
@@ -499,6 +619,7 @@
 									{
 										"name": "sgs/icon-list",
 										"attributes": {
+											"markerType": "none",
 											"items": [
 												{
 													"text": "FAQs",
@@ -535,9 +656,34 @@
 											"textHash": "7c7df400",
 											"line": 49
 										},
-										"innerBlocks": []
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text": {
+												"tpl": "Root>SiteFooter@250#0/37#0"
+											},
+											".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)": {
+												"tpl": "Root>SiteFooter@250#0/37#0"
+											},
+											".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2)": {
+												"tpl": "Root>SiteFooter@250#0/38#0"
+											},
+											".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3)": {
+												"tpl": "Root>SiteFooter@250#0/39#0"
+											},
+											".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4)": {
+												"tpl": "Root>SiteFooter@250#0/40#0"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root>SiteFooter@250#0/36#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root>SiteFooter@250#0/37#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/container",
@@ -563,9 +709,9 @@
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/text",
+										"name": "sgs/heading",
 										"attributes": {
-											"text": "say hello"
+											"content": "say hello"
 										},
 										"draftRef": {
 											"tpl": "Root>SiteFooter@250#0/42#0"
@@ -611,7 +757,12 @@
 											"textHash": "40b3970d",
 											"line": 56
 										},
-										"innerBlocks": []
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-button__label": {
+												"tpl": "Root>SiteFooter@250#0/43#0"
+											}
+										}
 									},
 									{
 										"name": "sgs/social-icons",
@@ -641,9 +792,47 @@
 											"whatsapp": "[data-dc-tpl=\"50\"]"
 										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root>SiteFooter@250#0/42#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root>SiteFooter@250#0/43#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root>SiteFooter@250#0/28#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root>SiteFooter@250#0/35#0"
+							}
+						}
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root>SiteFooter@250#0/54#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "9caa892b",
+							"parentTags": [
+								"footer",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 64
+						},
+						"innerBlocks": []
 					},
 					{
 						"name": "sgs/container",
@@ -743,7 +932,12 @@
 											"textHash": "cf47b943",
 											"line": 67
 										},
-										"innerBlocks": []
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-button__label": {
+												"tpl": "Root>SiteFooter@250#0/58#0"
+											}
+										}
 									},
 									{
 										"name": "sgs/button",
@@ -768,9 +962,22 @@
 											"textHash": "d92b8f8",
 											"line": 67
 										},
-										"innerBlocks": []
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-button__label": {
+												"tpl": "Root>SiteFooter@250#0/59#0"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-button:nth-of-type(1)": {
+										"tpl": "Root>SiteFooter@250#0/58#0"
+									},
+									".sgs-button:nth-of-type(2)": {
+										"tpl": "Root>SiteFooter@250#0/59#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/business-info",
@@ -802,9 +1009,22 @@
 									}
 								]
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root>SiteFooter@250#0/56#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root>SiteFooter@250#0/57#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner": {
+						"tpl": "Root>SiteFooter@250#0/20#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/site-footer-row",

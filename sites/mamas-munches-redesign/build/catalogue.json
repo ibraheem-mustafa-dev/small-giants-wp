@@ -443,12 +443,12 @@
   ],
   "sites": {
     "local-mamas": {
-      "builtAt": "2026-10-27T19:34:57.907Z",
+      "builtAt": "2026-11-01T23:07:54.667Z",
       "products": {
         "zookies": {
           "id": 257,
           "permalink": "http://localhost:8084/product/zookies/",
-          "variations": 24
+          "variations": 3
         },
         "trial": {
           "id": 282,
@@ -467,9 +467,12 @@
         },
         "giftcard": {
           "id": 285,
-          "permalink": "http://localhost:8084/?post_type=product&p=285",
-          "variations": 3
+          "permalink": "http://localhost:8084/product/baby-shower-gift-card/",
+          "variations": 0
         }
+      },
+      "attributes": {
+        "what-s-the-moment": 9
       }
     }
   }

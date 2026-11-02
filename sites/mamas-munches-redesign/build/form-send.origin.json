@@ -9,7 +9,7 @@
       "textHash": "1505",
       "line": 46
     },
-    "draft": "4cd995654ff1103b"
+    "draft": "8a4e3beea02443ed"
   },
   "cr-ref-form-send-1": {
     "tpl": "Root/45#0",
@@ -23,7 +23,7 @@
       "textHash": "526ea6f3",
       "line": 47
     },
-    "draft": "4cd995654ff1103b"
+    "draft": "8a4e3beea02443ed"
   },
   "cr-ref-form-send-2": {
     "tpl": "Root/46#0",
@@ -37,7 +37,10 @@
       "textHash": "1505",
       "line": 48
     },
-    "draft": "4cd995654ff1103b"
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/48#0"
+    },
+    "draft": "8a4e3beea02443ed"
   },
   "cr-ref-form-send-3": {
     "tpl": "Root/48#0",
@@ -52,7 +55,12 @@
       "textHash": "1505",
       "line": 50
     },
-    "draft": "4cd995654ff1103b"
+    "slots": {
+      ".sgs-form-field__group > .sgs-container": "Root/48#0",
+      ".sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(1) > .sgs-form-tile__label": "Root/50#0",
+      ".sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(2) > .sgs-form-tile__label": "Root/50#1"
+    },
+    "draft": "8a4e3beea02443ed"
   },
   "cr-ref-form-send-4": {
     "tpl": "Root/51#0",
@@ -66,7 +74,11 @@
       "textHash": "1505",
       "line": 52
     },
-    "draft": "4cd995654ff1103b"
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/53#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/55#0"
+    },
+    "draft": "8a4e3beea02443ed"
   },
   "cr-ref-form-send-5": {
     "tpl": "Root/53#0",
@@ -85,7 +97,7 @@
     "slots": {
       ".sgs-form-field__input": "Root/53#0"
     },
-    "draft": "4cd995654ff1103b"
+    "draft": "8a4e3beea02443ed"
   },
   "cr-ref-form-send-6": {
     "tpl": "Root/55#0",
@@ -104,7 +116,7 @@
     "slots": {
       ".sgs-form-field__input": "Root/55#0"
     },
-    "draft": "4cd995654ff1103b"
+    "draft": "8a4e3beea02443ed"
   },
   "cr-ref-form-send-7": {
     "tpl": "Root/58#0",
@@ -122,9 +134,9 @@
     "slots": {
       ".sgs-form-field__input": "Root/58#0"
     },
-    "draft": "4cd995654ff1103b"
+    "draft": "8a4e3beea02443ed"
   },
-  "cr-ref-form-send-8": {
+  "cr-ref-form-send-10": {
     "tpl": "Root/66#0",
     "fingerprint": {
       "tag": "textarea",
@@ -140,9 +152,9 @@
     "slots": {
       ".sgs-form-field__input": "Root/66#0"
     },
-    "draft": "4cd995654ff1103b"
+    "draft": "8a4e3beea02443ed"
   },
-  "cr-ref-form-send-9": {
+  "cr-ref-form-send-11": {
     "tpl": "Root/67#0",
     "fingerprint": {
       "tag": "button",
@@ -154,6 +166,9 @@
       "textHash": "57421940",
       "line": 59
     },
-    "draft": "4cd995654ff1103b"
+    "slots": {
+      ".sgs-button__label": "Root/67#0"
+    },
+    "draft": "8a4e3beea02443ed"
   }
 }

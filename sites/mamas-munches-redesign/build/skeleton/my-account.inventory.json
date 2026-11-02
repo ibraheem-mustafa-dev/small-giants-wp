@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-28T06:34:54.330Z",
-  "source": "http://127.0.0.1:60915/",
+  "generated": "2026-11-02T01:07:09.508Z",
+  "source": "http://127.0.0.1:58693/",
   "root": "main",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
@@ -49,6 +49,67 @@
       "srcTag": "main",
       "srcOwnText": "",
       "snippet": "<main data-dc-tpl=\"8\"> <section style=\"background:#F5C2C8;border-bottom:2px solid #3A2A22;padding:{{ L.heroPad }}\" data-dc-tpl=\"9\"> <div style=\"max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:12px\" data-dc-tpl=\"10\"> <div style=\"font-family:'Caveat',cursive;font-size:30px;color:#8E3444;line-height:1;transform:rotate(-2deg);transform-origin:left\" data-dc-tpl=\"11\">{{ eyebrow }}<",
+      "flow": [
+        {
+          "key": "Root/9#0"
+        },
+        {
+          "key": "Root/16#0"
+        }
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "375px",
+          "height": "548.594px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "768px",
+          "height": "500.594px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "1440px",
+          "height": "586.797px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 0,
@@ -81,6 +142,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_8_0@375.png",
@@ -104,6 +170,65 @@
       "srcTag": "section",
       "srcOwnText": "",
       "snippet": "<section style=\"background:#F5C2C8;border-bottom:2px solid #3A2A22;padding:{{ L.heroPad }}\" data-dc-tpl=\"9\"> <div style=\"max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:12px\" data-dc-tpl=\"10\"> <div style=\"font-family:'Caveat',cursive;font-size:30px;color:#8E3444;line-height:1;transform:rotate(-2deg);transform-origin:left\" data-dc-tpl=\"11\">{{ eyebrow }}</div> <h1 style=\"margin",
+      "flow": [
+        " ",
+        {
+          "key": "Root/10#0"
+        }
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "375px",
+          "height": "148px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "32px",
+          "padding-right": "20px",
+          "padding-bottom": "28px",
+          "padding-left": "20px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "768px",
+          "height": "182px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "48px",
+          "padding-right": "32px",
+          "padding-bottom": "36px",
+          "padding-left": "32px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "1440px",
+          "height": "220px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "64px",
+          "padding-right": "40px",
+          "padding-bottom": "44px",
+          "padding-left": "40px"
+        }
+      },
       "box": {
         "375": {
           "x": 0,
@@ -136,6 +261,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_9_0@375.png",
@@ -159,6 +289,70 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:12px\" data-dc-tpl=\"10\"> <div style=\"font-family:'Caveat',cursive;font-size:30px;color:#8E3444;line-height:1;transform:rotate(-2deg);transform-origin:left\" data-dc-tpl=\"11\">{{ eyebrow }}</div> <h1 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:",
+      "flow": [
+        " ",
+        {
+          "key": "Root/11#0"
+        },
+        " ",
+        {
+          "key": "Root/12#0"
+        },
+        "  "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "335px",
+          "height": "86px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "704px",
+          "height": "96px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "1240px",
+          "height": "110px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
@@ -191,6 +385,11 @@
         "1440": "static"
       },
       "flexDirection": "column",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_10_0@375.png",
@@ -214,6 +413,63 @@
       "srcTag": "div",
       "srcOwnText": "{{ eyebrow }}",
       "snippet": "<div style=\"font-family:'Caveat',cursive;font-size:30px;color:#8E3444;line-height:1;transform:rotate(-2deg);transform-origin:left\" data-dc-tpl=\"11\">{{ eyebrow }}</div>",
+      "flow": [
+        "my account"
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "30px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "30px",
+          "width": "335px",
+          "height": "30px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "30px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "30px",
+          "width": "704px",
+          "height": "30px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "30px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "30px",
+          "width": "1240px",
+          "height": "30px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 19.5,
@@ -246,6 +502,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_11_0@375.png",
@@ -269,6 +530,63 @@
       "srcTag": "h1",
       "srcOwnText": "{{ hello }}",
       "snippet": "<h1 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.025em\" data-dc-tpl=\"12\">{{ hello }}</h1>",
+      "flow": [
+        "My account"
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "44px",
+          "font-weight": "400",
+          "letter-spacing": "-1.1px",
+          "text-transform": "none",
+          "line-height": "44px",
+          "width": "335px",
+          "height": "44px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "54px",
+          "font-weight": "400",
+          "letter-spacing": "-1.35px",
+          "text-transform": "none",
+          "line-height": "54px",
+          "width": "704px",
+          "height": "54px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "68px",
+          "font-weight": "400",
+          "letter-spacing": "-1.7px",
+          "text-transform": "none",
+          "line-height": "68px",
+          "width": "1240px",
+          "height": "68px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
@@ -301,6 +619,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_12_0@375.png",
@@ -324,6 +647,65 @@
       "srcTag": "section",
       "srcOwnText": "",
       "snippet": "<section style=\"padding:{{ L.secPad }}\" data-dc-tpl=\"16\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"17\"> <sc-if value=\"{{ notSigned }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"18\"> <div style=\"max-width:640px;background:#F9D5D3;border:2px solid #3A2A22;border-radius:32px;padding:{{ L.cardPad }};box-shadow:8px 8px 0 #3A2A22;display:flex;flex-direction:column;align-items:flex-",
+      "flow": [
+        " ",
+        {
+          "key": "Root/17#0"
+        }
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "375px",
+          "height": "400.594px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "24px",
+          "padding-right": "20px",
+          "padding-bottom": "64px",
+          "padding-left": "20px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "768px",
+          "height": "318.594px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "40px",
+          "padding-right": "32px",
+          "padding-bottom": "80px",
+          "padding-left": "32px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "1440px",
+          "height": "366.797px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "56px",
+          "padding-right": "40px",
+          "padding-bottom": "104px",
+          "padding-left": "40px"
+        }
+      },
       "box": {
         "375": {
           "x": 0,
@@ -356,6 +738,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_16_0@375.png",
@@ -379,6 +766,66 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"17\"> <sc-if value=\"{{ notSigned }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"18\"> <div style=\"max-width:640px;background:#F9D5D3;border:2px solid #3A2A22;border-radius:32px;padding:{{ L.cardPad }};box-shadow:8px 8px 0 #3A2A22;display:flex;flex-direction:column;align-items:flex-start;gap:14px\" data-dc-tpl=\"19\"> <h2 style=\"margin:0;font",
+      "flow": [
+        "  ",
+        {
+          "key": "Root/19#0"
+        },
+        "   "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "335px",
+          "height": "312.594px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "704px",
+          "height": "198.594px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "1240px",
+          "height": "206.797px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
@@ -411,6 +858,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_17_0@375.png",
@@ -440,6 +892,74 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"max-width:640px;background:#F9D5D3;border:2px solid #3A2A22;border-radius:32px;padding:{{ L.cardPad }};box-shadow:8px 8px 0 #3A2A22;display:flex;flex-direction:column;align-items:flex-start;gap:14px\" data-dc-tpl=\"19\"> <h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05\" data-dc-tpl=\"20\">Sign in to see your orders</h2> <p sty",
+      "flow": [
+        " ",
+        {
+          "key": "Root/20#0"
+        },
+        " ",
+        {
+          "key": "Root/21#0"
+        },
+        " ",
+        {
+          "key": "Root/22#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "335px",
+          "height": "312.594px",
+          "border-top-left-radius": "32px",
+          "border-top-right-radius": "32px",
+          "border-bottom-right-radius": "32px",
+          "border-bottom-left-radius": "32px",
+          "padding-top": "18px",
+          "padding-right": "18px",
+          "padding-bottom": "18px",
+          "padding-left": "18px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "640px",
+          "height": "198.594px",
+          "border-top-left-radius": "32px",
+          "border-top-right-radius": "32px",
+          "border-bottom-right-radius": "32px",
+          "border-bottom-left-radius": "32px",
+          "padding-top": "22px",
+          "padding-right": "24px",
+          "padding-bottom": "22px",
+          "padding-left": "24px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "640px",
+          "height": "206.797px",
+          "border-top-left-radius": "32px",
+          "border-top-right-radius": "32px",
+          "border-bottom-right-radius": "32px",
+          "border-bottom-left-radius": "32px",
+          "padding-top": "24px",
+          "padding-right": "28px",
+          "padding-bottom": "24px",
+          "padding-left": "28px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
@@ -472,6 +992,11 @@
         "1440": "static"
       },
       "flexDirection": "column",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_19_0@375.png",
@@ -501,6 +1026,60 @@
       "srcTag": "h2",
       "srcOwnText": "Sign in to see your orders",
       "snippet": "<h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05\" data-dc-tpl=\"20\">Sign in to see your orders</h2>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "30px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "31.5px",
+          "width": "295px",
+          "height": "63px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "36px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "37.8px",
+          "width": "455.328px",
+          "height": "37.7969px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "40px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "42px",
+          "width": "505.922px",
+          "height": "42px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 40,
@@ -533,6 +1112,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_20_0@375.png",
@@ -562,6 +1146,60 @@
       "srcTag": "p",
       "srcOwnText": "Your orders, bake dates, subscriptions and saved addresses live here.",
       "snippet": "<p style=\"margin:0;font-size:16px;line-height:1.55;color:#4E3C31\" data-dc-tpl=\"21\">Your orders, bake dates, subscriptions and saved addresses live here.</p>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24.8px",
+          "width": "295px",
+          "height": "49.5938px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24.8px",
+          "width": "503.781px",
+          "height": "24.7969px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24.8px",
+          "width": "503.781px",
+          "height": "24.7969px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 40,
@@ -594,6 +1232,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_21_0@375.png",
@@ -623,6 +1266,70 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:12px\" data-dc-tpl=\"22\"> <a href=\"SignIn.dc.html\" style=\"height:60px;padding:0 30px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;font-size:17px;display:flex;align-items:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s",
+      "flow": [
+        " ",
+        {
+          "key": "Root/23#0"
+        },
+        " ",
+        {
+          "key": "Root/24#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "295px",
+          "height": "132px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "355.125px",
+          "height": "60px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "355.125px",
+          "height": "60px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 40,
@@ -655,6 +1362,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_22_0@375.png",
@@ -686,6 +1398,60 @@
       "srcTag": "a",
       "srcOwnText": "Sign in →",
       "snippet": "<a href=\"SignIn.dc.html\" style=\"height:60px;padding:0 30px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;font-size:17px;display:flex;align-items:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"background:#FFFAF0;transform:translate(-3px,-3px);box",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "140.344px",
+          "height": "60px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "0px",
+          "padding-right": "30px",
+          "padding-bottom": "0px",
+          "padding-left": "30px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "140.344px",
+          "height": "60px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "0px",
+          "padding-right": "30px",
+          "padding-bottom": "0px",
+          "padding-left": "30px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "140.344px",
+          "height": "60px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "0px",
+          "padding-right": "30px",
+          "padding-bottom": "0px",
+          "padding-left": "30px"
+        }
+      },
       "box": {
         "375": {
           "x": 40,
@@ -718,6 +1484,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_23_0@1440.png"
@@ -748,6 +1519,60 @@
       "srcTag": "a",
       "srcOwnText": "Create an account",
       "snippet": "<a href=\"SignIn.dc.html?mode=register\" style=\"height:60px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;color:#3A2A22;font-weight:700;font-size:17px;display:flex;align-items:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"background:#F9CF6E;transform:translate(",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "202.781px",
+          "height": "60px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "0px",
+          "padding-right": "26px",
+          "padding-bottom": "0px",
+          "padding-left": "26px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "202.781px",
+          "height": "60px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "0px",
+          "padding-right": "26px",
+          "padding-bottom": "0px",
+          "padding-left": "26px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "202.781px",
+          "height": "60px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "0px",
+          "padding-right": "26px",
+          "padding-bottom": "0px",
+          "padding-left": "26px"
+        }
+      },
       "box": {
         "375": {
           "x": 40,
@@ -780,11 +1605,53 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_24_0@375.png",
         "1440": "shots/Root_24_0@1440.png"
       }
     }
-  ]
+  ],
+  "sources": {
+    "files": {
+      "Account.dc.html": "569c41da66b4296faa81347c53f0d5d922d7bca67aed70fdb23df5efee8d01b5",
+      "Basket.dc.html": "f4520e82997834a44f5c99b456e3b9ca4a9fcdab575314d4b266bb2c8945bb8e",
+      "Checkout.dc.html": "19b5c1fec140b77d22c72b5110d1a675f2aa985330b72803e5cd3a7570d8891b",
+      "Confirmation.dc.html": "ddfcd751828e19d938d173826d514e40830a97221e4c6fa19e03c7836053f046",
+      "Contact.dc.html": "bcb3e4bcc8e1fdddb9abf777afab9396c7d06f809ba7b9cbd64a722205607b85",
+      "Gifts.dc.html": "c653d9aa8ca4475d3f1cfc45bd1f691341abd57ed56bedf07ee3cbfde2e227a9",
+      "Help.dc.html": "e705fc78ad76548eada464f2feee868d8ae5a40a8632c0e7f13a841f87bb55d6",
+      "Home.dc.html": "c25fa7cf4d35f8a68895902d7413f0534c7932cb3d8ca0bab692843bdf0282ca",
+      "Product.dc.html": "8100f5944df6e5191dc960779a192e7b5116417ffefc39270247c08b04936960",
+      "ProductCard.dc.html": "2f393444d81d0d03701e01e790a5aa5a49e0ecb46ba8ab2071f7193e34211f30",
+      "README.md": "09a85b34b22187e5be6458af75461cbd11e0536d95d868812d4ef7b247cd5163",
+      "Shop.dc.html": "0dabe1dff85052f3258910eca5f86e3d0aa23746907450bf855912fd2c378a80",
+      "SignIn.dc.html": "df5318346b9d9c84d026ea73bd034cd4a83dd5fe71fd3abd0e6f32cd716c1926",
+      "SiteFooter.dc.html": "7a3f377969e9e4c48d67080bdf5aed13509e7b583de0e0deed71f81b49b45b9b",
+      "SiteHeader.dc.html": "46e9c1365470b53cd9f3c8577f48ff93e97b663ae70a736af1eeb3ae9f02d0f2",
+      "animations.json": "10cff8410cac5c7ab9d50558203278fc1ea3acd0d47744b254b24024aac2743f",
+      "assets/logo-horizontal.png": "55fd2eef5bfbd2ae7aa067b3cfdfd5f0c2170185540935d152cac25bd8dad49c",
+      "assets/logo-round.png": "d1c039733af429dcaf0b2c8a051248cc1702c9501db1fcaf44d58eb427ce7815",
+      "assets/photo-bags-pink.jpg": "3aee33ac0ff61ff2005175c225879567d0591a9180a22e71543fc72e72179334",
+      "assets/photo-bun-case.jpg": "9875e09f8751f4f974025ad72aee8a773fec2262646e302d59a05209b197335d",
+      "assets/photo-gift-heart.jpg": "7825c0c1f5aaaf160cd0c4b4aab58b0824f99cfa9b927ca5f96fad2f308e3479",
+      "assets/photo-hero-mug.jpg": "6f5411ae2730cd6edf90b6a2c71e5714f6f6d9b4dcedf778a083a4538afa7cdf",
+      "assets/photo-pair-love.jpg": "c100f3ec56b7133a8ec26bb64dfa09d10f6dbc4499468ceabaf4acbeb2ced6f0",
+      "assets/photo-tray-love.jpg": "dc2306611ac203dbef6579eee755cf0d4bb6fb250f25216fd88caf17c423f63c",
+      "store.js": "5136ec82d5671747da32799d692b6c4ff5a39c2f0514e2398cc0a1a7a1545179",
+      "support.js": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe",
+      "surfaces.json": "4d7d9f56be27fc79b9e498b285a8e8304ec7068899f10e78f0264a6cf354e9ab",
+      "tokens/colors.css": "ef63ad226532ea7fac236ae01c9f0ab6afe09766644ec6eb64048c19b2ebf899",
+      "tokens/spacing.css": "f2ee00b6ce5813407d7938c18ad869209a6c92bb861a56355f540a66399bf5fa",
+      "tokens/typography.css": "805e2a943a3484599ae1f0e4bd379d207e688ec48237113ea135eb03250e97df"
+    },
+    "route": {
+      "commit": "c7b9372ff87779727f538697e5cac12afe50b1c8"
+    }
+  }
 }

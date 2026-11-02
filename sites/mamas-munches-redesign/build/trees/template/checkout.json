@@ -12,6 +12,7 @@
       "tagName": "main",
       "className": "cr-ref-template-checkout-0",
       "layout": "grid",
+      "textColour": "mm-cocoa",
       "gridTemplateColumns": {
         "tablet": "repeat(1, minmax(0, 1fr))",
         "desktop": "minmax(0, 1.35fr) minmax(0, 1fr)"
@@ -25,124 +26,38 @@
       "minHeight": {
         "desktop": "0px"
       },
-      "textColourHover": "primary-text",
+      "textColourHover": "mm-cocoa",
       "padding": {
-        "desktop": "40px",
-        "tablet": "28px",
-        "mobile": "16px"
-      }
+        "desktop": {
+          "top": "40px",
+          "right": "40px",
+          "bottom": "96px",
+          "left": "40px"
+        },
+        "tablet": {
+          "top": "28px",
+          "right": "28px",
+          "bottom": "72px",
+          "left": "28px"
+        },
+        "mobile": {
+          "top": "16px",
+          "right": "16px",
+          "bottom": "56px",
+          "left": "16px"
+        }
+      },
+      "sgsCustomCss": "& { line-height: normal; }",
+      "sgsCustomCssId": "r977c0ff3d87",
+      "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width line-height: normal;"
     },
     "innerBlocks": [
       {
         "name": "core/post-content",
         "attributes": {
-          "className": "cr-ref-template-checkout-1",
-          "sgsCustomCss": "@media (max-width: 767px) { & { display: none; } }",
-          "sgsCustomCssId": "wgate1",
-          "sgsCustomCssNote": "Width gate a width variant is shown at 375px: hidden at 0-767px"
+          "className": "cr-ref-template-checkout-1"
         },
-        "innerBlocks": [],
-        "widthVariants": [
-          {
-            "key": "Root/19#0",
-            "shown": [
-              375
-            ]
-          }
-        ]
-      },
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "tagName": "div",
-          "layout": "flex",
-          "className": "cr-ref-template-checkout-2",
-          "fontWeight": "700",
-          "textAlign": "center",
-          "backgroundColour": "section",
-          "borderWidth": {
-            "right": "2px",
-            "bottom": "2px",
-            "left": "2px",
-            "top": "2px"
-          },
-          "borderStyle": "solid",
-          "borderRadius": {
-            "mobile": {
-              "topLeft": "20px",
-              "topRight": "20px",
-              "bottomRight": "20px",
-              "bottomLeft": "20px"
-            }
-          },
-          "gap": {
-            "mobile": "60.17px"
-          },
-          "justifyContent": "space-between",
-          "alignItems": "center",
-          "minHeight": {
-            "mobile": "60px"
-          },
-          "textColourHover": "primary-text",
-          "borderColourHover": "primary-text",
-          "backgroundColourHover": "section",
-          "padding": {
-            "desktop": {
-              "right": "18px",
-              "left": "18px"
-            }
-          }
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Show order summary ▾",
-              "className": "cr-ref-template-checkout-3",
-              "lineHeight": {
-                "mobile": 1.188
-              },
-              "textColourHover": "primary-text"
-            },
-            "innerBlocks": []
-          },
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "£30.45",
-              "className": "cr-ref-template-checkout-4",
-              "fontFamily": "heading",
-              "fontSize": {
-                "mobile": 20
-              },
-              "lineHeight": {
-                "mobile": 1.4
-              },
-              "textColourHover": "primary-text",
-              "sgsMotion": {
-                "v": 1,
-                "elements": {
-                  "root": {
-                    "hover": {
-                      "state": {
-                        "values": {
-                          "translateX": "-token:distance.sm",
-                          "translateY": "-token:distance.sm",
-                          "duration": "token:duration.fast",
-                          "easing": "token:easing.spring"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "innerBlocks": []
-          }
-        ],
-        "widthShown": [
-          375
-        ]
+        "innerBlocks": []
       }
     ]
   },

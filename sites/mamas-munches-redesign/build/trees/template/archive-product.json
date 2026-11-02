@@ -11,21 +11,51 @@
     "attributes": {
       "tagName": "main",
       "className": "cr-ref-shop-0",
+      "textColour": "mm-cocoa",
       "minHeight": {
         "desktop": "0px"
+      },
+      "gridItemBackground": "mm-pink-band",
+      "gridItemPadding": {
+        "mobile": {
+          "top": "32px",
+          "right": "20px",
+          "bottom": "20px",
+          "left": "20px"
+        },
+        "tablet": {
+          "top": "48px",
+          "right": "32px",
+          "bottom": "24px",
+          "left": "32px"
+        },
+        "desktop": {
+          "top": "64px",
+          "right": "40px",
+          "bottom": "28px",
+          "left": "40px"
+        }
       },
       "contentWidth": {
         "desktop": "full"
       },
-      "textColourHover": "primary-text"
+      "textColourHover": "mm-cocoa",
+      "padding": {
+        "desktop": {
+          "right": "0px",
+          "left": "0px"
+        }
+      },
+      "sgsCustomCss": "& { line-height: normal; } & .sgs-container__inner > p:nth-of-type(1) { border-bottom-width: 2px; border-bottom-style: solid; } & .sgs-container__inner > p:nth-of-type(2) { max-width: 1240px; }",
+      "sgsCustomCssId": "r54913b0a718",
+      "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width line-height: normal;, & .sgs-container__inner > p:nth-of-type(1) every width border-bottom-width: 2px; border-bottom-style: solid;, & .sgs-container__inner > p:nth-of-type(2) every width max-width: 1240px;"
     },
     "innerBlocks": [
       {
         "name": "sgs/hero",
         "attributes": {
           "className": "cr-ref-shop-1",
-          "backgroundColour": "custom-mm-pink-band",
-          "backgroundColourGradient": "none",
+          "backgroundColour": "mm-pink-band",
           "borderWidth": {
             "top": "0px",
             "right": "0px",
@@ -36,9 +66,34 @@
             "mobile": "0px"
           },
           "flexDirection": "row",
-          "textColourHover": "primary-text",
-          "borderColourHover": "primary-text",
-          "backgroundColourHover": "custom-mm-pink-band"
+          "contentBackground": "mm-pink-band",
+          "contentPadding": {
+            "mobile": {
+              "top": "32px",
+              "right": "20px",
+              "bottom": "20px",
+              "left": "20px"
+            },
+            "tablet": {
+              "top": "48px",
+              "right": "32px",
+              "bottom": "24px",
+              "left": "32px"
+            },
+            "desktop": {
+              "top": "64px",
+              "right": "40px",
+              "bottom": "28px",
+              "left": "40px"
+            }
+          },
+          "variant": "split",
+          "textColourHover": "mm-cocoa",
+          "borderColourHover": "mm-cocoa",
+          "backgroundColourHover": "mm-pink-band",
+          "sgsCustomCss": "& { justify-content: normal; border-bottom-style: solid; } & .sgs-hero__content { display: block; border-bottom-width: 2px; border-bottom-style: solid; }",
+          "sgsCustomCssId": "r729c59ec200",
+          "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width justify-content: normal; border-bottom-style: solid;, & .sgs-hero__content every width display: block; border-bottom-width: 2px; border-bottom-style: solid;"
         },
         "innerBlocks": [
           {
@@ -53,19 +108,58 @@
                 "desktop": "minmax(0, 4.46fr) minmax(0, 1fr)"
               },
               "gap": {
-                "mobile": "24px",
-                "tablet": "63.86px",
-                "desktop": "497px"
+                "desktop": "24px"
               },
               "alignItems": "end",
               "maxWidth": {
                 "desktop": "1240px"
               },
-              "textColourHover": "primary-text"
+              "fontSize": {
+                "desktop": 15
+              },
+              "fontWeight": "700",
+              "gridItemTextColour": "mm-script",
+              "textColourHover": "mm-cocoa",
+              "padding": {
+                "desktop": {
+                  "right": "0px",
+                  "left": "0px"
+                }
+              },
+              "sgsMotion": {
+                "v": 1,
+                "elements": {
+                  "svg-bg": {
+                    "entrance": {
+                      "base": {
+                        "trigger": "scroll",
+                        "values": {
+                          "from": {
+                            "opacity": 0,
+                            "translateX": 0,
+                            "translateY": "token:entrance.distance"
+                          },
+                          "to": {
+                            "opacity": 1,
+                            "translateX": 0,
+                            "translateY": 0
+                          },
+                          "duration": "token:entrance.duration",
+                          "easing": "token:entrance.easing"
+                        },
+                        "preset": "entrance-fade-up"
+                      }
+                    }
+                  }
+                }
+              },
+              "sgsCustomCss": "@media (max-width: 767px) { & .sgs-container__svg-bg { justify-self: start; } } @media (min-width: 768px) { & .sgs-container__svg-bg { justify-self: end; } } & .sgs-container__inner > p:nth-of-type(1) { transform: matrix(0.999391, -0.0348995, 0.0348995, 0.999391, 0, 0); transform-origin: 0px 14px; } & .sgs-container__inner > p:nth-of-type(2) { margin-top: 6px; margin-bottom: 10px; }",
+              "sgsCustomCssId": "r96b8a8ad79a",
+              "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & .sgs-container__svg-bg 0-767px justify-self: start;, & .sgs-container__svg-bg 768px and up justify-self: end;, & .sgs-container__inner > p:nth-of-type(1) every width transform: matrix(0.999391, -0.0348995, 0.0348995, 0.999391, 0, 0); transform-origin: 0px 14px;, & .sgs-container__inner > p:nth-of-type(2) every width margin-top: 6px; margin-bottom: 10px;"
             },
             "innerBlocks": [
               {
-                "name": "sgs/text",
+                "name": "sgs/label",
                 "attributes": {
                   "text": "fresh from Zainab’s kitchen",
                   "className": "cr-ref-shop-3",
@@ -73,12 +167,15 @@
                   "fontSize": {
                     "desktop": 28
                   },
-                  "lineHeight": {
-                    "desktop": 1
-                  },
+                  "fontWeight": "400",
+                  "lineHeight": 1,
                   "lineHeightUnit": "",
-                  "textColour": "custom-mm-script",
-                  "textColourHover": "custom-mm-script"
+                  "textTransform": "none",
+                  "textColour": "mm-script",
+                  "textColourHover": "mm-script",
+                  "sgsCustomCss": "& { letter-spacing: normal; transform: matrix(0.999391, -0.0348995, 0.0348995, 0.999391, 0, 0); transform-origin: 0px 14px; }",
+                  "sgsCustomCssId": "r8ace153f73d",
+                  "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width letter-spacing: normal; transform: matrix(0.999391, -0.0348995, 0.0348995, 0.999391, 0, 0); transform-origin: 0px 14px;"
                 },
                 "innerBlocks": []
               },
@@ -86,6 +183,7 @@
                 "name": "sgs/heading",
                 "attributes": {
                   "content": "The shop",
+                  "level": "h1",
                   "className": "cr-ref-shop-4",
                   "fontSize": {
                     "mobile": 48,
@@ -98,11 +196,7 @@
                     "desktop": 1
                   },
                   "lineHeightUnit": "",
-                  "letterSpacing": {
-                    "mobile": -0.025,
-                    "tablet": -0.025,
-                    "desktop": -0.025
-                  },
+                  "textColour": "mm-cocoa",
                   "margin": {
                     "desktop": {
                       "top": "6px",
@@ -110,10 +204,37 @@
                     }
                   },
                   "textWrap": "wrap",
-                  "textColourHover": "primary-text",
+                  "textColourHover": "mm-cocoa",
                   "sgsCustomCss": "@media (prefers-reduced-motion: no-preference){ & { animation: sgs-loop-a-02 2.4s linear infinite; } } @keyframes sgs-loop-a-02 { 0%{transform:scale(1) rotate(0deg)} 8.33%{transform:scale(1.0095) rotate(2.45deg)} 16.67%{transform:scale(1.0393) rotate(10.1deg)} 25%{transform:scale(1.0904) rotate(23.25deg)} 33.33%{transform:scale(1.1622) rotate(41.72deg)} 41.67%{transform:scale(1.2512) rotate(64.59deg)} 50%{transform:scale(1.35) rotate(90deg)} 58.33%{transform:scale(1.2512) rotate(115.41deg)} 66.67%{transform:scale(1.1622) rotate(138.28deg)} 75%{transform:scale(1.0904) rotate(156.75deg)} 83.33%{transform:scale(1.0393) rotate(169.9deg)} 91.67%{transform:scale(1.0095) rotate(177.55deg)} 100%{transform:scale(1) rotate(180deg)} }",
-                  "sgsCustomCssId": "loopa02",
-                  "sgsCustomCssNote": "Loop A-02: Web Animation in motion on [data-twinkle]"
+                  "sgsCustomCssId": "r505e281b0a0",
+                  "sgsCustomCssNote": "Written by the cloning route: Loop A-02: Web Animation in motion on [data-twinkle]",
+                  "sgsMotion": {
+                    "v": 1,
+                    "elements": {
+                      "root": {
+                        "entrance": {
+                          "base": {
+                            "trigger": "scroll",
+                            "values": {
+                              "from": {
+                                "opacity": 0,
+                                "translateX": 0,
+                                "translateY": "token:entrance.distance"
+                              },
+                              "to": {
+                                "opacity": 1,
+                                "translateX": 0,
+                                "translateY": 0
+                              },
+                              "duration": "token:entrance.duration",
+                              "easing": "token:entrance.easing"
+                            },
+                            "preset": "entrance-fade-up"
+                          }
+                        }
+                      }
+                    }
+                  }
                 },
                 "innerBlocks": []
               },
@@ -127,101 +248,68 @@
                     "tablet": 18,
                     "desktop": 19
                   },
-                  "textColour": "custom-mm-body",
+                  "textColour": "mm-body",
                   "maxWidth": {
                     "desktop": "560px"
                   },
-                  "textColourHover": "custom-mm-body"
-                },
-                "innerBlocks": []
-              },
-              {
-                "name": "sgs/form-field-select",
-                "attributes": {
-                  "label": "Sort",
-                  "className": "cr-ref-shop-6",
-                  "options": [
-                    {
-                      "value": "featured",
-                      "label": "Featured"
-                    },
-                    {
-                      "value": "low",
-                      "label": "Price: low to high"
-                    },
-                    {
-                      "value": "high",
-                      "label": "Price: high to low"
+                  "textColourHover": "mm-body",
+                  "sgsMotion": {
+                    "v": 1,
+                    "elements": {
+                      "root": {
+                        "entrance": {
+                          "base": {
+                            "trigger": "scroll",
+                            "values": {
+                              "from": {
+                                "opacity": 0,
+                                "translateX": 0,
+                                "translateY": "token:entrance.distance"
+                              },
+                              "to": {
+                                "opacity": 1,
+                                "translateX": 0,
+                                "translateY": 0
+                              },
+                              "duration": "token:entrance.duration",
+                              "easing": "token:entrance.easing"
+                            },
+                            "preset": "entrance-fade-up"
+                          }
+                        }
+                      }
                     }
-                  ]
+                  }
                 },
                 "innerBlocks": []
               }
             ]
           },
           {
-            "name": "sgs/option-picker",
+            "name": "woocommerce/product-filters",
             "attributes": {
-              "className": "cr-ref-shop-7",
-              "borderColourGradient": "none",
-              "borderWidth": {
-                "top": "0px",
-                "bottom": "0px",
-                "left": "0px",
-                "right": "0px"
-              },
-              "borderStyle": "none",
-              "borderRadius": {
-                "desktop": {
-                  "topLeft": "0px",
-                  "topRight": "0px",
-                  "bottomRight": "0px",
-                  "bottomLeft": "0px"
-                }
-              },
-              "padding": {
-                "desktop": {
-                  "top": "4px",
-                  "right": "0px",
-                  "bottom": "8px",
-                  "left": "0px"
-                },
-                "mobile": {
-                  "right": "20px",
-                  "left": "20px"
-                }
-              },
-              "margin": {
-                "desktop": {
-                  "top": "0px",
-                  "bottom": "0px"
-                },
-                "mobile": {
-                  "right": "-20px",
-                  "left": "-20px"
-                }
-              },
-              "maxWidth": "1240px",
-              "labelColourHover": "primary-text",
-              "sgsMotion": {
-                "v": 1,
-                "elements": {
-                  "root": {
-                    "hover": {
-                      "state": {
-                        "values": {
-                          "translateX": "-token:distance.sm",
-                          "translateY": "-token:distance.sm",
-                          "duration": "token:duration.fast",
-                          "easing": "token:easing.spring"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
+              "className": "cr-ref-shop-6"
             },
-            "innerBlocks": []
+            "innerBlocks": [
+              {
+                "name": "woocommerce/product-filter-taxonomy",
+                "attributes": {
+                  "taxonomy": "product_cat",
+                  "displayStyle": "woocommerce/product-filter-chips",
+                  "showCounts": true,
+                  "className": "cr-ref-shop-7"
+                },
+                "innerBlocks": [
+                  {
+                    "name": "woocommerce/product-filter-chips",
+                    "attributes": {
+                      "className": "cr-ref-shop-8"
+                    },
+                    "innerBlocks": []
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
@@ -229,34 +317,49 @@
         "name": "sgs/container",
         "attributes": {
           "tagName": "div",
-          "className": "cr-ref-shop-8",
+          "className": "cr-ref-shop-9",
           "maxWidth": {
             "desktop": "1240px"
           },
-          "textColourHover": "primary-text"
+          "fontSize": {
+            "desktop": 15
+          },
+          "fontWeight": "700",
+          "layout": "grid",
+          "gridTemplateColumns": {
+            "mobile": "repeat(1, minmax(0, 1fr))",
+            "desktop": "repeat(2, minmax(0, 1fr))"
+          },
+          "gap": {
+            "desktop": "20px"
+          },
+          "gridItemBackground": "mm-paper",
+          "gridItemBorderRadius": {
+            "desktop": {
+              "topLeft": "28px",
+              "topRight": "28px",
+              "bottomRight": "28px",
+              "bottomLeft": "28px"
+            }
+          },
+          "alignItems": "center",
+          "textColourHover": "mm-cocoa",
+          "padding": {
+            "desktop": {
+              "right": "0px",
+              "left": "0px"
+            }
+          },
+          "margin": {
+            "desktop": {
+              "bottom": "0px"
+            }
+          },
+          "sgsCustomCss": "@media (max-width: 767px) { & .sgs-container__inner > p:nth-of-type(1) { margin-top: 48px; } } @media (min-width: 768px) and (max-width: 1023px) { & .sgs-container__inner > p:nth-of-type(1) { margin-top: 64px; } } @media (min-width: 1024px) { & .sgs-container__inner > p:nth-of-type(1) { margin-top: 88px; } } & .sgs-container__inner > p:nth-of-type(2) { border-top-width: 2px; border-top-style: solid; border-bottom-width: 2px; border-left-width: 2px; border-right-width: 2px; transition-timing-function: cubic-bezier(0.3, 1.4, 0.5, 1), ease; margin-top: 20px; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; overflow-x: hidden; overflow-y: hidden; } & .sgs-container__inner > p:nth-of-type(2):hover { box-shadow: rgb(58, 42, 34) 8px 8px 0px 0px; transform: matrix(1, 0, 0, 1, -4, -4); }",
+          "sgsCustomCssId": "ree39b5953d3",
+          "sgsCustomCssNote": "Written by the cloning route: Width ladder margin-top: 0-767px 48px, 768-1023px 64px, 1024px and up 88px; Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(2) every width border-top-width: 2px; border-top-style: solid; border-bottom-width: 2px; border-left-width: 2px; border-right-width: 2px; transition-timing-function: cubic-bezier(0.3, 1.4, 0.5, 1), ease; margin-top: 20px; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; overflow-x: hidden; overflow-y: hidden;, & .sgs-container__inner > p:nth-of-type(2):hover every width box-shadow: rgb(58, 42, 34) 8px 8px 0px 0px; transform: matrix(1, 0, 0, 1, -4, -4);"
         },
         "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "5 treats to choose from",
-              "className": "cr-ref-shop-9",
-              "fontSize": {
-                "desktop": 15
-              },
-              "fontWeight": "700",
-              "lineHeight": {
-                "desktop": 1.2
-              },
-              "margin": {
-                "desktop": {
-                  "bottom": "18px"
-                }
-              },
-              "textColourHover": "primary-text"
-            },
-            "innerBlocks": []
-          },
           {
             "name": "woocommerce/product-collection",
             "attributes": {
@@ -279,16 +382,40 @@
             },
             "innerBlocks": [
               {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "className": "sgs-shop-toolbar cr-ref-shop-11"
+                },
+                "innerBlocks": [
+                  {
+                    "name": "woocommerce/catalog-sorting",
+                    "attributes": {
+                      "className": "cr-ref-shop-12"
+                    },
+                    "innerBlocks": []
+                  },
+                  {
+                    "name": "woocommerce/product-results-count",
+                    "attributes": {
+                      "className": "cr-ref-shop-13"
+                    },
+                    "innerBlocks": []
+                  }
+                ]
+              },
+              {
                 "name": "woocommerce/product-template",
                 "attributes": {
-                  "className": "cr-ref-shop-11"
+                  "className": "cr-ref-shop-14"
                 },
                 "innerBlocks": [
                   {
                     "name": "sgs/product-card",
                     "attributes": {
-                      "sourceMode": "wc-product",
-                      "className": "cr-ref-shop-12",
+                      "sourceMode": "sgs-cpt",
+                      "className": "cr-ref-shop-15",
+                      "attributeTagText": "Zookies Our giant lactation cookie, baked to order in the flavour you pick. from £9.50 £1.19 a cookie Build your box",
                       "variantStyle": "trial",
                       "borderStyle": "none",
                       "borderRadius": {
@@ -300,7 +427,39 @@
                         }
                       },
                       "cardMaxWidth": "none",
-                      "textColourHover": "primary-text"
+                      "priceRowFlexWrap": "nowrap",
+                      "titleFontFamily": "body",
+                      "titleFontSize": {
+                        "desktop": 12
+                      },
+                      "titleFontWeight": "700",
+                      "titleLineHeight": 1.167,
+                      "attributeTagSource": "tag",
+                      "showAttributeTag": true,
+                      "titleTextWrap": "wrap",
+                      "cardPadding": {
+                        "top": "0px",
+                        "right": "0px",
+                        "bottom": "0px",
+                        "left": "0px"
+                      },
+                      "attributeTagFontFamily": "heading",
+                      "attributeTagFontSize": {
+                        "mobile": 18,
+                        "desktop": 22
+                      },
+                      "attributeTagFontWeight": "400",
+                      "attributeTagLineHeight": {
+                        "mobile": 1.15,
+                        "desktop": 1.15
+                      },
+                      "attributeTagTextTransform": "none",
+                      "attributeTagTextColour": "mm-cocoa",
+                      "attributeTagTextWrap": "wrap",
+                      "textColourHover": "mm-cocoa",
+                      "sgsCustomCss": "@media (max-width: 767px) { & .sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__attribute-tag { padding-top: 12px; } } @media (min-width: 768px) { & .sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__attribute-tag { padding-top: 16px; } } @media (max-width: 767px) { & .sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__attribute-tag { padding-right: 12px; } } @media (min-width: 768px) { & .sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__attribute-tag { padding-right: 18px; } } @media (max-width: 767px) { & .sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__attribute-tag { padding-bottom: 14px; } } @media (min-width: 768px) { & .sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__attribute-tag { padding-bottom: 18px; } } @media (max-width: 767px) { & .sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__attribute-tag { padding-left: 12px; } } @media (min-width: 768px) { & .sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__attribute-tag { padding-left: 18px; } } & { letter-spacing: normal; } & .sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__title { letter-spacing: normal; background-color: rgb(243, 230, 204); background-image: url(\"http://127.0.0.1:64409/assets/photo-pair-love.jpg\"); border-bottom-width: 2px; aspect-ratio: 1 / 1; border-bottom-style: solid; background-position-x: 50%; background-position-y: 50%; background-repeat: no-repeat; background-size: cover; position: relative; } & .sgs-product-card__body { letter-spacing: normal; flex-grow: 0; } & .sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__attribute-tag { display: flex; letter-spacing: normal; column-gap: 6px; row-gap: 6px; flex-grow: 1; flex-direction: column; flex-shrink: 1; flex-basis: 0%; } & .sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__title:hover { color: rgb(58, 42, 34); }",
+                      "sgsCustomCssId": "r728afd5d3f3",
+                      "sgsCustomCssNote": "Written by the cloning route: Width ladder padding-top: 0-767px 12px, 768px and up 16px; Written by the cloning route: Width ladder padding-right: 0-767px 12px, 768px and up 18px; Written by the cloning route: Width ladder padding-bottom: 0-767px 14px, 768px and up 18px; Written by the cloning route: Width ladder padding-left: 0-767px 12px, 768px and up 18px; Written by the cloning route: Custom CSS no setting holds: & every width letter-spacing: normal;, & .sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__title every width letter-spacing: normal; background-color: rgb(243, 230, 204); background-image: url(\"http://127.0.0.1:64409/assets/photo-pair-love.jpg\"); border-bottom-width: 2px; aspect-ratio: 1 / 1; border-bottom-style: solid; background-position-x: 50%; background-position-y: 50%; background-repeat: no-repeat; background-size: cover; position: relative;, & .sgs-product-card__body every width letter-spacing: normal; flex-grow: 0;, & .sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__attribute-tag every width display: flex; letter-spacing: normal; column-gap: 6px; row-gap: 6px; flex-grow: 1; flex-direction: column; flex-shrink: 1; flex-basis: 0%;, & .sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__title:hover every width color: rgb(58, 42, 34);"
                     },
                     "innerBlocks": []
                   }
@@ -313,7 +472,7 @@
             "attributes": {
               "tagName": "div",
               "layout": "grid",
-              "className": "cr-ref-shop-13",
+              "className": "cr-ref-shop-16",
               "gridTemplateColumns": {
                 "mobile": "repeat(1, minmax(0, 1fr))",
                 "desktop": "repeat(2, minmax(0, 1fr))"
@@ -332,7 +491,43 @@
                   "top": "88px"
                 }
               },
-              "textColourHover": "primary-text",
+              "gridItemBackground": "mm-pink-soft",
+              "gridItemBorderRadius": {
+                "desktop": {
+                  "topLeft": "28px",
+                  "topRight": "28px",
+                  "bottomRight": "28px",
+                  "bottomLeft": "28px"
+                }
+              },
+              "gridItemPadding": {
+                "mobile": {
+                  "top": "26px",
+                  "right": "22px",
+                  "bottom": "26px",
+                  "left": "22px"
+                },
+                "tablet": {
+                  "top": "32px",
+                  "right": "32px",
+                  "bottom": "32px",
+                  "left": "32px"
+                },
+                "desktop": {
+                  "top": "40px",
+                  "right": "40px",
+                  "bottom": "40px",
+                  "left": "40px"
+                }
+              },
+              "flexDirection": "column",
+              "textColourHover": "mm-cocoa",
+              "padding": {
+                "desktop": {
+                  "right": "0px",
+                  "left": "0px"
+                }
+              },
               "sgsMotion": {
                 "v": 1,
                 "elements": {
@@ -351,7 +546,10 @@
                     }
                   }
                 }
-              }
+              },
+              "sgsCustomCss": "& .sgs-container__inner > p:nth-of-type(1) { border-top-width: 2px; border-top-style: solid; border-bottom-width: 2px; border-left-width: 2px; border-right-width: 2px; transition-timing-function: cubic-bezier(0.3, 1.4, 0.5, 1), ease; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { border-top-width: 2px; border-top-style: solid; border-bottom-width: 2px; border-left-width: 2px; border-right-width: 2px; transition-timing-function: cubic-bezier(0.3, 1.4, 0.5, 1), ease; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; } & .sgs-container__inner > p:nth-of-type(1):hover { box-shadow: rgb(58, 42, 34) 8px 8px 0px 0px; transform: matrix(1, 0, 0, 1, -4, -4); } & .sgs-container__inner > p:nth-of-type(2):hover { box-shadow: rgb(58, 42, 34) 8px 8px 0px 0px; transform: matrix(1, 0, 0, 1, -4, -4); }",
+              "sgsCustomCssId": "r70b27ea8b2d",
+              "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width border-top-width: 2px; border-top-style: solid; border-bottom-width: 2px; border-left-width: 2px; border-right-width: 2px; transition-timing-function: cubic-bezier(0.3, 1.4, 0.5, 1), ease; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width border-top-width: 2px; border-top-style: solid; border-bottom-width: 2px; border-left-width: 2px; border-right-width: 2px; transition-timing-function: cubic-bezier(0.3, 1.4, 0.5, 1), ease; border-right-style: solid; border-bottom-style: solid; border-left-style: solid;, & .sgs-container__inner > p:nth-of-type(1):hover every width box-shadow: rgb(58, 42, 34) 8px 8px 0px 0px; transform: matrix(1, 0, 0, 1, -4, -4);, & .sgs-container__inner > p:nth-of-type(2):hover every width box-shadow: rgb(58, 42, 34) 8px 8px 0px 0px; transform: matrix(1, 0, 0, 1, -4, -4);"
             },
             "innerBlocks": [
               {
@@ -359,8 +557,8 @@
                 "attributes": {
                   "tagName": "div",
                   "layout": "stack",
-                  "className": "cr-ref-shop-14",
-                  "backgroundColour": "section",
+                  "className": "cr-ref-shop-17",
+                  "backgroundColour": "mm-pink-soft",
                   "borderWidth": {
                     "right": "2px",
                     "bottom": "2px",
@@ -379,20 +577,55 @@
                   "gap": {
                     "desktop": "10px"
                   },
+                  "gridItemTextColour": "mm-script",
                   "shadowHover": "rgb(58, 42, 34) 8px 8px 0px 0px",
-                  "textColourHover": "primary-text",
-                  "borderColourHover": "primary-text",
-                  "backgroundColourHover": "section",
+                  "borderColourHover": "mm-cocoa",
+                  "textColourHover": "mm-cocoa",
                   "sgsFocusRests": true,
                   "padding": {
-                    "desktop": "40px",
-                    "tablet": "32px",
-                    "mobile": "22px"
+                    "desktop": {
+                      "top": "40px",
+                      "right": "40px",
+                      "bottom": "40px",
+                      "left": "40px"
+                    },
+                    "tablet": {
+                      "top": "32px",
+                      "right": "32px",
+                      "bottom": "32px",
+                      "left": "32px"
+                    },
+                    "mobile": {
+                      "top": "26px",
+                      "right": "22px",
+                      "bottom": "26px",
+                      "left": "22px"
+                    }
                   },
                   "sgsMotion": {
                     "v": 1,
                     "elements": {
                       "root": {
+                        "entrance": {
+                          "base": {
+                            "trigger": "scroll",
+                            "values": {
+                              "from": {
+                                "opacity": 0,
+                                "translateX": 0,
+                                "translateY": "token:entrance.distance"
+                              },
+                              "to": {
+                                "opacity": 1,
+                                "translateX": 0,
+                                "translateY": 0
+                              },
+                              "duration": "token:entrance.duration",
+                              "easing": "token:entrance.easing"
+                            },
+                            "preset": "entrance-fade-up"
+                          }
+                        },
                         "hover": {
                           "state": {
                             "values": {
@@ -411,41 +644,44 @@
                 },
                 "innerBlocks": [
                   {
-                    "name": "sgs/text",
+                    "name": "sgs/label",
                     "attributes": {
                       "text": "your cookie, your way ✦",
-                      "className": "cr-ref-shop-15",
+                      "className": "cr-ref-shop-18",
                       "fontFamily": "caveat",
                       "fontSize": {
                         "desktop": 26
                       },
-                      "lineHeight": {
-                        "desktop": 1
-                      },
+                      "fontWeight": "400",
+                      "lineHeight": 1,
                       "lineHeightUnit": "",
-                      "textColour": "custom-mm-script",
-                      "textColourHover": "custom-mm-script"
+                      "textTransform": "none",
+                      "textColour": "mm-script",
+                      "textColourHover": "mm-script",
+                      "sgsCustomCss": "& { letter-spacing: normal; }",
+                      "sgsCustomCssId": "r2c476669896",
+                      "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width letter-spacing: normal;"
                     },
                     "innerBlocks": []
                   },
                   {
-                    "name": "sgs/text",
+                    "name": "sgs/heading",
                     "attributes": {
-                      "text": "Build your own box",
-                      "className": "cr-ref-shop-16",
-                      "fontFamily": "heading",
+                      "content": "Build your own box",
+                      "className": "cr-ref-shop-19",
                       "fontSize": {
                         "mobile": 26,
                         "tablet": 30,
                         "desktop": 34
                       },
-                      "lineHeight": {
-                        "mobile": 1.05,
-                        "tablet": 1.05,
-                        "desktop": 1.05
+                      "textColour": "mm-cocoa",
+                      "margin": {
+                        "desktop": {
+                          "bottom": "0px"
+                        }
                       },
-                      "lineHeightUnit": "",
-                      "textColourHover": "primary-text",
+                      "textWrap": "wrap",
+                      "textColourHover": "mm-cocoa",
                       "sgsMotion": {
                         "v": 1,
                         "elements": {
@@ -464,7 +700,10 @@
                             }
                           }
                         }
-                      }
+                      },
+                      "sgsCustomCss": "& { letter-spacing: normal; }",
+                      "sgsCustomCssId": "rb563f662984",
+                      "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width letter-spacing: normal;"
                     },
                     "innerBlocks": []
                   },
@@ -472,16 +711,16 @@
                     "name": "sgs/text",
                     "attributes": {
                       "text": "Pick a base, chips and up to three of Zainab’s 11 flavours.",
-                      "className": "cr-ref-shop-17",
+                      "className": "cr-ref-shop-20",
                       "lineHeight": {
                         "desktop": 1.5
                       },
                       "lineHeightUnit": "",
-                      "textColour": "custom-mm-body",
+                      "textColour": "mm-body",
                       "maxWidth": {
                         "desktop": "380px"
                       },
-                      "textColourHover": "custom-mm-body"
+                      "textColourHover": "mm-body"
                     },
                     "innerBlocks": []
                   },
@@ -490,7 +729,7 @@
                     "attributes": {
                       "tagName": "div",
                       "layout": "flex",
-                      "className": "cr-ref-shop-18",
+                      "className": "cr-ref-shop-21",
                       "fontWeight": "700",
                       "gap": {
                         "desktop": "8px"
@@ -501,20 +740,51 @@
                           "top": "6px"
                         }
                       },
-                      "textColourHover": "primary-text"
+                      "gridItemTextColour": "mm-pink-soft",
+                      "gridItemBackground": "mm-cocoa",
+                      "gridItemBorderRadius": {
+                        "desktop": {
+                          "topLeft": "999px",
+                          "topRight": "999px",
+                          "bottomRight": "999px",
+                          "bottomLeft": "999px"
+                        }
+                      },
+                      "justifyContent": "center",
+                      "textColourHover": "mm-cocoa",
+                      "padding": {
+                        "desktop": {
+                          "right": "0px",
+                          "left": "0px"
+                        }
+                      },
+                      "sgsCustomCss": "& .sgs-container__inner > p:nth-of-type(1) { width: 34px; height: 34px; }",
+                      "sgsCustomCssId": "ree4ffe0a791",
+                      "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width width: 34px; height: 34px;"
                     },
                     "innerBlocks": [
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "text": "Start building",
+                          "className": "cr-ref-shop-22"
+                        },
+                        "innerBlocks": []
+                      },
                       {
                         "name": "sgs/button",
                         "attributes": {
                           "label": "→",
                           "url": "/#build",
-                          "className": "cr-ref-shop-19",
+                          "className": "cr-ref-shop-23",
                           "fontSize": {
                             "desktop": 16
                           },
-                          "colourText": "section",
-                          "colourBackground": "primary-text",
+                          "lineHeight": {
+                            "desktop": 1.188
+                          },
+                          "colourText": "mm-pink-soft",
+                          "colourBackground": "mm-cocoa",
                           "borderWidth": {
                             "right": "0px",
                             "bottom": "0px",
@@ -531,8 +801,32 @@
                           "minHeight": {
                             "desktop": "34px"
                           },
-                          "colourBackgroundHover": "primary-text",
-                          "colourTextHover": "section"
+                          "colourBackgroundHover": "mm-cocoa",
+                          "colourTextHover": "mm-pink-soft",
+                          "sgsMotion": {
+                            "v": 1,
+                            "elements": {
+                              "root": {
+                                "effects": [
+                                  {
+                                    "id": "ambient-float-1",
+                                    "effect": "ambient-float",
+                                    "trigger": "load",
+                                    "values": {
+                                      "axis": "y",
+                                      "travel": "-token:distance.md",
+                                      "period": 1600,
+                                      "direction": "alternate",
+                                      "easing": "token:easing.ease-in-out"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          "sgsCustomCss": "& { text-align: start; width: 34px; } & .sgs-button__label { display: flex; text-align: start; background-color: rgb(58, 42, 34); border-radius: 999px; justify-content: center; align-items: center; width: 34px; height: 34px; border-radius: 999px; } &:hover { transform: none; }",
+                          "sgsCustomCssId": "rcbde9d20c80",
+                          "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width text-align: start; width: 34px;, & .sgs-button__label every width display: flex; text-align: start; background-color: rgb(58, 42, 34); border-radius: 999px; justify-content: center; align-items: center; width: 34px; height: 34px; border-radius: 999px;, &:hover every width transform: none;"
                         },
                         "innerBlocks": []
                       }
@@ -546,8 +840,8 @@
                   "tagName": "div",
                   "layout": "stack",
                   "sgsBlockLink": "/product/zookies/",
-                  "className": "cr-ref-shop-20",
-                  "backgroundColour": "custom-mm-yellow-soft",
+                  "className": "cr-ref-shop-24",
+                  "backgroundColour": "mm-yellow-soft",
                   "borderWidth": {
                     "right": "2px",
                     "bottom": "2px",
@@ -566,20 +860,55 @@
                   "gap": {
                     "desktop": "10px"
                   },
+                  "gridItemTextColour": "mm-script-gold",
                   "shadowHover": "rgb(58, 42, 34) 8px 8px 0px 0px",
-                  "textColourHover": "primary-text",
-                  "borderColourHover": "primary-text",
-                  "backgroundColourHover": "custom-mm-yellow-soft",
+                  "borderColourHover": "mm-cocoa",
+                  "textColourHover": "mm-cocoa",
                   "sgsFocusRests": true,
                   "padding": {
-                    "desktop": "40px",
-                    "tablet": "32px",
-                    "mobile": "22px"
+                    "desktop": {
+                      "top": "40px",
+                      "right": "40px",
+                      "bottom": "40px",
+                      "left": "40px"
+                    },
+                    "tablet": {
+                      "top": "32px",
+                      "right": "32px",
+                      "bottom": "32px",
+                      "left": "32px"
+                    },
+                    "mobile": {
+                      "top": "26px",
+                      "right": "22px",
+                      "bottom": "26px",
+                      "left": "22px"
+                    }
                   },
                   "sgsMotion": {
                     "v": 1,
                     "elements": {
                       "root": {
+                        "entrance": {
+                          "base": {
+                            "trigger": "scroll",
+                            "values": {
+                              "from": {
+                                "opacity": 0,
+                                "translateX": 0,
+                                "translateY": "token:entrance.distance"
+                              },
+                              "to": {
+                                "opacity": 1,
+                                "translateX": 0,
+                                "translateY": 0
+                              },
+                              "duration": "token:entrance.duration",
+                              "easing": "token:entrance.easing"
+                            },
+                            "preset": "entrance-fade-up"
+                          }
+                        },
                         "hover": {
                           "state": {
                             "values": {
@@ -598,47 +927,47 @@
                 },
                 "innerBlocks": [
                   {
-                    "name": "sgs/heading",
+                    "name": "sgs/label",
                     "attributes": {
-                      "content": "never run out",
-                      "className": "cr-ref-shop-21",
+                      "text": "never run out",
+                      "className": "cr-ref-shop-25",
                       "fontFamily": "caveat",
                       "fontSize": {
                         "desktop": 26
                       },
-                      "lineHeight": {
-                        "desktop": 1
-                      },
+                      "fontWeight": "400",
+                      "lineHeight": 1,
                       "lineHeightUnit": "",
-                      "textColour": "custom-mm-script-gold",
+                      "textTransform": "none",
+                      "textColour": "mm-script-gold",
+                      "textColourHover": "mm-script-gold",
+                      "sgsCustomCss": "& { letter-spacing: normal; }",
+                      "sgsCustomCssId": "re360627afaf",
+                      "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width letter-spacing: normal;"
+                    },
+                    "innerBlocks": []
+                  },
+                  {
+                    "name": "sgs/heading",
+                    "attributes": {
+                      "content": "Subscribe & save 10%",
+                      "className": "cr-ref-shop-26",
+                      "fontSize": {
+                        "mobile": 26,
+                        "tablet": 30,
+                        "desktop": 34
+                      },
+                      "textColour": "mm-cocoa",
                       "margin": {
                         "desktop": {
                           "bottom": "0px"
                         }
                       },
                       "textWrap": "wrap",
-                      "textColourHover": "custom-mm-script-gold"
-                    },
-                    "innerBlocks": []
-                  },
-                  {
-                    "name": "sgs/text",
-                    "attributes": {
-                      "text": "Subscribe & save 10%",
-                      "className": "cr-ref-shop-22",
-                      "fontFamily": "heading",
-                      "fontSize": {
-                        "mobile": 26,
-                        "tablet": 30,
-                        "desktop": 34
-                      },
-                      "lineHeight": {
-                        "mobile": 1.05,
-                        "tablet": 1.05,
-                        "desktop": 1.05
-                      },
-                      "lineHeightUnit": "",
-                      "textColourHover": "primary-text"
+                      "textColourHover": "mm-cocoa",
+                      "sgsCustomCss": "& { letter-spacing: normal; }",
+                      "sgsCustomCssId": "rc5b83fbccfb",
+                      "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width letter-spacing: normal;"
                     },
                     "innerBlocks": []
                   },
@@ -647,7 +976,7 @@
                     "attributes": {
                       "tagName": "div",
                       "layout": "flex",
-                      "className": "cr-ref-shop-23",
+                      "className": "cr-ref-shop-27",
                       "gap": {
                         "desktop": "8px"
                       },
@@ -657,14 +986,40 @@
                         }
                       },
                       "flexWrap": "wrap",
-                      "textColourHover": "primary-text"
+                      "gridItemBackground": "mm-paper",
+                      "gridItemBorderRadius": {
+                        "desktop": {
+                          "topLeft": "999px",
+                          "topRight": "999px",
+                          "bottomRight": "999px",
+                          "bottomLeft": "999px"
+                        }
+                      },
+                      "gridItemPadding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "12px",
+                          "bottom": "6px",
+                          "left": "12px"
+                        }
+                      },
+                      "textColourHover": "mm-cocoa",
+                      "padding": {
+                        "desktop": {
+                          "right": "0px",
+                          "left": "0px"
+                        }
+                      },
+                      "sgsCustomCss": "& .sgs-container__inner > p:nth-of-type(1) { border-top-width: 2px; border-top-style: solid; border-bottom-width: 2px; border-left-width: 2px; border-right-width: 2px; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; } & .sgs-container__inner > p:nth-of-type(2) { border-top-width: 2px; border-top-style: solid; border-bottom-width: 2px; border-left-width: 2px; border-right-width: 2px; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; }",
+                      "sgsCustomCssId": "r96bce9c4130",
+                      "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width border-top-width: 2px; border-top-style: solid; border-bottom-width: 2px; border-left-width: 2px; border-right-width: 2px; border-right-style: solid; border-bottom-style: solid; border-left-style: solid;, & .sgs-container__inner > p:nth-of-type(2) every width border-top-width: 2px; border-top-style: solid; border-bottom-width: 2px; border-left-width: 2px; border-right-width: 2px; border-right-style: solid; border-bottom-style: solid; border-left-style: solid;"
                     },
                     "innerBlocks": [
                       {
                         "name": "sgs/label",
                         "attributes": {
                           "text": "10% off every box",
-                          "className": "cr-ref-shop-24",
+                          "className": "cr-ref-shop-28",
                           "fontSize": {
                             "desktop": 14
                           },
@@ -686,22 +1041,23 @@
                               "left": "12px"
                             }
                           },
-                          "textColourHover": "primary-text"
+                          "textColourHover": "mm-cocoa",
+                          "sgsCustomCss": "& { letter-spacing: normal; }",
+                          "sgsCustomCssId": "r6819edbbcd9",
+                          "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width letter-spacing: normal;"
                         },
                         "innerBlocks": []
                       },
                       {
-                        "name": "sgs/text",
+                        "name": "sgs/label",
                         "attributes": {
                           "text": "Free delivery on 20 and 40 packs",
-                          "className": "cr-ref-shop-25",
+                          "className": "cr-ref-shop-29",
                           "fontSize": {
                             "desktop": 14
                           },
                           "fontWeight": "700",
-                          "lineHeight": {
-                            "desktop": 1.214
-                          },
+                          "textTransform": "none",
                           "borderWidth": {
                             "right": "2px",
                             "bottom": "2px",
@@ -709,14 +1065,7 @@
                             "top": "2px"
                           },
                           "borderStyle": "solid",
-                          "borderRadius": {
-                            "desktop": {
-                              "topLeft": "999px",
-                              "topRight": "999px",
-                              "bottomRight": "999px",
-                              "bottomLeft": "999px"
-                            }
-                          },
+                          "borderRadius": "999px",
                           "padding": {
                             "desktop": {
                               "top": "6px",
@@ -725,23 +1074,23 @@
                               "left": "12px"
                             }
                           },
-                          "textColourHover": "primary-text",
-                          "borderColourHover": "primary-text"
+                          "textColourHover": "mm-cocoa",
+                          "sgsCustomCss": "& { letter-spacing: normal; }",
+                          "sgsCustomCssId": "r68a101d42f6",
+                          "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width letter-spacing: normal;"
                         },
                         "innerBlocks": []
                       },
                       {
-                        "name": "sgs/text",
+                        "name": "sgs/label",
                         "attributes": {
                           "text": "A guaranteed slot in every bake",
-                          "className": "cr-ref-shop-26",
+                          "className": "cr-ref-shop-30",
                           "fontSize": {
                             "desktop": 14
                           },
                           "fontWeight": "700",
-                          "lineHeight": {
-                            "desktop": 1.214
-                          },
+                          "textTransform": "none",
                           "borderWidth": {
                             "right": "2px",
                             "bottom": "2px",
@@ -749,14 +1098,7 @@
                             "top": "2px"
                           },
                           "borderStyle": "solid",
-                          "borderRadius": {
-                            "desktop": {
-                              "topLeft": "999px",
-                              "topRight": "999px",
-                              "bottomRight": "999px",
-                              "bottomLeft": "999px"
-                            }
-                          },
+                          "borderRadius": "999px",
                           "padding": {
                             "desktop": {
                               "top": "6px",
@@ -765,23 +1107,23 @@
                               "left": "12px"
                             }
                           },
-                          "textColourHover": "primary-text",
-                          "borderColourHover": "primary-text"
+                          "textColourHover": "mm-cocoa",
+                          "sgsCustomCss": "& { letter-spacing: normal; }",
+                          "sgsCustomCssId": "r0acdf9cbed0",
+                          "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width letter-spacing: normal;"
                         },
                         "innerBlocks": []
                       },
                       {
-                        "name": "sgs/text",
+                        "name": "sgs/label",
                         "attributes": {
                           "text": "Skip, swap flavours or cancel online",
-                          "className": "cr-ref-shop-27",
+                          "className": "cr-ref-shop-31",
                           "fontSize": {
                             "desktop": 14
                           },
                           "fontWeight": "700",
-                          "lineHeight": {
-                            "desktop": 1.214
-                          },
+                          "textTransform": "none",
                           "borderWidth": {
                             "right": "2px",
                             "bottom": "2px",
@@ -789,14 +1131,7 @@
                             "top": "2px"
                           },
                           "borderStyle": "solid",
-                          "borderRadius": {
-                            "desktop": {
-                              "topLeft": "999px",
-                              "topRight": "999px",
-                              "bottomRight": "999px",
-                              "bottomLeft": "999px"
-                            }
-                          },
+                          "borderRadius": "999px",
                           "padding": {
                             "desktop": {
                               "top": "6px",
@@ -805,8 +1140,10 @@
                               "left": "12px"
                             }
                           },
-                          "textColourHover": "primary-text",
-                          "borderColourHover": "primary-text"
+                          "textColourHover": "mm-cocoa",
+                          "sgsCustomCss": "& { letter-spacing: normal; }",
+                          "sgsCustomCssId": "r7688a12f386",
+                          "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width letter-spacing: normal;"
                         },
                         "innerBlocks": []
                       }
@@ -822,8 +1159,8 @@
               "tagName": "div",
               "layout": "grid",
               "sgsBlockLink": "/gifts/",
-              "className": "cr-ref-shop-28",
-              "backgroundColour": "surface-alt",
+              "className": "cr-ref-shop-32",
+              "backgroundColour": "mm-paper",
               "borderWidth": {
                 "right": "2px",
                 "bottom": "2px",
@@ -850,15 +1187,67 @@
                   "top": "20px"
                 }
               },
+              "gridItemPadding": {
+                "mobile": {
+                  "top": "26px",
+                  "right": "22px",
+                  "bottom": "26px",
+                  "left": "22px"
+                },
+                "tablet": {
+                  "top": "32px",
+                  "right": "32px",
+                  "bottom": "32px",
+                  "left": "32px"
+                },
+                "desktop": {
+                  "top": "40px",
+                  "right": "40px",
+                  "bottom": "40px",
+                  "left": "40px"
+                }
+              },
+              "gap": {
+                "desktop": "8px"
+              },
+              "flexDirection": "column",
               "shadowHover": "rgb(58, 42, 34) 8px 8px 0px 0px",
-              "textColourHover": "primary-text",
-              "borderColourHover": "primary-text",
-              "backgroundColourHover": "surface-alt",
+              "borderColourHover": "mm-cocoa",
+              "textColourHover": "mm-cocoa",
               "sgsFocusRests": true,
+              "padding": {
+                "desktop": {
+                  "right": "0px",
+                  "left": "0px"
+                }
+              },
+              "sgsCustomCss": "@media (max-width: 767px) { & .sgs-container__inner > p:nth-of-type(2) { border-left-width: 0px; } } @media (min-width: 768px) { & .sgs-container__inner > p:nth-of-type(2) { border-left-width: 2px; } } @media (max-width: 767px) { & .sgs-container__inner > p:nth-of-type(2) { border-left-style: none; } } @media (min-width: 768px) { & .sgs-container__inner > p:nth-of-type(2) { border-left-style: solid; } } & .sgs-container__inner > p:nth-of-type(2) { background-image: url(\"http://127.0.0.1:64409/assets/photo-gift-heart.jpg\"); min-height: 200px; background-position-x: 50%; background-position-y: 50%; background-size: cover; height: 100%; }",
+              "sgsCustomCssId": "rd318e969f0b",
+              "sgsCustomCssNote": "Written by the cloning route: Width ladder border-left-width: 0-767px 0px, 768px and up 2px; Written by the cloning route: Width ladder border-left-style: 0-767px none, 768px and up solid; Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(2) every width background-image: url(\"http://127.0.0.1:64409/assets/photo-gift-heart.jpg\"); min-height: 200px; background-position-x: 50%; background-position-y: 50%; background-size: cover; height: 100%;",
               "sgsMotion": {
                 "v": 1,
                 "elements": {
                   "root": {
+                    "entrance": {
+                      "base": {
+                        "trigger": "scroll",
+                        "values": {
+                          "from": {
+                            "opacity": 0,
+                            "translateX": 0,
+                            "translateY": "token:entrance.distance"
+                          },
+                          "to": {
+                            "opacity": 1,
+                            "translateX": 0,
+                            "translateY": 0
+                          },
+                          "duration": "token:entrance.duration",
+                          "easing": "token:entrance.easing"
+                        },
+                        "preset": "entrance-fade-up"
+                      }
+                    },
                     "hover": {
                       "state": {
                         "values": {
@@ -881,39 +1270,49 @@
                 "attributes": {
                   "tagName": "div",
                   "layout": "stack",
-                  "className": "cr-ref-shop-29",
+                  "className": "cr-ref-shop-33",
                   "gap": {
                     "desktop": "8px"
                   },
-                  "textColourHover": "primary-text",
+                  "gridItemTextColour": "mm-script",
+                  "textColourHover": "mm-cocoa",
                   "padding": {
-                    "desktop": "40px",
-                    "tablet": "32px",
-                    "mobile": "22px"
+                    "desktop": {
+                      "top": "40px",
+                      "right": "40px",
+                      "bottom": "40px",
+                      "left": "40px"
+                    },
+                    "tablet": {
+                      "top": "32px",
+                      "right": "32px",
+                      "bottom": "32px",
+                      "left": "32px"
+                    },
+                    "mobile": {
+                      "top": "26px",
+                      "right": "22px",
+                      "bottom": "26px",
+                      "left": "22px"
+                    }
                   }
                 },
                 "innerBlocks": [
                   {
-                    "name": "sgs/heading",
+                    "name": "sgs/label",
                     "attributes": {
-                      "content": "buying for someone?",
-                      "className": "cr-ref-shop-30",
+                      "text": "buying for someone?",
+                      "className": "cr-ref-shop-34",
                       "fontFamily": "caveat",
                       "fontSize": {
                         "desktop": 26
                       },
-                      "lineHeight": {
-                        "desktop": 1
-                      },
+                      "fontWeight": "400",
+                      "lineHeight": 1,
                       "lineHeightUnit": "",
-                      "textColour": "custom-mm-script",
-                      "margin": {
-                        "desktop": {
-                          "bottom": "0px"
-                        }
-                      },
-                      "textWrap": "wrap",
-                      "textColourHover": "custom-mm-script",
+                      "textTransform": "none",
+                      "textColour": "mm-script",
+                      "textColourHover": "mm-script",
                       "sgsMotion": {
                         "v": 1,
                         "elements": {
@@ -931,28 +1330,34 @@
                             }
                           }
                         }
-                      }
+                      },
+                      "sgsCustomCss": "& { letter-spacing: normal; }",
+                      "sgsCustomCssId": "reeced22722b",
+                      "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width letter-spacing: normal;"
                     },
                     "innerBlocks": []
                   },
                   {
-                    "name": "sgs/text",
+                    "name": "sgs/heading",
                     "attributes": {
-                      "text": "Find a gift by moment or budget",
-                      "className": "cr-ref-shop-31",
-                      "fontFamily": "heading",
+                      "content": "Find a gift by moment or budget",
+                      "className": "cr-ref-shop-35",
                       "fontSize": {
                         "mobile": 26,
                         "tablet": 30,
                         "desktop": 34
                       },
-                      "lineHeight": {
-                        "mobile": 1.05,
-                        "tablet": 1.05,
-                        "desktop": 1.05
+                      "textColour": "mm-cocoa",
+                      "margin": {
+                        "desktop": {
+                          "bottom": "0px"
+                        }
                       },
-                      "lineHeightUnit": "",
-                      "textColourHover": "primary-text"
+                      "textWrap": "wrap",
+                      "textColourHover": "mm-cocoa",
+                      "sgsCustomCss": "& { letter-spacing: normal; }",
+                      "sgsCustomCssId": "r059b3b0fe87",
+                      "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width letter-spacing: normal;"
                     },
                     "innerBlocks": []
                   },
@@ -960,12 +1365,12 @@
                     "name": "sgs/text",
                     "attributes": {
                       "text": "Baby showers, new arrivals and the first 40 days.",
-                      "className": "cr-ref-shop-32",
+                      "className": "cr-ref-shop-36",
                       "lineHeight": {
                         "desktop": 1.188
                       },
-                      "textColour": "custom-mm-body",
-                      "textColourHover": "custom-mm-body"
+                      "textColour": "mm-body",
+                      "textColourHover": "mm-body"
                     },
                     "innerBlocks": []
                   }
@@ -974,11 +1379,13 @@
               {
                 "name": "sgs/media",
                 "attributes": {
-                  "className": "cr-ref-shop-33",
-                  "captionColourHover": "primary-text",
-                  "sgsCustomCss": "@media (max-width: 767px) { & { border-left-width: 0px; } } @media (min-width: 768px) { & { border-left-width: 2px; } } @media (max-width: 767px) { & { border-left-style: none; } } @media (min-width: 768px) { & { border-left-style: solid; } }",
-                  "sgsCustomCssId": "wgate33",
-                  "sgsCustomCssNote": "Width ladder border-left-width: 0-767px 0px, 768px and up 2px; Width ladder border-left-style: 0-767px none, 768px and up solid"
+                  "className": "cr-ref-shop-37",
+                  "imageUrl": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/photo-gift-heart-1.jpg",
+                  "imageId": 95,
+                  "captionColourHover": "mm-cocoa",
+                  "sgsCustomCss": "@media (max-width: 767px) { & { border-left-width: 0px; } } @media (min-width: 768px) { & { border-left-width: 2px; } } @media (max-width: 767px) { & { border-left-style: none; } } @media (min-width: 768px) { & { border-left-style: solid; } } & { min-height: 200px; background-position-x: 50%; background-position-y: 50%; background-size: cover; height: 100%; }",
+                  "sgsCustomCssId": "r1c50a0e879a",
+                  "sgsCustomCssNote": "Written by the cloning route: Width ladder border-left-width: 0-767px 0px, 768px and up 2px; Written by the cloning route: Width ladder border-left-style: 0-767px none, 768px and up solid; Written by the cloning route: Custom CSS no setting holds: & every width min-height: 200px; background-position-x: 50%; background-position-y: 50%; background-size: cover; height: 100%;"
                 },
                 "innerBlocks": []
               }

@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-27T14:12:45.865Z",
-  "source": "http://127.0.0.1:64367/Indus%20Foods%20Website%20v2.dc.html#/contact",
+  "generated": "2026-10-31T01:52:19.510Z",
+  "source": "http://127.0.0.1:59255/Indus%20Foods%20Website%20v2.dc.html#/contact",
   "root": "[data-sgs-skeleton-root=\"contact-enquiry\"]",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
@@ -164,6 +164,86 @@
       "srcTag": "form",
       "srcOwnText": "",
       "snippet": "<form sc-camel-on-submit=\"{{ submit }}\" sc-camel-no-validate=\"{{ true }}\" data-dc-tpl=\"6\"> <div style=\"display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;\" data-dc-tpl=\"7\"> <span style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:#0A7EA8;\" data-dc-tpl=\"8\">01</span> <h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(22px,2.2vw,26px);co",
+      "flow": [
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/7#0"
+        },
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/11#0"
+        },
+        "  ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/20#0"
+        },
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/23#0"
+        },
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/36#0"
+        },
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/40#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "289px",
+          "height": "1546.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "622px",
+          "height": "986.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "1158px",
+          "height": "840.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -196,6 +276,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -226,6 +311,74 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;\" data-dc-tpl=\"7\"> <span style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:#0A7EA8;\" data-dc-tpl=\"8\">01</span> <h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(22px,2.2vw,26px);color:#2C3E50;margin:0;\" data-dc-tpl=\"9\">What can we help with?</h3> <span style=\"font-size:1",
+      "flow": [
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/8#0"
+        },
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/9#0"
+        },
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/10#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "289px",
+          "height": "106px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "622px",
+          "height": "33px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "1158px",
+          "height": "39px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -258,6 +411,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -288,6 +446,60 @@
       "srcTag": "span",
       "srcOwnText": "01",
       "snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:#0A7EA8;\" data-dc-tpl=\"8\">01</span>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "15px",
+          "font-weight": "800",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "22.5px",
+          "width": "16.25px",
+          "height": "22.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "15px",
+          "font-weight": "800",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "22.5px",
+          "width": "16.25px",
+          "height": "22.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "15px",
+          "font-weight": "800",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "22.5px",
+          "width": "16.25px",
+          "height": "22.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -320,6 +532,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -350,6 +567,60 @@
       "srcTag": "h3",
       "srcOwnText": "What can we help with?",
       "snippet": "<h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(22px,2.2vw,26px);color:#2C3E50;margin:0;\" data-dc-tpl=\"9\">What can we help with?</h3>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "22px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "33px",
+          "width": "279.594px",
+          "height": "33px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "22px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "33px",
+          "width": "279.594px",
+          "height": "33px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "26px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "39px",
+          "width": "330.438px",
+          "height": "39px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -382,6 +653,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -412,6 +688,60 @@
       "srcTag": "span",
       "srcOwnText": "Choose all that apply",
       "snippet": "<span style=\"font-size:15px;color:#5E6873;\" data-dc-tpl=\"10\">Choose all that apply</span>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "22.5px",
+          "width": "131.594px",
+          "height": "22.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "22.5px",
+          "width": "131.594px",
+          "height": "22.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "22.5px",
+          "width": "131.594px",
+          "height": "22.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -444,6 +774,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -474,6 +809,86 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:grid;grid-template-columns:{{ L.topicCols }};gap:12px;margin-top:18px;\" data-dc-tpl=\"11\"> <sc-for list=\"{{ topics }}\" as=\"tp\" hint-placeholder-count=\"6\" data-dc-tpl=\"12\"> <button type=\"button\" sc-camel-on-click=\"{{ tp.onClick }}\" aria-pressed=\"{{ tp.on }}\" style=\"position:relative;text-align:left;padding:18px 18px 18px 20px;border-radius:20px;border:2px solid {{ tp.ring }};back",
+      "flow": [
+        "  ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/13#0"
+        },
+        "  ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/13#1"
+        },
+        "  ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/13#2"
+        },
+        "  ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/13#3"
+        },
+        "  ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/13#4"
+        },
+        "  ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/13#5"
+        },
+        "  "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "289px",
+          "height": "570px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "622px",
+          "height": "279px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "1158px",
+          "height": "182px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -506,6 +921,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "grid",
+        "768": "grid",
+        "1440": "grid"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -544,6 +964,70 @@
       "srcTag": "button",
       "srcOwnText": "",
       "snippet": "<button type=\"button\" sc-camel-on-click=\"{{ tp.onClick }}\" aria-pressed=\"{{ tp.on }}\" style=\"position:relative;text-align:left;padding:18px 18px 18px 20px;border-radius:20px;border:2px solid {{ tp.ring }};background:{{ tp.bg }};color:{{ tp.fg }};cursor:pointer;display:flex;flex-direction:column;gap:4px;transition:transform .35s cubic-bezier(.34,1.56,.64,1),background .25s,border-color .25s,box-sha",
+      "flow": [
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/14#0"
+        },
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/15#0"
+        },
+        "  "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "13.3333px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "289px",
+          "height": "85px",
+          "border-top-left-radius": "20px",
+          "border-top-right-radius": "20px",
+          "border-bottom-right-radius": "20px",
+          "border-bottom-left-radius": "20px",
+          "padding-top": "18px",
+          "padding-right": "18px",
+          "padding-bottom": "18px",
+          "padding-left": "20px"
+        },
+        "768": {
+          "font-size": "13.3333px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "305px",
+          "height": "85px",
+          "border-top-left-radius": "20px",
+          "border-top-right-radius": "20px",
+          "border-bottom-right-radius": "20px",
+          "border-bottom-left-radius": "20px",
+          "padding-top": "18px",
+          "padding-right": "18px",
+          "padding-bottom": "18px",
+          "padding-left": "20px"
+        },
+        "1440": {
+          "font-size": "13.3333px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "378px",
+          "height": "85px",
+          "border-top-left-radius": "20px",
+          "border-top-right-radius": "20px",
+          "border-bottom-right-radius": "20px",
+          "border-bottom-left-radius": "20px",
+          "padding-top": "18px",
+          "padding-right": "18px",
+          "padding-bottom": "18px",
+          "padding-left": "20px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -576,6 +1060,11 @@
         "1440": "relative"
       },
       "flexDirection": "column",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -612,6 +1101,63 @@
       "srcTag": "span",
       "srcOwnText": "{{ tp.label }}",
       "snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:17px;\" data-dc-tpl=\"14\">{{ tp.label }}</span>",
+      "flow": [
+        "New trade account"
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "247px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "263px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "336px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 65,
@@ -644,6 +1190,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -680,6 +1231,63 @@
       "srcTag": "span",
       "srcOwnText": "{{ tp.desc }}",
       "snippet": "<span style=\"font-size:15px;opacity:.85;\" data-dc-tpl=\"15\">{{ tp.desc }}</span>",
+      "flow": [
+        "Open an account with us"
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "247px",
+          "height": "21px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "263px",
+          "height": "21px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "336px",
+          "height": "21px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 65,
@@ -712,6 +1320,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -750,6 +1363,70 @@
       "srcTag": "button",
       "srcOwnText": "",
       "snippet": "<button type=\"button\" sc-camel-on-click=\"{{ tp.onClick }}\" aria-pressed=\"{{ tp.on }}\" style=\"position:relative;text-align:left;padding:18px 18px 18px 20px;border-radius:20px;border:2px solid {{ tp.ring }};background:{{ tp.bg }};color:{{ tp.fg }};cursor:pointer;display:flex;flex-direction:column;gap:4px;transition:transform .35s cubic-bezier(.34,1.56,.64,1),background .25s,border-color .25s,box-sha",
+      "flow": [
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/14#1"
+        },
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/15#1"
+        },
+        "  "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "13.3333px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "289px",
+          "height": "85px",
+          "border-top-left-radius": "20px",
+          "border-top-right-radius": "20px",
+          "border-bottom-right-radius": "20px",
+          "border-bottom-left-radius": "20px",
+          "padding-top": "18px",
+          "padding-right": "18px",
+          "padding-bottom": "18px",
+          "padding-left": "20px"
+        },
+        "768": {
+          "font-size": "13.3333px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "305px",
+          "height": "85px",
+          "border-top-left-radius": "20px",
+          "border-top-right-radius": "20px",
+          "border-bottom-right-radius": "20px",
+          "border-bottom-left-radius": "20px",
+          "padding-top": "18px",
+          "padding-right": "18px",
+          "padding-bottom": "18px",
+          "padding-left": "20px"
+        },
+        "1440": {
+          "font-size": "13.3333px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "378px",
+          "height": "85px",
+          "border-top-left-radius": "20px",
+          "border-top-right-radius": "20px",
+          "border-bottom-right-radius": "20px",
+          "border-bottom-left-radius": "20px",
+          "padding-top": "18px",
+          "padding-right": "18px",
+          "padding-bottom": "18px",
+          "padding-left": "20px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -782,6 +1459,11 @@
         "1440": "relative"
       },
       "flexDirection": "column",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -818,6 +1500,63 @@
       "srcTag": "span",
       "srcOwnText": "{{ tp.label }}",
       "snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:17px;\" data-dc-tpl=\"14\">{{ tp.label }}</span>",
+      "flow": [
+        "Existing order"
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "247px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "263px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "336px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 65,
@@ -850,6 +1589,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -886,6 +1630,63 @@
       "srcTag": "span",
       "srcOwnText": "{{ tp.desc }}",
       "snippet": "<span style=\"font-size:15px;opacity:.85;\" data-dc-tpl=\"15\">{{ tp.desc }}</span>",
+      "flow": [
+        "Delivery, invoice or account help"
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "247px",
+          "height": "21px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "263px",
+          "height": "21px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "336px",
+          "height": "21px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 65,
@@ -918,6 +1719,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -956,6 +1762,70 @@
       "srcTag": "button",
       "srcOwnText": "",
       "snippet": "<button type=\"button\" sc-camel-on-click=\"{{ tp.onClick }}\" aria-pressed=\"{{ tp.on }}\" style=\"position:relative;text-align:left;padding:18px 18px 18px 20px;border-radius:20px;border:2px solid {{ tp.ring }};background:{{ tp.bg }};color:{{ tp.fg }};cursor:pointer;display:flex;flex-direction:column;gap:4px;transition:transform .35s cubic-bezier(.34,1.56,.64,1),background .25s,border-color .25s,box-sha",
+      "flow": [
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/14#2"
+        },
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/15#2"
+        },
+        "  "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "13.3333px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "289px",
+          "height": "85px",
+          "border-top-left-radius": "20px",
+          "border-top-right-radius": "20px",
+          "border-bottom-right-radius": "20px",
+          "border-bottom-left-radius": "20px",
+          "padding-top": "18px",
+          "padding-right": "18px",
+          "padding-bottom": "18px",
+          "padding-left": "20px"
+        },
+        "768": {
+          "font-size": "13.3333px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "305px",
+          "height": "85px",
+          "border-top-left-radius": "20px",
+          "border-top-right-radius": "20px",
+          "border-bottom-right-radius": "20px",
+          "border-bottom-left-radius": "20px",
+          "padding-top": "18px",
+          "padding-right": "18px",
+          "padding-bottom": "18px",
+          "padding-left": "20px"
+        },
+        "1440": {
+          "font-size": "13.3333px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "378px",
+          "height": "85px",
+          "border-top-left-radius": "20px",
+          "border-top-right-radius": "20px",
+          "border-bottom-right-radius": "20px",
+          "border-bottom-left-radius": "20px",
+          "padding-top": "18px",
+          "padding-right": "18px",
+          "padding-bottom": "18px",
+          "padding-left": "20px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -988,6 +1858,11 @@
         "1440": "relative"
       },
       "flexDirection": "column",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -1024,6 +1899,63 @@
       "srcTag": "span",
       "srcOwnText": "{{ tp.label }}",
       "snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:17px;\" data-dc-tpl=\"14\">{{ tp.label }}</span>",
+      "flow": [
+        "Product enquiry"
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "247px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "263px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "336px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 65,
@@ -1056,6 +1988,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -1092,6 +2029,63 @@
       "srcTag": "span",
       "srcOwnText": "{{ tp.desc }}",
       "snippet": "<span style=\"font-size:15px;opacity:.85;\" data-dc-tpl=\"15\">{{ tp.desc }}</span>",
+      "flow": [
+        "Ranges, specs and availability"
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "247px",
+          "height": "21px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "263px",
+          "height": "21px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "336px",
+          "height": "21px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 65,
@@ -1124,6 +2118,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -1162,6 +2161,70 @@
       "srcTag": "button",
       "srcOwnText": "",
       "snippet": "<button type=\"button\" sc-camel-on-click=\"{{ tp.onClick }}\" aria-pressed=\"{{ tp.on }}\" style=\"position:relative;text-align:left;padding:18px 18px 18px 20px;border-radius:20px;border:2px solid {{ tp.ring }};background:{{ tp.bg }};color:{{ tp.fg }};cursor:pointer;display:flex;flex-direction:column;gap:4px;transition:transform .35s cubic-bezier(.34,1.56,.64,1),background .25s,border-color .25s,box-sha",
+      "flow": [
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/14#3"
+        },
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/15#3"
+        },
+        "  "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "13.3333px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "289px",
+          "height": "85px",
+          "border-top-left-radius": "20px",
+          "border-top-right-radius": "20px",
+          "border-bottom-right-radius": "20px",
+          "border-bottom-left-radius": "20px",
+          "padding-top": "18px",
+          "padding-right": "18px",
+          "padding-bottom": "18px",
+          "padding-left": "20px"
+        },
+        "768": {
+          "font-size": "13.3333px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "305px",
+          "height": "85px",
+          "border-top-left-radius": "20px",
+          "border-top-right-radius": "20px",
+          "border-bottom-right-radius": "20px",
+          "border-bottom-left-radius": "20px",
+          "padding-top": "18px",
+          "padding-right": "18px",
+          "padding-bottom": "18px",
+          "padding-left": "20px"
+        },
+        "1440": {
+          "font-size": "13.3333px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "378px",
+          "height": "85px",
+          "border-top-left-radius": "20px",
+          "border-top-right-radius": "20px",
+          "border-bottom-right-radius": "20px",
+          "border-bottom-left-radius": "20px",
+          "padding-top": "18px",
+          "padding-right": "18px",
+          "padding-bottom": "18px",
+          "padding-left": "20px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -1194,6 +2257,11 @@
         "1440": "relative"
       },
       "flexDirection": "column",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -1230,6 +2298,63 @@
       "srcTag": "span",
       "srcOwnText": "{{ tp.label }}",
       "snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:17px;\" data-dc-tpl=\"14\">{{ tp.label }}</span>",
+      "flow": [
+        "White label"
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "247px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "263px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "336px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 65,
@@ -1262,6 +2387,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -1298,6 +2428,63 @@
       "srcTag": "span",
       "srcOwnText": "{{ tp.desc }}",
       "snippet": "<span style=\"font-size:15px;opacity:.85;\" data-dc-tpl=\"15\">{{ tp.desc }}</span>",
+      "flow": [
+        "Your brand, our products"
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "247px",
+          "height": "21px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "263px",
+          "height": "21px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "336px",
+          "height": "21px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 65,
@@ -1330,6 +2517,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -1368,6 +2560,70 @@
       "srcTag": "button",
       "srcOwnText": "",
       "snippet": "<button type=\"button\" sc-camel-on-click=\"{{ tp.onClick }}\" aria-pressed=\"{{ tp.on }}\" style=\"position:relative;text-align:left;padding:18px 18px 18px 20px;border-radius:20px;border:2px solid {{ tp.ring }};background:{{ tp.bg }};color:{{ tp.fg }};cursor:pointer;display:flex;flex-direction:column;gap:4px;transition:transform .35s cubic-bezier(.34,1.56,.64,1),background .25s,border-color .25s,box-sha",
+      "flow": [
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/14#4"
+        },
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/15#4"
+        },
+        "  "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "13.3333px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "289px",
+          "height": "85px",
+          "border-top-left-radius": "20px",
+          "border-top-right-radius": "20px",
+          "border-bottom-right-radius": "20px",
+          "border-bottom-left-radius": "20px",
+          "padding-top": "18px",
+          "padding-right": "18px",
+          "padding-bottom": "18px",
+          "padding-left": "20px"
+        },
+        "768": {
+          "font-size": "13.3333px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "305px",
+          "height": "85px",
+          "border-top-left-radius": "20px",
+          "border-top-right-radius": "20px",
+          "border-bottom-right-radius": "20px",
+          "border-bottom-left-radius": "20px",
+          "padding-top": "18px",
+          "padding-right": "18px",
+          "padding-bottom": "18px",
+          "padding-left": "20px"
+        },
+        "1440": {
+          "font-size": "13.3333px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "378px",
+          "height": "85px",
+          "border-top-left-radius": "20px",
+          "border-top-right-radius": "20px",
+          "border-bottom-right-radius": "20px",
+          "border-bottom-left-radius": "20px",
+          "padding-top": "18px",
+          "padding-right": "18px",
+          "padding-bottom": "18px",
+          "padding-left": "20px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -1400,6 +2656,11 @@
         "1440": "relative"
       },
       "flexDirection": "column",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -1436,6 +2697,63 @@
       "srcTag": "span",
       "srcOwnText": "{{ tp.label }}",
       "snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:17px;\" data-dc-tpl=\"14\">{{ tp.label }}</span>",
+      "flow": [
+        "Careers"
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "247px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "263px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "336px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 65,
@@ -1468,6 +2786,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -1504,6 +2827,63 @@
       "srcTag": "span",
       "srcOwnText": "{{ tp.desc }}",
       "snippet": "<span style=\"font-size:15px;opacity:.85;\" data-dc-tpl=\"15\">{{ tp.desc }}</span>",
+      "flow": [
+        "Working at Indus Foods"
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "247px",
+          "height": "21px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "263px",
+          "height": "21px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "336px",
+          "height": "21px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 65,
@@ -1536,6 +2916,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -1574,6 +2959,70 @@
       "srcTag": "button",
       "srcOwnText": "",
       "snippet": "<button type=\"button\" sc-camel-on-click=\"{{ tp.onClick }}\" aria-pressed=\"{{ tp.on }}\" style=\"position:relative;text-align:left;padding:18px 18px 18px 20px;border-radius:20px;border:2px solid {{ tp.ring }};background:{{ tp.bg }};color:{{ tp.fg }};cursor:pointer;display:flex;flex-direction:column;gap:4px;transition:transform .35s cubic-bezier(.34,1.56,.64,1),background .25s,border-color .25s,box-sha",
+      "flow": [
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/14#5"
+        },
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/15#5"
+        },
+        "  "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "13.3333px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "289px",
+          "height": "85px",
+          "border-top-left-radius": "20px",
+          "border-top-right-radius": "20px",
+          "border-bottom-right-radius": "20px",
+          "border-bottom-left-radius": "20px",
+          "padding-top": "18px",
+          "padding-right": "18px",
+          "padding-bottom": "18px",
+          "padding-left": "20px"
+        },
+        "768": {
+          "font-size": "13.3333px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "305px",
+          "height": "85px",
+          "border-top-left-radius": "20px",
+          "border-top-right-radius": "20px",
+          "border-bottom-right-radius": "20px",
+          "border-bottom-left-radius": "20px",
+          "padding-top": "18px",
+          "padding-right": "18px",
+          "padding-bottom": "18px",
+          "padding-left": "20px"
+        },
+        "1440": {
+          "font-size": "13.3333px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "378px",
+          "height": "85px",
+          "border-top-left-radius": "20px",
+          "border-top-right-radius": "20px",
+          "border-bottom-right-radius": "20px",
+          "border-bottom-left-radius": "20px",
+          "padding-top": "18px",
+          "padding-right": "18px",
+          "padding-bottom": "18px",
+          "padding-left": "20px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -1606,6 +3055,11 @@
         "1440": "relative"
       },
       "flexDirection": "column",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -1642,6 +3096,63 @@
       "srcTag": "span",
       "srcOwnText": "{{ tp.label }}",
       "snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:17px;\" data-dc-tpl=\"14\">{{ tp.label }}</span>",
+      "flow": [
+        "Something else"
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "247px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "263px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "336px",
+          "height": "20px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 65,
@@ -1674,6 +3185,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -1710,6 +3226,63 @@
       "srcTag": "span",
       "srcOwnText": "{{ tp.desc }}",
       "snippet": "<span style=\"font-size:15px;opacity:.85;\" data-dc-tpl=\"15\">{{ tp.desc }}</span>",
+      "flow": [
+        "Anything we haven’t covered"
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "247px",
+          "height": "21px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "263px",
+          "height": "21px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "336px",
+          "height": "21px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 65,
@@ -1742,6 +3315,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -1772,6 +3350,70 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:flex;align-items:baseline;gap:14px;margin-top:36px;\" data-dc-tpl=\"20\"> <span style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:#0A7EA8;\" data-dc-tpl=\"21\">02</span> <h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(22px,2.2vw,26px);color:#2C3E50;margin:0;\" data-dc-tpl=\"22\">Your details</h3> </div>",
+      "flow": [
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/21#0"
+        },
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/22#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "289px",
+          "height": "33px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "622px",
+          "height": "33px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "1158px",
+          "height": "39px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -1804,6 +3446,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -1834,6 +3481,60 @@
       "srcTag": "span",
       "srcOwnText": "02",
       "snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:#0A7EA8;\" data-dc-tpl=\"21\">02</span>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "15px",
+          "font-weight": "800",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "22.5px",
+          "width": "19.1719px",
+          "height": "22.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "15px",
+          "font-weight": "800",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "22.5px",
+          "width": "19.1719px",
+          "height": "22.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "15px",
+          "font-weight": "800",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "22.5px",
+          "width": "19.1719px",
+          "height": "22.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -1866,6 +3567,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -1896,6 +3602,60 @@
       "srcTag": "h3",
       "srcOwnText": "Your details",
       "snippet": "<h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(22px,2.2vw,26px);color:#2C3E50;margin:0;\" data-dc-tpl=\"22\">Your details</h3>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "22px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "33px",
+          "width": "135.578px",
+          "height": "33px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "22px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "33px",
+          "width": "135.578px",
+          "height": "33px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "26px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "39px",
+          "width": "160.219px",
+          "height": "39px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 76.2,
@@ -1928,6 +3688,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -1958,6 +3723,82 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:grid;grid-template-columns:{{ L.fieldCols }};gap:18px;margin-top:18px;\" data-dc-tpl=\"23\"> <sc-for list=\"{{ fields }}\" as=\"f\" hint-placeholder-count=\"4\" data-dc-tpl=\"24\"> <div style=\"position:relative;min-width:0;\" data-dc-tpl=\"25\"> <input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-",
+      "flow": [
+        "  ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/25#0"
+        },
+        "  ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/25#1"
+        },
+        "  ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/25#2"
+        },
+        "  ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/25#3"
+        },
+        "  ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/30#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "289px",
+          "height": "494.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "622px",
+          "height": "334.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "1158px",
+          "height": "334.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -1990,6 +3831,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "grid",
+        "768": "grid",
+        "1440": "grid"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -2026,6 +3872,70 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"position:relative;min-width:0;\" data-dc-tpl=\"25\"> <input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ f.onBlur }}\" autocomplete=\"{{ f.ac }}\" style=\"height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2",
+      "flow": [
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/26#0"
+        },
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/27#0"
+        },
+        "  "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "289px",
+          "height": "62px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "302px",
+          "height": "62px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "570px",
+          "height": "62px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -2058,6 +3968,11 @@
         "1440": "relative"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -2096,6 +4011,59 @@
       "srcTag": "input",
       "srcOwnText": "",
       "snippet": "<input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ f.onBlur }}\" autocomplete=\"{{ f.ac }}\" style=\"height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;transition",
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "289px",
+          "height": "62px",
+          "border-top-left-radius": "16px",
+          "border-top-right-radius": "16px",
+          "border-bottom-right-radius": "16px",
+          "border-bottom-left-radius": "16px",
+          "padding-top": "22px",
+          "padding-right": "18px",
+          "padding-bottom": "6px",
+          "padding-left": "18px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "302px",
+          "height": "62px",
+          "border-top-left-radius": "16px",
+          "border-top-right-radius": "16px",
+          "border-bottom-right-radius": "16px",
+          "border-bottom-left-radius": "16px",
+          "padding-top": "22px",
+          "padding-right": "18px",
+          "padding-bottom": "6px",
+          "padding-left": "18px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "570px",
+          "height": "62px",
+          "border-top-left-radius": "16px",
+          "border-top-right-radius": "16px",
+          "border-bottom-right-radius": "16px",
+          "border-bottom-left-radius": "16px",
+          "padding-top": "22px",
+          "padding-right": "18px",
+          "padding-bottom": "6px",
+          "padding-left": "18px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -2128,6 +4096,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "inline-block",
+        "768": "inline-block",
+        "1440": "inline-block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -2164,6 +4137,63 @@
       "srcTag": "label",
       "srcOwnText": "{{ f.label }}",
       "snippet": "<label for=\"{{ f.id }}\" style=\"position:absolute;left:19px;top:{{ f.lTop }};font-size:{{ f.lSize }};font-weight:600;color:{{ f.lColor }};pointer-events:none;transition:top .2s,font-size .2s,color .2s;\" data-dc-tpl=\"27\">{{ f.label }}</label>",
+      "flow": [
+        "Your name"
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "77.4844px",
+          "height": "25.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "77.4844px",
+          "height": "25.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "77.4844px",
+          "height": "25.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 62,
@@ -2196,6 +4226,11 @@
         "1440": "absolute"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -2232,6 +4267,70 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"position:relative;min-width:0;\" data-dc-tpl=\"25\"> <input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ f.onBlur }}\" autocomplete=\"{{ f.ac }}\" style=\"height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2",
+      "flow": [
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/26#1"
+        },
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/27#1"
+        },
+        "  "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "289px",
+          "height": "62px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "302px",
+          "height": "62px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "570px",
+          "height": "62px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -2264,6 +4363,11 @@
         "1440": "relative"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -2302,6 +4406,59 @@
       "srcTag": "input",
       "srcOwnText": "",
       "snippet": "<input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ f.onBlur }}\" autocomplete=\"{{ f.ac }}\" style=\"height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;transition",
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "289px",
+          "height": "62px",
+          "border-top-left-radius": "16px",
+          "border-top-right-radius": "16px",
+          "border-bottom-right-radius": "16px",
+          "border-bottom-left-radius": "16px",
+          "padding-top": "22px",
+          "padding-right": "18px",
+          "padding-bottom": "6px",
+          "padding-left": "18px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "302px",
+          "height": "62px",
+          "border-top-left-radius": "16px",
+          "border-top-right-radius": "16px",
+          "border-bottom-right-radius": "16px",
+          "border-bottom-left-radius": "16px",
+          "padding-top": "22px",
+          "padding-right": "18px",
+          "padding-bottom": "6px",
+          "padding-left": "18px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "570px",
+          "height": "62px",
+          "border-top-left-radius": "16px",
+          "border-top-right-radius": "16px",
+          "border-bottom-right-radius": "16px",
+          "border-bottom-left-radius": "16px",
+          "padding-top": "22px",
+          "padding-right": "18px",
+          "padding-bottom": "6px",
+          "padding-left": "18px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -2334,6 +4491,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "inline-block",
+        "768": "inline-block",
+        "1440": "inline-block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -2370,6 +4532,63 @@
       "srcTag": "label",
       "srcOwnText": "{{ f.label }}",
       "snippet": "<label for=\"{{ f.id }}\" style=\"position:absolute;left:19px;top:{{ f.lTop }};font-size:{{ f.lSize }};font-weight:600;color:{{ f.lColor }};pointer-events:none;transition:top .2s,font-size .2s,color .2s;\" data-dc-tpl=\"27\">{{ f.label }}</label>",
+      "flow": [
+        "Business name (optional)"
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "184.609px",
+          "height": "25.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "184.609px",
+          "height": "25.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "184.609px",
+          "height": "25.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 62,
@@ -2402,6 +4621,11 @@
         "1440": "absolute"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -2438,6 +4662,70 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"position:relative;min-width:0;\" data-dc-tpl=\"25\"> <input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ f.onBlur }}\" autocomplete=\"{{ f.ac }}\" style=\"height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2",
+      "flow": [
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/26#2"
+        },
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/27#2"
+        },
+        "  "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "289px",
+          "height": "62px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "302px",
+          "height": "62px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "570px",
+          "height": "62px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -2470,6 +4758,11 @@
         "1440": "relative"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -2508,6 +4801,59 @@
       "srcTag": "input",
       "srcOwnText": "",
       "snippet": "<input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ f.onBlur }}\" autocomplete=\"{{ f.ac }}\" style=\"height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;transition",
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "289px",
+          "height": "62px",
+          "border-top-left-radius": "16px",
+          "border-top-right-radius": "16px",
+          "border-bottom-right-radius": "16px",
+          "border-bottom-left-radius": "16px",
+          "padding-top": "22px",
+          "padding-right": "18px",
+          "padding-bottom": "6px",
+          "padding-left": "18px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "302px",
+          "height": "62px",
+          "border-top-left-radius": "16px",
+          "border-top-right-radius": "16px",
+          "border-bottom-right-radius": "16px",
+          "border-bottom-left-radius": "16px",
+          "padding-top": "22px",
+          "padding-right": "18px",
+          "padding-bottom": "6px",
+          "padding-left": "18px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "570px",
+          "height": "62px",
+          "border-top-left-radius": "16px",
+          "border-top-right-radius": "16px",
+          "border-bottom-right-radius": "16px",
+          "border-bottom-left-radius": "16px",
+          "padding-top": "22px",
+          "padding-right": "18px",
+          "padding-bottom": "6px",
+          "padding-left": "18px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -2540,6 +4886,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "inline-block",
+        "768": "inline-block",
+        "1440": "inline-block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -2576,6 +4927,63 @@
       "srcTag": "label",
       "srcOwnText": "{{ f.label }}",
       "snippet": "<label for=\"{{ f.id }}\" style=\"position:absolute;left:19px;top:{{ f.lTop }};font-size:{{ f.lSize }};font-weight:600;color:{{ f.lColor }};pointer-events:none;transition:top .2s,font-size .2s,color .2s;\" data-dc-tpl=\"27\">{{ f.label }}</label>",
+      "flow": [
+        "Email"
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "41.3125px",
+          "height": "25.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "41.3125px",
+          "height": "25.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "41.3125px",
+          "height": "25.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 62,
@@ -2608,6 +5016,11 @@
         "1440": "absolute"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -2644,6 +5057,70 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"position:relative;min-width:0;\" data-dc-tpl=\"25\"> <input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ f.onBlur }}\" autocomplete=\"{{ f.ac }}\" style=\"height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2",
+      "flow": [
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/26#3"
+        },
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/27#3"
+        },
+        "  "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "289px",
+          "height": "62px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "302px",
+          "height": "62px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "570px",
+          "height": "62px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -2676,6 +5153,11 @@
         "1440": "relative"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -2714,6 +5196,59 @@
       "srcTag": "input",
       "srcOwnText": "",
       "snippet": "<input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ f.onBlur }}\" autocomplete=\"{{ f.ac }}\" style=\"height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;transition",
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "289px",
+          "height": "62px",
+          "border-top-left-radius": "16px",
+          "border-top-right-radius": "16px",
+          "border-bottom-right-radius": "16px",
+          "border-bottom-left-radius": "16px",
+          "padding-top": "22px",
+          "padding-right": "18px",
+          "padding-bottom": "6px",
+          "padding-left": "18px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "302px",
+          "height": "62px",
+          "border-top-left-radius": "16px",
+          "border-top-right-radius": "16px",
+          "border-bottom-right-radius": "16px",
+          "border-bottom-left-radius": "16px",
+          "padding-top": "22px",
+          "padding-right": "18px",
+          "padding-bottom": "6px",
+          "padding-left": "18px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "570px",
+          "height": "62px",
+          "border-top-left-radius": "16px",
+          "border-top-right-radius": "16px",
+          "border-bottom-right-radius": "16px",
+          "border-bottom-left-radius": "16px",
+          "padding-top": "22px",
+          "padding-right": "18px",
+          "padding-bottom": "6px",
+          "padding-left": "18px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -2746,6 +5281,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "inline-block",
+        "768": "inline-block",
+        "1440": "inline-block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -2782,6 +5322,63 @@
       "srcTag": "label",
       "srcOwnText": "{{ f.label }}",
       "snippet": "<label for=\"{{ f.id }}\" style=\"position:absolute;left:19px;top:{{ f.lTop }};font-size:{{ f.lSize }};font-weight:600;color:{{ f.lColor }};pointer-events:none;transition:top .2s,font-size .2s,color .2s;\" data-dc-tpl=\"27\">{{ f.label }}</label>",
+      "flow": [
+        "Phone (optional)"
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "122.641px",
+          "height": "25.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "122.641px",
+          "height": "25.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "122.641px",
+          "height": "25.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 62,
@@ -2814,6 +5411,11 @@
         "1440": "absolute"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -2844,6 +5446,74 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"grid-column:1 / -1;position:relative;\" data-dc-tpl=\"30\"> <textarea id=\"enq-msg\" value=\"{{ msg.value }}\" sc-camel-on-change=\"{{ msg.onChange }}\" sc-camel-on-focus=\"{{ msg.onFocus }}\" sc-camel-on-blur=\"{{ msg.onBlur }}\" sc-camel-max-length=\"{{ 800 }}\" rows=\"5\" style=\"padding:30px 18px 14px;border-radius:16px;border:1.5px solid {{ msg.border }};background:{{ msg.bg }};font-size:17px;color",
+      "flow": [
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/31#0"
+        },
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/32#0"
+        },
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/33#0"
+        },
+        "  "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "289px",
+          "height": "174.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "622px",
+          "height": "174.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "1158px",
+          "height": "174.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -2876,6 +5546,11 @@
         "1440": "relative"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -2907,6 +5582,59 @@
       "srcTag": "textarea",
       "srcOwnText": "",
       "snippet": "<textarea id=\"enq-msg\" value=\"{{ msg.value }}\" sc-camel-on-change=\"{{ msg.onChange }}\" sc-camel-on-focus=\"{{ msg.onFocus }}\" sc-camel-on-blur=\"{{ msg.onBlur }}\" sc-camel-max-length=\"{{ 800 }}\" rows=\"5\" style=\"padding:30px 18px 14px;border-radius:16px;border:1.5px solid {{ msg.border }};background:{{ msg.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;resize:vertica",
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "289px",
+          "height": "166px",
+          "border-top-left-radius": "16px",
+          "border-top-right-radius": "16px",
+          "border-bottom-right-radius": "16px",
+          "border-bottom-left-radius": "16px",
+          "padding-top": "30px",
+          "padding-right": "18px",
+          "padding-bottom": "14px",
+          "padding-left": "18px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "622px",
+          "height": "166px",
+          "border-top-left-radius": "16px",
+          "border-top-right-radius": "16px",
+          "border-bottom-right-radius": "16px",
+          "border-bottom-left-radius": "16px",
+          "padding-top": "30px",
+          "padding-right": "18px",
+          "padding-bottom": "14px",
+          "padding-left": "18px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "1158px",
+          "height": "166px",
+          "border-top-left-radius": "16px",
+          "border-top-right-radius": "16px",
+          "border-bottom-right-radius": "16px",
+          "border-bottom-left-radius": "16px",
+          "padding-top": "30px",
+          "padding-right": "18px",
+          "padding-bottom": "14px",
+          "padding-left": "18px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -2939,6 +5667,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "inline-block",
+        "768": "inline-block",
+        "1440": "inline-block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -2969,6 +5702,60 @@
       "srcTag": "label",
       "srcOwnText": "How can we help?",
       "snippet": "<label for=\"enq-msg\" style=\"position:absolute;left:19px;top:{{ msg.lTop }};font-size:{{ msg.lSize }};font-weight:600;color:{{ msg.lColor }};pointer-events:none;transition:top .2s,font-size .2s,color .2s;\" data-dc-tpl=\"32\">How can we help?</label>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "130.109px",
+          "height": "25.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "130.109px",
+          "height": "25.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "600",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "130.109px",
+          "height": "25.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 62,
@@ -3001,6 +5788,11 @@
         "1440": "absolute"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -3031,6 +5823,63 @@
       "srcTag": "span",
       "srcOwnText": "{{ msg.count }}",
       "snippet": "<span style=\"position:absolute;right:16px;bottom:14px;font-size:14px;color:#8793A0;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"33\">{{ msg.count }}</span>",
+      "flow": [
+        "0 / 800"
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "14px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "21px",
+          "width": "38.3438px",
+          "height": "21px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "14px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "21px",
+          "width": "38.3438px",
+          "height": "21px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "14px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "21px",
+          "width": "38.3438px",
+          "height": "21px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 277.7,
@@ -3063,6 +5912,11 @@
         "1440": "absolute"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -3093,6 +5947,78 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:22px;\" data-dc-tpl=\"36\"> <span style=\"font-weight:700;font-size:16px;margin-right:4px;flex-basis:{{ L.prefBasis }};\" data-dc-tpl=\"37\">Reply by</span> <sc-for list=\"{{ prefs }}\" as=\"p\" hint-placeholder-count=\"3\" data-dc-tpl=\"38\"> <button type=\"button\" sc-camel-on-click=\"{{ p.onClick }}\" style=\"padding:9px 18px;border-rad",
+      "flow": [
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/37#0"
+        },
+        "  ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/39#0"
+        },
+        "  ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/39#1"
+        },
+        "  ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/39#2"
+        },
+        "  "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "289px",
+          "height": "77px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "622px",
+          "height": "41px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "1158px",
+          "height": "41px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -3125,6 +6051,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -3155,6 +6086,60 @@
       "srcTag": "span",
       "srcOwnText": "Reply by",
       "snippet": "<span style=\"font-weight:700;font-size:16px;margin-right:4px;flex-basis:{{ L.prefBasis }};\" data-dc-tpl=\"37\">Reply by</span>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24px",
+          "width": "285px",
+          "height": "24px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24px",
+          "width": "60.5938px",
+          "height": "24px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24px",
+          "width": "60.5938px",
+          "height": "24px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -3187,6 +6172,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -3224,6 +6214,63 @@
       "srcTag": "button",
       "srcOwnText": "{{ p.label }}",
       "snippet": "<button type=\"button\" sc-camel-on-click=\"{{ p.onClick }}\" style=\"padding:9px 18px;border-radius:999px;border:1.5px solid {{ p.ring }};background:{{ p.bg }};color:{{ p.fg }};font-weight:700;font-size:15px;cursor:pointer;transition:background .2s,color .2s,border-color .2s;\" data-dc-tpl=\"39\">{{ p.label }}</button>",
+      "flow": [
+        "Email"
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "15px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "75.4375px",
+          "height": "41px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "9px",
+          "padding-right": "18px",
+          "padding-bottom": "9px",
+          "padding-left": "18px"
+        },
+        "768": {
+          "font-size": "15px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "75.4375px",
+          "height": "41px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "9px",
+          "padding-right": "18px",
+          "padding-bottom": "9px",
+          "padding-left": "18px"
+        },
+        "1440": {
+          "font-size": "15px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "75.4375px",
+          "height": "41px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "9px",
+          "padding-right": "18px",
+          "padding-bottom": "9px",
+          "padding-left": "18px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -3256,6 +6303,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -3293,6 +6345,63 @@
       "srcTag": "button",
       "srcOwnText": "{{ p.label }}",
       "snippet": "<button type=\"button\" sc-camel-on-click=\"{{ p.onClick }}\" style=\"padding:9px 18px;border-radius:999px;border:1.5px solid {{ p.ring }};background:{{ p.bg }};color:{{ p.fg }};font-weight:700;font-size:15px;cursor:pointer;transition:background .2s,color .2s,border-color .2s;\" data-dc-tpl=\"39\">{{ p.label }}</button>",
+      "flow": [
+        "Phone"
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "15px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "80.1875px",
+          "height": "41px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "9px",
+          "padding-right": "18px",
+          "padding-bottom": "9px",
+          "padding-left": "18px"
+        },
+        "768": {
+          "font-size": "15px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "80.1875px",
+          "height": "41px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "9px",
+          "padding-right": "18px",
+          "padding-bottom": "9px",
+          "padding-left": "18px"
+        },
+        "1440": {
+          "font-size": "15px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "80.1875px",
+          "height": "41px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "9px",
+          "padding-right": "18px",
+          "padding-bottom": "9px",
+          "padding-left": "18px"
+        }
+      },
       "box": {
         "375": {
           "x": 130.4,
@@ -3325,6 +6434,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -3362,6 +6476,63 @@
       "srcTag": "button",
       "srcOwnText": "{{ p.label }}",
       "snippet": "<button type=\"button\" sc-camel-on-click=\"{{ p.onClick }}\" style=\"padding:9px 18px;border-radius:999px;border:1.5px solid {{ p.ring }};background:{{ p.bg }};color:{{ p.fg }};font-weight:700;font-size:15px;cursor:pointer;transition:background .2s,color .2s,border-color .2s;\" data-dc-tpl=\"39\">{{ p.label }}</button>",
+      "flow": [
+        "WhatsApp"
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "15px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "104.422px",
+          "height": "41px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "9px",
+          "padding-right": "18px",
+          "padding-bottom": "9px",
+          "padding-left": "18px"
+        },
+        "768": {
+          "font-size": "15px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "104.422px",
+          "height": "41px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "9px",
+          "padding-right": "18px",
+          "padding-bottom": "9px",
+          "padding-left": "18px"
+        },
+        "1440": {
+          "font-size": "15px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "104.422px",
+          "height": "41px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "9px",
+          "padding-right": "18px",
+          "padding-bottom": "9px",
+          "padding-left": "18px"
+        }
+      },
       "box": {
         "375": {
           "x": 222.6,
@@ -3394,6 +6565,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -3424,6 +6600,70 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;margin-top:30px;padding-top:24px;border-top:1px solid #EEF2F5;\" data-dc-tpl=\"40\"> <span style=\"font-size:15px;color:#5E6873;max-width:420px;\" data-dc-tpl=\"41\">We reply within one working day. Your details are only used to answer your enquiry.</span> <button type=\"submit\" style=\"width:{{ L.btnW }};just",
+      "flow": [
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/41#0"
+        },
+        " ",
+        {
+          "key": "Indus Foods Website v2>EnquiryForm@468#0/42#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "289px",
+          "height": "142px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "24px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "622px",
+          "height": "142px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "24px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "17px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "25.5px",
+          "width": "1158px",
+          "height": "81px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "24px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -3456,6 +6696,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -3486,6 +6731,60 @@
       "srcTag": "span",
       "srcOwnText": "We reply within one working day. Your details are only used to answer your enquiry.",
       "snippet": "<span style=\"font-size:15px;color:#5E6873;max-width:420px;\" data-dc-tpl=\"41\">We reply within one working day. Your details are only used to answer your enquiry.</span>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "22.5px",
+          "width": "289px",
+          "height": "45px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "22.5px",
+          "width": "420px",
+          "height": "45px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "22.5px",
+          "width": "420px",
+          "height": "45px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -3518,6 +6817,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     },
@@ -3550,6 +6854,63 @@
       "srcTag": "button",
       "srcOwnText": "{{ sendLabel }} {{ arrow }}",
       "snippet": "<button type=\"submit\" style=\"width:{{ L.btnW }};justify-content:center;display:inline-flex;align-items:center;gap:10px;background:#0A7EA8;color:#FFFFFF;border:2px solid #0A7EA8;border-radius:999px;padding:15px 30px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 22px -10px rgba(10,126,168,.7);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s;\" style-hover=\"transfor",
+      "flow": [
+        "Send message "
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "289px",
+          "height": "56px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "15px",
+          "padding-right": "30px",
+          "padding-bottom": "15px",
+          "padding-left": "30px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "191.859px",
+          "height": "56px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "15px",
+          "padding-right": "30px",
+          "padding-bottom": "15px",
+          "padding-left": "30px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "700",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "191.859px",
+          "height": "56px",
+          "border-top-left-radius": "999px",
+          "border-top-right-radius": "999px",
+          "border-bottom-right-radius": "999px",
+          "border-bottom-left-radius": "999px",
+          "padding-top": "15px",
+          "padding-right": "30px",
+          "padding-bottom": "15px",
+          "padding-left": "30px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -3582,6 +6943,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {}
     }
@@ -3610,7 +6976,7 @@
       "tokens/typography.css": "9dcdef1dd3f8e3830a78e14b472900536cebcf3f17a08b945981d2a65816f64b"
     },
     "route": {
-      "commit": "5892ce78973c218d477af956c380a4d83e583f7f"
+      "commit": "483583e65e051f50edc343c67aad9aa20056c69b"
     }
   }
 }

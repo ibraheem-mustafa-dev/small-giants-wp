@@ -1,7 +1,9 @@
 [
 	{
 		"name": "sgs/form",
-		"attributes": {},
+		"attributes": {
+			"anchor": "careers"
+		},
 		"draftRef": {
 			"tpl": "Root/550#0"
 		},
@@ -17,7 +19,8 @@
 			{
 				"name": "sgs/heading",
 				"attributes": {
-					"content": "Register your interest"
+					"content": "Register your interest",
+					"level": "h3"
 				},
 				"draftRef": {
 					"tpl": "Root/551#0"
@@ -77,8 +80,7 @@
 					{
 						"name": "sgs/form-field-text",
 						"attributes": {
-							"label": "Full name",
-							"required": true
+							"label": "Full name"
 						},
 						"draftRef": {
 							"tpl": "Root/560#0"
@@ -105,8 +107,7 @@
 					{
 						"name": "sgs/form-field-email",
 						"attributes": {
-							"label": "Email",
-							"required": true
+							"label": "Email"
 						},
 						"draftRef": {
 							"tpl": "Root/560#1"
@@ -160,8 +161,7 @@
 					{
 						"name": "sgs/form-field-select",
 						"attributes": {
-							"label": "Team",
-							"required": true
+							"label": "Team"
 						},
 						"draftRef": {
 							"tpl": "Root/562#0"
@@ -261,7 +261,15 @@
 							}
 						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/560#0"
+					},
+					".sgs-container__inner > p:nth-of-type(2)": {
+						"tpl": "Root/560#1"
+					}
+				}
 			},
 			{
 				"name": "sgs/form-field-consent",
@@ -303,8 +311,18 @@
 					"textHash": "29759c43",
 					"line": 817
 				},
-				"innerBlocks": []
+				"innerBlocks": [],
+				"draftSlots": {
+					".sgs-button__label": {
+						"tpl": "Root/571#0"
+					}
+				}
 			}
-		]
+		],
+		"draftSlots": {
+			".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input": {
+				"tpl": "Root/569#0"
+			}
+		}
 	}
 ]

@@ -1,18 +1,22 @@
 {
   "cr-ref-shop-0": {
-    "tpl": "Root/248#0",
+    "tpl": "Root/246#0",
     "fingerprint": {
       "tag": "main",
       "cls": "sgs-page-shop",
       "styleHash": "41bf7980",
       "parentTags": [],
       "textHash": "1505",
-      "line": 905
+      "line": 902
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/247#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/267#0"
+    },
+    "draft": "9fdd17eaaf271355"
   },
   "cr-ref-shop-1": {
-    "tpl": "Root/249#0",
+    "tpl": "Root/247#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -21,12 +25,15 @@
         "main"
       ],
       "textHash": "1505",
-      "line": 906
+      "line": 903
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-hero__content": "Root/248#0"
+    },
+    "draft": "9fdd17eaaf271355"
   },
   "cr-ref-shop-2": {
-    "tpl": "Root/251#0",
+    "tpl": "Root/249#0",
     "fingerprint": {
       "tag": "p",
       "cls": "",
@@ -37,12 +44,12 @@
         "div"
       ],
       "textHash": "7c8a2f61",
-      "line": 908
+      "line": 905
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
   "cr-ref-shop-3": {
-    "tpl": "Root/252#0",
+    "tpl": "Root/250#0",
     "fingerprint": {
       "tag": "h1",
       "cls": "",
@@ -53,12 +60,12 @@
         "div"
       ],
       "textHash": "a820011",
-      "line": 909
+      "line": 906
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
   "cr-ref-shop-4": {
-    "tpl": "Root/253#0",
+    "tpl": "Root/251#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -68,12 +75,15 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 911
+      "line": 908
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/254#0"
+    },
+    "draft": "9fdd17eaaf271355"
   },
   "cr-ref-shop-5": {
-    "tpl": "Root/256#0",
+    "tpl": "Root/254#0",
     "fingerprint": {
       "tag": "button",
       "cls": "",
@@ -84,31 +94,15 @@
         "div"
       ],
       "textHash": "96834005",
-      "line": 914
-    },
-    "draft": "10edcc3a998d8e4f"
-  },
-  "cr-ref-shop-6": {
-    "tpl": "Root/257#0",
-    "fingerprint": {
-      "tag": "select",
-      "cls": "",
-      "styleHash": "dc12ff9",
-      "parentTags": [
-        "main",
-        "div",
-        "div"
-      ],
-      "textHash": "1505",
-      "line": 916
+      "line": 911
     },
     "slots": {
-      ".sgs-form-field__input": "Root/257#0"
+      ".sgs-button__label": "Root/254#0"
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-shop-7": {
-    "tpl": "Root/269#0",
+  "cr-ref-shop-6": {
+    "tpl": "Root/267#0",
     "fingerprint": {
       "tag": "div",
       "cls": "sgs-shop-layout",
@@ -117,12 +111,16 @@
         "main"
       ],
       "textHash": "1505",
-      "line": 935
+      "line": 932
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/269#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/321#0"
+    },
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-shop-8": {
-    "tpl": "Root/271#0",
+  "cr-ref-shop-7": {
+    "tpl": "Root/269#0",
     "fingerprint": {
       "tag": "aside",
       "cls": "",
@@ -132,12 +130,12 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 937
+      "line": 934
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-shop-14": {
-    "tpl": "Root/280#0",
+  "cr-ref-shop-13": {
+    "tpl": "Root/278#0",
     "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -151,12 +149,12 @@
         "button"
       ],
       "textHash": "98d85eba",
-      "line": 949
+      "line": 946
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-shop-17": {
-    "tpl": "Root/280#1",
+  "cr-ref-shop-16": {
+    "tpl": "Root/278#1",
     "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -170,12 +168,12 @@
         "button"
       ],
       "textHash": "7c8a2900",
-      "line": 949
+      "line": 946
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-shop-20": {
-    "tpl": "Root/280#2",
+  "cr-ref-shop-19": {
+    "tpl": "Root/278#2",
     "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -189,12 +187,12 @@
         "button"
       ],
       "textHash": "a1c185ad",
-      "line": 949
+      "line": 946
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-shop-23": {
-    "tpl": "Root/280#3",
+  "cr-ref-shop-22": {
+    "tpl": "Root/278#3",
     "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -208,12 +206,12 @@
         "button"
       ],
       "textHash": "dd328c8",
-      "line": 949
+      "line": 946
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-shop-26": {
-    "tpl": "Root/280#4",
+  "cr-ref-shop-25": {
+    "tpl": "Root/278#4",
     "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -227,12 +225,12 @@
         "button"
       ],
       "textHash": "c9eeb7e",
-      "line": 949
+      "line": 946
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-shop-29": {
-    "tpl": "Root/280#5",
+  "cr-ref-shop-28": {
+    "tpl": "Root/278#5",
     "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -246,12 +244,12 @@
         "button"
       ],
       "textHash": "dc153f2",
-      "line": 949
+      "line": 946
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-shop-32": {
-    "tpl": "Root/280#6",
+  "cr-ref-shop-31": {
+    "tpl": "Root/278#6",
     "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -265,12 +263,12 @@
         "button"
       ],
       "textHash": "326770ee",
-      "line": 949
+      "line": 946
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-shop-35": {
-    "tpl": "Root/280#7",
+  "cr-ref-shop-34": {
+    "tpl": "Root/278#7",
     "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -284,12 +282,12 @@
         "button"
       ],
       "textHash": "29b1e820",
-      "line": 949
+      "line": 946
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-shop-38": {
-    "tpl": "Root/280#8",
+  "cr-ref-shop-37": {
+    "tpl": "Root/278#8",
     "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -303,12 +301,12 @@
         "button"
       ],
       "textHash": "d4416a8",
-      "line": 949
+      "line": 946
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-shop-41": {
-    "tpl": "Root/280#9",
+  "cr-ref-shop-40": {
+    "tpl": "Root/278#9",
     "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -322,12 +320,12 @@
         "button"
       ],
       "textHash": "64f694b4",
-      "line": 949
+      "line": 946
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-shop-44": {
-    "tpl": "Root/323#0",
+  "cr-ref-shop-43": {
+    "tpl": "Root/321#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -337,12 +335,15 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 1021
+      "line": 1018
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/331#0"
+    },
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-shop-47": {
-    "tpl": "Root/326#0",
+  "cr-ref-shop-49": {
+    "tpl": "Root/324#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -354,12 +355,17 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 1024
+      "line": 1021
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__title > .sgs-focus-source": "Root>Frame Card@325#0/15#0",
+      "div:nth-of-type(1) > .sgs-product-card__saving-badge": "Root>Frame Card@325#0/9#0",
+      "div:nth-of-type(1) > .sgs-product-card__wishlist": "Root>Frame Card@325#0/10#0"
+    },
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-shop-48": {
-    "tpl": "Root/333#0",
+  "cr-ref-shop-50": {
+    "tpl": "Root/331#0",
     "fingerprint": {
       "tag": "p",
       "cls": "",
@@ -370,8 +376,8 @@
         "div"
       ],
       "textHash": "2e9938b1",
-      "line": 1036
+      "line": 1033
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   }
 }

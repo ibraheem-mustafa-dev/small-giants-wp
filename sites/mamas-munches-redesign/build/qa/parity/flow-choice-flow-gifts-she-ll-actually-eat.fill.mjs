@@ -3,7 +3,6 @@
 import base from './flow-choice-flow-gifts-she-ll-actually-eat.fill-base.mjs';
 
 const generated = [
-	{ name: "gen-flow-choice-flow-gifts-she-ll-actually-eat-0", text: false, structure: false, draft: {"tpl":"Root/24#0"}, live: ".cr-ref-flow-choice-flow-gifts-she-ll-actually-eat-0" },
 ];
 
 // Hand pairs measuring a paired block's draft element on an element inside the block: moved to the block root.

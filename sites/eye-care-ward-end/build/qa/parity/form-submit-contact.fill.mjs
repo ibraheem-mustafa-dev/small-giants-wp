@@ -3,17 +3,17 @@
 import base from './form-submit-contact.fill-base.mjs';
 
 const generated = [
-	{ name: "gen-form-submit-contact-0", text: false, structure: false, draft: {"tpl":"Root/682#0"}, live: ".cr-ref-form-submit-contact-0" },
-	{ name: "gen-form-submit-contact-1", text: false, structure: false, draft: {"tpl":"Root/683#0"}, live: ".cr-ref-form-submit-contact-1" },
-	{ name: "gen-form-submit-contact-2", text: false, structure: false, draft: {"tpl":"Root/684#0"}, live: ".cr-ref-form-submit-contact-2" },
-	{ name: "gen-form-submit-contact-3", text: false, structure: false, draft: {"tpl":"Root/685#0"}, live: ".cr-ref-form-submit-contact-3" },
-	{ name: "gen-form-submit-contact-4", text: false, structure: false, draft: {"tpl":"Root/686#0"}, live: ".cr-ref-form-submit-contact-4" },
-	{ name: "gen-form-submit-contact-5", text: false, structure: false, draft: {"tpl":"Root/687#0"}, live: ".cr-ref-form-submit-contact-5" },
-	{ name: "gen-form-submit-contact-6", text: false, structure: false, draft: {"tpl":"Root/688#0"}, live: ".cr-ref-form-submit-contact-6" },
-	{ name: "gen-form-submit-contact-7", text: false, structure: false, draft: {"tpl":"Root/689#0"}, live: ".cr-ref-form-submit-contact-7" },
-	{ name: "gen-form-submit-contact-8", text: false, structure: false, draft: {"tpl":"Root/696#0"}, live: ".cr-ref-form-submit-contact-8" },
-	{ name: "gen-form-submit-contact-9", text: false, structure: false, draft: {"tpl":"Root/697#0"}, live: ".cr-ref-form-submit-contact-9" },
-	{ name: "gen-form-submit-contact-10", text: false, structure: false, draft: {"tpl":"Root/698#0"}, live: ".cr-ref-form-submit-contact-10" },
+	{ name: "gen-form-submit-contact-0", text: false, structure: false, draft: {"tpl":"Root/680#0"}, live: ".cr-ref-form-submit-contact-0" },
+	{ name: "gen-form-submit-contact-1", text: false, structure: false, draft: {"tpl":"Root/681#0"}, live: ".cr-ref-form-submit-contact-1" },
+	{ name: "gen-form-submit-contact-2", text: false, structure: false, draft: {"tpl":"Root/682#0"}, live: ".cr-ref-form-submit-contact-2" },
+	{ name: "gen-form-submit-contact-3", text: false, structure: false, draft: {"tpl":"Root/683#0"}, live: ".cr-ref-form-submit-contact-3", liveAt: {"column-gap":".sgs-container__inner","padding-right":".sgs-container__inner","padding-left":".sgs-container__inner"} },
+	{ name: "gen-form-submit-contact-4", text: false, structure: false, draft: {"tpl":"Root/684#0"}, live: ".cr-ref-form-submit-contact-4" },
+	{ name: "gen-form-submit-contact-5", text: false, structure: false, draft: {"tpl":"Root/685#0"}, live: ".cr-ref-form-submit-contact-5" },
+	{ name: "gen-form-submit-contact-6", text: false, structure: false, draft: {"tpl":"Root/686#0"}, live: ".cr-ref-form-submit-contact-6" },
+	{ name: "gen-form-submit-contact-7", text: false, structure: false, draft: {"tpl":"Root/687#0"}, live: ".cr-ref-form-submit-contact-7" },
+	{ name: "gen-form-submit-contact-8", text: false, structure: false, draft: {"tpl":"Root/694#0"}, live: ".cr-ref-form-submit-contact-8" },
+	{ name: "gen-form-submit-contact-9", text: false, structure: false, draft: {"tpl":"Root/695#0"}, live: ".cr-ref-form-submit-contact-9", liveAt: {"padding-right":".sgs-container__inner","padding-left":".sgs-container__inner"} },
+	{ name: "gen-form-submit-contact-10", text: false, structure: false, draft: {"tpl":"Root/696#0"}, live: ".cr-ref-form-submit-contact-10" },
 ];
 
 // Hand pairs measuring a paired block's draft element on an element inside the block: moved to the block root.

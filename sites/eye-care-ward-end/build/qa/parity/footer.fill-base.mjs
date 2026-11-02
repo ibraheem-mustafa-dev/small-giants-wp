@@ -7,9 +7,9 @@ export default {
 	refPrefix: "cr-ref-",
 	divergences: "../divergences.json",
 	// The surface's own element on each side: the automatic text and moved-run collection and the links run inside it.
-	auto: { root: {"draft":":has(> :is(.sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"1124\"]:not(.sc-host .sc-host *))):has(> :is(.sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"1161\"]:not(.sc-host .sc-host *)))","live":".cr-ref-footer-0"}, exclude: {"draft":[".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"113\"]:not(.sc-host .sc-host *)",".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"13\"]:not(.sc-host .sc-host *)",".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"7\"]:not(.sc-host .sc-host *)"]} },
-	linkRoot: {"draft":":has(> :is(.sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"1124\"]:not(.sc-host .sc-host *))):has(> :is(.sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"1161\"]:not(.sc-host .sc-host *)))","live":".cr-ref-footer-0"},
-	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:57904/" },
+	auto: { root: {"draft":":has(> :is(.sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"1122\"]:not(.sc-host .sc-host *))):has(> :is(.sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"1158\"]:not(.sc-host .sc-host *)))","live":".cr-ref-footer-0"}, exclude: {"draft":[".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"111\"]:not(.sc-host .sc-host *)",".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"13\"]:not(.sc-host .sc-host *)",".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"7\"]:not(.sc-host .sc-host *)"]} },
+	linkRoot: {"draft":":has(> :is(.sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"1122\"]:not(.sc-host .sc-host *))):has(> :is(.sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"1158\"]:not(.sc-host .sc-host *)))","live":".cr-ref-footer-0"},
+	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:56430/" },
 	live: { url: "http://localhost:8081/" },
 	states: [
 		{ name: "default", fullPage: true },

@@ -3,22 +3,23 @@
 import base from './header.fill-base.mjs';
 
 const generated = [
-	{ name: "gen-header-1", text: false, structure: false, draft: {"tpl":"Root/9#0"}, live: ".cr-ref-header-1" },
+	{ name: "gen-header-1", text: false, structure: false, draft: {"tpl":"Root/9#0"}, live: ".cr-ref-header-1", liveAt: {"align-items":".sgs-container__inner"} },
 	{ name: "gen-header-2", text: false, structure: false, draft: {"tpl":"Root/11#0"}, live: ".cr-ref-header-2" },
 	{ name: "gen-header-3", text: false, structure: false, draft: {"tpl":"Root/13#0"}, live: ".cr-ref-header-3" },
 	{ name: "gen-header-4", text: false, structure: false, draft: {"tpl":"Root/14#0","within":".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"14\"]:not(.sc-host .sc-host *):not(:has([data-dc-tpl=\"18\"]:not(.sc-host .sc-host *)))"}, live: ".cr-ref-header-4" },
 	{ name: "gen-header-5", text: false, structure: false, draft: {"tpl":"Root/14#0","within":".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"14\"]:not(.sc-host .sc-host *):has([data-dc-tpl=\"18\"]:not(.sc-host .sc-host *))"}, live: ".cr-ref-header-5" },
 	{ name: "gen-header-6", text: false, structure: false, draft: {"tpl":"Root/20#0"}, live: ".cr-ref-header-6" },
-	{ name: "gen-header-7", text: false, structure: false, draft: "div[data-dc-tpl=\"9\"] [data-dc-tpl=\"22\"]", live: ".cr-ref-header-7" },
-	{ name: "gen-header-8", text: false, structure: false, draft: "div[data-dc-tpl=\"9\"] [data-dc-tpl=\"22\"] [data-dc-tpl=\"23\"]", live: ".cr-ref-header-8" },
-	{ name: "gen-header-9", text: false, structure: false, draft: "div[data-dc-tpl=\"9\"] [data-dc-tpl=\"22\"] [data-dc-tpl=\"26\"]", live: ".cr-ref-header-9" },
-	{ name: "gen-header-10", text: false, structure: false, draft: "div[data-dc-tpl=\"9\"] [data-dc-tpl=\"22\"] [data-dc-tpl=\"29\"]", live: ".cr-ref-header-10" },
-	{ name: "gen-header-11", text: false, structure: false, draft: "div[data-dc-tpl=\"9\"] [data-dc-tpl=\"22\"] [data-dc-tpl=\"35\"]", live: ".cr-ref-header-11" },
+	{ name: "gen-header-7", text: false, structure: false, draft: "div[data-dc-tpl=\"9\"] [data-dc-tpl=\"22\"]", live: ".cr-ref-header-7", liveAt: {"width":".sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__shape"} },
+	{ name: "gen-header-8", text: false, structure: false, draft: "div[data-dc-tpl=\"9\"] [data-dc-tpl=\"22\"] [data-dc-tpl=\"23\"]", live: ".cr-ref-header-8", liveAt: {"color":".sgs-icon__shape","background-color":".sgs-icon__shape","box-shadow":".sgs-icon__link > .sgs-icon__shape"} },
+	{ name: "gen-header-9", text: false, structure: false, draft: "div[data-dc-tpl=\"9\"] [data-dc-tpl=\"22\"] [data-dc-tpl=\"26\"]", live: ".cr-ref-header-9", liveAt: {"color":".sgs-icon__shape","background-color":".sgs-icon__shape","box-shadow":".sgs-icon__link > .sgs-icon__shape"} },
+	{ name: "gen-header-10", text: false, structure: false, draft: "div[data-dc-tpl=\"9\"] [data-dc-tpl=\"22\"] [data-dc-tpl=\"29\"]", live: ".cr-ref-header-10", liveAt: {"color":".sgs-icon__shape","background-color":".sgs-icon__shape","box-shadow":".sgs-icon__link > .sgs-icon__shape"} },
+	{ name: "gen-header-11", text: false, structure: false, draft: "div[data-dc-tpl=\"9\"] [data-dc-tpl=\"22\"] [data-dc-tpl=\"35\"]", live: ".cr-ref-header-11", liveAt: {"color":".sgs-icon__shape","background-image":".sgs-icon__shape","box-shadow":".sgs-icon__link > .sgs-icon__shape"} },
 	{ name: "gen-header-12", text: false, structure: false, draft: {"tpl":"Root/40#0"}, live: ".cr-ref-header-12" },
 	{ name: "gen-header-13", text: false, structure: false, draft: {"tpl":"Root/43#0"}, live: ".cr-ref-header-13" },
+	{ name: "gen-header-14", text: false, structure: false, draft: {"tpl":"Root/56#0"}, live: ".cr-ref-header-14", liveAt: {"column-gap":".sgs-container__inner","padding-right":".sgs-container__inner","padding-left":".sgs-container__inner"} },
 	{ name: "gen-header-15", text: false, structure: false, draft: {"tpl":"Root/58#0"}, live: ".cr-ref-header-15" },
 	{ name: "gen-header-16__burger", text: false, structure: false, draft: {"tpl":"Root/59#0"}, live: ".cr-ref-header-16 .sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger" },
-	{ name: "gen-header-16", text: false, structure: false, draft: {"tpl":"Root/45#0"}, live: ".cr-ref-header-16" },
+	{ name: "gen-header-16", text: false, structure: false, draft: {"tpl":"Root/45#0"}, live: ".cr-ref-header-16", liveAt: {"justify-content":"@companion"} },
 	{ name: "gen-header-17", text: false, structure: false, draft: {"tpl":"Root/54#0"}, live: ".cr-ref-header-17" },
 ];
 

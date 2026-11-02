@@ -9,53 +9,6 @@
       "textHash": "1505",
       "line": 17
     },
-    "draft": "4cd995654ff1103b"
-  },
-  "cr-ref-template-checkout-2": {
-    "tpl": "Root/19#0",
-    "fingerprint": {
-      "tag": "button",
-      "cls": "",
-      "styleHash": "642cdeb",
-      "parentTags": [
-        "main",
-        "div"
-      ],
-      "textHash": "1505",
-      "line": 20
-    },
-    "draft": "4cd995654ff1103b"
-  },
-  "cr-ref-template-checkout-3": {
-    "tpl": "Root/20#0",
-    "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "1505",
-      "parentTags": [
-        "main",
-        "div",
-        "button"
-      ],
-      "textHash": "b178e25a",
-      "line": 20
-    },
-    "draft": "4cd995654ff1103b"
-  },
-  "cr-ref-template-checkout-4": {
-    "tpl": "Root/21#0",
-    "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "fe6e953a",
-      "parentTags": [
-        "main",
-        "div",
-        "button"
-      ],
-      "textHash": "9856b6ea",
-      "line": 20
-    },
-    "draft": "4cd995654ff1103b"
+    "draft": "8a4e3beea02443ed"
   }
 }

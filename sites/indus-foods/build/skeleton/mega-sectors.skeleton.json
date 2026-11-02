@@ -75,9 +75,19 @@
 									"textHash": "1505",
 									"line": 118
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-media__img": {
+										"tpl": "Root/89#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/89#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -165,11 +175,32 @@
 									"textHash": "e26e5c63",
 									"line": 123
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-button__label": {
+										"tpl": "Root/93#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/91#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/92#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/88#0"
+					},
+					".sgs-container__inner > p:nth-of-type(2)": {
+						"tpl": "Root/90#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -229,9 +260,19 @@
 									"textHash": "1505",
 									"line": 118
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-media__img": {
+										"tpl": "Root/89#1"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/89#1"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -302,7 +343,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Explore Manufacturing",
-									"url": "/manufacturing/"
+									"url": "/food-service/manufacturing/"
 								},
 								"draftRef": {
 									"tpl": "Root/93#1"
@@ -319,11 +360,32 @@
 									"textHash": "2d5e9f7c",
 									"line": 123
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-button__label": {
+										"tpl": "Root/93#1"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/91#1"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/92#1"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/88#1"
+					},
+					".sgs-container__inner > p:nth-of-type(2)": {
+						"tpl": "Root/90#1"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -383,9 +445,19 @@
 									"textHash": "1505",
 									"line": 118
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-media__img": {
+										"tpl": "Root/89#2"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/89#2"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -456,7 +528,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Explore Retail",
-									"url": "/retail/"
+									"url": "/food-service/retail/"
 								},
 								"draftRef": {
 									"tpl": "Root/93#2"
@@ -473,11 +545,32 @@
 									"textHash": "1d428c5b",
 									"line": 123
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-button__label": {
+										"tpl": "Root/93#2"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/91#2"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/92#2"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/88#2"
+					},
+					".sgs-container__inner > p:nth-of-type(2)": {
+						"tpl": "Root/90#2"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -537,9 +630,19 @@
 									"textHash": "1505",
 									"line": 118
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-media__img": {
+										"tpl": "Root/89#3"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/89#3"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -610,7 +713,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Explore Wholesale",
-									"url": "/wholesale/"
+									"url": "/food-service/wholesale/"
 								},
 								"draftRef": {
 									"tpl": "Root/93#3"
@@ -627,12 +730,41 @@
 									"textHash": "1bf062be",
 									"line": 123
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-button__label": {
+										"tpl": "Root/93#3"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/91#3"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/92#3"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/88#3"
+					},
+					".sgs-container__inner > p:nth-of-type(2)": {
+						"tpl": "Root/90#3"
+					}
+				}
 			}
-		]
+		],
+		"draftSlots": {
+			".sgs-container__inner > p:nth-of-type(1)": {
+				"tpl": "Root/87#0"
+			},
+			".sgs-container__inner > p:nth-of-type(2)": {
+				"tpl": "Root/87#1"
+			}
+		}
 	}
 ]

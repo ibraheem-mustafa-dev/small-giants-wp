@@ -9,6 +9,9 @@
       "textHash": "1505",
       "line": 131
     },
+    "slots": {
+      ".sgs-mega-panel__content > .sgs-mega-aside": "Root/102#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-mega-brands-1": {
@@ -22,6 +25,10 @@
       ],
       "textHash": "1505",
       "line": 132
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/97#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/98#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -52,6 +59,11 @@
       ],
       "textHash": "1505",
       "line": 134
+    },
+    "slots": {
+      ".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(1)": "Root/100#0",
+      ".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(2)": "Root/100#1",
+      ".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(3)": "Root/100#2"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -111,6 +123,9 @@
       ],
       "textHash": "795bc921",
       "line": 145
+    },
+    "slots": {
+      ".sgs-button__label": "Root/105#0"
     },
     "draft": "0fe5aee1c396a997"
   }

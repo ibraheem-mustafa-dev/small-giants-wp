@@ -1,18 +1,21 @@
 {
   "cr-ref-my-account-0": {
-    "tpl": "Root/856#0",
+    "tpl": "Root/854#0",
     "fingerprint": {
       "tag": "main",
       "cls": "sgs-page-signin",
       "styleHash": "e0705001",
       "parentTags": [],
       "textHash": "1505",
-      "line": 1658
+      "line": 1655
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/856#0"
+    },
+    "draft": "9fdd17eaaf271355"
   },
   "cr-ref-my-account-1": {
-    "tpl": "Root/858#0",
+    "tpl": "Root/856#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -21,12 +24,15 @@
         "main"
       ],
       "textHash": "1505",
-      "line": 1660
+      "line": 1657
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-hero__content": "Root/856#0"
+    },
+    "draft": "9fdd17eaaf271355"
   },
   "cr-ref-my-account-2": {
-    "tpl": "Root/859#0",
+    "tpl": "Root/857#0",
     "fingerprint": {
       "tag": "p",
       "cls": "",
@@ -36,12 +42,12 @@
         "div"
       ],
       "textHash": "e5ea9ef5",
-      "line": 1661
+      "line": 1658
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
   "cr-ref-my-account-3": {
-    "tpl": "Root/860#0",
+    "tpl": "Root/858#0",
     "fingerprint": {
       "tag": "h1",
       "cls": "",
@@ -51,12 +57,12 @@
         "div"
       ],
       "textHash": "3d13afa6",
-      "line": 1662
+      "line": 1659
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
   "cr-ref-my-account-4": {
-    "tpl": "Root/861#0",
+    "tpl": "Root/859#0",
     "fingerprint": {
       "tag": "p",
       "cls": "",
@@ -66,8 +72,8 @@
         "div"
       ],
       "textHash": "7f899c21",
-      "line": 1663
+      "line": 1660
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   }
 }

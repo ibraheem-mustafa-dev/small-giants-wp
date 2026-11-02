@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-28T06:34:36.048Z",
-	"inventory": "2026-10-27T14:12:45.865Z",
-	"source": "http://127.0.0.1:64367/Indus%20Foods%20Website%20v2.dc.html#/contact",
+	"generated": "2026-11-02T04:53:38.284Z",
+	"inventory": "2026-10-31T01:52:19.510Z",
+	"source": "http://127.0.0.1:59255/Indus%20Foods%20Website%20v2.dc.html#/contact",
 	"surface": "contact-enquiry",
 	"siteName": null,
 	"surfaceParts": [
@@ -41,16 +41,555 @@
 		"inventoryElements": 52,
 		"parts": 0,
 		"rows": 52,
-		"skeletonNodes": 28,
-		"expandedNodes": 28,
-		"low": 5,
-		"removed": 24,
+		"skeletonNodes": 26,
+		"expandedNodes": 26,
+		"low": 0,
+		"removed": 26,
 		"unresolved": 0,
 		"byRule": {
 			"formHost": 1,
-			"optionSetForm": 19,
+			"drawsChildren": 18,
 			"formControl": 11
 		}
+	},
+	"partPairing": {
+		"paired": 20,
+		"unpaired": [
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form__actions > .sgs-form__button:nth-of-type(3)",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__progress-wrapper > .sgs-form__progress > .sgs-form__progress-bar",
+				"reason": ".sgs-form__progress-wrapper: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form__actions > .sgs-form__button:nth-of-type(1)",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(4) > .sgs-form-field__input",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__input",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form__actions",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__label",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__label",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(9) > .sgs-form-field__label",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(7) > .sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(1) > .sgs-form-tile__icon",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(7) > .sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(2) > .sgs-form-tile__icon",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(7) > .sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(1) > .sgs-form-tile__label",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(7) > .sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(2) > .sgs-form-tile__label",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(8) > .sgs-form-field__consent > .sgs-form-field__consent-text",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form__actions > .sgs-form__button:nth-of-type(2)",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__help",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(9) > .sgs-form-field__file-zone > .sgs-form-field__file-label > .sgs-form-field__file-hint",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__error",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__error",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(4) > .sgs-form-field__error",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__error",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__error",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(7) > .sgs-form-field__error",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(8) > .sgs-form-field__error",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(9) > .sgs-form-field__error",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(9) > .sgs-form-field__file-zone > .sgs-form-file__progress",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-review > .sgs-form-review__heading",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__progress-wrapper > .sgs-form__progress-steps > .sgs-form__progress-step:nth-of-type(1) > .sgs-form__progress-step-label",
+				"reason": ".sgs-form__progress-wrapper: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__progress-wrapper > .sgs-form__progress-steps > .sgs-form__progress-step:nth-of-type(2) > .sgs-form__progress-step-label",
+				"reason": ".sgs-form__progress-wrapper: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(9) > .sgs-form-field__file-zone > .sgs-form-field__file-label > .sgs-form-field__file-button",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(9) > .sgs-form-field__file-zone > .sgs-form-field__file-label",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__column-heading",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__row-heading",
+				"reason": ".sgs-form__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__progress-wrapper > .sgs-form__progress-steps > .sgs-form__progress-step:nth-of-type(1) > .sgs-form__progress-step-number",
+				"reason": ".sgs-form__progress-wrapper: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/6#0",
+				"block": "sgs/form",
+				"slot": ".sgs-form__progress-wrapper > .sgs-form__progress-steps > .sgs-form__progress-step:nth-of-type(2) > .sgs-form__progress-step-number",
+				"reason": ".sgs-form__progress-wrapper: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/7#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/7#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/7#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/8#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/9#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/11#0",
+				"block": "sgs/form-field-tiles",
+				"slot": ".sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(1) > .sgs-form-tile__label",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/11#0",
+				"block": "sgs/form-field-tiles",
+				"slot": ".sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(2) > .sgs-form-tile__label",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/11#0",
+				"block": "sgs/form-field-tiles",
+				"slot": ".sgs-form-field__group > .sgs-form-field__label",
+				"reason": "6 draft elements could supply label, so none is its part"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/20#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/20#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/20#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/21#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/22#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/23#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/23#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/23#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/25#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/25#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/25#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/25#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(2)",
+				"reason": "no inner block of this node stands at this place"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/25#1",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/25#1",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/25#1",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/25#1",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(2)",
+				"reason": "no inner block of this node stands at this place"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/25#2",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/25#2",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/25#2",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/25#2",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(2)",
+				"reason": "no inner block of this node stands at this place"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/25#3",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/25#3",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/25#3",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/25#3",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(2)",
+				"reason": "no inner block of this node stands at this place"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/30#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/30#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/30#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/30#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(2)",
+				"reason": "no inner block of this node stands at this place"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/36#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/36#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/36#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/39#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/39#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon > svg",
+				"reason": ".sgs-button__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/39#1",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/39#1",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon > svg",
+				"reason": ".sgs-button__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/39#2",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/39#2",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon > svg",
+				"reason": ".sgs-button__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/40#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/40#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/40#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/41#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/42#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>EnquiryForm@468#0/42#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon > svg",
+				"reason": ".sgs-button__icon: the draft has no element of its own here"
+			}
+		]
 	},
 	"widthAlternatives": [],
 	"problems": [],
@@ -69,6 +608,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "formHost",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form",
@@ -82,7 +622,9 @@
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<form sc-camel-on-submit=\"{{ submit }}\" sc-camel-no-validate=\"{{ true }}\" data-dc-tpl=\"6\"> <div style=\"display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;\" data-dc-tpl=\"7\"> <span style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:#0A7EA8;\" data-dc-tpl=\"8\">01</span> <h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(22px,2.2vw,26px);co",
-			"attributes": {}
+			"attributes": {
+				"anchor": "enquiry"
+			}
 		},
 		{
 			"order": 1,
@@ -98,6 +640,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -116,6 +659,14 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>EnquiryForm@468#0/8#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root>EnquiryForm@468#0/9#0"
+				}
 			}
 		},
 		{
@@ -127,18 +678,18 @@
 			"block": "sgs/text",
 			"action": null,
 			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/text",
-					"score": 0.25,
+					"score": 1,
 					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-10-19: A step number beside a form section heading; sgs/text is the only candidate."
 					]
 				}
 			],
@@ -163,6 +714,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -178,7 +730,8 @@
 			"screenshots": {},
 			"snippet": "<h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(22px,2.2vw,26px);color:#2C3E50;margin:0;\" data-dc-tpl=\"9\">What can we help with?</h3>",
 			"attributes": {
-				"content": "What can we help with?"
+				"content": "What can we help with?",
+				"level": "h3"
 			}
 		},
 		{
@@ -187,30 +740,19 @@
 			"tag": "span",
 			"depth": 2,
 			"words": "Choose all that apply",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"block": null,
+			"action": "remove",
+			"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block",
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"font-size:15px;color:#5E6873;\" data-dc-tpl=\"10\">Choose all that apply</span>",
-			"attributes": {
-				"text": "Choose all that apply"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 5,
@@ -220,26 +762,33 @@
 			"words": "",
 			"block": "sgs/form-field-tiles",
 			"action": null,
-			"reason": "a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21)",
-			"source": "rule optionSetForm",
+			"reason": null,
+			"source": "client decision",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSetForm",
+			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/form-field-tiles",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule optionSetForm: a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21)"
+						"client decision: Bean marked block:sgs/form-field-tiles in the intake review on 2026-10-19"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<div style=\"display:grid;grid-template-columns:{{ L.topicCols }};gap:12px;margin-top:18px;\" data-dc-tpl=\"11\"> <sc-for list=\"{{ topics }}\" as=\"tp\" hint-placeholder-count=\"6\" data-dc-tpl=\"12\"> <button type=\"button\" sc-camel-on-click=\"{{ tp.onClick }}\" aria-pressed=\"{{ tp.on }}\" style=\"position:relative;text-align:left;padding:18px 18px 18px 20px;border-radius:20px;border:2px solid {{ tp.ring }};back",
-			"attributes": {}
+			"attributes": {
+				"layout": "grid"
+			},
+			"slots": {
+				".sgs-form-field__group > .sgs-container": {
+					"tpl": "Root>EnquiryForm@468#0/11#0"
+				}
+			}
 		},
 		{
 			"order": 6,
@@ -249,12 +798,12 @@
 			"words": "",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
-			"source": null,
+			"reason": "drawn by sgs/form-field-tiles: array_item_schema: sgs/form-field-tiles holds its items in an attribute",
+			"source": "client decision (inside Root>EnquiryForm@468#0/11#0)",
 			"confidence": 1,
 			"low": false,
-			"stale": null,
-			"rule": "optionSetForm",
+			"stale": "the client decision for Root>EnquiryForm@468#0/13#0 (remove) no longer applies: sgs/form-field-tiles draws this element",
+			"rule": "drawsChildren",
 			"into": "Root>EnquiryForm@468#0/11#0",
 			"candidates": [],
 			"parts": [],
@@ -270,12 +819,12 @@
 			"words": "New trade account",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
-			"source": null,
+			"reason": "drawn by sgs/form-field-tiles: array_item_schema: sgs/form-field-tiles holds its items in an attribute",
+			"source": "client decision (inside Root>EnquiryForm@468#0/11#0)",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSetForm",
+			"rule": "drawsChildren",
 			"into": "Root>EnquiryForm@468#0/11#0",
 			"candidates": [],
 			"parts": [],
@@ -291,12 +840,12 @@
 			"words": "Open an account with us",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
-			"source": null,
+			"reason": "drawn by sgs/form-field-tiles: array_item_schema: sgs/form-field-tiles holds its items in an attribute",
+			"source": "client decision (inside Root>EnquiryForm@468#0/11#0)",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSetForm",
+			"rule": "drawsChildren",
 			"into": "Root>EnquiryForm@468#0/11#0",
 			"candidates": [],
 			"parts": [],
@@ -312,12 +861,12 @@
 			"words": "",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
-			"source": null,
+			"reason": "drawn by sgs/form-field-tiles: array_item_schema: sgs/form-field-tiles holds its items in an attribute",
+			"source": "client decision (inside Root>EnquiryForm@468#0/11#0)",
 			"confidence": 1,
 			"low": false,
-			"stale": null,
-			"rule": "optionSetForm",
+			"stale": "the client decision for Root>EnquiryForm@468#0/13#1 (remove) no longer applies: sgs/form-field-tiles draws this element",
+			"rule": "drawsChildren",
 			"into": "Root>EnquiryForm@468#0/11#0",
 			"candidates": [],
 			"parts": [],
@@ -333,12 +882,12 @@
 			"words": "Existing order",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
-			"source": null,
+			"reason": "drawn by sgs/form-field-tiles: array_item_schema: sgs/form-field-tiles holds its items in an attribute",
+			"source": "client decision (inside Root>EnquiryForm@468#0/11#0)",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSetForm",
+			"rule": "drawsChildren",
 			"into": "Root>EnquiryForm@468#0/11#0",
 			"candidates": [],
 			"parts": [],
@@ -354,12 +903,12 @@
 			"words": "Delivery, invoice or account help",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
-			"source": null,
+			"reason": "drawn by sgs/form-field-tiles: array_item_schema: sgs/form-field-tiles holds its items in an attribute",
+			"source": "client decision (inside Root>EnquiryForm@468#0/11#0)",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSetForm",
+			"rule": "drawsChildren",
 			"into": "Root>EnquiryForm@468#0/11#0",
 			"candidates": [],
 			"parts": [],
@@ -375,12 +924,12 @@
 			"words": "",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
-			"source": null,
+			"reason": "drawn by sgs/form-field-tiles: array_item_schema: sgs/form-field-tiles holds its items in an attribute",
+			"source": "client decision (inside Root>EnquiryForm@468#0/11#0)",
 			"confidence": 1,
 			"low": false,
-			"stale": null,
-			"rule": "optionSetForm",
+			"stale": "the client decision for Root>EnquiryForm@468#0/13#2 (remove) no longer applies: sgs/form-field-tiles draws this element",
+			"rule": "drawsChildren",
 			"into": "Root>EnquiryForm@468#0/11#0",
 			"candidates": [],
 			"parts": [],
@@ -396,12 +945,12 @@
 			"words": "Product enquiry",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
-			"source": null,
+			"reason": "drawn by sgs/form-field-tiles: array_item_schema: sgs/form-field-tiles holds its items in an attribute",
+			"source": "client decision (inside Root>EnquiryForm@468#0/11#0)",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSetForm",
+			"rule": "drawsChildren",
 			"into": "Root>EnquiryForm@468#0/11#0",
 			"candidates": [],
 			"parts": [],
@@ -417,12 +966,12 @@
 			"words": "Ranges, specs and availability",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
-			"source": null,
+			"reason": "drawn by sgs/form-field-tiles: array_item_schema: sgs/form-field-tiles holds its items in an attribute",
+			"source": "client decision (inside Root>EnquiryForm@468#0/11#0)",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSetForm",
+			"rule": "drawsChildren",
 			"into": "Root>EnquiryForm@468#0/11#0",
 			"candidates": [],
 			"parts": [],
@@ -438,12 +987,12 @@
 			"words": "",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
-			"source": null,
+			"reason": "drawn by sgs/form-field-tiles: array_item_schema: sgs/form-field-tiles holds its items in an attribute",
+			"source": "client decision (inside Root>EnquiryForm@468#0/11#0)",
 			"confidence": 1,
 			"low": false,
-			"stale": null,
-			"rule": "optionSetForm",
+			"stale": "the client decision for Root>EnquiryForm@468#0/13#3 (remove) no longer applies: sgs/form-field-tiles draws this element",
+			"rule": "drawsChildren",
 			"into": "Root>EnquiryForm@468#0/11#0",
 			"candidates": [],
 			"parts": [],
@@ -459,12 +1008,12 @@
 			"words": "White label",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
-			"source": null,
+			"reason": "drawn by sgs/form-field-tiles: array_item_schema: sgs/form-field-tiles holds its items in an attribute",
+			"source": "client decision (inside Root>EnquiryForm@468#0/11#0)",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSetForm",
+			"rule": "drawsChildren",
 			"into": "Root>EnquiryForm@468#0/11#0",
 			"candidates": [],
 			"parts": [],
@@ -480,12 +1029,12 @@
 			"words": "Your brand, our products",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
-			"source": null,
+			"reason": "drawn by sgs/form-field-tiles: array_item_schema: sgs/form-field-tiles holds its items in an attribute",
+			"source": "client decision (inside Root>EnquiryForm@468#0/11#0)",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSetForm",
+			"rule": "drawsChildren",
 			"into": "Root>EnquiryForm@468#0/11#0",
 			"candidates": [],
 			"parts": [],
@@ -501,12 +1050,12 @@
 			"words": "",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
-			"source": null,
+			"reason": "drawn by sgs/form-field-tiles: array_item_schema: sgs/form-field-tiles holds its items in an attribute",
+			"source": "client decision (inside Root>EnquiryForm@468#0/11#0)",
 			"confidence": 1,
 			"low": false,
-			"stale": null,
-			"rule": "optionSetForm",
+			"stale": "the client decision for Root>EnquiryForm@468#0/13#4 (remove) no longer applies: sgs/form-field-tiles draws this element",
+			"rule": "drawsChildren",
 			"into": "Root>EnquiryForm@468#0/11#0",
 			"candidates": [],
 			"parts": [],
@@ -522,12 +1071,12 @@
 			"words": "Careers",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
-			"source": null,
+			"reason": "drawn by sgs/form-field-tiles: array_item_schema: sgs/form-field-tiles holds its items in an attribute",
+			"source": "client decision (inside Root>EnquiryForm@468#0/11#0)",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSetForm",
+			"rule": "drawsChildren",
 			"into": "Root>EnquiryForm@468#0/11#0",
 			"candidates": [],
 			"parts": [],
@@ -543,12 +1092,12 @@
 			"words": "Working at Indus Foods",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
-			"source": null,
+			"reason": "drawn by sgs/form-field-tiles: array_item_schema: sgs/form-field-tiles holds its items in an attribute",
+			"source": "client decision (inside Root>EnquiryForm@468#0/11#0)",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSetForm",
+			"rule": "drawsChildren",
 			"into": "Root>EnquiryForm@468#0/11#0",
 			"candidates": [],
 			"parts": [],
@@ -564,12 +1113,12 @@
 			"words": "",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
-			"source": null,
+			"reason": "drawn by sgs/form-field-tiles: array_item_schema: sgs/form-field-tiles holds its items in an attribute",
+			"source": "client decision (inside Root>EnquiryForm@468#0/11#0)",
 			"confidence": 1,
 			"low": false,
-			"stale": null,
-			"rule": "optionSetForm",
+			"stale": "the client decision for Root>EnquiryForm@468#0/13#5 (remove) no longer applies: sgs/form-field-tiles draws this element",
+			"rule": "drawsChildren",
 			"into": "Root>EnquiryForm@468#0/11#0",
 			"candidates": [],
 			"parts": [],
@@ -585,12 +1134,12 @@
 			"words": "Something else",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
-			"source": null,
+			"reason": "drawn by sgs/form-field-tiles: array_item_schema: sgs/form-field-tiles holds its items in an attribute",
+			"source": "client decision (inside Root>EnquiryForm@468#0/11#0)",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSetForm",
+			"rule": "drawsChildren",
 			"into": "Root>EnquiryForm@468#0/11#0",
 			"candidates": [],
 			"parts": [],
@@ -606,12 +1155,12 @@
 			"words": "Anything we haven’t covered",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
-			"source": null,
+			"reason": "drawn by sgs/form-field-tiles: array_item_schema: sgs/form-field-tiles holds its items in an attribute",
+			"source": "client decision (inside Root>EnquiryForm@468#0/11#0)",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSetForm",
+			"rule": "drawsChildren",
 			"into": "Root>EnquiryForm@468#0/11#0",
 			"candidates": [],
 			"parts": [],
@@ -633,6 +1182,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -651,6 +1201,14 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>EnquiryForm@468#0/21#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root>EnquiryForm@468#0/22#0"
+				}
 			}
 		},
 		{
@@ -662,18 +1220,18 @@
 			"block": "sgs/text",
 			"action": null,
 			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/text",
-					"score": 0.25,
+					"score": 1,
 					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-10-19: A step number beside a form section heading; sgs/text is the only candidate."
 					]
 				}
 			],
@@ -698,6 +1256,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -713,7 +1272,8 @@
 			"screenshots": {},
 			"snippet": "<h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(22px,2.2vw,26px);color:#2C3E50;margin:0;\" data-dc-tpl=\"22\">Your details</h3>",
 			"attributes": {
-				"content": "Your details"
+				"content": "Your details",
+				"level": "h3"
 			}
 		},
 		{
@@ -730,6 +1290,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -748,6 +1309,14 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>EnquiryForm@468#0/25#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root>EnquiryForm@468#0/25#1"
+				}
 			}
 		},
 		{
@@ -764,6 +1333,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -780,6 +1350,11 @@
 			"snippet": "<div style=\"position:relative;min-width:0;\" data-dc-tpl=\"25\"> <input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ f.onBlur }}\" autocomplete=\"{{ f.ac }}\" style=\"height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2",
 			"attributes": {
 				"tagName": "div"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>EnquiryForm@468#0/26#0"
+				}
 			}
 		},
 		{
@@ -796,6 +1371,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form-field-text",
@@ -832,6 +1408,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
+			"acceptedDecision": true,
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
@@ -852,6 +1429,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -868,6 +1446,11 @@
 			"snippet": "<div style=\"position:relative;min-width:0;\" data-dc-tpl=\"25\"> <input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ f.onBlur }}\" autocomplete=\"{{ f.ac }}\" style=\"height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2",
 			"attributes": {
 				"tagName": "div"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>EnquiryForm@468#0/26#1"
+				}
 			}
 		},
 		{
@@ -884,6 +1467,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form-field-text",
@@ -920,6 +1504,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
+			"acceptedDecision": true,
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
@@ -940,6 +1525,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -956,6 +1542,11 @@
 			"snippet": "<div style=\"position:relative;min-width:0;\" data-dc-tpl=\"25\"> <input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ f.onBlur }}\" autocomplete=\"{{ f.ac }}\" style=\"height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2",
 			"attributes": {
 				"tagName": "div"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>EnquiryForm@468#0/26#2"
+				}
 			}
 		},
 		{
@@ -972,6 +1563,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form-field-email",
@@ -1008,6 +1600,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
+			"acceptedDecision": true,
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
@@ -1028,6 +1621,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1044,6 +1638,11 @@
 			"snippet": "<div style=\"position:relative;min-width:0;\" data-dc-tpl=\"25\"> <input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ f.onBlur }}\" autocomplete=\"{{ f.ac }}\" style=\"height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2",
 			"attributes": {
 				"tagName": "div"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>EnquiryForm@468#0/26#3"
+				}
 			}
 		},
 		{
@@ -1060,6 +1659,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form-field-phone",
@@ -1096,6 +1696,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
+			"acceptedDecision": true,
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
@@ -1116,6 +1717,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1132,6 +1734,11 @@
 			"snippet": "<div style=\"grid-column:1 / -1;position:relative;\" data-dc-tpl=\"30\"> <textarea id=\"enq-msg\" value=\"{{ msg.value }}\" sc-camel-on-change=\"{{ msg.onChange }}\" sc-camel-on-focus=\"{{ msg.onFocus }}\" sc-camel-on-blur=\"{{ msg.onBlur }}\" sc-camel-max-length=\"{{ 800 }}\" rows=\"5\" style=\"padding:30px 18px 14px;border-radius:16px;border:1.5px solid {{ msg.border }};background:{{ msg.bg }};font-size:17px;color",
 			"attributes": {
 				"tagName": "div"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>EnquiryForm@468#0/31#0"
+				}
 			}
 		},
 		{
@@ -1148,6 +1755,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form-field-textarea",
@@ -1184,6 +1792,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
+			"acceptedDecision": true,
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
@@ -1204,6 +1813,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
+			"acceptedDecision": true,
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
@@ -1224,6 +1834,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1242,6 +1853,14 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>EnquiryForm@468#0/39#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root>EnquiryForm@468#0/39#1"
+				}
 			}
 		},
 		{
@@ -1250,30 +1869,19 @@
 			"tag": "span",
 			"depth": 2,
 			"words": "Reply by",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"block": null,
+			"action": "remove",
+			"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block",
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"font-weight:700;font-size:16px;margin-right:4px;flex-basis:{{ L.prefBasis }};\" data-dc-tpl=\"37\">Reply by</span>",
-			"attributes": {
-				"text": "Reply by"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 46,
@@ -1289,6 +1897,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -1305,6 +1914,11 @@
 			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ p.onClick }}\" style=\"padding:9px 18px;border-radius:999px;border:1.5px solid {{ p.ring }};background:{{ p.bg }};color:{{ p.fg }};font-weight:700;font-size:15px;cursor:pointer;transition:background .2s,color .2s,border-color .2s;\" data-dc-tpl=\"39\">{{ p.label }}</button>",
 			"attributes": {
 				"label": "Email"
+			},
+			"slots": {
+				".sgs-button__label": {
+					"tpl": "Root>EnquiryForm@468#0/39#0"
+				}
 			}
 		},
 		{
@@ -1321,6 +1935,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -1337,6 +1952,11 @@
 			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ p.onClick }}\" style=\"padding:9px 18px;border-radius:999px;border:1.5px solid {{ p.ring }};background:{{ p.bg }};color:{{ p.fg }};font-weight:700;font-size:15px;cursor:pointer;transition:background .2s,color .2s,border-color .2s;\" data-dc-tpl=\"39\">{{ p.label }}</button>",
 			"attributes": {
 				"label": "Phone"
+			},
+			"slots": {
+				".sgs-button__label": {
+					"tpl": "Root>EnquiryForm@468#0/39#1"
+				}
 			}
 		},
 		{
@@ -1353,6 +1973,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -1369,6 +1990,11 @@
 			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ p.onClick }}\" style=\"padding:9px 18px;border-radius:999px;border:1.5px solid {{ p.ring }};background:{{ p.bg }};color:{{ p.fg }};font-weight:700;font-size:15px;cursor:pointer;transition:background .2s,color .2s,border-color .2s;\" data-dc-tpl=\"39\">{{ p.label }}</button>",
 			"attributes": {
 				"label": "WhatsApp"
+			},
+			"slots": {
+				".sgs-button__label": {
+					"tpl": "Root>EnquiryForm@468#0/39#2"
+				}
 			}
 		},
 		{
@@ -1385,6 +2011,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1403,6 +2030,14 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>EnquiryForm@468#0/41#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root>EnquiryForm@468#0/42#0"
+				}
 			}
 		},
 		{
@@ -1414,18 +2049,18 @@
 			"block": "sgs/text",
 			"action": null,
 			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/text",
-					"score": 0.25,
+					"score": 1,
 					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-10-19: A privacy reassurance line beside the submit button; sgs/text is the only candidate."
 					]
 				}
 			],
@@ -1450,6 +2085,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -1466,6 +2102,11 @@
 			"snippet": "<button type=\"submit\" style=\"width:{{ L.btnW }};justify-content:center;display:inline-flex;align-items:center;gap:10px;background:#0A7EA8;color:#FFFFFF;border:2px solid #0A7EA8;border-radius:999px;padding:15px 30px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 22px -10px rgba(10,126,168,.7);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s;\" style-hover=\"transfor",
 			"attributes": {
 				"label": "Send message"
+			},
+			"slots": {
+				".sgs-button__label": {
+					"tpl": "Root>EnquiryForm@468#0/42#0"
+				}
 			}
 		}
 	]

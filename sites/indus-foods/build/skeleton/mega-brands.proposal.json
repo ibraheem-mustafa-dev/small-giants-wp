@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-28T06:49:52.451Z",
-	"inventory": "2026-10-27T13:52:35.862Z",
-	"source": "http://127.0.0.1:49333/Indus%20Foods%20Website%20v2.dc.html",
+	"generated": "2026-11-02T05:01:19.217Z",
+	"inventory": "2026-10-31T01:40:31.611Z",
+	"source": "http://127.0.0.1:58295/Indus%20Foods%20Website%20v2.dc.html",
 	"surface": "brands-mega-menu",
 	"siteName": null,
 	"surfaceParts": [],
@@ -20,24 +20,159 @@
 		"logo": 0.5,
 		"rule": 1
 	},
-	"builtPost": {
-		"site": "sandybrown",
-		"postType": "sgs_mega_menu",
-		"postId": 4440,
-		"title": "[QA] Indus mega: Brands"
-	},
 	"counts": {
 		"inventoryElements": 28,
 		"parts": 0,
 		"rows": 28,
 		"skeletonNodes": 8,
 		"expandedNodes": 8,
-		"low": 0,
+		"low": 1,
 		"removed": 20,
 		"unresolved": 0,
 		"byRule": {
-			"clientBuiltSurface": 28
+			"surfaceRoot": 1,
+			"megaContainer": 1,
+			"label": 2,
+			"logoGrid": 21,
+			"megaAside": 1
 		}
+	},
+	"partPairing": {
+		"paired": 7,
+		"unpaired": [
+			{
+				"key": "Root/95#0",
+				"block": "sgs/mega-panel",
+				"slot": ".sgs-mega-panel__content > .sgs-mega-group",
+				"reason": "no inner block of this node stands at this place"
+			},
+			{
+				"key": "Root/95#0",
+				"block": "sgs/mega-panel",
+				"slot": ".sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > .sgs-container > .sgs-container__inner > .sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/95#0",
+				"block": "sgs/mega-panel",
+				"slot": ".sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > .sgs-container > .sgs-container__inner > .sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/95#0",
+				"block": "sgs/mega-panel",
+				"slot": ".sgs-mega-panel__eyebrow",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/95#0",
+				"block": "sgs/mega-panel",
+				"slot": ".sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/95#0",
+				"block": "sgs/mega-panel",
+				"slot": ".sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > .sgs-container > .sgs-container__inner > p",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/95#0",
+				"block": "sgs/mega-panel",
+				"slot": ".sgs-mega-panel__content > .sgs-mega-group > .sgs-container",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/95#0",
+				"block": "sgs/mega-panel",
+				"slot": ".sgs-mega-panel__content > .sgs-mega-aside > .sgs-container:nth-of-type(1)",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/95#0",
+				"block": "sgs/mega-panel",
+				"slot": ".sgs-mega-panel__content > .sgs-mega-aside > .sgs-container:nth-of-type(2) > .sgs-container__inner > span",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/95#0",
+				"block": "sgs/mega-panel",
+				"slot": ".sgs-mega-panel__content > .sgs-mega-aside > p:nth-of-type(1)",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/95#0",
+				"block": "sgs/mega-panel",
+				"slot": ".sgs-mega-panel__content > .sgs-mega-aside > .sgs-container:nth-of-type(3) > .sgs-container__inner > .sgs-button",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/95#0",
+				"block": "sgs/mega-panel",
+				"slot": ".sgs-mega-panel__content > .sgs-mega-aside > .sgs-container:nth-of-type(2)",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/96#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/96#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/96#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/98#0",
+				"block": "sgs/gallery",
+				"slot": ".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(1) > .sgs-gallery__caption",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/98#0",
+				"block": "sgs/gallery",
+				"slot": ".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(2) > .sgs-gallery__caption",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/98#0",
+				"block": "sgs/gallery",
+				"slot": ".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(3) > .sgs-gallery__caption",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/98#0",
+				"block": "sgs/gallery",
+				"slot": "@scrim",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/104#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/105#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/105#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon > svg",
+				"reason": ".sgs-button__icon: the draft has no element of its own here"
+			}
+		]
 	},
 	"widthAlternatives": [],
 	"problems": [],
@@ -55,7 +190,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "surfaceRoot",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/mega-panel",
@@ -70,11 +206,10 @@
 			"screenshots": {},
 			"snippet": "<div style=\"display:flex;\" data-dc-tpl=\"95\"> <div style=\"flex:1;min-width:0;padding:26px;\" data-dc-tpl=\"96\"> <div style=\"font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#68727C;margin-bottom:14px;\" data-dc-tpl=\"97\">Our Brands</div> <div style=\"display:grid;grid-template-columns:repeat(4,1fr);gap:10px;\" data-dc-tpl=\"98\"> <sc-for list=\"{{ activeP",
 			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
+			"slots": {
+				".sgs-mega-panel__content > .sgs-mega-aside": {
+					"tpl": "Root/102#0"
+				}
 			}
 		},
 		{
@@ -90,7 +225,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "megaContainer",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -107,11 +243,13 @@
 			"attributes": {
 				"tagName": "div"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/97#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/98#0"
+				}
 			}
 		},
 		{
@@ -127,7 +265,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "label",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/label",
@@ -143,12 +282,6 @@
 			"snippet": "<div style=\"font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#68727C;margin-bottom:14px;\" data-dc-tpl=\"97\">Our Brands</div>",
 			"attributes": {
 				"text": "Our Brands"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
 			}
 		},
 		{
@@ -164,7 +297,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "logoGrid",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/gallery",
@@ -179,11 +313,16 @@
 			"screenshots": {},
 			"snippet": "<div style=\"display:grid;grid-template-columns:repeat(4,1fr);gap:10px;\" data-dc-tpl=\"98\"> <sc-for list=\"{{ activePanel.logos }}\" as=\"logo\" hint-placeholder-count=\"10\" data-dc-tpl=\"99\"> <a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,bor",
 			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
+			"slots": {
+				".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(1)": {
+					"tpl": "Root/100#0"
+				},
+				".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(2)": {
+					"tpl": "Root/100#1"
+				},
+				".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(3)": {
+					"tpl": "Root/100#2"
+				}
 			}
 		},
 		{
@@ -199,19 +338,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "logoGrid",
 			"into": "Root/98#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 5,
@@ -226,19 +359,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "logoGrid",
 			"into": "Root/98#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 6,
@@ -253,19 +380,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "logoGrid",
 			"into": "Root/98#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 7,
@@ -280,19 +401,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "logoGrid",
 			"into": "Root/98#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 8,
@@ -307,19 +422,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "logoGrid",
 			"into": "Root/98#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 9,
@@ -334,19 +443,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "logoGrid",
 			"into": "Root/98#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 10,
@@ -361,19 +464,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "logoGrid",
 			"into": "Root/98#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 11,
@@ -388,19 +485,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "logoGrid",
 			"into": "Root/98#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 12,
@@ -415,19 +506,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "logoGrid",
 			"into": "Root/98#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 13,
@@ -442,19 +527,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "logoGrid",
 			"into": "Root/98#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 14,
@@ -469,19 +548,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "logoGrid",
 			"into": "Root/98#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 15,
@@ -496,19 +569,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "logoGrid",
 			"into": "Root/98#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 16,
@@ -523,19 +590,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "logoGrid",
 			"into": "Root/98#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 17,
@@ -550,19 +611,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "logoGrid",
 			"into": "Root/98#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 18,
@@ -577,19 +632,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "logoGrid",
 			"into": "Root/98#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 19,
@@ -604,19 +653,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "logoGrid",
 			"into": "Root/98#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 20,
@@ -631,19 +674,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "logoGrid",
 			"into": "Root/98#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 21,
@@ -658,19 +695,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "logoGrid",
 			"into": "Root/98#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 22,
@@ -685,19 +716,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "logoGrid",
 			"into": "Root/98#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 23,
@@ -712,19 +737,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "logoGrid",
 			"into": "Root/98#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 24,
@@ -739,7 +758,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "megaAside",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/mega-aside",
@@ -753,13 +773,7 @@
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<div style=\"width:300px;flex-shrink:0;padding:26px;background:#0A7EA8;display:flex;flex-direction:column;justify-content:center;\" data-dc-tpl=\"102\"> <span style=\"display:inline-block;background:#D8CA50;color:#1E2A3C;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:5px 10px;border-radius:3px;margin-bottom:12px;width:fit-content;\" data-dc-tpl=\"103\">Own Brands</spa",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 25,
@@ -774,7 +788,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "label",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/label",
@@ -790,12 +805,6 @@
 			"snippet": "<span style=\"display:inline-block;background:#D8CA50;color:#1E2A3C;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:5px 10px;border-radius:3px;margin-bottom:12px;width:fit-content;\" data-dc-tpl=\"103\">Own Brands</span>",
 			"attributes": {
 				"text": "Own Brands"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
 			}
 		},
 		{
@@ -809,9 +818,10 @@
 			"reason": null,
 			"source": null,
 			"confidence": 0.25,
-			"low": false,
+			"low": true,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -827,12 +837,6 @@
 			"snippet": "<div style=\"font-size:16px;color:#E3EFF4;line-height:1.5;\" data-dc-tpl=\"104\">{{ activePanel.ownDesc }}</div>",
 			"attributes": {
 				"text": "We develop and market our own Sanam range alongside trusted brands like Shan, Green Leaf and The Lemon Tree."
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
 			}
 		},
 		{
@@ -848,7 +852,8 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -867,11 +872,10 @@
 				"label": "View All Brands",
 				"url": "/brands/"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4440,
-				"title": "[QA] Indus mega: Brands"
+			"slots": {
+				".sgs-button__label": {
+					"tpl": "Root/105#0"
+				}
 			}
 		}
 	]

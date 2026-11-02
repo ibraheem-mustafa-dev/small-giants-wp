@@ -55,7 +55,7 @@
 						},
 						"innerBlocks": [
 							{
-								"name": "sgs/text",
+								"name": "sgs/label",
 								"attributes": {
 									"text": "for the mum-to-be & the brand new mum ♥"
 								},
@@ -80,7 +80,8 @@
 							{
 								"name": "sgs/heading",
 								"attributes": {
-									"content": "Gifts she’ll actually eat"
+									"content": "Gifts she’ll actually eat",
+									"level": "h1"
 								},
 								"draftRef": {
 									"tpl": "Root/13#0"
@@ -124,135 +125,143 @@
 								"innerBlocks": []
 							},
 							{
-								"name": "sgs/text",
+								"name": "sgs/container",
 								"attributes": {
-									"text": "What’s the moment?"
+									"tagName": "aside",
+									"anchor": "sgs-shop-filters",
+									"className": "sgs-shop-filters"
 								},
 								"draftRef": {
-									"tpl": "Root/16#0"
+									"tpl": "Root/15#0"
 								},
 								"draftFingerprint": {
 									"tag": "div",
 									"cls": "",
-									"styleHash": "fe6ad7db",
+									"styleHash": "38eb6139",
 									"parentTags": [
 										"main",
 										"section",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "4b2e44f3",
-									"line": 19
-								},
-								"innerBlocks": []
-							},
-							{
-								"name": "sgs/option-picker",
-								"attributes": {},
-								"draftRef": {
-									"tpl": "Root/17#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "2a2f14b5",
-									"parentTags": [
-										"main",
-										"section",
-										"div",
 										"div",
 										"div"
 									],
 									"textHash": "1505",
-									"line": 20
+									"line": 18
 								},
-								"innerBlocks": [],
-								"handover": [
+								"innerBlocks": [
 									{
-										"owner": "behaviour",
-										"kind": "behaviour",
-										"detail": "the choice narrows a list on this page: wire it to the list's filter"
+										"name": "woocommerce/product-filters",
+										"attributes": {},
+										"innerBlocks": [
+											{
+												"name": "woocommerce/product-filter-active",
+												"attributes": {},
+												"innerBlocks": [
+													{
+														"name": "woocommerce/product-filter-removable-chips",
+														"attributes": {},
+														"innerBlocks": []
+													},
+													{
+														"name": "woocommerce/product-filter-clear-button",
+														"attributes": {},
+														"innerBlocks": [
+															{
+																"name": "sgs/button",
+																"attributes": {
+																	"label": "Clear all",
+																	"className": "wp-block-button__link"
+																},
+																"innerBlocks": []
+															}
+														]
+													}
+												]
+											},
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"level": "h3",
+													"content": "What’s the moment?",
+													"className": "sgs-shop-filters__group-heading sgs-filter-open"
+												},
+												"innerBlocks": [],
+												"draftRef": {
+													"tpl": "Root/16#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "fe6ad7db",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "4b2e44f3",
+													"line": 19
+												}
+											},
+											{
+												"name": "woocommerce/product-filter-attribute",
+												"attributes": {
+													"queryType": "or",
+													"showCounts": true,
+													"sortOrder": "menu_order-asc",
+													"displayStyle": "woocommerce/product-filter-chips",
+													"attributeId": 9
+												},
+												"innerBlocks": [
+													{
+														"name": "woocommerce/product-filter-chips",
+														"attributes": {},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"level": "h3",
+													"content": "Budget",
+													"className": "sgs-shop-filters__group-heading sgs-filter-open"
+												},
+												"innerBlocks": [],
+												"draftRef": {
+													"tpl": "Root/20#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "fe6ad7db",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "a02467c0",
+													"line": 21
+												}
+											},
+											{
+												"name": "woocommerce/product-filter-price",
+												"attributes": {},
+												"innerBlocks": [
+													{
+														"name": "woocommerce/product-filter-price-slider",
+														"attributes": {
+															"showInputFields": false
+														},
+														"innerBlocks": []
+													}
+												]
+											}
+										]
 									}
 								]
-							},
-							{
-								"name": "sgs/text",
-								"attributes": {
-									"text": "Budget"
-								},
-								"draftRef": {
-									"tpl": "Root/20#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "fe6ad7db",
-									"parentTags": [
-										"main",
-										"section",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "a02467c0",
-									"line": 21
-								},
-								"innerBlocks": []
-							},
-							{
-								"name": "sgs/option-picker",
-								"attributes": {},
-								"draftRef": {
-									"tpl": "Root/21#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "2a2f14b5",
-									"parentTags": [
-										"main",
-										"section",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 22
-								},
-								"innerBlocks": [],
-								"handover": [
-									{
-										"owner": "behaviour",
-										"kind": "behaviour",
-										"detail": "the choice narrows a list on this page: wire it to the list's filter"
-									}
-								]
-							},
-							{
-								"name": "sgs/button",
-								"attributes": {
-									"label": "Show 4 gifts ↓",
-									"url": "#results"
-								},
-								"draftRef": {
-									"tpl": "Root/24#0"
-								},
-								"draftFingerprint": {
-									"tag": "a",
-									"cls": "scp1",
-									"styleHash": "1fd4209a",
-									"parentTags": [
-										"main",
-										"section",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "64bb8a6e",
-									"line": 23
-								},
-								"innerBlocks": []
 							},
 							{
 								"name": "sgs/container",
@@ -343,7 +352,15 @@
 												},
 												"innerBlocks": []
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/27#0"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/28#0"
+											}
+										}
 									},
 									{
 										"name": "sgs/container",
@@ -439,13 +456,42 @@
 												},
 												"innerBlocks": []
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/31#0"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/32#0"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/26#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/29#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/12#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/13#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-hero__content": {
+						"tpl": "Root/9#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -489,7 +535,8 @@
 							{
 								"name": "sgs/heading",
 								"attributes": {
-									"content": "Gifts for “just had a baby”"
+									"content": "Gifts for “just had a baby”",
+									"level": "h2"
 								},
 								"draftRef": {
 									"tpl": "Root/36#0"
@@ -509,1220 +556,80 @@
 								"innerBlocks": []
 							},
 							{
-								"name": "sgs/container",
+								"name": "woocommerce/product-collection",
 								"attributes": {
+									"queryId": 0,
+									"query": {
+										"inherit": false,
+										"perPage": 4,
+										"isProductCollectionBlock": true
+									},
 									"tagName": "div",
-									"layout": "grid"
-								},
-								"draftRef": {
-									"tpl": "Root/37#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "15d72e31",
-									"parentTags": [
-										"main",
-										"section",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 41
+									"displayLayout": {
+										"type": "flex",
+										"columns": 4,
+										"shrinkColumns": true
+									},
+									"queryContextIncludes": [
+										"collection"
+									]
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div"
-										},
-										"draftRef": {
-											"tpl": "Root/39#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "73effcfd",
-											"parentTags": [
-												"main",
-												"section",
-												"div",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 43
-										},
+										"name": "woocommerce/product-template",
+										"attributes": {},
 										"innerBlocks": [
 											{
-												"name": "sgs/container",
+												"name": "sgs/product-card",
 												"attributes": {
-													"tagName": "div"
+													"sourceMode": "wc-product"
 												},
+												"innerBlocks": [],
 												"draftRef": {
-													"tpl": "Root/40#0"
+													"tpl": "Root/39#0"
 												},
 												"draftFingerprint": {
 													"tag": "div",
-													"cls": "sc-host",
-													"styleHash": "1505",
+													"cls": "",
+													"styleHash": "73effcfd",
 													"parentTags": [
 														"main",
 														"section",
-														"div",
 														"div",
 														"div"
 													],
 													"textHash": "1505",
 													"line": 43
 												},
-												"innerBlocks": [
-													{
-														"name": "sgs/container",
-														"attributes": {
-															"tagName": "div",
-															"layout": "stack"
-														},
-														"draftRef": {
-															"tpl": "Root>ProductCard@40#0/0#0"
-														},
-														"draftFingerprint": {
-															"tag": "div",
-															"cls": "scpe",
-															"styleHash": "84143dc9",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"div",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 2
-														},
-														"innerBlocks": [
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "Build your own"
-																},
-																"draftRef": {
-																	"tpl": "Root>ProductCard@40#0/1#0"
-																},
-																"draftFingerprint": {
-																	"tag": "a",
-																	"cls": "",
-																	"styleHash": "94b88499",
-																	"parentTags": [
-																		"main",
-																		"section",
-																		"div",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "1505",
-																	"line": 3
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/container",
-																"attributes": {
-																	"tagName": "div",
-																	"layout": "stack"
-																},
-																"draftRef": {
-																	"tpl": "Root>ProductCard@40#0/4#0"
-																},
-																"draftFingerprint": {
-																	"tag": "div",
-																	"cls": "",
-																	"styleHash": "2820ce14",
-																	"parentTags": [
-																		"main",
-																		"section",
-																		"div",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "1505",
-																	"line": 8
-																},
-																"innerBlocks": [
-																	{
-																		"name": "sgs/button",
-																		"attributes": {
-																			"label": "Zookies",
-																			"url": "/product/zookies/"
-																		},
-																		"draftRef": {
-																			"tpl": "Root>ProductCard@40#0/5#0"
-																		},
-																		"draftFingerprint": {
-																			"tag": "a",
-																			"cls": "",
-																			"styleHash": "b5b0ab3d",
-																			"parentTags": [
-																				"main",
-																				"section",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div"
-																			],
-																			"textHash": "a97420cb",
-																			"line": 9
-																		},
-																		"innerBlocks": []
-																	},
-																	{
-																		"name": "sgs/text",
-																		"attributes": {
-																			"text": "Our giant lactation cookie, baked to order in the flavour you pick."
-																		},
-																		"draftRef": {
-																			"tpl": "Root>ProductCard@40#0/7#0"
-																		},
-																		"draftFingerprint": {
-																			"tag": "p",
-																			"cls": "",
-																			"styleHash": "fd1cab74",
-																			"parentTags": [
-																				"main",
-																				"section",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div"
-																			],
-																			"textHash": "23d7703c",
-																			"line": 11
-																		},
-																		"innerBlocks": []
-																	},
-																	{
-																		"name": "sgs/container",
-																		"attributes": {
-																			"tagName": "div",
-																			"layout": "flex"
-																		},
-																		"draftRef": {
-																			"tpl": "Root>ProductCard@40#0/8#0"
-																		},
-																		"draftFingerprint": {
-																			"tag": "div",
-																			"cls": "",
-																			"styleHash": "eb982417",
-																			"parentTags": [
-																				"main",
-																				"section",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div"
-																			],
-																			"textHash": "1505",
-																			"line": 13
-																		},
-																		"innerBlocks": [
-																			{
-																				"name": "sgs/text",
-																				"attributes": {
-																					"text": "from £9.50"
-																				},
-																				"draftRef": {
-																					"tpl": "Root>ProductCard@40#0/9#0"
-																				},
-																				"draftFingerprint": {
-																					"tag": "span",
-																					"cls": "",
-																					"styleHash": "92425b87",
-																					"parentTags": [
-																						"main",
-																						"section",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div"
-																					],
-																					"textHash": "59769a22",
-																					"line": 14
-																				},
-																				"innerBlocks": []
-																			},
-																			{
-																				"name": "sgs/text",
-																				"attributes": {
-																					"text": "£1.19 a cookie"
-																				},
-																				"draftRef": {
-																					"tpl": "Root>ProductCard@40#0/10#0"
-																				},
-																				"draftFingerprint": {
-																					"tag": "span",
-																					"cls": "",
-																					"styleHash": "feea9976",
-																					"parentTags": [
-																						"main",
-																						"section",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div"
-																					],
-																					"textHash": "314c6a14",
-																					"line": 15
-																				},
-																				"innerBlocks": []
-																			}
-																		]
-																	},
-																	{
-																		"name": "sgs/button",
-																		"attributes": {
-																			"label": "Build your box"
-																		},
-																		"draftRef": {
-																			"tpl": "Root>ProductCard@40#0/11#0"
-																		},
-																		"draftFingerprint": {
-																			"tag": "button",
-																			"cls": "scp9 scpa",
-																			"styleHash": "b47beac4",
-																			"parentTags": [
-																				"main",
-																				"section",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div"
-																			],
-																			"textHash": "7a4fe9f7",
-																			"line": 17
-																		},
-																		"innerBlocks": []
-																	}
-																]
-															}
-														]
+												"draftSlots": {
+													".sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__title": {
+														"tpl": "Root>ProductCard@40#0/1#0"
+													},
+													".sgs-product-card__body": {
+														"tpl": "Root/40#0"
+													},
+													".sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__attribute-tag": {
+														"tpl": "Root>ProductCard@40#0/4#0"
 													}
-												]
-											}
-										]
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div"
-										},
-										"draftRef": {
-											"tpl": "Root/39#1"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "73effcfd",
-											"parentTags": [
-												"main",
-												"section",
-												"div",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 43
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div"
-												},
-												"draftRef": {
-													"tpl": "Root/40#1"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "sc-host",
-													"styleHash": "1505",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 43
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/container",
-														"attributes": {
-															"tagName": "div",
-															"layout": "stack"
-														},
-														"draftRef": {
-															"tpl": "Root>ProductCard@40#1/0#0"
-														},
-														"draftFingerprint": {
-															"tag": "div",
-															"cls": "scpe",
-															"styleHash": "95a16264",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"div",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 2
-														},
-														"innerBlocks": [
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "New? Start here"
-																},
-																"draftRef": {
-																	"tpl": "Root>ProductCard@40#1/1#0"
-																},
-																"draftFingerprint": {
-																	"tag": "a",
-																	"cls": "",
-																	"styleHash": "f32b036e",
-																	"parentTags": [
-																		"main",
-																		"section",
-																		"div",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "1505",
-																	"line": 3
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/container",
-																"attributes": {
-																	"tagName": "div",
-																	"layout": "stack"
-																},
-																"draftRef": {
-																	"tpl": "Root>ProductCard@40#1/4#0"
-																},
-																"draftFingerprint": {
-																	"tag": "div",
-																	"cls": "",
-																	"styleHash": "2820ce14",
-																	"parentTags": [
-																		"main",
-																		"section",
-																		"div",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "1505",
-																	"line": 8
-																},
-																"innerBlocks": [
-																	{
-																		"name": "sgs/button",
-																		"attributes": {
-																			"label": "Taster Trio",
-																			"url": "/product/taster-trio/"
-																		},
-																		"draftRef": {
-																			"tpl": "Root>ProductCard@40#1/5#0"
-																		},
-																		"draftFingerprint": {
-																			"tag": "a",
-																			"cls": "",
-																			"styleHash": "b5b0ab3d",
-																			"parentTags": [
-																				"main",
-																				"section",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div"
-																			],
-																			"textHash": "70e26b00",
-																			"line": 9
-																		},
-																		"innerBlocks": []
-																	},
-																	{
-																		"name": "sgs/text",
-																		"attributes": {
-																			"text": "3 Classic Zookies to try. Postage included, fits through the letterbox."
-																		},
-																		"draftRef": {
-																			"tpl": "Root>ProductCard@40#1/7#0"
-																		},
-																		"draftFingerprint": {
-																			"tag": "p",
-																			"cls": "",
-																			"styleHash": "fd1cab74",
-																			"parentTags": [
-																				"main",
-																				"section",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div"
-																			],
-																			"textHash": "a17944b6",
-																			"line": 11
-																		},
-																		"innerBlocks": []
-																	},
-																	{
-																		"name": "sgs/container",
-																		"attributes": {
-																			"tagName": "div",
-																			"layout": "flex"
-																		},
-																		"draftRef": {
-																			"tpl": "Root>ProductCard@40#1/8#0"
-																		},
-																		"draftFingerprint": {
-																			"tag": "div",
-																			"cls": "",
-																			"styleHash": "eb982417",
-																			"parentTags": [
-																				"main",
-																				"section",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div"
-																			],
-																			"textHash": "1505",
-																			"line": 13
-																		},
-																		"innerBlocks": [
-																			{
-																				"name": "sgs/text",
-																				"attributes": {
-																					"text": "£5"
-																				},
-																				"draftRef": {
-																					"tpl": "Root>ProductCard@40#1/9#0"
-																				},
-																				"draftFingerprint": {
-																					"tag": "span",
-																					"cls": "",
-																					"styleHash": "92425b87",
-																					"parentTags": [
-																						"main",
-																						"section",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div"
-																					],
-																					"textHash": "5955f3",
-																					"line": 14
-																				},
-																				"innerBlocks": []
-																			},
-																			{
-																				"name": "sgs/text",
-																				"attributes": {
-																					"text": "postage included"
-																				},
-																				"draftRef": {
-																					"tpl": "Root>ProductCard@40#1/10#0"
-																				},
-																				"draftFingerprint": {
-																					"tag": "span",
-																					"cls": "",
-																					"styleHash": "feea9976",
-																					"parentTags": [
-																						"main",
-																						"section",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div"
-																					],
-																					"textHash": "e29dd066",
-																					"line": 15
-																				},
-																				"innerBlocks": []
-																			}
-																		]
-																	},
-																	{
-																		"name": "sgs/button",
-																		"attributes": {
-																			"label": "Add to basket"
-																		},
-																		"draftRef": {
-																			"tpl": "Root>ProductCard@40#1/11#0"
-																		},
-																		"draftFingerprint": {
-																			"tag": "button",
-																			"cls": "scp9 scpa",
-																			"styleHash": "5bd0084d",
-																			"parentTags": [
-																				"main",
-																				"section",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div"
-																			],
-																			"textHash": "31c89e55",
-																			"line": 17
-																		},
-																		"innerBlocks": []
-																	}
-																]
-															}
-														]
-													}
-												]
-											}
-										]
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div"
-										},
-										"draftRef": {
-											"tpl": "Root/39#2"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "73effcfd",
-											"parentTags": [
-												"main",
-												"section",
-												"div",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 43
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div"
-												},
-												"draftRef": {
-													"tpl": "Root/40#2"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "sc-host",
-													"styleHash": "1505",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 43
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/container",
-														"attributes": {
-															"tagName": "div",
-															"layout": "stack"
-														},
-														"draftRef": {
-															"tpl": "Root>ProductCard@40#2/0#0"
-														},
-														"draftFingerprint": {
-															"tag": "div",
-															"cls": "scpe",
-															"styleHash": "d0e900f0",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"div",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 2
-														},
-														"innerBlocks": [
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "Gift favourite"
-																},
-																"draftRef": {
-																	"tpl": "Root>ProductCard@40#2/1#0"
-																},
-																"draftFingerprint": {
-																	"tag": "a",
-																	"cls": "",
-																	"styleHash": "94105535",
-																	"parentTags": [
-																		"main",
-																		"section",
-																		"div",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "1505",
-																	"line": 3
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/container",
-																"attributes": {
-																	"tagName": "div",
-																	"layout": "stack"
-																},
-																"draftRef": {
-																	"tpl": "Root>ProductCard@40#2/4#0"
-																},
-																"draftFingerprint": {
-																	"tag": "div",
-																	"cls": "",
-																	"styleHash": "2820ce14",
-																	"parentTags": [
-																		"main",
-																		"section",
-																		"div",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "1505",
-																	"line": 8
-																},
-																"innerBlocks": [
-																	{
-																		"name": "sgs/button",
-																		"attributes": {
-																			"label": "New Baby Gift Box",
-																			"url": "/product/new-baby-gift-box/"
-																		},
-																		"draftRef": {
-																			"tpl": "Root>ProductCard@40#2/5#0"
-																		},
-																		"draftFingerprint": {
-																			"tag": "a",
-																			"cls": "",
-																			"styleHash": "b5b0ab3d",
-																			"parentTags": [
-																				"main",
-																				"section",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div"
-																			],
-																			"textHash": "eacd19e8",
-																			"line": 9
-																		},
-																		"innerBlocks": []
-																	},
-																	{
-																		"name": "sgs/text",
-																		"attributes": {
-																			"text": "A mix of Zookies in a gift box, sent with your message."
-																		},
-																		"draftRef": {
-																			"tpl": "Root>ProductCard@40#2/7#0"
-																		},
-																		"draftFingerprint": {
-																			"tag": "p",
-																			"cls": "",
-																			"styleHash": "fd1cab74",
-																			"parentTags": [
-																				"main",
-																				"section",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div"
-																			],
-																			"textHash": "ab7465a6",
-																			"line": 11
-																		},
-																		"innerBlocks": []
-																	},
-																	{
-																		"name": "sgs/container",
-																		"attributes": {
-																			"tagName": "div",
-																			"layout": "flex"
-																		},
-																		"draftRef": {
-																			"tpl": "Root>ProductCard@40#2/8#0"
-																		},
-																		"draftFingerprint": {
-																			"tag": "div",
-																			"cls": "",
-																			"styleHash": "eb982417",
-																			"parentTags": [
-																				"main",
-																				"section",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div"
-																			],
-																			"textHash": "1505",
-																			"line": 13
-																		},
-																		"innerBlocks": [
-																			{
-																				"name": "sgs/text",
-																				"attributes": {
-																					"text": "£15"
-																				},
-																				"draftRef": {
-																					"tpl": "Root>ProductCard@40#2/9#0"
-																				},
-																				"draftFingerprint": {
-																					"tag": "span",
-																					"cls": "",
-																					"styleHash": "92425b87",
-																					"parentTags": [
-																						"main",
-																						"section",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div"
-																					],
-																					"textHash": "b8414e2",
-																					"line": 14
-																				},
-																				"innerBlocks": []
-																			},
-																			{
-																				"name": "sgs/text",
-																				"attributes": {
-																					"text": "gift-boxed"
-																				},
-																				"draftRef": {
-																					"tpl": "Root>ProductCard@40#2/10#0"
-																				},
-																				"draftFingerprint": {
-																					"tag": "span",
-																					"cls": "",
-																					"styleHash": "feea9976",
-																					"parentTags": [
-																						"main",
-																						"section",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div"
-																					],
-																					"textHash": "f6ec68c0",
-																					"line": 15
-																				},
-																				"innerBlocks": []
-																			}
-																		]
-																	},
-																	{
-																		"name": "sgs/button",
-																		"attributes": {
-																			"label": "Add to basket"
-																		},
-																		"draftRef": {
-																			"tpl": "Root>ProductCard@40#2/11#0"
-																		},
-																		"draftFingerprint": {
-																			"tag": "button",
-																			"cls": "scp9 scpa",
-																			"styleHash": "5bd0084d",
-																			"parentTags": [
-																				"main",
-																				"section",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div"
-																			],
-																			"textHash": "31c89e55",
-																			"line": 17
-																		},
-																		"innerBlocks": []
-																	}
-																]
-															}
-														]
-													}
-												]
-											}
-										]
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div"
-										},
-										"draftRef": {
-											"tpl": "Root/39#3"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "73effcfd",
-											"parentTags": [
-												"main",
-												"section",
-												"div",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 43
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div"
-												},
-												"draftRef": {
-													"tpl": "Root/40#3"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "sc-host",
-													"styleHash": "1505",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 43
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/container",
-														"attributes": {
-															"tagName": "div",
-															"layout": "stack"
-														},
-														"draftRef": {
-															"tpl": "Root>ProductCard@40#3/0#0"
-														},
-														"draftFingerprint": {
-															"tag": "div",
-															"cls": "scpe",
-															"styleHash": "4dccaa38",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"div",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 2
-														},
-														"innerBlocks": [
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "Most thoughtful"
-																},
-																"draftRef": {
-																	"tpl": "Root>ProductCard@40#3/1#0"
-																},
-																"draftFingerprint": {
-																	"tag": "a",
-																	"cls": "",
-																	"styleHash": "7de396ec",
-																	"parentTags": [
-																		"main",
-																		"section",
-																		"div",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "1505",
-																	"line": 3
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/container",
-																"attributes": {
-																	"tagName": "div",
-																	"layout": "stack"
-																},
-																"draftRef": {
-																	"tpl": "Root>ProductCard@40#3/4#0"
-																},
-																"draftFingerprint": {
-																	"tag": "div",
-																	"cls": "",
-																	"styleHash": "2820ce14",
-																	"parentTags": [
-																		"main",
-																		"section",
-																		"div",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "1505",
-																	"line": 8
-																},
-																"innerBlocks": [
-																	{
-																		"name": "sgs/button",
-																		"attributes": {
-																			"label": "40-Day Care Bundle",
-																			"url": "/product/40-day-care-bundle/"
-																		},
-																		"draftRef": {
-																			"tpl": "Root>ProductCard@40#3/5#0"
-																		},
-																		"draftFingerprint": {
-																			"tag": "a",
-																			"cls": "",
-																			"styleHash": "b5b0ab3d",
-																			"parentTags": [
-																				"main",
-																				"section",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div"
-																			],
-																			"textHash": "550b4971",
-																			"line": 9
-																		},
-																		"innerBlocks": []
-																	},
-																	{
-																		"name": "sgs/text",
-																		"attributes": {
-																			"text": "Six weekly deliveries for the 40-day postnatal window."
-																		},
-																		"draftRef": {
-																			"tpl": "Root>ProductCard@40#3/7#0"
-																		},
-																		"draftFingerprint": {
-																			"tag": "p",
-																			"cls": "",
-																			"styleHash": "fd1cab74",
-																			"parentTags": [
-																				"main",
-																				"section",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div"
-																			],
-																			"textHash": "8e5f5fef",
-																			"line": 11
-																		},
-																		"innerBlocks": []
-																	},
-																	{
-																		"name": "sgs/container",
-																		"attributes": {
-																			"tagName": "div",
-																			"layout": "flex"
-																		},
-																		"draftRef": {
-																			"tpl": "Root>ProductCard@40#3/8#0"
-																		},
-																		"draftFingerprint": {
-																			"tag": "div",
-																			"cls": "",
-																			"styleHash": "eb982417",
-																			"parentTags": [
-																				"main",
-																				"section",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div"
-																			],
-																			"textHash": "1505",
-																			"line": 13
-																		},
-																		"innerBlocks": [
-																			{
-																				"name": "sgs/text",
-																				"attributes": {
-																					"text": "£42"
-																				},
-																				"draftRef": {
-																					"tpl": "Root>ProductCard@40#3/9#0"
-																				},
-																				"draftFingerprint": {
-																					"tag": "span",
-																					"cls": "",
-																					"styleHash": "92425b87",
-																					"parentTags": [
-																						"main",
-																						"section",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div"
-																					],
-																					"textHash": "b841400",
-																					"line": 14
-																				},
-																				"innerBlocks": []
-																			},
-																			{
-																				"name": "sgs/text",
-																				"attributes": {
-																					"text": "6 deliveries"
-																				},
-																				"draftRef": {
-																					"tpl": "Root>ProductCard@40#3/10#0"
-																				},
-																				"draftFingerprint": {
-																					"tag": "span",
-																					"cls": "",
-																					"styleHash": "feea9976",
-																					"parentTags": [
-																						"main",
-																						"section",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div"
-																					],
-																					"textHash": "57c181e9",
-																					"line": 15
-																				},
-																				"innerBlocks": []
-																			}
-																		]
-																	},
-																	{
-																		"name": "sgs/button",
-																		"attributes": {
-																			"label": "Add to basket"
-																		},
-																		"draftRef": {
-																			"tpl": "Root>ProductCard@40#3/11#0"
-																		},
-																		"draftFingerprint": {
-																			"tag": "button",
-																			"cls": "scp9 scpa",
-																			"styleHash": "5bd0084d",
-																			"parentTags": [
-																				"main",
-																				"section",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div"
-																			],
-																			"textHash": "31c89e55",
-																			"line": 17
-																		},
-																		"innerBlocks": []
-																	}
-																]
-															}
-														]
-													}
-												]
+												}
 											}
 										]
 									}
 								]
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/36#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/35#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -1764,7 +671,7 @@
 						},
 						"innerBlocks": [
 							{
-								"name": "sgs/text",
+								"name": "sgs/label",
 								"attributes": {
 									"text": "easy as that"
 								},
@@ -1788,7 +695,8 @@
 							{
 								"name": "sgs/heading",
 								"attributes": {
-									"content": "How gifting works"
+									"content": "How gifting works",
+									"level": "h2"
 								},
 								"draftRef": {
 									"tpl": "Root/47#0"
@@ -1852,7 +760,7 @@
 										},
 										"innerBlocks": [
 											{
-												"name": "sgs/text",
+												"name": "sgs/label",
 												"attributes": {
 													"text": "1"
 												},
@@ -1876,9 +784,9 @@
 												"innerBlocks": []
 											},
 											{
-												"name": "sgs/text",
+												"name": "sgs/heading",
 												"attributes": {
-													"text": "Pick a gift"
+													"content": "Pick a gift"
 												},
 												"draftRef": {
 													"tpl": "Root/52#0"
@@ -1923,7 +831,15 @@
 												},
 												"innerBlocks": []
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/51#0"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/52#0"
+											}
+										}
 									},
 									{
 										"name": "sgs/container",
@@ -1948,7 +864,7 @@
 										},
 										"innerBlocks": [
 											{
-												"name": "sgs/text",
+												"name": "sgs/label",
 												"attributes": {
 													"text": "2"
 												},
@@ -1972,9 +888,9 @@
 												"innerBlocks": []
 											},
 											{
-												"name": "sgs/text",
+												"name": "sgs/heading",
 												"attributes": {
-													"text": "Write your note"
+													"content": "Write your note"
 												},
 												"draftRef": {
 													"tpl": "Root/52#1"
@@ -2019,7 +935,15 @@
 												},
 												"innerBlocks": []
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/51#1"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/52#1"
+											}
+										}
 									},
 									{
 										"name": "sgs/container",
@@ -2044,7 +968,7 @@
 										},
 										"innerBlocks": [
 											{
-												"name": "sgs/text",
+												"name": "sgs/label",
 												"attributes": {
 													"text": "3"
 												},
@@ -2068,9 +992,9 @@
 												"innerBlocks": []
 											},
 											{
-												"name": "sgs/text",
+												"name": "sgs/heading",
 												"attributes": {
-													"text": "We bake and post"
+													"content": "We bake and post"
 												},
 												"draftRef": {
 													"tpl": "Root/52#2"
@@ -2115,13 +1039,42 @@
 												},
 												"innerBlocks": []
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/51#2"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/52#2"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/50#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/50#1"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/46#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/47#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/45#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -2167,7 +1120,7 @@
 						},
 						"innerBlocks": [
 							{
-								"name": "sgs/text",
+								"name": "sgs/label",
 								"attributes": {
 									"text": "go on, have a go"
 								},
@@ -2192,7 +1145,8 @@
 							{
 								"name": "sgs/heading",
 								"attributes": {
-									"content": "Write her a note"
+									"content": "Write her a note",
+									"level": "h2"
 								},
 								"draftRef": {
 									"tpl": "Root/58#0"
@@ -2322,7 +1276,15 @@
 									}
 								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/57#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/58#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -2444,9 +1406,25 @@
 								},
 								"innerBlocks": []
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/68#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/69#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/56#0"
+					},
+					".sgs-container__inner > p:nth-of-type(2)": {
+						"tpl": "Root/66#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -2521,9 +1499,9 @@
 						},
 						"innerBlocks": [
 							{
-								"name": "sgs/heading",
+								"name": "sgs/label",
 								"attributes": {
-									"content": "baby shower coming up?"
+									"text": "baby shower coming up?"
 								},
 								"draftRef": {
 									"tpl": "Root/76#0"
@@ -2544,9 +1522,9 @@
 								"innerBlocks": []
 							},
 							{
-								"name": "sgs/text",
+								"name": "sgs/heading",
 								"attributes": {
-									"text": "Give it now, she bakes it later"
+									"content": "Give it now, she bakes it later"
 								},
 								"draftRef": {
 									"tpl": "Root/77#0"
@@ -2683,14 +1661,51 @@
 											"textHash": "b841402",
 											"line": 93
 										},
-										"innerBlocks": []
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-button__label": {
+												"tpl": "Root/82#0"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/80#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/81#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/76#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/77#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/74#0"
+					},
+					".sgs-container__inner > p:nth-of-type(2)": {
+						"tpl": "Root/75#0"
+					}
+				}
 			}
-		]
+		],
+		"draftSlots": {
+			".sgs-container__inner > p:nth-of-type(1)": {
+				"tpl": "Root/9#0"
+			},
+			".sgs-container__inner > p:nth-of-type(2)": {
+				"tpl": "Root/34#0"
+			}
+		}
 	}
 ]

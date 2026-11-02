@@ -5,7 +5,7 @@
 			"tagName": "main"
 		},
 		"draftRef": {
-			"tpl": "Root/248#0"
+			"tpl": "Root/246#0"
 		},
 		"draftFingerprint": {
 			"tag": "main",
@@ -13,7 +13,7 @@
 			"styleHash": "41bf7980",
 			"parentTags": [],
 			"textHash": "1505",
-			"line": 905
+			"line": 902
 		},
 		"innerBlocks": [
 			{
@@ -22,7 +22,7 @@
 					"layout": "flex"
 				},
 				"draftRef": {
-					"tpl": "Root/249#0"
+					"tpl": "Root/247#0"
 				},
 				"draftFingerprint": {
 					"tag": "div",
@@ -32,7 +32,7 @@
 						"main"
 					],
 					"textHash": "1505",
-					"line": 906
+					"line": 903
 				},
 				"innerBlocks": [
 					{
@@ -41,7 +41,7 @@
 							"text": "Shop"
 						},
 						"draftRef": {
-							"tpl": "Root/251#0"
+							"tpl": "Root/249#0"
 						},
 						"draftFingerprint": {
 							"tag": "p",
@@ -53,17 +53,18 @@
 								"div"
 							],
 							"textHash": "7c8a2f61",
-							"line": 908
+							"line": 905
 						},
 						"innerBlocks": []
 					},
 					{
 						"name": "sgs/heading",
 						"attributes": {
-							"content": "Sunglasses"
+							"content": "Sunglasses",
+							"level": "h1"
 						},
 						"draftRef": {
-							"tpl": "Root/252#0"
+							"tpl": "Root/250#0"
 						},
 						"draftFingerprint": {
 							"tag": "h1",
@@ -75,7 +76,7 @@
 								"div"
 							],
 							"textHash": "a820011",
-							"line": 909
+							"line": 906
 						},
 						"innerBlocks": []
 					},
@@ -86,7 +87,7 @@
 							"layout": "flex"
 						},
 						"draftRef": {
-							"tpl": "Root/253#0"
+							"tpl": "Root/251#0"
 						},
 						"draftFingerprint": {
 							"tag": "div",
@@ -97,7 +98,7 @@
 								"div"
 							],
 							"textHash": "1505",
-							"line": 911
+							"line": 908
 						},
 						"innerBlocks": [
 							{
@@ -106,7 +107,7 @@
 									"label": "Filter"
 								},
 								"draftRef": {
-									"tpl": "Root/256#0"
+									"tpl": "Root/254#0"
 								},
 								"draftFingerprint": {
 									"tag": "button",
@@ -118,40 +119,28 @@
 										"div"
 									],
 									"textHash": "96834005",
-									"line": 914
-								},
-								"innerBlocks": []
-							},
-							{
-								"name": "sgs/form-field-select",
-								"attributes": {
-									"label": "16 frames"
-								},
-								"draftRef": {
-									"tpl": "Root/257#0"
-								},
-								"draftFingerprint": {
-									"tag": "select",
-									"cls": "",
-									"styleHash": "dc12ff9",
-									"parentTags": [
-										"main",
-										"div",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 916
+									"line": 911
 								},
 								"innerBlocks": [],
 								"draftSlots": {
-									".sgs-form-field__input": {
-										"tpl": "Root/257#0"
+									".sgs-button__label": {
+										"tpl": "Root/254#0"
 									}
 								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/254#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-hero__content": {
+						"tpl": "Root/248#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -160,7 +149,7 @@
 					"layout": "grid"
 				},
 				"draftRef": {
-					"tpl": "Root/269#0"
+					"tpl": "Root/267#0"
 				},
 				"draftFingerprint": {
 					"tag": "div",
@@ -170,7 +159,7 @@
 						"main"
 					],
 					"textHash": "1505",
-					"line": 935
+					"line": 932
 				},
 				"innerBlocks": [
 					{
@@ -181,7 +170,7 @@
 							"className": "sgs-shop-filters"
 						},
 						"draftRef": {
-							"tpl": "Root/271#0"
+							"tpl": "Root/269#0"
 						},
 						"draftFingerprint": {
 							"tag": "aside",
@@ -192,7 +181,7 @@
 								"div"
 							],
 							"textHash": "1505",
-							"line": 937
+							"line": 934
 						},
 						"innerBlocks": [
 							{
@@ -233,7 +222,7 @@
 										},
 										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/280#0"
+											"tpl": "Root/278#0"
 										},
 										"draftFingerprint": {
 											"tag": "span",
@@ -248,7 +237,7 @@
 												"button"
 											],
 											"textHash": "98d85eba",
-											"line": 949
+											"line": 946
 										}
 									},
 									{
@@ -277,7 +266,7 @@
 										},
 										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/280#1"
+											"tpl": "Root/278#1"
 										},
 										"draftFingerprint": {
 											"tag": "span",
@@ -292,7 +281,7 @@
 												"button"
 											],
 											"textHash": "7c8a2900",
-											"line": 949
+											"line": 946
 										}
 									},
 									{
@@ -321,7 +310,7 @@
 										},
 										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/280#2"
+											"tpl": "Root/278#2"
 										},
 										"draftFingerprint": {
 											"tag": "span",
@@ -336,7 +325,7 @@
 												"button"
 											],
 											"textHash": "a1c185ad",
-											"line": 949
+											"line": 946
 										}
 									},
 									{
@@ -365,7 +354,7 @@
 										},
 										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/280#3"
+											"tpl": "Root/278#3"
 										},
 										"draftFingerprint": {
 											"tag": "span",
@@ -380,7 +369,7 @@
 												"button"
 											],
 											"textHash": "dd328c8",
-											"line": 949
+											"line": 946
 										}
 									},
 									{
@@ -405,7 +394,7 @@
 										},
 										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/280#4"
+											"tpl": "Root/278#4"
 										},
 										"draftFingerprint": {
 											"tag": "span",
@@ -420,7 +409,7 @@
 												"button"
 											],
 											"textHash": "c9eeb7e",
-											"line": 949
+											"line": 946
 										}
 									},
 									{
@@ -447,7 +436,7 @@
 										},
 										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/280#5"
+											"tpl": "Root/278#5"
 										},
 										"draftFingerprint": {
 											"tag": "span",
@@ -462,7 +451,7 @@
 												"button"
 											],
 											"textHash": "dc153f2",
-											"line": 949
+											"line": 946
 										}
 									},
 									{
@@ -491,7 +480,7 @@
 										},
 										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/280#6"
+											"tpl": "Root/278#6"
 										},
 										"draftFingerprint": {
 											"tag": "span",
@@ -506,7 +495,7 @@
 												"button"
 											],
 											"textHash": "326770ee",
-											"line": 949
+											"line": 946
 										}
 									},
 									{
@@ -535,7 +524,7 @@
 										},
 										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/280#7"
+											"tpl": "Root/278#7"
 										},
 										"draftFingerprint": {
 											"tag": "span",
@@ -550,7 +539,7 @@
 												"button"
 											],
 											"textHash": "29b1e820",
-											"line": 949
+											"line": 946
 										}
 									},
 									{
@@ -579,7 +568,7 @@
 										},
 										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/280#8"
+											"tpl": "Root/278#8"
 										},
 										"draftFingerprint": {
 											"tag": "span",
@@ -594,7 +583,7 @@
 												"button"
 											],
 											"textHash": "d4416a8",
-											"line": 949
+											"line": 946
 										}
 									},
 									{
@@ -623,7 +612,7 @@
 										},
 										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/280#9"
+											"tpl": "Root/278#9"
 										},
 										"draftFingerprint": {
 											"tag": "span",
@@ -638,7 +627,7 @@
 												"button"
 											],
 											"textHash": "64f694b4",
-											"line": 949
+											"line": 946
 										}
 									},
 									{
@@ -668,7 +657,7 @@
 							"tagName": "div"
 						},
 						"draftRef": {
-							"tpl": "Root/323#0"
+							"tpl": "Root/321#0"
 						},
 						"draftFingerprint": {
 							"tag": "div",
@@ -679,7 +668,7 @@
 								"div"
 							],
 							"textHash": "1505",
-							"line": 1021
+							"line": 1018
 						},
 						"innerBlocks": [
 							{
@@ -703,6 +692,25 @@
 								},
 								"innerBlocks": [
 									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"className": "sgs-shop-toolbar"
+										},
+										"innerBlocks": [
+											{
+												"name": "woocommerce/product-results-count",
+												"attributes": {},
+												"innerBlocks": []
+											},
+											{
+												"name": "woocommerce/catalog-sorting",
+												"attributes": {},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
 										"name": "woocommerce/product-template",
 										"attributes": {},
 										"innerBlocks": [
@@ -713,7 +721,7 @@
 												},
 												"innerBlocks": [],
 												"draftRef": {
-													"tpl": "Root/326#0"
+													"tpl": "Root/324#0"
 												},
 												"draftFingerprint": {
 													"tag": "div",
@@ -726,7 +734,18 @@
 														"div"
 													],
 													"textHash": "1505",
-													"line": 1024
+													"line": 1021
+												},
+												"draftSlots": {
+													".sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__title > .sgs-focus-source": {
+														"tpl": "Root>Frame Card@325#0/15#0"
+													},
+													"div:nth-of-type(1) > .sgs-product-card__saving-badge": {
+														"tpl": "Root>Frame Card@325#0/9#0"
+													},
+													"div:nth-of-type(1) > .sgs-product-card__wishlist": {
+														"tpl": "Root>Frame Card@325#0/10#0"
+													}
 												}
 											}
 										]
@@ -739,7 +758,7 @@
 									"text": "Every pair is genuine, bought through the brands' authorised UK suppliers, and comes boxed with its own case and cloth. Prescription lenses can go in any of them."
 								},
 								"draftRef": {
-									"tpl": "Root/333#0"
+									"tpl": "Root/331#0"
 								},
 								"draftFingerprint": {
 									"tag": "p",
@@ -751,14 +770,35 @@
 										"div"
 									],
 									"textHash": "2e9938b1",
-									"line": 1036
+									"line": 1033
 								},
 								"innerBlocks": []
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/331#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/269#0"
+					},
+					".sgs-container__inner > p:nth-of-type(2)": {
+						"tpl": "Root/321#0"
+					}
+				}
 			}
-		]
+		],
+		"draftSlots": {
+			".sgs-container__inner > p:nth-of-type(1)": {
+				"tpl": "Root/247#0"
+			},
+			".sgs-container__inner > p:nth-of-type(2)": {
+				"tpl": "Root/267#0"
+			}
+		}
 	}
 ]

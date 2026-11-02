@@ -142,16 +142,32 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/73#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/74#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/71#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/72#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
 						"attributes": {
 							"tagName": "div",
 							"layout": "flex",
-							"sgsBlockLink": "/catalogue/"
+							"sgsBlockLink": "/apply/catalogue/"
 						},
 						"draftRef": {
 							"tpl": "Root/70#1"
@@ -257,16 +273,32 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/73#1"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/74#1"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/71#1"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/72#1"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
 						"attributes": {
 							"tagName": "div",
 							"layout": "flex",
-							"sgsBlockLink": "/delivery/"
+							"sgsBlockLink": "/apply/delivery/"
 						},
 						"draftRef": {
 							"tpl": "Root/70#2"
@@ -372,16 +404,32 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/73#2"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/74#2"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/71#2"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/72#2"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
 						"attributes": {
 							"tagName": "div",
 							"layout": "flex",
-							"sgsBlockLink": "/faqs/"
+							"sgsBlockLink": "/apply/faqs/"
 						},
 						"draftRef": {
 							"tpl": "Root/70#3"
@@ -487,16 +535,32 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/73#3"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/74#3"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/71#3"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/72#3"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
 						"attributes": {
 							"tagName": "div",
 							"layout": "flex",
-							"sgsBlockLink": "/terms/"
+							"sgsBlockLink": "/apply/terms/"
 						},
 						"draftRef": {
 							"tpl": "Root/70#4"
@@ -602,9 +666,25 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/73#4"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/74#4"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/71#4"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/72#4"
+							}
+						}
 					}
 				]
 			},
@@ -663,9 +743,19 @@
 									"textHash": "1505",
 									"line": 100
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-media__img": {
+										"tpl": "Root/78#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/78#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -710,9 +800,9 @@
 								"innerBlocks": []
 							},
 							{
-								"name": "sgs/text",
+								"name": "sgs/heading",
 								"attributes": {
-									"text": "Trade with Indus Foods"
+									"content": "Trade with Indus Foods"
 								},
 								"draftRef": {
 									"tpl": "Root/81#0"
@@ -774,12 +864,33 @@
 									"textHash": "73f8c87",
 									"line": 106
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-button__label": {
+										"tpl": "Root/83#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/80#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/81#0"
+							}
+						}
 					}
 				]
 			}
-		]
+		],
+		"draftSlots": {
+			".sgs-mega-panel__content > .sgs-mega-group": {
+				"tpl": "Root/68#0"
+			},
+			".sgs-mega-panel__content > .sgs-mega-aside": {
+				"tpl": "Root/76#0"
+			}
+		}
 	}
 ]

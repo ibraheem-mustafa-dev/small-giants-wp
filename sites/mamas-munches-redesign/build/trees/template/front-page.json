@@ -11,13 +11,24 @@
     "attributes": {
       "tagName": "main",
       "className": "cr-ref-home-0",
+      "textColour": "mm-cocoa",
       "minHeight": {
         "desktop": "0px"
       },
+      "gridItemBackground": "mm-pink-band",
       "contentWidth": {
         "desktop": "full"
       },
-      "textColourHover": "primary-text"
+      "textColourHover": "mm-cocoa",
+      "padding": {
+        "desktop": {
+          "right": "0px",
+          "left": "0px"
+        }
+      },
+      "sgsCustomCss": "& { line-height: normal; } & .sgs-container__inner > p:nth-of-type(1) { overflow-x: hidden; overflow-y: hidden; } & .sgs-container__inner > p:nth-of-type(2) { max-width: 1240px; }",
+      "sgsCustomCssId": "r2b39703f299",
+      "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width line-height: normal;, & .sgs-container__inner > p:nth-of-type(1) every width overflow-x: hidden; overflow-y: hidden;, & .sgs-container__inner > p:nth-of-type(2) every width max-width: 1240px;"
     },
     "innerBlocks": [
       {

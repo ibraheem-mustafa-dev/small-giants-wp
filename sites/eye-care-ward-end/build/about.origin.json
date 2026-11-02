@@ -1,18 +1,21 @@
 {
   "cr-ref-about-0": {
-    "tpl": "Root/601#0",
+    "tpl": "Root/599#0",
     "fingerprint": {
       "tag": "main",
       "cls": "sgs-page-about",
       "styleHash": "e0705001",
       "parentTags": [],
       "textHash": "1505",
-      "line": 1374
+      "line": 1371
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/600#0"
+    },
+    "draft": "9fdd17eaaf271355"
   },
   "cr-ref-about-1": {
-    "tpl": "Root/602#0",
+    "tpl": "Root/600#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -21,12 +24,12 @@
         "main"
       ],
       "textHash": "1505",
-      "line": 1375
+      "line": 1372
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
   "cr-ref-about-2": {
-    "tpl": "Root/604#0",
+    "tpl": "Root/602#0",
     "fingerprint": {
       "tag": "p",
       "cls": "",
@@ -37,12 +40,12 @@
         "div"
       ],
       "textHash": "34b72d44",
-      "line": 1377
+      "line": 1374
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
   "cr-ref-about-3": {
-    "tpl": "Root/605#0",
+    "tpl": "Root/603#0",
     "fingerprint": {
       "tag": "h1",
       "cls": "",
@@ -53,12 +56,12 @@
         "div"
       ],
       "textHash": "8f608df0",
-      "line": 1378
+      "line": 1375
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
   "cr-ref-about-4": {
-    "tpl": "Root/606#0",
+    "tpl": "Root/604#0",
     "fingerprint": {
       "tag": "p",
       "cls": "",
@@ -69,12 +72,12 @@
         "div"
       ],
       "textHash": "e4ddf8fd",
-      "line": 1379
+      "line": 1376
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
   "cr-ref-about-5": {
-    "tpl": "Root/607#0",
+    "tpl": "Root/605#0",
     "fingerprint": {
       "tag": "p",
       "cls": "",
@@ -85,12 +88,12 @@
         "div"
       ],
       "textHash": "e2caf20f",
-      "line": 1380
+      "line": 1377
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
   "cr-ref-about-6": {
-    "tpl": "Root/608#0",
+    "tpl": "Root/606#0",
     "fingerprint": {
       "tag": "p",
       "cls": "",
@@ -101,12 +104,12 @@
         "div"
       ],
       "textHash": "ba9a04b9",
-      "line": 1381
+      "line": 1378
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
   "cr-ref-about-7": {
-    "tpl": "Root/609#0",
+    "tpl": "Root/607#0",
     "fingerprint": {
       "tag": "p",
       "cls": "",
@@ -117,12 +120,32 @@
         "div"
       ],
       "textHash": "edd071ed",
-      "line": 1382
+      "line": 1379
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
   "cr-ref-about-8": {
-    "tpl": "Root/611#0",
+    "tpl": "Root/608#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "f25efba1",
+      "parentTags": [
+        "main",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 1380
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/609#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/611#0"
+    },
+    "draft": "9fdd17eaaf271355"
+  },
+  "cr-ref-about-9": {
+    "tpl": "Root/609#0",
     "fingerprint": {
       "tag": "a",
       "cls": "scpq",
@@ -134,12 +157,15 @@
         "div"
       ],
       "textHash": "ac9484c6",
-      "line": 1384
+      "line": 1381
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-whatsapp-cta__label": "Root/609#0"
+    },
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-about-9": {
-    "tpl": "Root/613#0",
+  "cr-ref-about-10": {
+    "tpl": "Root/611#0",
     "fingerprint": {
       "tag": "button",
       "cls": "scpr",
@@ -151,12 +177,15 @@
         "div"
       ],
       "textHash": "3ed0f727",
-      "line": 1388
+      "line": 1385
     },
-    "draft": "10edcc3a998d8e4f"
+    "slots": {
+      ".sgs-button__label": "Root/611#0"
+    },
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-about-10": {
-    "tpl": "Root/616#0",
+  "cr-ref-about-11": {
+    "tpl": "Root/614#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -168,12 +197,12 @@
         "div"
       ],
       "textHash": "605ea04c",
-      "line": 1392
+      "line": 1389
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-about-11": {
-    "tpl": "Root/617#0",
+  "cr-ref-about-12": {
+    "tpl": "Root/615#0",
     "fingerprint": {
       "tag": "p",
       "cls": "",
@@ -185,12 +214,12 @@
         "div"
       ],
       "textHash": "109a6165",
-      "line": 1392
+      "line": 1389
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-about-12": {
-    "tpl": "Root/619#0",
+  "cr-ref-about-13": {
+    "tpl": "Root/617#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -202,12 +231,12 @@
         "div"
       ],
       "textHash": "9ef1b562",
-      "line": 1393
+      "line": 1390
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-about-13": {
-    "tpl": "Root/620#0",
+  "cr-ref-about-14": {
+    "tpl": "Root/618#0",
     "fingerprint": {
       "tag": "p",
       "cls": "",
@@ -219,12 +248,12 @@
         "div"
       ],
       "textHash": "54fa9549",
-      "line": 1393
+      "line": 1390
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-about-14": {
-    "tpl": "Root/622#0",
+  "cr-ref-about-15": {
+    "tpl": "Root/620#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -236,12 +265,12 @@
         "div"
       ],
       "textHash": "b7a6a6e4",
-      "line": 1394
+      "line": 1391
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-about-15": {
-    "tpl": "Root/623#0",
+  "cr-ref-about-16": {
+    "tpl": "Root/621#0",
     "fingerprint": {
       "tag": "p",
       "cls": "",
@@ -253,12 +282,12 @@
         "div"
       ],
       "textHash": "72a97ef9",
-      "line": 1394
+      "line": 1391
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-about-16": {
-    "tpl": "Root/625#0",
+  "cr-ref-about-17": {
+    "tpl": "Root/623#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -270,12 +299,12 @@
         "div"
       ],
       "textHash": "75991e3d",
-      "line": 1395
+      "line": 1392
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   },
-  "cr-ref-about-17": {
-    "tpl": "Root/626#0",
+  "cr-ref-about-18": {
+    "tpl": "Root/624#0",
     "fingerprint": {
       "tag": "p",
       "cls": "",
@@ -287,8 +316,8 @@
         "div"
       ],
       "textHash": "7faa41e",
-      "line": 1395
+      "line": 1392
     },
-    "draft": "10edcc3a998d8e4f"
+    "draft": "9fdd17eaaf271355"
   }
 }

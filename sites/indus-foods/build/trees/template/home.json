@@ -11,14 +11,44 @@
     "attributes": {
       "tagName": "main",
       "className": "cr-ref-blog-0",
-      "textColour": "custom-ink",
+      "textColour": "ink",
       "minHeight": {
         "desktop": "0px"
+      },
+      "gridItemTextColour": "slate",
+      "gridItemBackgroundGradient": "linear-gradient(135deg, rgb(235, 221, 120) 0%, rgb(227, 211, 95) 50%, rgb(216, 202, 80) 100%)",
+      "gridItemPadding": {
+        "mobile": {
+          "top": "32px",
+          "right": "20px",
+          "bottom": "52px",
+          "left": "20px"
+        },
+        "desktop": {
+          "top": "44px",
+          "right": "40px",
+          "bottom": "88px",
+          "left": "40px"
+        },
+        "tablet": {
+          "right": "32px",
+          "bottom": "72px",
+          "left": "32px"
+        }
       },
       "contentWidth": {
         "desktop": "full"
       },
-      "textColourHover": "custom-ink"
+      "textColourHover": "ink",
+      "padding": {
+        "desktop": {
+          "right": "0px",
+          "left": "0px"
+        }
+      },
+      "sgsCustomCss": "@media (prefers-reduced-motion: no-preference){ & #sunrays_spin { animation: sgs-loop-a-40 40s linear infinite; } } @keyframes sgs-loop-a-40 { 0%{rotate:0deg} 100%{rotate:360deg} } & .sgs-container__inner > p:nth-of-type(1) { overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { overflow-x: clip; overflow-y: clip; position: relative; }",
+      "sgsCustomCssId": "r53052fc4423",
+      "sgsCustomCssNote": "Written by the cloning route: Loop A-40: Web Animation in setHeroSvgEl on #sunrays_spin; Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width overflow-x: clip; overflow-y: clip; position: relative;"
     },
     "innerBlocks": [
       {

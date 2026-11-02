@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-28T06:50:08.775Z",
-	"inventory": "2026-10-28T06:50:08.580Z",
-	"source": "http://127.0.0.1:60917/",
+	"generated": "2026-11-02T05:01:16.350Z",
+	"inventory": "2026-11-02T01:28:36.201Z",
+	"source": "http://127.0.0.1:57778/",
 	"surface": "page-checkout-dc-html",
 	"siteName": null,
 	"surfaceParts": [
@@ -25,7 +25,26 @@
 		}
 	],
 	"stripRoots": [],
-	"recordDisagreements": [],
+	"recordDisagreements": [
+		{
+			"key": "Checkout/74",
+			"field": "aria-pressed",
+			"record": true,
+			"render": false
+		},
+		{
+			"key": "Checkout/76",
+			"field": "aria-pressed",
+			"record": true,
+			"render": false
+		},
+		{
+			"key": "Checkout/100",
+			"field": "aria-pressed",
+			"record": true,
+			"render": false
+		}
+	],
 	"recordUntranslated": [],
 	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
 	"weights": {
@@ -46,16 +65,51 @@
 	},
 	"counts": {
 		"inventoryElements": 106,
-		"parts": 0,
-		"rows": 106,
-		"skeletonNodes": 5,
-		"expandedNodes": 5,
-		"low": 2,
+		"parts": 3,
+		"rows": 103,
+		"skeletonNodes": 2,
+		"expandedNodes": 2,
+		"low": 0,
 		"removed": 101,
 		"unresolved": 0,
 		"byRule": {
 			"commerceRegion": 102
 		}
+	},
+	"partPairing": {
+		"paired": 0,
+		"unpaired": [
+			{
+				"key": "Root/16#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/16#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/16#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root/16#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(1)",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/16#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(2)",
+				"reason": "the draft has no element of its own here"
+			}
+		]
 	},
 	"widthAlternatives": [],
 	"problems": [],
@@ -74,6 +128,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -109,6 +164,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "commerceRegion",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "core/post-content",
@@ -116,6 +172,7 @@
 					"share": 1,
 					"evidence": [
 						"rule commerceRegion: the checkout page's content is WooCommerce's Checkout block (kept by site build), which draws the payment form and the order summary (3 payment field(s); 2 order lines loop(s))",
+						"rules.coreExceptions: core/post-content is kept (a WooCommerce page's template copy prints the page's own content, WooCommerce's working block, where the draft's commerce region is (rules.commerceRegion))",
 						"rules.coreExceptions: core/post-content is kept (a WooCommerce page's template copy prints the page's own content, WooCommerce's working block, where the draft's commerce region is (rules.commerceRegion))"
 					]
 				}
@@ -188,7 +245,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/33#0 (sgs/text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -212,7 +269,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/34#0 (sgs/heading) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -236,7 +293,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/35#0 (sgs/multi-button) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -260,7 +317,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/36#0 (sgs/button) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -284,7 +341,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/37#0 (sgs/button) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -308,7 +365,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/38#0 (sgs/button) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -332,7 +389,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/39#0 (sgs/container) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -428,7 +485,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/43#0 (sgs/text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -445,7 +502,7 @@
 			"key": "Root/50#0",
 			"tag": "div",
 			"depth": 4,
-			"words": "Checking out as a guest.",
+			"words": "Checking out as a guest. Have an account? Sign in",
 			"block": null,
 			"action": "absorbed",
 			"reason": "drawn by core/post-content: rule commerceRegion",
@@ -456,7 +513,9 @@
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
-			"parts": [],
+			"parts": [
+				"Root/51#0"
+			],
 			"screenshots": {
 				"375": "shots/Root_50_0@375.png",
 				"1440": "shots/Root_50_0@1440.png"
@@ -466,30 +525,6 @@
 		},
 		{
 			"order": 16,
-			"key": "Root/51#0",
-			"tag": "a",
-			"depth": 5,
-			"words": "Have an account? Sign in",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by core/post-content: rule commerceRegion",
-			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": null,
-			"rule": "commerceRegion",
-			"into": "Root/17#0",
-			"candidates": [],
-			"parts": [],
-			"screenshots": {
-				"375": "shots/Root_51_0@375.png",
-				"1440": "shots/Root_51_0@1440.png"
-			},
-			"snippet": "<a href=\"SignIn.dc.html?next=checkout\" style=\"font-weight:700;color:#3A2A22\" data-dc-tpl=\"51\">Have an account? Sign in</a>",
-			"attributes": {}
-		},
-		{
-			"order": 17,
 			"key": "Root/52#0",
 			"tag": "label",
 			"depth": 4,
@@ -513,7 +548,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 18,
+			"order": 17,
 			"key": "Root/53#0",
 			"tag": "input",
 			"depth": 5,
@@ -524,7 +559,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/53#0 (sgs/form-field-email) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -537,7 +572,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 19,
+			"order": 18,
 			"key": "Root/54#0",
 			"tag": "label",
 			"depth": 4,
@@ -561,7 +596,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 20,
+			"order": 19,
 			"key": "Root/55#0",
 			"tag": "input",
 			"depth": 5,
@@ -572,7 +607,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/55#0 (sgs/form-field-phone) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -585,7 +620,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 21,
+			"order": 20,
 			"key": "Root/57#0",
 			"tag": "div",
 			"depth": 4,
@@ -609,7 +644,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 22,
+			"order": 21,
 			"key": "Root/58#0",
 			"tag": "label",
 			"depth": 5,
@@ -633,7 +668,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 23,
+			"order": 22,
 			"key": "Root/59#0",
 			"tag": "input",
 			"depth": 6,
@@ -644,7 +679,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/59#0 (sgs/form-field-checkbox) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -656,7 +691,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 24,
+			"order": 23,
 			"key": "Root/60#0",
 			"tag": "span",
 			"depth": 6,
@@ -667,7 +702,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/60#0 (remove) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -680,7 +715,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 25,
+			"order": 24,
 			"key": "Root/61#0",
 			"tag": "span",
 			"depth": 7,
@@ -691,7 +726,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/61#0 (sgs/text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -704,7 +739,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 26,
+			"order": 25,
 			"key": "Root/62#0",
 			"tag": "span",
 			"depth": 7,
@@ -715,7 +750,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/62#0 (sgs/text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -728,7 +763,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 27,
+			"order": 26,
 			"key": "Root/71#0",
 			"tag": "fieldset",
 			"depth": 3,
@@ -752,7 +787,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 28,
+			"order": 27,
 			"key": "Root/72#0",
 			"tag": "legend",
 			"depth": 4,
@@ -776,7 +811,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 29,
+			"order": 28,
 			"key": "Root/73#0",
 			"tag": "div",
 			"depth": 4,
@@ -787,7 +822,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/73#0 (sgs/form-field-tiles) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -800,7 +835,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 30,
+			"order": 29,
 			"key": "Root/74#0",
 			"tag": "button",
 			"depth": 5,
@@ -824,7 +859,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 31,
+			"order": 30,
 			"key": "Root/75#0",
 			"tag": "span",
 			"depth": 6,
@@ -848,7 +883,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 32,
+			"order": 31,
 			"key": "Root/76#0",
 			"tag": "button",
 			"depth": 5,
@@ -872,7 +907,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 33,
+			"order": 32,
 			"key": "Root/77#0",
 			"tag": "span",
 			"depth": 6,
@@ -896,7 +931,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 34,
+			"order": 33,
 			"key": "Root/85#0",
 			"tag": "fieldset",
 			"depth": 3,
@@ -920,7 +955,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 35,
+			"order": 34,
 			"key": "Root/86#0",
 			"tag": "legend",
 			"depth": 4,
@@ -931,7 +966,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/86#0 (sgs/text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -944,7 +979,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 36,
+			"order": 35,
 			"key": "Root/87#0",
 			"tag": "div",
 			"depth": 4,
@@ -955,7 +990,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/87#0 (sgs/container) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -968,7 +1003,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 37,
+			"order": 36,
 			"key": "Root/88#0",
 			"tag": "label",
 			"depth": 5,
@@ -992,7 +1027,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 38,
+			"order": 37,
 			"key": "Root/89#0",
 			"tag": "input",
 			"depth": 6,
@@ -1003,7 +1038,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/89#0 (sgs/form-field-text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -1016,7 +1051,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 39,
+			"order": 38,
 			"key": "Root/90#0",
 			"tag": "button",
 			"depth": 5,
@@ -1027,7 +1062,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/90#0 (sgs/button) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -1040,7 +1075,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 40,
+			"order": 39,
 			"key": "Root/91#0",
 			"tag": "label",
 			"depth": 4,
@@ -1064,7 +1099,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 41,
+			"order": 40,
 			"key": "Root/92#0",
 			"tag": "input",
 			"depth": 5,
@@ -1075,7 +1110,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/92#0 (sgs/form-field-text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -1088,7 +1123,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 42,
+			"order": 41,
 			"key": "Root/93#0",
 			"tag": "div",
 			"depth": 4,
@@ -1099,7 +1134,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/93#0 (sgs/container) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -1112,7 +1147,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 43,
+			"order": 42,
 			"key": "Root/94#0",
 			"tag": "label",
 			"depth": 5,
@@ -1136,7 +1171,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 44,
+			"order": 43,
 			"key": "Root/95#0",
 			"tag": "input",
 			"depth": 6,
@@ -1147,7 +1182,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/95#0 (sgs/form-field-text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -1160,7 +1195,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 45,
+			"order": 44,
 			"key": "Root/96#0",
 			"tag": "label",
 			"depth": 5,
@@ -1184,7 +1219,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 46,
+			"order": 45,
 			"key": "Root/97#0",
 			"tag": "input",
 			"depth": 6,
@@ -1195,7 +1230,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/97#0 (sgs/form-field-text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -1208,7 +1243,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 47,
+			"order": 46,
 			"key": "Root/98#0",
 			"tag": "div",
 			"depth": 4,
@@ -1219,7 +1254,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/98#0 (sgs/form-field-tiles) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -1232,7 +1267,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 48,
+			"order": 47,
 			"key": "Root/100#0",
 			"tag": "button",
 			"depth": 5,
@@ -1256,7 +1291,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 49,
+			"order": 48,
 			"key": "Root/101#0",
 			"tag": "span",
 			"depth": 6,
@@ -1279,7 +1314,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 50,
+			"order": 49,
 			"key": "Root/102#0",
 			"tag": "span",
 			"depth": 6,
@@ -1303,7 +1338,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 51,
+			"order": 50,
 			"key": "Root/103#0",
 			"tag": "b",
 			"depth": 7,
@@ -1327,7 +1362,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 52,
+			"order": 51,
 			"key": "Root/104#0",
 			"tag": "span",
 			"depth": 7,
@@ -1351,7 +1386,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 53,
+			"order": 52,
 			"key": "Root/105#0",
 			"tag": "b",
 			"depth": 6,
@@ -1375,7 +1410,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 54,
+			"order": 53,
 			"key": "Root/100#1",
 			"tag": "button",
 			"depth": 5,
@@ -1399,7 +1434,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 55,
+			"order": 54,
 			"key": "Root/101#1",
 			"tag": "span",
 			"depth": 6,
@@ -1422,7 +1457,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 56,
+			"order": 55,
 			"key": "Root/102#1",
 			"tag": "span",
 			"depth": 6,
@@ -1446,7 +1481,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 57,
+			"order": 56,
 			"key": "Root/103#1",
 			"tag": "b",
 			"depth": 7,
@@ -1470,7 +1505,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 58,
+			"order": 57,
 			"key": "Root/104#1",
 			"tag": "span",
 			"depth": 7,
@@ -1494,7 +1529,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 59,
+			"order": 58,
 			"key": "Root/105#1",
 			"tag": "b",
 			"depth": 6,
@@ -1518,7 +1553,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 60,
+			"order": 59,
 			"key": "Root/106#0",
 			"tag": "fieldset",
 			"depth": 3,
@@ -1542,7 +1577,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 61,
+			"order": 60,
 			"key": "Root/107#0",
 			"tag": "legend",
 			"depth": 4,
@@ -1553,7 +1588,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/107#0 (sgs/text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -1566,7 +1601,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 62,
+			"order": 61,
 			"key": "Root/108#0",
 			"tag": "label",
 			"depth": 4,
@@ -1590,7 +1625,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 63,
+			"order": 62,
 			"key": "Root/109#0",
 			"tag": "input",
 			"depth": 5,
@@ -1601,7 +1636,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/109#0 (sgs/form-field-text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -1614,7 +1649,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 64,
+			"order": 63,
 			"key": "Root/110#0",
 			"tag": "div",
 			"depth": 4,
@@ -1625,7 +1660,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/110#0 (sgs/container) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -1638,7 +1673,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 65,
+			"order": 64,
 			"key": "Root/111#0",
 			"tag": "label",
 			"depth": 5,
@@ -1662,7 +1697,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 66,
+			"order": 65,
 			"key": "Root/112#0",
 			"tag": "input",
 			"depth": 6,
@@ -1673,7 +1708,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/112#0 (sgs/form-field-text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -1686,7 +1721,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 67,
+			"order": 66,
 			"key": "Root/113#0",
 			"tag": "label",
 			"depth": 5,
@@ -1710,7 +1745,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 68,
+			"order": 67,
 			"key": "Root/114#0",
 			"tag": "input",
 			"depth": 6,
@@ -1721,7 +1756,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/114#0 (sgs/form-field-text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -1734,11 +1769,11 @@
 			"attributes": {}
 		},
 		{
-			"order": 69,
+			"order": 68,
 			"key": "Root/115#0",
 			"tag": "div",
 			"depth": 3,
-			"words": "Contains oats (gluten), eggs, milk and fenugreek unless you chose the vegan base. Made in a kitchen that handles tree nuts.",
+			"words": "Contains oats (gluten), eggs, milk and fenugreek unless you chose the vegan base. Made in a kitchen that handles tree nuts. Full allergen info",
 			"block": null,
 			"action": "absorbed",
 			"reason": "drawn by core/post-content: rule commerceRegion",
@@ -1749,7 +1784,9 @@
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
-			"parts": [],
+			"parts": [
+				"Root/116#0"
+			],
 			"screenshots": {
 				"375": "shots/Root_115_0@375.png",
 				"1440": "shots/Root_115_0@1440.png"
@@ -1758,31 +1795,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 70,
-			"key": "Root/116#0",
-			"tag": "a",
-			"depth": 4,
-			"words": "Full allergen info",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by core/post-content: rule commerceRegion",
-			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": null,
-			"rule": "commerceRegion",
-			"into": "Root/17#0",
-			"candidates": [],
-			"parts": [],
-			"screenshots": {
-				"375": "shots/Root_116_0@375.png",
-				"1440": "shots/Root_116_0@1440.png"
-			},
-			"snippet": "<a href=\"Help.dc.html#allergens\" style=\"font-weight:700;color:#3A2A22\" data-dc-tpl=\"116\">Full allergen info</a>",
-			"attributes": {}
-		},
-		{
-			"order": 71,
+			"order": 69,
 			"key": "Root/117#0",
 			"tag": "button",
 			"depth": 3,
@@ -1793,7 +1806,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/117#0 (sgs/button) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -1806,11 +1819,11 @@
 			"attributes": {}
 		},
 		{
-			"order": 72,
+			"order": 70,
 			"key": "Root/118#0",
 			"tag": "div",
 			"depth": 3,
-			"words": "By placing your order you agree to our .",
+			"words": "By placing your order you agree to our terms.",
 			"block": null,
 			"action": "absorbed",
 			"reason": "drawn by core/post-content: rule commerceRegion",
@@ -1821,7 +1834,9 @@
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
-			"parts": [],
+			"parts": [
+				"Root/119#0"
+			],
 			"screenshots": {
 				"375": "shots/Root_118_0@375.png",
 				"1440": "shots/Root_118_0@1440.png"
@@ -1830,31 +1845,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 73,
-			"key": "Root/119#0",
-			"tag": "a",
-			"depth": 4,
-			"words": "terms",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by core/post-content: rule commerceRegion",
-			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": null,
-			"rule": "commerceRegion",
-			"into": "Root/17#0",
-			"candidates": [],
-			"parts": [],
-			"screenshots": {
-				"375": "shots/Root_119_0@375.png",
-				"1440": "shots/Root_119_0@1440.png"
-			},
-			"snippet": "<a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"119\">terms</a>",
-			"attributes": {}
-		},
-		{
-			"order": 74,
+			"order": 71,
 			"key": "Root/121#0",
 			"tag": "aside",
 			"depth": 2,
@@ -1877,7 +1868,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 75,
+			"order": 72,
 			"key": "Root/122#0",
 			"tag": "div",
 			"depth": 3,
@@ -1888,7 +1879,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/122#0 (sgs/text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -1900,7 +1891,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 76,
+			"order": 73,
 			"key": "Root/124#0",
 			"tag": "div",
 			"depth": 3,
@@ -1911,7 +1902,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/124#0 (sgs/container) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -1923,7 +1914,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 77,
+			"order": 74,
 			"key": "Root/125#0",
 			"tag": "div",
 			"depth": 4,
@@ -1946,7 +1937,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 78,
+			"order": 75,
 			"key": "Root/126#0",
 			"tag": "span",
 			"depth": 5,
@@ -1957,7 +1948,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/126#0 (sgs/text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -1969,7 +1960,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 79,
+			"order": 76,
 			"key": "Root/127#0",
 			"tag": "div",
 			"depth": 4,
@@ -1992,7 +1983,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 80,
+			"order": 77,
 			"key": "Root/128#0",
 			"tag": "div",
 			"depth": 5,
@@ -2003,7 +1994,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/128#0 (sgs/text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -2015,7 +2006,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 81,
+			"order": 78,
 			"key": "Root/129#0",
 			"tag": "div",
 			"depth": 5,
@@ -2026,7 +2017,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/129#0 (sgs/text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -2038,7 +2029,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 82,
+			"order": 79,
 			"key": "Root/130#0",
 			"tag": "b",
 			"depth": 4,
@@ -2049,7 +2040,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/130#0 (sgs/text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -2061,7 +2052,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 83,
+			"order": 80,
 			"key": "Root/124#1",
 			"tag": "div",
 			"depth": 3,
@@ -2072,7 +2063,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/124#1 (sgs/container) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -2084,7 +2075,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 84,
+			"order": 81,
 			"key": "Root/125#1",
 			"tag": "div",
 			"depth": 4,
@@ -2107,7 +2098,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 85,
+			"order": 82,
 			"key": "Root/126#1",
 			"tag": "span",
 			"depth": 5,
@@ -2118,7 +2109,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/126#1 (sgs/text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -2130,7 +2121,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 86,
+			"order": 83,
 			"key": "Root/127#1",
 			"tag": "div",
 			"depth": 4,
@@ -2153,7 +2144,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 87,
+			"order": 84,
 			"key": "Root/128#1",
 			"tag": "div",
 			"depth": 5,
@@ -2176,7 +2167,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 88,
+			"order": 85,
 			"key": "Root/129#1",
 			"tag": "div",
 			"depth": 5,
@@ -2199,7 +2190,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 89,
+			"order": 86,
 			"key": "Root/130#1",
 			"tag": "b",
 			"depth": 4,
@@ -2222,7 +2213,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 90,
+			"order": 87,
 			"key": "Root/131#0",
 			"tag": "div",
 			"depth": 3,
@@ -2233,7 +2224,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/131#0 (sgs/container) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -2245,7 +2236,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 91,
+			"order": 88,
 			"key": "Root/132#0",
 			"tag": "input",
 			"depth": 4,
@@ -2256,7 +2247,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/132#0 (sgs/form-field-text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -2268,7 +2259,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 92,
+			"order": 89,
 			"key": "Root/133#0",
 			"tag": "button",
 			"depth": 4,
@@ -2279,7 +2270,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/133#0 (sgs/button) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -2291,7 +2282,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 93,
+			"order": 90,
 			"key": "Root/134#0",
 			"tag": "div",
 			"depth": 3,
@@ -2302,7 +2293,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/134#0 (sgs/container) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -2314,7 +2305,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 94,
+			"order": 91,
 			"key": "Root/135#0",
 			"tag": "span",
 			"depth": 4,
@@ -2325,7 +2316,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/135#0 (sgs/text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -2337,7 +2328,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 95,
+			"order": 92,
 			"key": "Root/136#0",
 			"tag": "b",
 			"depth": 4,
@@ -2348,7 +2339,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/136#0 (sgs/text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -2360,7 +2351,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 96,
+			"order": 93,
 			"key": "Root/137#0",
 			"tag": "div",
 			"depth": 3,
@@ -2371,7 +2362,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/137#0 (sgs/container) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -2383,7 +2374,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 97,
+			"order": 94,
 			"key": "Root/138#0",
 			"tag": "span",
 			"depth": 4,
@@ -2394,7 +2385,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/138#0 (sgs/text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -2406,7 +2397,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 98,
+			"order": 95,
 			"key": "Root/139#0",
 			"tag": "b",
 			"depth": 4,
@@ -2417,7 +2408,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/139#0 (sgs/text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -2429,7 +2420,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 99,
+			"order": 96,
 			"key": "Root/140#0",
 			"tag": "div",
 			"depth": 3,
@@ -2440,7 +2431,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/140#0 (sgs/container) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -2452,7 +2443,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 100,
+			"order": 97,
 			"key": "Root/141#0",
 			"tag": "b",
 			"depth": 4,
@@ -2463,7 +2454,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/141#0 (sgs/text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -2475,7 +2466,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 101,
+			"order": 98,
 			"key": "Root/142#0",
 			"tag": "span",
 			"depth": 4,
@@ -2486,7 +2477,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/142#0 (sgs/text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -2498,7 +2489,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 102,
+			"order": 99,
 			"key": "Root/143#0",
 			"tag": "div",
 			"depth": 3,
@@ -2509,7 +2500,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/143#0 (sgs/text) no longer applies: core/post-content draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/17#0",
 			"candidates": [],
@@ -2521,106 +2512,73 @@
 			"attributes": {}
 		},
 		{
-			"order": 103,
+			"order": 100,
 			"key": "Root/19#0",
 			"tag": "button",
 			"depth": 2,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by core/post-content: an element shown only at 375px inside a block that draws its content from its own source: the block draws it itself",
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"stale": "the client decision for Root/19#0 (sgs/container) no longer applies: drawn by core/post-content: an element shown only at 375px inside a block that draws its content from its own source: the block draws it itself",
+			"rule": "commerceRegion",
+			"into": "Root/17#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_19_0@375.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ toggleSum }}\" style=\"width:100%;min-height:60px;border:2px solid #3A2A22;border-radius:20px;background:#F9D5D3;padding:0 18px;display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:16px;cursor:pointer\" data-dc-tpl=\"19\"><span data-dc-tpl=\"20\">{{ sumLabel }}</span><span style=\"font-family:'Young Serif',serif;font-size:20px\" data-dc-tpl=\"",
-			"attributes": {
-				"tagName": "div",
-				"layout": "flex"
-			}
+			"attributes": {}
 		},
 		{
-			"order": 104,
+			"order": 101,
 			"key": "Root/20#0",
 			"tag": "span",
 			"depth": 3,
 			"words": "Show order summary ▾",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by core/post-content: an element shown only at 375px inside a block that draws its content from its own source: the block draws it itself",
 			"source": null,
-			"confidence": 0.25,
-			"low": true,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"confidence": 1,
+			"low": false,
+			"stale": "the client decision for Root/20#0 (sgs/text) no longer applies: core/post-content draws this element",
+			"rule": "commerceRegion",
+			"into": "Root/17#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_20_0@375.png"
 			},
 			"snippet": "<span data-dc-tpl=\"20\">{{ sumLabel }}</span>",
-			"attributes": {
-				"text": "Show order summary ▾"
-			}
+			"attributes": {}
 		},
 		{
-			"order": 105,
+			"order": 102,
 			"key": "Root/21#0",
 			"tag": "span",
 			"depth": 3,
 			"words": "£30.45",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by core/post-content: an element shown only at 375px inside a block that draws its content from its own source: the block draws it itself",
 			"source": null,
-			"confidence": 0.25,
-			"low": true,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"confidence": 1,
+			"low": false,
+			"stale": "the client decision for Root/21#0 (sgs/text) no longer applies: core/post-content draws this element",
+			"rule": "commerceRegion",
+			"into": "Root/17#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_21_0@375.png"
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:20px\" data-dc-tpl=\"21\">{{ totalText }}</span>",
-			"attributes": {
-				"text": "£30.45"
-			}
+			"attributes": {}
 		}
 	]
 }

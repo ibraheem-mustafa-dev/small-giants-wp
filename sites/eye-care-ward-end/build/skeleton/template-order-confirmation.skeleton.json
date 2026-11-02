@@ -5,7 +5,7 @@
 			"tagName": "main"
 		},
 		"draftRef": {
-			"tpl": "Root/845#0"
+			"tpl": "Root/843#0"
 		},
 		"draftFingerprint": {
 			"tag": "main",
@@ -13,16 +13,16 @@
 			"styleHash": "819b1d43",
 			"parentTags": [],
 			"textHash": "1505",
-			"line": 1641
+			"line": 1638
 		},
 		"innerBlocks": [
 			{
-				"name": "sgs/text",
+				"name": "sgs/icon",
 				"attributes": {
-					"text": "✓"
+					"brandName": "✓"
 				},
 				"draftRef": {
-					"tpl": "Root/846#0"
+					"tpl": "Root/844#0"
 				},
 				"draftFingerprint": {
 					"tag": "div",
@@ -32,17 +32,23 @@
 						"main"
 					],
 					"textHash": "292b6",
-					"line": 1642
+					"line": 1639
 				},
-				"innerBlocks": []
+				"innerBlocks": [],
+				"draftSlots": {
+					".sgs-icon__shape": {
+						"tpl": "Root/844#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/heading",
 				"attributes": {
-					"content": "Thank you — order EC-10482."
+					"content": "Thank you — order EC-10482.",
+					"level": "h1"
 				},
 				"draftRef": {
-					"tpl": "Root/847#0"
+					"tpl": "Root/845#0"
 				},
 				"draftFingerprint": {
 					"tag": "h1",
@@ -52,7 +58,7 @@
 						"main"
 					],
 					"textHash": "5550a3de",
-					"line": 1643
+					"line": 1640
 				},
 				"innerBlocks": []
 			},
@@ -62,7 +68,7 @@
 					"text": "Confirmation is on its way by email and WhatsApp. Frames post within one working day; prescription lenses take 7 to 10."
 				},
 				"draftRef": {
-					"tpl": "Root/848#0"
+					"tpl": "Root/846#0"
 				},
 				"draftFingerprint": {
 					"tag": "p",
@@ -72,7 +78,7 @@
 						"main"
 					],
 					"textHash": "f4031071",
-					"line": 1644
+					"line": 1641
 				},
 				"innerBlocks": []
 			},
@@ -83,7 +89,7 @@
 					"layout": "flex"
 				},
 				"draftRef": {
-					"tpl": "Root/851#0"
+					"tpl": "Root/849#0"
 				},
 				"draftFingerprint": {
 					"tag": "div",
@@ -93,16 +99,17 @@
 						"main"
 					],
 					"textHash": "1505",
-					"line": 1648
+					"line": 1645
 				},
 				"innerBlocks": [
 					{
 						"name": "sgs/button",
 						"attributes": {
-							"label": "Back to the shop"
+							"label": "Back to the shop",
+							"url": "/shop/"
 						},
 						"draftRef": {
-							"tpl": "Root/852#0"
+							"tpl": "Root/850#0"
 						},
 						"draftFingerprint": {
 							"tag": "button",
@@ -113,12 +120,30 @@
 								"div"
 							],
 							"textHash": "be0dfec8",
-							"line": 1649
+							"line": 1646
 						},
-						"innerBlocks": []
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-button__label": {
+								"tpl": "Root/850#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/850#0"
+					}
+				}
 			}
-		]
+		],
+		"draftSlots": {
+			".sgs-container__inner > p:nth-of-type(1)": {
+				"tpl": "Root/844#0"
+			},
+			".sgs-container__inner > p:nth-of-type(2)": {
+				"tpl": "Root/845#0"
+			}
+		}
 	}
 ]

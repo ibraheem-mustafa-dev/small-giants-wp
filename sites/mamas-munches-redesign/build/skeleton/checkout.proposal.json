@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-28T06:35:06.992Z",
-	"inventory": "2026-10-28T06:35:06.494Z",
-	"source": "http://127.0.0.1:60917/",
+	"generated": "2026-11-01T11:35:17.054Z",
+	"inventory": "2026-11-01T11:35:15.963Z",
+	"source": "http://127.0.0.1:57035/",
 	"surface": "page-checkout-dc-html",
 	"siteName": null,
 	"surfaceParts": [
@@ -27,12 +27,6 @@
 	"stripRoots": [],
 	"recordDisagreements": [
 		{
-			"key": "Checkout/53",
-			"field": "required",
-			"record": true,
-			"render": false
-		},
-		{
 			"key": "Checkout/74",
 			"field": "aria-pressed",
 			"record": true,
@@ -47,6 +41,12 @@
 		{
 			"key": "Checkout/100",
 			"field": "aria-pressed",
+			"record": true,
+			"render": false
+		},
+		{
+			"key": "Checkout/53",
+			"field": "required",
 			"record": true,
 			"render": false
 		}
@@ -66,11 +66,11 @@
 	},
 	"counts": {
 		"inventoryElements": 106,
-		"parts": 0,
-		"rows": 106,
-		"skeletonNodes": 66,
-		"expandedNodes": 66,
-		"low": 25,
+		"parts": 3,
+		"rows": 103,
+		"skeletonNodes": 64,
+		"expandedNodes": 64,
+		"low": 28,
 		"removed": 40,
 		"unresolved": 0,
 		"byRule": {
@@ -79,6 +79,545 @@
 			"formControl": 22,
 			"optionSetForm": 18
 		}
+	},
+	"partPairing": {
+		"paired": 37,
+		"unpaired": [
+			{
+				"key": "Root/16#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/16#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/16#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/16#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(2)",
+				"reason": "no inner block of this node stands at this place"
+			},
+			{
+				"key": "Root/17#0",
+				"block": "sgs/hero",
+				"slot": ".sgs-hero__bg-img",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/17#0",
+				"block": "sgs/hero",
+				"slot": ".sgs-hero__content",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/17#0",
+				"block": "sgs/hero",
+				"slot": ".sgs-hero__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/17#0",
+				"block": "sgs/hero",
+				"slot": ".sgs-hero__video-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/17#0",
+				"block": "sgs/hero",
+				"slot": ".sgs-hero__media > .sgs-hero__split-media",
+				"reason": ".sgs-hero__media: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/17#0",
+				"block": "sgs/hero",
+				"slot": ".sgs-hero__media",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/19#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/19#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/19#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/20#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/21#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/33#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/34#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/35#0",
+				"block": "sgs/multi-button",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/35#0",
+				"block": "sgs/multi-button",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/36#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/36#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon > svg",
+				"reason": ".sgs-button__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/37#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/37#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon > svg",
+				"reason": ".sgs-button__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/38#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/38#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon > svg",
+				"reason": ".sgs-button__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/39#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/39#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/39#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/40#0",
+				"block": "sgs/separator",
+				"slot": ".sgs-separator__content > .sgs-separator__icon",
+				"reason": ".sgs-separator__content: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/40#0",
+				"block": "sgs/separator",
+				"slot": ".sgs-separator__content",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/41#0",
+				"block": "sgs/separator",
+				"slot": ".sgs-separator__content > .sgs-separator__icon",
+				"reason": ".sgs-separator__content: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/41#0",
+				"block": "sgs/separator",
+				"slot": ".sgs-separator__content",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/43#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/61#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/62#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/73#0",
+				"block": "sgs/form-field-tiles",
+				"slot": ".sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(2) > .sgs-form-tile__label",
+				"reason": ".sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(2): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root/86#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/87#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/87#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/87#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/90#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/90#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon > svg",
+				"reason": ".sgs-button__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/93#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/93#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/93#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/98#0",
+				"block": "sgs/form-field-tiles",
+				"slot": ".sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(1) > .sgs-form-tile__label",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/98#0",
+				"block": "sgs/form-field-tiles",
+				"slot": ".sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(2) > .sgs-form-tile__label",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/107#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/110#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/110#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/110#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/117#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/117#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon > svg",
+				"reason": ".sgs-button__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/124#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/124#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/124#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/126#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/128#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/129#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/130#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/124#1",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/124#1",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/124#1",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/126#1",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/128#1",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/129#1",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/130#1",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/131#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/131#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/131#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/133#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/133#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon > svg",
+				"reason": ".sgs-button__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/134#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/134#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/134#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/135#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/136#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/137#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/137#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/137#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/138#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/139#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/140#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/140#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/140#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/141#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/142#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/143#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			}
+		]
 	},
 	"widthAlternatives": [],
 	"problems": [],
@@ -116,6 +655,11 @@
 			"snippet": "<main style=\"padding:{{ L.pad }}\" data-dc-tpl=\"16\"> <div style=\"max-width:1160px;margin:0 auto;display:grid;grid-template-columns:{{ L.cols }};gap:{{ L.gap }};align-items:start\" data-dc-tpl=\"17\"> <sc-if value=\"{{ isM }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"18\"> <button sc-camel-on-click=\"{{ toggleSum }}\" style=\"width:100%;min-height:60px;border:2px solid #3A2A22;border-radius:20px;back",
 			"attributes": {
 				"tagName": "main"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/17#0"
+				}
 			}
 		},
 		{
@@ -186,6 +730,14 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/20#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/21#0"
+				}
 			}
 		},
 		{
@@ -366,7 +918,8 @@
 			},
 			"snippet": "<h1 style=\"margin:4px 0 16px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1\" data-dc-tpl=\"34\">Checkout</h1>",
 			"attributes": {
-				"content": "Checkout"
+				"content": "Checkout",
+				"level": "h1"
 			}
 		},
 		{
@@ -410,6 +963,14 @@
 			"snippet": "<div style=\"display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px\" data-dc-tpl=\"35\"> <button type=\"button\" style=\"height:52px;border-radius:999px;border:2px solid #3A2A22;background:#000000;color:#FFFFFF;font-weight:700;font-size:{{ L.exp }};cursor:pointer\" data-dc-tpl=\"36\">Apple Pay</button> <button type=\"button\" style=\"height:52px;border-radius:999px;border:2px solid #3A2A22;background:#FFFFFF;",
 			"attributes": {
 				"layout": "grid"
+			},
+			"slots": {
+				".sgs-button:nth-of-type(1)": {
+					"tpl": "Root/36#0"
+				},
+				".sgs-button:nth-of-type(2)": {
+					"tpl": "Root/37#0"
+				}
 			}
 		},
 		{
@@ -445,6 +1006,11 @@
 			"snippet": "<button type=\"button\" style=\"height:52px;border-radius:999px;border:2px solid #3A2A22;background:#000000;color:#FFFFFF;font-weight:700;font-size:{{ L.exp }};cursor:pointer\" data-dc-tpl=\"36\">Apple Pay</button>",
 			"attributes": {
 				"label": "Apple Pay"
+			},
+			"slots": {
+				".sgs-button__label": {
+					"tpl": "Root/36#0"
+				}
 			}
 		},
 		{
@@ -480,6 +1046,11 @@
 			"snippet": "<button type=\"button\" style=\"height:52px;border-radius:999px;border:2px solid #3A2A22;background:#FFFFFF;font-weight:700;font-size:{{ L.exp }};cursor:pointer\" data-dc-tpl=\"37\">Google Pay</button>",
 			"attributes": {
 				"label": "Google Pay"
+			},
+			"slots": {
+				".sgs-button__label": {
+					"tpl": "Root/37#0"
+				}
 			}
 		},
 		{
@@ -515,6 +1086,11 @@
 			"snippet": "<button type=\"button\" style=\"height:52px;border-radius:999px;border:2px solid #3A2A22;background:#FFC439;font-weight:700;font-size:{{ L.exp }};cursor:pointer\" data-dc-tpl=\"38\">PayPal</button>",
 			"attributes": {
 				"label": "PayPal"
+			},
+			"slots": {
+				".sgs-button__label": {
+					"tpl": "Root/38#0"
+				}
 			}
 		},
 		{
@@ -552,6 +1128,15 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
+			},
+			"rowNote": "its own words \"or pay by card\" are the sgs/text child after its children",
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/40#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/41#0"
+				}
 			}
 		},
 		{
@@ -680,74 +1265,44 @@
 			"key": "Root/50#0",
 			"tag": "div",
 			"depth": 4,
-			"words": "Checking out as a guest.",
-			"block": "sgs/container",
+			"words": "Checking out as a guest. Have an account? Sign in",
+			"block": "sgs/text",
 			"action": null,
 			"reason": null,
 			"source": null,
-			"confidence": 0.75,
-			"low": false,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/container",
-					"score": 0.75,
+					"block": "sgs/text",
+					"score": 0.25,
 					"share": 1,
 					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper"
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
 					]
 				}
 			],
-			"parts": [],
+			"parts": [
+				"Root/51#0"
+			],
 			"screenshots": {
 				"375": "shots/Root_50_0@375.png",
 				"1440": "shots/Root_50_0@1440.png"
 			},
 			"snippet": "<div style=\"font-size:15px\" data-dc-tpl=\"50\">Checking out as a guest. <a href=\"SignIn.dc.html?next=checkout\" style=\"font-weight:700;color:#3A2A22\" data-dc-tpl=\"51\">Have an account? Sign in</a></div>",
 			"attributes": {
-				"tagName": "div"
+				"text": "Checking out as a guest. <a href=\"/my-account/\"><strong>Have an account? Sign in</strong></a>"
+			},
+			"slots": {
+				"a": {
+					"tpl": "Root/51#0"
+				}
 			}
 		},
 		{
 			"order": 19,
-			"key": "Root/51#0",
-			"tag": "a",
-			"depth": 5,
-			"words": "Have an account? Sign in",
-			"block": "sgs/button",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.75,
-			"low": false,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
-						"block_composition: sgs/button is a leaf; the element holds words and no block children"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {
-				"375": "shots/Root_51_0@375.png",
-				"1440": "shots/Root_51_0@1440.png"
-			},
-			"snippet": "<a href=\"SignIn.dc.html?next=checkout\" style=\"font-weight:700;color:#3A2A22\" data-dc-tpl=\"51\">Have an account? Sign in</a>",
-			"attributes": {
-				"label": "Have an account? Sign in",
-				"url": "/my-account/"
-			}
-		},
-		{
-			"order": 20,
 			"key": "Root/52#0",
 			"tag": "label",
 			"depth": 4,
@@ -770,7 +1325,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 21,
+			"order": 20,
 			"key": "Root/53#0",
 			"tag": "input",
 			"depth": 5,
@@ -810,7 +1365,7 @@
 			}
 		},
 		{
-			"order": 22,
+			"order": 21,
 			"key": "Root/54#0",
 			"tag": "label",
 			"depth": 4,
@@ -833,7 +1388,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 23,
+			"order": 22,
 			"key": "Root/55#0",
 			"tag": "input",
 			"depth": 5,
@@ -872,7 +1427,7 @@
 			}
 		},
 		{
-			"order": 24,
+			"order": 23,
 			"key": "Root/57#0",
 			"tag": "div",
 			"depth": 4,
@@ -895,7 +1450,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 25,
+			"order": 24,
 			"key": "Root/58#0",
 			"tag": "label",
 			"depth": 5,
@@ -918,7 +1473,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 26,
+			"order": 25,
 			"key": "Root/59#0",
 			"tag": "input",
 			"depth": 6,
@@ -952,7 +1507,7 @@
 			}
 		},
 		{
-			"order": 27,
+			"order": 26,
 			"key": "Root/60#0",
 			"tag": "span",
 			"depth": 6,
@@ -975,7 +1530,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 28,
+			"order": 27,
 			"key": "Root/61#0",
 			"tag": "span",
 			"depth": 7,
@@ -1009,7 +1564,7 @@
 			}
 		},
 		{
-			"order": 29,
+			"order": 28,
 			"key": "Root/62#0",
 			"tag": "span",
 			"depth": 7,
@@ -1043,7 +1598,7 @@
 			}
 		},
 		{
-			"order": 30,
+			"order": 29,
 			"key": "Root/71#0",
 			"tag": "fieldset",
 			"depth": 3,
@@ -1066,7 +1621,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 31,
+			"order": 30,
 			"key": "Root/72#0",
 			"tag": "legend",
 			"depth": 4,
@@ -1089,7 +1644,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 32,
+			"order": 31,
 			"key": "Root/73#0",
 			"tag": "div",
 			"depth": 4,
@@ -1120,10 +1675,18 @@
 			"snippet": "<div style=\"display:grid;grid-template-columns:1fr 1fr;gap:10px\" data-dc-tpl=\"73\"> <button type=\"button\" sc-camel-on-click=\"{{ forMe }}\" aria-pressed=\"{{ isMe }}\" style=\"min-height:76px;border-radius:20px;border:2px solid #3A2A22;background:{{ me.bg }};box-shadow:{{ me.shadow }};font-weight:700;font-size:16px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:cent",
 			"attributes": {
 				"label": "2 · Who’s it for?"
+			},
+			"slots": {
+				".sgs-form-field__group > .sgs-container": {
+					"tpl": "Root/74#0"
+				},
+				".sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(1) > .sgs-form-tile__label": {
+					"tpl": "Root/75#0"
+				}
 			}
 		},
 		{
-			"order": 33,
+			"order": 32,
 			"key": "Root/74#0",
 			"tag": "button",
 			"depth": 5,
@@ -1147,7 +1710,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 34,
+			"order": 33,
 			"key": "Root/75#0",
 			"tag": "span",
 			"depth": 6,
@@ -1171,7 +1734,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 35,
+			"order": 34,
 			"key": "Root/76#0",
 			"tag": "button",
 			"depth": 5,
@@ -1195,7 +1758,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 36,
+			"order": 35,
 			"key": "Root/77#0",
 			"tag": "span",
 			"depth": 6,
@@ -1219,7 +1782,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 37,
+			"order": 36,
 			"key": "Root/85#0",
 			"tag": "fieldset",
 			"depth": 3,
@@ -1242,7 +1805,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 38,
+			"order": 37,
 			"key": "Root/86#0",
 			"tag": "legend",
 			"depth": 4,
@@ -1276,7 +1839,7 @@
 			}
 		},
 		{
-			"order": 39,
+			"order": 38,
 			"key": "Root/87#0",
 			"tag": "div",
 			"depth": 4,
@@ -1310,10 +1873,18 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/89#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/90#0"
+				}
 			}
 		},
 		{
-			"order": 40,
+			"order": 39,
 			"key": "Root/88#0",
 			"tag": "label",
 			"depth": 5,
@@ -1336,7 +1907,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 41,
+			"order": 40,
 			"key": "Root/89#0",
 			"tag": "input",
 			"depth": 6,
@@ -1375,7 +1946,7 @@
 			}
 		},
 		{
-			"order": 42,
+			"order": 41,
 			"key": "Root/90#0",
 			"tag": "button",
 			"depth": 5,
@@ -1407,10 +1978,15 @@
 			"snippet": "<button type=\"button\" style=\"height:54px;padding:0 18px;border-radius:14px;border:2px solid #3A2A22;background:#F9CF6E;font-weight:700;cursor:pointer\" data-dc-tpl=\"90\">Find address</button>",
 			"attributes": {
 				"label": "Find address"
+			},
+			"slots": {
+				".sgs-button__label": {
+					"tpl": "Root/90#0"
+				}
 			}
 		},
 		{
-			"order": 43,
+			"order": 42,
 			"key": "Root/91#0",
 			"tag": "label",
 			"depth": 4,
@@ -1433,7 +2009,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 44,
+			"order": 43,
 			"key": "Root/92#0",
 			"tag": "input",
 			"depth": 5,
@@ -1472,7 +2048,7 @@
 			}
 		},
 		{
-			"order": 45,
+			"order": 44,
 			"key": "Root/93#0",
 			"tag": "div",
 			"depth": 4,
@@ -1506,10 +2082,18 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/95#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/97#0"
+				}
 			}
 		},
 		{
-			"order": 46,
+			"order": 45,
 			"key": "Root/94#0",
 			"tag": "label",
 			"depth": 5,
@@ -1532,7 +2116,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 47,
+			"order": 46,
 			"key": "Root/95#0",
 			"tag": "input",
 			"depth": 6,
@@ -1571,7 +2155,7 @@
 			}
 		},
 		{
-			"order": 48,
+			"order": 47,
 			"key": "Root/96#0",
 			"tag": "label",
 			"depth": 5,
@@ -1594,7 +2178,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 49,
+			"order": 48,
 			"key": "Root/97#0",
 			"tag": "input",
 			"depth": 6,
@@ -1633,7 +2217,7 @@
 			}
 		},
 		{
-			"order": 50,
+			"order": 49,
 			"key": "Root/98#0",
 			"tag": "div",
 			"depth": 4,
@@ -1662,10 +2246,15 @@
 				"1440": "shots/Root_98_0@1440.png"
 			},
 			"snippet": "<div style=\"display:flex;flex-direction:column;gap:10px;margin-top:4px\" data-dc-tpl=\"98\"> <sc-for list=\"{{ methods }}\" as=\"d\" hint-placeholder-count=\"0\" data-dc-tpl=\"99\"> <button type=\"button\" sc-camel-on-click=\"{{ d.pick }}\" aria-pressed=\"{{ d.on }}\" style=\"min-height:66px;border-radius:18px;border:2px solid #3A2A22;background:{{ d.bg }};box-shadow:{{ d.shadow }};padding:10px 16px;display:grid;gr",
-			"attributes": {}
+			"attributes": {},
+			"slots": {
+				".sgs-form-field__group > .sgs-container": {
+					"tpl": "Root/98#0"
+				}
+			}
 		},
 		{
-			"order": 51,
+			"order": 50,
 			"key": "Root/100#0",
 			"tag": "button",
 			"depth": 5,
@@ -1689,7 +2278,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 52,
+			"order": 51,
 			"key": "Root/101#0",
 			"tag": "span",
 			"depth": 6,
@@ -1712,7 +2301,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 53,
+			"order": 52,
 			"key": "Root/102#0",
 			"tag": "span",
 			"depth": 6,
@@ -1736,7 +2325,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 54,
+			"order": 53,
 			"key": "Root/103#0",
 			"tag": "b",
 			"depth": 7,
@@ -1760,7 +2349,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 55,
+			"order": 54,
 			"key": "Root/104#0",
 			"tag": "span",
 			"depth": 7,
@@ -1784,7 +2373,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 56,
+			"order": 55,
 			"key": "Root/105#0",
 			"tag": "b",
 			"depth": 6,
@@ -1808,7 +2397,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 57,
+			"order": 56,
 			"key": "Root/100#1",
 			"tag": "button",
 			"depth": 5,
@@ -1832,7 +2421,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 58,
+			"order": 57,
 			"key": "Root/101#1",
 			"tag": "span",
 			"depth": 6,
@@ -1855,7 +2444,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 59,
+			"order": 58,
 			"key": "Root/102#1",
 			"tag": "span",
 			"depth": 6,
@@ -1879,7 +2468,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 60,
+			"order": 59,
 			"key": "Root/103#1",
 			"tag": "b",
 			"depth": 7,
@@ -1903,7 +2492,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 61,
+			"order": 60,
 			"key": "Root/104#1",
 			"tag": "span",
 			"depth": 7,
@@ -1927,7 +2516,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 62,
+			"order": 61,
 			"key": "Root/105#1",
 			"tag": "b",
 			"depth": 6,
@@ -1951,7 +2540,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 63,
+			"order": 62,
 			"key": "Root/106#0",
 			"tag": "fieldset",
 			"depth": 3,
@@ -1974,7 +2563,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 64,
+			"order": 63,
 			"key": "Root/107#0",
 			"tag": "legend",
 			"depth": 4,
@@ -2008,7 +2597,7 @@
 			}
 		},
 		{
-			"order": 65,
+			"order": 64,
 			"key": "Root/108#0",
 			"tag": "label",
 			"depth": 4,
@@ -2031,7 +2620,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 66,
+			"order": 65,
 			"key": "Root/109#0",
 			"tag": "input",
 			"depth": 5,
@@ -2070,7 +2659,7 @@
 			}
 		},
 		{
-			"order": 67,
+			"order": 66,
 			"key": "Root/110#0",
 			"tag": "div",
 			"depth": 4,
@@ -2104,10 +2693,18 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/112#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/114#0"
+				}
 			}
 		},
 		{
-			"order": 68,
+			"order": 67,
 			"key": "Root/111#0",
 			"tag": "label",
 			"depth": 5,
@@ -2130,7 +2727,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 69,
+			"order": 68,
 			"key": "Root/112#0",
 			"tag": "input",
 			"depth": 6,
@@ -2169,7 +2766,7 @@
 			}
 		},
 		{
-			"order": 70,
+			"order": 69,
 			"key": "Root/113#0",
 			"tag": "label",
 			"depth": 5,
@@ -2192,7 +2789,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 71,
+			"order": 70,
 			"key": "Root/114#0",
 			"tag": "input",
 			"depth": 6,
@@ -2231,78 +2828,48 @@
 			}
 		},
 		{
-			"order": 72,
+			"order": 71,
 			"key": "Root/115#0",
 			"tag": "div",
 			"depth": 3,
-			"words": "Contains oats (gluten), eggs, milk and fenugreek unless you chose the vegan base. Made in a kitchen that handles tree nuts.",
-			"block": "sgs/container",
+			"words": "Contains oats (gluten), eggs, milk and fenugreek unless you chose the vegan base. Made in a kitchen that handles tree nuts. Full allergen info",
+			"block": "sgs/text",
 			"action": null,
 			"reason": null,
 			"source": null,
-			"confidence": 0.75,
-			"low": false,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/container",
-					"score": 0.75,
+					"block": "sgs/text",
+					"score": 0.25,
 					"share": 1,
 					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper"
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
 					]
 				}
 			],
-			"parts": [],
+			"parts": [
+				"Root/116#0"
+			],
 			"screenshots": {
 				"375": "shots/Root_115_0@375.png",
 				"1440": "shots/Root_115_0@1440.png"
 			},
 			"snippet": "<div style=\"border:2px dashed #3A2A22;border-radius:20px;padding:14px 18px;font-size:14px;line-height:1.55\" data-dc-tpl=\"115\">Contains oats (gluten), eggs, milk and fenugreek unless you chose the vegan base. Made in a kitchen that handles tree nuts. <a href=\"Help.dc.html#allergens\" style=\"font-weight:700;color:#3A2A22\" data-dc-tpl=\"116\">Full allergen info</a></div>",
 			"attributes": {
-				"tagName": "div"
-			}
-		},
-		{
-			"order": 73,
-			"key": "Root/116#0",
-			"tag": "a",
-			"depth": 4,
-			"words": "Full allergen info",
-			"block": "sgs/button",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.75,
-			"low": false,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
-						"block_composition: sgs/button is a leaf; the element holds words and no block children"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {
-				"375": "shots/Root_116_0@375.png",
-				"1440": "shots/Root_116_0@1440.png"
+				"text": "Contains oats (gluten), eggs, milk and fenugreek unless you chose the vegan base. Made in a kitchen that handles tree nuts. <a href=\"/help/#allergens\"><strong>Full allergen info</strong></a>"
 			},
-			"snippet": "<a href=\"Help.dc.html#allergens\" style=\"font-weight:700;color:#3A2A22\" data-dc-tpl=\"116\">Full allergen info</a>",
-			"attributes": {
-				"label": "Full allergen info",
-				"url": "/help/#allergens"
+			"slots": {
+				"a": {
+					"tpl": "Root/116#0"
+				}
 			}
 		},
 		{
-			"order": 74,
+			"order": 72,
 			"key": "Root/117#0",
 			"tag": "button",
 			"depth": 3,
@@ -2334,81 +2901,56 @@
 			"snippet": "<button type=\"submit\" style=\"height:66px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;font-weight:700;font-size:19px;cursor:pointer;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"background:#FFFAF0;transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22\" style-active=\"transform:translate(3px,3px);",
 			"attributes": {
 				"label": "Pay £30.45"
+			},
+			"slots": {
+				".sgs-button__label": {
+					"tpl": "Root/117#0"
+				}
 			}
 		},
 		{
-			"order": 75,
+			"order": 73,
 			"key": "Root/118#0",
 			"tag": "div",
 			"depth": 3,
-			"words": "By placing your order you agree to our .",
-			"block": "sgs/container",
+			"words": "By placing your order you agree to our terms.",
+			"block": "sgs/text",
 			"action": null,
 			"reason": null,
 			"source": null,
-			"confidence": 0.75,
-			"low": false,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/container",
-					"score": 0.75,
+					"block": "sgs/text",
+					"score": 0.25,
 					"share": 1,
 					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper"
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
 					]
 				}
 			],
-			"parts": [],
+			"parts": [
+				"Root/119#0"
+			],
 			"screenshots": {
 				"375": "shots/Root_118_0@375.png",
 				"1440": "shots/Root_118_0@1440.png"
 			},
 			"snippet": "<div style=\"font-size:13px;text-align:center;color:#5E4A3D\" data-dc-tpl=\"118\">By placing your order you agree to our <a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"119\">terms</a>.</div>",
 			"attributes": {
-				"tagName": "div"
-			}
-		},
-		{
-			"order": 76,
-			"key": "Root/119#0",
-			"tag": "a",
-			"depth": 4,
-			"words": "terms",
-			"block": "sgs/button",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.75,
-			"low": false,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
-						"block_composition: sgs/button is a leaf; the element holds words and no block children"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {
-				"375": "shots/Root_119_0@375.png",
-				"1440": "shots/Root_119_0@1440.png"
+				"text": "By placing your order you agree to our <a href=\"/help/#legal\">terms</a>."
 			},
-			"snippet": "<a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"119\">terms</a>",
-			"attributes": {
-				"label": "terms",
-				"url": "/help/#legal"
+			"slots": {
+				"a": {
+					"tpl": "Root/119#0"
+				}
 			}
 		},
 		{
-			"order": 77,
+			"order": 74,
 			"key": "Root/121#0",
 			"tag": "aside",
 			"depth": 2,
@@ -2430,7 +2972,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 78,
+			"order": 75,
 			"key": "Root/122#0",
 			"tag": "div",
 			"depth": 3,
@@ -2463,7 +3005,7 @@
 			}
 		},
 		{
-			"order": 79,
+			"order": 76,
 			"key": "Root/124#0",
 			"tag": "div",
 			"depth": 3,
@@ -2496,10 +3038,18 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/126#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/128#0"
+				}
 			}
 		},
 		{
-			"order": 80,
+			"order": 77,
 			"key": "Root/125#0",
 			"tag": "div",
 			"depth": 4,
@@ -2521,7 +3071,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 81,
+			"order": 78,
 			"key": "Root/126#0",
 			"tag": "span",
 			"depth": 5,
@@ -2554,7 +3104,7 @@
 			}
 		},
 		{
-			"order": 82,
+			"order": 79,
 			"key": "Root/127#0",
 			"tag": "div",
 			"depth": 4,
@@ -2576,7 +3126,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 83,
+			"order": 80,
 			"key": "Root/128#0",
 			"tag": "div",
 			"depth": 5,
@@ -2609,7 +3159,7 @@
 			}
 		},
 		{
-			"order": 84,
+			"order": 81,
 			"key": "Root/129#0",
 			"tag": "div",
 			"depth": 5,
@@ -2642,7 +3192,7 @@
 			}
 		},
 		{
-			"order": 85,
+			"order": 82,
 			"key": "Root/130#0",
 			"tag": "b",
 			"depth": 4,
@@ -2675,7 +3225,7 @@
 			}
 		},
 		{
-			"order": 86,
+			"order": 83,
 			"key": "Root/124#1",
 			"tag": "div",
 			"depth": 3,
@@ -2708,10 +3258,18 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/126#1"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/128#1"
+				}
 			}
 		},
 		{
-			"order": 87,
+			"order": 84,
 			"key": "Root/125#1",
 			"tag": "div",
 			"depth": 4,
@@ -2733,7 +3291,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 88,
+			"order": 85,
 			"key": "Root/126#1",
 			"tag": "span",
 			"depth": 5,
@@ -2766,7 +3324,7 @@
 			}
 		},
 		{
-			"order": 89,
+			"order": 86,
 			"key": "Root/127#1",
 			"tag": "div",
 			"depth": 4,
@@ -2788,7 +3346,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 90,
+			"order": 87,
 			"key": "Root/128#1",
 			"tag": "div",
 			"depth": 5,
@@ -2821,7 +3379,7 @@
 			}
 		},
 		{
-			"order": 91,
+			"order": 88,
 			"key": "Root/129#1",
 			"tag": "div",
 			"depth": 5,
@@ -2854,7 +3412,7 @@
 			}
 		},
 		{
-			"order": 92,
+			"order": 89,
 			"key": "Root/130#1",
 			"tag": "b",
 			"depth": 4,
@@ -2887,7 +3445,7 @@
 			}
 		},
 		{
-			"order": 93,
+			"order": 90,
 			"key": "Root/131#0",
 			"tag": "div",
 			"depth": 3,
@@ -2920,10 +3478,18 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/132#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/133#0"
+				}
 			}
 		},
 		{
-			"order": 94,
+			"order": 91,
 			"key": "Root/132#0",
 			"tag": "input",
 			"depth": 4,
@@ -2961,7 +3527,7 @@
 			}
 		},
 		{
-			"order": 95,
+			"order": 92,
 			"key": "Root/133#0",
 			"tag": "button",
 			"depth": 4,
@@ -2992,10 +3558,15 @@
 			"snippet": "<button type=\"button\" style=\"height:48px;padding:0 16px;border-radius:14px;border:2px solid #3A2A22;background:#FFFAF0;font-weight:700;cursor:pointer\" data-dc-tpl=\"133\">Apply</button>",
 			"attributes": {
 				"label": "Apply"
+			},
+			"slots": {
+				".sgs-button__label": {
+					"tpl": "Root/133#0"
+				}
 			}
 		},
 		{
-			"order": 96,
+			"order": 93,
 			"key": "Root/134#0",
 			"tag": "div",
 			"depth": 3,
@@ -3028,10 +3599,18 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/135#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/136#0"
+				}
 			}
 		},
 		{
-			"order": 97,
+			"order": 94,
 			"key": "Root/135#0",
 			"tag": "span",
 			"depth": 4,
@@ -3064,7 +3643,7 @@
 			}
 		},
 		{
-			"order": 98,
+			"order": 95,
 			"key": "Root/136#0",
 			"tag": "b",
 			"depth": 4,
@@ -3097,7 +3676,7 @@
 			}
 		},
 		{
-			"order": 99,
+			"order": 96,
 			"key": "Root/137#0",
 			"tag": "div",
 			"depth": 3,
@@ -3130,10 +3709,18 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/138#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/139#0"
+				}
 			}
 		},
 		{
-			"order": 100,
+			"order": 97,
 			"key": "Root/138#0",
 			"tag": "span",
 			"depth": 4,
@@ -3166,7 +3753,7 @@
 			}
 		},
 		{
-			"order": 101,
+			"order": 98,
 			"key": "Root/139#0",
 			"tag": "b",
 			"depth": 4,
@@ -3199,7 +3786,7 @@
 			}
 		},
 		{
-			"order": 102,
+			"order": 99,
 			"key": "Root/140#0",
 			"tag": "div",
 			"depth": 3,
@@ -3232,10 +3819,18 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/141#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/142#0"
+				}
 			}
 		},
 		{
-			"order": 103,
+			"order": 100,
 			"key": "Root/141#0",
 			"tag": "b",
 			"depth": 4,
@@ -3268,7 +3863,7 @@
 			}
 		},
 		{
-			"order": 104,
+			"order": 101,
 			"key": "Root/142#0",
 			"tag": "span",
 			"depth": 4,
@@ -3301,7 +3896,7 @@
 			}
 		},
 		{
-			"order": 105,
+			"order": 102,
 			"key": "Root/143#0",
 			"tag": "div",
 			"depth": 3,

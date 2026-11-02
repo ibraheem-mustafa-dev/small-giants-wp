@@ -9,6 +9,10 @@
       "textHash": "1505",
       "line": 114
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/87#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/87#1"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-mega-sectors-1": {
@@ -22,6 +26,10 @@
       ],
       "textHash": "1505",
       "line": 116
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/88#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/90#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -37,6 +45,9 @@
       ],
       "textHash": "1505",
       "line": 117
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/89#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -54,6 +65,9 @@
       "textHash": "1505",
       "line": 118
     },
+    "slots": {
+      ".sgs-media__img": "Root/89#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-mega-sectors-4": {
@@ -68,6 +82,10 @@
       ],
       "textHash": "1505",
       "line": 120
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/91#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/92#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -117,6 +135,9 @@
       "textHash": "e26e5c63",
       "line": 123
     },
+    "slots": {
+      ".sgs-button__label": "Root/93#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-mega-sectors-8": {
@@ -130,6 +151,10 @@
       ],
       "textHash": "1505",
       "line": 116
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/88#1",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/90#1"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -145,6 +170,9 @@
       ],
       "textHash": "1505",
       "line": 117
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/89#1"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -162,6 +190,9 @@
       "textHash": "1505",
       "line": 118
     },
+    "slots": {
+      ".sgs-media__img": "Root/89#1"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-mega-sectors-11": {
@@ -176,6 +207,10 @@
       ],
       "textHash": "1505",
       "line": 120
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/91#1",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/92#1"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -225,6 +260,9 @@
       "textHash": "2d5e9f7c",
       "line": 123
     },
+    "slots": {
+      ".sgs-button__label": "Root/93#1"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-mega-sectors-15": {
@@ -238,6 +276,10 @@
       ],
       "textHash": "1505",
       "line": 116
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/88#2",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/90#2"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -253,6 +295,9 @@
       ],
       "textHash": "1505",
       "line": 117
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/89#2"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -270,6 +315,9 @@
       "textHash": "1505",
       "line": 118
     },
+    "slots": {
+      ".sgs-media__img": "Root/89#2"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-mega-sectors-18": {
@@ -284,6 +332,10 @@
       ],
       "textHash": "1505",
       "line": 120
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/91#2",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/92#2"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -333,6 +385,9 @@
       "textHash": "1d428c5b",
       "line": 123
     },
+    "slots": {
+      ".sgs-button__label": "Root/93#2"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-mega-sectors-22": {
@@ -346,6 +401,10 @@
       ],
       "textHash": "1505",
       "line": 116
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/88#3",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/90#3"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -361,6 +420,9 @@
       ],
       "textHash": "1505",
       "line": 117
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/89#3"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -378,6 +440,9 @@
       "textHash": "1505",
       "line": 118
     },
+    "slots": {
+      ".sgs-media__img": "Root/89#3"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-mega-sectors-25": {
@@ -392,6 +457,10 @@
       ],
       "textHash": "1505",
       "line": 120
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/91#3",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/92#3"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -440,6 +509,9 @@
       ],
       "textHash": "1bf062be",
       "line": 123
+    },
+    "slots": {
+      ".sgs-button__label": "Root/93#3"
     },
     "draft": "0fe5aee1c396a997"
   }

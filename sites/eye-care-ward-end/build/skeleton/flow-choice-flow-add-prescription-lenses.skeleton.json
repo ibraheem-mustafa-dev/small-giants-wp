@@ -24,7 +24,7 @@
 			}
 		},
 		"draftRef": {
-			"tpl": "Root/1283#0"
+			"tpl": "Root/1280#0"
 		},
 		"draftFingerprint": {
 			"tag": "div",
@@ -32,7 +32,7 @@
 			"styleHash": "b75df390",
 			"parentTags": [],
 			"textHash": "1505",
-			"line": 2167
+			"line": 2163
 		},
 		"innerBlocks": [
 			{
@@ -76,7 +76,7 @@
 						},
 						"innerBlocks": [],
 						"draftRef": {
-							"tpl": "Root/1322#0"
+							"tpl": "Root/1319#0"
 						},
 						"draftFingerprint": {
 							"tag": "div",
@@ -88,17 +88,26 @@
 								"div"
 							],
 							"textHash": "1505",
-							"line": 2225
+							"line": 2221
 						},
 						"draftSlots": {
 							".sgs-choice-flow-question__title": {
-								"tpl": "Root/1324#0"
+								"tpl": "Root/1321#0"
 							},
 							".sgs-choice-flow-question__intro": {
-								"tpl": "Root/1325#0"
+								"tpl": "Root/1322#0"
 							},
 							".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description": {
-								"tpl": "Root/1340#0"
+								"tpl": "Root/1337#0"
+							},
+							".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(2) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description": {
+								"tpl": "Root/1333#1"
+							},
+							".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(3) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description": {
+								"tpl": "Root/1333#2"
+							},
+							".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(4) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description": {
+								"tpl": "Root/1333#3"
 							}
 						}
 					}
@@ -334,22 +343,37 @@
 		],
 		"draftSlots": {
 			".sgs-choice-flow__chrome-header > .sgs-choice-flow__chrome-logo": {
-				"tpl": "Root/1286#0"
+				"tpl": "Root/1283#0"
 			},
 			".sgs-choice-flow__chrome-header > .sgs-choice-flow__chrome-eyebrow": {
-				"tpl": "Root/1287#0"
+				"tpl": "Root/1284#0"
 			},
 			".sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__footer-actions": {
-				"tpl": "Root/1443#0"
+				"tpl": "Root/1440#0"
 			},
 			".sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-body > .sgs-choice-flow__summary-note": {
-				"tpl": "Root/1315#0"
+				"tpl": "Root/1312#0"
 			},
 			".sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-choice-flow__summary-note": {
-				"tpl": "Root/1432#0"
+				"tpl": "Root/1429#0"
 			},
 			".sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-container:nth-of-type(2) > .sgs-choice-flow-question > .sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-info-toggle": {
-				"tpl": "Root/1341#0"
+				"tpl": "Root/1338#0"
+			},
+			".sgs-choice-flow__chrome-header > .sgs-choice-flow__chrome-close > .sgs-choice-flow__chrome-close-label": {
+				"tpl": "Root/1285#0"
+			},
+			".sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-body > .sgs-choice-flow__summary-lines > li:nth-of-type(2) > span:nth-of-type(1)": {
+				"tpl": "Root/1306#1"
+			},
+			".sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-body > .sgs-choice-flow__summary-lines > li:nth-of-type(2) > span:nth-of-type(2)": {
+				"tpl": "Root/1307#1"
+			},
+			".sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__skip": {
+				"tpl": "Root/1438#0"
+			},
+			".sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__skip > .sgs-choice-flow__skip-button": {
+				"tpl": "Root/1439#0"
 			}
 		},
 		"handover": [

@@ -61,32 +61,16 @@
 								"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
 							}
 						]
-					},
-					{
-						"name": "sgs/button",
-						"attributes": {
-							"label": "×"
-						},
-						"draftRef": {
-							"tpl": "Root>SiteHeader@7#0/59#0"
-						},
-						"draftFingerprint": {
-							"tag": "button",
-							"cls": "scpe",
-							"styleHash": "7b985aeb",
-							"parentTags": [
-								"aside",
-								"div"
-							],
-							"textHash": "2b572",
-							"line": 63
-						},
-						"innerBlocks": []
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root>SiteHeader@7#0/58#0"
+					}
+				}
 			},
 			{
-				"name": "sgs/text",
+				"name": "sgs/label",
 				"attributes": {
 					"text": "Who are you shopping for?"
 				},
@@ -169,7 +153,12 @@
 									"textHash": "1505",
 									"line": 69
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-media__img": {
+										"tpl": "Root>SiteHeader@7#0/64#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/container",
@@ -195,9 +184,9 @@
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/heading",
+										"name": "sgs/label",
 										"attributes": {
-											"content": "For me"
+											"text": "For me"
 										},
 										"draftRef": {
 											"tpl": "Root>SiteHeader@7#0/66#0"
@@ -242,9 +231,25 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root>SiteHeader@7#0/66#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root>SiteHeader@7#0/67#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root>SiteHeader@7#0/64#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root>SiteHeader@7#0/65#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -288,7 +293,12 @@
 									"textHash": "1505",
 									"line": 73
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-media__img": {
+										"tpl": "Root>SiteHeader@7#0/69#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/container",
@@ -314,9 +324,9 @@
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/heading",
+										"name": "sgs/label",
 										"attributes": {
-											"content": "For a new mum"
+											"text": "For a new mum"
 										},
 										"draftRef": {
 											"tpl": "Root>SiteHeader@7#0/71#0"
@@ -361,15 +371,40 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root>SiteHeader@7#0/71#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root>SiteHeader@7#0/72#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root>SiteHeader@7#0/69#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root>SiteHeader@7#0/70#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root>SiteHeader@7#0/63#0"
+					},
+					".sgs-container__inner > p:nth-of-type(2)": {
+						"tpl": "Root>SiteHeader@7#0/68#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/icon-list",
 				"attributes": {
+					"markerType": "none",
 					"items": [
 						{
 							"text": "Shop all",
@@ -422,7 +457,12 @@
 						"kind": "link",
 						"detail": "draft link \"Product.dc.html?id=zookies&sub=1\" opens /product/zookies/; its draft query ?sub=1 has no site address and is dropped"
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)": {
+						"tpl": "Root>SiteHeader@7#0/73#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -467,6 +507,7 @@
 							{
 								"name": "sgs/icon-list",
 								"attributes": {
+									"markerType": "none",
 									"items": [
 										{
 											"text": "Sign in",
@@ -501,9 +542,25 @@
 										"kind": "link",
 										"detail": "draft link \"SignIn.dc.html?mode=register\" opens /my-account/; its draft query ?mode=register has no site address and is dropped"
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon": {
+										"tpl": "Root>SiteHeader@7#0/93#0"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text": {
+										"tpl": "Root>SiteHeader@7#0/92#0"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)": {
+										"tpl": "Root>SiteHeader@7#0/91#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root>SiteHeader@7#0/92#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -526,9 +583,9 @@
 						},
 						"innerBlocks": [
 							{
-								"name": "sgs/text",
+								"name": "sgs/heading",
 								"attributes": {
-									"text": "say hello"
+									"content": "say hello"
 								},
 								"draftRef": {
 									"tpl": "Root>SiteHeader@7#0/105#0"
@@ -550,6 +607,7 @@
 							{
 								"name": "sgs/icon-list",
 								"attributes": {
+									"markerType": "none",
 									"items": [
 										{
 											"text": "WhatsApp",
@@ -581,9 +639,22 @@
 									"textHash": "71fcb1bd",
 									"line": 99
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)": {
+										"tpl": "Root>SiteHeader@7#0/106#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root>SiteHeader@7#0/105#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root>SiteHeader@7#0/107#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -697,12 +768,50 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root>SiteHeader@7#0/126#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root>SiteHeader@7#0/127#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root>SiteHeader@7#0/124#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root>SiteHeader@7#0/125#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root>SiteHeader@7#0/89#0"
+					},
+					".sgs-container__inner > p:nth-of-type(2)": {
+						"tpl": "Root>SiteHeader@7#0/104#0"
+					}
+				}
 			}
-		]
+		],
+		"draftSlots": {
+			".sgs-nav-drawer__chrome > .sgs-nav-drawer__close": {
+				"tpl": "Root>SiteHeader@7#0/59#0"
+			},
+			".sgs-nav-drawer__body": {
+				"tpl": "Root>SiteHeader@7#0/60#0"
+			},
+			"@scrim": {
+				"tpl": "Root>SiteHeader@7#0/56#0"
+			},
+			".sgs-nav-drawer__chrome": {
+				"tpl": "Root>SiteHeader@7#0/73#0"
+			}
+		}
 	}
 ]

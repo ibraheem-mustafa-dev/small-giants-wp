@@ -5,13 +5,26 @@
       "attributes": {
         "tagName": "main",
         "className": "cr-ref-home-0",
+        "ariaLabel": "Shop by brand",
+        "textColour": "ink",
         "minHeight": {
           "desktop": "0px"
         },
+        "gridItemBackground": "ink",
+        "gridItemBorder": "hairline",
         "contentWidth": {
           "desktop": "full"
         },
-        "textColourHover": "primary"
+        "textColourHover": "ink",
+        "padding": {
+          "desktop": {
+            "right": "0px",
+            "left": "0px"
+          }
+        },
+        "sgsCustomCss": "& .sgs-container__inner > p:nth-of-type(1) { height: 82vh; overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { border-bottom-width: 1px; border-bottom-style: solid; overflow-x: hidden; overflow-y: hidden; }",
+        "sgsCustomCssId": "r9f1a8fdce5a",
+        "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width height: 82vh; overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width border-bottom-width: 1px; border-bottom-style: solid; overflow-x: hidden; overflow-y: hidden;"
       }
     }
   ],
@@ -22,13 +35,26 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-home-0",
+          "ariaLabel": "Shop by brand",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
           },
+          "gridItemBackground": "ink",
+          "gridItemBorder": "hairline",
           "contentWidth": {
             "desktop": "full"
           },
-          "textColourHover": "primary"
+          "textColourHover": "ink",
+          "padding": {
+            "desktop": {
+              "right": "0px",
+              "left": "0px"
+            }
+          },
+          "sgsCustomCss": "& .sgs-container__inner > p:nth-of-type(1) { height: 82vh; overflow-x: hidden; overflow-y: hidden; position: relative; } & .sgs-container__inner > p:nth-of-type(2) { border-bottom-width: 1px; border-bottom-style: solid; overflow-x: hidden; overflow-y: hidden; }",
+          "sgsCustomCssId": "r9f1a8fdce5a",
+          "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width height: 82vh; overflow-x: hidden; overflow-y: hidden; position: relative;, & .sgs-container__inner > p:nth-of-type(2) every width border-bottom-width: 1px; border-bottom-style: solid; overflow-x: hidden; overflow-y: hidden;"
         }
       }
     ]

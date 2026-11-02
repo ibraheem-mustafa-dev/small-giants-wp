@@ -54,7 +54,9 @@
 					},
 					{
 						"name": "sgs/breadcrumbs",
-						"attributes": {},
+						"attributes": {
+							"homeLabel": ""
+						},
 						"draftRef": {
 							"tpl": "Root/323#0"
 						},
@@ -93,7 +95,12 @@
 									"textHash": "d9d08625",
 									"line": 446
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-button__label": {
+										"tpl": "Root/326#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/text",
@@ -118,7 +125,12 @@
 								},
 								"innerBlocks": []
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-breadcrumbs__list > .sgs-breadcrumbs__item:nth-of-type(1) > a": {
+								"tpl": "Root/326#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/label",
@@ -145,7 +157,8 @@
 					{
 						"name": "sgs/heading",
 						"attributes": {
-							"content": "Talk to our team."
+							"content": "Talk to our team.",
+							"level": "h1"
 						},
 						"draftRef": {
 							"tpl": "Root/333#0"
@@ -190,7 +203,15 @@
 						},
 						"innerBlocks": []
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-hero__content": {
+						"tpl": "Root/322#0"
+					},
+					".sgs-hero__video-bg": {
+						"tpl": "Root/318#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -322,7 +343,12 @@
 															"textHash": "1505",
 															"line": 762
 														},
-														"innerBlocks": []
+														"innerBlocks": [],
+														"draftSlots": {
+															".sgs-icon__shape": {
+																"tpl": "Root/532#0"
+															}
+														}
 													},
 													{
 														"name": "sgs/container",
@@ -398,7 +424,12 @@
 																	"textHash": "a9838f6a",
 																	"line": 765
 																},
-																"innerBlocks": []
+																"innerBlocks": [],
+																"draftSlots": {
+																	".sgs-business-info": {
+																		"tpl": "Root/535#0"
+																	}
+																}
 															},
 															{
 																"name": "sgs/text",
@@ -426,9 +457,25 @@
 																},
 																"innerBlocks": []
 															}
-														]
+														],
+														"draftSlots": {
+															".sgs-container__inner > p:nth-of-type(1)": {
+																"tpl": "Root/534#0"
+															},
+															".sgs-container__inner > p:nth-of-type(2)": {
+																"tpl": "Root/535#0"
+															}
+														}
 													}
-												]
+												],
+												"draftSlots": {
+													".sgs-container__inner > p:nth-of-type(1)": {
+														"tpl": "Root/532#0"
+													},
+													".sgs-container__inner > p:nth-of-type(2)": {
+														"tpl": "Root/533#0"
+													}
+												}
 											},
 											{
 												"name": "sgs/container",
@@ -476,7 +523,12 @@
 															"textHash": "1505",
 															"line": 762
 														},
-														"innerBlocks": []
+														"innerBlocks": [],
+														"draftSlots": {
+															".sgs-icon__shape": {
+																"tpl": "Root/532#1"
+															}
+														}
 													},
 													{
 														"name": "sgs/container",
@@ -557,7 +609,7 @@
 																	{
 																		"owner": "site-info",
 																		"kind": "text",
-																		"detail": "Site Info \"phone\" must read: {{ d.value }}"
+																		"detail": "Site Info \"phone\" must read: 0121 771 4330"
 																	}
 																]
 															},
@@ -587,9 +639,25 @@
 																},
 																"innerBlocks": []
 															}
-														]
+														],
+														"draftSlots": {
+															".sgs-container__inner > p:nth-of-type(1)": {
+																"tpl": "Root/534#1"
+															},
+															".sgs-container__inner > p:nth-of-type(2)": {
+																"tpl": "Root/535#1"
+															}
+														}
 													}
-												]
+												],
+												"draftSlots": {
+													".sgs-container__inner > p:nth-of-type(1)": {
+														"tpl": "Root/532#1"
+													},
+													".sgs-container__inner > p:nth-of-type(2)": {
+														"tpl": "Root/533#1"
+													}
+												}
 											},
 											{
 												"name": "sgs/container",
@@ -637,7 +705,12 @@
 															"textHash": "1505",
 															"line": 762
 														},
-														"innerBlocks": []
+														"innerBlocks": [],
+														"draftSlots": {
+															".sgs-icon__shape": {
+																"tpl": "Root/532#2"
+															}
+														}
 													},
 													{
 														"name": "sgs/container",
@@ -718,7 +791,7 @@
 																	{
 																		"owner": "site-info",
 																		"kind": "text",
-																		"detail": "Site Info \"email\" must read: {{ d.value }}"
+																		"detail": "Site Info \"email\" must read: amir@indusfoodsltd.com"
 																	}
 																]
 															},
@@ -748,11 +821,35 @@
 																},
 																"innerBlocks": []
 															}
-														]
+														],
+														"draftSlots": {
+															".sgs-container__inner > p:nth-of-type(1)": {
+																"tpl": "Root/534#2"
+															},
+															".sgs-container__inner > p:nth-of-type(2)": {
+																"tpl": "Root/535#2"
+															}
+														}
 													}
-												]
+												],
+												"draftSlots": {
+													".sgs-container__inner > p:nth-of-type(1)": {
+														"tpl": "Root/532#2"
+													},
+													".sgs-container__inner > p:nth-of-type(2)": {
+														"tpl": "Root/533#2"
+													}
+												}
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/531#0"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/531#1"
+											}
+										}
 									},
 									{
 										"name": "sgs/container",
@@ -832,15 +929,46 @@
 													"textHash": "64e53e25",
 													"line": 772
 												},
-												"innerBlocks": []
+												"innerBlocks": [],
+												"draftSlots": {
+													".sgs-button__label": {
+														"tpl": "Root/539#0"
+													}
+												}
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/538#0"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/539#0"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/529#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/537#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/528#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/345#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -950,7 +1078,8 @@
 											{
 												"name": "sgs/heading",
 												"attributes": {
-													"content": "Send us a message"
+													"content": "Send us a message",
+													"level": "h2"
 												},
 												"draftRef": {
 													"tpl": "Root/352#0"
@@ -971,9 +1100,22 @@
 												},
 												"innerBlocks": []
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/350#0"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/352#0"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/348#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/container",
@@ -1051,14 +1193,45 @@
 													}
 												]
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root>EnquiryForm@468#0/4#0"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root>EnquiryForm@468#0/3#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/347#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/468#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/345#1"
+					}
+				}
 			}
-		]
+		],
+		"draftSlots": {
+			".sgs-container__inner > p:nth-of-type(1)": {
+				"tpl": "Root/316#0"
+			},
+			".sgs-container__inner > p:nth-of-type(2)": {
+				"tpl": "Root/344#0"
+			}
+		}
 	}
 ]

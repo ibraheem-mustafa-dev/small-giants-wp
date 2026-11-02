@@ -7,18 +7,38 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-prescription-lenses-0",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
           },
           "maxWidth": {
             "desktop": "1100px"
           },
-          "textColourHover": "primary",
+          "gridItemTextColour": "acc-ink",
+          "textColourHover": "ink",
           "padding": {
-            "desktop": "52px",
-            "tablet": "52px",
-            "mobile": "20px"
-          }
+            "desktop": {
+              "top": "48px",
+              "right": "52px",
+              "bottom": "90px",
+              "left": "52px"
+            },
+            "tablet": {
+              "top": "48px",
+              "right": "52px",
+              "bottom": "90px",
+              "left": "52px"
+            },
+            "mobile": {
+              "top": "28px",
+              "right": "20px",
+              "bottom": "60px",
+              "left": "20px"
+            }
+          },
+          "sgsCustomCss": "& .sgs-container__inner > p:nth-of-type(1) { margin-bottom: 10px; } & .sgs-container__inner > p:nth-of-type(2) { margin-bottom: 20px; text-wrap-style: pretty; } @media (max-width: 767px) { & .sgs-container__inner > p:nth-of-type(2) { max-width: 376.38px; } } @media (min-width: 768px) { & .sgs-container__inner > p:nth-of-type(2) { max-width: 531.36px; } }",
+          "sgsCustomCssId": "r532f285b775",
+          "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width margin-bottom: 10px;, & .sgs-container__inner > p:nth-of-type(2) every width margin-bottom: 20px; text-wrap-style: pretty;, & .sgs-container__inner > p:nth-of-type(2) 0-767px max-width: 376.38px;, & .sgs-container__inner > p:nth-of-type(2) 768px and up max-width: 531.36px;"
         }
       }
     ],
@@ -28,59 +48,89 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-about-0",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
           },
           "maxWidth": {
             "desktop": "1100px"
           },
-          "textColourHover": "primary",
+          "layout": "grid",
+          "gridTemplateColumns": {
+            "tablet": "repeat(1, minmax(0, 1fr))",
+            "desktop": "minmax(0, 1.1fr) minmax(0, 1fr)"
+          },
+          "gap": {
+            "desktop": "48px"
+          },
+          "alignItems": "start",
+          "textColourHover": "ink",
           "padding": {
-            "desktop": "52px",
-            "tablet": "52px",
-            "mobile": "20px"
+            "desktop": {
+              "top": "48px",
+              "right": "52px",
+              "bottom": "90px",
+              "left": "52px"
+            },
+            "tablet": {
+              "top": "48px",
+              "right": "52px",
+              "bottom": "90px",
+              "left": "52px"
+            },
+            "mobile": {
+              "top": "28px",
+              "right": "20px",
+              "bottom": "60px",
+              "left": "20px"
+            }
           }
         }
       }
     ],
-    "help": [
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "tagName": "main",
-          "className": "cr-ref-help-0",
-          "minHeight": {
-            "desktop": "0px"
-          },
-          "maxWidth": {
-            "desktop": "1100px"
-          },
-          "textColourHover": "primary",
-          "padding": {
-            "desktop": "52px",
-            "tablet": "52px",
-            "mobile": "20px"
-          }
-        }
-      }
-    ],
+    "help": [],
     "contact": [
       {
         "name": "sgs/container",
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-contact-0",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
           },
           "maxWidth": {
             "desktop": "1100px"
           },
-          "textColourHover": "primary",
+          "layout": "grid",
+          "gridTemplateColumns": {
+            "tablet": "repeat(1, minmax(0, 1fr))",
+            "desktop": "minmax(0, 1.1fr) minmax(0, 1fr)"
+          },
+          "gap": {
+            "desktop": "48px"
+          },
+          "alignItems": "start",
+          "textColourHover": "ink",
           "padding": {
-            "desktop": "52px",
-            "tablet": "52px",
-            "mobile": "20px"
+            "desktop": {
+              "top": "48px",
+              "right": "52px",
+              "bottom": "90px",
+              "left": "52px"
+            },
+            "tablet": {
+              "top": "48px",
+              "right": "52px",
+              "bottom": "90px",
+              "left": "52px"
+            },
+            "mobile": {
+              "top": "28px",
+              "right": "20px",
+              "bottom": "60px",
+              "left": "20px"
+            }
           }
         }
       }
@@ -91,17 +141,33 @@
         "attributes": {
           "tagName": "main",
           "className": "cr-ref-my-account-0",
+          "textColour": "ink",
           "minHeight": {
             "desktop": "0px"
           },
           "maxWidth": {
             "desktop": "1100px"
           },
-          "textColourHover": "primary",
+          "textColourHover": "ink",
           "padding": {
-            "desktop": "52px",
-            "tablet": "52px",
-            "mobile": "20px"
+            "desktop": {
+              "top": "48px",
+              "right": "52px",
+              "bottom": "90px",
+              "left": "52px"
+            },
+            "tablet": {
+              "top": "48px",
+              "right": "52px",
+              "bottom": "90px",
+              "left": "52px"
+            },
+            "mobile": {
+              "top": "28px",
+              "right": "20px",
+              "bottom": "60px",
+              "left": "20px"
+            }
           }
         }
       }

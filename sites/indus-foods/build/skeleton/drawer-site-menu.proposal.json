@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-28T06:45:10.296Z",
-	"inventory": "2026-10-27T13:54:04.491Z",
-	"source": "http://127.0.0.1:49333/Indus%20Foods%20Website%20v2.dc.html",
+	"generated": "2026-11-02T04:56:55.249Z",
+	"inventory": "2026-10-31T01:41:42.024Z",
+	"source": "http://127.0.0.1:58295/Indus%20Foods%20Website%20v2.dc.html",
 	"surface": "mobile-tablet-drawer",
 	"siteName": null,
 	"surfaceParts": [
@@ -57,24 +57,363 @@
 		"logo": 0.5,
 		"rule": 1
 	},
-	"builtPost": {
-		"site": "sandybrown",
-		"postType": "sgs_drawer",
-		"postId": 4456,
-		"title": "[QA] Indus mobile drawer"
-	},
 	"counts": {
 		"inventoryElements": 225,
 		"parts": 164,
 		"rows": 61,
-		"skeletonNodes": 15,
-		"expandedNodes": 21,
+		"skeletonNodes": 13,
+		"expandedNodes": 19,
 		"low": 0,
-		"removed": 46,
+		"removed": 48,
 		"unresolved": 0,
 		"byRule": {
-			"clientBuiltSurface": 61
+			"surfaceRoot": 1,
+			"decorativeShape": 2,
+			"decorationLayer": 1,
+			"homeLink": 1,
+			"drawerLogo": 1,
+			"drawerIconRun": 2,
+			"drawerClose": 3,
+			"navigation": 35,
+			"label": 1,
+			"drawsChildren": 4,
+			"pillButton": 4
 		}
+	},
+	"partPairing": {
+		"paired": 20,
+		"unpaired": [
+			{
+				"key": "Root/108#0",
+				"block": "sgs/nav-drawer",
+				"slot": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close > .sgs-nav-drawer__close-variant:nth-of-type(1) > .sgs-nav-drawer__close-text",
+				"reason": ".sgs-nav-drawer__chrome: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/108#0",
+				"block": "sgs/nav-drawer",
+				"slot": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close > .sgs-nav-drawer__close-icon",
+				"reason": ".sgs-nav-drawer__chrome: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/108#0",
+				"block": "sgs/nav-drawer",
+				"slot": ".sgs-nav-drawer__chrome",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/108#0",
+				"block": "sgs/nav-drawer",
+				"slot": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__chrome-logo > .sgs-nav-drawer__chrome-logo-picture > .sgs-nav-drawer__chrome-logo-image",
+				"reason": ".sgs-nav-drawer__chrome: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/108#0",
+				"block": "sgs/nav-drawer",
+				"slot": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__chrome-slot",
+				"reason": ".sgs-nav-drawer__chrome: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/112#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/112#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/112#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root/112#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(2)",
+				"reason": "no inner block of this node stands at this place"
+			},
+			{
+				"key": "Root/115#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/115#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/115#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/115#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(1)",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/115#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(2)",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/121#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/121#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/121#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(3) > .sgs-nav-drawer-menu__link",
+				"reason": "a part another render of the block draws: the default render draws it inside a wrapper"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(4) > .sgs-nav-drawer-menu__link",
+				"reason": "a part another render of the block draws: the default render draws it inside a wrapper"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(5) > .sgs-nav-drawer-menu__link",
+				"reason": "a part another render of the block draws: the default render draws it inside a wrapper"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(7) > .sgs-nav-drawer-menu__link",
+				"reason": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(7): no draft copy is left of a kind this copy draws (holding a panel or none)"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(2) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__submenu",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(3) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__submenu",
+				"reason": "the first copy of this repeated part has no element here, so neither has this one"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(4) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__submenu",
+				"reason": "the first copy of this repeated part has no element here, so neither has this one"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(5) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__submenu",
+				"reason": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(5) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(1) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__submenu",
+				"reason": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(1) > .sgs-nav-drawer-menu__accordion-row: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(1) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem:nth-of-type(1) > .sgs-nav-drawer-menu__sublink",
+				"reason": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(1) > .sgs-nav-drawer-menu__accordion-row: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(1) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem:nth-of-type(2) > .sgs-nav-drawer-menu__sublink",
+				"reason": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(1) > .sgs-nav-drawer-menu__accordion-row: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(1) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem:nth-of-type(1) > .sgs-nav-drawer-menu__sublink > .sgs-nav-drawer-menu__sublink-marker > svg > defs",
+				"reason": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(1) > .sgs-nav-drawer-menu__accordion-row: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(1) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem:nth-of-type(2) > .sgs-nav-drawer-menu__sublink > .sgs-nav-drawer-menu__sublink-marker > svg > defs",
+				"reason": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(1) > .sgs-nav-drawer-menu__accordion-row: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(3) > .sgs-nav-drawer-menu__link > .sgs-nav-drawer-menu__ornament",
+				"reason": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(3) > .sgs-nav-drawer-menu__link: a part another render of the block draws: the default render draws it inside a wrapper"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(4) > .sgs-nav-drawer-menu__link > .sgs-nav-drawer-menu__ornament",
+				"reason": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(4) > .sgs-nav-drawer-menu__link: a part another render of the block draws: the default render draws it inside a wrapper"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(5) > .sgs-nav-drawer-menu__link > .sgs-nav-drawer-menu__ornament",
+				"reason": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(5) > .sgs-nav-drawer-menu__link: a part another render of the block draws: the default render draws it inside a wrapper"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(7) > .sgs-nav-drawer-menu__link > .sgs-nav-drawer-menu__ornament",
+				"reason": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(7): no draft copy is left of a kind this copy draws (holding a panel or none)"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(4) > .sgs-nav-drawer-menu__link > .sgs-nav-drawer-menu__trailing-icon",
+				"reason": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(4) > .sgs-nav-drawer-menu__link: a part another render of the block draws: the default render draws it inside a wrapper"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(4) > .sgs-nav-drawer-menu__link > .sgs-nav-drawer-menu__badge",
+				"reason": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(4) > .sgs-nav-drawer-menu__link: a part another render of the block draws: the default render draws it inside a wrapper"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(2) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary > .sgs-nav-drawer-menu__caret > svg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(3) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary > .sgs-nav-drawer-menu__caret > svg",
+				"reason": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(3) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(4) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary > .sgs-nav-drawer-menu__caret > svg",
+				"reason": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(4) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(5) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary > .sgs-nav-drawer-menu__caret > svg",
+				"reason": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(5) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(1) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary > .sgs-nav-drawer-menu__caret > svg",
+				"reason": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(1) > .sgs-nav-drawer-menu__accordion-row: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(1) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary",
+				"reason": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(1) > .sgs-nav-drawer-menu__accordion-row: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(1) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary > .sgs-nav-drawer-menu__caret",
+				"reason": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(1) > .sgs-nav-drawer-menu__accordion-row: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(2) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__mega-body",
+				"reason": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(2) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__submenu: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(3) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__mega-body",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(4) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__mega-body",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root/122#0",
+				"block": "sgs/nav-drawer-menu",
+				"slot": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(5) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__mega-body",
+				"reason": ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(5) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/178#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/178#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/178#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root/178#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(2)",
+				"reason": "no inner block of this node stands at this place"
+			},
+			{
+				"key": "Root/196#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/196#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/196#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/196#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(2)",
+				"reason": "no inner block of this node stands at this place"
+			}
+		]
 	},
 	"widthAlternatives": [],
 	"problems": [],
@@ -92,7 +431,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "surfaceRoot",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/nav-drawer",
@@ -107,12 +447,24 @@
 			"screenshots": {},
 			"snippet": "<div ref=\"{{ setDrawerEl }}\" role=\"dialog\" aria-label=\"Site menu\" style=\"position:fixed;top:0;right:0;bottom:0;width:{{ R.drawerW }};z-index:300;background:linear-gradient(165deg,#0E8BB8 0%,#0A7EA8 45%,#075E80 100%);display:flex;flex-direction:column;overflow:hidden;box-shadow:-30px 0 60px -30px rgba(0,0,0,.45);\" data-dc-tpl=\"108\"> <span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;rig",
 			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"slots": {
+				".sgs-nav-drawer__chrome > .sgs-nav-drawer__chrome-logo": {
+					"tpl": "Root/114#0"
+				},
+				".sgs-nav-drawer__chrome > .sgs-nav-drawer__close": {
+					"tpl": "Root/118#0"
+				},
+				".sgs-nav-drawer__body": {
+					"tpl": "Root/108#0"
+				},
+				"@scrim": {
+					"tpl": "Root/111#0"
+				}
+			},
+			"slotNotes": [
+				".sgs-nav-drawer__chrome > .sgs-nav-drawer__close > .sgs-nav-drawer__close-icon: the draft has no element for .sgs-nav-drawer__close-icon",
+				".sgs-nav-drawer__chrome > .sgs-nav-drawer__close > .sgs-nav-drawer__close-variant:nth-of-type(2) > .sgs-nav-drawer__close-icon: the draft has no element for .sgs-nav-drawer__close-icon"
+			]
 		},
 		{
 			"order": 1,
@@ -127,7 +479,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "decorativeShape",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/decorative-image",
@@ -141,13 +494,7 @@
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-150px;bottom:90px;width:380px;height:380px;border-radius:50%;border:2px solid rgba(231,215,104,.4);pointer-events:none;\" data-dc-tpl=\"109\"></span>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 2,
@@ -162,7 +509,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "decorativeShape",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/decorative-image",
@@ -176,13 +524,7 @@
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;left:-110px;top:190px;width:240px;height:240px;border-radius:50%;border:1.5px solid rgba(255,255,255,.14);pointer-events:none;\" data-dc-tpl=\"110\"></span>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 3,
@@ -197,18 +539,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "decorationLayer",
+			"acceptedDecision": true,
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span aria-hidden=\"true\" style=\"position:absolute;inset:0;background:radial-gradient(80% 50% at 100% 0%,rgba(255,255,255,.16),rgba(255,255,255,0) 60%);pointer-events:none;\" data-dc-tpl=\"111\"></span>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 4,
@@ -223,7 +560,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -243,11 +581,10 @@
 				"tagName": "div",
 				"layout": "flex"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/115#0"
+				}
 			}
 		},
 		{
@@ -263,18 +600,12 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "homeLink",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<a href=\"#/\" style=\"background:#FFFFFF;border-radius:14px;padding:8px 10px;display:inline-flex;min-width:0;box-shadow:0 8px 20px -12px rgba(0,0,0,.5);\" data-dc-tpl=\"113\"><indus-logo variant=\"horizontal\" aria-label=\"Indus Foods Ltd\" style=\"display:block;height:{{ R.drawerLogoH }};aspect-ratio:3741 / 848;\" data-dc-tpl=\"114\"></indus-logo></a>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 6,
@@ -282,44 +613,20 @@
 			"tag": "indus-logo",
 			"depth": 3,
 			"words": "",
-			"block": "sgs/responsive-logo",
-			"action": null,
-			"reason": "a custom element named as a logo (its tag matches logoImage, such as <brand-logo>) is the logo block, which reads the site logo",
-			"source": "rule logoElement",
+			"block": null,
+			"action": "absorbed",
+			"reason": "a logo in a drawer's top row (the row holding the drawer's own close control, not its navigation) is the drawer block's own top-row logo (Spec 36 FR-36-6: sgs/nav-drawer draws its logo from its chrome logo settings above its body), so the block takes it: the logo's carried attachment is the block's logo setting and its look the block's logo settings; the draft's logo is never built as a second logo block",
+			"source": "rule drawerLogo",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
-			"handover": {
-				"owner": "site-info",
-				"kind": "presence",
-				"detail": "the logo image: choose the site logo in the editor"
-			},
-			"candidates": [
-				{
-					"block": "sgs/responsive-logo",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"rule logoElement: a custom element named as a logo (its tag matches logoImage, such as <brand-logo>) is the logo block, which reads the site logo"
-					]
-				}
-			],
+			"rule": "drawerLogo",
+			"into": "Root/108#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<indus-logo variant=\"horizontal\" aria-label=\"Indus Foods Ltd\" style=\"display:block;height:{{ R.drawerLogoH }};aspect-ratio:3741 / 848;\" data-dc-tpl=\"114\"></indus-logo>",
-			"attributes": {
-				"logoId": 81
-			},
-			"carried": {
-				"logoId": "media-map.json: sites/indus-foods/handoff/assets/logo-horizontal-anim.svg"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 7,
@@ -334,7 +641,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -353,12 +661,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
 			}
 		},
 		{
@@ -374,7 +676,7 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "drawerIconRun",
 			"candidates": [
 				{
 					"block": "sgs/social-icons",
@@ -395,13 +697,7 @@
 				"attribute": "chromeSlotType",
 				"value": "icons"
 			},
-			"rowNote": "icons generated by Fill from siteInfoRow [\"phone\",\"email\"]; chromeSlotType icons on sgs/nav-drawer",
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"rowNote": "icons generated by Fill from siteInfoRow [\"phone\",\"email\"]; chromeSlotType icons on sgs/nav-drawer"
 		},
 		{
 			"order": 9,
@@ -415,20 +711,14 @@
 			"source": "rule drawerIconRun",
 			"confidence": 1,
 			"low": false,
-			"stale": null,
-			"rule": "clientBuiltSurface",
+			"stale": "the client decision for Root/117#0 (sgs/business-info) no longer applies: part of the drawer's top-row icon group: sgs/social-icons draws it from Site Info",
+			"rule": "drawerIconRun",
 			"into": "Root/116#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<a href=\"mailto:amir@indusfoodsltd.com\" aria-label=\"Email amir@indusfoodsltd.com\" style=\"width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(255,255,255,.55);color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),background .25s,border-color .25s,color .25s,box-shadow .25s;\" style-hover=\"transform:scale",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 10,
@@ -436,39 +726,20 @@
 			"tag": "button",
 			"depth": 3,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
-			"source": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "a button or link inside a drawer surface whose click handler writes a falsy value to a state key one of the drawer's own surfaces.json states holds at true (lib/skeleton-handler-opens.mjs::handlerCloses; a handler that also writes the key to an opening value is a toggle, not a close) is the drawer block's own close control (Spec 36 FR-36-6: close is the drawer's chrome, drawn by sgs/nav-drawer above its body), so the block takes it and its look becomes the block's close settings; the draft's button is never built as a second, dead close",
+			"source": "rule drawerClose",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "drawerClose",
+			"into": "Root/108#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<button sc-camel-on-click=\"{{ closeMobile }}\" aria-label=\"Close menu\" style=\"position:relative;width:46px;height:46px;border-radius:50%;border:0;background:#E7D768;color:#2C3E50;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 20px -10px rgba(0,0,0,.55);transition:transform .5s cubic-bezier(.34,1.56,.64,1),background .25s;\" style-hover=\"transfor",
-			"attributes": {
-				"tagName": "div",
-				"layout": "flex"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 11,
@@ -477,24 +748,19 @@
 			"depth": 4,
 			"words": "",
 			"block": null,
-			"action": "remove",
-			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
-			"source": "rule decorationLayer",
+			"action": "absorbed",
+			"reason": "drawn by the element before it: a button or link inside a drawer surface whose click handler writes a falsy value to a state key one of the drawer's own surfaces.json states holds at true (lib/skeleton-handler-opens.mjs::handlerCloses; a handler that also writes the key to an opening value is a toggle, not a close) is the drawer block's own close control (Spec 36 FR-36-6: close is the drawer's chrome, drawn by sgs/nav-drawer above its body), so the block takes it and its look becomes the block's close settings; the draft's button is never built as a second, dead close",
+			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
-			"rule": "clientBuiltSurface",
+			"stale": "the client decision for Root/119#0 (remove) no longer applies: the element before it draws this element",
+			"rule": "drawerClose",
+			"into": "Root/108#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"position:absolute;width:18px;height:2.5px;border-radius:2px;background:currentColor;transform:rotate(45deg);\" data-dc-tpl=\"119\"></span>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 12,
@@ -503,24 +769,19 @@
 			"depth": 4,
 			"words": "",
 			"block": null,
-			"action": "remove",
-			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
-			"source": "rule decorationLayer",
+			"action": "absorbed",
+			"reason": "drawn by the element before it: a button or link inside a drawer surface whose click handler writes a falsy value to a state key one of the drawer's own surfaces.json states holds at true (lib/skeleton-handler-opens.mjs::handlerCloses; a handler that also writes the key to an opening value is a toggle, not a close) is the drawer block's own close control (Spec 36 FR-36-6: close is the drawer's chrome, drawn by sgs/nav-drawer above its body), so the block takes it and its look becomes the block's close settings; the draft's button is never built as a second, dead close",
+			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
-			"rule": "clientBuiltSurface",
+			"stale": "the client decision for Root/120#0 (remove) no longer applies: the element before it draws this element",
+			"rule": "drawerClose",
+			"into": "Root/108#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"position:absolute;width:18px;height:2.5px;border-radius:2px;background:currentColor;transform:rotate(-45deg);\" data-dc-tpl=\"120\"></span>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 13,
@@ -535,7 +796,8 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -553,11 +815,13 @@
 			"attributes": {
 				"tagName": "div"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/122#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/178#0"
+				}
 			}
 		},
 		{
@@ -573,7 +837,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/nav-drawer-menu",
@@ -593,11 +858,37 @@
 			"carried": {
 				"ref": "menu-map.json: the drawer menu"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
+			"slots": {
+				".sgs-nav-drawer-menu__bar": {
+					"tpl": "Root/122#0"
+				},
+				".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(1) > .sgs-nav-drawer-menu__link": {
+					"tpl": "Root/124#0"
+				},
+				".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(6) > .sgs-nav-drawer-menu__link": {
+					"tpl": "Root/124#5"
+				},
+				".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(1) > .sgs-nav-drawer-menu__link > .sgs-nav-drawer-menu__ornament": {
+					"tpl": "Root/125#0"
+				},
+				".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(6) > .sgs-nav-drawer-menu__link > .sgs-nav-drawer-menu__ornament": {
+					"tpl": "Root/125#5"
+				},
+				".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(2) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary": {
+					"tpl": "Root/125#1"
+				},
+				".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(2) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary > .sgs-nav-drawer-menu__caret": {
+					"tpl": "Root/126#1"
+				},
+				".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(3) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary > .sgs-nav-drawer-menu__caret": {
+					"tpl": "Root/126#2"
+				},
+				".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(4) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary > .sgs-nav-drawer-menu__caret": {
+					"tpl": "Root/126#3"
+				},
+				".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(5) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary > .sgs-nav-drawer-menu__caret": {
+					"tpl": "Root/126#4"
+				}
 			}
 		},
 		{
@@ -613,19 +904,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<div data-manim=\"\" style=\"border-bottom:1px solid rgba(255,255,255,.16);\" data-dc-tpl=\"124\"> <button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-items:center;gap:16px;text-align:left;color:{{ item.mobColor }};transition:color .25s;\" style-hover=\"--cr:6px;--lx:5px\" data-d",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 16,
@@ -640,19 +925,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-items:center;gap:16px;text-align:left;color:{{ item.mobColor }};transition:color .25s;\" style-hover=\"--cr:6px;--lx:5px\" data-dc-tpl=\"125\"> <span style=\"flex-shrink:0;min-width:24px;font-family:'Geist Mono',monospace;fon",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 17,
@@ -667,19 +946,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"flex-shrink:0;min-width:24px;font-family:'Geist Mono',monospace;font-size:14px;font-weight:500;color:#E7D768;\" data-dc-tpl=\"126\">{{ item.num }}</span>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 18,
@@ -694,19 +967,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"flex:1;min-width:0;font-family:'Montserrat',sans-serif;font-weight:700;font-size:24px;letter-spacing:-.015em;line-height:1.2;transform:translateX(var(--lx,0px));transition:transform .35s cubic-bezier(.16,.84,.32,1);\" data-dc-tpl=\"127\">{{ item.label }}</span>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 19,
@@ -721,19 +988,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"flex-shrink:0;width:40px;height:40px;border-radius:50%;border:1.5px solid {{ item.accRing }};background:{{ item.accBtnBg }};color:{{ item.accBtnFg }};display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 var(--cr,0px) rgba(231,215,104,.22);transition:background .3s,border-color .3s,color .3s,box-shadow .3s;\" data-dc-tpl=\"128\"> <sc-if value=\"{{ item.hasPanel }}\" hint-",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 20,
@@ -748,7 +1009,7 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [
@@ -756,13 +1017,7 @@
 			],
 			"screenshots": {},
 			"snippet": "<div data-manim=\"\" style=\"border-bottom:1px solid rgba(255,255,255,.16);\" data-dc-tpl=\"124\"> <button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-items:center;gap:16px;text-align:left;color:{{ item.mobColor }};transition:color .25s;\" style-hover=\"--cr:6px;--lx:5px\" data-d",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 21,
@@ -777,19 +1032,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-items:center;gap:16px;text-align:left;color:{{ item.mobColor }};transition:color .25s;\" style-hover=\"--cr:6px;--lx:5px\" data-dc-tpl=\"125\"> <span style=\"flex-shrink:0;min-width:24px;font-family:'Geist Mono',monospace;fon",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 22,
@@ -804,19 +1053,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"flex-shrink:0;min-width:24px;font-family:'Geist Mono',monospace;font-size:14px;font-weight:500;color:#E7D768;\" data-dc-tpl=\"126\">{{ item.num }}</span>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 23,
@@ -831,19 +1074,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"flex:1;min-width:0;font-family:'Montserrat',sans-serif;font-weight:700;font-size:24px;letter-spacing:-.015em;line-height:1.2;transform:translateX(var(--lx,0px));transition:transform .35s cubic-bezier(.16,.84,.32,1);\" data-dc-tpl=\"127\">{{ item.label }}</span>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 24,
@@ -858,19 +1095,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"flex-shrink:0;width:40px;height:40px;border-radius:50%;border:1.5px solid {{ item.accRing }};background:{{ item.accBtnBg }};color:{{ item.accBtnFg }};display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 var(--cr,0px) rgba(231,215,104,.22);transition:background .3s,border-color .3s,color .3s,box-shadow .3s;\" data-dc-tpl=\"128\"> <sc-if value=\"{{ item.hasPanel }}\" hint-",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 25,
@@ -885,19 +1116,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"display:flex;transform:rotate({{ item.accCaret }}deg);transition:transform .45s cubic-bezier(.34,1.56,.64,1);\" data-dc-tpl=\"130\">{{ caretLg }}</span>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 26,
@@ -912,7 +1137,7 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [
@@ -920,13 +1145,7 @@
 			],
 			"screenshots": {},
 			"snippet": "<div data-manim=\"\" style=\"border-bottom:1px solid rgba(255,255,255,.16);\" data-dc-tpl=\"124\"> <button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-items:center;gap:16px;text-align:left;color:{{ item.mobColor }};transition:color .25s;\" style-hover=\"--cr:6px;--lx:5px\" data-d",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 27,
@@ -941,19 +1160,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-items:center;gap:16px;text-align:left;color:{{ item.mobColor }};transition:color .25s;\" style-hover=\"--cr:6px;--lx:5px\" data-dc-tpl=\"125\"> <span style=\"flex-shrink:0;min-width:24px;font-family:'Geist Mono',monospace;fon",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 28,
@@ -968,19 +1181,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"flex-shrink:0;min-width:24px;font-family:'Geist Mono',monospace;font-size:14px;font-weight:500;color:#E7D768;\" data-dc-tpl=\"126\">{{ item.num }}</span>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 29,
@@ -995,19 +1202,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"flex:1;min-width:0;font-family:'Montserrat',sans-serif;font-weight:700;font-size:24px;letter-spacing:-.015em;line-height:1.2;transform:translateX(var(--lx,0px));transition:transform .35s cubic-bezier(.16,.84,.32,1);\" data-dc-tpl=\"127\">{{ item.label }}</span>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 30,
@@ -1022,19 +1223,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"flex-shrink:0;width:40px;height:40px;border-radius:50%;border:1.5px solid {{ item.accRing }};background:{{ item.accBtnBg }};color:{{ item.accBtnFg }};display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 var(--cr,0px) rgba(231,215,104,.22);transition:background .3s,border-color .3s,color .3s,box-shadow .3s;\" data-dc-tpl=\"128\"> <sc-if value=\"{{ item.hasPanel }}\" hint-",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 31,
@@ -1049,19 +1244,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"display:flex;transform:rotate({{ item.accCaret }}deg);transition:transform .45s cubic-bezier(.34,1.56,.64,1);\" data-dc-tpl=\"130\">{{ caretLg }}</span>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 32,
@@ -1076,7 +1265,7 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [
@@ -1084,13 +1273,7 @@
 			],
 			"screenshots": {},
 			"snippet": "<div data-manim=\"\" style=\"border-bottom:1px solid rgba(255,255,255,.16);\" data-dc-tpl=\"124\"> <button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-items:center;gap:16px;text-align:left;color:{{ item.mobColor }};transition:color .25s;\" style-hover=\"--cr:6px;--lx:5px\" data-d",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 33,
@@ -1105,19 +1288,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-items:center;gap:16px;text-align:left;color:{{ item.mobColor }};transition:color .25s;\" style-hover=\"--cr:6px;--lx:5px\" data-dc-tpl=\"125\"> <span style=\"flex-shrink:0;min-width:24px;font-family:'Geist Mono',monospace;fon",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 34,
@@ -1132,19 +1309,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"flex-shrink:0;min-width:24px;font-family:'Geist Mono',monospace;font-size:14px;font-weight:500;color:#E7D768;\" data-dc-tpl=\"126\">{{ item.num }}</span>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 35,
@@ -1159,19 +1330,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"flex:1;min-width:0;font-family:'Montserrat',sans-serif;font-weight:700;font-size:24px;letter-spacing:-.015em;line-height:1.2;transform:translateX(var(--lx,0px));transition:transform .35s cubic-bezier(.16,.84,.32,1);\" data-dc-tpl=\"127\">{{ item.label }}</span>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 36,
@@ -1186,19 +1351,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"flex-shrink:0;width:40px;height:40px;border-radius:50%;border:1.5px solid {{ item.accRing }};background:{{ item.accBtnBg }};color:{{ item.accBtnFg }};display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 var(--cr,0px) rgba(231,215,104,.22);transition:background .3s,border-color .3s,color .3s,box-shadow .3s;\" data-dc-tpl=\"128\"> <sc-if value=\"{{ item.hasPanel }}\" hint-",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 37,
@@ -1213,19 +1372,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"display:flex;transform:rotate({{ item.accCaret }}deg);transition:transform .45s cubic-bezier(.34,1.56,.64,1);\" data-dc-tpl=\"130\">{{ caretLg }}</span>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 38,
@@ -1240,7 +1393,7 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [
@@ -1248,13 +1401,7 @@
 			],
 			"screenshots": {},
 			"snippet": "<div data-manim=\"\" style=\"border-bottom:1px solid rgba(255,255,255,.16);\" data-dc-tpl=\"124\"> <button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-items:center;gap:16px;text-align:left;color:{{ item.mobColor }};transition:color .25s;\" style-hover=\"--cr:6px;--lx:5px\" data-d",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 39,
@@ -1269,19 +1416,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-items:center;gap:16px;text-align:left;color:{{ item.mobColor }};transition:color .25s;\" style-hover=\"--cr:6px;--lx:5px\" data-dc-tpl=\"125\"> <span style=\"flex-shrink:0;min-width:24px;font-family:'Geist Mono',monospace;fon",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 40,
@@ -1296,19 +1437,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"flex-shrink:0;min-width:24px;font-family:'Geist Mono',monospace;font-size:14px;font-weight:500;color:#E7D768;\" data-dc-tpl=\"126\">{{ item.num }}</span>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 41,
@@ -1323,19 +1458,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"flex:1;min-width:0;font-family:'Montserrat',sans-serif;font-weight:700;font-size:24px;letter-spacing:-.015em;line-height:1.2;transform:translateX(var(--lx,0px));transition:transform .35s cubic-bezier(.16,.84,.32,1);\" data-dc-tpl=\"127\">{{ item.label }}</span>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 42,
@@ -1350,19 +1479,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"flex-shrink:0;width:40px;height:40px;border-radius:50%;border:1.5px solid {{ item.accRing }};background:{{ item.accBtnBg }};color:{{ item.accBtnFg }};display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 var(--cr,0px) rgba(231,215,104,.22);transition:background .3s,border-color .3s,color .3s,box-shadow .3s;\" data-dc-tpl=\"128\"> <sc-if value=\"{{ item.hasPanel }}\" hint-",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 43,
@@ -1377,19 +1500,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"display:flex;transform:rotate({{ item.accCaret }}deg);transition:transform .45s cubic-bezier(.34,1.56,.64,1);\" data-dc-tpl=\"130\">{{ caretLg }}</span>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 44,
@@ -1404,19 +1521,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<div data-manim=\"\" style=\"border-bottom:1px solid rgba(255,255,255,.16);\" data-dc-tpl=\"124\"> <button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-items:center;gap:16px;text-align:left;color:{{ item.mobColor }};transition:color .25s;\" style-hover=\"--cr:6px;--lx:5px\" data-d",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 45,
@@ -1431,19 +1542,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-items:center;gap:16px;text-align:left;color:{{ item.mobColor }};transition:color .25s;\" style-hover=\"--cr:6px;--lx:5px\" data-dc-tpl=\"125\"> <span style=\"flex-shrink:0;min-width:24px;font-family:'Geist Mono',monospace;fon",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 46,
@@ -1458,19 +1563,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"flex-shrink:0;min-width:24px;font-family:'Geist Mono',monospace;font-size:14px;font-weight:500;color:#E7D768;\" data-dc-tpl=\"126\">{{ item.num }}</span>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 47,
@@ -1485,19 +1584,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"flex:1;min-width:0;font-family:'Montserrat',sans-serif;font-weight:700;font-size:24px;letter-spacing:-.015em;line-height:1.2;transform:translateX(var(--lx,0px));transition:transform .35s cubic-bezier(.16,.84,.32,1);\" data-dc-tpl=\"127\">{{ item.label }}</span>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 48,
@@ -1512,19 +1605,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "navigation",
 			"into": "Root/122#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"flex-shrink:0;width:40px;height:40px;border-radius:50%;border:1.5px solid {{ item.accRing }};background:{{ item.accBtnBg }};color:{{ item.accBtnFg }};display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 var(--cr,0px) rgba(231,215,104,.22);transition:background .3s,border-color .3s,color .3s,box-shadow .3s;\" data-dc-tpl=\"128\"> <sc-if value=\"{{ item.hasPanel }}\" hint-",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 49,
@@ -1539,7 +1626,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1559,11 +1647,10 @@
 				"tagName": "div",
 				"layout": "flex"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/179#0"
+				}
 			}
 		},
 		{
@@ -1579,7 +1666,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "label",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/label",
@@ -1595,12 +1683,6 @@
 			"snippet": "<span style=\"font-family:'Geist Mono',monospace;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#E7D768;\" data-dc-tpl=\"179\">Follow us</span>",
 			"attributes": {
 				"text": "Follow us"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
 			}
 		},
 		{
@@ -1616,7 +1698,8 @@
 			"confidence": 0.74,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/social-icons",
@@ -1641,13 +1724,7 @@
 			"screenshots": {},
 			"snippet": "<div style=\"display:flex;gap:10px;\" data-dc-tpl=\"180\"><a href=\"#/\" aria-label=\"LinkedIn\" style=\"width:42px;height:42px;border-radius:50%;background:#0A66C2;color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);box-shadow:0 10px 20px",
 			"attributes": {},
-			"rowNote": "icons generated by Fill from siteInfoRow [\"linkedin\",\"facebook\",\"google\",\"instagram\"]",
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"rowNote": "icons generated by Fill from siteInfoRow [\"linkedin\",\"facebook\",\"google\",\"instagram\"]"
 		},
 		{
 			"order": 52,
@@ -1662,7 +1739,7 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "drawsChildren",
 			"into": "Root/180#0",
 			"candidates": [
 				{
@@ -1694,13 +1771,7 @@
 					}
 				}
 			},
-			"generatedBy": "Root/180#0",
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"generatedBy": "Root/180#0"
 		},
 		{
 			"order": 53,
@@ -1715,7 +1786,7 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "drawsChildren",
 			"into": "Root/180#0",
 			"candidates": [
 				{
@@ -1747,13 +1818,7 @@
 					}
 				}
 			},
-			"generatedBy": "Root/180#0",
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"generatedBy": "Root/180#0"
 		},
 		{
 			"order": 54,
@@ -1768,7 +1833,7 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "drawsChildren",
 			"into": "Root/180#0",
 			"candidates": [
 				{
@@ -1800,13 +1865,7 @@
 					}
 				}
 			},
-			"generatedBy": "Root/180#0",
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"generatedBy": "Root/180#0"
 		},
 		{
 			"order": 55,
@@ -1821,7 +1880,7 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "drawsChildren",
 			"into": "Root/180#0",
 			"candidates": [
 				{
@@ -1853,13 +1912,7 @@
 					}
 				}
 			},
-			"generatedBy": "Root/180#0",
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"generatedBy": "Root/180#0"
 		},
 		{
 			"order": 56,
@@ -1874,7 +1927,8 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1892,11 +1946,10 @@
 			"attributes": {
 				"tagName": "div"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/197#0"
+				}
 			}
 		},
 		{
@@ -1912,7 +1965,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "pillButton",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -1927,13 +1981,19 @@
 			"screenshots": {},
 			"snippet": "<a href=\"#/apply\" data-mag=\"\" style=\"height:54px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 7px 0 24px;border-radius:999px;background:#E7D768;color:#2C3E50;font-family:'Montserrat',sans-serif;font-weight:700;font-size:16px;letter-spacing:-.005em;box-shadow:0 12px 24px -14px rgba(0,0,0,.6);transition:background .25s,transform .35s cubic-bezier(.34,1.56,.64,1),b",
 			"attributes": {
+				"url": "/apply/",
 				"label": "Become A Trade Customer"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
+			"slots": {
+				".sgs-button__label": {
+					"tpl": "Root/198#0"
+				},
+				".sgs-button__icon": {
+					"tpl": "Root/199#0"
+				},
+				".sgs-button__icon > svg": {
+					"tpl": "Root/200#0"
+				}
 			}
 		},
 		{
@@ -1949,19 +2009,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "pillButton",
 			"into": "Root/197#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;\" data-dc-tpl=\"198\">Become A Trade Customer</span>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 59,
@@ -1976,19 +2030,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "pillButton",
 			"into": "Root/197#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"flex-shrink:0;width:40px;height:40px;border-radius:50%;background:#2C3E50;color:#E7D768;display:flex;align-items:center;justify-content:center;\" data-dc-tpl=\"199\"><span style=\"display:flex;transform:translateX(var(--ax,0px));transition:transform .3s cubic-bezier(.16,.84,.32,1);\" data-dc-tpl=\"200\">{{ arrowIcon }}</span></span>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 60,
@@ -2003,19 +2051,13 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "pillButton",
 			"into": "Root/197#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"display:flex;transform:translateX(var(--ax,0px));transition:transform .3s cubic-bezier(.16,.84,.32,1);\" data-dc-tpl=\"200\">{{ arrowIcon }}</span>",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_drawer",
-				"postId": 4456,
-				"title": "[QA] Indus mobile drawer"
-			}
+			"attributes": {}
 		}
 	]
 }

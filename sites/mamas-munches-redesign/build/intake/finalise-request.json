@@ -1,22 +1,2838 @@
 {
-	"generated": "2026-10-31T06:33:15.811Z",
+	"generated": "2026-11-02T04:37:13.108Z",
 	"client": "mamas-munches-redesign",
 	"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
 	"picksFile": "finalise-picks.json",
 	"picksShape": "{ \"<surface>\": [ <one answerShape entry per row of that surface> ] }",
 	"context": "Built from intake.json rows: the element is the row (tag, words, snippet); candidate evidence lines are not kept there. parent, siblings (the nearest 12 in document order; siblingCount is the full number) and boxes (375, 768, 1440; x and y are page coordinates) come from the skeleton inventory, null where it held none. neighbours are the rows before and after it in the surface.",
 	"counts": {
-		"surfaces": 3,
-		"rows": 7
+		"surfaces": 11,
+		"rows": 72
 	},
 	"surfaces": {
+		"site-header-announcement-strip-bar": {
+			"generated": "2026-11-02T04:37:13.105Z",
+			"surface": "site-header-announcement-strip-bar",
+			"source": "intake.json skeletons[\"site-header-announcement-strip-bar\"]",
+			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
+			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
+			"rows": [
+				{
+					"key": "Home>SiteHeader@7#0/13#0",
+					"element": {
+						"tag": "header",
+						"words": "",
+						"snippet": "<header style=\"background:#FBF3DC;border-bottom:1px solid #EADBC0\" data-dc-tpl=\"13\"> <sc-if value=\"{{ notD }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"14"
+					},
+					"parent": null,
+					"siblings": [],
+					"confidence": 0.58,
+					"candidates": [
+						{
+							"block": "sgs/site-header",
+							"score": 1.4,
+							"share": 0.583
+						},
+						{
+							"block": "sgs/hero",
+							"score": 1,
+							"share": 0.417
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/13#0",
+					"draftId": "SiteHeader:13",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home>SiteHeader@7#0/5#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/site-header-row"
+						}
+					],
+					"siblingCount": 0,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 0,
+							"y": 32,
+							"w": 1440,
+							"h": 85
+						},
+						{
+							"width": 768,
+							"x": 0,
+							"y": 32,
+							"w": 768,
+							"h": 65
+						},
+						{
+							"width": 375,
+							"x": 0,
+							"y": 32,
+							"w": 375,
+							"h": 65
+						}
+					]
+				},
+				{
+					"key": "Home>SiteHeader@7#0/7#0",
+					"element": {
+						"tag": "span",
+						"words": "✦ Baked fresh when you order",
+						"snippet": "<span data-dc-tpl=\"7\">✦ {{ annBake }}</span>"
+					},
+					"parent": {
+						"draftId": "SiteHeader:6",
+						"tag": "div",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "SiteHeader:9",
+							"tag": "span",
+							"block": null
+						},
+						{
+							"draftId": "SiteHeader:10",
+							"tag": "span",
+							"block": "sgs/text"
+						},
+						{
+							"draftId": "SiteHeader:11",
+							"tag": "span",
+							"block": null
+						},
+						{
+							"draftId": "SiteHeader:12",
+							"tag": "span",
+							"block": "sgs/text"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/7#0",
+					"draftId": "SiteHeader:7",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home>SiteHeader@7#0/6#0",
+							"tag": "div",
+							"words": "",
+							"block": null
+						},
+						{
+							"key": "Home>SiteHeader@7#0/9#0",
+							"tag": "span",
+							"words": "·",
+							"block": null
+						}
+					],
+					"siblingCount": 4,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 463.1,
+							"y": 7.5,
+							"w": 184.8,
+							"h": 17
+						},
+						{
+							"width": 768,
+							"x": 202.9,
+							"y": 7.5,
+							"w": 184.8,
+							"h": 17
+						},
+						{
+							"width": 375,
+							"x": 57.2,
+							"y": 7.5,
+							"w": 104,
+							"h": 17
+						}
+					]
+				},
+				{
+					"key": "Home>SiteHeader@7#0/10#0",
+					"element": {
+						"tag": "span",
+						"words": "With you in 3–5 days",
+						"snippet": "<span data-dc-tpl=\"10\">With you in 3–5 days</span>"
+					},
+					"parent": {
+						"draftId": "SiteHeader:6",
+						"tag": "div",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "SiteHeader:7",
+							"tag": "span",
+							"block": "sgs/text"
+						},
+						{
+							"draftId": "SiteHeader:9",
+							"tag": "span",
+							"block": null
+						},
+						{
+							"draftId": "SiteHeader:11",
+							"tag": "span",
+							"block": null
+						},
+						{
+							"draftId": "SiteHeader:12",
+							"tag": "span",
+							"block": "sgs/text"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/10#0",
+					"draftId": "SiteHeader:10",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home>SiteHeader@7#0/9#0",
+							"tag": "span",
+							"words": "·",
+							"block": null
+						},
+						{
+							"key": "Home>SiteHeader@7#0/11#0",
+							"tag": "span",
+							"words": "·",
+							"block": null
+						}
+					],
+					"siblingCount": 4,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 670.7,
+							"y": 8.5,
+							"w": 128.8,
+							"h": 15
+						}
+					]
+				},
+				{
+					"key": "Home>SiteHeader@7#0/12#0",
+					"element": {
+						"tag": "span",
+						"words": "Free UK delivery over £35",
+						"snippet": "<span data-dc-tpl=\"12\">{{ annFree }}</span>"
+					},
+					"parent": {
+						"draftId": "SiteHeader:6",
+						"tag": "div",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "SiteHeader:7",
+							"tag": "span",
+							"block": "sgs/text"
+						},
+						{
+							"draftId": "SiteHeader:9",
+							"tag": "span",
+							"block": null
+						},
+						{
+							"draftId": "SiteHeader:10",
+							"tag": "span",
+							"block": "sgs/text"
+						},
+						{
+							"draftId": "SiteHeader:11",
+							"tag": "span",
+							"block": null
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/12#0",
+					"draftId": "SiteHeader:12",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home>SiteHeader@7#0/11#0",
+							"tag": "span",
+							"words": "·",
+							"block": null
+						},
+						{
+							"key": "Home>SiteHeader@7#0/15#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/site-header-row"
+						}
+					],
+					"siblingCount": 4,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 822.3,
+							"y": 8.5,
+							"w": 154.6,
+							"h": 15
+						},
+						{
+							"width": 768,
+							"x": 410.5,
+							"y": 8.5,
+							"w": 154.6,
+							"h": 15
+						},
+						{
+							"width": 375,
+							"x": 184,
+							"y": 8.5,
+							"w": 133.8,
+							"h": 15
+						}
+					]
+				},
+				{
+					"key": "Home>SiteHeader@7#0/22#0",
+					"element": {
+						"tag": "img",
+						"words": "",
+						"snippet": "<img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:{{ logoH }};width:auto;display:block\" data-dc-tpl=\"22\">"
+					},
+					"parent": {
+						"draftId": "SiteHeader:21",
+						"tag": "a",
+						"block": "sgs/container"
+					},
+					"siblings": [],
+					"confidence": 0.66,
+					"candidates": [
+						{
+							"block": "sgs/responsive-logo",
+							"score": 0.85,
+							"share": 0.773
+						},
+						{
+							"block": "sgs/media",
+							"score": 0.25,
+							"share": 0.227
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/22#0",
+					"draftId": "SiteHeader:22",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home>SiteHeader@7#0/21#0",
+							"tag": "a",
+							"words": "",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Home>SiteHeader@7#0/23#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 0,
+					"boxes": [
+						{
+							"width": 768,
+							"x": 300,
+							"y": 36,
+							"w": 168,
+							"h": 56
+						},
+						{
+							"width": 375,
+							"x": 115.5,
+							"y": 40,
+							"w": 144,
+							"h": 48
+						}
+					]
+				},
+				{
+					"key": "Home>SiteHeader@7#0/24#0",
+					"element": {
+						"tag": "a",
+						"words": "",
+						"snippet": "<a href=\"{{ acctHref }}\" aria-label=\"{{ acctLabel }}\" aria-current=\"{{ cur.account }}\" style=\"width:48px;height:48px;border-radius:999px;display:flex;align-item"
+					},
+					"parent": {
+						"draftId": "SiteHeader:23",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "SiteHeader:28",
+							"tag": "button",
+							"block": "sgs/cart"
+						}
+					],
+					"confidence": 0.5,
+					"candidates": [
+						{
+							"block": "sgs/icon",
+							"score": 0.5,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/24#0",
+					"draftId": "SiteHeader:24",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home>SiteHeader@7#0/23#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Home>SiteHeader@7#0/28#0",
+							"tag": "button",
+							"words": "",
+							"block": "sgs/cart"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 768,
+							"x": 652,
+							"y": 40,
+							"w": 48,
+							"h": 48
+						},
+						{
+							"width": 375,
+							"x": 271,
+							"y": 40,
+							"w": 48,
+							"h": 48
+						}
+					]
+				},
+				{
+					"key": "Home>SiteHeader@7#0/28#0",
+					"element": {
+						"tag": "button",
+						"words": "",
+						"snippet": "<button sc-camel-on-click=\"{{ openBasket }}\" aria-label=\"Open basket\" style=\"position:relative;width:48px;height:48px;border:0;background:transparent;border-rad"
+					},
+					"parent": {
+						"draftId": "SiteHeader:23",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "SiteHeader:24",
+							"tag": "a",
+							"block": "sgs/icon"
+						}
+					],
+					"confidence": 0.5,
+					"candidates": [
+						{
+							"block": "sgs/cart",
+							"score": 1,
+							"share": 0.5
+						},
+						{
+							"block": "sgs/button",
+							"score": 0.75,
+							"share": 0.5
+						}
+					],
+					"reason": "the control that opens a drawer the page map hands to a block is that block, which draws both the drawer and its own trigger: the control's label, count and icon become the block's trigger settings (byTemplate.<template>.trigger) and are absorbed, never a container in the header (the bag pill is sgs/cart in drawer mode with a pill trigger; Bean S5, 2026-10-23); it opens S-04 (Basket drawer (right)), which the page map holds as the drawer part \"Basket\" of the cart row; the framework DB prefers sgs/button (confidence 0.75: html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\"); block_composition: sgs/button is a leaf; the element holds words and no block children); a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two",
+					"rowId": "skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/28#0",
+					"draftId": "SiteHeader:28",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home>SiteHeader@7#0/24#0",
+							"tag": "a",
+							"words": "",
+							"block": "sgs/icon"
+						},
+						{
+							"key": "Home>SiteHeader@7#0/35#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/site-header-row"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 768,
+							"x": 700,
+							"y": 40,
+							"w": 48,
+							"h": 48
+						},
+						{
+							"width": 375,
+							"x": 319,
+							"y": 40,
+							"w": 48,
+							"h": 48
+						}
+					]
+				},
+				{
+					"key": "Home>SiteHeader@7#0/37#0",
+					"element": {
+						"tag": "img",
+						"words": "",
+						"snippet": "<img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:60px;width:auto;display:block\" data-dc-tpl=\"37\">"
+					},
+					"parent": {
+						"draftId": "SiteHeader:36",
+						"tag": "a",
+						"block": "sgs/container"
+					},
+					"siblings": [],
+					"confidence": 0.66,
+					"candidates": [
+						{
+							"block": "sgs/responsive-logo",
+							"score": 0.85,
+							"share": 0.773
+						},
+						{
+							"block": "sgs/media",
+							"score": 0.25,
+							"share": 0.227
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/37#0",
+					"draftId": "SiteHeader:37",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home>SiteHeader@7#0/36#0",
+							"tag": "a",
+							"words": "",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Home>SiteHeader@7#0/38#0",
+							"tag": "nav",
+							"words": "",
+							"block": "sgs/nav-bar-menu"
+						}
+					],
+					"siblingCount": 0,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 140,
+							"y": 44,
+							"w": 180,
+							"h": 60
+						}
+					]
+				},
+				{
+					"key": "Home>SiteHeader@7#0/45#0",
+					"element": {
+						"tag": "a",
+						"words": "",
+						"snippet": "<a href=\"{{ acctHref }}\" aria-label=\"{{ acctLabel }}\" aria-current=\"{{ cur.account }}\" style=\"width:48px;height:48px;border-radius:999px;display:flex;align-item"
+					},
+					"parent": {
+						"draftId": "SiteHeader:44",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "SiteHeader:49",
+							"tag": "button",
+							"block": "sgs/cart"
+						}
+					],
+					"confidence": 0.5,
+					"candidates": [
+						{
+							"block": "sgs/icon",
+							"score": 0.5,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/45#0",
+					"draftId": "SiteHeader:45",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home>SiteHeader@7#0/44#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Home>SiteHeader@7#0/49#0",
+							"tag": "button",
+							"words": "",
+							"block": "sgs/cart"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 1100.8,
+							"y": 50,
+							"w": 48,
+							"h": 48
+						}
+					]
+				}
+			]
+		},
+		"nav-drawer-left": {
+			"generated": "2026-11-02T04:37:13.105Z",
+			"surface": "nav-drawer-left",
+			"source": "intake.json skeletons[\"nav-drawer-left\"]",
+			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
+			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
+			"rows": [
+				{
+					"key": "Home>SiteHeader@7#0/58#0",
+					"element": {
+						"tag": "img",
+						"words": "",
+						"snippet": "<img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:44px;width:auto\" data-dc-tpl=\"58\">"
+					},
+					"parent": {
+						"draftId": "SiteHeader:57",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "SiteHeader:59",
+							"tag": "button",
+							"block": null
+						}
+					],
+					"confidence": 0.66,
+					"candidates": [
+						{
+							"block": "sgs/responsive-logo",
+							"score": 0.85,
+							"share": 0.773
+						},
+						{
+							"block": "sgs/media",
+							"score": 0.25,
+							"share": 0.227
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:nav-drawer-left:Home>SiteHeader@7#0/58#0",
+					"draftId": "SiteHeader:58",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home>SiteHeader@7#0/57#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Home>SiteHeader@7#0/59#0",
+							"tag": "button",
+							"words": "×",
+							"block": null
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": -400,
+							"y": 12,
+							"w": 132,
+							"h": 44
+						},
+						{
+							"width": 768,
+							"x": -400,
+							"y": 12,
+							"w": 132,
+							"h": 44
+						},
+						{
+							"width": 375,
+							"x": -326.5,
+							"y": 12,
+							"w": 132,
+							"h": 44
+						}
+					]
+				},
+				{
+					"key": "Home>SiteHeader@7#0/64#0",
+					"element": {
+						"tag": "img",
+						"words": "",
+						"snippet": "<img src=\"assets/photo-bags-pink.jpg\" alt=\"\" style=\"width:100%;height:84px;object-fit:cover;border-bottom:2px solid #3A2A22\" data-dc-tpl=\"64\">"
+					},
+					"parent": {
+						"draftId": "SiteHeader:63",
+						"tag": "a",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "SiteHeader:65",
+							"tag": "span",
+							"block": "sgs/container"
+						}
+					],
+					"confidence": 0.29,
+					"candidates": [
+						{
+							"block": "sgs/media",
+							"score": 0.5,
+							"share": 0.588
+						},
+						{
+							"block": "sgs/responsive-logo",
+							"score": 0.35,
+							"share": 0.412
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:nav-drawer-left:Home>SiteHeader@7#0/64#0",
+					"draftId": "SiteHeader:64",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home>SiteHeader@7#0/63#0",
+							"tag": "a",
+							"words": "",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Home>SiteHeader@7#0/65#0",
+							"tag": "span",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": -398,
+							"y": 116,
+							"w": 171,
+							"h": 84
+						},
+						{
+							"width": 768,
+							"x": -398,
+							"y": 116,
+							"w": 171,
+							"h": 84
+						},
+						{
+							"width": 375,
+							"x": -324.5,
+							"y": 116,
+							"w": 136,
+							"h": 84
+						}
+					]
+				},
+				{
+					"key": "Home>SiteHeader@7#0/67#0",
+					"element": {
+						"tag": "span",
+						"words": "Zookies & trial packs",
+						"snippet": "<span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"67\">Zookies &amp; trial packs</span>"
+					},
+					"parent": {
+						"draftId": "SiteHeader:65",
+						"tag": "span",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "SiteHeader:66",
+							"tag": "span",
+							"block": "sgs/label"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:nav-drawer-left:Home>SiteHeader@7#0/67#0",
+					"draftId": "SiteHeader:67",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home>SiteHeader@7#0/66#0",
+							"tag": "span",
+							"words": "For me",
+							"block": "sgs/label"
+						},
+						{
+							"key": "Home>SiteHeader@7#0/68#0",
+							"tag": "a",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": -386,
+							"y": 238,
+							"w": 147,
+							"h": 15
+						},
+						{
+							"width": 768,
+							"x": -386,
+							"y": 238,
+							"w": 147,
+							"h": 15
+						},
+						{
+							"width": 375,
+							"x": -312.5,
+							"y": 238,
+							"w": 112,
+							"h": 30
+						}
+					]
+				},
+				{
+					"key": "Home>SiteHeader@7#0/69#0",
+					"element": {
+						"tag": "img",
+						"words": "",
+						"snippet": "<img src=\"assets/photo-gift-heart.jpg\" alt=\"\" style=\"width:100%;height:84px;object-fit:cover;border-bottom:2px solid #3A2A22\" data-dc-tpl=\"69\">"
+					},
+					"parent": {
+						"draftId": "SiteHeader:68",
+						"tag": "a",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "SiteHeader:70",
+							"tag": "span",
+							"block": "sgs/container"
+						}
+					],
+					"confidence": 0.29,
+					"candidates": [
+						{
+							"block": "sgs/media",
+							"score": 0.5,
+							"share": 0.588
+						},
+						{
+							"block": "sgs/responsive-logo",
+							"score": 0.35,
+							"share": 0.412
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:nav-drawer-left:Home>SiteHeader@7#0/69#0",
+					"draftId": "SiteHeader:69",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home>SiteHeader@7#0/68#0",
+							"tag": "a",
+							"words": "",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Home>SiteHeader@7#0/70#0",
+							"tag": "span",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": -213,
+							"y": 116,
+							"w": 171,
+							"h": 84
+						},
+						{
+							"width": 768,
+							"x": -213,
+							"y": 116,
+							"w": 171,
+							"h": 84
+						},
+						{
+							"width": 375,
+							"x": -174.5,
+							"y": 116,
+							"w": 136,
+							"h": 84
+						}
+					]
+				},
+				{
+					"key": "Home>SiteHeader@7#0/72#0",
+					"element": {
+						"tag": "span",
+						"words": "Gift boxes & cards",
+						"snippet": "<span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"72\">Gift boxes &amp; cards</span>"
+					},
+					"parent": {
+						"draftId": "SiteHeader:70",
+						"tag": "span",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "SiteHeader:71",
+							"tag": "span",
+							"block": "sgs/label"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:nav-drawer-left:Home>SiteHeader@7#0/72#0",
+					"draftId": "SiteHeader:72",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home>SiteHeader@7#0/71#0",
+							"tag": "span",
+							"words": "For a new mum",
+							"block": "sgs/label"
+						},
+						{
+							"key": "Home>SiteHeader@7#0/73#0",
+							"tag": "nav",
+							"words": "",
+							"block": null
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": -201,
+							"y": 238,
+							"w": 147,
+							"h": 15
+						},
+						{
+							"width": 768,
+							"x": -201,
+							"y": 238,
+							"w": 147,
+							"h": 15
+						},
+						{
+							"width": 375,
+							"x": -162.5,
+							"y": 264,
+							"w": 112,
+							"h": 15
+						}
+					]
+				},
+				{
+					"key": "Home>SiteHeader@7#0/127#0",
+					"element": {
+						"tag": "span",
+						"words": "8 reviews on Trustpilot ↗",
+						"snippet": "<span style=\"font-size:13px;font-weight:700\" data-dc-tpl=\"127\">8 reviews on Trustpilot ↗</span>"
+					},
+					"parent": {
+						"draftId": "SiteHeader:125",
+						"tag": "span",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "SiteHeader:126",
+							"tag": "span",
+							"block": "sgs/label"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:nav-drawer-left:Home>SiteHeader@7#0/127#0",
+					"draftId": "SiteHeader:127",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home>SiteHeader@7#0/126#0",
+							"tag": "span",
+							"words": "★★★★★",
+							"block": "sgs/label"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": -324.6,
+							"y": 934,
+							"w": 152.8,
+							"h": 17
+						},
+						{
+							"width": 768,
+							"x": -324.6,
+							"y": 934,
+							"w": 152.8,
+							"h": 17
+						},
+						{
+							"width": 375,
+							"x": -251.1,
+							"y": 960,
+							"w": 152.8,
+							"h": 17
+						}
+					]
+				}
+			]
+		},
+		"site-footer": {
+			"generated": "2026-11-02T04:37:13.106Z",
+			"surface": "site-footer",
+			"source": "intake.json skeletons[\"site-footer\"]",
+			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
+			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
+			"rows": [
+				{
+					"key": "Home>SiteFooter@250#0/26#0",
+					"element": {
+						"tag": "img",
+						"words": "",
+						"snippet": "<img src=\"assets/logo-round.png\" alt=\"Mama's Munches\" style=\"width:{{ logoW }};justify-self:{{ logoJust }};transform:rotate(-8deg);transition:transform .6s cubi"
+					},
+					"parent": {
+						"draftId": "SiteFooter:21",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "SiteFooter:22",
+							"tag": "div",
+							"block": "sgs/container"
+						}
+					],
+					"confidence": 0.66,
+					"candidates": [
+						{
+							"block": "sgs/responsive-logo",
+							"score": 0.85,
+							"share": 0.773
+						},
+						{
+							"block": "sgs/media",
+							"score": 0.25,
+							"share": 0.227
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:site-footer:Home>SiteFooter@250#0/26#0",
+					"draftId": "SiteFooter:26",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home>SiteFooter@250#0/25#0",
+							"tag": "span",
+							"words": "→",
+							"block": null
+						},
+						{
+							"key": "Home>SiteFooter@250#0/27#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 1138.3,
+							"y": 7022.8,
+							"w": 213.3,
+							"h": 205.5
+						},
+						{
+							"width": 768,
+							"x": 576.8,
+							"y": 8882.1,
+							"w": 168.4,
+							"h": 162.3
+						},
+						{
+							"width": 375,
+							"x": 108.9,
+							"y": 9596.9,
+							"w": 157.2,
+							"h": 151.4
+						}
+					]
+				},
+				{
+					"key": "Home>SiteFooter@250#0/57#0",
+					"element": {
+						"tag": "span",
+						"words": "",
+						"snippet": "<span style=\"display:flex;justify-content:center;gap:18px\" data-dc-tpl=\"57\"><a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"58\">Privacy</a><a hr"
+					},
+					"parent": {
+						"draftId": "SiteFooter:55",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "SiteFooter:56",
+							"tag": "span",
+							"block": "sgs/business-info"
+						},
+						{
+							"draftId": "SiteFooter:60",
+							"tag": "a",
+							"block": "sgs/business-info"
+						}
+					],
+					"confidence": 0.51,
+					"candidates": [
+						{
+							"block": "sgs/multi-button",
+							"score": 0.75,
+							"share": 0.682
+						},
+						{
+							"block": "sgs/container",
+							"score": 0.35,
+							"share": 0.318
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:site-footer:Home>SiteFooter@250#0/57#0",
+					"draftId": "SiteFooter:57",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home>SiteFooter@250#0/56#0",
+							"tag": "span",
+							"words": "© 2026 Mama’s Munches · Registered food business",
+							"block": "sgs/business-info"
+						},
+						{
+							"key": "Home>SiteFooter@250#0/58#0",
+							"tag": "a",
+							"words": "Privacy",
+							"block": "sgs/button"
+						}
+					],
+					"siblingCount": 2,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 668.9,
+							"y": 7630.5,
+							"w": 102.1,
+							"h": 17
+						},
+						{
+							"width": 768,
+							"x": 32,
+							"y": 9439.2,
+							"w": 704,
+							"h": 17
+						},
+						{
+							"width": 375,
+							"x": 20,
+							"y": 10258.2,
+							"w": 335,
+							"h": 17
+						}
+					]
+				},
+				{
+					"key": "Home>SiteFooter@250#0/60#0",
+					"element": {
+						"tag": "a",
+						"words": "Website by Small Giants Studio",
+						"snippet": "<a href=\"https://smallgiantsstudio.com\" style=\"justify-self:{{ rightJust }};color:#3A2A22;font-weight:700;text-decoration:none;white-space:nowrap\" style-hover=\""
+					},
+					"parent": {
+						"draftId": "SiteFooter:55",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "SiteFooter:56",
+							"tag": "span",
+							"block": "sgs/business-info"
+						},
+						{
+							"draftId": "SiteFooter:57",
+							"tag": "span",
+							"block": "sgs/multi-button"
+						}
+					],
+					"confidence": 0.38,
+					"candidates": [
+						{
+							"block": "sgs/business-info",
+							"score": 0.75,
+							"share": 0.5
+						},
+						{
+							"block": "sgs/button",
+							"score": 0.75,
+							"share": 0.5
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:site-footer:Home>SiteFooter@250#0/60#0",
+					"draftId": "SiteFooter:60",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home>SiteFooter@250#0/59#0",
+							"tag": "a",
+							"words": "Terms",
+							"block": "sgs/button"
+						}
+					],
+					"siblingCount": 2,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 1129.4,
+							"y": 7630.5,
+							"w": 210.6,
+							"h": 17
+						},
+						{
+							"width": 768,
+							"x": 278.7,
+							"y": 9466.2,
+							"w": 210.6,
+							"h": 17
+						},
+						{
+							"width": 375,
+							"x": 82.2,
+							"y": 10285.2,
+							"w": 210.6,
+							"h": 17
+						}
+					]
+				}
+			]
+		},
 		"page-home-dc-html": {
-			"generated": "2026-10-31T06:33:15.810Z",
+			"generated": "2026-11-02T04:37:13.106Z",
 			"surface": "page-home-dc-html",
 			"source": "intake.json skeletons[\"page-home-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
 			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
 			"rows": [
+				{
+					"key": "Home/13#0",
+					"element": {
+						"tag": "span",
+						"words": "✦",
+						"snippet": "<span data-twinkle=\"\" style=\"color:#F9CF6E;font-family:Karla;-webkit-text-stroke:1px #3A2A22\" data-dc-tpl=\"13\">✦</span>"
+					},
+					"parent": {
+						"draftId": "Home:12",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/13#0",
+					"draftId": "Home:13",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/12#0",
+							"tag": "div",
+							"words": "good morning, mama",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Home/14#0",
+							"tag": "h1",
+							"words": "Made for the mum who needs it",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 0,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 139.4,
+							"y": 180.1,
+							"w": 27.2,
+							"h": 32.9
+						},
+						{
+							"width": 768,
+							"x": 31.5,
+							"y": 140.2,
+							"w": 23.8,
+							"h": 28.8
+						},
+						{
+							"width": 375,
+							"x": 19.5,
+							"y": 124.3,
+							"w": 22.1,
+							"h": 26.7
+						}
+					]
+				},
+				{
+					"key": "Home/20#0",
+					"element": {
+						"tag": "div",
+						"words": "",
+						"snippet": "<div data-reveal=\"\" style=\"display:flex;flex-wrap:wrap;gap:14px\" data-dc-tpl=\"20\"> <a href=\"#build\" style=\"height:60px;padding:0 10px 0 28px;border-radius:999px"
+					},
+					"parent": {
+						"draftId": "Home:11",
+						"tag": "div",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "Home:12",
+							"tag": "div",
+							"block": "sgs/container"
+						},
+						{
+							"draftId": "Home:14",
+							"tag": "h1",
+							"block": "sgs/container"
+						},
+						{
+							"draftId": "Home:19",
+							"tag": "p",
+							"block": "sgs/text"
+						},
+						{
+							"draftId": "Home:24",
+							"tag": "div",
+							"block": "sgs/multi-button"
+						}
+					],
+					"confidence": 0.51,
+					"candidates": [
+						{
+							"block": "sgs/multi-button",
+							"score": 0.75,
+							"share": 0.682
+						},
+						{
+							"block": "sgs/container",
+							"score": 0.35,
+							"share": 0.318
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/20#0",
+					"draftId": "Home:20",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/19#0",
+							"tag": "p",
+							"words": "Giant, filling lactation cookies with oats, brewer’s yeast, flaxseed and fenugreek. Built the way you like them and baked fresh in Birmingham the moment you order.",
+							"block": "sgs/text"
+						},
+						{
+							"key": "Home/21#0",
+							"tag": "a",
+							"words": "Build your box",
+							"block": "sgs/button"
+						}
+					],
+					"siblingCount": 4,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 140,
+							"y": 653.9,
+							"w": 574.1,
+							"h": 60
+						},
+						{
+							"width": 768,
+							"x": 32,
+							"y": 594.8,
+							"w": 340.1,
+							"h": 134
+						},
+						{
+							"width": 375,
+							"x": 20,
+							"y": 489.4,
+							"w": 335,
+							"h": 134
+						}
+					]
+				},
+				{
+					"key": "Home/24#0",
+					"element": {
+						"tag": "div",
+						"words": "",
+						"snippet": "<div data-reveal=\"\" style=\"display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px;font-size:15px;font-weight:700\" data-dc-tpl=\"24\"> <a href=\"#reviews\" sty"
+					},
+					"parent": {
+						"draftId": "Home:11",
+						"tag": "div",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "Home:12",
+							"tag": "div",
+							"block": "sgs/container"
+						},
+						{
+							"draftId": "Home:14",
+							"tag": "h1",
+							"block": "sgs/container"
+						},
+						{
+							"draftId": "Home:19",
+							"tag": "p",
+							"block": "sgs/text"
+						},
+						{
+							"draftId": "Home:20",
+							"tag": "div",
+							"block": "sgs/multi-button"
+						}
+					],
+					"confidence": 0.51,
+					"candidates": [
+						{
+							"block": "sgs/multi-button",
+							"score": 0.75,
+							"share": 0.682
+						},
+						{
+							"block": "sgs/container",
+							"score": 0.35,
+							"share": 0.318
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/24#0",
+					"draftId": "Home:24",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/23#0",
+							"tag": "a",
+							"words": "Send a gift",
+							"block": "sgs/button"
+						},
+						{
+							"key": "Home/25#0",
+							"tag": "a",
+							"words": "4.3 on Trustpilot",
+							"block": "sgs/button"
+						}
+					],
+					"siblingCount": 4,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 140,
+							"y": 735.9,
+							"w": 574.1,
+							"h": 20
+						},
+						{
+							"width": 768,
+							"x": 32,
+							"y": 750.8,
+							"w": 340.1,
+							"h": 50
+						},
+						{
+							"width": 375,
+							"x": 20,
+							"y": 645.4,
+							"w": 335,
+							"h": 50
+						}
+					]
+				},
+				{
+					"key": "Home/31#0",
+					"element": {
+						"tag": "div",
+						"words": "fresh batch!",
+						"snippet": "<div style=\"position:absolute;left:0;right:0;bottom:4px;text-align:center;font-family:'Caveat',cursive;font-size:21px\" data-dc-tpl=\"31\">fresh batch!</div>"
+					},
+					"parent": {
+						"draftId": "Home:29",
+						"tag": "div",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "Home:30",
+							"tag": "img",
+							"block": null
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/31#0",
+					"draftId": "Home:31",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/30#0",
+							"tag": "img",
+							"words": "",
+							"block": null
+						},
+						{
+							"key": "Home/32#0",
+							"tag": "div",
+							"words": "",
+							"block": null
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 812.1,
+							"y": 513.5,
+							"w": 237.2,
+							"h": 62.6
+						},
+						{
+							"width": 768,
+							"x": 432.7,
+							"y": 449.9,
+							"w": 147.3,
+							"h": 48.4
+						},
+						{
+							"width": 375,
+							"x": 41.3,
+							"y": 934.4,
+							"w": 152.3,
+							"h": 49.2
+						}
+					]
+				},
+				{
+					"key": "Home/34#0",
+					"element": {
+						"tag": "div",
+						"words": "for a new mum",
+						"snippet": "<div style=\"position:absolute;left:0;right:0;bottom:4px;text-align:center;font-family:'Caveat',cursive;font-size:21px\" data-dc-tpl=\"34\">for a new mum</div>"
+					},
+					"parent": {
+						"draftId": "Home:32",
+						"tag": "div",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "Home:33",
+							"tag": "img",
+							"block": null
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/34#0",
+					"draftId": "Home:34",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/33#0",
+							"tag": "img",
+							"words": "",
+							"block": null
+						},
+						{
+							"key": "Home/35#0",
+							"tag": "div",
+							"words": "",
+							"block": null
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 1052.9,
+							"y": 470,
+							"w": 227,
+							"h": 57.1
+						},
+						{
+							"width": 768,
+							"x": 583.1,
+							"y": 416.1,
+							"w": 140.8,
+							"h": 45
+						},
+						{
+							"width": 375,
+							"x": 196.9,
+							"y": 905.2,
+							"w": 145.6,
+							"h": 45.7
+						}
+					]
+				},
+				{
+					"key": "Home/37#0",
+					"element": {
+						"tag": "div",
+						"words": "3am snack sorted ♥",
+						"snippet": "<div style=\"position:absolute;left:0;right:0;bottom:6px;text-align:center;font-family:'Caveat',cursive;font-size:24px\" data-dc-tpl=\"37\">3am snack sorted ♥</div>"
+					},
+					"parent": {
+						"draftId": "Home:35",
+						"tag": "div",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "Home:36",
+							"tag": "img",
+							"block": null
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/37#0",
+					"draftId": "Home:37",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/36#0",
+							"tag": "img",
+							"words": "",
+							"block": null
+						},
+						{
+							"key": "Home/38#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 887.9,
+							"y": 706.5,
+							"w": 299.4,
+							"h": 37.8
+						},
+						{
+							"width": 768,
+							"x": 480.7,
+							"y": 660.4,
+							"w": 184.6,
+							"h": 34.8
+						},
+						{
+							"width": 375,
+							"x": 91,
+							"y": 1066.9,
+							"w": 191,
+							"h": 35
+						}
+					]
+				},
+				{
+					"key": "Home/40#0",
+					"element": {
+						"tag": "span",
+						"words": "to order",
+						"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:{{ L.stickerBig }};line-height:1.1;margin-top:2px\" data-dc-tpl=\"40\">to order</span>"
+					},
+					"parent": {
+						"draftId": "Home:38",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Home:39",
+							"tag": "span",
+							"block": "sgs/label"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/40#0",
+					"draftId": "Home:40",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/39#0",
+							"tag": "span",
+							"words": "Baked",
+							"block": "sgs/label"
+						},
+						{
+							"key": "Home/41#0",
+							"tag": "div",
+							"words": "baked with love",
+							"block": "sgs/label"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 1170.8,
+							"y": 588.2,
+							"w": 102.2,
+							"h": 47.4
+						},
+						{
+							"width": 768,
+							"x": 624.9,
+							"y": 565.5,
+							"w": 89.9,
+							"h": 41.7
+						},
+						{
+							"width": 375,
+							"x": 253.8,
+							"y": 991.1,
+							"w": 81.8,
+							"h": 37.9
+						}
+					]
+				},
+				{
+					"key": "Home/48#0",
+					"element": {
+						"tag": "img",
+						"words": "",
+						"snippet": "<img src=\"assets/photo-bags-pink.jpg\" alt=\"Zookies in their bags\" style=\"width:100%;height:100%;min-height:{{ L.pathImgH }};object-fit:cover\" data-dc-tpl=\"48\">"
+					},
+					"parent": {
+						"draftId": "Home:47",
+						"tag": "a",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Home:49",
+							"tag": "div",
+							"block": "sgs/container"
+						}
+					],
+					"confidence": 0.29,
+					"candidates": [
+						{
+							"block": "sgs/media",
+							"score": 0.5,
+							"share": 0.588
+						},
+						{
+							"block": "sgs/responsive-logo",
+							"score": 0.35,
+							"share": 0.412
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/48#0",
+					"draftId": "Home:48",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/47#0",
+							"tag": "a",
+							"words": "",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Home/49#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 102,
+							"y": 1108.8,
+							"w": 278.4,
+							"h": 441.1
+						},
+						{
+							"width": 768,
+							"x": 34,
+							"y": 1079,
+							"w": 338,
+							"h": 372.8
+						},
+						{
+							"width": 375,
+							"x": 22,
+							"y": 1382.8,
+							"w": 118,
+							"h": 257.2
+						}
+					]
+				},
+				{
+					"key": "Home/52#0",
+					"element": {
+						"tag": "span",
+						"words": "Build your own box, or subscribe and save 10% on every one.",
+						"snippet": "<span style=\"font-size:16px;line-height:1.5;color:#4E3C31\" data-dc-tpl=\"52\">Build your own box, or subscribe and save 10% on every one.</span>"
+					},
+					"parent": {
+						"draftId": "Home:49",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Home:50",
+							"tag": "span",
+							"block": "sgs/label"
+						},
+						{
+							"draftId": "Home:51",
+							"tag": "span",
+							"block": "sgs/heading"
+						},
+						{
+							"draftId": "Home:53",
+							"tag": "span",
+							"block": "sgs/container"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/52#0",
+					"draftId": "Home:52",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/51#0",
+							"tag": "span",
+							"words": "I’m feeding a little one",
+							"block": "sgs/heading"
+						},
+						{
+							"key": "Home/53#0",
+							"tag": "span",
+							"words": "Build your box",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 3,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 414.4,
+							"y": 1339.5,
+							"w": 259.6,
+							"h": 48
+						},
+						{
+							"width": 768,
+							"x": 58,
+							"y": 1660.7,
+							"w": 290,
+							"h": 48
+						},
+						{
+							"width": 375,
+							"x": 158,
+							"y": 1502,
+							"w": 177,
+							"h": 72
+						}
+					]
+				},
+				{
+					"key": "Home/56#0",
+					"element": {
+						"tag": "img",
+						"words": "",
+						"snippet": "<img src=\"assets/photo-gift-heart.jpg\" alt=\"A gift box of Zookies with a heart\" style=\"width:100%;height:100%;min-height:{{ L.pathImgH }};object-fit:cover\" data"
+					},
+					"parent": {
+						"draftId": "Home:55",
+						"tag": "a",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Home:57",
+							"tag": "div",
+							"block": "sgs/container"
+						}
+					],
+					"confidence": 0.29,
+					"candidates": [
+						{
+							"block": "sgs/media",
+							"score": 0.5,
+							"share": 0.588
+						},
+						{
+							"block": "sgs/responsive-logo",
+							"score": 0.35,
+							"share": 0.412
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/56#0",
+					"draftId": "Home:56",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/55#0",
+							"tag": "a",
+							"words": "",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Home/57#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 732,
+							"y": 1108.8,
+							"w": 278.4,
+							"h": 441.1
+						},
+						{
+							"width": 768,
+							"x": 396,
+							"y": 1079,
+							"w": 338,
+							"h": 535.5
+						},
+						{
+							"width": 375,
+							"x": 22,
+							"y": 1664,
+							"w": 118,
+							"h": 257.2
+						}
+					]
+				},
+				{
+					"key": "Home/60#0",
+					"element": {
+						"tag": "span",
+						"words": "Gift boxes, gift cards and a note from you, with the prices left off.",
+						"snippet": "<span style=\"font-size:16px;line-height:1.5;color:#4E3C31\" data-dc-tpl=\"60\">Gift boxes, gift cards and a note from you, with the prices left off.</span>"
+					},
+					"parent": {
+						"draftId": "Home:57",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Home:58",
+							"tag": "span",
+							"block": "sgs/label"
+						},
+						{
+							"draftId": "Home:59",
+							"tag": "span",
+							"block": "sgs/heading"
+						},
+						{
+							"draftId": "Home:61",
+							"tag": "span",
+							"block": "sgs/container"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/60#0",
+					"draftId": "Home:60",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/59#0",
+							"tag": "span",
+							"words": "I’m spoiling a new mum",
+							"block": "sgs/heading"
+						},
+						{
+							"key": "Home/61#0",
+							"tag": "span",
+							"words": "Shop gifts",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 3,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 1044.4,
+							"y": 1339.5,
+							"w": 259.6,
+							"h": 48
+						},
+						{
+							"width": 768,
+							"x": 420,
+							"y": 1742.1,
+							"w": 290,
+							"h": 48
+						},
+						{
+							"width": 375,
+							"x": 158,
+							"y": 1783.2,
+							"w": 177,
+							"h": 72
+						}
+					]
+				},
+				{
+					"key": "Home/155#0",
+					"element": {
+						"tag": "div",
+						"words": "“Congratulations, mama! One for the 3am feed. So proud of you. Sara x”",
+						"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:{{ L.note }};line-height:1.15\" data-dc-tpl=\"155\">“Congratulations, mama! One for the 3am feed. So proud of yo"
+					},
+					"parent": {
+						"draftId": "Home:153",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Home:154",
+							"tag": "span",
+							"block": null
+						},
+						{
+							"draftId": "Home:156",
+							"tag": "div",
+							"block": "sgs/text"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/155#0",
+					"draftId": "Home:155",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/154#0",
+							"tag": "span",
+							"words": "",
+							"block": null
+						},
+						{
+							"key": "Home/156#0",
+							"tag": "div",
+							"words": "Your words go in the box. The prices stay out.",
+							"block": "sgs/text"
+						}
+					],
+					"siblingCount": 2,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 125.2,
+							"y": 3281.1,
+							"w": 589.3,
+							"h": 83.8
+						},
+						{
+							"width": 768,
+							"x": 56.8,
+							"y": 4587.7,
+							"w": 292.6,
+							"h": 101.6
+						},
+						{
+							"width": 375,
+							"x": 44.9,
+							"y": 4525.8,
+							"w": 284.5,
+							"h": 94.6
+						}
+					]
+				},
+				{
+					"key": "Home/156#0",
+					"element": {
+						"tag": "div",
+						"words": "Your words go in the box. The prices stay out.",
+						"snippet": "<div style=\"font-size:15px;color:#5E4A3D;margin-top:8px\" data-dc-tpl=\"156\">Your words go in the box. The prices stay out.</div>"
+					},
+					"parent": {
+						"draftId": "Home:153",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Home:154",
+							"tag": "span",
+							"block": null
+						},
+						{
+							"draftId": "Home:155",
+							"tag": "div",
+							"block": "sgs/text"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/156#0",
+					"draftId": "Home:156",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/155#0",
+							"tag": "div",
+							"words": "“Congratulations, mama! One for the 3am feed. So proud of you. Sara x”",
+							"block": "sgs/text"
+						},
+						{
+							"key": "Home/157#0",
+							"tag": "a",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 2,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 126.6,
+							"y": 3362.7,
+							"w": 588.3,
+							"h": 28.3
+						},
+						{
+							"width": 768,
+							"x": 58.7,
+							"y": 4692.2,
+							"w": 291.6,
+							"h": 41.1
+						},
+						{
+							"width": 375,
+							"x": 46.6,
+							"y": 4623.4,
+							"w": 283.6,
+							"h": 40.9
+						}
+					]
+				},
+				{
+					"key": "Home/158#0",
+					"element": {
+						"tag": "img",
+						"words": "",
+						"snippet": "<img src=\"assets/logo-round.png\" alt=\"\" style=\"width:84px;transform:rotate(-8deg)\" data-dc-tpl=\"158\">"
+					},
+					"parent": {
+						"draftId": "Home:157",
+						"tag": "a",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Home:159",
+							"tag": "div",
+							"block": "sgs/container"
+						}
+					],
+					"confidence": 0.66,
+					"candidates": [
+						{
+							"block": "sgs/responsive-logo",
+							"score": 0.85,
+							"share": 0.773
+						},
+						{
+							"block": "sgs/media",
+							"score": 0.25,
+							"share": 0.227
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/158#0",
+					"draftId": "Home:158",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/157#0",
+							"tag": "a",
+							"words": "",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Home/159#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 778.9,
+							"y": 3288.6,
+							"w": 94.3,
+							"h": 90.9
+						},
+						{
+							"width": 768,
+							"x": 413.8,
+							"y": 4613.1,
+							"w": 94.3,
+							"h": 90.9
+						},
+						{
+							"width": 375,
+							"x": 40.8,
+							"y": 4754.7,
+							"w": 94.3,
+							"h": 90.9
+						}
+					]
+				},
+				{
+					"key": "Home/161#0",
+					"element": {
+						"tag": "div",
+						"words": "Give a gift card now. She redeems it once baby arrives, so every cookie is fresh.",
+						"snippet": "<div style=\"font-size:15px;color:#4E3C31;line-height:1.5;margin-top:4px\" data-dc-tpl=\"161\">Give a gift card now. She redeems it once baby arrives, so every cook"
+					},
+					"parent": {
+						"draftId": "Home:159",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Home:160",
+							"tag": "div",
+							"block": "sgs/label"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/161#0",
+					"draftId": "Home:161",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/160#0",
+							"tag": "div",
+							"words": "Baby shower coming up?",
+							"block": "sgs/label"
+						},
+						{
+							"key": "Home/162#0",
+							"tag": "section",
+							"words": "",
+							"block": null
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 884.1,
+							"y": 3326.2,
+							"w": 429.9,
+							"h": 45
+						},
+						{
+							"width": 768,
+							"x": 519,
+							"y": 4640.8,
+							"w": 191,
+							"h": 90
+						},
+						{
+							"width": 375,
+							"x": 146,
+							"y": 4782.5,
+							"w": 183,
+							"h": 90
+						}
+					]
+				},
+				{
+					"key": "Home/167#0",
+					"element": {
+						"tag": "div",
+						"words": "The four that go in every single one",
+						"snippet": "<div style=\"font-size:15px;color:#6B5646;padding-left:26px;margin:6px 0 18px\" data-dc-tpl=\"167\">The four that go in every single one</div>"
+					},
+					"parent": {
+						"draftId": "Home:164",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Home:165",
+							"tag": "span",
+							"block": null
+						},
+						{
+							"draftId": "Home:166",
+							"tag": "div",
+							"block": "sgs/heading"
+						},
+						{
+							"draftId": "Home:168",
+							"tag": "div",
+							"block": "sgs/container"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/167#0",
+					"draftId": "Home:167",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/166#0",
+							"tag": "div",
+							"words": "Zainab’s Zookie recipe",
+							"block": "sgs/heading"
+						},
+						{
+							"key": "Home/168#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 3,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 139.5,
+							"y": 3737.2,
+							"w": 532.2,
+							"h": 27.3
+						},
+						{
+							"width": 768,
+							"x": 61.8,
+							"y": 5001.2,
+							"w": 640.2,
+							"h": 29.2
+						},
+						{
+							"width": 375,
+							"x": 36.9,
+							"y": 5141.9,
+							"w": 295.3,
+							"h": 23.1
+						}
+					]
+				},
+				{
+					"key": "Home/173#0",
+					"element": {
+						"tag": "div",
+						"words": "Rich in iron. Used in postpartum foods across cultures for centuries.",
+						"snippet": "<div style=\"font-size:15px;line-height:1.5;color:#4E3C31\" data-dc-tpl=\"173\">Rich in iron. Used in postpartum foods across cultures for centuries.</div>"
+					},
+					"parent": {
+						"draftId": "Home:171",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Home:172",
+							"tag": "div",
+							"block": "sgs/heading"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/173#0",
+					"draftId": "Home:173",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/172#0",
+							"tag": "div",
+							"words": "Oats",
+							"block": "sgs/heading"
+						},
+						{
+							"key": "Home/174#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 214.6,
+							"y": 3804.2,
+							"w": 458.7,
+							"h": 53
+						},
+						{
+							"width": 768,
+							"x": 137,
+							"y": 5068.2,
+							"w": 566.3,
+							"h": 32.4
+						},
+						{
+							"width": 375,
+							"x": 112,
+							"y": 5208.9,
+							"w": 222.1,
+							"h": 71.3
+						}
+					]
+				},
+				{
+					"key": "Home/178#0",
+					"element": {
+						"tag": "div",
+						"words": "B-vitamins and chromium. A traditional galactagogue used worldwide.",
+						"snippet": "<div style=\"font-size:15px;line-height:1.5;color:#4E3C31\" data-dc-tpl=\"178\">B-vitamins and chromium. A traditional galactagogue used worldwide.</div>"
+					},
+					"parent": {
+						"draftId": "Home:176",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Home:177",
+							"tag": "div",
+							"block": "sgs/heading"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/178#0",
+					"draftId": "Home:178",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/177#0",
+							"tag": "div",
+							"words": "Brewer’s yeast",
+							"block": "sgs/heading"
+						},
+						{
+							"key": "Home/179#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 216.2,
+							"y": 3894.2,
+							"w": 458.7,
+							"h": 53
+						},
+						{
+							"width": 768,
+							"x": 138.1,
+							"y": 5135.7,
+							"w": 566.3,
+							"h": 32.4
+						},
+						{
+							"width": 375,
+							"x": 114,
+							"y": 5321.4,
+							"w": 222.1,
+							"h": 71.3
+						}
+					]
+				},
+				{
+					"key": "Home/183#0",
+					"element": {
+						"tag": "div",
+						"words": "Omega-3 fatty acids. Good for mum and baby.",
+						"snippet": "<div style=\"font-size:15px;line-height:1.5;color:#4E3C31\" data-dc-tpl=\"183\">Omega-3 fatty acids. Good for mum and baby.</div>"
+					},
+					"parent": {
+						"draftId": "Home:181",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Home:182",
+							"tag": "div",
+							"block": "sgs/heading"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/183#0",
+					"draftId": "Home:183",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/182#0",
+							"tag": "div",
+							"words": "Flaxseed",
+							"block": "sgs/heading"
+						},
+						{
+							"key": "Home/184#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 217.8,
+							"y": 3984.2,
+							"w": 458.3,
+							"h": 30.5
+						},
+						{
+							"width": 768,
+							"x": 139.3,
+							"y": 5203.2,
+							"w": 566.3,
+							"h": 32.4
+						},
+						{
+							"width": 375,
+							"x": 116,
+							"y": 5433.9,
+							"w": 221.8,
+							"h": 48.9
+						}
+					]
+				},
+				{
+					"key": "Home/188#0",
+					"element": {
+						"tag": "div",
+						"words": "A traditional postpartum herb. If your baby has a sensitive tummy, ask your midwife first.",
+						"snippet": "<div style=\"font-size:15px;line-height:1.5;color:#4E3C31\" data-dc-tpl=\"188\">A traditional postpartum herb. If your baby has a sensitive tummy, ask your midwife "
+					},
+					"parent": {
+						"draftId": "Home:186",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Home:187",
+							"tag": "div",
+							"block": "sgs/heading"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/188#0",
+					"draftId": "Home:188",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/187#0",
+							"tag": "div",
+							"words": "Fenugreek",
+							"block": "sgs/heading"
+						},
+						{
+							"key": "Home/189#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 219,
+							"y": 4051.7,
+							"w": 458.7,
+							"h": 53
+						},
+						{
+							"width": 768,
+							"x": 140.5,
+							"y": 5270.7,
+							"w": 566.7,
+							"h": 54.9
+						},
+						{
+							"width": 375,
+							"x": 117.5,
+							"y": 5523.9,
+							"w": 222.1,
+							"h": 71.3
+						}
+					]
+				},
 				{
 					"key": "Home/192#0",
 					"element": {
@@ -94,95 +2910,1859 @@
 					]
 				},
 				{
-					"key": "Home/222#0",
+					"key": "Home/199#0",
 					"element": {
-						"tag": "div",
+						"tag": "img",
 						"words": "",
-						"snippet": "<div ref=\"{{ trackRef }}\" sc-camel-on-scroll=\"{{ onTrack }}\" sc-camel-on-mouse-enter=\"{{ hoverOn }}\" sc-camel-on-mouse-leave=\"{{ hoverOff }}\" sc-camel-on-touch-"
+						"snippet": "<img src=\"assets/photo-tray-love.jpg\" alt=\"A tray of Zookies with a Baked With Love tag\" style=\"width:100%;aspect-ratio:1 / 1;object-fit:cover;border-radius:4px"
 					},
 					"parent": {
-						"draftId": "Home:209",
+						"draftId": "Home:196",
 						"tag": "div",
 						"block": "sgs/container"
 					},
 					"siblings": [
 						{
-							"draftId": "Home:210",
-							"tag": "div",
-							"block": "sgs/container"
+							"draftId": "Home:197",
+							"tag": "span",
+							"block": null
 						},
 						{
-							"draftId": "Home:233",
-							"tag": "div",
+							"draftId": "Home:198",
+							"tag": "span",
 							"block": null
+						},
+						{
+							"draftId": "Home:200",
+							"tag": "div",
+							"block": "sgs/text"
 						}
 					],
-					"confidence": 0.4,
+					"confidence": 0.29,
 					"candidates": [
 						{
-							"block": "sgs/testimonial-slider",
-							"score": 1,
-							"share": 1
+							"block": "sgs/media",
+							"score": 0.5,
+							"share": 0.588
 						},
 						{
-							"block": "sgs/trustpilot-reviews",
-							"score": 0,
-							"share": 0
+							"block": "sgs/responsive-logo",
+							"score": 0.35,
+							"share": 0.412
 						}
 					],
-					"reason": "a loop of review cards whose holder is a scroll track the draft's script steps (a timer, pointer drag or arrow controls, never a name) is the testimonial slider, each card one of its testimonials (Spec 48 FR-48-77, register row C5) (a loop of 6 review cards in a scroll track the draft's script steps); the element's facts rule out the standing rule's block, so the row keeps it at low confidence for the review: the region names trustpilot (Home/232#0, Home/232#1, Home/232#2 (+3)), the platform of sgs/trustpilot-reviews, which shows the same facts (self-moving timer); sgs/testimonial-slider belongs to no platform",
-					"rowId": "skeleton:page-home-dc-html:Home/222#0",
-					"draftId": "Home:222",
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/199#0",
+					"draftId": "Home:199",
 					"action": null,
 					"copies": 1,
 					"neighbours": [
 						{
-							"key": "Home/221#0",
-							"tag": "button",
-							"words": "→",
+							"key": "Home/198#0",
+							"tag": "span",
+							"words": "",
 							"block": null
 						},
 						{
-							"key": "Home/224",
-							"tag": "article",
+							"key": "Home/200#0",
+							"tag": "div",
+							"words": "where it all started",
+							"block": "sgs/text"
+						}
+					],
+					"siblingCount": 3,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 121.2,
+							"y": 4370.8,
+							"w": 513,
+							"h": 513
+						},
+						{
+							"width": 768,
+							"x": 39.1,
+							"y": 6028.6,
+							"w": 298.7,
+							"h": 298.7
+						},
+						{
+							"width": 375,
+							"x": 26.7,
+							"y": 6169.3,
+							"w": 320.1,
+							"h": 320.1
+						}
+					]
+				},
+				{
+					"key": "Home/200#0",
+					"element": {
+						"tag": "div",
+						"words": "where it all started",
+						"snippet": "<div style=\"position:absolute;left:0;right:0;bottom:8px;text-align:center;font-family:'Caveat',cursive;font-size:26px\" data-dc-tpl=\"200\">where it all started</d"
+					},
+					"parent": {
+						"draftId": "Home:196",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Home:197",
+							"tag": "span",
+							"block": null
+						},
+						{
+							"draftId": "Home:198",
+							"tag": "span",
+							"block": null
+						},
+						{
+							"draftId": "Home:199",
+							"tag": "img",
+							"block": "sgs/media"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/200#0",
+					"draftId": "Home:200",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/199#0",
+							"tag": "img",
 							"words": "",
-							"block": "sgs/testimonial"
+							"block": "sgs/media"
+						},
+						{
+							"key": "Home/201#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 3,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 131,
+							"y": 4868.9,
+							"w": 516.9,
+							"h": 55.5
+						},
+						{
+							"width": 768,
+							"x": 39.9,
+							"y": 6321.3,
+							"w": 311.7,
+							"h": 46.5
+						},
+						{
+							"width": 375,
+							"x": 28.4,
+							"y": 6482.5,
+							"w": 332.1,
+							"h": 47.4
+						}
+					]
+				},
+				{
+					"key": "Home/207#0",
+					"element": {
+						"tag": "div",
+						"words": "Zainab x",
+						"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:40px;line-height:1\" data-dc-tpl=\"207\">Zainab x</div>"
+					},
+					"parent": {
+						"draftId": "Home:206",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/207#0",
+					"draftId": "Home:207",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/206#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Home/208#0",
+							"tag": "section",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 0,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 721,
+							"y": 4863.5,
+							"w": 120.8,
+							"h": 40
+						},
+						{
+							"width": 768,
+							"x": 386.5,
+							"y": 6506.8,
+							"w": 120.8,
+							"h": 40
+						},
+						{
+							"width": 375,
+							"x": 20,
+							"y": 7191.9,
+							"w": 120.8,
+							"h": 40
+						}
+					]
+				}
+			]
+		},
+		"page-shop-dc-html": {
+			"generated": "2026-11-02T04:37:13.106Z",
+			"surface": "page-shop-dc-html",
+			"source": "intake.json skeletons[\"page-shop-dc-html\"]",
+			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
+			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
+			"rows": [
+				{
+					"key": "Shop/36#0",
+					"element": {
+						"tag": "span",
+						"words": "Pick a base, chips and up to three of Zainab’s 11 flavours.",
+						"snippet": "<span style=\"font-size:16px;line-height:1.5;color:#4E3C31;max-width:380px\" data-dc-tpl=\"36\">Pick a base, chips and up to three of Zainab’s 11 flavours.</span>"
+					},
+					"parent": {
+						"draftId": "Shop:33",
+						"tag": "a",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Shop:34",
+							"tag": "span",
+							"block": "sgs/label"
+						},
+						{
+							"draftId": "Shop:35",
+							"tag": "span",
+							"block": "sgs/heading"
+						},
+						{
+							"draftId": "Shop:37",
+							"tag": "span",
+							"block": "sgs/container"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-shop-dc-html:Shop/36#0",
+					"draftId": "Shop:36",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Shop/35#0",
+							"tag": "span",
+							"words": "Build your own box",
+							"block": "sgs/heading"
+						},
+						{
+							"key": "Shop/37#0",
+							"tag": "span",
+							"words": "Start building",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 3,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 142,
+							"y": 2030.5,
+							"w": 380,
+							"h": 48
+						},
+						{
+							"width": 768,
+							"x": 66,
+							"y": 1734.2,
+							"w": 274,
+							"h": 48
+						},
+						{
+							"width": 375,
+							"x": 44,
+							"y": 1712.3,
+							"w": 287,
+							"h": 48
+						}
+					]
+				},
+				{
+					"key": "Shop/49#0",
+					"element": {
+						"tag": "span",
+						"words": "Baby showers, new arrivals and the first 40 days.",
+						"snippet": "<span style=\"font-size:16px;color:#4E3C31\" data-dc-tpl=\"49\">Baby showers, new arrivals and the first 40 days.</span>"
+					},
+					"parent": {
+						"draftId": "Shop:46",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Shop:47",
+							"tag": "span",
+							"block": "sgs/label"
+						},
+						{
+							"draftId": "Shop:48",
+							"tag": "span",
+							"block": "sgs/heading"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-shop-dc-html:Shop/49#0",
+					"draftId": "Shop:49",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Shop/48#0",
+							"tag": "span",
+							"words": "Find a gift by moment or budget",
+							"block": "sgs/heading"
+						},
+						{
+							"key": "Shop/50#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/media"
 						}
 					],
 					"siblingCount": 2,
 					"boxes": [
 						{
 							"width": 1440,
-							"x": 80,
-							"y": 5386.8,
-							"w": 1280,
-							"h": 347
+							"x": 142,
+							"y": 2321.8,
+							"w": 680.6,
+							"h": 19
 						},
 						{
 							"width": 768,
-							"x": 12,
-							"y": 6928.5,
-							"w": 744,
-							"h": 372.5
+							"x": 66,
+							"y": 2087.2,
+							"w": 344.3,
+							"h": 38
 						},
 						{
 							"width": 375,
-							"x": 0,
-							"y": 7595.9,
-							"w": 375,
-							"h": 424.5
+							"x": 44,
+							"y": 2292.2,
+							"w": 287,
+							"h": 38
+						}
+					]
+				}
+			]
+		},
+		"page-product-dc-html-id-zookies": {
+			"generated": "2026-11-02T04:37:13.107Z",
+			"surface": "page-product-dc-html-id-zookies",
+			"source": "intake.json skeletons[\"page-product-dc-html-id-zookies\"]",
+			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
+			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
+			"rows": [
+				{
+					"key": "Product/14#0",
+					"element": {
+						"tag": "span",
+						"words": "Zookies",
+						"snippet": "<span data-dc-tpl=\"14\">{{ p.name }}</span>"
+					},
+					"parent": {
+						"draftId": "Product:9",
+						"tag": "nav",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Product:10",
+							"tag": "a",
+							"block": "sgs/button"
+						},
+						{
+							"draftId": "Product:11",
+							"tag": "span",
+							"block": null
+						},
+						{
+							"draftId": "Product:12",
+							"tag": "a",
+							"block": "sgs/button"
+						},
+						{
+							"draftId": "Product:13",
+							"tag": "span",
+							"block": null
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/14#0",
+					"draftId": "Product:14",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Product/13#0",
+							"tag": "span",
+							"words": "/",
+							"block": null
+						},
+						{
+							"key": "Product/15#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/hero"
+						}
+					],
+					"siblingCount": 4,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 216.8,
+							"y": 153,
+							"w": 51.8,
+							"h": 17
+						},
+						{
+							"width": 768,
+							"x": 148.8,
+							"y": 125,
+							"w": 51.8,
+							"h": 17
+						},
+						{
+							"width": 375,
+							"x": 136.8,
+							"y": 115,
+							"w": 51.8,
+							"h": 17
+						}
+					]
+				},
+				{
+					"key": "Product/21#0",
+					"element": {
+						"tag": "div",
+						"words": "",
+						"snippet": "<div style=\"display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding:4px 2px 6px\" data-dc-tpl=\"21\"> <sc-for list=\"{{ thumbs }}\" as=\"g\" hint-placeholde"
+					},
+					"parent": {
+						"draftId": "Product:16",
+						"tag": "div",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "Product:17",
+							"tag": "div",
+							"block": null
+						}
+					],
+					"confidence": 0.51,
+					"candidates": [
+						{
+							"block": "sgs/multi-button",
+							"score": 0.75,
+							"share": 0.682
+						},
+						{
+							"block": "sgs/container",
+							"score": 0.35,
+							"share": 0.318
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/21#0",
+					"draftId": "Product:21",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Product/20#0",
+							"tag": "div",
+							"words": "baked with love",
+							"block": "sgs/label"
+						},
+						{
+							"key": "Product/23",
+							"tag": "button",
+							"words": "",
+							"block": "sgs/button"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 100,
+							"y": 804.3,
+							"w": 602.3,
+							"h": 98
+						},
+						{
+							"width": 768,
+							"x": 32,
+							"y": 508,
+							"w": 334,
+							"h": 86
+						},
+						{
+							"width": 375,
+							"x": 20,
+							"y": 499,
+							"w": 335,
+							"h": 74
+						}
+					]
+				}
+			]
+		},
+		"page-gifts-dc-html": {
+			"generated": "2026-11-02T04:37:13.107Z",
+			"surface": "page-gifts-dc-html",
+			"source": "intake.json skeletons[\"page-gifts-dc-html\"]",
+			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
+			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
+			"rows": [
+				{
+					"key": "Gifts/28#0",
+					"element": {
+						"tag": "div",
+						"words": "wrapped with love",
+						"snippet": "<div style=\"position:absolute;left:0;right:0;bottom:6px;text-align:center;font-family:'Caveat',cursive;font-size:24px\" data-dc-tpl=\"28\">wrapped with love</div>"
+					},
+					"parent": {
+						"draftId": "Gifts:26",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Gifts:27",
+							"tag": "div",
+							"block": "sgs/media"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-gifts-dc-html:Gifts/28#0",
+					"draftId": "Gifts:28",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Gifts/27#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/media"
+						},
+						{
+							"key": "Gifts/29#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 818,
+							"y": 642.8,
+							"w": 321,
+							"h": 57.7
+						},
+						{
+							"width": 768,
+							"x": 443.8,
+							"y": 518.5,
+							"w": 193.9,
+							"h": 46.6
+						},
+						{
+							"width": 375,
+							"x": 45.5,
+							"y": 1127.3,
+							"w": 205.5,
+							"h": 47.6
+						}
+					]
+				},
+				{
+					"key": "Gifts/31#0",
+					"element": {
+						"tag": "div",
+						"words": "Dear Aisha,",
+						"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:{{ L.card1 }};line-height:1.1\" data-dc-tpl=\"31\">Dear Aisha,</div>"
+					},
+					"parent": {
+						"draftId": "Gifts:29",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Gifts:30",
+							"tag": "span",
+							"block": null
+						},
+						{
+							"draftId": "Gifts:32",
+							"tag": "div",
+							"block": "sgs/text"
+						},
+						{
+							"draftId": "Gifts:33",
+							"tag": "div",
+							"block": "sgs/text"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-gifts-dc-html:Gifts/31#0",
+					"draftId": "Gifts:31",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Gifts/30#0",
+							"tag": "span",
+							"words": "",
+							"block": null
+						},
+						{
+							"key": "Gifts/32#0",
+							"tag": "div",
+							"words": "For the 3am feeds. You’re doing brilliantly.",
+							"block": "sgs/text"
+						}
+					],
+					"siblingCount": 3,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 1032.2,
+							"y": 610.1,
+							"w": 250.3,
+							"h": 54.6
+						},
+						{
+							"width": 768,
+							"x": 584,
+							"y": 563.3,
+							"w": 135,
+							"h": 42.2
+						},
+						{
+							"width": 375,
+							"x": 192.3,
+							"y": 1084.5,
+							"w": 145.4,
+							"h": 40.7
+						}
+					]
+				},
+				{
+					"key": "Gifts/32#0",
+					"element": {
+						"tag": "div",
+						"words": "For the 3am feeds. You’re doing brilliantly.",
+						"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:{{ L.card2 }};line-height:1.2;margin-top:6px\" data-dc-tpl=\"32\">For the 3am feeds. You’re doing brilliantly.</"
+					},
+					"parent": {
+						"draftId": "Gifts:29",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Gifts:30",
+							"tag": "span",
+							"block": null
+						},
+						{
+							"draftId": "Gifts:31",
+							"tag": "div",
+							"block": "sgs/text"
+						},
+						{
+							"draftId": "Gifts:33",
+							"tag": "div",
+							"block": "sgs/text"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-gifts-dc-html:Gifts/32#0",
+					"draftId": "Gifts:32",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Gifts/31#0",
+							"tag": "div",
+							"words": "Dear Aisha,",
+							"block": "sgs/text"
+						},
+						{
+							"key": "Gifts/33#0",
+							"tag": "div",
+							"words": "Sara x",
+							"block": "sgs/text"
+						}
+					],
+					"siblingCount": 3,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 1027.6,
+							"y": 653.4,
+							"w": 251.8,
+							"h": 77.2
+						},
+						{
+							"width": 768,
+							"x": 578,
+							"y": 602.2,
+							"w": 138.3,
+							"h": 88.3
+						},
+						{
+							"width": 375,
+							"x": 186.6,
+							"y": 1121.2,
+							"w": 148.5,
+							"h": 85.4
+						}
+					]
+				},
+				{
+					"key": "Gifts/33#0",
+					"element": {
+						"tag": "div",
+						"words": "Sara x",
+						"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:{{ L.card2 }};text-align:right;margin-top:8px\" data-dc-tpl=\"33\">Sara x</div>"
+					},
+					"parent": {
+						"draftId": "Gifts:29",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Gifts:30",
+							"tag": "span",
+							"block": null
+						},
+						{
+							"draftId": "Gifts:31",
+							"tag": "div",
+							"block": "sgs/text"
+						},
+						{
+							"draftId": "Gifts:32",
+							"tag": "div",
+							"block": "sgs/text"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-gifts-dc-html:Gifts/33#0",
+					"draftId": "Gifts:33",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Gifts/32#0",
+							"tag": "div",
+							"words": "For the 3am feeds. You’re doing brilliantly.",
+							"block": "sgs/text"
+						},
+						{
+							"key": "Gifts/34#0",
+							"tag": "section",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 3,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 1024.8,
+							"y": 721.2,
+							"w": 249.9,
+							"h": 49.2
+						},
+						{
+							"width": 768,
+							"x": 575.5,
+							"y": 689.1,
+							"w": 134.7,
+							"h": 37.2
+						},
+						{
+							"width": 375,
+							"x": 184.3,
+							"y": 1204.6,
+							"w": 145.1,
+							"h": 36
+						}
+					]
+				},
+				{
+					"key": "Gifts/53",
+					"element": {
+						"tag": "div",
+						"words": "A gift box, the 40-day bundle, a Taster Trio or a gift card.",
+						"snippet": "<div style=\"font-size:16px;line-height:1.55;color:#4E3C31\" data-dc-tpl=\"53\">{{ s.d }}</div>"
+					},
+					"parent": {
+						"draftId": "Gifts:50",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Gifts:51",
+							"tag": "div",
+							"block": "sgs/label"
+						},
+						{
+							"draftId": "Gifts:52",
+							"tag": "div",
+							"block": "sgs/heading"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": "3 copies of one template element",
+					"rowId": "skeleton:page-gifts-dc-html:Gifts/53",
+					"draftId": "Gifts:53",
+					"action": null,
+					"copies": 3,
+					"keys": [
+						"Gifts/53#0",
+						"Gifts/53#1",
+						"Gifts/53#2"
+					],
+					"otherWords": [
+						"Add her address and your message at checkout.",
+						"Baked fresh for her and with her in 3–5 days, no prices inside."
+					],
+					"neighbours": [
+						{
+							"key": "Gifts/52",
+							"tag": "div",
+							"words": "Pick a gift",
+							"block": "sgs/heading"
+						},
+						{
+							"key": "Gifts/54#0",
+							"tag": "section",
+							"words": "",
+							"block": null
+						}
+					],
+					"siblingCount": 2,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 126.5,
+							"y": 2075.6,
+							"w": 348.8,
+							"h": 55.7
+						},
+						{
+							"width": 768,
+							"x": 58,
+							"y": 2448.2,
+							"w": 170.6,
+							"h": 77.3
+						},
+						{
+							"width": 375,
+							"x": 46.5,
+							"y": 2451.1,
+							"w": 283.8,
+							"h": 54.5
+						}
+					]
+				},
+				{
+					"key": "Gifts/68#0",
+					"element": {
+						"tag": "img",
+						"words": "",
+						"snippet": "<img src=\"assets/logo-round.png\" alt=\"\" style=\"position:absolute;right:18px;top:18px;width:{{ L.noteLogo }};opacity:.95;transform:rotate(10deg)\" data-dc-tpl=\"68"
+					},
+					"parent": {
+						"draftId": "Gifts:66",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Gifts:67",
+							"tag": "span",
+							"block": null
+						},
+						{
+							"draftId": "Gifts:69",
+							"tag": "div",
+							"block": "sgs/text"
+						},
+						{
+							"draftId": "Gifts:70",
+							"tag": "div",
+							"block": "sgs/text"
+						},
+						{
+							"draftId": "Gifts:71",
+							"tag": "div",
+							"block": "sgs/text"
+						}
+					],
+					"confidence": 0.66,
+					"candidates": [
+						{
+							"block": "sgs/responsive-logo",
+							"score": 0.85,
+							"share": 0.773
+						},
+						{
+							"block": "sgs/media",
+							"score": 0.25,
+							"share": 0.227
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-gifts-dc-html:Gifts/68#0",
+					"draftId": "Gifts:68",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Gifts/67#0",
+							"tag": "span",
+							"words": "",
+							"block": null
+						},
+						{
+							"key": "Gifts/69#0",
+							"tag": "div",
+							"words": "Dear Aisha,",
+							"block": "sgs/text"
+						}
+					],
+					"siblingCount": 4,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 1198.3,
+							"y": 2383.6,
+							"w": 123.5,
+							"h": 119
+						},
+						{
+							"width": 768,
+							"x": 622.2,
+							"y": 2801,
+							"w": 94.3,
+							"h": 90.9
+						},
+						{
+							"width": 375,
+							"x": 263.2,
+							"y": 3587.5,
+							"w": 71.9,
+							"h": 69.2
+						}
+					]
+				},
+				{
+					"key": "Gifts/69#0",
+					"element": {
+						"tag": "div",
+						"words": "Dear Aisha,",
+						"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:{{ L.noteBig }};line-height:44px;padding-right:{{ L.noteLogoPad }}\" data-dc-tpl=\"69\">{{ toLine }}</div>"
+					},
+					"parent": {
+						"draftId": "Gifts:66",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Gifts:67",
+							"tag": "span",
+							"block": null
+						},
+						{
+							"draftId": "Gifts:68",
+							"tag": "img",
+							"block": "sgs/responsive-logo"
+						},
+						{
+							"draftId": "Gifts:70",
+							"tag": "div",
+							"block": "sgs/text"
+						},
+						{
+							"draftId": "Gifts:71",
+							"tag": "div",
+							"block": "sgs/text"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-gifts-dc-html:Gifts/69#0",
+					"draftId": "Gifts:69",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Gifts/68#0",
+							"tag": "img",
+							"words": "",
+							"block": "sgs/responsive-logo"
+						},
+						{
+							"key": "Gifts/70#0",
+							"tag": "div",
+							"words": "Congratulations, mama! One for the 3am feed. So proud of you.",
+							"block": "sgs/text"
+						}
+					],
+					"siblingCount": 4,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 792.7,
+							"y": 2423.7,
+							"w": 497.2,
+							"h": 61.3
+						},
+						{
+							"width": 768,
+							"x": 431.1,
+							"y": 2831.4,
+							"w": 269.4,
+							"h": 53.3
+						},
+						{
+							"width": 375,
+							"x": 39.8,
+							"y": 3608.7,
+							"w": 288.4,
+							"h": 54
+						}
+					]
+				},
+				{
+					"key": "Gifts/70#0",
+					"element": {
+						"tag": "div",
+						"words": "Congratulations, mama! One for the 3am feed. So proud of you.",
+						"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:{{ L.noteText }};line-height:44px;white-space:pre-wrap;padding-right:{{ L.notePadR }}\" data-dc-tpl=\"70\">{{ no"
+					},
+					"parent": {
+						"draftId": "Gifts:66",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Gifts:67",
+							"tag": "span",
+							"block": null
+						},
+						{
+							"draftId": "Gifts:68",
+							"tag": "img",
+							"block": "sgs/responsive-logo"
+						},
+						{
+							"draftId": "Gifts:69",
+							"tag": "div",
+							"block": "sgs/text"
+						},
+						{
+							"draftId": "Gifts:71",
+							"tag": "div",
+							"block": "sgs/text"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-gifts-dc-html:Gifts/70#0",
+					"draftId": "Gifts:70",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Gifts/69#0",
+							"tag": "div",
+							"words": "Dear Aisha,",
+							"block": "sgs/text"
+						},
+						{
+							"key": "Gifts/71#0",
+							"tag": "div",
+							"words": "Sara x",
+							"block": "sgs/text"
+						}
+					],
+					"siblingCount": 4,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 794.2,
+							"y": 2467.7,
+							"w": 498.8,
+							"h": 105.3
+						},
+						{
+							"width": 768,
+							"x": 432.6,
+							"y": 2875.4,
+							"w": 274,
+							"h": 185.2
+						},
+						{
+							"width": 375,
+							"x": 41.4,
+							"y": 3652.6,
+							"w": 291.4,
+							"h": 141.9
+						}
+					]
+				},
+				{
+					"key": "Gifts/71#0",
+					"element": {
+						"tag": "div",
+						"words": "Sara x",
+						"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:{{ L.noteText }};line-height:44px;text-align:right\" data-dc-tpl=\"71\">{{ fromLine }}</div>"
+					},
+					"parent": {
+						"draftId": "Gifts:66",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Gifts:67",
+							"tag": "span",
+							"block": null
+						},
+						{
+							"draftId": "Gifts:68",
+							"tag": "img",
+							"block": "sgs/responsive-logo"
+						},
+						{
+							"draftId": "Gifts:69",
+							"tag": "div",
+							"block": "sgs/text"
+						},
+						{
+							"draftId": "Gifts:70",
+							"tag": "div",
+							"block": "sgs/text"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-gifts-dc-html:Gifts/71#0",
+					"draftId": "Gifts:71",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Gifts/70#0",
+							"tag": "div",
+							"words": "Congratulations, mama! One for the 3am feed. So proud of you.",
+							"block": "sgs/text"
+						},
+						{
+							"key": "Gifts/72#0",
+							"tag": "section",
+							"words": "",
+							"block": null
+						}
+					],
+					"siblingCount": 4,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 797.3,
+							"y": 2555.6,
+							"w": 497.2,
+							"h": 61.3
+						},
+						{
+							"width": 768,
+							"x": 438.7,
+							"y": 3051.3,
+							"w": 269.4,
+							"h": 53.3
+						},
+						{
+							"width": 375,
+							"x": 46,
+							"y": 3784.6,
+							"w": 288.4,
+							"h": 54
+						}
+					]
+				},
+				{
+					"key": "Gifts/74#0",
+					"element": {
+						"tag": "img",
+						"words": "",
+						"snippet": "<img src=\"assets/logo-round.png\" alt=\"\" style=\"width:{{ L.bandLogo }};transform:rotate(-8deg);justify-self:center\" data-dc-tpl=\"74\">"
+					},
+					"parent": {
+						"draftId": "Gifts:73",
+						"tag": "a",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Gifts:75",
+							"tag": "div",
+							"block": "sgs/container"
+						}
+					],
+					"confidence": 0.66,
+					"candidates": [
+						{
+							"block": "sgs/responsive-logo",
+							"score": 0.85,
+							"share": 0.773
+						},
+						{
+							"block": "sgs/media",
+							"score": 0.25,
+							"share": 0.227
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-gifts-dc-html:Gifts/74#0",
+					"draftId": "Gifts:74",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Gifts/73#0",
+							"tag": "a",
+							"words": "",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Gifts/75#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 146.3,
+							"y": 2966.7,
+							"w": 213.3,
+							"h": 205.5
+						},
+						{
+							"width": 768,
+							"x": 60.8,
+							"y": 3393.9,
+							"w": 168.4,
+							"h": 162.3
+						},
+						{
+							"width": 375,
+							"x": 120.1,
+							"y": 3973.8,
+							"w": 134.7,
+							"h": 129.8
+						}
+					]
+				},
+				{
+					"key": "Gifts/78#0",
+					"element": {
+						"tag": "div",
+						"words": "Cookies are best fresh and babies keep their own schedule. A gift card in a printed envelope lets her order once baby arrives.",
+						"snippet": "<div style=\"font-size:17px;line-height:1.55;color:#4E3C31;max-width:560px\" data-dc-tpl=\"78\">Cookies are best fresh and babies keep their own schedule. A gift ca"
+					},
+					"parent": {
+						"draftId": "Gifts:75",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Gifts:76",
+							"tag": "div",
+							"block": "sgs/label"
+						},
+						{
+							"draftId": "Gifts:77",
+							"tag": "div",
+							"block": "sgs/heading"
+						},
+						{
+							"draftId": "Gifts:79",
+							"tag": "div",
+							"block": "sgs/container"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-gifts-dc-html:Gifts/78#0",
+					"draftId": "Gifts:78",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Gifts/77#0",
+							"tag": "div",
+							"words": "Give it now, she bakes it later",
+							"block": "sgs/heading"
+						},
+						{
+							"key": "Gifts/79#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 3,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 376,
+							"y": 3071,
+							"w": 560,
+							"h": 52.7
+						},
+						{
+							"width": 768,
+							"x": 248,
+							"y": 3479.1,
+							"w": 450,
+							"h": 79
+						},
+						{
+							"width": 375,
+							"x": 44,
+							"y": 4239,
+							"w": 287,
+							"h": 105.4
+						}
+					]
+				}
+			]
+		},
+		"page-contact-dc-html": {
+			"generated": "2026-11-02T04:37:13.107Z",
+			"surface": "page-contact-dc-html",
+			"source": "intake.json skeletons[\"page-contact-dc-html\"]",
+			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
+			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
+			"rows": [
+				{
+					"key": "Contact/25#0",
+					"element": {
+						"tag": "span",
+						"words": "The quickest way to reach Zainab. Number to be added.",
+						"snippet": "<span style=\"font-size:15px;line-height:1.5\" data-dc-tpl=\"25\">The quickest way to reach Zainab. Number to be added.</span>"
+					},
+					"parent": {
+						"draftId": "Contact:19",
+						"tag": "a",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Contact:20",
+							"tag": "span",
+							"block": "sgs/icon"
+						},
+						{
+							"draftId": "Contact:24",
+							"tag": "b",
+							"block": "sgs/heading"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-contact-dc-html:Contact/25#0",
+					"draftId": "Contact:25",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Contact/24#0",
+							"tag": "b",
+							"words": "WhatsApp",
+							"block": "sgs/heading"
+						},
+						{
+							"key": "Contact/26#0",
+							"tag": "a",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 2,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 124.6,
+							"y": 686.9,
+							"w": 354.1,
+							"h": 51.2
+						},
+						{
+							"width": 768,
+							"x": 56.4,
+							"y": 645.1,
+							"w": 175.8,
+							"h": 70.5
+						},
+						{
+							"width": 375,
+							"x": 44.6,
+							"y": 738.3,
+							"w": 287.7,
+							"h": 50
+						}
+					]
+				},
+				{
+					"key": "Contact/33#0",
+					"element": {
+						"tag": "span",
+						"words": "DM @mamasmunches and see what’s baking.",
+						"snippet": "<span style=\"font-size:15px;line-height:1.5\" data-dc-tpl=\"33\">DM @mamasmunches and see what’s baking.</span>"
+					},
+					"parent": {
+						"draftId": "Contact:26",
+						"tag": "a",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Contact:27",
+							"tag": "span",
+							"block": "sgs/icon"
+						},
+						{
+							"draftId": "Contact:32",
+							"tag": "b",
+							"block": "sgs/heading"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-contact-dc-html:Contact/33#0",
+					"draftId": "Contact:33",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Contact/32#0",
+							"tag": "b",
+							"words": "Instagram",
+							"block": "sgs/heading"
+						},
+						{
+							"key": "Contact/34#0",
+							"tag": "a",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 2,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 542.4,
+							"y": 686.9,
+							"w": 353.7,
+							"h": 28.7
+						},
+						{
+							"width": 768,
+							"x": 295.5,
+							"y": 645.1,
+							"w": 175.4,
+							"h": 48
+						},
+						{
+							"width": 375,
+							"x": 42.7,
+							"y": 959.3,
+							"w": 287.7,
+							"h": 50
+						}
+					]
+				},
+				{
+					"key": "Contact/87#0",
+					"element": {
+						"tag": "div",
+						"words": "Handmade in Birmingham by a registered food business. No shop to visit, but you’ll sometimes find Zainab at local markets and events.",
+						"snippet": "<div data-reveal=\"\" style=\"border:2px dashed #3A2A22;border-radius:20px;padding:16px 18px;font-size:15px;line-height:1.55\" data-dc-tpl=\"87\">Handmade in Birmingh"
+					},
+					"parent": {
+						"draftId": "Contact:74",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Contact:75",
+							"tag": "div",
+							"block": "sgs/label"
+						},
+						{
+							"draftId": "Contact:76",
+							"tag": "div",
+							"block": "sgs/accordion"
+						},
+						{
+							"draftId": "Contact:86",
+							"tag": "a",
+							"block": "sgs/button"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-contact-dc-html:Contact/87#0",
+					"draftId": "Contact:87",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Contact/86#0",
+							"tag": "a",
+							"words": "More answers on the Help page",
+							"block": "sgs/button"
+						}
+					],
+					"siblingCount": 3,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 863.2,
+							"y": 1377.8,
+							"w": 476.8,
+							"h": 105.8
+						},
+						{
+							"width": 768,
+							"x": 32,
+							"y": 2018.2,
+							"w": 704,
+							"h": 82.5
+						},
+						{
+							"width": 375,
+							"x": 20,
+							"y": 2770.2,
+							"w": 335,
+							"h": 129
 						}
 					]
 				}
 			]
 		},
 		"page-help-dc-html": {
-			"generated": "2026-10-31T06:33:15.811Z",
+			"generated": "2026-11-02T04:37:13.107Z",
 			"surface": "page-help-dc-html",
 			"source": "intake.json skeletons[\"page-help-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
 			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
 			"rows": [
+				{
+					"key": "Help/24#0",
+					"element": {
+						"tag": "div",
+						"words": "12 answers",
+						"snippet": "<div style=\"font-size:15px;font-weight:700;margin-bottom:4px\" data-dc-tpl=\"24\">{{ countText }}</div>"
+					},
+					"parent": {
+						"draftId": "Help:23",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Help:26",
+							"tag": "div",
+							"block": "sgs/accordion-item"
+						},
+						{
+							"draftId": "Help:26",
+							"tag": "div",
+							"block": "sgs/accordion-item"
+						},
+						{
+							"draftId": "Help:26",
+							"tag": "div",
+							"block": "sgs/accordion-item"
+						},
+						{
+							"draftId": "Help:26",
+							"tag": "div",
+							"block": "sgs/accordion-item"
+						},
+						{
+							"draftId": "Help:26",
+							"tag": "div",
+							"block": "sgs/accordion-item"
+						},
+						{
+							"draftId": "Help:26",
+							"tag": "div",
+							"block": "sgs/accordion-item"
+						},
+						{
+							"draftId": "Help:26",
+							"tag": "div",
+							"block": "sgs/accordion-item"
+						},
+						{
+							"draftId": "Help:26",
+							"tag": "div",
+							"block": "sgs/accordion-item"
+						},
+						{
+							"draftId": "Help:26",
+							"tag": "div",
+							"block": "sgs/accordion-item"
+						},
+						{
+							"draftId": "Help:26",
+							"tag": "div",
+							"block": "sgs/accordion-item"
+						},
+						{
+							"draftId": "Help:26",
+							"tag": "div",
+							"block": "sgs/accordion-item"
+						},
+						{
+							"draftId": "Help:26",
+							"tag": "div",
+							"block": "sgs/accordion-item"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-help-dc-html:Help/24#0",
+					"draftId": "Help:24",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Help/23#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Help/26",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/accordion-item"
+						}
+					],
+					"siblingCount": 12,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 270,
+							"y": 541,
+							"w": 900,
+							"h": 18
+						},
+						{
+							"width": 768,
+							"x": 32,
+							"y": 471,
+							"w": 704,
+							"h": 18
+						},
+						{
+							"width": 375,
+							"x": 20,
+							"y": 427,
+							"w": 335,
+							"h": 18
+						}
+					]
+				},
 				{
 					"key": "Help/44#0",
 					"element": {
@@ -397,6 +4977,77 @@
 					]
 				},
 				{
+					"key": "Help/56#0",
+					"element": {
+						"tag": "b",
+						"words": "£5.45",
+						"snippet": "<b data-dc-tpl=\"56\">£5.45</b>"
+					},
+					"parent": {
+						"draftId": "Help:51",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Help:52",
+							"tag": "span",
+							"block": "sgs/text"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-help-dc-html:Help/56#0",
+					"draftId": "Help:56",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Help/52#0",
+							"tag": "span",
+							"words": "Royal Mail Tracked 24 The day after baking",
+							"block": "sgs/text"
+						},
+						{
+							"key": "Help/57#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 1068.8,
+							"y": 2107.5,
+							"w": 41.2,
+							"h": 38
+						},
+						{
+							"width": 768,
+							"x": 644.8,
+							"y": 2017.2,
+							"w": 41.2,
+							"h": 38
+						},
+						{
+							"width": 375,
+							"x": 275.8,
+							"y": 2369.3,
+							"w": 41.2,
+							"h": 38
+						}
+					]
+				},
+				{
 					"key": "Help/58#0",
 					"element": {
 						"tag": "span",
@@ -466,16 +5117,167 @@
 							"h": 38
 						}
 					]
+				},
+				{
+					"key": "Help/62#0",
+					"element": {
+						"tag": "b",
+						"words": "Included",
+						"snippet": "<b data-dc-tpl=\"62\">Included</b>"
+					},
+					"parent": {
+						"draftId": "Help:57",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Help:58",
+							"tag": "span",
+							"block": "sgs/text"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-help-dc-html:Help/62#0",
+					"draftId": "Help:62",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Help/58#0",
+							"tag": "span",
+							"words": "Taster Trio & gift cards Letterbox-sized",
+							"block": "sgs/text"
+						},
+						{
+							"key": "Help/63#0",
+							"tag": "div",
+							"words": "Prices and timings to be confirmed by Zainab.",
+							"block": null
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 1043.6,
+							"y": 2187.5,
+							"w": 66.4,
+							"h": 38
+						},
+						{
+							"width": 768,
+							"x": 619.6,
+							"y": 2097.2,
+							"w": 66.4,
+							"h": 38
+						},
+						{
+							"width": 375,
+							"x": 250.6,
+							"y": 2449.3,
+							"w": 66.4,
+							"h": 38
+						}
+					]
 				}
 			]
 		},
 		"page-signin-dc-html": {
-			"generated": "2026-10-31T06:33:15.811Z",
+			"generated": "2026-11-02T04:37:13.108Z",
 			"surface": "page-signin-dc-html",
 			"source": "intake.json skeletons[\"page-signin-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
 			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
 			"rows": [
+				{
+					"key": "SignIn/103",
+					"element": {
+						"tag": "div",
+						"words": "See when Zainab bakes your box and when it’s posted.",
+						"snippet": "<div style=\"font-size:15px;line-height:1.5;color:#4E3C31\" data-dc-tpl=\"103\">{{ k.d }}</div>"
+					},
+					"parent": {
+						"draftId": "SignIn:101",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "SignIn:102",
+							"tag": "div",
+							"block": "sgs/heading"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": "3 copies of one template element",
+					"rowId": "skeleton:page-signin-dc-html:SignIn/103",
+					"draftId": "SignIn:103",
+					"action": null,
+					"copies": 3,
+					"keys": [
+						"SignIn/103#0",
+						"SignIn/103#1",
+						"SignIn/103#2"
+					],
+					"otherWords": [
+						"Skip a delivery, pause, change how often or cancel, all online.",
+						"Keep your own and the new mums you send gifts to."
+					],
+					"neighbours": [
+						{
+							"key": "SignIn/102",
+							"tag": "div",
+							"words": "Every order and bake date",
+							"block": "sgs/heading"
+						},
+						{
+							"key": "SignIn/104#0",
+							"tag": "div",
+							"words": "You don’t need an account to order. Checkout works fine as a guest, and you can create one at the end. Go to the shop →",
+							"block": "sgs/text"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 870.2,
+							"y": 497,
+							"w": 445.8,
+							"h": 22.5
+						},
+						{
+							"width": 768,
+							"x": 104,
+							"y": 843,
+							"w": 608,
+							"h": 22.5
+						},
+						{
+							"width": 375,
+							"x": 92,
+							"y": 839,
+							"w": 239,
+							"h": 45
+						}
+					]
+				},
 				{
 					"key": "SignIn/104#0",
 					"element": {
@@ -492,7 +5294,7 @@
 						{
 							"draftId": "SignIn:96",
 							"tag": "div",
-							"block": "sgs/text"
+							"block": "sgs/label"
 						},
 						{
 							"draftId": "SignIn:97",
@@ -543,6 +5345,215 @@
 							"y": 1114,
 							"w": 335,
 							"h": 129
+						}
+					]
+				}
+			]
+		},
+		"checkout-header": {
+			"generated": "2026-11-02T04:37:13.108Z",
+			"surface": "checkout-header",
+			"source": "intake.json skeletons[\"checkout-header\"]",
+			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
+			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
+			"rows": [
+				{
+					"key": "Checkout/7#0",
+					"element": {
+						"tag": "header",
+						"words": "",
+						"snippet": "<header style=\"background:#F5C2C8;border-bottom:2px solid #3A2A22\" data-dc-tpl=\"7\"> <div style=\"max-width:1160px;margin:0 auto;padding:0 20px;height:72px;displa"
+					},
+					"parent": null,
+					"siblings": [],
+					"confidence": 0.58,
+					"candidates": [
+						{
+							"block": "sgs/site-header",
+							"score": 1.4,
+							"share": 0.583
+						},
+						{
+							"block": "sgs/hero",
+							"score": 1,
+							"share": 0.417
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:checkout-header:Checkout/7#0",
+					"draftId": "Checkout:7",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Checkout/8#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/site-header-row"
+						}
+					],
+					"siblingCount": 0,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 0,
+							"y": 0,
+							"w": 1440,
+							"h": 74
+						},
+						{
+							"width": 768,
+							"x": 0,
+							"y": 0,
+							"w": 768,
+							"h": 74
+						},
+						{
+							"width": 375,
+							"x": 0,
+							"y": 0,
+							"w": 375,
+							"h": 74
+						}
+					]
+				},
+				{
+					"key": "Checkout/11#0",
+					"element": {
+						"tag": "img",
+						"words": "",
+						"snippet": "<img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:{{ logoH }};width:auto\" data-dc-tpl=\"11\">"
+					},
+					"parent": {
+						"draftId": "Checkout:10",
+						"tag": "a",
+						"block": "sgs/container"
+					},
+					"siblings": [],
+					"confidence": 0.66,
+					"candidates": [
+						{
+							"block": "sgs/responsive-logo",
+							"score": 0.85,
+							"share": 0.773
+						},
+						{
+							"block": "sgs/media",
+							"score": 0.25,
+							"share": 0.227
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:checkout-header:Checkout/11#0",
+					"draftId": "Checkout:11",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Checkout/10#0",
+							"tag": "a",
+							"words": "",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Checkout/12#0",
+							"tag": "span",
+							"words": "Secure checkout",
+							"block": "sgs/text"
+						}
+					],
+					"siblingCount": 0,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 645,
+							"y": 11,
+							"w": 150,
+							"h": 50
+						},
+						{
+							"width": 768,
+							"x": 309,
+							"y": 11,
+							"w": 150,
+							"h": 50
+						},
+						{
+							"width": 375,
+							"x": 127.5,
+							"y": 16,
+							"w": 120,
+							"h": 40
+						}
+					]
+				},
+				{
+					"key": "Checkout/12#0",
+					"element": {
+						"tag": "span",
+						"words": "Secure checkout",
+						"snippet": "<span style=\"justify-self:end;font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px\" data-dc-tpl=\"12\"><svg width=\"16\" height=\"16\" sc-camel-view"
+					},
+					"parent": {
+						"draftId": "Checkout:8",
+						"tag": "div",
+						"block": "sgs/site-header-row"
+					},
+					"siblings": [
+						{
+							"draftId": "Checkout:9",
+							"tag": "a",
+							"block": "sgs/button"
+						},
+						{
+							"draftId": "Checkout:10",
+							"tag": "a",
+							"block": "sgs/container"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:checkout-header:Checkout/12#0",
+					"draftId": "Checkout:12",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Checkout/11#0",
+							"tag": "img",
+							"words": "",
+							"block": "sgs/responsive-logo"
+						}
+					],
+					"siblingCount": 2,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 1147.5,
+							"y": 27.5,
+							"w": 132.5,
+							"h": 17
+						},
+						{
+							"width": 768,
+							"x": 615.5,
+							"y": 27.5,
+							"w": 132.5,
+							"h": 17
+						},
+						{
+							"width": 375,
+							"x": 287.5,
+							"y": 27.5,
+							"w": 67.5,
+							"h": 17
 						}
 					]
 				}

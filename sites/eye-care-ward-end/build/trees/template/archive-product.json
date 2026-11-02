@@ -11,21 +11,58 @@
     "attributes": {
       "tagName": "main",
       "className": "cr-ref-shop-0",
+      "textColour": "ink",
       "minHeight": {
         "desktop": "0px"
       },
       "maxWidth": {
         "desktop": "1440px"
       },
+      "layout": "flex",
+      "gridItemBorder": "hairline",
+      "gridItemPadding": {
+        "desktop": {
+          "bottom": "24px",
+          "top": "28px"
+        }
+      },
+      "gap": {
+        "desktop": "16px"
+      },
+      "justifyContent": "space-between",
+      "alignItems": "flex-end",
+      "flexWrap": "wrap",
+      "gridTemplateColumns": {
+        "tablet": "repeat(1, minmax(0, 1fr))",
+        "desktop": "minmax(0, 1fr) minmax(0, 3.8fr)"
+      },
       "contentWidth": {
         "desktop": "full"
       },
-      "textColourHover": "primary",
+      "textColourHover": "ink",
       "padding": {
-        "desktop": "52px",
-        "tablet": "52px",
-        "mobile": "20px"
-      }
+        "desktop": {
+          "top": "48px",
+          "right": "52px",
+          "bottom": "90px",
+          "left": "52px"
+        },
+        "tablet": {
+          "top": "48px",
+          "right": "52px",
+          "bottom": "90px",
+          "left": "52px"
+        },
+        "mobile": {
+          "top": "28px",
+          "right": "20px",
+          "bottom": "60px",
+          "left": "20px"
+        }
+      },
+      "sgsCustomCss": "& .sgs-container__inner > p:nth-of-type(1) { border-bottom-width: 1px; border-bottom-style: solid; }",
+      "sgsCustomCssId": "r8cb6658f470",
+      "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width border-bottom-width: 1px; border-bottom-style: solid;"
     },
     "innerBlocks": [
       {
@@ -33,14 +70,13 @@
         "attributes": {
           "layout": "flex",
           "className": "cr-ref-shop-1",
-          "backgroundColourGradient": "none",
           "borderWidth": {
             "top": "0px",
             "right": "0px",
             "left": "0px",
             "bottom": "1px"
           },
-          "borderColour": "border",
+          "borderColour": "hairline",
           "gap": {
             "desktop": "16px"
           },
@@ -51,8 +87,9 @@
           },
           "flexDirection": "row",
           "flexWrap": "wrap",
-          "borderColourHover": "border",
-          "textColourHover": "primary",
+          "variant": "split",
+          "textColourHover": "ink",
+          "borderColourHover": "hairline",
           "sgsMotion": {
             "v": 1,
             "elements": {
@@ -76,7 +113,10 @@
                 }
               }
             }
-          }
+          },
+          "sgsCustomCss": "& { border-bottom-style: solid; } & .sgs-hero__content { display: block; }",
+          "sgsCustomCssId": "rc21a298320a",
+          "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width border-bottom-style: solid;, & .sgs-hero__content every width display: block;"
         },
         "innerBlocks": [
           {
@@ -87,13 +127,13 @@
               "fontWeight": "400",
               "lineHeight": 1.5,
               "letterSpacing": 0.24,
-              "textColour": "accent-text",
+              "textColour": "acc-ink",
               "margin": {
                 "mobile": {
                   "bottom": "8px"
                 }
               },
-              "textColourHover": "accent-text"
+              "textColourHover": "acc-ink"
             },
             "innerBlocks": []
           },
@@ -101,6 +141,7 @@
             "name": "sgs/heading",
             "attributes": {
               "content": "Sunglasses",
+              "level": "h1",
               "className": "cr-ref-shop-3",
               "fontSize": {
                 "mobile": 34,
@@ -111,13 +152,14 @@
                 "desktop": 1
               },
               "lineHeightUnit": "",
+              "textColour": "ink",
               "margin": {
                 "desktop": {
                   "bottom": "0px"
                 }
               },
               "textWrap": "wrap",
-              "textColourHover": "primary"
+              "textColourHover": "ink"
             },
             "innerBlocks": []
           },
@@ -132,7 +174,24 @@
               },
               "alignItems": "center",
               "flexWrap": "wrap",
-              "textColourHover": "primary"
+              "gridItemTextColour": "#000000",
+              "gridItemBackground": "white",
+              "gridItemPadding": {
+                "tablet": {
+                  "right": "16px",
+                  "left": "16px"
+                }
+              },
+              "textColourHover": "ink",
+              "padding": {
+                "desktop": {
+                  "right": "0px",
+                  "left": "0px"
+                }
+              },
+              "sgsCustomCss": "& .sgs-container__inner > p:nth-of-type(1) { border-top-width: 1px; border-top-style: solid; border-bottom-width: 1px; border-left-width: 1px; border-right-width: 1px; min-height: 44px; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; cursor: pointer; }",
+              "sgsCustomCssId": "r4a89ab894b5",
+              "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width border-top-width: 1px; border-top-style: solid; border-bottom-width: 1px; border-left-width: 1px; border-right-width: 1px; min-height: 44px; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; cursor: pointer;"
             },
             "innerBlocks": [
               {
@@ -140,6 +199,9 @@
                 "attributes": {
                   "label": "Filter",
                   "className": "cr-ref-shop-5",
+                  "fontSize": {
+                    "tablet": 12.5
+                  },
                   "lineHeight": {
                     "tablet": 1.28
                   },
@@ -149,14 +211,14 @@
                   "letterSpacingUnit": "em",
                   "textTransform": "uppercase",
                   "colourText": "#000000",
-                  "colourBackground": "surface-alt",
+                  "colourBackground": "white",
                   "borderWidth": {
                     "right": "1px",
                     "bottom": "1px",
                     "left": "1px",
                     "top": "1px"
                   },
-                  "borderColour": "primary",
+                  "borderColour": "ink",
                   "padding": {
                     "tablet": {
                       "right": "16px",
@@ -166,39 +228,12 @@
                   "minHeight": {
                     "tablet": "44px"
                   },
-                  "colourBackgroundHover": "surface-alt",
-                  "borderColourHover": "primary",
-                  "colourTextHover": "#000000"
-                },
-                "innerBlocks": []
-              },
-              {
-                "name": "sgs/form-field-select",
-                "attributes": {
-                  "label": "16 frames",
-                  "className": "cr-ref-shop-6",
-                  "options": [
-                    {
-                      "value": "featured",
-                      "label": "Featured"
-                    },
-                    {
-                      "value": "low",
-                      "label": "Price: low to high"
-                    },
-                    {
-                      "value": "high",
-                      "label": "Price: high to low"
-                    },
-                    {
-                      "value": "save",
-                      "label": "Biggest saving"
-                    },
-                    {
-                      "value": "brand",
-                      "label": "Brand A–Z"
-                    }
-                  ]
+                  "colourBackgroundHover": "white",
+                  "borderColourHover": "ink",
+                  "colourTextHover": "#000000",
+                  "sgsCustomCss": "& { display: block; align-items: normal; } & .sgs-button__label { background-color: rgb(255, 255, 255); border-top-width: 1px; border-top-style: solid; border-top-color: rgb(20, 20, 20); border-bottom-width: 1px; border-bottom-color: rgb(20, 20, 20); border-left-width: 1px; border-right-width: 1px; padding-right: 16px; padding-left: 16px; min-height: 44px; border-left-color: rgb(20, 20, 20); border-right-color: rgb(20, 20, 20); border-right-style: solid; border-bottom-style: solid; border-left-style: solid; } @media (max-width: 1023px) { &:hover { transform: none; } }",
+                  "sgsCustomCssId": "r777e9648c47",
+                  "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width display: block; align-items: normal;, & .sgs-button__label every width background-color: rgb(255, 255, 255); border-top-width: 1px; border-top-style: solid; border-top-color: rgb(20, 20, 20); border-bottom-width: 1px; border-bottom-color: rgb(20, 20, 20); border-left-width: 1px; border-right-width: 1px; padding-right: 16px; padding-left: 16px; min-height: 44px; border-left-color: rgb(20, 20, 20); border-right-color: rgb(20, 20, 20); border-right-style: solid; border-bottom-style: solid; border-left-style: solid;, &:hover 0-1023px transform: none;"
                 },
                 "innerBlocks": []
               }
@@ -211,7 +246,7 @@
         "attributes": {
           "tagName": "div",
           "layout": "grid",
-          "className": "cr-ref-shop-7",
+          "className": "cr-ref-shop-6",
           "gridTemplateColumns": {
             "tablet": "repeat(1, minmax(0, 1fr))",
             "desktop": "minmax(0, 1fr) minmax(0, 3.8fr)"
@@ -220,12 +255,18 @@
             "desktop": "40px"
           },
           "alignItems": "start",
-          "textColourHover": "primary",
+          "flexDirection": "column",
+          "textColourHover": "ink",
           "padding": {
             "desktop": {
-              "top": "28px"
+              "top": "28px",
+              "right": "0px",
+              "left": "0px"
             }
-          }
+          },
+          "sgsCustomCss": "& .sgs-container__inner > p:nth-of-type(1) { top: 110px; position: sticky; z-index: 1; }",
+          "sgsCustomCssId": "r04896f2c607",
+          "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width top: 110px; position: sticky; z-index: 1;"
         },
         "innerBlocks": [
           {
@@ -233,13 +274,19 @@
             "attributes": {
               "tagName": "aside",
               "anchor": "sgs-shop-filters",
-              "className": "sgs-shop-filters cr-ref-shop-8",
+              "className": "sgs-shop-filters cr-ref-shop-7",
               "layout": "stack",
               "fontSize": {
                 "desktop": 14.5
               },
               "overflow": "visible",
-              "textColourHover": "primary",
+              "textColourHover": "ink",
+              "padding": {
+                "desktop": {
+                  "right": "0px",
+                  "left": "0px"
+                }
+              },
               "sgsMotion": {
                 "v": 1,
                 "elements": {
@@ -261,39 +308,42 @@
                     }
                   }
                 }
-              }
+              },
+              "sgsCustomCss": "& { top: 110px; position: sticky; }",
+              "sgsCustomCssId": "rf844f955be1",
+              "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width top: 110px; position: sticky;"
             },
             "innerBlocks": [
               {
                 "name": "woocommerce/product-filters",
                 "attributes": {
-                  "className": "cr-ref-shop-9"
+                  "className": "cr-ref-shop-8"
                 },
                 "innerBlocks": [
                   {
                     "name": "woocommerce/product-filter-active",
                     "attributes": {
-                      "className": "cr-ref-shop-10"
+                      "className": "cr-ref-shop-9"
                     },
                     "innerBlocks": [
                       {
                         "name": "woocommerce/product-filter-removable-chips",
                         "attributes": {
-                          "className": "cr-ref-shop-11"
+                          "className": "cr-ref-shop-10"
                         },
                         "innerBlocks": []
                       },
                       {
                         "name": "woocommerce/product-filter-clear-button",
                         "attributes": {
-                          "className": "cr-ref-shop-12"
+                          "className": "cr-ref-shop-11"
                         },
                         "innerBlocks": [
                           {
                             "name": "sgs/button",
                             "attributes": {
                               "label": "Clear all",
-                              "className": "wp-block-button__link cr-ref-shop-13"
+                              "className": "wp-block-button__link cr-ref-shop-12"
                             },
                             "innerBlocks": []
                           }
@@ -306,7 +356,7 @@
                     "attributes": {
                       "level": "h3",
                       "content": "Gender",
-                      "className": "sgs-shop-filters__group-heading sgs-filter-open cr-ref-shop-14",
+                      "className": "sgs-shop-filters__group-heading sgs-filter-open cr-ref-shop-13",
                       "fontFamily": "body",
                       "fontSize": {
                         "desktop": 12
@@ -319,13 +369,14 @@
                         "desktop": 0.18
                       },
                       "textTransform": "uppercase",
+                      "textColour": "ink",
                       "margin": {
                         "desktop": {
                           "bottom": "0px"
                         }
                       },
                       "textWrap": "wrap",
-                      "textColourHover": "primary"
+                      "textColourHover": "ink"
                     },
                     "innerBlocks": []
                   },
@@ -337,13 +388,13 @@
                       "sortOrder": "menu_order-asc",
                       "displayStyle": "woocommerce/product-filter-chips",
                       "attributeId": 12,
-                      "className": "cr-ref-shop-15"
+                      "className": "cr-ref-shop-14"
                     },
                     "innerBlocks": [
                       {
                         "name": "woocommerce/product-filter-chips",
                         "attributes": {
-                          "className": "cr-ref-shop-16"
+                          "className": "cr-ref-shop-15"
                         },
                         "innerBlocks": []
                       }
@@ -354,7 +405,7 @@
                     "attributes": {
                       "level": "h3",
                       "content": "Size",
-                      "className": "sgs-shop-filters__group-heading cr-ref-shop-17",
+                      "className": "sgs-shop-filters__group-heading cr-ref-shop-16",
                       "fontFamily": "body",
                       "fontSize": {
                         "desktop": 12
@@ -367,13 +418,14 @@
                         "desktop": 0.18
                       },
                       "textTransform": "uppercase",
+                      "textColour": "ink",
                       "margin": {
                         "desktop": {
                           "bottom": "0px"
                         }
                       },
                       "textWrap": "wrap",
-                      "textColourHover": "primary"
+                      "textColourHover": "ink"
                     },
                     "innerBlocks": []
                   },
@@ -385,13 +437,13 @@
                       "sortOrder": "menu_order-asc",
                       "displayStyle": "woocommerce/product-filter-chips",
                       "attributeId": 10,
-                      "className": "cr-ref-shop-18"
+                      "className": "cr-ref-shop-17"
                     },
                     "innerBlocks": [
                       {
                         "name": "woocommerce/product-filter-chips",
                         "attributes": {
-                          "className": "cr-ref-shop-19"
+                          "className": "cr-ref-shop-18"
                         },
                         "innerBlocks": []
                       }
@@ -402,7 +454,7 @@
                     "attributes": {
                       "level": "h3",
                       "content": "Colour",
-                      "className": "sgs-shop-filters__group-heading sgs-filter-open sgs-filter-swatches cr-ref-shop-20",
+                      "className": "sgs-shop-filters__group-heading sgs-filter-open sgs-filter-swatches cr-ref-shop-19",
                       "fontFamily": "body",
                       "fontSize": {
                         "desktop": 12
@@ -415,13 +467,14 @@
                         "desktop": 0.18
                       },
                       "textTransform": "uppercase",
+                      "textColour": "ink",
                       "margin": {
                         "desktop": {
                           "bottom": "0px"
                         }
                       },
                       "textWrap": "wrap",
-                      "textColourHover": "primary"
+                      "textColourHover": "ink"
                     },
                     "innerBlocks": []
                   },
@@ -433,13 +486,13 @@
                       "sortOrder": "menu_order-asc",
                       "displayStyle": "woocommerce/product-filter-chips",
                       "attributeId": 5,
-                      "className": "cr-ref-shop-21"
+                      "className": "cr-ref-shop-20"
                     },
                     "innerBlocks": [
                       {
                         "name": "woocommerce/product-filter-chips",
                         "attributes": {
-                          "className": "cr-ref-shop-22"
+                          "className": "cr-ref-shop-21"
                         },
                         "innerBlocks": []
                       }
@@ -450,7 +503,7 @@
                     "attributes": {
                       "level": "h3",
                       "content": "Price",
-                      "className": "sgs-shop-filters__group-heading sgs-filter-open cr-ref-shop-23",
+                      "className": "sgs-shop-filters__group-heading sgs-filter-open cr-ref-shop-22",
                       "fontFamily": "body",
                       "fontSize": {
                         "desktop": 12
@@ -463,27 +516,28 @@
                         "desktop": 0.18
                       },
                       "textTransform": "uppercase",
+                      "textColour": "ink",
                       "margin": {
                         "desktop": {
                           "bottom": "0px"
                         }
                       },
                       "textWrap": "wrap",
-                      "textColourHover": "primary"
+                      "textColourHover": "ink"
                     },
                     "innerBlocks": []
                   },
                   {
                     "name": "woocommerce/product-filter-price",
                     "attributes": {
-                      "className": "cr-ref-shop-24"
+                      "className": "cr-ref-shop-23"
                     },
                     "innerBlocks": [
                       {
                         "name": "woocommerce/product-filter-price-slider",
                         "attributes": {
                           "showInputFields": false,
-                          "className": "cr-ref-shop-25"
+                          "className": "cr-ref-shop-24"
                         },
                         "innerBlocks": []
                       }
@@ -494,7 +548,7 @@
                     "attributes": {
                       "level": "h3",
                       "content": "Brand",
-                      "className": "sgs-shop-filters__group-heading sgs-filter-open cr-ref-shop-26",
+                      "className": "sgs-shop-filters__group-heading sgs-filter-open cr-ref-shop-25",
                       "fontFamily": "body",
                       "fontSize": {
                         "desktop": 12
@@ -507,13 +561,14 @@
                         "desktop": 0.18
                       },
                       "textTransform": "uppercase",
+                      "textColour": "ink",
                       "margin": {
                         "desktop": {
                           "bottom": "0px"
                         }
                       },
                       "textWrap": "wrap",
-                      "textColourHover": "primary"
+                      "textColourHover": "ink"
                     },
                     "innerBlocks": []
                   },
@@ -523,13 +578,13 @@
                       "taxonomy": "product_brand",
                       "displayStyle": "woocommerce/product-filter-checkbox-list",
                       "showCounts": true,
-                      "className": "cr-ref-shop-27"
+                      "className": "cr-ref-shop-26"
                     },
                     "innerBlocks": [
                       {
                         "name": "woocommerce/product-filter-checkbox-list",
                         "attributes": {
-                          "className": "cr-ref-shop-28"
+                          "className": "cr-ref-shop-27"
                         },
                         "innerBlocks": []
                       }
@@ -540,7 +595,7 @@
                     "attributes": {
                       "level": "h3",
                       "content": "Style",
-                      "className": "sgs-shop-filters__group-heading sgs-filter-open cr-ref-shop-29",
+                      "className": "sgs-shop-filters__group-heading sgs-filter-open cr-ref-shop-28",
                       "fontFamily": "body",
                       "fontSize": {
                         "desktop": 12
@@ -553,13 +608,14 @@
                         "desktop": 0.18
                       },
                       "textTransform": "uppercase",
+                      "textColour": "ink",
                       "margin": {
                         "desktop": {
                           "bottom": "0px"
                         }
                       },
                       "textWrap": "wrap",
-                      "textColourHover": "primary"
+                      "textColourHover": "ink"
                     },
                     "innerBlocks": []
                   },
@@ -571,13 +627,13 @@
                       "sortOrder": "menu_order-asc",
                       "displayStyle": "woocommerce/product-filter-chips",
                       "attributeId": 4,
-                      "className": "cr-ref-shop-30"
+                      "className": "cr-ref-shop-29"
                     },
                     "innerBlocks": [
                       {
                         "name": "woocommerce/product-filter-chips",
                         "attributes": {
-                          "className": "cr-ref-shop-31"
+                          "className": "cr-ref-shop-30"
                         },
                         "innerBlocks": []
                       }
@@ -588,7 +644,7 @@
                     "attributes": {
                       "level": "h3",
                       "content": "Material",
-                      "className": "sgs-shop-filters__group-heading cr-ref-shop-32",
+                      "className": "sgs-shop-filters__group-heading cr-ref-shop-31",
                       "fontFamily": "body",
                       "fontSize": {
                         "desktop": 12
@@ -601,13 +657,14 @@
                         "desktop": 0.18
                       },
                       "textTransform": "uppercase",
+                      "textColour": "ink",
                       "margin": {
                         "desktop": {
                           "bottom": "0px"
                         }
                       },
                       "textWrap": "wrap",
-                      "textColourHover": "primary"
+                      "textColourHover": "ink"
                     },
                     "innerBlocks": []
                   },
@@ -619,13 +676,13 @@
                       "sortOrder": "menu_order-asc",
                       "displayStyle": "woocommerce/product-filter-chips",
                       "attributeId": 6,
-                      "className": "cr-ref-shop-33"
+                      "className": "cr-ref-shop-32"
                     },
                     "innerBlocks": [
                       {
                         "name": "woocommerce/product-filter-chips",
                         "attributes": {
-                          "className": "cr-ref-shop-34"
+                          "className": "cr-ref-shop-33"
                         },
                         "innerBlocks": []
                       }
@@ -636,7 +693,7 @@
                     "attributes": {
                       "level": "h3",
                       "content": "Frame type",
-                      "className": "sgs-shop-filters__group-heading cr-ref-shop-35",
+                      "className": "sgs-shop-filters__group-heading cr-ref-shop-34",
                       "fontFamily": "body",
                       "fontSize": {
                         "desktop": 12
@@ -649,13 +706,14 @@
                         "desktop": 0.18
                       },
                       "textTransform": "uppercase",
+                      "textColour": "ink",
                       "margin": {
                         "desktop": {
                           "bottom": "0px"
                         }
                       },
                       "textWrap": "wrap",
-                      "textColourHover": "primary"
+                      "textColourHover": "ink"
                     },
                     "innerBlocks": []
                   },
@@ -667,13 +725,13 @@
                       "sortOrder": "menu_order-asc",
                       "displayStyle": "woocommerce/product-filter-chips",
                       "attributeId": 7,
-                      "className": "cr-ref-shop-36"
+                      "className": "cr-ref-shop-35"
                     },
                     "innerBlocks": [
                       {
                         "name": "woocommerce/product-filter-chips",
                         "attributes": {
-                          "className": "cr-ref-shop-37"
+                          "className": "cr-ref-shop-36"
                         },
                         "innerBlocks": []
                       }
@@ -684,7 +742,7 @@
                     "attributes": {
                       "level": "h3",
                       "content": "Hinge",
-                      "className": "sgs-shop-filters__group-heading cr-ref-shop-38",
+                      "className": "sgs-shop-filters__group-heading cr-ref-shop-37",
                       "fontFamily": "body",
                       "fontSize": {
                         "desktop": 12
@@ -697,13 +755,14 @@
                         "desktop": 0.18
                       },
                       "textTransform": "uppercase",
+                      "textColour": "ink",
                       "margin": {
                         "desktop": {
                           "bottom": "0px"
                         }
                       },
                       "textWrap": "wrap",
-                      "textColourHover": "primary"
+                      "textColourHover": "ink"
                     },
                     "innerBlocks": []
                   },
@@ -715,13 +774,13 @@
                       "sortOrder": "menu_order-asc",
                       "displayStyle": "woocommerce/product-filter-chips",
                       "attributeId": 8,
-                      "className": "cr-ref-shop-39"
+                      "className": "cr-ref-shop-38"
                     },
                     "innerBlocks": [
                       {
                         "name": "woocommerce/product-filter-chips",
                         "attributes": {
-                          "className": "cr-ref-shop-40"
+                          "className": "cr-ref-shop-39"
                         },
                         "innerBlocks": []
                       }
@@ -732,7 +791,7 @@
                     "attributes": {
                       "level": "h3",
                       "content": "Nose pads",
-                      "className": "sgs-shop-filters__group-heading cr-ref-shop-41",
+                      "className": "sgs-shop-filters__group-heading cr-ref-shop-40",
                       "fontFamily": "body",
                       "fontSize": {
                         "desktop": 12
@@ -745,13 +804,14 @@
                         "desktop": 0.18
                       },
                       "textTransform": "uppercase",
+                      "textColour": "ink",
                       "margin": {
                         "desktop": {
                           "bottom": "0px"
                         }
                       },
                       "textWrap": "wrap",
-                      "textColourHover": "primary"
+                      "textColourHover": "ink"
                     },
                     "innerBlocks": []
                   },
@@ -763,13 +823,13 @@
                       "sortOrder": "menu_order-asc",
                       "displayStyle": "woocommerce/product-filter-chips",
                       "attributeId": 9,
-                      "className": "cr-ref-shop-42"
+                      "className": "cr-ref-shop-41"
                     },
                     "innerBlocks": [
                       {
                         "name": "woocommerce/product-filter-chips",
                         "attributes": {
-                          "className": "cr-ref-shop-43"
+                          "className": "cr-ref-shop-42"
                         },
                         "innerBlocks": []
                       }
@@ -783,8 +843,18 @@
             "name": "sgs/container",
             "attributes": {
               "tagName": "div",
-              "className": "cr-ref-shop-44",
-              "textColourHover": "primary"
+              "className": "cr-ref-shop-43",
+              "gridItemTextColour": "text-3",
+              "textColourHover": "ink",
+              "padding": {
+                "desktop": {
+                  "right": "0px",
+                  "left": "0px"
+                }
+              },
+              "sgsCustomCss": "& .sgs-container__inner > p:nth-of-type(1) { margin-top: 28px; text-wrap-style: pretty; }",
+              "sgsCustomCssId": "r0e509b6faf6",
+              "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width margin-top: 28px; text-wrap-style: pretty;"
             },
             "innerBlocks": [
               {
@@ -805,21 +875,46 @@
                   "queryContextIncludes": [
                     "collection"
                   ],
-                  "className": "cr-ref-shop-45"
+                  "className": "cr-ref-shop-44"
                 },
                 "innerBlocks": [
                   {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "className": "sgs-shop-toolbar cr-ref-shop-45"
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "woocommerce/product-results-count",
+                        "attributes": {
+                          "className": "cr-ref-shop-46"
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "woocommerce/catalog-sorting",
+                        "attributes": {
+                          "className": "cr-ref-shop-47"
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  },
+                  {
                     "name": "woocommerce/product-template",
                     "attributes": {
-                      "className": "cr-ref-shop-46"
+                      "className": "cr-ref-shop-48"
                     },
                     "innerBlocks": [
                       {
                         "name": "sgs/product-card",
                         "attributes": {
-                          "sourceMode": "wc-product",
-                          "className": "cr-ref-shop-47",
-                          "textColour": "custom-text-faint",
+                          "sourceMode": "sgs-cpt",
+                          "className": "cr-ref-shop-49",
+                          "productName": "Aviator Classic",
+                          "savingLabel": "Save £32",
+                          "textColour": "text-faint",
                           "variantStyle": "trial",
                           "borderStyle": "none",
                           "borderRadius": {
@@ -831,7 +926,59 @@
                             }
                           },
                           "cardMaxWidth": "none",
-                          "textColourHover": "custom-text-faint"
+                          "priceRowFlexWrap": "nowrap",
+                          "titleFontFamily": "body",
+                          "titleFontSize": {
+                            "desktop": 16
+                          },
+                          "titleFontWeight": "400",
+                          "titleLineHeight": 1.25,
+                          "titleColour": "ink",
+                          "savingBadgeBackgroundColour": "ink",
+                          "showSavingBadge": true,
+                          "wishlistBorderColour": "#E0DAD1",
+                          "showWishlist": true,
+                          "textColourHover": "text-faint",
+                          "sgsMotion": {
+                            "v": 1,
+                            "elements": {
+                              "root": {
+                                "entrance": {
+                                  "base": {
+                                    "trigger": "scroll",
+                                    "values": {
+                                      "from": {
+                                        "opacity": 0,
+                                        "translateY": "token:distance.xl"
+                                      },
+                                      "to": {
+                                        "opacity": 1,
+                                        "translateY": 0
+                                      },
+                                      "duration": 460,
+                                      "easing": "cubic-bezier(0.215, 0.61, 0.355, 1)"
+                                    }
+                                  }
+                                }
+                              },
+                              "wishlist": {
+                                "hover": {
+                                  "state": {
+                                    "values": {
+                                      "scale": 1.08,
+                                      "duration": 200,
+                                      "easing": "token:easing.ease",
+                                      "paintDuration": 200,
+                                      "paintEasing": "token:easing.ease"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "sgsCustomCss": "& .sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__title > .sgs-focus-source { letter-spacing: normal; } & .sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__title > .sgs-focus-source:hover { color: rgb(111, 97, 82); } & div:nth-of-type(1) > .sgs-product-card__wishlist:hover { background-color: rgb(255, 255, 255); } & div:nth-of-type(1) > .sgs-product-card__wishlist { transition-property: background, transform; }",
+                          "sgsCustomCssId": "ra5df600f07a",
+                          "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & .sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__title > .sgs-focus-source every width letter-spacing: normal;, & .sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__title > .sgs-focus-source:hover every width color: rgb(111, 97, 82);, & div:nth-of-type(1) > .sgs-product-card__wishlist:hover every width background-color: rgb(255, 255, 255);, & div:nth-of-type(1) > .sgs-product-card__wishlist every width transition-property: background, transform;"
                         },
                         "innerBlocks": []
                       }
@@ -843,18 +990,18 @@
                 "name": "sgs/text",
                 "attributes": {
                   "text": "Every pair is genuine, bought through the brands' authorised UK suppliers, and comes boxed with its own case and cloth. Prescription lenses can go in any of them.",
-                  "className": "cr-ref-shop-48",
+                  "className": "cr-ref-shop-50",
                   "fontSize": {
                     "desktop": 13
                   },
-                  "textColour": "custom-text-3",
+                  "textColour": "text-3",
                   "margin": {
                     "desktop": {
                       "top": "28px"
                     }
                   },
                   "textWrap": "pretty",
-                  "textColourHover": "custom-text-3"
+                  "textColourHover": "text-3"
                 },
                 "innerBlocks": []
               }

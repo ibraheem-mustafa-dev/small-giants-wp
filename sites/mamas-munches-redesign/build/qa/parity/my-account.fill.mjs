@@ -3,11 +3,11 @@
 import base from './my-account.fill-base.mjs';
 
 const generated = [
-	{ name: "gen-my-account-0", text: false, structure: false, draft: {"tpl":"Root/8#0"}, live: ".cr-ref-my-account-0" },
+	{ name: "gen-my-account-0", text: false, structure: false, draft: {"tpl":"Root/8#0"}, live: ".cr-ref-my-account-0", liveAt: {"column-gap":".sgs-container__inner","padding-right":".sgs-container__inner","padding-left":".sgs-container__inner"} },
 	{ name: "gen-my-account-1", text: false, structure: false, draft: {"tpl":"Root/9#0"}, live: ".cr-ref-my-account-1" },
 	{ name: "gen-my-account-2", text: false, structure: false, draft: {"tpl":"Root/11#0"}, live: ".cr-ref-my-account-2" },
 	{ name: "gen-my-account-3", text: false, structure: false, draft: {"tpl":"Root/12#0"}, live: ".cr-ref-my-account-3" },
-	{ name: "gen-my-account-4", text: false, structure: false, draft: {"tpl":"Root/17#0"}, live: ".cr-ref-my-account-4" },
+	{ name: "gen-my-account-4", text: false, structure: false, draft: {"tpl":"Root/17#0"}, live: ".cr-ref-my-account-4", liveAt: {"column-gap":".sgs-container__inner","padding-right":".sgs-container__inner","padding-left":".sgs-container__inner"} },
 ];
 
 // Hand pairs measuring a paired block's draft element on an element inside the block: moved to the block root.

@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-28T06:42:49.451Z",
-	"inventory": "2026-10-27T15:25:19.620Z",
-	"source": "http://127.0.0.1:55293/Home.dc.html#build",
+	"generated": "2026-11-02T04:55:30.423Z",
+	"inventory": "2026-11-01T20:50:11.760Z",
+	"source": "http://127.0.0.1:54163/Home.dc.html#build",
 	"surface": "build-your-zookie",
 	"siteName": null,
 	"surfaceParts": [],
@@ -30,6 +30,12 @@
 			"field": "aria-pressed",
 			"record": true,
 			"render": false
+		},
+		{
+			"key": "Home/108",
+			"field": "aria-pressed",
+			"record": true,
+			"render": false
 		}
 	],
 	"recordUntranslated": [],
@@ -55,7 +61,6 @@
 		"results": 1,
 		"notes": [
 			"question 3: the live line Home/89 \"{{ split }}\" has no flow setting",
-			"question 3 \"Flavours\": the loop Home/86 recorded only 8 of its 11 labels, so its options are not listed: add them in the editor",
 			"the choice between the pressable buttons in Home/107 has no words of its own: write its question in the editor",
 			"question 5 (Home/116) has no words of its own: write its question in the editor"
 		]
@@ -66,12 +71,287 @@
 		"rows": 106,
 		"skeletonNodes": 19,
 		"expandedNodes": 19,
-		"low": 1,
+		"low": 0,
 		"removed": 101,
 		"unresolved": 0,
 		"byRule": {
 			"choiceFlow": 102
 		}
+	},
+	"partPairing": {
+		"paired": 9,
+		"unpaired": [
+			{
+				"key": "Root/66#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/66#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/66#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/68#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/69#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/63#0",
+				"block": "sgs/choice-flow",
+				"slot": ".sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__nav-back",
+				"reason": ".sgs-choice-flow__footer: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/63#0",
+				"block": "sgs/choice-flow",
+				"slot": ".sgs-choice-flow__progress > .sgs-choice-flow__progress-fill",
+				"reason": ".sgs-choice-flow__progress: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/63#0",
+				"block": "sgs/choice-flow",
+				"slot": ".sgs-choice-flow__chrome-header > .sgs-choice-flow__chrome-logo",
+				"reason": ".sgs-choice-flow__chrome-header: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/63#0",
+				"block": "sgs/choice-flow",
+				"slot": ".sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-choice-flow__summary-note",
+				"reason": ".sgs-choice-flow__body > .sgs-choice-flow__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/63#0",
+				"block": "sgs/choice-flow",
+				"slot": ".sgs-choice-flow__chrome-header > .sgs-choice-flow__chrome-eyebrow",
+				"reason": ".sgs-choice-flow__chrome-header: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/63#0",
+				"block": "sgs/choice-flow",
+				"slot": ".sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-container:nth-of-type(2) > .sgs-choice-flow-question > .sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-info-toggle",
+				"reason": ".sgs-choice-flow__body > .sgs-choice-flow__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/63#0",
+				"block": "sgs/choice-flow",
+				"slot": ".sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-container:nth-of-type(2) > .sgs-choice-flow-question > .sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(2) > .sgs-info-toggle",
+				"reason": ".sgs-choice-flow__body > .sgs-choice-flow__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/63#0",
+				"block": "sgs/choice-flow",
+				"slot": ".sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-container:nth-of-type(2) > .sgs-choice-flow-question > .sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(3) > .sgs-info-toggle",
+				"reason": ".sgs-choice-flow__body > .sgs-choice-flow__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/63#0",
+				"block": "sgs/choice-flow",
+				"slot": ".sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-container:nth-of-type(2) > .sgs-choice-flow-question > .sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(4) > .sgs-info-toggle",
+				"reason": ".sgs-choice-flow__body > .sgs-choice-flow__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/63#0",
+				"block": "sgs/choice-flow",
+				"slot": ".sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-container:nth-of-type(3) > .sgs-choice-flow-question > .sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-info-toggle",
+				"reason": ".sgs-choice-flow__body > .sgs-choice-flow__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/63#0",
+				"block": "sgs/choice-flow",
+				"slot": ".sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-container:nth-of-type(3) > .sgs-choice-flow-question > .sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(2) > .sgs-info-toggle",
+				"reason": ".sgs-choice-flow__body > .sgs-choice-flow__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/63#0",
+				"block": "sgs/choice-flow",
+				"slot": ".sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-container:nth-of-type(3) > .sgs-choice-flow-question > .sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(3) > .sgs-info-toggle",
+				"reason": ".sgs-choice-flow__body > .sgs-choice-flow__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/63#0",
+				"block": "sgs/choice-flow",
+				"slot": ".sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-container:nth-of-type(3) > .sgs-choice-flow-question > .sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(4) > .sgs-info-toggle",
+				"reason": ".sgs-choice-flow__body > .sgs-choice-flow__inner: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/63#0",
+				"block": "sgs/choice-flow",
+				"slot": ".sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__footer-actions",
+				"reason": ".sgs-choice-flow__footer: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/70#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__intro",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/70#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description",
+				"reason": ".sgs-choice-flow-question__options: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/70#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(2) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description",
+				"reason": ".sgs-choice-flow-question__options: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/70#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(3) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description",
+				"reason": ".sgs-choice-flow-question__options: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/70#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(4) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description",
+				"reason": ".sgs-choice-flow-question__options: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/76#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__intro",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/76#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description",
+				"reason": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/76#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(2) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description",
+				"reason": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(2) > .sgs-choice-flow-question__option-button: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/76#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(3) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description",
+				"reason": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(3) > .sgs-choice-flow-question__option-button: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/76#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(4) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description",
+				"reason": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(4) > .sgs-choice-flow-question__option-button: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/90#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__intro",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/90#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/90#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(2) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description",
+				"reason": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(2): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root/90#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(3) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description",
+				"reason": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(3): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root/90#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(4) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description",
+				"reason": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(4): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root/107#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__title",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/107#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__intro",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/107#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(2) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description",
+				"reason": ".sgs-choice-flow-question__options: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/107#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(3) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description",
+				"reason": ".sgs-choice-flow-question__options: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/107#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(4) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description",
+				"reason": ".sgs-choice-flow-question__options: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/116#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__title",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/116#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__intro",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/116#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description",
+				"reason": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/116#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(2) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description",
+				"reason": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(2) > .sgs-choice-flow-question__option-button: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/116#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(3) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description",
+				"reason": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(3): the draft draws 2 copies of this repeated part"
+			},
+			{
+				"key": "Root/116#0",
+				"block": "sgs/choice-flow-question",
+				"slot": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(4) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description",
+				"reason": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(4): the draft draws 2 copies of this repeated part"
+			}
+		]
 	},
 	"widthAlternatives": [],
 	"problems": [],
@@ -90,6 +370,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "choiceFlow",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/choice-flow",
@@ -112,12 +393,14 @@
 			"slots": {
 				".sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-body > .sgs-choice-flow__summary-note": {
 					"tpl": "Root/123#0"
+				},
+				".sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-body > .sgs-choice-flow__summary-note > .sgs-choice-flow__summary-note-text": {
+					"tpl": "Root/123#0"
 				}
 			},
 			"slotNotes": [
 				"the calibration of sgs/choice-flow-question has no slot for optionBadgeColour, so the draft's badge (Root/99#0) is not read",
 				"question 3: the live line Home/89 \"{{ split }}\" has no flow setting",
-				"question 3 \"Flavours\": the loop Home/86 recorded only 8 of its 11 labels, so its options are not listed: add them in the editor",
 				"the choice between the pressable buttons in Home/107 has no words of its own: write its question in the editor",
 				"question 5 (Home/116) has no words of its own: write its question in the editor"
 			]
@@ -155,7 +438,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/65#0 (sgs/container) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -178,6 +461,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -194,6 +478,14 @@
 			"snippet": "<div data-dc-tpl=\"66\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"67\">your cookie, your way</div> <h2 style=\"margin:4px 0 8px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.02;letter-spacing:-0.015em\" data-dc-tpl=\"68\">Build your Zookie</h2> <p style=\"margin:0;font-size:17px;line-height:1.5;color:#4E3",
 			"attributes": {
 				"tagName": "div"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/67#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/68#0"
+				}
 			}
 		},
 		{
@@ -202,21 +494,21 @@
 			"tag": "div",
 			"depth": 4,
 			"words": "your cookie, your way",
-			"block": "sgs/text",
+			"block": "sgs/label",
 			"action": null,
 			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/text",
-					"score": 0.25,
+					"block": "sgs/label",
+					"score": 1,
 					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
 					]
 				}
 			],
@@ -241,6 +533,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -256,7 +549,8 @@
 			"screenshots": {},
 			"snippet": "<h2 style=\"margin:4px 0 8px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.02;letter-spacing:-0.015em\" data-dc-tpl=\"68\">Build your Zookie</h2>",
 			"attributes": {
-				"content": "Build your Zookie"
+				"content": "Build your Zookie",
+				"level": "h2"
 			}
 		},
 		{
@@ -273,6 +567,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -303,7 +598,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/70#0 (sgs/container) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -324,7 +619,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/71#0 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -345,7 +640,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/72#0 (sgs/form-field-tiles) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -450,7 +745,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/76#0 (sgs/container) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -471,7 +766,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/77#0 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -492,7 +787,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/78#0 (sgs/form-field-tiles) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -597,14 +892,32 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/81#0 (sgs/container) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<div data-dc-tpl=\"81\"><div style=\"display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin-bottom:10px\" data-dc-tpl=\"82\"><span style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase\" data-dc-tpl=\"83\">3 · Flavours</span><span style=\"font-size:14px;color:#5E4A3D\" data-dc-tpl=\"84\">Pick up to 3 and we’ll split your box between them</span></div> <div style=\"disp",
-			"attributes": {}
+			"attributes": {},
+			"slots": {
+				".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description": {
+					"tpl": "Root/88#0"
+				},
+				".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(2) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description": {
+					"tpl": "Root/88#1"
+				},
+				".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(3) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description": {
+					"tpl": "Root/88#2"
+				},
+				".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(4) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description": {
+					"tpl": "Root/88#3"
+				}
+			},
+			"missingFeature": {
+				"line": "question 3 \"Flavours\" (sgs/choice-flow-question, pa_flav): the shopper picks several of its options, and sgs/choice-flow-question has no setting for a question taking several options (it is a one-pick answer step)",
+				"why": "the shopper picks several of its options, and sgs/choice-flow-question has no setting for a question taking several options (it is a one-pick answer step)"
+			}
 		},
 		{
 			"order": 22,
@@ -618,7 +931,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/82#0 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -639,7 +952,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/83#0 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -660,7 +973,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/84#0 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -681,7 +994,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/85#0 (sgs/form-field-tiles) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1164,7 +1477,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/89#0 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1185,14 +1498,18 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/90#0 (sgs/container) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<div data-dc-tpl=\"90\"><div style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px\" data-dc-tpl=\"91\">4 · How many</div> <div style=\"display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:10px;padding-top:6px\" data-dc-tpl=\"92\"><sc-for list=\"{{ sizes }}\" as=\"o\" hint-placeholder-count=\"3\" data-dc-tpl=\"93\"><button sc-camel-on-click=\"{{ o.pick }}",
-			"attributes": {}
+			"attributes": {},
+			"missingFeature": {
+				"line": "question 4 \"How many\" (sgs/choice-flow-question, pa_pack-size): each option shows a second price (£1.19 each, £1.08 each, £0.95 each), and a product-option step draws only the product's price",
+				"why": "each option shows a second price (£1.19 each, £1.08 each, £0.95 each), and a product-option step draws only the product's price"
+			}
 		},
 		{
 			"order": 50,
@@ -1206,7 +1523,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/91#0 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1227,7 +1544,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/92#0 (sgs/form-field-tiles) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1542,7 +1859,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/100#0 (sgs/container) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1563,7 +1880,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/101#0 (sgs/container) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1584,7 +1901,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/102#0 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1605,7 +1922,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/103#0 (sgs/container) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1626,7 +1943,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/105#0 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1647,7 +1964,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/105#1 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1668,7 +1985,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/105#2 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1689,7 +2006,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/105#3 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1710,7 +2027,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/105#4 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1731,7 +2048,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/105#5 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1752,7 +2069,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/105#6 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1773,7 +2090,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/105#7 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1794,7 +2111,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/105#8 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1815,7 +2132,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/105#9 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1836,7 +2153,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/105#10 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1857,7 +2174,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/105#11 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1878,7 +2195,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/105#12 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1899,7 +2216,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/105#13 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1920,7 +2237,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/105#14 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1941,7 +2258,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/105#15 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1962,7 +2279,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/105#16 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -1983,7 +2300,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/105#17 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -2004,7 +2321,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/105#18 (remove) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -2025,7 +2342,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/106#0 (sgs/text) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -2046,7 +2363,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/107#0 (sgs/container) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -2067,7 +2384,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/108#0 (sgs/container) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -2088,7 +2405,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/109#0 (sgs/container) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -2109,7 +2426,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/110#0 (sgs/text) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -2130,7 +2447,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/111#0 (sgs/text) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -2151,7 +2468,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/112#0 (sgs/container) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -2172,7 +2489,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/113#0 (sgs/text) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -2193,7 +2510,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/114#0 (sgs/text) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -2214,7 +2531,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/116#0 (sgs/multi-button) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -2235,7 +2552,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/118#0 (sgs/button) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -2256,7 +2573,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/118#1 (sgs/button) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -2277,7 +2594,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/119#0 (sgs/container) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -2298,7 +2615,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/120#0 (sgs/text) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -2319,7 +2636,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/121#0 (sgs/text) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -2340,7 +2657,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/122#0 (sgs/button) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],
@@ -2361,7 +2678,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/123#0 (sgs/text) no longer applies: sgs/choice-flow draws this element",
 			"rule": "choiceFlow",
 			"into": "Root/63#0",
 			"candidates": [],

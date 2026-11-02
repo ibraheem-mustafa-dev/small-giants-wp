@@ -142,9 +142,25 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/73#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/74#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/71#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/72#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -257,9 +273,25 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/73#1"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/74#1"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/71#1"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/72#1"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -372,9 +404,25 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/73#2"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/74#2"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/71#2"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/72#2"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -487,9 +535,25 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/73#3"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/74#3"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/71#3"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/72#3"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -602,9 +666,25 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/73#4"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/74#4"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/71#4"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/72#4"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -717,9 +797,25 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/73#5"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/74#5"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/71#5"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/72#5"
+							}
+						}
 					}
 				]
 			},
@@ -778,9 +874,19 @@
 									"textHash": "1505",
 									"line": 100
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-media__img": {
+										"tpl": "Root/78#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/78#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -825,9 +931,9 @@
 								"innerBlocks": []
 							},
 							{
-								"name": "sgs/text",
+								"name": "sgs/heading",
 								"attributes": {
-									"text": "Six decades of heritage"
+									"content": "Six decades of heritage"
 								},
 								"draftRef": {
 									"tpl": "Root/81#0"
@@ -889,12 +995,33 @@
 									"textHash": "647f8ebc",
 									"line": 106
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-button__label": {
+										"tpl": "Root/83#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/80#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/81#0"
+							}
+						}
 					}
 				]
 			}
-		]
+		],
+		"draftSlots": {
+			".sgs-mega-panel__content > .sgs-mega-group": {
+				"tpl": "Root/68#0"
+			},
+			".sgs-mega-panel__content > .sgs-mega-aside": {
+				"tpl": "Root/76#0"
+			}
+		}
 	}
 ]

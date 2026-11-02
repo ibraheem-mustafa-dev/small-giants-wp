@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-28T06:34:55.278Z",
-	"inventory": "2026-10-28T06:34:54.330Z",
-	"source": "http://127.0.0.1:60915/",
+	"generated": "2026-11-02T04:50:31.277Z",
+	"inventory": "2026-11-02T01:07:09.508Z",
+	"source": "http://127.0.0.1:58693/",
 	"surface": "page-account-dc-html",
 	"siteName": null,
 	"surfaceParts": [
@@ -95,7 +95,7 @@
 		"rows": 13,
 		"skeletonNodes": 6,
 		"expandedNodes": 6,
-		"low": 1,
+		"low": 0,
 		"removed": 7,
 		"unresolved": 0,
 		"byRule": {
@@ -104,6 +104,95 @@
 			"alignWrapper": 1,
 			"commerceRegion": 6
 		}
+	},
+	"partPairing": {
+		"paired": 3,
+		"unpaired": [
+			{
+				"key": "Root/8#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/8#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/8#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/9#0",
+				"block": "sgs/hero",
+				"slot": ".sgs-hero__bg-img",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/9#0",
+				"block": "sgs/hero",
+				"slot": ".sgs-hero__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/9#0",
+				"block": "sgs/hero",
+				"slot": ".sgs-hero__video-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/9#0",
+				"block": "sgs/hero",
+				"slot": ".sgs-hero__media > .sgs-hero__split-media",
+				"reason": ".sgs-hero__media: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/9#0",
+				"block": "sgs/hero",
+				"slot": ".sgs-hero__media",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/12#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/17#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/17#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/17#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root/17#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(1)",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/17#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(2)",
+				"reason": "the draft has no element of its own here"
+			}
+		]
 	},
 	"widthAlternatives": [],
 	"problems": [],
@@ -122,6 +211,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -141,6 +231,14 @@
 			"snippet": "<main data-dc-tpl=\"8\"> <section style=\"background:#F5C2C8;border-bottom:2px solid #3A2A22;padding:{{ L.heroPad }}\" data-dc-tpl=\"9\"> <div style=\"max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:12px\" data-dc-tpl=\"10\"> <div style=\"font-family:'Caveat',cursive;font-size:30px;color:#8E3444;line-height:1;transform:rotate(-2deg);transform-origin:left\" data-dc-tpl=\"11\">{{ eyebrow }}<",
 			"attributes": {
 				"tagName": "main"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/9#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/17#0"
+				}
 			}
 		},
 		{
@@ -157,6 +255,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "hero",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/hero",
@@ -173,7 +272,12 @@
 				"1440": "shots/Root_9_0@1440.png"
 			},
 			"snippet": "<section style=\"background:#F5C2C8;border-bottom:2px solid #3A2A22;padding:{{ L.heroPad }}\" data-dc-tpl=\"9\"> <div style=\"max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:12px\" data-dc-tpl=\"10\"> <div style=\"font-family:'Caveat',cursive;font-size:30px;color:#8E3444;line-height:1;transform:rotate(-2deg);transform-origin:left\" data-dc-tpl=\"11\">{{ eyebrow }}</div> <h1 style=\"margin",
-			"attributes": {}
+			"attributes": {},
+			"slots": {
+				".sgs-hero__content": {
+					"tpl": "Root/10#0"
+				}
+			}
 		},
 		{
 			"order": 2,
@@ -183,7 +287,7 @@
 			"words": "",
 			"block": null,
 			"action": "unwrap",
-			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays; an element another rule owns (a form, the commerce region, a loop or accordion, the filter rail) and everything below it is never the hero's inner",
 			"source": "rule heroInner",
 			"confidence": 1,
 			"low": false,
@@ -204,21 +308,21 @@
 			"tag": "div",
 			"depth": 3,
 			"words": "my account",
-			"block": "sgs/text",
+			"block": "sgs/label",
 			"action": null,
 			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/text",
-					"score": 0.25,
+					"block": "sgs/label",
+					"score": 1,
 					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1)."
 					]
 				}
 			],
@@ -246,6 +350,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -264,7 +369,8 @@
 			},
 			"snippet": "<h1 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.025em\" data-dc-tpl=\"12\">{{ hello }}</h1>",
 			"attributes": {
-				"content": "My account"
+				"content": "My account",
+				"level": "h1"
 			}
 		},
 		{
@@ -304,6 +410,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -339,6 +446,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "commerceRegion",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/account",
@@ -369,7 +477,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/20#0 (sgs/heading) no longer applies: sgs/account draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/19#0",
 			"candidates": [],
@@ -393,7 +501,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/21#0 (sgs/text) no longer applies: sgs/account draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/19#0",
 			"candidates": [],
@@ -417,7 +525,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/22#0 (sgs/multi-button) no longer applies: sgs/account draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/19#0",
 			"candidates": [],
@@ -441,7 +549,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/23#0 (sgs/button) no longer applies: sgs/account draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/19#0",
 			"candidates": [],
@@ -464,7 +572,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/24#0 (sgs/button) no longer applies: sgs/account draws this element",
 			"rule": "commerceRegion",
 			"into": "Root/19#0",
 			"candidates": [],

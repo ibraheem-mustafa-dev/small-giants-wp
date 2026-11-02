@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-28T06:50:38.251Z",
-	"inventory": "2026-10-28T06:50:38.125Z",
-	"source": "http://127.0.0.1:57904/#@state/page=done",
+	"generated": "2026-11-02T04:42:20.795Z",
+	"inventory": "2026-11-01T21:27:09.193Z",
+	"source": "http://127.0.0.1:62097/#@state/page=done",
 	"surface": "page-done",
 	"siteName": "Eye Care Birmingham",
 	"surfaceParts": [],
@@ -26,17 +26,102 @@
 		"rows": 6,
 		"skeletonNodes": 6,
 		"expandedNodes": 6,
-		"low": 1,
+		"low": 0,
 		"removed": 0,
 		"unresolved": 0,
 		"byRule": {}
 	},
+	"partPairing": {
+		"paired": 5,
+		"unpaired": [
+			{
+				"key": "Root/843#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/843#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/843#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/844#0",
+				"block": "sgs/icon",
+				"slot": ".sgs-icon__shape > .sgs-icon__glyph",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/844#0",
+				"block": "sgs/icon",
+				"slot": ".sgs-icon__shape > .sgs-icon__glyph > svg",
+				"reason": ".sgs-icon__shape > .sgs-icon__glyph: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/845#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/846#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/849#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/849#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/849#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/849#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(2)",
+				"reason": "no inner block of this node stands at this place"
+			},
+			{
+				"key": "Root/850#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/850#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon > svg",
+				"reason": ".sgs-button__icon: the draft has no element of its own here"
+			}
+		]
+	},
 	"widthAlternatives": [],
-	"problems": [],
+	"problems": [
+		"page-done: the confirmation surface has no commerce region (no element of the draft reads as it), so WooCommerce's piece would not be placed and the page would imitate its form with the draft's own blocks (FR-48-87)"
+	],
 	"rows": [
 		{
 			"order": 0,
-			"key": "Root/845#0",
+			"key": "Root/843#0",
 			"tag": "main",
 			"depth": 0,
 			"words": "",
@@ -48,6 +133,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -61,51 +147,64 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_845_0@375.png",
-				"1440": "shots/Root_845_0@1440.png"
+				"375": "shots/Root_843_0@375.png",
+				"1440": "shots/Root_843_0@1440.png"
 			},
-			"snippet": "<main class=\"sgs-page-order-confirmed\" data-screen-label=\"Order confirmed\" style=\"max-width:720px;margin:0 auto;padding: {{ pagePad }};text-align:center\" data-dc-tpl=\"845\"> <div style=\"width:64px;height:64px;border-radius:50%;background:var(--acc,#9C8B78);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:26px;animation:pop .6s both\" data-dc-tpl=\"846\">✓</div> <h1 st",
+			"snippet": "<main class=\"sgs-page-order-confirmed\" data-screen-label=\"Order confirmed\" style=\"max-width:720px;margin:0 auto;padding: {{ pagePad }};text-align:center\" data-dc-tpl=\"843\"> <div style=\"width:64px;height:64px;border-radius:50%;background:var(--acc,#9C8B78);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:26px;animation:pop .6s both\" data-dc-tpl=\"844\">✓</div> <h1 st",
 			"attributes": {
 				"tagName": "main"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/844#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/845#0"
+				}
 			}
 		},
 		{
 			"order": 1,
-			"key": "Root/846#0",
+			"key": "Root/844#0",
 			"tag": "div",
 			"depth": 1,
 			"words": "✓",
-			"block": "sgs/text",
+			"block": "sgs/icon",
 			"action": null,
 			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/text",
-					"score": 0.25,
+					"block": "sgs/icon",
+					"score": 1,
 					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: A lone check glyph in a 64px accent circle above the confirmation heading; a glyph on its own is sgs/icon, not text."
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_846_0@375.png",
-				"1440": "shots/Root_846_0@1440.png"
+				"375": "shots/Root_844_0@375.png",
+				"1440": "shots/Root_844_0@1440.png"
 			},
-			"snippet": "<div style=\"width:64px;height:64px;border-radius:50%;background:var(--acc,#9C8B78);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:26px;animation:pop .6s both\" data-dc-tpl=\"846\">✓</div>",
+			"snippet": "<div style=\"width:64px;height:64px;border-radius:50%;background:var(--acc,#9C8B78);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:26px;animation:pop .6s both\" data-dc-tpl=\"844\">✓</div>",
 			"attributes": {
-				"text": "✓"
+				"brandName": "✓"
+			},
+			"slots": {
+				".sgs-icon__shape": {
+					"tpl": "Root/844#0"
+				}
 			}
 		},
 		{
 			"order": 2,
-			"key": "Root/847#0",
+			"key": "Root/845#0",
 			"tag": "h1",
 			"depth": 1,
 			"words": "Thank you — order EC-10482.",
@@ -117,6 +216,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -130,17 +230,18 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_847_0@375.png",
-				"1440": "shots/Root_847_0@1440.png"
+				"375": "shots/Root_845_0@375.png",
+				"1440": "shots/Root_845_0@1440.png"
 			},
-			"snippet": "<h1 style=\"margin:24px 0 12px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.05;animation:rise .6s both\" data-dc-tpl=\"847\">Thank you — order EC-10482.</h1>",
+			"snippet": "<h1 style=\"margin:24px 0 12px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.05;animation:rise .6s both\" data-dc-tpl=\"845\">Thank you — order EC-10482.</h1>",
 			"attributes": {
-				"content": "Thank you — order EC-10482."
+				"content": "Thank you — order EC-10482.",
+				"level": "h1"
 			}
 		},
 		{
 			"order": 3,
-			"key": "Root/848#0",
+			"key": "Root/846#0",
 			"tag": "p",
 			"depth": 1,
 			"words": "Confirmation is on its way by email and WhatsApp. Frames post within one working day; prescription lenses take 7 to 10.",
@@ -152,6 +253,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -165,17 +267,17 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_848_0@375.png",
-				"1440": "shots/Root_848_0@1440.png"
+				"375": "shots/Root_846_0@375.png",
+				"1440": "shots/Root_846_0@1440.png"
 			},
-			"snippet": "<p style=\"margin:0 0 28px;color:#5E584F;font-size:16.5px;text-wrap:pretty;animation:rise .7s both\" data-dc-tpl=\"848\">{{ doneNote }}</p>",
+			"snippet": "<p style=\"margin:0 0 28px;color:#5E584F;font-size:16.5px;text-wrap:pretty;animation:rise .7s both\" data-dc-tpl=\"846\">{{ doneNote }}</p>",
 			"attributes": {
 				"text": "Confirmation is on its way by email and WhatsApp. Frames post within one working day; prescription lenses take 7 to 10."
 			}
 		},
 		{
 			"order": 4,
-			"key": "Root/851#0",
+			"key": "Root/849#0",
 			"tag": "div",
 			"depth": 1,
 			"words": "",
@@ -187,6 +289,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -201,18 +304,23 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_851_0@375.png",
-				"1440": "shots/Root_851_0@1440.png"
+				"375": "shots/Root_849_0@375.png",
+				"1440": "shots/Root_849_0@1440.png"
 			},
-			"snippet": "<div style=\"display:flex;gap:10px;justify-content:center;flex-wrap:wrap\" data-dc-tpl=\"851\"> <button sc-camel-on-click=\"{{ goSun }}\" style=\"background:#141414;color:#FAF8F5;border:0;padding:0 26px;min-height:50px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;animation:rise .8s both\" data-dc-tpl=\"852\">Back to the shop</button> <sc-if value=\"{{ doneHasAccount }}\" hint-placeholder-val=\"{",
+			"snippet": "<div style=\"display:flex;gap:10px;justify-content:center;flex-wrap:wrap\" data-dc-tpl=\"849\"> <button sc-camel-on-click=\"{{ goSun }}\" style=\"background:#141414;color:#FAF8F5;border:0;padding:0 26px;min-height:50px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;animation:rise .8s both\" data-dc-tpl=\"850\">Back to the shop</button> <sc-if value=\"{{ doneHasAccount }}\" hint-placeholder-val=\"{",
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/850#0"
+				}
 			}
 		},
 		{
 			"order": 5,
-			"key": "Root/852#0",
+			"key": "Root/850#0",
 			"tag": "button",
 			"depth": 2,
 			"words": "Back to the shop",
@@ -224,6 +332,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -237,12 +346,18 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_852_0@375.png",
-				"1440": "shots/Root_852_0@1440.png"
+				"375": "shots/Root_850_0@375.png",
+				"1440": "shots/Root_850_0@1440.png"
 			},
-			"snippet": "<button sc-camel-on-click=\"{{ goSun }}\" style=\"background:#141414;color:#FAF8F5;border:0;padding:0 26px;min-height:50px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;animation:rise .8s both\" data-dc-tpl=\"852\">Back to the shop</button>",
+			"snippet": "<button sc-camel-on-click=\"{{ goSun }}\" style=\"background:#141414;color:#FAF8F5;border:0;padding:0 26px;min-height:50px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;animation:rise .8s both\" data-dc-tpl=\"850\">Back to the shop</button>",
 			"attributes": {
-				"label": "Back to the shop"
+				"label": "Back to the shop",
+				"url": "/shop/"
+			},
+			"slots": {
+				".sgs-button__label": {
+					"tpl": "Root/850#0"
+				}
 			}
 		}
 	]

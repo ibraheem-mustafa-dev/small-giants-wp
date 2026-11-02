@@ -1,11 +1,11 @@
 {
-  "generated": "2026-10-28T06:41:27.663Z",
-  "source": "http://127.0.0.1:57904/#@state/page=signin",
+  "generated": "2026-11-01T22:17:13.521Z",
+  "source": "http://127.0.0.1:52426/#@state/page=signin",
   "root": "main",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
     "rootName": "Root",
-    "rootKey": "Root/856#0",
+    "rootKey": "Root/854#0",
     "unstamped": [],
     "duplicateKeys": 0,
     "perWidthCounts": {
@@ -24,29 +24,93 @@
   },
   "elements": [
     {
-      "key": "Root/856#0",
+      "key": "Root/854#0",
       "parentKey": "Root/6#0",
       "depth": 0,
       "tag": "main",
       "template": "Root",
-      "tpl": 856,
+      "tpl": 854,
       "attrs": {
         "class": "sgs-page-signin",
         "style": "max-width: 1100px; margin: 0px auto; padding: 48px 52px 90px;"
       },
       "words": "",
       "allText": "Your account Sign in or create an account You don't need an account to order; checkout works as a guest. An account keep",
-      "srcLine": 1658,
+      "srcLine": 1655,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         }
       ],
       "srcTag": "main",
       "srcOwnText": "",
-      "snippet": "<main class=\"sgs-page-signin\" data-screen-label=\"Sign in\" style=\"max-width:1100px;margin:0 auto;padding: {{ pagePad }}\" data-dc-tpl=\"856\"> <sc-if value=\"{{ authSignin }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"857\"> <div style=\"animation:rise .5s both\" data-dc-tpl=\"858\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152)\" data",
+      "snippet": "<main class=\"sgs-page-signin\" data-screen-label=\"Sign in\" style=\"max-width:1100px;margin:0 auto;padding: {{ pagePad }}\" data-dc-tpl=\"854\"> <sc-if value=\"{{ authSignin }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"855\"> <div style=\"animation:rise .5s both\" data-dc-tpl=\"856\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152)\" data",
+      "flow": [
+        "  ",
+        {
+          "key": "Root/856#0"
+        },
+        "  ",
+        {
+          "key": "Root/862#0"
+        },
+        "    "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24px",
+          "width": "375px",
+          "height": "1195.22px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "28px",
+          "padding-right": "20px",
+          "padding-bottom": "60px",
+          "padding-left": "20px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24px",
+          "width": "768px",
+          "height": "1193.23px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "48px",
+          "padding-right": "52px",
+          "padding-bottom": "90px",
+          "padding-left": "52px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24px",
+          "width": "1100px",
+          "height": "778.438px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "48px",
+          "padding-right": "52px",
+          "padding-bottom": "90px",
+          "padding-left": "52px"
+        }
+      },
       "box": {
         "375": {
           "x": 0,
@@ -79,40 +143,113 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_856_0@375.png",
-        "1440": "shots/Root_856_0@1440.png"
+        "375": "shots/Root_854_0@375.png",
+        "1440": "shots/Root_854_0@1440.png"
       }
     },
     {
-      "key": "Root/858#0",
-      "parentKey": "Root/856#0",
+      "key": "Root/856#0",
+      "parentKey": "Root/854#0",
       "depth": 1,
       "tag": "div",
       "template": "Root",
-      "tpl": 858,
+      "tpl": 856,
       "attrs": {
         "style": "animation: 0.5s ease 0s 1 normal both running rise;"
       },
       "words": "",
       "allText": "Your account Sign in or create an account You don't need an account to order; checkout works as a guest. An account keep",
-      "srcLine": 1660,
+      "srcLine": 1657,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "div",
       "srcOwnText": "",
-      "snippet": "<div style=\"animation:rise .5s both\" data-dc-tpl=\"858\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152)\" data-dc-tpl=\"859\">Your account</p> <h1 style=\"margin:0 0 12px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.05\" data-dc-tpl=\"860\">Sign in or create an account</h1> <p style=\"margin:0 0 32",
+      "snippet": "<div style=\"animation:rise .5s both\" data-dc-tpl=\"856\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152)\" data-dc-tpl=\"857\">Your account</p> <h1 style=\"margin:0 0 12px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.05\" data-dc-tpl=\"858\">Sign in or create an account</h1> <p style=\"margin:0 0 32",
+      "flow": [
+        " ",
+        {
+          "key": "Root/857#0"
+        },
+        " ",
+        {
+          "key": "Root/858#0"
+        },
+        " ",
+        {
+          "key": "Root/859#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24px",
+          "width": "335px",
+          "height": "207.375px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24px",
+          "width": "664px",
+          "height": "138.391px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24px",
+          "width": "996px",
+          "height": "138.391px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
@@ -145,40 +282,99 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_858_0@375.png",
-        "1440": "shots/Root_858_0@1440.png"
+        "375": "shots/Root_856_0@375.png",
+        "1440": "shots/Root_856_0@1440.png"
       }
     },
     {
-      "key": "Root/859#0",
-      "parentKey": "Root/858#0",
+      "key": "Root/857#0",
+      "parentKey": "Root/856#0",
       "depth": 2,
       "tag": "p",
       "template": "Root",
-      "tpl": 859,
+      "tpl": 857,
       "attrs": {
         "style": "margin: 0px 0px 10px; font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--accInk,#6F6152);"
       },
       "words": "Your account",
       "allText": "Your account",
-      "srcLine": 1661,
+      "srcLine": 1658,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "p",
       "srcOwnText": "Your account",
-      "snippet": "<p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152)\" data-dc-tpl=\"859\">Your account</p>",
+      "snippet": "<p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152)\" data-dc-tpl=\"857\">Your account</p>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "12px",
+          "font-weight": "400",
+          "letter-spacing": "2.88px",
+          "text-transform": "uppercase",
+          "line-height": "18px",
+          "width": "335px",
+          "height": "18px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "12px",
+          "font-weight": "400",
+          "letter-spacing": "2.88px",
+          "text-transform": "uppercase",
+          "line-height": "18px",
+          "width": "664px",
+          "height": "18px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "12px",
+          "font-weight": "400",
+          "letter-spacing": "2.88px",
+          "text-transform": "uppercase",
+          "line-height": "18px",
+          "width": "996px",
+          "height": "18px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
@@ -211,40 +407,99 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_859_0@375.png",
-        "1440": "shots/Root_859_0@1440.png"
+        "375": "shots/Root_857_0@375.png",
+        "1440": "shots/Root_857_0@1440.png"
       }
     },
     {
-      "key": "Root/860#0",
-      "parentKey": "Root/858#0",
+      "key": "Root/858#0",
+      "parentKey": "Root/856#0",
       "depth": 2,
       "tag": "h1",
       "template": "Root",
-      "tpl": 860,
+      "tpl": 858,
       "attrs": {
         "style": "margin: 0px 0px 12px; font-family: \"Playfair Display\", serif; font-weight: 500; font-size: 48px; line-height: 1.05;"
       },
       "words": "Sign in or create an account",
       "allText": "Sign in or create an account",
-      "srcLine": 1662,
+      "srcLine": 1659,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "h1",
       "srcOwnText": "Sign in or create an account",
-      "snippet": "<h1 style=\"margin:0 0 12px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.05\" data-dc-tpl=\"860\">Sign in or create an account</h1>",
+      "snippet": "<h1 style=\"margin:0 0 12px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.05\" data-dc-tpl=\"858\">Sign in or create an account</h1>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "34px",
+          "font-weight": "500",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "35.7px",
+          "width": "335px",
+          "height": "71.375px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "48px",
+          "font-weight": "500",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "50.4px",
+          "width": "664px",
+          "height": "50.3906px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "48px",
+          "font-weight": "500",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "50.4px",
+          "width": "996px",
+          "height": "50.3906px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
@@ -277,40 +532,99 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_860_0@375.png",
-        "1440": "shots/Root_860_0@1440.png"
+        "375": "shots/Root_858_0@375.png",
+        "1440": "shots/Root_858_0@1440.png"
       }
     },
     {
-      "key": "Root/861#0",
-      "parentKey": "Root/858#0",
+      "key": "Root/859#0",
+      "parentKey": "Root/856#0",
       "depth": 2,
       "tag": "p",
       "template": "Root",
-      "tpl": 861,
+      "tpl": 859,
       "attrs": {
         "style": "margin: 0px 0px 32px; max-width: 60ch; color: rgb(94, 88, 79); font-size: 16px; text-wrap: pretty;"
       },
       "words": "You don't need an account to order; checkout works as a guest. An account keeps your orders, subscriptions, addresses and saved frames in one place.",
       "allText": "You don't need an account to order; checkout works as a guest. An account keeps your orders, subscriptions, addresses an",
-      "srcLine": 1663,
+      "srcLine": 1660,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "p",
       "srcOwnText": "You don't need an account to order; checkout works as a guest. An account keeps your orders, subscriptions, addresses and saved frames in one place.",
-      "snippet": "<p style=\"margin:0 0 32px;max-width:60ch;color:#5E584F;font-size:16px;text-wrap:pretty\" data-dc-tpl=\"861\">You don't need an account to order; checkout works as a guest. An account keeps your orders, subscriptions, addresses and saved frames in one place.</p>",
+      "snippet": "<p style=\"margin:0 0 32px;max-width:60ch;color:#5E584F;font-size:16px;text-wrap:pretty\" data-dc-tpl=\"859\">You don't need an account to order; checkout works as a guest. An account keeps your orders, subscriptions, addresses and saved frames in one place.</p>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24px",
+          "width": "335px",
+          "height": "96px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24px",
+          "width": "629.75px",
+          "height": "48px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24px",
+          "width": "629.75px",
+          "height": "48px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
@@ -343,40 +657,109 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_861_0@375.png",
-        "1440": "shots/Root_861_0@1440.png"
+        "375": "shots/Root_859_0@375.png",
+        "1440": "shots/Root_859_0@1440.png"
       }
     },
     {
-      "key": "Root/864#0",
-      "parentKey": "Root/856#0",
+      "key": "Root/862#0",
+      "parentKey": "Root/854#0",
       "depth": 1,
       "tag": "div",
       "template": "Root",
-      "tpl": 864,
+      "tpl": 862,
       "attrs": {
         "style": "display: grid; grid-template-columns: repeat(2, minmax(0px, 1fr)); gap: 1px; background: rgb(230, 225, 218); border: 1px solid rgb(230, 225, 218); animation: 0.6s ease 0s 1 normal both running rise;"
       },
       "words": "",
       "allText": "Sign in Email Password Keep me signed in Forgotten your password? Sign in New here? First name Email Password8 character",
-      "srcLine": 1668,
+      "srcLine": 1665,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "div",
       "srcOwnText": "",
-      "snippet": "<div style=\"display:grid;grid-template-columns: {{ authCols }};gap:1px;background:#E6E1DA;border:1px solid #E6E1DA;animation:rise .6s both\" data-dc-tpl=\"864\"> <form sc-camel-on-submit=\"{{ signIn }}\" style=\"background:#fff;padding: {{ authPad }};display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"865\"> <h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;lin",
+      "snippet": "<div style=\"display:grid;grid-template-columns: {{ authCols }};gap:1px;background:#E6E1DA;border:1px solid #E6E1DA;animation:rise .6s both\" data-dc-tpl=\"862\"> <form sc-camel-on-submit=\"{{ signIn }}\" style=\"background:#fff;padding: {{ authPad }};display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"863\"> <h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;lin",
+      "flow": [
+        " ",
+        {
+          "key": "Root/863#0"
+        },
+        " ",
+        {
+          "key": "Root/874#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24px",
+          "width": "335px",
+          "height": "867.844px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24px",
+          "width": "664px",
+          "height": "884.844px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24px",
+          "width": "996px",
+          "height": "470.047px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 20,
@@ -409,40 +792,121 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "grid",
+        "768": "grid",
+        "1440": "grid"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_864_0@375.png",
-        "1440": "shots/Root_864_0@1440.png"
+        "375": "shots/Root_862_0@375.png",
+        "1440": "shots/Root_862_0@1440.png"
       }
     },
     {
-      "key": "Root/865#0",
-      "parentKey": "Root/864#0",
+      "key": "Root/863#0",
+      "parentKey": "Root/862#0",
       "depth": 2,
       "tag": "form",
       "template": "Root",
-      "tpl": 865,
+      "tpl": 863,
       "attrs": {
         "style": "background: rgb(255, 255, 255); padding: 40px 44px; display: flex; flex-direction: column; gap: 14px;"
       },
       "words": "",
       "allText": "Sign in Email Password Keep me signed in Forgotten your password? Sign in",
-      "srcLine": 1669,
+      "srcLine": 1666,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "form",
       "srcOwnText": "",
-      "snippet": "<form sc-camel-on-submit=\"{{ signIn }}\" style=\"background:#fff;padding: {{ authPad }};display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"865\"> <h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;line-height:1.1;margin-bottom:4px\" data-dc-tpl=\"866\">Sign in</h2> <label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-t",
+      "snippet": "<form sc-camel-on-submit=\"{{ signIn }}\" style=\"background:#fff;padding: {{ authPad }};display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"863\"> <h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;line-height:1.1;margin-bottom:4px\" data-dc-tpl=\"864\">Sign in</h2> <label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-t",
+      "flow": [
+        " ",
+        {
+          "key": "Root/864#0"
+        },
+        " ",
+        {
+          "key": "Root/865#0"
+        },
+        " ",
+        {
+          "key": "Root/867#0"
+        },
+        " ",
+        {
+          "key": "Root/869#0"
+        },
+        " ",
+        {
+          "key": "Root/873#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24px",
+          "width": "333px",
+          "height": "420.797px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "28px",
+          "padding-right": "22px",
+          "padding-bottom": "28px",
+          "padding-left": "22px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24px",
+          "width": "662px",
+          "height": "413.797px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "40px",
+          "padding-right": "44px",
+          "padding-bottom": "40px",
+          "padding-left": "44px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24px",
+          "width": "496.5px",
+          "height": "468.047px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "40px",
+          "padding-right": "44px",
+          "padding-bottom": "40px",
+          "padding-left": "44px"
+        }
+      },
       "box": {
         "375": {
           "x": 21,
@@ -475,40 +939,99 @@
         "1440": "static"
       },
       "flexDirection": "column",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_865_0@375.png",
-        "1440": "shots/Root_865_0@1440.png"
+        "375": "shots/Root_863_0@375.png",
+        "1440": "shots/Root_863_0@1440.png"
       }
     },
     {
-      "key": "Root/866#0",
-      "parentKey": "Root/865#0",
+      "key": "Root/864#0",
+      "parentKey": "Root/863#0",
       "depth": 3,
       "tag": "h2",
       "template": "Root",
-      "tpl": 866,
+      "tpl": 864,
       "attrs": {
         "style": "margin: 0px 0px 4px; font-family: \"Playfair Display\", serif; font-weight: 500; font-size: 28px; line-height: 1.1;"
       },
       "words": "Sign in",
       "allText": "Sign in",
-      "srcLine": 1670,
+      "srcLine": 1667,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "h2",
       "srcOwnText": "Sign in",
-      "snippet": "<h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;line-height:1.1;margin-bottom:4px\" data-dc-tpl=\"866\">Sign in</h2>",
+      "snippet": "<h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;line-height:1.1;margin-bottom:4px\" data-dc-tpl=\"864\">Sign in</h2>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "28px",
+          "font-weight": "500",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "30.8px",
+          "width": "289px",
+          "height": "30.7969px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "28px",
+          "font-weight": "500",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "30.8px",
+          "width": "574px",
+          "height": "30.7969px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "28px",
+          "font-weight": "500",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "30.8px",
+          "width": "408.5px",
+          "height": "30.7969px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -541,40 +1064,105 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_866_0@375.png",
-        "1440": "shots/Root_866_0@1440.png"
+        "375": "shots/Root_864_0@375.png",
+        "1440": "shots/Root_864_0@1440.png"
       }
     },
     {
-      "key": "Root/867#0",
-      "parentKey": "Root/865#0",
+      "key": "Root/865#0",
+      "parentKey": "Root/863#0",
       "depth": 3,
       "tag": "label",
       "template": "Root",
-      "tpl": 867,
+      "tpl": 865,
       "attrs": {
         "style": "display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: rgb(74, 69, 62);"
       },
       "words": "Email",
       "allText": "Email",
-      "srcLine": 1671,
+      "srcLine": 1668,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "label",
       "srcOwnText": "Email",
-      "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"867\">Email<input name=\"email\" type=\"email\" required=\"{{ true }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"868\"></label>",
+      "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"865\">Email<input name=\"email\" type=\"email\" required=\"{{ true }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"866\"></label>",
+      "flow": [
+        "Email",
+        {
+          "key": "Root/866#0"
+        }
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "13px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "19.5px",
+          "width": "289px",
+          "height": "73.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "13px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "19.5px",
+          "width": "574px",
+          "height": "73.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "13px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "19.5px",
+          "width": "408.5px",
+          "height": "73.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -607,41 +1195,99 @@
         "1440": "static"
       },
       "flexDirection": "column",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_867_0@375.png",
-        "1440": "shots/Root_867_0@1440.png"
+        "375": "shots/Root_865_0@375.png",
+        "1440": "shots/Root_865_0@1440.png"
       }
     },
     {
-      "key": "Root/868#0",
-      "parentKey": "Root/867#0",
+      "key": "Root/866#0",
+      "parentKey": "Root/865#0",
       "depth": 4,
       "tag": "input",
       "template": "Root",
-      "tpl": 868,
+      "tpl": 866,
       "attrs": {
         "type": "email",
         "style": "border: 1px solid rgb(230, 225, 218); background: rgb(255, 255, 255); padding: 0px 14px; min-height: 48px; font-size: 15px; color: rgb(20, 20, 20); width: 100%;"
       },
       "words": "",
       "allText": "",
-      "srcLine": 1671,
+      "srcLine": 1668,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "input",
       "srcOwnText": "",
-      "snippet": "<input name=\"email\" type=\"email\" required=\"{{ true }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"868\">",
+      "snippet": "<input name=\"email\" type=\"email\" required=\"{{ true }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"866\">",
+      "resolved": {
+        "375": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "289px",
+          "height": "48px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "14px",
+          "padding-bottom": "0px",
+          "padding-left": "14px"
+        },
+        "768": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "574px",
+          "height": "48px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "14px",
+          "padding-bottom": "0px",
+          "padding-left": "14px"
+        },
+        "1440": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "408.5px",
+          "height": "48px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "14px",
+          "padding-bottom": "0px",
+          "padding-left": "14px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -674,40 +1320,105 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_868_0@375.png",
-        "1440": "shots/Root_868_0@1440.png"
+        "375": "shots/Root_866_0@375.png",
+        "1440": "shots/Root_866_0@1440.png"
       }
     },
     {
-      "key": "Root/869#0",
-      "parentKey": "Root/865#0",
+      "key": "Root/867#0",
+      "parentKey": "Root/863#0",
       "depth": 3,
       "tag": "label",
       "template": "Root",
-      "tpl": 869,
+      "tpl": 867,
       "attrs": {
         "style": "display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: rgb(74, 69, 62);"
       },
       "words": "Password",
       "allText": "Password",
-      "srcLine": 1672,
+      "srcLine": 1669,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "label",
       "srcOwnText": "Password",
-      "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"869\">Password<input name=\"password\" type=\"password\" required=\"{{ true }}\" sc-camel-auto-complete=\"current-password\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"870\"></label>",
+      "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"867\">Password<input name=\"password\" type=\"password\" required=\"{{ true }}\" sc-camel-auto-complete=\"current-password\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"868\"></label>",
+      "flow": [
+        "Password",
+        {
+          "key": "Root/868#0"
+        }
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "13px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "19.5px",
+          "width": "289px",
+          "height": "73.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "13px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "19.5px",
+          "width": "574px",
+          "height": "73.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "13px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "19.5px",
+          "width": "408.5px",
+          "height": "73.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -740,41 +1451,99 @@
         "1440": "static"
       },
       "flexDirection": "column",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_869_0@375.png",
-        "1440": "shots/Root_869_0@1440.png"
+        "375": "shots/Root_867_0@375.png",
+        "1440": "shots/Root_867_0@1440.png"
       }
     },
     {
-      "key": "Root/870#0",
-      "parentKey": "Root/869#0",
+      "key": "Root/868#0",
+      "parentKey": "Root/867#0",
       "depth": 4,
       "tag": "input",
       "template": "Root",
-      "tpl": 870,
+      "tpl": 868,
       "attrs": {
         "type": "password",
         "style": "border: 1px solid rgb(230, 225, 218); background: rgb(255, 255, 255); padding: 0px 14px; min-height: 48px; font-size: 15px; color: rgb(20, 20, 20); width: 100%;"
       },
       "words": "",
       "allText": "",
-      "srcLine": 1672,
+      "srcLine": 1669,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "input",
       "srcOwnText": "",
-      "snippet": "<input name=\"password\" type=\"password\" required=\"{{ true }}\" sc-camel-auto-complete=\"current-password\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"870\">",
+      "snippet": "<input name=\"password\" type=\"password\" required=\"{{ true }}\" sc-camel-auto-complete=\"current-password\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"868\">",
+      "resolved": {
+        "375": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "289px",
+          "height": "48px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "14px",
+          "padding-bottom": "0px",
+          "padding-left": "14px"
+        },
+        "768": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "574px",
+          "height": "48px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "14px",
+          "padding-bottom": "0px",
+          "padding-left": "14px"
+        },
+        "1440": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "408.5px",
+          "height": "48px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "14px",
+          "padding-bottom": "0px",
+          "padding-left": "14px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -807,40 +1576,109 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_870_0@375.png",
-        "1440": "shots/Root_870_0@1440.png"
+        "375": "shots/Root_868_0@375.png",
+        "1440": "shots/Root_868_0@1440.png"
       }
     },
     {
-      "key": "Root/871#0",
-      "parentKey": "Root/865#0",
+      "key": "Root/869#0",
+      "parentKey": "Root/863#0",
       "depth": 3,
       "tag": "div",
       "template": "Root",
-      "tpl": 871,
+      "tpl": 869,
       "attrs": {
         "style": "display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;"
       },
       "words": "",
       "allText": "Keep me signed in Forgotten your password?",
-      "srcLine": 1673,
+      "srcLine": 1670,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "div",
       "srcOwnText": "",
-      "snippet": "<div style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap\" data-dc-tpl=\"871\"> <label style=\"display:flex;gap:10px;align-items:center;font-size:14px;color:#4A453E;cursor:pointer;min-height:44px\" data-dc-tpl=\"872\"><input type=\"checkbox\" style=\"accent-color:#141414;width:16px;height:16px;margin:0\" data-dc-tpl=\"873\">Keep me signed in</label> <button type=\"button",
+      "snippet": "<div style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap\" data-dc-tpl=\"869\"> <label style=\"display:flex;gap:10px;align-items:center;font-size:14px;color:#4A453E;cursor:pointer;min-height:44px\" data-dc-tpl=\"870\"><input type=\"checkbox\" style=\"accent-color:#141414;width:16px;height:16px;margin:0\" data-dc-tpl=\"871\">Keep me signed in</label> <button type=\"button",
+      "flow": [
+        " ",
+        {
+          "key": "Root/870#0"
+        },
+        " ",
+        {
+          "key": "Root/872#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24px",
+          "width": "289px",
+          "height": "75px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24px",
+          "width": "574px",
+          "height": "44px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24px",
+          "width": "408.5px",
+          "height": "44px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -873,40 +1711,105 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_871_0@375.png",
-        "1440": "shots/Root_871_0@1440.png"
+        "375": "shots/Root_869_0@375.png",
+        "1440": "shots/Root_869_0@1440.png"
       }
     },
     {
-      "key": "Root/872#0",
-      "parentKey": "Root/871#0",
+      "key": "Root/870#0",
+      "parentKey": "Root/869#0",
       "depth": 4,
       "tag": "label",
       "template": "Root",
-      "tpl": 872,
+      "tpl": 870,
       "attrs": {
         "style": "display: flex; gap: 10px; align-items: center; font-size: 14px; color: rgb(74, 69, 62); cursor: pointer; min-height: 44px;"
       },
       "words": "Keep me signed in",
       "allText": "Keep me signed in",
-      "srcLine": 1674,
+      "srcLine": 1671,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "label",
       "srcOwnText": "Keep me signed in",
-      "snippet": "<label style=\"display:flex;gap:10px;align-items:center;font-size:14px;color:#4A453E;cursor:pointer;min-height:44px\" data-dc-tpl=\"872\"><input type=\"checkbox\" style=\"accent-color:#141414;width:16px;height:16px;margin:0\" data-dc-tpl=\"873\">Keep me signed in</label>",
+      "snippet": "<label style=\"display:flex;gap:10px;align-items:center;font-size:14px;color:#4A453E;cursor:pointer;min-height:44px\" data-dc-tpl=\"870\"><input type=\"checkbox\" style=\"accent-color:#141414;width:16px;height:16px;margin:0\" data-dc-tpl=\"871\">Keep me signed in</label>",
+      "flow": [
+        {
+          "key": "Root/871#0"
+        },
+        "Keep me signed in"
+      ],
+      "textLeads": false,
+      "resolved": {
+        "375": {
+          "font-size": "14px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "21px",
+          "width": "137.328px",
+          "height": "44px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "14px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "21px",
+          "width": "137.328px",
+          "height": "44px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "14px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "21px",
+          "width": "137.328px",
+          "height": "44px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -939,40 +1842,98 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": false,
       "screenshots": {
-        "1440": "shots/Root_872_0@1440.png"
+        "1440": "shots/Root_870_0@1440.png"
       }
     },
     {
-      "key": "Root/873#0",
-      "parentKey": "Root/872#0",
+      "key": "Root/871#0",
+      "parentKey": "Root/870#0",
       "depth": 5,
       "tag": "input",
       "template": "Root",
-      "tpl": 873,
+      "tpl": 871,
       "attrs": {
         "type": "checkbox",
         "style": "accent-color: rgb(20, 20, 20); width: 16px; height: 16px; margin: 0px;"
       },
       "words": "",
       "allText": "",
-      "srcLine": 1674,
+      "srcLine": 1671,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "input",
       "srcOwnText": "",
-      "snippet": "<input type=\"checkbox\" style=\"accent-color:#141414;width:16px;height:16px;margin:0\" data-dc-tpl=\"873\">",
+      "snippet": "<input type=\"checkbox\" style=\"accent-color:#141414;width:16px;height:16px;margin:0\" data-dc-tpl=\"871\">",
+      "resolved": {
+        "375": {
+          "font-size": "13.3333px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "16px",
+          "height": "16px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "13.3333px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "16px",
+          "height": "16px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "13.3333px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "16px",
+          "height": "16px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -1005,40 +1966,99 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": false,
       "screenshots": {
-        "1440": "shots/Root_873_0@1440.png"
+        "1440": "shots/Root_871_0@1440.png"
       }
     },
     {
-      "key": "Root/874#0",
-      "parentKey": "Root/871#0",
+      "key": "Root/872#0",
+      "parentKey": "Root/869#0",
       "depth": 4,
       "tag": "button",
       "template": "Root",
-      "tpl": 874,
+      "tpl": 872,
       "attrs": {
         "type": "button",
         "style": "background: none; border-width: 0px 0px 1px; border-top-style: initial; border-right-style: initial; border-bottom-style: solid; border-left-style: initial; border-top-color: initial; border-right-color: initial; border-bottom-color: rgb(20, 20, 20); border-left-color: initial; border-image: initial; padding: 0px; color: rgb(20, 20, 20); font-size: 13.5px;"
       },
       "words": "Forgotten your password?",
       "allText": "Forgotten your password?",
-      "srcLine": 1675,
+      "srcLine": 1672,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "button",
       "srcOwnText": "Forgotten your password?",
-      "snippet": "<button type=\"button\" sc-camel-on-click=\"{{ goForgot }}\" style=\"background:none;border:0;padding:0;border-bottom:1px solid #141414;color:#141414;font-size:13.5px\" data-dc-tpl=\"874\">Forgotten your password?</button>",
+      "snippet": "<button type=\"button\" sc-camel-on-click=\"{{ goForgot }}\" style=\"background:none;border:0;padding:0;border-bottom:1px solid #141414;color:#141414;font-size:13.5px\" data-dc-tpl=\"872\">Forgotten your password?</button>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "13.5px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "156.078px",
+          "height": "19px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "13.5px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "156.078px",
+          "height": "19px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "13.5px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "156.078px",
+          "height": "19px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -1071,19 +2091,24 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_874_0@375.png",
-        "1440": "shots/Root_874_0@1440.png"
+        "375": "shots/Root_872_0@375.png",
+        "1440": "shots/Root_872_0@1440.png"
       }
     },
     {
-      "key": "Root/875#0",
-      "parentKey": "Root/865#0",
+      "key": "Root/873#0",
+      "parentKey": "Root/863#0",
       "depth": 3,
       "tag": "button",
       "template": "Root",
-      "tpl": 875,
+      "tpl": 873,
       "attrs": {
         "type": "submit",
         "class": "scpp",
@@ -1091,22 +2116,76 @@
       },
       "words": "Sign in",
       "allText": "Sign in",
-      "srcLine": 1677,
+      "srcLine": 1674,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "button",
       "srcOwnText": "Sign in",
-      "snippet": "<button type=\"submit\" style=\"background:#141414;color:#FAF8F5;border:0;min-height:52px;padding:0 26px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;transition:background .2s\" style-hover=\"background:#2a2a2a\" data-dc-tpl=\"875\">Sign in</button>",
+      "snippet": "<button type=\"submit\" style=\"background:#141414;color:#FAF8F5;border:0;min-height:52px;padding:0 26px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;transition:background .2s\" style-hover=\"background:#2a2a2a\" data-dc-tpl=\"873\">Sign in</button>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "13px",
+          "font-weight": "400",
+          "letter-spacing": "1.3px",
+          "text-transform": "uppercase",
+          "line-height": "normal",
+          "width": "289px",
+          "height": "52px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "26px",
+          "padding-bottom": "0px",
+          "padding-left": "26px"
+        },
+        "768": {
+          "font-size": "13px",
+          "font-weight": "400",
+          "letter-spacing": "1.3px",
+          "text-transform": "uppercase",
+          "line-height": "normal",
+          "width": "574px",
+          "height": "52px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "26px",
+          "padding-bottom": "0px",
+          "padding-left": "26px"
+        },
+        "1440": {
+          "font-size": "13px",
+          "font-weight": "400",
+          "letter-spacing": "1.3px",
+          "text-transform": "uppercase",
+          "line-height": "normal",
+          "width": "408.5px",
+          "height": "52px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "26px",
+          "padding-bottom": "0px",
+          "padding-left": "26px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -1139,40 +2218,121 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_875_0@375.png",
-        "1440": "shots/Root_875_0@1440.png"
+        "375": "shots/Root_873_0@375.png",
+        "1440": "shots/Root_873_0@1440.png"
       }
     },
     {
-      "key": "Root/876#0",
-      "parentKey": "Root/864#0",
+      "key": "Root/874#0",
+      "parentKey": "Root/862#0",
       "depth": 2,
       "tag": "form",
       "template": "Root",
-      "tpl": 876,
+      "tpl": 874,
       "attrs": {
         "style": "background: rgb(255, 255, 255); padding: 40px 44px; display: flex; flex-direction: column; gap: 14px;"
       },
       "words": "",
       "allText": "New here? First name Email Password8 characters or more Create account",
-      "srcLine": 1679,
+      "srcLine": 1676,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "form",
       "srcOwnText": "",
-      "snippet": "<form sc-camel-on-submit=\"{{ register }}\" style=\"background:#fff;padding: {{ authPad }};display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"876\"> <h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;line-height:1.1;margin-bottom:4px\" data-dc-tpl=\"877\">New here?</h2> <label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-",
+      "snippet": "<form sc-camel-on-submit=\"{{ register }}\" style=\"background:#fff;padding: {{ authPad }};display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"874\"> <h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;line-height:1.1;margin-bottom:4px\" data-dc-tpl=\"875\">New here?</h2> <label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-",
+      "flow": [
+        " ",
+        {
+          "key": "Root/875#0"
+        },
+        " ",
+        {
+          "key": "Root/876#0"
+        },
+        " ",
+        {
+          "key": "Root/878#0"
+        },
+        " ",
+        {
+          "key": "Root/880#0"
+        },
+        " ",
+        {
+          "key": "Root/883#0"
+        },
+        " "
+      ],
+      "resolved": {
+        "375": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24px",
+          "width": "333px",
+          "height": "444.047px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "28px",
+          "padding-right": "22px",
+          "padding-bottom": "28px",
+          "padding-left": "22px"
+        },
+        "768": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24px",
+          "width": "662px",
+          "height": "468.047px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "40px",
+          "padding-right": "44px",
+          "padding-bottom": "40px",
+          "padding-left": "44px"
+        },
+        "1440": {
+          "font-size": "16px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "24px",
+          "width": "496.5px",
+          "height": "468.047px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "40px",
+          "padding-right": "44px",
+          "padding-bottom": "40px",
+          "padding-left": "44px"
+        }
+      },
       "box": {
         "375": {
           "x": 21,
@@ -1205,40 +2365,99 @@
         "1440": "static"
       },
       "flexDirection": "column",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_876_0@375.png",
-        "1440": "shots/Root_876_0@1440.png"
+        "375": "shots/Root_874_0@375.png",
+        "1440": "shots/Root_874_0@1440.png"
       }
     },
     {
-      "key": "Root/877#0",
-      "parentKey": "Root/876#0",
+      "key": "Root/875#0",
+      "parentKey": "Root/874#0",
       "depth": 3,
       "tag": "h2",
       "template": "Root",
-      "tpl": 877,
+      "tpl": 875,
       "attrs": {
         "style": "margin: 0px 0px 4px; font-family: \"Playfair Display\", serif; font-weight: 500; font-size: 28px; line-height: 1.1;"
       },
       "words": "New here?",
       "allText": "New here?",
-      "srcLine": 1680,
+      "srcLine": 1677,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "h2",
       "srcOwnText": "New here?",
-      "snippet": "<h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;line-height:1.1;margin-bottom:4px\" data-dc-tpl=\"877\">New here?</h2>",
+      "snippet": "<h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;line-height:1.1;margin-bottom:4px\" data-dc-tpl=\"875\">New here?</h2>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "28px",
+          "font-weight": "500",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "30.8px",
+          "width": "289px",
+          "height": "30.7969px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "28px",
+          "font-weight": "500",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "30.8px",
+          "width": "574px",
+          "height": "30.7969px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "28px",
+          "font-weight": "500",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "30.8px",
+          "width": "408.5px",
+          "height": "30.7969px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -1271,40 +2490,105 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_877_0@375.png",
-        "1440": "shots/Root_877_0@1440.png"
+        "375": "shots/Root_875_0@375.png",
+        "1440": "shots/Root_875_0@1440.png"
       }
     },
     {
-      "key": "Root/878#0",
-      "parentKey": "Root/876#0",
+      "key": "Root/876#0",
+      "parentKey": "Root/874#0",
       "depth": 3,
       "tag": "label",
       "template": "Root",
-      "tpl": 878,
+      "tpl": 876,
       "attrs": {
         "style": "display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: rgb(74, 69, 62);"
       },
       "words": "First name",
       "allText": "First name",
-      "srcLine": 1681,
+      "srcLine": 1678,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "label",
       "srcOwnText": "First name",
-      "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"878\">First name<input name=\"first\" required=\"{{ true }}\" sc-camel-auto-complete=\"given-name\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"879\"></label>",
+      "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"876\">First name<input name=\"first\" required=\"{{ true }}\" sc-camel-auto-complete=\"given-name\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"877\"></label>",
+      "flow": [
+        "First name",
+        {
+          "key": "Root/877#0"
+        }
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "13px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "19.5px",
+          "width": "289px",
+          "height": "73.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "13px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "19.5px",
+          "width": "574px",
+          "height": "73.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "13px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "19.5px",
+          "width": "408.5px",
+          "height": "73.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -1337,40 +2621,98 @@
         "1440": "static"
       },
       "flexDirection": "column",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_878_0@375.png",
-        "1440": "shots/Root_878_0@1440.png"
+        "375": "shots/Root_876_0@375.png",
+        "1440": "shots/Root_876_0@1440.png"
       }
     },
     {
-      "key": "Root/879#0",
-      "parentKey": "Root/878#0",
+      "key": "Root/877#0",
+      "parentKey": "Root/876#0",
       "depth": 4,
       "tag": "input",
       "template": "Root",
-      "tpl": 879,
+      "tpl": 877,
       "attrs": {
         "style": "border: 1px solid rgb(230, 225, 218); background: rgb(255, 255, 255); padding: 0px 14px; min-height: 48px; font-size: 15px; color: rgb(20, 20, 20); width: 100%;"
       },
       "words": "",
       "allText": "",
-      "srcLine": 1681,
+      "srcLine": 1678,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "input",
       "srcOwnText": "",
-      "snippet": "<input name=\"first\" required=\"{{ true }}\" sc-camel-auto-complete=\"given-name\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"879\">",
+      "snippet": "<input name=\"first\" required=\"{{ true }}\" sc-camel-auto-complete=\"given-name\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"877\">",
+      "resolved": {
+        "375": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "289px",
+          "height": "48px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "14px",
+          "padding-bottom": "0px",
+          "padding-left": "14px"
+        },
+        "768": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "574px",
+          "height": "48px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "14px",
+          "padding-bottom": "0px",
+          "padding-left": "14px"
+        },
+        "1440": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "408.5px",
+          "height": "48px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "14px",
+          "padding-bottom": "0px",
+          "padding-left": "14px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -1403,40 +2745,105 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_879_0@375.png",
-        "1440": "shots/Root_879_0@1440.png"
+        "375": "shots/Root_877_0@375.png",
+        "1440": "shots/Root_877_0@1440.png"
       }
     },
     {
-      "key": "Root/880#0",
-      "parentKey": "Root/876#0",
+      "key": "Root/878#0",
+      "parentKey": "Root/874#0",
       "depth": 3,
       "tag": "label",
       "template": "Root",
-      "tpl": 880,
+      "tpl": 878,
       "attrs": {
         "style": "display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: rgb(74, 69, 62);"
       },
       "words": "Email",
       "allText": "Email",
-      "srcLine": 1682,
+      "srcLine": 1679,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "label",
       "srcOwnText": "Email",
-      "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"880\">Email<input name=\"email\" type=\"email\" required=\"{{ true }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"881\"></label>",
+      "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"878\">Email<input name=\"email\" type=\"email\" required=\"{{ true }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"879\"></label>",
+      "flow": [
+        "Email",
+        {
+          "key": "Root/879#0"
+        }
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "13px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "19.5px",
+          "width": "289px",
+          "height": "73.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "13px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "19.5px",
+          "width": "574px",
+          "height": "73.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "13px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "19.5px",
+          "width": "408.5px",
+          "height": "73.5px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -1469,41 +2876,99 @@
         "1440": "static"
       },
       "flexDirection": "column",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_880_0@375.png",
-        "1440": "shots/Root_880_0@1440.png"
+        "375": "shots/Root_878_0@375.png",
+        "1440": "shots/Root_878_0@1440.png"
       }
     },
     {
-      "key": "Root/881#0",
-      "parentKey": "Root/880#0",
+      "key": "Root/879#0",
+      "parentKey": "Root/878#0",
       "depth": 4,
       "tag": "input",
       "template": "Root",
-      "tpl": 881,
+      "tpl": 879,
       "attrs": {
         "type": "email",
         "style": "border: 1px solid rgb(230, 225, 218); background: rgb(255, 255, 255); padding: 0px 14px; min-height: 48px; font-size: 15px; color: rgb(20, 20, 20); width: 100%;"
       },
       "words": "",
       "allText": "",
-      "srcLine": 1682,
+      "srcLine": 1679,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "input",
       "srcOwnText": "",
-      "snippet": "<input name=\"email\" type=\"email\" required=\"{{ true }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"881\">",
+      "snippet": "<input name=\"email\" type=\"email\" required=\"{{ true }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"879\">",
+      "resolved": {
+        "375": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "289px",
+          "height": "48px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "14px",
+          "padding-bottom": "0px",
+          "padding-left": "14px"
+        },
+        "768": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "574px",
+          "height": "48px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "14px",
+          "padding-bottom": "0px",
+          "padding-left": "14px"
+        },
+        "1440": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "408.5px",
+          "height": "48px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "14px",
+          "padding-bottom": "0px",
+          "padding-left": "14px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -1536,40 +3001,108 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_881_0@375.png",
-        "1440": "shots/Root_881_0@1440.png"
+        "375": "shots/Root_879_0@375.png",
+        "1440": "shots/Root_879_0@1440.png"
       }
     },
     {
-      "key": "Root/882#0",
-      "parentKey": "Root/876#0",
+      "key": "Root/880#0",
+      "parentKey": "Root/874#0",
       "depth": 3,
       "tag": "label",
       "template": "Root",
-      "tpl": 882,
+      "tpl": 880,
       "attrs": {
         "style": "display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: rgb(74, 69, 62);"
       },
       "words": "Password",
       "allText": "Password8 characters or more",
-      "srcLine": 1683,
+      "srcLine": 1680,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "label",
       "srcOwnText": "Password",
-      "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"882\">Password<input name=\"password\" type=\"password\" required=\"{{ true }}\" sc-camel-min-length=\"8\" sc-camel-auto-complete=\"new-password\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"883\"><span style=\"font-size:12.",
+      "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"880\">Password<input name=\"password\" type=\"password\" required=\"{{ true }}\" sc-camel-min-length=\"8\" sc-camel-auto-complete=\"new-password\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"881\"><span style=\"font-size:12.",
+      "flow": [
+        "Password",
+        {
+          "key": "Root/881#0"
+        },
+        {
+          "key": "Root/882#0"
+        }
+      ],
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "13px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "19.5px",
+          "width": "289px",
+          "height": "98.25px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "13px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "19.5px",
+          "width": "574px",
+          "height": "98.25px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "13px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "19.5px",
+          "width": "408.5px",
+          "height": "98.25px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -1602,41 +3135,99 @@
         "1440": "static"
       },
       "flexDirection": "column",
+      "displayAt": {
+        "375": "flex",
+        "768": "flex",
+        "1440": "flex"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_882_0@375.png",
-        "1440": "shots/Root_882_0@1440.png"
+        "375": "shots/Root_880_0@375.png",
+        "1440": "shots/Root_880_0@1440.png"
       }
     },
     {
-      "key": "Root/883#0",
-      "parentKey": "Root/882#0",
+      "key": "Root/881#0",
+      "parentKey": "Root/880#0",
       "depth": 4,
       "tag": "input",
       "template": "Root",
-      "tpl": 883,
+      "tpl": 881,
       "attrs": {
         "type": "password",
         "style": "border: 1px solid rgb(230, 225, 218); background: rgb(255, 255, 255); padding: 0px 14px; min-height: 48px; font-size: 15px; color: rgb(20, 20, 20); width: 100%;"
       },
       "words": "",
       "allText": "",
-      "srcLine": 1683,
+      "srcLine": 1680,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "input",
       "srcOwnText": "",
-      "snippet": "<input name=\"password\" type=\"password\" required=\"{{ true }}\" sc-camel-min-length=\"8\" sc-camel-auto-complete=\"new-password\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"883\">",
+      "snippet": "<input name=\"password\" type=\"password\" required=\"{{ true }}\" sc-camel-min-length=\"8\" sc-camel-auto-complete=\"new-password\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"881\">",
+      "resolved": {
+        "375": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "289px",
+          "height": "48px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "14px",
+          "padding-bottom": "0px",
+          "padding-left": "14px"
+        },
+        "768": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "574px",
+          "height": "48px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "14px",
+          "padding-bottom": "0px",
+          "padding-left": "14px"
+        },
+        "1440": {
+          "font-size": "15px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "normal",
+          "width": "408.5px",
+          "height": "48px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "14px",
+          "padding-bottom": "0px",
+          "padding-left": "14px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -1669,40 +3260,99 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_883_0@375.png",
-        "1440": "shots/Root_883_0@1440.png"
+        "375": "shots/Root_881_0@375.png",
+        "1440": "shots/Root_881_0@1440.png"
       }
     },
     {
-      "key": "Root/884#0",
-      "parentKey": "Root/882#0",
+      "key": "Root/882#0",
+      "parentKey": "Root/880#0",
       "depth": 4,
       "tag": "span",
       "template": "Root",
-      "tpl": 884,
+      "tpl": 882,
       "attrs": {
         "style": "font-size: 12.5px; color: rgb(119, 113, 106);"
       },
       "words": "8 characters or more",
       "allText": "8 characters or more",
-      "srcLine": 1683,
+      "srcLine": 1680,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "span",
       "srcOwnText": "8 characters or more",
-      "snippet": "<span style=\"font-size:12.5px;color:#77716A\" data-dc-tpl=\"884\">8 characters or more</span>",
+      "snippet": "<span style=\"font-size:12.5px;color:#77716A\" data-dc-tpl=\"882\">8 characters or more</span>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "12.5px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "18.75px",
+          "width": "289px",
+          "height": "18.75px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "768": {
+          "font-size": "12.5px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "18.75px",
+          "width": "574px",
+          "height": "18.75px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        },
+        "1440": {
+          "font-size": "12.5px",
+          "font-weight": "400",
+          "letter-spacing": "normal",
+          "text-transform": "none",
+          "line-height": "18.75px",
+          "width": "408.5px",
+          "height": "18.75px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "0px",
+          "padding-bottom": "0px",
+          "padding-left": "0px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -1735,19 +3385,24 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_884_0@375.png",
-        "1440": "shots/Root_884_0@1440.png"
+        "375": "shots/Root_882_0@375.png",
+        "1440": "shots/Root_882_0@1440.png"
       }
     },
     {
-      "key": "Root/885#0",
-      "parentKey": "Root/876#0",
+      "key": "Root/883#0",
+      "parentKey": "Root/874#0",
       "depth": 3,
       "tag": "button",
       "template": "Root",
-      "tpl": 885,
+      "tpl": 883,
       "attrs": {
         "type": "submit",
         "class": "scp4",
@@ -1755,22 +3410,76 @@
       },
       "words": "Create account",
       "allText": "Create account",
-      "srcLine": 1684,
+      "srcLine": 1681,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isSignin }}",
-          "tpl": "855"
+          "tpl": "853"
         },
         {
           "kind": "sc-if",
           "value": "{{ authSignin }}",
-          "tpl": "857"
+          "tpl": "855"
         }
       ],
       "srcTag": "button",
       "srcOwnText": "Create account",
-      "snippet": "<button type=\"submit\" style=\"background:none;color:#141414;border:1px solid #141414;min-height:52px;padding:0 26px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;transition:background .25s,color .25s\" style-hover=\"background:#141414;color:#FAF8F5\" data-dc-tpl=\"885\">Create account</button>",
+      "snippet": "<button type=\"submit\" style=\"background:none;color:#141414;border:1px solid #141414;min-height:52px;padding:0 26px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;transition:background .25s,color .25s\" style-hover=\"background:#141414;color:#FAF8F5\" data-dc-tpl=\"883\">Create account</button>",
+      "textLeads": true,
+      "resolved": {
+        "375": {
+          "font-size": "13px",
+          "font-weight": "400",
+          "letter-spacing": "1.3px",
+          "text-transform": "uppercase",
+          "line-height": "normal",
+          "width": "289px",
+          "height": "52px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "26px",
+          "padding-bottom": "0px",
+          "padding-left": "26px"
+        },
+        "768": {
+          "font-size": "13px",
+          "font-weight": "400",
+          "letter-spacing": "1.3px",
+          "text-transform": "uppercase",
+          "line-height": "normal",
+          "width": "574px",
+          "height": "52px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "26px",
+          "padding-bottom": "0px",
+          "padding-left": "26px"
+        },
+        "1440": {
+          "font-size": "13px",
+          "font-weight": "400",
+          "letter-spacing": "1.3px",
+          "text-transform": "uppercase",
+          "line-height": "normal",
+          "width": "408.5px",
+          "height": "52px",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "padding-top": "0px",
+          "padding-right": "26px",
+          "padding-bottom": "0px",
+          "padding-left": "26px"
+        }
+      },
       "box": {
         "375": {
           "x": 43,
@@ -1803,11 +3512,40 @@
         "1440": "static"
       },
       "flexDirection": "row",
+      "displayAt": {
+        "375": "block",
+        "768": "block",
+        "1440": "block"
+      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_885_0@375.png",
-        "1440": "shots/Root_885_0@1440.png"
+        "375": "shots/Root_883_0@375.png",
+        "1440": "shots/Root_883_0@1440.png"
       }
     }
-  ]
+  ],
+  "sources": {
+    "files": {
+      "Eye Care Birmingham.dc.html": "547057ef6711a8b933e89bedaefd2e0c1d597606560f95dea39d8bc044e4867d",
+      "Frame Card.dc.html": "4c139189317abfd2d49c4851624fd8e1e3043fc002bfaddb474a0a645b8b8db4",
+      "README.md": "0b063b7a239855d748cfeb9ac9ce978cb0bf6a9a38c41a04f81a858d30afbfe8",
+      "animations.json": "4d482eaddd75a737f7892b582c127792869a95addf11632ff77af05c2a5e7616",
+      "assets/ec-logo.png": "a8533911367a930ee85e83bd163e4c1e195ad9cfea9d9189757f32415fade27f",
+      "assets/eye-care-wordmark.png": "7a991f041e5022c103366e28f88b7b6ba013c5c99929bbdc180cd99982bb6012",
+      "assets/google-g.svg": "a38b9299dc4f1d1c96079ac7c6c84b7d0c5a36e6521845056b4351387fb45875",
+      "assets/instagram.svg": "2e63f047e9cce71a4c7a38eb22327a758ae31c6418197cebfde2ddf3eff77c38",
+      "assets/whatsapp-deep.svg": "d4f59fdf92f70685a75ef3fa920d96aad53c7e7fc37c3179d1809de9ba4ac7a0",
+      "assets/whatsapp-green.svg": "7c831ad55d0f49fd715d55723062faa212fe3fafcbb0a7d63d1dd0261f716c4a",
+      "assets/whatsapp-ink.svg": "1d98c1896e1bca405c3e152aaec32415c24ef77f83a46450dbebd8f18ffb3d5d",
+      "assets/whatsapp-white.svg": "97f0612934fac011b54359c333998c3712581c2d9d7359acd2e51d0c78032699",
+      "support.js": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe",
+      "surfaces.json": "cafeb0dd42a0e3ebef175d71f3f599973c122d17ae33fd2c58eb684fadc99386",
+      "tokens/colors.css": "9473a276fdb556d59fc1850805e80210dbc4dac9d1264eff03fb8f2b4b487977",
+      "tokens/spacing.css": "d2ec7bbe305cce06d1124d4d03b1f507694bd6c0812210d67e879540b126a4fa",
+      "tokens/typography.css": "10afddb7990718dee4942ef9abbd139dc2b38d26ae4416415cab54901cba3eff"
+    },
+    "route": {
+      "commit": "51f80c97f6896b04fc86e72af35e49986cba95fb"
+    }
+  }
 }

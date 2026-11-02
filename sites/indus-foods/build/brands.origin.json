@@ -9,6 +9,10 @@
       "textHash": "1505",
       "line": 269
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/316#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/344#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-brands-1": {
@@ -22,6 +26,10 @@
       ],
       "textHash": "1505",
       "line": 435
+    },
+    "slots": {
+      ".sgs-hero__content": "Root/322#0",
+      ".sgs-hero__video-bg": "Root/318#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -54,6 +62,9 @@
       "textHash": "1505",
       "line": 445
     },
+    "slots": {
+      ".sgs-breadcrumbs__list > .sgs-breadcrumbs__item:nth-of-type(1) > a": "Root/326#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-brands-4": {
@@ -70,6 +81,9 @@
       ],
       "textHash": "a07c5b4d",
       "line": 446
+    },
+    "slots": {
+      ".sgs-button__label": "Root/326#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -156,6 +170,9 @@
       "textHash": "1505",
       "line": 474
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/345#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-brands-10": {
@@ -170,6 +187,10 @@
       ],
       "textHash": "1505",
       "line": 476
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/347#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/499#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -187,6 +208,9 @@
       "textHash": "1505",
       "line": 479
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/348#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-brands-12": {
@@ -203,6 +227,10 @@
       ],
       "textHash": "1505",
       "line": 480
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/350#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/352#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -274,6 +302,10 @@
       "textHash": "1505",
       "line": 713
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/501#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/501#1"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-brands-17": {
@@ -290,6 +322,10 @@
       ],
       "textHash": "1505",
       "line": 715
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/502#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/505#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -309,6 +345,9 @@
       "textHash": "1505",
       "line": 716
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/503#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-brands-19": {
@@ -327,6 +366,9 @@
       ],
       "textHash": "1505",
       "line": 717
+    },
+    "slots": {
+      ".sgs-media__img": "Root/503#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -383,6 +425,10 @@
       "textHash": "1505",
       "line": 715
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/502#1",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/505#1"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-brands-23": {
@@ -400,6 +446,9 @@
       ],
       "textHash": "1505",
       "line": 716
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/503#1"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -419,6 +468,9 @@
       ],
       "textHash": "1505",
       "line": 717
+    },
+    "slots": {
+      ".sgs-media__img": "Root/503#1"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -475,6 +527,10 @@
       "textHash": "1505",
       "line": 715
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/502#2",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/505#2"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-brands-28": {
@@ -492,6 +548,9 @@
       ],
       "textHash": "1505",
       "line": 716
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/503#2"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -511,6 +570,9 @@
       ],
       "textHash": "1505",
       "line": 717
+    },
+    "slots": {
+      ".sgs-media__img": "Root/503#2"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -567,6 +629,10 @@
       "textHash": "1505",
       "line": 715
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/502#3",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/505#3"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-brands-33": {
@@ -584,6 +650,9 @@
       ],
       "textHash": "1505",
       "line": 716
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/503#3"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -603,6 +672,9 @@
       ],
       "textHash": "1505",
       "line": 717
+    },
+    "slots": {
+      ".sgs-media__img": "Root/503#3"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -659,6 +731,10 @@
       "textHash": "1505",
       "line": 715
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/502#4",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/505#4"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-brands-38": {
@@ -676,6 +752,9 @@
       ],
       "textHash": "1505",
       "line": 716
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/503#4"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -695,6 +774,9 @@
       ],
       "textHash": "1505",
       "line": 717
+    },
+    "slots": {
+      ".sgs-media__img": "Root/503#4"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -751,6 +833,10 @@
       "textHash": "1505",
       "line": 715
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/502#5",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/505#5"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-brands-43": {
@@ -768,6 +854,9 @@
       ],
       "textHash": "1505",
       "line": 716
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/503#5"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -787,6 +876,9 @@
       ],
       "textHash": "1505",
       "line": 717
+    },
+    "slots": {
+      ".sgs-media__img": "Root/503#5"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -843,6 +935,10 @@
       "textHash": "1505",
       "line": 715
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/502#6",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/505#6"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-brands-48": {
@@ -860,6 +956,9 @@
       ],
       "textHash": "1505",
       "line": 716
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/503#6"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -879,6 +978,9 @@
       ],
       "textHash": "1505",
       "line": 717
+    },
+    "slots": {
+      ".sgs-media__img": "Root/503#6"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -935,6 +1037,10 @@
       "textHash": "1505",
       "line": 715
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/502#7",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/505#7"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-brands-53": {
@@ -952,6 +1058,9 @@
       ],
       "textHash": "1505",
       "line": 716
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/503#7"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -971,6 +1080,9 @@
       ],
       "textHash": "1505",
       "line": 717
+    },
+    "slots": {
+      ".sgs-media__img": "Root/503#7"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -1027,6 +1139,10 @@
       "textHash": "1505",
       "line": 715
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/502#8",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/505#8"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-brands-58": {
@@ -1044,6 +1160,9 @@
       ],
       "textHash": "1505",
       "line": 716
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/503#8"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -1063,6 +1182,9 @@
       ],
       "textHash": "1505",
       "line": 717
+    },
+    "slots": {
+      ".sgs-media__img": "Root/503#8"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -1119,6 +1241,10 @@
       "textHash": "1505",
       "line": 715
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/502#9",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/505#9"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-brands-63": {
@@ -1136,6 +1262,9 @@
       ],
       "textHash": "1505",
       "line": 716
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/503#9"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -1155,6 +1284,9 @@
       ],
       "textHash": "1505",
       "line": 717
+    },
+    "slots": {
+      ".sgs-media__img": "Root/503#9"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -1208,6 +1340,9 @@
       "textHash": "1505",
       "line": 474
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/345#1"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-brands-68": {
@@ -1222,6 +1357,9 @@
       ],
       "textHash": "1505",
       "line": 476
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/379#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -1239,6 +1377,10 @@
       "textHash": "1505",
       "line": 529
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/380#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/394#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-brands-70": {
@@ -1255,6 +1397,10 @@
       ],
       "textHash": "1505",
       "line": 530
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/382#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/384#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -1313,24 +1459,6 @@
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-brands-74": {
-    "tpl": "Root/388#0",
-    "fingerprint": {
-      "tag": "div",
-      "cls": "",
-      "styleHash": "37ecd678",
-      "parentTags": [
-        "main",
-        "section",
-        "div",
-        "div",
-        "div"
-      ],
-      "textHash": "1505",
-      "line": 539
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-brands-75": {
     "tpl": "Root/390#0",
     "fingerprint": {
       "tag": "div",
@@ -1347,66 +1475,23 @@
       "textHash": "5c297023",
       "line": 541
     },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-brands-76": {
-    "tpl": "Root/390#1",
-    "fingerprint": {
-      "tag": "div",
-      "cls": "",
-      "styleHash": "592aa752",
-      "parentTags": [
-        "main",
-        "section",
-        "div",
-        "div",
-        "div",
-        "div"
-      ],
-      "textHash": "9176fee1",
-      "line": 541
+    "slots": {
+      ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon": "Root/391#0",
+      ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text": "Root/390#0",
+      ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)": "Root/390#0",
+      ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__text": "Root/390#1",
+      ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__text": "Root/390#2",
+      ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text": "Root/390#3",
+      ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2)": "Root/390#1",
+      ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3)": "Root/390#2",
+      ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4)": "Root/390#3",
+      ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon": "Root/391#1",
+      ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon": "Root/391#2",
+      ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon": "Root/391#3"
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-brands-77": {
-    "tpl": "Root/390#2",
-    "fingerprint": {
-      "tag": "div",
-      "cls": "",
-      "styleHash": "592aa752",
-      "parentTags": [
-        "main",
-        "section",
-        "div",
-        "div",
-        "div",
-        "div"
-      ],
-      "textHash": "c62b6a1a",
-      "line": 541
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-brands-78": {
-    "tpl": "Root/390#3",
-    "fingerprint": {
-      "tag": "div",
-      "cls": "",
-      "styleHash": "592aa752",
-      "parentTags": [
-        "main",
-        "section",
-        "div",
-        "div",
-        "div",
-        "div"
-      ],
-      "textHash": "c709fb94",
-      "line": 541
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-brands-79": {
+  "cr-ref-brands-75": {
     "tpl": "Root/393#0",
     "fingerprint": {
       "tag": "a",
@@ -1422,9 +1507,12 @@
       "textHash": "4e67f1cc",
       "line": 546
     },
+    "slots": {
+      ".sgs-button__label": "Root/393#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-brands-80": {
+  "cr-ref-brands-76": {
     "tpl": "Root/394#0",
     "fingerprint": {
       "tag": "div",
@@ -1439,9 +1527,12 @@
       "textHash": "1505",
       "line": 549
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/395#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-brands-81": {
+  "cr-ref-brands-77": {
     "tpl": "Root/395#0",
     "fingerprint": {
       "tag": "div",
@@ -1457,9 +1548,12 @@
       "textHash": "1505",
       "line": 550
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/396#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-brands-82": {
+  "cr-ref-brands-78": {
     "tpl": "Root/396#0",
     "fingerprint": {
       "tag": "image-slot",
@@ -1476,9 +1570,12 @@
       "textHash": "1505",
       "line": 551
     },
+    "slots": {
+      ".sgs-media__img": "Root/396#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-brands-83": {
+  "cr-ref-brands-79": {
     "tpl": "Root/344#2",
     "fingerprint": {
       "tag": "section",
@@ -1490,9 +1587,12 @@
       "textHash": "1505",
       "line": 474
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/345#2"
+    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-brands-84": {
+  "cr-ref-brands-80": {
     "tpl": "Root/345#2",
     "fingerprint": {
       "tag": "div",
@@ -1505,9 +1605,12 @@
       "textHash": "1505",
       "line": 476
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/515#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-brands-85": {
+  "cr-ref-brands-81": {
     "tpl": "Root/515#0",
     "fingerprint": {
       "tag": "div",
@@ -1521,9 +1624,13 @@
       "textHash": "1505",
       "line": 741
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/516#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/517#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-brands-86": {
+  "cr-ref-brands-82": {
     "tpl": "Root/516#0",
     "fingerprint": {
       "tag": "span",
@@ -1540,7 +1647,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-brands-87": {
+  "cr-ref-brands-83": {
     "tpl": "Root/517#0",
     "fingerprint": {
       "tag": "span",
@@ -1557,7 +1664,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-brands-88": {
+  "cr-ref-brands-84": {
     "tpl": "Root/519#0",
     "fingerprint": {
       "tag": "div",
@@ -1572,9 +1679,13 @@
       "textHash": "1505",
       "line": 745
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/520#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/522#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-brands-89": {
+  "cr-ref-brands-85": {
     "tpl": "Root/520#0",
     "fingerprint": {
       "tag": "div",
@@ -1592,7 +1703,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-brands-90": {
+  "cr-ref-brands-86": {
     "tpl": "Root/522#0",
     "fingerprint": {
       "tag": "h2",
@@ -1610,7 +1721,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-brands-91": {
+  "cr-ref-brands-87": {
     "tpl": "Root/523#0",
     "fingerprint": {
       "tag": "p",
@@ -1628,7 +1739,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-brands-92": {
+  "cr-ref-brands-88": {
     "tpl": "Root/524#0",
     "fingerprint": {
       "tag": "div",
@@ -1643,9 +1754,13 @@
       "textHash": "1505",
       "line": 750
     },
+    "slots": {
+      ".sgs-button:nth-of-type(1)": "Root/525#0",
+      ".sgs-button:nth-of-type(2)": "Root/526#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-brands-93": {
+  "cr-ref-brands-89": {
     "tpl": "Root/525#0",
     "fingerprint": {
       "tag": "a",
@@ -1661,9 +1776,12 @@
       "textHash": "c189c62a",
       "line": 751
     },
+    "slots": {
+      ".sgs-button__label": "Root/525#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-brands-94": {
+  "cr-ref-brands-90": {
     "tpl": "Root/526#0",
     "fingerprint": {
       "tag": "a",
@@ -1678,6 +1796,9 @@
       ],
       "textHash": "9b742957",
       "line": 752
+    },
+    "slots": {
+      ".sgs-button__label": "Root/526#0"
     },
     "draft": "0fe5aee1c396a997"
   }

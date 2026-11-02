@@ -38,7 +38,8 @@
 					{
 						"name": "sgs/heading",
 						"attributes": {
-							"content": "Leading Indian Food & Drinks Wholesaler"
+							"content": "Leading Indian Food & Drinks Wholesaler",
+							"level": "h1"
 						},
 						"draftRef": {
 							"tpl": "Root/206#0"
@@ -126,13 +127,18 @@
 									"textHash": "c38be34c",
 									"line": 278
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-button__label": {
+										"tpl": "Root/209#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Request Our Catalogue",
-									"url": "/catalogue/"
+									"url": "/apply/catalogue/"
 								},
 								"draftRef": {
 									"tpl": "Root/210#0"
@@ -151,9 +157,22 @@
 									"textHash": "26ac2e7f",
 									"line": 278
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-button__label": {
+										"tpl": "Root/210#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-button:nth-of-type(1)": {
+								"tpl": "Root/209#0"
+							},
+							".sgs-button:nth-of-type(2)": {
+								"tpl": "Root/210#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -244,7 +263,15 @@
 								},
 								"innerBlocks": []
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/213#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/213#1"
+							}
+						}
 					}
 				],
 				"handover": [
@@ -253,7 +280,18 @@
 						"kind": "presence",
 						"detail": "the hero image: choose it in the hero's split media setting"
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-hero__content": {
+						"tpl": "Root/205#0"
+					},
+					".sgs-hero__media > .sgs-hero__split-media": {
+						"tpl": "Root/216#0"
+					},
+					".sgs-hero__media": {
+						"tpl": "Root/215#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -277,7 +315,8 @@
 					{
 						"name": "sgs/heading",
 						"attributes": {
-							"content": "Our Brands"
+							"content": "Our Brands",
+							"level": "h2"
 						},
 						"draftRef": {
 							"tpl": "Root/220#0"
@@ -321,9 +360,31 @@
 								"kind": "presence",
 								"detail": "the brand logos: add each logo image to the strip"
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-brand-strip__track > .sgs-brand-strip__set > .sgs-brand-strip__tile:nth-of-type(1) > .sgs-brand-strip__item": {
+								"tpl": "Root/224#0"
+							},
+							".sgs-brand-strip__track > .sgs-brand-strip__set > .sgs-brand-strip__tile:nth-of-type(2) > .sgs-brand-strip__item": {
+								"tpl": "Root/224#1"
+							},
+							".sgs-brand-strip__track > .sgs-brand-strip__set > .sgs-brand-strip__tile:nth-of-type(1) > .sgs-brand-strip__item > .sgs-media": {
+								"tpl": "Root/225#0"
+							},
+							".sgs-brand-strip__track > .sgs-brand-strip__set > .sgs-brand-strip__tile:nth-of-type(2) > .sgs-brand-strip__item > .sgs-media": {
+								"tpl": "Root/225#1"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/220#0"
+					},
+					".sgs-container__inner > p:nth-of-type(2)": {
+						"tpl": "Root/222#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -367,7 +428,8 @@
 							{
 								"name": "sgs/heading",
 								"attributes": {
-									"content": "Our UK Wide Food Services"
+									"content": "Our UK Wide Food Services",
+									"level": "h2"
 								},
 								"draftRef": {
 									"tpl": "Root/228#0"
@@ -475,14 +537,25 @@
 															"textHash": "1505",
 															"line": 317
 														},
-														"innerBlocks": []
+														"innerBlocks": [],
+														"draftSlots": {
+															".sgs-media__img": {
+																"tpl": "Root/234#0"
+															}
+														}
 													}
-												]
+												],
+												"draftSlots": {
+													".sgs-container__inner > p:nth-of-type(1)": {
+														"tpl": "Root/234#0"
+													}
+												}
 											},
 											{
 												"name": "sgs/heading",
 												"attributes": {
-													"content": "Food Service"
+													"content": "Food Service",
+													"level": "h3"
 												},
 												"draftRef": {
 													"tpl": "Root/235#0"
@@ -550,9 +623,22 @@
 													"textHash": "e8fce2df",
 													"line": 321
 												},
-												"innerBlocks": []
+												"innerBlocks": [],
+												"draftSlots": {
+													".sgs-button__label": {
+														"tpl": "Root/237#0"
+													}
+												}
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/233#0"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/235#0"
+											}
+										}
 									},
 									{
 										"name": "sgs/container",
@@ -621,14 +707,25 @@
 															"textHash": "1505",
 															"line": 317
 														},
-														"innerBlocks": []
+														"innerBlocks": [],
+														"draftSlots": {
+															".sgs-media__img": {
+																"tpl": "Root/234#1"
+															}
+														}
 													}
-												]
+												],
+												"draftSlots": {
+													".sgs-container__inner > p:nth-of-type(1)": {
+														"tpl": "Root/234#1"
+													}
+												}
 											},
 											{
 												"name": "sgs/heading",
 												"attributes": {
-													"content": "Manufacturing"
+													"content": "Manufacturing",
+													"level": "h3"
 												},
 												"draftRef": {
 													"tpl": "Root/235#1"
@@ -677,7 +774,7 @@
 												"name": "sgs/button",
 												"attributes": {
 													"label": "Food Manufacturer",
-													"url": "/manufacturing/"
+													"url": "/food-service/manufacturing/"
 												},
 												"draftRef": {
 													"tpl": "Root/237#1"
@@ -696,9 +793,22 @@
 													"textHash": "5fd3b5f0",
 													"line": 321
 												},
-												"innerBlocks": []
+												"innerBlocks": [],
+												"draftSlots": {
+													".sgs-button__label": {
+														"tpl": "Root/237#1"
+													}
+												}
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/233#1"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/235#1"
+											}
+										}
 									},
 									{
 										"name": "sgs/container",
@@ -767,14 +877,25 @@
 															"textHash": "1505",
 															"line": 317
 														},
-														"innerBlocks": []
+														"innerBlocks": [],
+														"draftSlots": {
+															".sgs-media__img": {
+																"tpl": "Root/234#2"
+															}
+														}
 													}
-												]
+												],
+												"draftSlots": {
+													".sgs-container__inner > p:nth-of-type(1)": {
+														"tpl": "Root/234#2"
+													}
+												}
 											},
 											{
 												"name": "sgs/heading",
 												"attributes": {
-													"content": "Retail"
+													"content": "Retail",
+													"level": "h3"
 												},
 												"draftRef": {
 													"tpl": "Root/235#2"
@@ -823,7 +944,7 @@
 												"name": "sgs/button",
 												"attributes": {
 													"label": "Food Retailer",
-													"url": "/retail/"
+													"url": "/food-service/retail/"
 												},
 												"draftRef": {
 													"tpl": "Root/237#2"
@@ -842,9 +963,22 @@
 													"textHash": "24c74537",
 													"line": 321
 												},
-												"innerBlocks": []
+												"innerBlocks": [],
+												"draftSlots": {
+													".sgs-button__label": {
+														"tpl": "Root/237#2"
+													}
+												}
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/233#2"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/235#2"
+											}
+										}
 									},
 									{
 										"name": "sgs/container",
@@ -913,14 +1047,25 @@
 															"textHash": "1505",
 															"line": 317
 														},
-														"innerBlocks": []
+														"innerBlocks": [],
+														"draftSlots": {
+															".sgs-media__img": {
+																"tpl": "Root/234#3"
+															}
+														}
 													}
-												]
+												],
+												"draftSlots": {
+													".sgs-container__inner > p:nth-of-type(1)": {
+														"tpl": "Root/234#3"
+													}
+												}
 											},
 											{
 												"name": "sgs/heading",
 												"attributes": {
-													"content": "Wholesale"
+													"content": "Wholesale",
+													"level": "h3"
 												},
 												"draftRef": {
 													"tpl": "Root/235#3"
@@ -969,7 +1114,7 @@
 												"name": "sgs/button",
 												"attributes": {
 													"label": "UK Food Wholesaler",
-													"url": "/wholesale/"
+													"url": "/food-service/wholesale/"
 												},
 												"draftRef": {
 													"tpl": "Root/237#3"
@@ -988,15 +1133,49 @@
 													"textHash": "344c6729",
 													"line": 321
 												},
-												"innerBlocks": []
+												"innerBlocks": [],
+												"draftSlots": {
+													".sgs-button__label": {
+														"tpl": "Root/237#3"
+													}
+												}
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/233#3"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/235#3"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/231#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/231#1"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/228#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/229#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/227#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -1040,7 +1219,8 @@
 							{
 								"name": "sgs/heading",
 								"attributes": {
-									"content": "Why Choose Indus Foods?"
+									"content": "Why Choose Indus Foods?",
+									"level": "h2"
 								},
 								"draftRef": {
 									"tpl": "Root/240#0"
@@ -1124,12 +1304,18 @@
 													"textHash": "1505",
 													"line": 335
 												},
-												"innerBlocks": []
+												"innerBlocks": [],
+												"draftSlots": {
+													".sgs-icon__shape": {
+														"tpl": "Root/244#0"
+													}
+												}
 											},
 											{
 												"name": "sgs/heading",
 												"attributes": {
-													"content": "Experience"
+													"content": "Experience",
+													"level": "h3"
 												},
 												"draftRef": {
 													"tpl": "Root/245#0"
@@ -1198,7 +1384,15 @@
 												},
 												"innerBlocks": []
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/244#0"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/245#0"
+											}
+										}
 									},
 									{
 										"name": "sgs/container",
@@ -1243,12 +1437,18 @@
 													"textHash": "1505",
 													"line": 335
 												},
-												"innerBlocks": []
+												"innerBlocks": [],
+												"draftSlots": {
+													".sgs-icon__shape": {
+														"tpl": "Root/244#1"
+													}
+												}
 											},
 											{
 												"name": "sgs/heading",
 												"attributes": {
-													"content": "Quality"
+													"content": "Quality",
+													"level": "h3"
 												},
 												"draftRef": {
 													"tpl": "Root/245#1"
@@ -1317,7 +1517,15 @@
 												},
 												"innerBlocks": []
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/244#1"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/245#1"
+											}
+										}
 									},
 									{
 										"name": "sgs/container",
@@ -1362,12 +1570,18 @@
 													"textHash": "1505",
 													"line": 335
 												},
-												"innerBlocks": []
+												"innerBlocks": [],
+												"draftSlots": {
+													".sgs-icon__shape": {
+														"tpl": "Root/244#2"
+													}
+												}
 											},
 											{
 												"name": "sgs/heading",
 												"attributes": {
-													"content": "Delivery"
+													"content": "Delivery",
+													"level": "h3"
 												},
 												"draftRef": {
 													"tpl": "Root/245#2"
@@ -1436,7 +1650,15 @@
 												},
 												"innerBlocks": []
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/244#2"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/245#2"
+											}
+										}
 									},
 									{
 										"name": "sgs/container",
@@ -1481,12 +1703,18 @@
 													"textHash": "1505",
 													"line": 335
 												},
-												"innerBlocks": []
+												"innerBlocks": [],
+												"draftSlots": {
+													".sgs-icon__shape": {
+														"tpl": "Root/244#3"
+													}
+												}
 											},
 											{
 												"name": "sgs/heading",
 												"attributes": {
-													"content": "Brands & White Label"
+													"content": "Brands & White Label",
+													"level": "h3"
 												},
 												"draftRef": {
 													"tpl": "Root/245#3"
@@ -1555,13 +1783,42 @@
 												},
 												"innerBlocks": []
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/244#3"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/245#3"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/243#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/243#1"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/240#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/241#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/239#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -1650,7 +1907,8 @@
 									{
 										"name": "sgs/heading",
 										"attributes": {
-											"content": "Family-run since 1962."
+											"content": "Family-run since 1962.",
+											"level": "h2"
 										},
 										"draftRef": {
 											"tpl": "Root/252#0"
@@ -1715,9 +1973,22 @@
 											"textHash": "647f8ebc",
 											"line": 351
 										},
-										"innerBlocks": []
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-button__label": {
+												"tpl": "Root/254#0"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/251#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/252#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/container",
@@ -1759,13 +2030,72 @@
 											"textHash": "1505",
 											"line": 355
 										},
-										"innerBlocks": []
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-timeline__list > .sgs-timeline__entry:nth-of-type(1) > .sgs-timeline__date": {
+												"tpl": "Root/261#0"
+											},
+											".sgs-timeline__list > .sgs-timeline__progress > .sgs-timeline__progress-fill": {
+												"tpl": "Root/262#3"
+											},
+											".sgs-timeline__list > .sgs-timeline__entry:nth-of-type(1)": {
+												"tpl": "Root/260#0"
+											},
+											".sgs-timeline__list > .sgs-timeline__entry:nth-of-type(3)": {
+												"tpl": "Root/260#2"
+											},
+											".sgs-timeline__list > .sgs-timeline__entry:nth-of-type(2)": {
+												"tpl": "Root/260#1"
+											},
+											".sgs-timeline__list > .sgs-timeline__entry:nth-of-type(1) > .sgs-timeline__content > .sgs-timeline__title": {
+												"tpl": "Root/263#0"
+											},
+											".sgs-timeline__list > .sgs-timeline__entry:nth-of-type(2) > .sgs-timeline__content > .sgs-timeline__title": {
+												"tpl": "Root/263#1"
+											},
+											".sgs-timeline__list > .sgs-timeline__entry:nth-of-type(3) > .sgs-timeline__content > .sgs-timeline__title": {
+												"tpl": "Root/263#2"
+											},
+											".sgs-timeline__list > .sgs-timeline__entry:nth-of-type(2) > .sgs-timeline__date": {
+												"tpl": "Root/261#1"
+											},
+											".sgs-timeline__list > .sgs-timeline__entry:nth-of-type(3) > .sgs-timeline__date": {
+												"tpl": "Root/261#2"
+											},
+											".sgs-timeline__list > .sgs-timeline__entry:nth-of-type(1) > .sgs-timeline__content > .sgs-timeline__description": {
+												"tpl": "Root/264#0"
+											},
+											".sgs-timeline__list > .sgs-timeline__entry:nth-of-type(2) > .sgs-timeline__content > .sgs-timeline__description": {
+												"tpl": "Root/264#1"
+											},
+											".sgs-timeline__list > .sgs-timeline__entry:nth-of-type(3) > .sgs-timeline__content > .sgs-timeline__description": {
+												"tpl": "Root/264#2"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/258#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/250#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/255#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/249#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -1809,7 +2139,8 @@
 							{
 								"name": "sgs/heading",
 								"attributes": {
-									"content": "Our Partners Love Us!"
+									"content": "Our Partners Love Us!",
+									"level": "h2"
 								},
 								"draftRef": {
 									"tpl": "Root/268#0"
@@ -1870,7 +2201,12 @@
 											"textHash": "1505",
 											"line": 372
 										},
-										"innerBlocks": []
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-testimonial-slider__stage > .sgs-testimonial-slider__track > .sgs-testimonial-slider__list > .sgs-testimonial-slider__slide:nth-of-type(1)": {
+												"tpl": "Root/274#0"
+											}
+										}
 									},
 									{
 										"name": "sgs/container",
@@ -1938,17 +2274,53 @@
 															"textHash": "1505",
 															"line": 392
 														},
-														"innerBlocks": []
+														"innerBlocks": [],
+														"draftSlots": {
+															".sgs-media__img": {
+																"tpl": "Root/289#0"
+															}
+														}
 													}
-												]
+												],
+												"draftSlots": {
+													".sgs-container__inner > p:nth-of-type(1)": {
+														"tpl": "Root/289#0"
+													}
+												}
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/288#0"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/270#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/287#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/268#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/269#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/266#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -2015,7 +2387,8 @@
 							{
 								"name": "sgs/heading",
 								"attributes": {
-									"content": "How to open a trade account"
+									"content": "How to open a trade account",
+									"level": "h2"
 								},
 								"draftRef": {
 									"tpl": "Root/294#0"
@@ -2075,9 +2448,52 @@
 											"textHash": "1505",
 											"line": 406
 										},
-										"innerBlocks": []
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__number": {
+												"tpl": "Root/301#0"
+											},
+											".sgs-process-steps__step:nth-of-type(2) > .sgs-process-steps__number": {
+												"tpl": "Root/301#1"
+											},
+											".sgs-process-steps__step:nth-of-type(3) > .sgs-process-steps__number": {
+												"tpl": "Root/301#2"
+											},
+											".sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__title": {
+												"tpl": "Root/303#0"
+											},
+											".sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__description": {
+												"tpl": "Root/304#0"
+											},
+											".sgs-process-steps__step:nth-of-type(1)": {
+												"tpl": "Root/300#0"
+											},
+											".sgs-process-steps__step:nth-of-type(2)": {
+												"tpl": "Root/300#1"
+											},
+											".sgs-process-steps__step:nth-of-type(3)": {
+												"tpl": "Root/300#2"
+											},
+											".sgs-process-steps__step:nth-of-type(2) > .sgs-process-steps__title": {
+												"tpl": "Root/303#1"
+											},
+											".sgs-process-steps__step:nth-of-type(3) > .sgs-process-steps__title": {
+												"tpl": "Root/303#2"
+											},
+											".sgs-process-steps__step:nth-of-type(2) > .sgs-process-steps__description": {
+												"tpl": "Root/304#1"
+											},
+											".sgs-process-steps__step:nth-of-type(3) > .sgs-process-steps__description": {
+												"tpl": "Root/304#2"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/298#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/container",
@@ -2123,13 +2539,36 @@
 											"textHash": "dacf5eee",
 											"line": 417
 										},
-										"innerBlocks": []
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-button__label": {
+												"tpl": "Root/306#0"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/306#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/293#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/294#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/291#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -2195,7 +2634,8 @@
 									{
 										"name": "sgs/heading",
 										"attributes": {
-											"content": "What Are You Waiting For?"
+											"content": "What Are You Waiting For?",
+											"level": "h2"
 										},
 										"draftRef": {
 											"tpl": "Root/310#0"
@@ -2238,44 +2678,130 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/310#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/311#0"
+									}
+								}
 							},
 							{
-								"name": "sgs/icon-list",
+								"name": "sgs/multi-button",
 								"attributes": {
-									"items": [
-										{
-											"text": "Apply For A Trade Account",
-											"url": "/apply/"
-										},
-										{
-											"text": "Request Our Catalogue",
-											"url": "/catalogue/"
-										}
-									]
+									"layout": "flex"
 								},
 								"draftRef": {
-									"tpl": "Root/313#0"
+									"tpl": "Root/312#0"
 								},
 								"draftFingerprint": {
-									"tag": "a",
-									"cls": "scph",
-									"styleHash": "3685ce7c",
+									"tag": "div",
+									"cls": "",
+									"styleHash": "e641476",
 									"parentTags": [
 										"main",
 										"section",
-										"div",
 										"div"
 									],
-									"textHash": "c38be34c",
+									"textHash": "1505",
 									"line": 429
 								},
-								"innerBlocks": []
+								"innerBlocks": [
+									{
+										"name": "sgs/button",
+										"attributes": {
+											"label": "Apply For A Trade Account",
+											"url": "/apply/"
+										},
+										"draftRef": {
+											"tpl": "Root/313#0"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scph",
+											"styleHash": "3685ce7c",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "c38be34c",
+											"line": 429
+										},
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-button__label": {
+												"tpl": "Root/313#0"
+											}
+										}
+									},
+									{
+										"name": "sgs/button",
+										"attributes": {
+											"label": "Request Our Catalogue",
+											"url": "/apply/catalogue/"
+										},
+										"draftRef": {
+											"tpl": "Root/314#0"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scpi",
+											"styleHash": "fdef043b",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "26ac2e7f",
+											"line": 429
+										},
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-button__label": {
+												"tpl": "Root/314#0"
+											}
+										}
+									}
+								],
+								"draftSlots": {
+									".sgs-button:nth-of-type(1)": {
+										"tpl": "Root/313#0"
+									},
+									".sgs-button:nth-of-type(2)": {
+										"tpl": "Root/314#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/309#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/312#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/308#0"
+					}
+				}
 			}
-		]
+		],
+		"draftSlots": {
+			".sgs-container__inner > p:nth-of-type(1)": {
+				"tpl": "Root/203#0"
+			},
+			".sgs-container__inner > p:nth-of-type(2)": {
+				"tpl": "Root/218#0"
+			}
+		}
 	}
 ]

@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-28T06:48:04.862Z",
-	"inventory": "2026-10-27T13:51:06.523Z",
-	"source": "http://127.0.0.1:49333/Indus%20Foods%20Website%20v2.dc.html",
+	"generated": "2026-11-02T04:59:04.683Z",
+	"inventory": "2026-10-31T01:39:20.038Z",
+	"source": "http://127.0.0.1:58295/Indus%20Foods%20Website%20v2.dc.html",
 	"surface": "about-mega-menu",
 	"siteName": null,
 	"surfaceParts": [],
@@ -20,24 +20,497 @@
 		"logo": 0.5,
 		"rule": 1
 	},
-	"builtPost": {
-		"site": "sandybrown",
-		"postType": "sgs_mega_menu",
-		"postId": 4426,
-		"title": "[QA] Indus mega: About"
-	},
 	"counts": {
 		"inventoryElements": 40,
 		"parts": 0,
 		"rows": 40,
 		"skeletonNodes": 40,
 		"expandedNodes": 40,
-		"low": 0,
+		"low": 13,
 		"removed": 0,
 		"unresolved": 0,
 		"byRule": {
-			"clientBuiltSurface": 40
+			"surfaceRoot": 1,
+			"megaGroup": 1,
+			"wholeCardLink": 6,
+			"cardHeading": 6,
+			"megaAside": 1,
+			"mediaElement": 1,
+			"label": 1
 		}
+	},
+	"partPairing": {
+		"paired": 31,
+		"unpaired": [
+			{
+				"key": "Root/67#0",
+				"block": "sgs/mega-panel",
+				"slot": ".sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > .sgs-container > .sgs-container__inner > .sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/67#0",
+				"block": "sgs/mega-panel",
+				"slot": ".sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > .sgs-container > .sgs-container__inner > .sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/67#0",
+				"block": "sgs/mega-panel",
+				"slot": ".sgs-mega-panel__eyebrow",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/67#0",
+				"block": "sgs/mega-panel",
+				"slot": ".sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/67#0",
+				"block": "sgs/mega-panel",
+				"slot": ".sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > .sgs-container > .sgs-container__inner > p",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/67#0",
+				"block": "sgs/mega-panel",
+				"slot": ".sgs-mega-panel__content > .sgs-mega-group > .sgs-container",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/67#0",
+				"block": "sgs/mega-panel",
+				"slot": ".sgs-mega-panel__content > .sgs-mega-aside > .sgs-container:nth-of-type(1)",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/67#0",
+				"block": "sgs/mega-panel",
+				"slot": ".sgs-mega-panel__content > .sgs-mega-aside > .sgs-container:nth-of-type(2) > .sgs-container__inner > span",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/67#0",
+				"block": "sgs/mega-panel",
+				"slot": ".sgs-mega-panel__content > .sgs-mega-aside > p:nth-of-type(1)",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/67#0",
+				"block": "sgs/mega-panel",
+				"slot": ".sgs-mega-panel__content > .sgs-mega-aside > .sgs-container:nth-of-type(3) > .sgs-container__inner > .sgs-button",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/67#0",
+				"block": "sgs/mega-panel",
+				"slot": ".sgs-mega-panel__content > .sgs-mega-aside > .sgs-container:nth-of-type(2)",
+				"reason": "inside an inner block, which its own node reads"
+			},
+			{
+				"key": "Root/70#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/70#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/70#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/71#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/72#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/72#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/72#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/73#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/74#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/70#1",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/70#1",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/70#1",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/71#1",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/72#1",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/72#1",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/72#1",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/73#1",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/74#1",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/70#2",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/70#2",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/70#2",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/71#2",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/72#2",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/72#2",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/72#2",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/73#2",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/74#2",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/70#3",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/70#3",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/70#3",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/71#3",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/72#3",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/72#3",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/72#3",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/73#3",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/74#3",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/70#4",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/70#4",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/70#4",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/71#4",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/72#4",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/72#4",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/72#4",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/73#4",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/74#4",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/70#5",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/70#5",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/70#5",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/71#5",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/72#5",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/72#5",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/72#5",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/73#5",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/74#5",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/77#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/77#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/77#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/77#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(2)",
+				"reason": "no inner block of this node stands at this place"
+			},
+			{
+				"key": "Root/78#0",
+				"block": "sgs/media",
+				"slot": ".sgs-media__caption",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/78#0",
+				"block": "sgs/media",
+				"slot": ".sgs-video > .sgs-video__bar > .sgs-video__time",
+				"reason": ".sgs-video: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/79#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/79#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/79#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/81#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/82#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/83#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/83#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon > svg",
+				"reason": ".sgs-button__icon: the draft has no element of its own here"
+			}
+		]
 	},
 	"widthAlternatives": [],
 	"problems": [],
@@ -55,7 +528,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "surfaceRoot",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/mega-panel",
@@ -70,11 +544,13 @@
 			"screenshots": {},
 			"snippet": "<div style=\"display:flex;\" data-dc-tpl=\"67\"> <div style=\"flex:1;min-width:0;padding:24px 22px 10px 26px;display:flex;flex-direction:column;\" data-dc-tpl=\"68\"> <sc-for list=\"{{ activePanel.links }}\" as=\"link\" hint-placeholder-count=\"4\" data-dc-tpl=\"69\"> <a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09",
 			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
+			"slots": {
+				".sgs-mega-panel__content > .sgs-mega-group": {
+					"tpl": "Root/68#0"
+				},
+				".sgs-mega-panel__content > .sgs-mega-aside": {
+					"tpl": "Root/76#0"
+				}
 			}
 		},
 		{
@@ -90,7 +566,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "megaGroup",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/mega-group",
@@ -104,13 +581,7 @@
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<div style=\"flex:1;min-width:0;padding:24px 22px 10px 26px;display:flex;flex-direction:column;\" data-dc-tpl=\"68\"> <sc-for list=\"{{ activePanel.links }}\" as=\"link\" hint-placeholder-count=\"4\" data-dc-tpl=\"69\"> <a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 2,
@@ -125,7 +596,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "wholeCardLink",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -144,11 +616,13 @@
 				"layout": "flex",
 				"sgsBlockLink": "/about/our-story/"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/71#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/72#0"
+				}
 			}
 		},
 		{
@@ -162,9 +636,10 @@
 			"reason": null,
 			"source": null,
 			"confidence": 0.25,
-			"low": false,
+			"low": true,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -180,12 +655,6 @@
 			"snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
 			"attributes": {
 				"text": "01"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
 			}
 		},
 		{
@@ -201,7 +670,8 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -219,11 +689,13 @@
 			"attributes": {
 				"tagName": "div"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/73#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/74#0"
+				}
 			}
 		},
 		{
@@ -239,7 +711,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "cardHeading",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -255,12 +728,6 @@
 			"snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
 			"attributes": {
 				"content": "Our Story"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
 			}
 		},
 		{
@@ -274,9 +741,10 @@
 			"reason": null,
 			"source": null,
 			"confidence": 0.25,
-			"low": false,
+			"low": true,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -292,12 +760,6 @@
 			"snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
 			"attributes": {
 				"text": "Six decades of family heritage"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
 			}
 		},
 		{
@@ -313,7 +775,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "wholeCardLink",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -332,11 +795,13 @@
 				"layout": "flex",
 				"sgsBlockLink": "/about/certifications/"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/71#1"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/72#1"
+				}
 			}
 		},
 		{
@@ -350,9 +815,10 @@
 			"reason": null,
 			"source": null,
 			"confidence": 0.25,
-			"low": false,
+			"low": true,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -368,12 +834,6 @@
 			"snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
 			"attributes": {
 				"text": "02"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
 			}
 		},
 		{
@@ -389,7 +849,8 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -407,11 +868,13 @@
 			"attributes": {
 				"tagName": "div"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/73#1"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/74#1"
+				}
 			}
 		},
 		{
@@ -427,7 +890,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "cardHeading",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -443,12 +907,6 @@
 			"snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
 			"attributes": {
 				"content": "Certifications"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
 			}
 		},
 		{
@@ -462,9 +920,10 @@
 			"reason": null,
 			"source": null,
 			"confidence": 0.25,
-			"low": false,
+			"low": true,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -480,12 +939,6 @@
 			"snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
 			"attributes": {
 				"text": "BRC & Halal certified"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
 			}
 		},
 		{
@@ -501,7 +954,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "wholeCardLink",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -520,11 +974,13 @@
 				"layout": "flex",
 				"sgsBlockLink": "/about/community/"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/71#2"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/72#2"
+				}
 			}
 		},
 		{
@@ -538,9 +994,10 @@
 			"reason": null,
 			"source": null,
 			"confidence": 0.25,
-			"low": false,
+			"low": true,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -556,12 +1013,6 @@
 			"snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
 			"attributes": {
 				"text": "03"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
 			}
 		},
 		{
@@ -577,7 +1028,8 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -595,11 +1047,13 @@
 			"attributes": {
 				"tagName": "div"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/73#2"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/74#2"
+				}
 			}
 		},
 		{
@@ -615,7 +1069,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "cardHeading",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -631,12 +1086,6 @@
 			"snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
 			"attributes": {
 				"content": "Community & Charity"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
 			}
 		},
 		{
@@ -650,9 +1099,10 @@
 			"reason": null,
 			"source": null,
 			"confidence": 0.25,
-			"low": false,
+			"low": true,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -668,12 +1118,6 @@
 			"snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
 			"attributes": {
 				"text": "Giving back in Birmingham"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
 			}
 		},
 		{
@@ -689,7 +1133,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "wholeCardLink",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -708,11 +1153,13 @@
 				"layout": "flex",
 				"sgsBlockLink": "/about/sustainability/"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/71#3"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/72#3"
+				}
 			}
 		},
 		{
@@ -726,9 +1173,10 @@
 			"reason": null,
 			"source": null,
 			"confidence": 0.25,
-			"low": false,
+			"low": true,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -744,12 +1192,6 @@
 			"snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
 			"attributes": {
 				"text": "04"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
 			}
 		},
 		{
@@ -765,7 +1207,8 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -783,11 +1226,13 @@
 			"attributes": {
 				"tagName": "div"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/73#3"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/74#3"
+				}
 			}
 		},
 		{
@@ -803,7 +1248,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "cardHeading",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -819,12 +1265,6 @@
 			"snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
 			"attributes": {
 				"content": "Sustainability"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
 			}
 		},
 		{
@@ -838,9 +1278,10 @@
 			"reason": null,
 			"source": null,
 			"confidence": 0.25,
-			"low": false,
+			"low": true,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -856,12 +1297,6 @@
 			"snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
 			"attributes": {
 				"text": "Responsible sourcing"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
 			}
 		},
 		{
@@ -877,7 +1312,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "wholeCardLink",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -896,11 +1332,13 @@
 				"layout": "flex",
 				"sgsBlockLink": "/about/careers/"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/71#4"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/72#4"
+				}
 			}
 		},
 		{
@@ -914,9 +1352,10 @@
 			"reason": null,
 			"source": null,
 			"confidence": 0.25,
-			"low": false,
+			"low": true,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -932,12 +1371,6 @@
 			"snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
 			"attributes": {
 				"text": "05"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
 			}
 		},
 		{
@@ -953,7 +1386,8 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -971,11 +1405,13 @@
 			"attributes": {
 				"tagName": "div"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/73#4"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/74#4"
+				}
 			}
 		},
 		{
@@ -991,7 +1427,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "cardHeading",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -1007,12 +1444,6 @@
 			"snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
 			"attributes": {
 				"content": "Careers"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
 			}
 		},
 		{
@@ -1026,9 +1457,10 @@
 			"reason": null,
 			"source": null,
 			"confidence": 0.25,
-			"low": false,
+			"low": true,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -1044,12 +1476,6 @@
 			"snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
 			"attributes": {
 				"text": "Join our growing team"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
 			}
 		},
 		{
@@ -1065,7 +1491,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "wholeCardLink",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1084,11 +1511,13 @@
 				"layout": "flex",
 				"sgsBlockLink": "/blog/"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/71#5"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/72#5"
+				}
 			}
 		},
 		{
@@ -1102,9 +1531,10 @@
 			"reason": null,
 			"source": null,
 			"confidence": 0.25,
-			"low": false,
+			"low": true,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -1120,12 +1550,6 @@
 			"snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
 			"attributes": {
 				"text": "06"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
 			}
 		},
 		{
@@ -1141,7 +1565,8 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1159,11 +1584,13 @@
 			"attributes": {
 				"tagName": "div"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/73#5"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/74#5"
+				}
 			}
 		},
 		{
@@ -1179,7 +1606,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "cardHeading",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -1195,12 +1623,6 @@
 			"snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
 			"attributes": {
 				"content": "News & Blog"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
 			}
 		},
 		{
@@ -1214,9 +1636,10 @@
 			"reason": null,
 			"source": null,
 			"confidence": 0.25,
-			"low": false,
+			"low": true,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -1232,12 +1655,6 @@
 			"snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
 			"attributes": {
 				"text": "Updates, recipes and trade news"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
 			}
 		},
 		{
@@ -1253,7 +1670,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "megaAside",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/mega-aside",
@@ -1267,13 +1685,7 @@
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<div style=\"width:300px;flex-shrink:0;padding:24px;background:{{ activePanel.feature.bg }};\" data-dc-tpl=\"76\"> <div style=\"overflow:hidden;height:130px;border:2px solid #E7D768;\" data-dc-tpl=\"77\"> <image-slot id=\"{{ activePanel.feature.imgId }}\" shape=\"rect\" placeholder=\"{{ activePanel.feature.imgLabel }}\" data-dc-tpl=\"78\"></image-slot> </div> <div style=\"margin-top:18px;\" data-dc-tpl=\"79\"> <span ",
-			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 33,
@@ -1288,7 +1700,8 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1306,11 +1719,10 @@
 			"attributes": {
 				"tagName": "div"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/78#0"
+				}
 			}
 		},
 		{
@@ -1326,7 +1738,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "mediaElement",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/media",
@@ -1341,11 +1754,10 @@
 			"screenshots": {},
 			"snippet": "<image-slot id=\"{{ activePanel.feature.imgId }}\" shape=\"rect\" placeholder=\"{{ activePanel.feature.imgLabel }}\" data-dc-tpl=\"78\"></image-slot>",
 			"attributes": {},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
+			"slots": {
+				".sgs-media__img": {
+					"tpl": "Root/78#0"
+				}
 			}
 		},
 		{
@@ -1361,7 +1773,8 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1379,11 +1792,13 @@
 			"attributes": {
 				"tagName": "div"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/80#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/81#0"
+				}
 			}
 		},
 		{
@@ -1399,7 +1814,8 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": "label",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/label",
@@ -1415,12 +1831,6 @@
 			"snippet": "<span style=\"display:inline-block;background:#D8CA50;color:#1E2A3C;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:5px 10px;border-radius:3px;margin-bottom:12px;\" data-dc-tpl=\"80\">{{ activePanel.feature.tag }}</span>",
 			"attributes": {
 				"text": "Since 1962"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
 			}
 		},
 		{
@@ -1429,21 +1839,21 @@
 			"tag": "div",
 			"depth": 3,
 			"words": "Six decades of heritage",
-			"block": "sgs/text",
+			"block": "sgs/heading",
 			"action": null,
 			"reason": null,
-			"source": null,
-			"confidence": 0.25,
+			"source": "client decision",
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/text",
-					"score": 0.25,
+					"block": "sgs/heading",
+					"score": 1,
 					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: The bold 22px title of the feature panel between its kicker (sgs/label) and its description and button; a title role, so sgs/heading (a real block, chosen over the sole text candidate)."
 					]
 				}
 			],
@@ -1451,13 +1861,7 @@
 			"screenshots": {},
 			"snippet": "<div style=\"font-weight:700;font-size:22px;letter-spacing:-.02em;line-height:1.2;color:#FFFFFF;\" data-dc-tpl=\"81\">{{ activePanel.feature.title }}</div>",
 			"attributes": {
-				"text": "Six decades of heritage"
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
+				"content": "Six decades of heritage"
 			}
 		},
 		{
@@ -1471,9 +1875,10 @@
 			"reason": null,
 			"source": null,
 			"confidence": 0.25,
-			"low": false,
+			"low": true,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -1489,12 +1894,6 @@
 			"snippet": "<div style=\"font-size:15px;color:#E3EFF4;line-height:1.45;margin-top:8px;\" data-dc-tpl=\"82\">{{ activePanel.feature.desc }}</div>",
 			"attributes": {
 				"text": "From a Sparkbrook corner shop to one of the UK’s leading Indian food wholesalers."
-			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
 			}
 		},
 		{
@@ -1510,7 +1909,8 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "clientBuiltSurface",
+			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -1529,11 +1929,10 @@
 				"label": "Read our story",
 				"url": "/about/our-story/"
 			},
-			"builtPost": {
-				"site": "sandybrown",
-				"postType": "sgs_mega_menu",
-				"postId": 4426,
-				"title": "[QA] Indus mega: About"
+			"slots": {
+				".sgs-button__label": {
+					"tpl": "Root/83#0"
+				}
 			}
 		}
 	]

@@ -71,9 +71,28 @@
 							"textHash": "1505",
 							"line": 134
 						},
-						"innerBlocks": []
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(1)": {
+								"tpl": "Root/100#0"
+							},
+							".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(2)": {
+								"tpl": "Root/100#1"
+							},
+							".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(3)": {
+								"tpl": "Root/100#2"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/97#0"
+					},
+					".sgs-container__inner > p:nth-of-type(2)": {
+						"tpl": "Root/98#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/mega-aside",
@@ -154,10 +173,20 @@
 							"textHash": "795bc921",
 							"line": 145
 						},
-						"innerBlocks": []
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-button__label": {
+								"tpl": "Root/105#0"
+							}
+						}
 					}
 				]
 			}
-		]
+		],
+		"draftSlots": {
+			".sgs-mega-panel__content > .sgs-mega-aside": {
+				"tpl": "Root/102#0"
+			}
+		}
 	}
 ]

@@ -9,11 +9,389 @@ export default {
 	// The surface's own element on each side: the automatic text and moved-run collection and the links run inside it.
 	auto: { root: {"draft":".sc-host[data-sc-name=\"Root\"] .sc-host[data-sc-name=\"SiteFooter\"][data-dc-tpl=\"250\"] [data-dc-tpl=\"2\"]:not(.sc-host .sc-host .sc-host *)","live":".cr-ref-footer-0"} },
 	linkRoot: {"draft":".sc-host[data-sc-name=\"Root\"] .sc-host[data-sc-name=\"SiteFooter\"][data-dc-tpl=\"250\"] [data-dc-tpl=\"2\"]:not(.sc-host .sc-host .sc-host *)","live":".cr-ref-footer-0"},
-	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:55059/" },
+	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:58682/" },
 	live: { url: "http://localhost:8084/" },
 	states: [
-		{ name: "mobile", fullPage: true },
+		{ name: "mobile", fullPage: true, draft: async ( h ) => {
+		
+		const ways = [{"op":"reach","patch":{"calls":[{"ident":"dcLogic","args":"{ bp: \"m\" }","component":"SiteFooter"}],"keep":[]},"bounds":[]}];
+		const width = h.page.viewportSize?.()?.width ?? null;
+		const fits = ( bounds, width ) => null == width || ( bounds || [] ).every( ( b ) => ( null == b.min || width >= b.min ) && ( null == b.max || width <= b.max ) );
+		const way = [].includes( width ) ? null : ways.find( ( w ) => fits( w.bounds, width ) );
+		if ( way ) {
+			const reached = await h.page.evaluate( function logicState( { comp, op, patch, slot } ) {
+	const slots = ( window.__sgsStateSnaps ||= {} );
+	const snap = slot ? ( slots[ slot ] ||= new Map() ) : ( window.__sgsStateSnap ||= new Map() );
+	const values = [];
+	let count = 0;
+	// A store call (`MM.cart.setGift({ on: true })`, lib/intake-store-calls.mjs) runs once, before any logic call, on a global the
+	// draft itself defines (a plain object, never a built-in such as Math, JSON, console or document), by plain property names only; the page's storage is kept first so
+	// `restore` puts it back. A call that cannot run reaches nothing.
+	if ( 'reach' === op && patch.calls.some( ( c ) => c.store ) ) {
+		window.__sgsStoreSnap ||= Object.fromEntries( Object.entries( localStorage ) );
+		for ( const c of patch.calls.filter( ( x ) => x.store ) ) {
+			const found = Object.getOwnPropertyDescriptor( window, c.ident )?.value;
+			const root = found && '[object Object]' === Object.prototype.toString.call( found ) && Object.getPrototypeOf( found ) === Object.prototype ? found : null;
+			let obj = root;
+			for ( const seg of c.path.slice( 0, -1 ) ) {
+				obj = obj && 'object' === typeof obj ? obj[ seg ] : null;
+			}
+			const fn = obj ? obj[ c.path.at( -1 ) ] : null;
+			if ( ! root || 'object' !== typeof root || 'function' !== typeof fn ) {
+				return 0;
+			}
+			try {
+				fn.apply( obj, c.args );
+			} catch {
+				return 0;
+			}
+		}
+		if ( ! patch.calls.some( ( c ) => ! c.store ) ) {
+			return 1;
+		}
+	}
+	if ( 'restore' === op && window.__sgsStoreSnap ) {
+		localStorage.clear();
+		Object.entries( window.__sgsStoreSnap ).forEach( ( [ k, v ] ) => localStorage.setItem( k, v ) );
+		window.dispatchEvent( new Event( 'storage' ) );
+		delete window.__sgsStoreSnap;
+	}
+	for ( const host of document.querySelectorAll( '.sc-host' ) ) {
+		const name = host.dataset.scName;
+		if ( comp && name !== comp ) {
+			continue;
+		}
+		const key = Object.keys( host ).find( ( k ) => k.startsWith( '__reactFiber$' ) );
+		let f = key ? host[ key ] : null;
+		while ( f && ! ( f.stateNode && f.stateNode.logic && f.stateNode.__name === name ) ) {
+			f = f.return;
+		}
+		if ( ! f ) {
+			continue;
+		}
+		const logic = f.stateNode.logic;
+		if ( 'set' === op ) {
+			logic.setState( patch );
+			count++;
+		} else if ( 'reach' === op ) {
+			const keep = patch.keep || [];
+			const was = Object.fromEntries( keep.map( ( k ) => [ k, logic.state[ k ] ] ) );
+			try {
+				patch.calls.filter( ( c ) => ! c.store && ( ! c.component || c.component === name ) ).forEach( ( c ) => new Function( c.ident, `${ c.ident }.setState(${ c.args });` )( logic ) );
+				keep.length && logic.setState( was );
+				count++;
+			} catch {
+				// A call the draft's logic refuses leaves this instance unreached; the caller names the opener.
+			}
+		} else if ( 'get' === op ) {
+			values.push( logic.state[ patch ] );
+		} else if ( 'snapshot' === op ) {
+			snap.set( logic, { ...logic.state } );
+			count++;
+		} else if ( 'diff' === op && snap.has( logic ) ) {
+			const was = snap.get( logic );
+			count += Object.keys( logic.state ).some( ( k ) => logic.state[ k ] !== was[ k ] ) ? 1 : 0;
+		} else if ( 'restore' === op && snap.has( logic ) ) {
+			const was = snap.get( logic );
+			const back = {};
+			Object.keys( logic.state ).filter( ( k ) => logic.state[ k ] !== was[ k ] ).forEach( ( k ) => ( back[ k ] = was[ k ] ) );
+			if ( Object.keys( back ).length ) {
+				logic.setState( back );
+				count++;
+			}
+		}
+	}
+	return 'get' === op ? values : count;
+}, { comp: "SiteFooter", op: way.op, patch: way.patch } );
+			h.log.push( { type: 'click', target: "state \"mobile\" on SiteFooter", hit: reached > 0 } );
+		}
+		await h.page.waitForTimeout( 900 );
+	}, live: async () => {} },
+		{ name: "tablet", fullPage: true, from: 'rest', allPairs: true, draft: async ( h ) => {
+		
+		const ways = [{"op":"reach","patch":{"calls":[{"ident":"dcLogic","args":"{ bp: \"t\" }","component":"SiteFooter"}],"keep":[]},"bounds":[]}];
+		const width = h.page.viewportSize?.()?.width ?? null;
+		const fits = ( bounds, width ) => null == width || ( bounds || [] ).every( ( b ) => ( null == b.min || width >= b.min ) && ( null == b.max || width <= b.max ) );
+		const way = [].includes( width ) ? null : ways.find( ( w ) => fits( w.bounds, width ) );
+		if ( way ) {
+			const reached = await h.page.evaluate( function logicState( { comp, op, patch, slot } ) {
+	const slots = ( window.__sgsStateSnaps ||= {} );
+	const snap = slot ? ( slots[ slot ] ||= new Map() ) : ( window.__sgsStateSnap ||= new Map() );
+	const values = [];
+	let count = 0;
+	// A store call (`MM.cart.setGift({ on: true })`, lib/intake-store-calls.mjs) runs once, before any logic call, on a global the
+	// draft itself defines (a plain object, never a built-in such as Math, JSON, console or document), by plain property names only; the page's storage is kept first so
+	// `restore` puts it back. A call that cannot run reaches nothing.
+	if ( 'reach' === op && patch.calls.some( ( c ) => c.store ) ) {
+		window.__sgsStoreSnap ||= Object.fromEntries( Object.entries( localStorage ) );
+		for ( const c of patch.calls.filter( ( x ) => x.store ) ) {
+			const found = Object.getOwnPropertyDescriptor( window, c.ident )?.value;
+			const root = found && '[object Object]' === Object.prototype.toString.call( found ) && Object.getPrototypeOf( found ) === Object.prototype ? found : null;
+			let obj = root;
+			for ( const seg of c.path.slice( 0, -1 ) ) {
+				obj = obj && 'object' === typeof obj ? obj[ seg ] : null;
+			}
+			const fn = obj ? obj[ c.path.at( -1 ) ] : null;
+			if ( ! root || 'object' !== typeof root || 'function' !== typeof fn ) {
+				return 0;
+			}
+			try {
+				fn.apply( obj, c.args );
+			} catch {
+				return 0;
+			}
+		}
+		if ( ! patch.calls.some( ( c ) => ! c.store ) ) {
+			return 1;
+		}
+	}
+	if ( 'restore' === op && window.__sgsStoreSnap ) {
+		localStorage.clear();
+		Object.entries( window.__sgsStoreSnap ).forEach( ( [ k, v ] ) => localStorage.setItem( k, v ) );
+		window.dispatchEvent( new Event( 'storage' ) );
+		delete window.__sgsStoreSnap;
+	}
+	for ( const host of document.querySelectorAll( '.sc-host' ) ) {
+		const name = host.dataset.scName;
+		if ( comp && name !== comp ) {
+			continue;
+		}
+		const key = Object.keys( host ).find( ( k ) => k.startsWith( '__reactFiber$' ) );
+		let f = key ? host[ key ] : null;
+		while ( f && ! ( f.stateNode && f.stateNode.logic && f.stateNode.__name === name ) ) {
+			f = f.return;
+		}
+		if ( ! f ) {
+			continue;
+		}
+		const logic = f.stateNode.logic;
+		if ( 'set' === op ) {
+			logic.setState( patch );
+			count++;
+		} else if ( 'reach' === op ) {
+			const keep = patch.keep || [];
+			const was = Object.fromEntries( keep.map( ( k ) => [ k, logic.state[ k ] ] ) );
+			try {
+				patch.calls.filter( ( c ) => ! c.store && ( ! c.component || c.component === name ) ).forEach( ( c ) => new Function( c.ident, `${ c.ident }.setState(${ c.args });` )( logic ) );
+				keep.length && logic.setState( was );
+				count++;
+			} catch {
+				// A call the draft's logic refuses leaves this instance unreached; the caller names the opener.
+			}
+		} else if ( 'get' === op ) {
+			values.push( logic.state[ patch ] );
+		} else if ( 'snapshot' === op ) {
+			snap.set( logic, { ...logic.state } );
+			count++;
+		} else if ( 'diff' === op && snap.has( logic ) ) {
+			const was = snap.get( logic );
+			count += Object.keys( logic.state ).some( ( k ) => logic.state[ k ] !== was[ k ] ) ? 1 : 0;
+		} else if ( 'restore' === op && snap.has( logic ) ) {
+			const was = snap.get( logic );
+			const back = {};
+			Object.keys( logic.state ).filter( ( k ) => logic.state[ k ] !== was[ k ] ).forEach( ( k ) => ( back[ k ] = was[ k ] ) );
+			if ( Object.keys( back ).length ) {
+				logic.setState( back );
+				count++;
+			}
+		}
+	}
+	return 'get' === op ? values : count;
+}, { comp: "SiteFooter", op: way.op, patch: way.patch } );
+			h.log.push( { type: 'click', target: "state \"tablet\" on SiteFooter", hit: reached > 0 } );
+		}
+		await h.page.waitForTimeout( 900 );
+	}, live: async () => {} },
+		{ name: "desktop", fullPage: true, from: 'rest', allPairs: true, draft: async ( h ) => {
+		
+		const ways = [{"op":"reach","patch":{"calls":[{"ident":"dcLogic","args":"{ bp: \"d\" }","component":"SiteFooter"}],"keep":[]},"bounds":[]}];
+		const width = h.page.viewportSize?.()?.width ?? null;
+		const fits = ( bounds, width ) => null == width || ( bounds || [] ).every( ( b ) => ( null == b.min || width >= b.min ) && ( null == b.max || width <= b.max ) );
+		const way = [].includes( width ) ? null : ways.find( ( w ) => fits( w.bounds, width ) );
+		if ( way ) {
+			const reached = await h.page.evaluate( function logicState( { comp, op, patch, slot } ) {
+	const slots = ( window.__sgsStateSnaps ||= {} );
+	const snap = slot ? ( slots[ slot ] ||= new Map() ) : ( window.__sgsStateSnap ||= new Map() );
+	const values = [];
+	let count = 0;
+	// A store call (`MM.cart.setGift({ on: true })`, lib/intake-store-calls.mjs) runs once, before any logic call, on a global the
+	// draft itself defines (a plain object, never a built-in such as Math, JSON, console or document), by plain property names only; the page's storage is kept first so
+	// `restore` puts it back. A call that cannot run reaches nothing.
+	if ( 'reach' === op && patch.calls.some( ( c ) => c.store ) ) {
+		window.__sgsStoreSnap ||= Object.fromEntries( Object.entries( localStorage ) );
+		for ( const c of patch.calls.filter( ( x ) => x.store ) ) {
+			const found = Object.getOwnPropertyDescriptor( window, c.ident )?.value;
+			const root = found && '[object Object]' === Object.prototype.toString.call( found ) && Object.getPrototypeOf( found ) === Object.prototype ? found : null;
+			let obj = root;
+			for ( const seg of c.path.slice( 0, -1 ) ) {
+				obj = obj && 'object' === typeof obj ? obj[ seg ] : null;
+			}
+			const fn = obj ? obj[ c.path.at( -1 ) ] : null;
+			if ( ! root || 'object' !== typeof root || 'function' !== typeof fn ) {
+				return 0;
+			}
+			try {
+				fn.apply( obj, c.args );
+			} catch {
+				return 0;
+			}
+		}
+		if ( ! patch.calls.some( ( c ) => ! c.store ) ) {
+			return 1;
+		}
+	}
+	if ( 'restore' === op && window.__sgsStoreSnap ) {
+		localStorage.clear();
+		Object.entries( window.__sgsStoreSnap ).forEach( ( [ k, v ] ) => localStorage.setItem( k, v ) );
+		window.dispatchEvent( new Event( 'storage' ) );
+		delete window.__sgsStoreSnap;
+	}
+	for ( const host of document.querySelectorAll( '.sc-host' ) ) {
+		const name = host.dataset.scName;
+		if ( comp && name !== comp ) {
+			continue;
+		}
+		const key = Object.keys( host ).find( ( k ) => k.startsWith( '__reactFiber$' ) );
+		let f = key ? host[ key ] : null;
+		while ( f && ! ( f.stateNode && f.stateNode.logic && f.stateNode.__name === name ) ) {
+			f = f.return;
+		}
+		if ( ! f ) {
+			continue;
+		}
+		const logic = f.stateNode.logic;
+		if ( 'set' === op ) {
+			logic.setState( patch );
+			count++;
+		} else if ( 'reach' === op ) {
+			const keep = patch.keep || [];
+			const was = Object.fromEntries( keep.map( ( k ) => [ k, logic.state[ k ] ] ) );
+			try {
+				patch.calls.filter( ( c ) => ! c.store && ( ! c.component || c.component === name ) ).forEach( ( c ) => new Function( c.ident, `${ c.ident }.setState(${ c.args });` )( logic ) );
+				keep.length && logic.setState( was );
+				count++;
+			} catch {
+				// A call the draft's logic refuses leaves this instance unreached; the caller names the opener.
+			}
+		} else if ( 'get' === op ) {
+			values.push( logic.state[ patch ] );
+		} else if ( 'snapshot' === op ) {
+			snap.set( logic, { ...logic.state } );
+			count++;
+		} else if ( 'diff' === op && snap.has( logic ) ) {
+			const was = snap.get( logic );
+			count += Object.keys( logic.state ).some( ( k ) => logic.state[ k ] !== was[ k ] ) ? 1 : 0;
+		} else if ( 'restore' === op && snap.has( logic ) ) {
+			const was = snap.get( logic );
+			const back = {};
+			Object.keys( logic.state ).filter( ( k ) => logic.state[ k ] !== was[ k ] ).forEach( ( k ) => ( back[ k ] = was[ k ] ) );
+			if ( Object.keys( back ).length ) {
+				logic.setState( back );
+				count++;
+			}
+		}
+	}
+	return 'get' === op ? values : count;
+}, { comp: "SiteFooter", op: way.op, patch: way.patch } );
+			h.log.push( { type: 'click', target: "state \"desktop\" on SiteFooter", hit: reached > 0 } );
+		}
+		await h.page.waitForTimeout( 900 );
+	}, live: async () => {} },
+		{ name: "tagline-marquee-paused", fullPage: true, from: 'rest', allPairs: true, draft: async ( h ) => {
+		
+		const ways = [{"op":"reach","patch":{"calls":[{"ident":"dcLogic","args":"{ tagHover: true }","component":"SiteFooter"}],"keep":[]},"bounds":[]}];
+		const width = h.page.viewportSize?.()?.width ?? null;
+		const fits = ( bounds, width ) => null == width || ( bounds || [] ).every( ( b ) => ( null == b.min || width >= b.min ) && ( null == b.max || width <= b.max ) );
+		const way = [].includes( width ) ? null : ways.find( ( w ) => fits( w.bounds, width ) );
+		if ( way ) {
+			const reached = await h.page.evaluate( function logicState( { comp, op, patch, slot } ) {
+	const slots = ( window.__sgsStateSnaps ||= {} );
+	const snap = slot ? ( slots[ slot ] ||= new Map() ) : ( window.__sgsStateSnap ||= new Map() );
+	const values = [];
+	let count = 0;
+	// A store call (`MM.cart.setGift({ on: true })`, lib/intake-store-calls.mjs) runs once, before any logic call, on a global the
+	// draft itself defines (a plain object, never a built-in such as Math, JSON, console or document), by plain property names only; the page's storage is kept first so
+	// `restore` puts it back. A call that cannot run reaches nothing.
+	if ( 'reach' === op && patch.calls.some( ( c ) => c.store ) ) {
+		window.__sgsStoreSnap ||= Object.fromEntries( Object.entries( localStorage ) );
+		for ( const c of patch.calls.filter( ( x ) => x.store ) ) {
+			const found = Object.getOwnPropertyDescriptor( window, c.ident )?.value;
+			const root = found && '[object Object]' === Object.prototype.toString.call( found ) && Object.getPrototypeOf( found ) === Object.prototype ? found : null;
+			let obj = root;
+			for ( const seg of c.path.slice( 0, -1 ) ) {
+				obj = obj && 'object' === typeof obj ? obj[ seg ] : null;
+			}
+			const fn = obj ? obj[ c.path.at( -1 ) ] : null;
+			if ( ! root || 'object' !== typeof root || 'function' !== typeof fn ) {
+				return 0;
+			}
+			try {
+				fn.apply( obj, c.args );
+			} catch {
+				return 0;
+			}
+		}
+		if ( ! patch.calls.some( ( c ) => ! c.store ) ) {
+			return 1;
+		}
+	}
+	if ( 'restore' === op && window.__sgsStoreSnap ) {
+		localStorage.clear();
+		Object.entries( window.__sgsStoreSnap ).forEach( ( [ k, v ] ) => localStorage.setItem( k, v ) );
+		window.dispatchEvent( new Event( 'storage' ) );
+		delete window.__sgsStoreSnap;
+	}
+	for ( const host of document.querySelectorAll( '.sc-host' ) ) {
+		const name = host.dataset.scName;
+		if ( comp && name !== comp ) {
+			continue;
+		}
+		const key = Object.keys( host ).find( ( k ) => k.startsWith( '__reactFiber$' ) );
+		let f = key ? host[ key ] : null;
+		while ( f && ! ( f.stateNode && f.stateNode.logic && f.stateNode.__name === name ) ) {
+			f = f.return;
+		}
+		if ( ! f ) {
+			continue;
+		}
+		const logic = f.stateNode.logic;
+		if ( 'set' === op ) {
+			logic.setState( patch );
+			count++;
+		} else if ( 'reach' === op ) {
+			const keep = patch.keep || [];
+			const was = Object.fromEntries( keep.map( ( k ) => [ k, logic.state[ k ] ] ) );
+			try {
+				patch.calls.filter( ( c ) => ! c.store && ( ! c.component || c.component === name ) ).forEach( ( c ) => new Function( c.ident, `${ c.ident }.setState(${ c.args });` )( logic ) );
+				keep.length && logic.setState( was );
+				count++;
+			} catch {
+				// A call the draft's logic refuses leaves this instance unreached; the caller names the opener.
+			}
+		} else if ( 'get' === op ) {
+			values.push( logic.state[ patch ] );
+		} else if ( 'snapshot' === op ) {
+			snap.set( logic, { ...logic.state } );
+			count++;
+		} else if ( 'diff' === op && snap.has( logic ) ) {
+			const was = snap.get( logic );
+			count += Object.keys( logic.state ).some( ( k ) => logic.state[ k ] !== was[ k ] ) ? 1 : 0;
+		} else if ( 'restore' === op && snap.has( logic ) ) {
+			const was = snap.get( logic );
+			const back = {};
+			Object.keys( logic.state ).filter( ( k ) => logic.state[ k ] !== was[ k ] ).forEach( ( k ) => ( back[ k ] = was[ k ] ) );
+			if ( Object.keys( back ).length ) {
+				logic.setState( back );
+				count++;
+			}
+		}
+	}
+	return 'get' === op ? values : count;
+}, { comp: "SiteFooter", op: way.op, patch: way.patch } );
+			h.log.push( { type: 'click', target: "state \"tagline-marquee-paused\" on SiteFooter", hit: reached > 0 } );
+		}
+		await h.page.waitForTimeout( 900 );
+	}, live: async () => {} },
 	],
-	unwalked: [{"state":"tablet","reason":"\"tablet (768–1023px)\": no usable state key (bp: derived from the viewport width) and no setState call in its how_to_reach"},{"state":"desktop","reason":"\"desktop (≥1024px)\": no usable state key (bp: derived from the viewport width) and no setState call in its how_to_reach"},{"state":"tagline-marquee-paused","reason":"\"tagline marquee paused\": no usable state key (tagHover || tagFocus: a render value or selector, not a state key name) and no setState call in its how_to_reach"}],
 	pairs: [],
 };

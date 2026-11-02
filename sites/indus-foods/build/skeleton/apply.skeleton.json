@@ -54,7 +54,9 @@
 					},
 					{
 						"name": "sgs/breadcrumbs",
-						"attributes": {},
+						"attributes": {
+							"homeLabel": ""
+						},
 						"draftRef": {
 							"tpl": "Root/323#0"
 						},
@@ -93,7 +95,12 @@
 									"textHash": "d8aa523",
 									"line": 446
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-button__label": {
+										"tpl": "Root/326#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/text",
@@ -118,7 +125,12 @@
 								},
 								"innerBlocks": []
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-breadcrumbs__list > .sgs-breadcrumbs__item:nth-of-type(1) > a": {
+								"tpl": "Root/326#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/label",
@@ -145,7 +157,8 @@
 					{
 						"name": "sgs/heading",
 						"attributes": {
-							"content": "Apply for a trade account."
+							"content": "Apply for a trade account.",
+							"level": "h1"
 						},
 						"draftRef": {
 							"tpl": "Root/333#0"
@@ -190,7 +203,15 @@
 						},
 						"innerBlocks": []
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-hero__content": {
+						"tpl": "Root/322#0"
+					},
+					".sgs-hero__video-bg": {
+						"tpl": "Root/318#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -275,152 +296,874 @@
 										},
 										"innerBlocks": [
 											{
-												"name": "sgs/form",
-												"attributes": {
-													"formIsLinked": true,
-													"formId": "trade-application"
-												},
-												"innerBlocks": [],
-												"widthVariants": [
-													{
-														"key": "Root>TradeApplication@466#0/91#0",
-														"shown": [
-															375,
-															768
-														]
-													},
-													{
-														"key": "Root>TradeApplication@466#0/103#0",
-														"shown": [
-															375,
-															768
-														]
-													}
-												]
-											},
-											{
-												"name": "sgs/icon",
-												"attributes": {},
-												"draftRef": {
-													"tpl": "Root>TradeApplication@466#0/91#0"
-												},
-												"draftFingerprint": {
-													"tag": "span",
-													"cls": "",
-													"styleHash": "643ee16",
-													"parentTags": [
-														"main",
-														"section",
-														"div",
-														"div",
-														"div",
-														"div",
-														"aside",
-														"div",
-														"button"
-													],
-													"textHash": "1505",
-													"line": 115
-												},
-												"innerBlocks": [],
-												"widthShown": [
-													375,
-													768
-												]
-											},
-											{
 												"name": "sgs/container",
 												"attributes": {
 													"tagName": "div",
-													"layout": "flex"
+													"layout": "grid"
 												},
 												"draftRef": {
-													"tpl": "Root>TradeApplication@466#0/103#0"
+													"tpl": "Root>TradeApplication@466#0/6#0"
 												},
 												"draftFingerprint": {
 													"tag": "div",
 													"cls": "",
-													"styleHash": "aa025ab5",
+													"styleHash": "4979cc05",
 													"parentTags": [
 														"main",
 														"section",
-														"div",
 														"div",
 														"div",
 														"div"
 													],
 													"textHash": "1505",
-													"line": 128
+													"line": 13
 												},
 												"innerBlocks": [
 													{
-														"name": "sgs/text",
+														"name": "sgs/form",
 														"attributes": {
-															"text": "Prefer to apply over the phone?"
-														},
-														"draftRef": {
-															"tpl": "Root>TradeApplication@466#0/104#0"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "4a5dd59",
-															"parentTags": [
-																"main",
-																"section",
-																"div",
-																"div",
-																"div",
-																"div",
-																"div"
-															],
-															"textHash": "1c504d48",
-															"line": 128
+															"formIsLinked": true,
+															"formId": "trade-application"
 														},
 														"innerBlocks": []
 													},
 													{
-														"name": "sgs/button",
+														"name": "sgs/container",
 														"attributes": {
-															"label": "Call 0121 771 4330",
-															"url": "tel:01217714330",
-															"linkSource": "phone"
+															"tagName": "aside",
+															"layout": "stack"
 														},
 														"draftRef": {
-															"tpl": "Root>TradeApplication@466#0/105#0"
+															"tpl": "Root>TradeApplication@466#0/86#0"
 														},
 														"draftFingerprint": {
-															"tag": "a",
-															"cls": "scp1q",
-															"styleHash": "5fd1ad2",
+															"tag": "aside",
+															"cls": "",
+															"styleHash": "1bd60e4b",
 															"parentTags": [
 																"main",
 																"section",
 																"div",
 																"div",
 																"div",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 113
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/container",
+																"attributes": {
+																	"tagName": "div"
+																},
+																"draftRef": {
+																	"tpl": "Root>TradeApplication@466#0/87#0"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "19950800",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"aside"
+																	],
+																	"textHash": "1505",
+																	"line": 114
+																},
+																"innerBlocks": [
+																	{
+																		"name": "sgs/container",
+																		"attributes": {
+																			"tagName": "div",
+																			"layout": "flex"
+																		},
+																		"draftRef": {
+																			"tpl": "Root>TradeApplication@466#0/88#0"
+																		},
+																		"draftFingerprint": {
+																			"tag": "button",
+																			"cls": "",
+																			"styleHash": "3f26fc36",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"aside",
+																				"div"
+																			],
+																			"textHash": "1505",
+																			"line": 115
+																		},
+																		"innerBlocks": [
+																			{
+																				"name": "sgs/label",
+																				"attributes": {
+																					"text": "Have these ready"
+																				},
+																				"draftRef": {
+																					"tpl": "Root>TradeApplication@466#0/89#0"
+																				},
+																				"draftFingerprint": {
+																					"tag": "span",
+																					"cls": "",
+																					"styleHash": "cde97387",
+																					"parentTags": [
+																						"main",
+																						"section",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"aside",
+																						"div",
+																						"button"
+																					],
+																					"textHash": "d88f9fbb",
+																					"line": 115
+																				},
+																				"innerBlocks": []
+																			},
+																			{
+																				"name": "sgs/icon",
+																				"attributes": {},
+																				"draftRef": {
+																					"tpl": "Root>TradeApplication@466#0/91#0"
+																				},
+																				"draftFingerprint": {
+																					"tag": "span",
+																					"cls": "",
+																					"styleHash": "643ee16",
+																					"parentTags": [
+																						"main",
+																						"section",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"aside",
+																						"div",
+																						"button"
+																					],
+																					"textHash": "1505",
+																					"line": 115
+																				},
+																				"innerBlocks": [],
+																				"draftSlots": {
+																					".sgs-icon__shape": {
+																						"tpl": "Root>TradeApplication@466#0/91#0"
+																					}
+																				}
+																			}
+																		],
+																		"draftSlots": {
+																			".sgs-container__inner > p:nth-of-type(1)": {
+																				"tpl": "Root>TradeApplication@466#0/89#0"
+																			},
+																			".sgs-container__inner > p:nth-of-type(2)": {
+																				"tpl": "Root>TradeApplication@466#0/91#0"
+																			}
+																		}
+																	},
+																	{
+																		"name": "sgs/container",
+																		"attributes": {
+																			"tagName": "div",
+																			"layout": "stack"
+																		},
+																		"draftRef": {
+																			"tpl": "Root>TradeApplication@466#0/93#0"
+																		},
+																		"draftFingerprint": {
+																			"tag": "div",
+																			"cls": "",
+																			"styleHash": "8498ab8",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"aside",
+																				"div"
+																			],
+																			"textHash": "1505",
+																			"line": 116
+																		},
+																		"innerBlocks": [
+																			{
+																				"name": "sgs/container",
+																				"attributes": {
+																					"tagName": "div",
+																					"layout": "flex"
+																				},
+																				"draftRef": {
+																					"tpl": "Root>TradeApplication@466#0/95#0"
+																				},
+																				"draftFingerprint": {
+																					"tag": "div",
+																					"cls": "",
+																					"styleHash": "9b1ca309",
+																					"parentTags": [
+																						"main",
+																						"section",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"aside",
+																						"div",
+																						"div"
+																					],
+																					"textHash": "9c551ef5",
+																					"line": 118
+																				},
+																				"innerBlocks": [
+																					{
+																						"name": "sgs/icon",
+																						"attributes": {},
+																						"draftRef": {
+																							"tpl": "Root>TradeApplication@466#0/96#0"
+																						},
+																						"draftFingerprint": {
+																							"tag": "span",
+																							"cls": "",
+																							"styleHash": "e6ad9e98",
+																							"parentTags": [
+																								"main",
+																								"section",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"aside",
+																								"div",
+																								"div",
+																								"div"
+																							],
+																							"textHash": "1505",
+																							"line": 118
+																						},
+																						"innerBlocks": [],
+																						"draftSlots": {
+																							".sgs-icon__shape": {
+																								"tpl": "Root>TradeApplication@466#0/96#0"
+																							}
+																						}
+																					},
+																					{
+																						"name": "sgs/text",
+																						"attributes": {
+																							"text": "Your trading and registered business name"
+																						},
+																						"innerBlocks": []
+																					}
+																				],
+																				"draftSlots": {
+																					".sgs-container__inner > p:nth-of-type(1)": {
+																						"tpl": "Root>TradeApplication@466#0/96#0"
+																					}
+																				}
+																			},
+																			{
+																				"name": "sgs/container",
+																				"attributes": {
+																					"tagName": "div",
+																					"layout": "flex"
+																				},
+																				"draftRef": {
+																					"tpl": "Root>TradeApplication@466#0/95#1"
+																				},
+																				"draftFingerprint": {
+																					"tag": "div",
+																					"cls": "",
+																					"styleHash": "9b1ca309",
+																					"parentTags": [
+																						"main",
+																						"section",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"aside",
+																						"div",
+																						"div"
+																					],
+																					"textHash": "e3d080bb",
+																					"line": 118
+																				},
+																				"innerBlocks": [
+																					{
+																						"name": "sgs/icon",
+																						"attributes": {},
+																						"draftRef": {
+																							"tpl": "Root>TradeApplication@466#0/96#1"
+																						},
+																						"draftFingerprint": {
+																							"tag": "span",
+																							"cls": "",
+																							"styleHash": "e6ad9e98",
+																							"parentTags": [
+																								"main",
+																								"section",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"aside",
+																								"div",
+																								"div",
+																								"div"
+																							],
+																							"textHash": "1505",
+																							"line": 118
+																						},
+																						"innerBlocks": [],
+																						"draftSlots": {
+																							".sgs-icon__shape": {
+																								"tpl": "Root>TradeApplication@466#0/96#1"
+																							}
+																						}
+																					},
+																					{
+																						"name": "sgs/text",
+																						"attributes": {
+																							"text": "Companies House and VAT numbers (if you have them)"
+																						},
+																						"innerBlocks": []
+																					}
+																				],
+																				"draftSlots": {
+																					".sgs-container__inner > p:nth-of-type(1)": {
+																						"tpl": "Root>TradeApplication@466#0/96#1"
+																					}
+																				}
+																			},
+																			{
+																				"name": "sgs/container",
+																				"attributes": {
+																					"tagName": "div",
+																					"layout": "flex"
+																				},
+																				"draftRef": {
+																					"tpl": "Root>TradeApplication@466#0/95#2"
+																				},
+																				"draftFingerprint": {
+																					"tag": "div",
+																					"cls": "",
+																					"styleHash": "9b1ca309",
+																					"parentTags": [
+																						"main",
+																						"section",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"aside",
+																						"div",
+																						"div"
+																					],
+																					"textHash": "eb46962",
+																					"line": 118
+																				},
+																				"innerBlocks": [
+																					{
+																						"name": "sgs/icon",
+																						"attributes": {},
+																						"draftRef": {
+																							"tpl": "Root>TradeApplication@466#0/96#2"
+																						},
+																						"draftFingerprint": {
+																							"tag": "span",
+																							"cls": "",
+																							"styleHash": "e6ad9e98",
+																							"parentTags": [
+																								"main",
+																								"section",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"aside",
+																								"div",
+																								"div",
+																								"div"
+																							],
+																							"textHash": "1505",
+																							"line": 118
+																						},
+																						"innerBlocks": [],
+																						"draftSlots": {
+																							".sgs-icon__shape": {
+																								"tpl": "Root>TradeApplication@466#0/96#2"
+																							}
+																						}
+																					},
+																					{
+																						"name": "sgs/text",
+																						"attributes": {
+																							"text": "Business and delivery address"
+																						},
+																						"innerBlocks": []
+																					}
+																				],
+																				"draftSlots": {
+																					".sgs-container__inner > p:nth-of-type(1)": {
+																						"tpl": "Root>TradeApplication@466#0/96#2"
+																					}
+																				}
+																			},
+																			{
+																				"name": "sgs/container",
+																				"attributes": {
+																					"tagName": "div",
+																					"layout": "flex"
+																				},
+																				"draftRef": {
+																					"tpl": "Root>TradeApplication@466#0/95#3"
+																				},
+																				"draftFingerprint": {
+																					"tag": "div",
+																					"cls": "",
+																					"styleHash": "9b1ca309",
+																					"parentTags": [
+																						"main",
+																						"section",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"aside",
+																						"div",
+																						"div"
+																					],
+																					"textHash": "a922406b",
+																					"line": 118
+																				},
+																				"innerBlocks": [
+																					{
+																						"name": "sgs/icon",
+																						"attributes": {},
+																						"draftRef": {
+																							"tpl": "Root>TradeApplication@466#0/96#3"
+																						},
+																						"draftFingerprint": {
+																							"tag": "span",
+																							"cls": "",
+																							"styleHash": "e6ad9e98",
+																							"parentTags": [
+																								"main",
+																								"section",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"aside",
+																								"div",
+																								"div",
+																								"div"
+																							],
+																							"textHash": "1505",
+																							"line": 118
+																						},
+																						"innerBlocks": [],
+																						"draftSlots": {
+																							".sgs-icon__shape": {
+																								"tpl": "Root>TradeApplication@466#0/96#3"
+																							}
+																						}
+																					},
+																					{
+																						"name": "sgs/text",
+																						"attributes": {
+																							"text": "Owner or director details"
+																						},
+																						"innerBlocks": []
+																					}
+																				],
+																				"draftSlots": {
+																					".sgs-container__inner > p:nth-of-type(1)": {
+																						"tpl": "Root>TradeApplication@466#0/96#3"
+																					}
+																				}
+																			},
+																			{
+																				"name": "sgs/container",
+																				"attributes": {
+																					"tagName": "div",
+																					"layout": "flex"
+																				},
+																				"draftRef": {
+																					"tpl": "Root>TradeApplication@466#0/95#4"
+																				},
+																				"draftFingerprint": {
+																					"tag": "div",
+																					"cls": "",
+																					"styleHash": "9b1ca309",
+																					"parentTags": [
+																						"main",
+																						"section",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"aside",
+																						"div",
+																						"div"
+																					],
+																					"textHash": "a54a30a1",
+																					"line": 118
+																				},
+																				"innerBlocks": [
+																					{
+																						"name": "sgs/icon",
+																						"attributes": {},
+																						"draftRef": {
+																							"tpl": "Root>TradeApplication@466#0/96#4"
+																						},
+																						"draftFingerprint": {
+																							"tag": "span",
+																							"cls": "",
+																							"styleHash": "e6ad9e98",
+																							"parentTags": [
+																								"main",
+																								"section",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"aside",
+																								"div",
+																								"div",
+																								"div"
+																							],
+																							"textHash": "1505",
+																							"line": 118
+																						},
+																						"innerBlocks": [],
+																						"draftSlots": {
+																							".sgs-icon__shape": {
+																								"tpl": "Root>TradeApplication@466#0/96#4"
+																							}
+																						}
+																					},
+																					{
+																						"name": "sgs/text",
+																						"attributes": {
+																							"text": "Two trade references for a credit account"
+																						},
+																						"innerBlocks": []
+																					}
+																				],
+																				"draftSlots": {
+																					".sgs-container__inner > p:nth-of-type(1)": {
+																						"tpl": "Root>TradeApplication@466#0/96#4"
+																					}
+																				}
+																			}
+																		],
+																		"draftSlots": {
+																			".sgs-container__inner > p:nth-of-type(1)": {
+																				"tpl": "Root>TradeApplication@466#0/95#0"
+																			},
+																			".sgs-container__inner > p:nth-of-type(2)": {
+																				"tpl": "Root>TradeApplication@466#0/95#1"
+																			}
+																		}
+																	}
+																],
+																"draftSlots": {
+																	".sgs-container__inner > p:nth-of-type(1)": {
+																		"tpl": "Root>TradeApplication@466#0/88#0"
+																	},
+																	".sgs-container__inner > p:nth-of-type(2)": {
+																		"tpl": "Root>TradeApplication@466#0/93#0"
+																	}
+																}
+															},
+															{
+																"name": "sgs/container",
+																"attributes": {
+																	"tagName": "div"
+																},
+																"draftRef": {
+																	"tpl": "Root>TradeApplication@466#0/98#0"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "ad92f0b8",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"aside"
+																	],
+																	"textHash": "1505",
+																	"line": 122
+																},
+																"innerBlocks": [
+																	{
+																		"name": "sgs/heading",
+																		"attributes": {
+																			"content": "Need a hand?"
+																		},
+																		"draftRef": {
+																			"tpl": "Root>TradeApplication@466#0/99#0"
+																		},
+																		"draftFingerprint": {
+																			"tag": "span",
+																			"cls": "",
+																			"styleHash": "f5ec0b0a",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"aside",
+																				"div"
+																			],
+																			"textHash": "402d95b2",
+																			"line": 123
+																		},
+																		"innerBlocks": []
+																	},
+																	{
+																		"name": "sgs/text",
+																		"attributes": {
+																			"text": "Our trade team can complete the application with you over the phone."
+																		},
+																		"draftRef": {
+																			"tpl": "Root>TradeApplication@466#0/100#0"
+																		},
+																		"draftFingerprint": {
+																			"tag": "p",
+																			"cls": "",
+																			"styleHash": "1d83a3aa",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"aside",
+																				"div"
+																			],
+																			"textHash": "5d1b59b4",
+																			"line": 124
+																		},
+																		"innerBlocks": []
+																	},
+																	{
+																		"name": "sgs/button",
+																		"attributes": {
+																			"label": "0121 771 4330",
+																			"url": "tel:01217714330",
+																			"linkSource": "phone",
+																			"labelFromSiteInfo": true
+																		},
+																		"draftRef": {
+																			"tpl": "Root>TradeApplication@466#0/101#0"
+																		},
+																		"draftFingerprint": {
+																			"tag": "a",
+																			"cls": "scp1q",
+																			"styleHash": "70db2873",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"aside",
+																				"div"
+																			],
+																			"textHash": "f3097ff2",
+																			"line": 125
+																		},
+																		"innerBlocks": [],
+																		"draftSlots": {
+																			".sgs-button__label": {
+																				"tpl": "Root>TradeApplication@466#0/101#0"
+																			}
+																		}
+																	}
+																],
+																"draftSlots": {
+																	".sgs-container__inner > p:nth-of-type(1)": {
+																		"tpl": "Root>TradeApplication@466#0/99#0"
+																	},
+																	".sgs-container__inner > p:nth-of-type(2)": {
+																		"tpl": "Root>TradeApplication@466#0/100#0"
+																	}
+																}
+															}
+														],
+														"draftSlots": {
+															".sgs-container__inner > p:nth-of-type(1)": {
+																"tpl": "Root>TradeApplication@466#0/87#0"
+															},
+															".sgs-container__inner > p:nth-of-type(2)": {
+																"tpl": "Root>TradeApplication@466#0/98#0"
+															}
+														}
+													},
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "flex"
+														},
+														"draftRef": {
+															"tpl": "Root>TradeApplication@466#0/103#0"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "aa025ab5",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
 																"div",
 																"div"
 															],
-															"textHash": "d9580830",
+															"textHash": "1505",
 															"line": 128
 														},
-														"innerBlocks": []
+														"innerBlocks": [
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "Prefer to apply over the phone?"
+																},
+																"draftRef": {
+																	"tpl": "Root>TradeApplication@466#0/104#0"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "4a5dd59",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "1c504d48",
+																	"line": 128
+																},
+																"innerBlocks": []
+															},
+															{
+																"name": "sgs/button",
+																"attributes": {
+																	"label": "Call 0121 771 4330",
+																	"url": "tel:01217714330",
+																	"linkSource": "phone"
+																},
+																"draftRef": {
+																	"tpl": "Root>TradeApplication@466#0/105#0"
+																},
+																"draftFingerprint": {
+																	"tag": "a",
+																	"cls": "scp1q",
+																	"styleHash": "5fd1ad2",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "d9580830",
+																	"line": 128
+																},
+																"innerBlocks": [],
+																"draftSlots": {
+																	".sgs-button__label": {
+																		"tpl": "Root>TradeApplication@466#0/105#0"
+																	}
+																}
+															}
+														],
+														"draftSlots": {
+															".sgs-container__inner > p:nth-of-type(1)": {
+																"tpl": "Root>TradeApplication@466#0/104#0"
+															},
+															".sgs-container__inner > p:nth-of-type(2)": {
+																"tpl": "Root>TradeApplication@466#0/105#0"
+															}
+														}
 													}
 												],
-												"widthShown": [
-													375,
-													768
-												]
+												"draftSlots": {
+													".sgs-container__inner > p:nth-of-type(1)": {
+														"tpl": "Root>TradeApplication@466#0/86#0"
+													},
+													".sgs-container__inner > p:nth-of-type(2)": {
+														"tpl": "Root>TradeApplication@466#0/103#0"
+													}
+												}
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root>TradeApplication@466#0/6#0"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root>TradeApplication@466#0/4#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/466#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/345#0"
+					}
+				}
 			}
-		]
+		],
+		"draftSlots": {
+			".sgs-container__inner > p:nth-of-type(1)": {
+				"tpl": "Root/316#0"
+			},
+			".sgs-container__inner > p:nth-of-type(2)": {
+				"tpl": "Root/344#0"
+			}
+		}
 	}
 ]

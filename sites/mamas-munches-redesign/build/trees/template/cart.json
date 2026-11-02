@@ -11,34 +11,55 @@
     "attributes": {
       "tagName": "main",
       "className": "cr-ref-template-cart-0",
+      "textColour": "mm-cocoa",
       "minHeight": {
         "desktop": "0px"
       },
       "contentWidth": {
         "desktop": "full"
       },
-      "textColourHover": "primary-text",
+      "textColourHover": "mm-cocoa",
       "padding": {
-        "desktop": "40px",
-        "tablet": "32px",
-        "mobile": "20px"
-      }
+        "desktop": {
+          "top": "48px",
+          "right": "40px",
+          "bottom": "104px",
+          "left": "40px"
+        },
+        "tablet": {
+          "top": "36px",
+          "right": "32px",
+          "bottom": "80px",
+          "left": "32px"
+        },
+        "mobile": {
+          "top": "24px",
+          "right": "20px",
+          "bottom": "64px",
+          "left": "20px"
+        }
+      },
+      "sgsCustomCss": "& { line-height: normal; } & .sgs-container__inner > p:nth-of-type(1) { max-width: 1240px; }",
+      "sgsCustomCssId": "r387e8491006",
+      "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width line-height: normal;, & .sgs-container__inner > p:nth-of-type(1) every width max-width: 1240px;"
     },
     "innerBlocks": [
       {
         "name": "sgs/hero",
         "attributes": {
           "className": "cr-ref-template-cart-1",
-          "backgroundColourGradient": "none",
           "minHeight": {
             "mobile": "0px"
           },
           "flexDirection": "row",
-          "textColourHover": "primary-text"
+          "textColourHover": "mm-cocoa",
+          "sgsCustomCss": "& { justify-content: normal; max-width: 1240px; } & .sgs-hero__content { display: block; max-width: 1240px; }",
+          "sgsCustomCssId": "r5e019ccc085",
+          "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width justify-content: normal; max-width: 1240px;, & .sgs-hero__content every width display: block; max-width: 1240px;"
         },
         "innerBlocks": [
           {
-            "name": "sgs/text",
+            "name": "sgs/label",
             "attributes": {
               "text": "nearly there",
               "className": "cr-ref-template-cart-2",
@@ -46,12 +67,15 @@
               "fontSize": {
                 "desktop": 28
               },
-              "lineHeight": {
-                "desktop": 1
-              },
+              "fontWeight": "400",
+              "lineHeight": 1,
               "lineHeightUnit": "",
-              "textColour": "custom-mm-script",
-              "textColourHover": "custom-mm-script"
+              "textTransform": "none",
+              "textColour": "mm-script",
+              "textColourHover": "mm-script",
+              "sgsCustomCss": "& { letter-spacing: normal; }",
+              "sgsCustomCssId": "rb236ef65ca1",
+              "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width letter-spacing: normal;"
             },
             "innerBlocks": []
           },
@@ -83,46 +107,20 @@
                   "bottom": "24px"
                 }
               },
-              "textColourHover": "primary-text"
+              "textColourHover": "mm-cocoa",
+              "padding": {
+                "desktop": {
+                  "right": "0px",
+                  "left": "0px"
+                }
+              }
             },
             "innerBlocks": [
               {
                 "name": "sgs/text",
                 "attributes": {
-                  "text": "2",
-                  "className": "cr-ref-template-cart-4",
-                  "fontFamily": "body",
-                  "fontSize": {
-                    "mobile": 17.6,
-                    "tablet": 21.6,
-                    "desktop": 27.2
-                  },
-                  "fontWeight": "700",
-                  "borderWidth": {
-                    "right": "2px",
-                    "bottom": "2px",
-                    "left": "2px",
-                    "top": "2px"
-                  },
-                  "borderStyle": "solid",
-                  "borderRadius": {
-                    "desktop": {
-                      "topLeft": "999px",
-                      "topRight": "999px",
-                      "bottomRight": "999px",
-                      "bottomLeft": "999px"
-                    }
-                  },
-                  "padding": {
-                    "desktop": {
-                      "top": "4px",
-                      "right": "12px",
-                      "bottom": "4px",
-                      "left": "12px"
-                    }
-                  },
-                  "textColourHover": "primary-text",
-                  "borderColourHover": "primary-text"
+                  "text": "Your basket",
+                  "className": "cr-ref-template-cart-4"
                 },
                 "innerBlocks": []
               }

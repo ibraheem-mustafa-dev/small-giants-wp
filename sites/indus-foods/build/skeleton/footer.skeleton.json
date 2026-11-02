@@ -77,7 +77,12 @@
 									"textHash": "1505",
 									"line": 945
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-icon__shape": {
+										"tpl": "Root/659#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/container",
@@ -180,9 +185,25 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/661#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/662#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/659#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/660#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -226,7 +247,12 @@
 									"textHash": "1505",
 									"line": 949
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-icon__shape": {
+										"tpl": "Root/665#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/container",
@@ -329,9 +355,25 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/667#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/668#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/665#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/666#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -403,8 +445,10 @@
 										"innerBlocks": []
 									},
 									{
-										"name": "sgs/label",
-										"attributes": {},
+										"name": "sgs/business-info",
+										"attributes": {
+											"displayType": "open-status"
+										},
 										"draftRef": {
 											"tpl": "Root/673#0"
 										},
@@ -424,7 +468,15 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/672#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/673#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/container",
@@ -472,34 +524,131 @@
 											"textHash": "1505",
 											"line": 959
 										},
-										"innerBlocks": []
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-business-info > .sgs-business-hours__row:nth-of-type(1) > .sgs-business-hours__day": {
+												"tpl": "Root/678#0"
+											},
+											".sgs-business-info > .sgs-business-hours__row:nth-of-type(1)": {
+												"tpl": "Root/677#0"
+											}
+										}
+									},
+									{
+										"name": "sgs/business-info",
+										"attributes": {
+											"copyrightPrefix": ""
+										},
+										"draftRef": {
+											"tpl": "Root/677#1"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "eb8ff691",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 959
+										},
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-business-info > .sgs-business-hours__row:nth-of-type(1) > .sgs-business-hours__day": {
+												"tpl": "Root/678#1"
+											},
+											".sgs-business-info > .sgs-business-hours__row:nth-of-type(1)": {
+												"tpl": "Root/677#1"
+											}
+										}
+									},
+									{
+										"name": "sgs/business-info",
+										"attributes": {
+											"copyrightPrefix": ""
+										},
+										"draftRef": {
+											"tpl": "Root/677#2"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "eb8ff691",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 959
+										},
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-business-info > .sgs-business-hours__row:nth-of-type(1) > .sgs-business-hours__day": {
+												"tpl": "Root/678#2"
+											},
+											".sgs-business-info > .sgs-business-hours__row:nth-of-type(1)": {
+												"tpl": "Root/677#2"
+											}
+										}
+									},
+									{
+										"name": "sgs/business-info",
+										"attributes": {
+											"copyrightPrefix": ""
+										},
+										"draftRef": {
+											"tpl": "Root/677#3"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "eb8ff691",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 959
+										},
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-business-info > .sgs-business-hours__row:nth-of-type(1) > .sgs-business-hours__day": {
+												"tpl": "Root/678#3"
+											},
+											".sgs-business-info > .sgs-business-hours__row:nth-of-type(1)": {
+												"tpl": "Root/677#3"
+											}
+										}
 									}
-								]
-							},
-							{
-								"name": "sgs/business-info",
-								"attributes": {
-									"displayType": "open-status"
-								},
-								"draftRef": {
-									"tpl": "Root/680#0"
-								},
-								"draftFingerprint": {
-									"tag": "span",
-									"cls": "",
-									"styleHash": "2ab719e9",
-									"parentTags": [
-										"footer",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "2210ee1b",
-									"line": 962
-								},
-								"innerBlocks": []
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/677#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/677#1"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/671#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/675#0"
+							}
+						}
 					}
 				]
 			},
@@ -635,7 +784,18 @@
 									"instagram": "[data-dc-tpl=\"699\"]"
 								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__svg-bg": {
+								"tpl": "Root/686#0"
+							},
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/684#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/685#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -684,6 +844,7 @@
 							{
 								"name": "sgs/icon-list",
 								"attributes": {
+									"markerType": "none",
 									"items": [
 										{
 											"text": "Certifications",
@@ -699,11 +860,11 @@
 										},
 										{
 											"text": "Delivery & Logistics",
-											"url": "/delivery/"
+											"url": "/apply/delivery/"
 										},
 										{
 											"text": "Terms & Conditions",
-											"url": "/terms/"
+											"url": "/apply/terms/"
 										},
 										{
 											"text": "Blog",
@@ -728,7 +889,63 @@
 									"textHash": "da9824ce",
 									"line": 976
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon": {
+										"tpl": "Root/707#0"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text": {
+										"tpl": "Root/706#0"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)": {
+										"tpl": "Root/706#0"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__text": {
+										"tpl": "Root/706#1"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__text": {
+										"tpl": "Root/706#2"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text": {
+										"tpl": "Root/706#3"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__text": {
+										"tpl": "Root/706#4"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__text": {
+										"tpl": "Root/706#5"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2)": {
+										"tpl": "Root/706#1"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3)": {
+										"tpl": "Root/706#2"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4)": {
+										"tpl": "Root/706#3"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5)": {
+										"tpl": "Root/706#4"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6)": {
+										"tpl": "Root/706#5"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon": {
+										"tpl": "Root/707#1"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon": {
+										"tpl": "Root/707#2"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon": {
+										"tpl": "Root/707#3"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__icon": {
+										"tpl": "Root/707#4"
+									},
+									".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__icon": {
+										"tpl": "Root/707#5"
+									}
+								}
 							},
 							{
 								"name": "sgs/button",
@@ -752,9 +969,22 @@
 									"textHash": "c38be34c",
 									"line": 979
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-button__label": {
+										"tpl": "Root/708#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/703#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/706#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -935,13 +1165,42 @@
 													"textHash": "64e53e25",
 													"line": 987
 												},
-												"innerBlocks": []
+												"innerBlocks": [],
+												"draftSlots": {
+													".sgs-button__label": {
+														"tpl": "Root/717#0"
+													}
+												}
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/714#0"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/717#0"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/712#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/713#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/710#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/711#0"
+							}
+						}
 					}
 				]
 			},
@@ -1020,7 +1279,6 @@
 							{
 								"name": "sgs/business-info",
 								"attributes": {
-									"copyrightPrefix": "Website by Ibraheem Mustafa",
 									"displayType": "attribution"
 								},
 								"draftRef": {
@@ -1039,9 +1297,24 @@
 									"textHash": "e5b0b5a1",
 									"line": 996
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "site-info",
+										"kind": "text",
+										"detail": "Site Info \"attribution\" must read: Website by Ibraheem Mustafa"
+									}
+								]
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/721#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/723#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -1067,6 +1340,13 @@
 						},
 						"innerBlocks": [
 							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Back to top"
+								},
+								"innerBlocks": []
+							},
+							{
 								"name": "sgs/icon",
 								"attributes": {},
 								"draftRef": {
@@ -1085,13 +1365,25 @@
 									"textHash": "1505",
 									"line": 998
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-icon__shape": {
+										"tpl": "Root/727#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/727#0"
+							}
+						}
 					},
 					{
-						"name": "sgs/button",
+						"name": "sgs/whatsapp-cta",
 						"attributes": {
+							"variant": "floating",
+							"floatingHideLabelBelow": 768,
 							"label": "Chat with our team"
 						},
 						"draftRef": {
@@ -1105,7 +1397,12 @@
 							"textHash": "1505",
 							"line": 1002
 						},
-						"innerBlocks": []
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-whatsapp-cta__label": {
+								"tpl": "Root/731#0"
+							}
+						}
 					}
 				],
 				"draftSlots": {

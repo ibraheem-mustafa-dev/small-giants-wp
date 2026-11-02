@@ -3,11 +3,11 @@
 import base from './my-account.fill-base.mjs';
 
 const generated = [
-	{ name: "gen-my-account-0", text: false, structure: false, draft: {"tpl":"Root/856#0"}, live: ".cr-ref-my-account-0" },
-	{ name: "gen-my-account-1", text: false, structure: false, draft: {"tpl":"Root/858#0"}, live: ".cr-ref-my-account-1" },
-	{ name: "gen-my-account-2", text: false, structure: false, draft: {"tpl":"Root/859#0"}, live: ".cr-ref-my-account-2" },
-	{ name: "gen-my-account-3", text: false, structure: false, draft: {"tpl":"Root/860#0"}, live: ".cr-ref-my-account-3" },
-	{ name: "gen-my-account-4", text: false, structure: false, draft: {"tpl":"Root/861#0"}, live: ".cr-ref-my-account-4" },
+	{ name: "gen-my-account-0", text: false, structure: false, draft: {"tpl":"Root/854#0"}, live: ".cr-ref-my-account-0", liveAt: {"padding-top":".sgs-container__inner","padding-right":".sgs-container__inner","padding-bottom":".sgs-container__inner","padding-left":".sgs-container__inner"} },
+	{ name: "gen-my-account-1", text: false, structure: false, draft: {"tpl":"Root/856#0"}, live: ".cr-ref-my-account-1" },
+	{ name: "gen-my-account-2", text: false, structure: false, draft: {"tpl":"Root/857#0"}, live: ".cr-ref-my-account-2" },
+	{ name: "gen-my-account-3", text: false, structure: false, draft: {"tpl":"Root/858#0"}, live: ".cr-ref-my-account-3" },
+	{ name: "gen-my-account-4", text: false, structure: false, draft: {"tpl":"Root/859#0"}, live: ".cr-ref-my-account-4" },
 ];
 
 // Hand pairs measuring a paired block's draft element on an element inside the block: moved to the block root.

@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-28T06:44:59.244Z",
-	"inventory": "2026-10-28T06:44:58.980Z",
-	"source": "http://127.0.0.1:55059/",
+	"generated": "2026-11-02T04:55:44.073Z",
+	"inventory": "2026-11-02T01:21:52.249Z",
+	"source": "http://127.0.0.1:52267/",
 	"surface": "site-footer",
 	"siteName": null,
 	"surfaceParts": [],
@@ -24,19 +24,883 @@
 		"inventoryElements": 68,
 		"parts": 11,
 		"rows": 57,
-		"skeletonNodes": 33,
-		"expandedNodes": 35,
-		"low": 5,
+		"skeletonNodes": 34,
+		"expandedNodes": 36,
+		"low": 3,
 		"removed": 17,
-		"unresolved": 1,
+		"unresolved": 0,
 		"byRule": {
 			"widthWrapper": 2,
 			"logoGrid": 13,
 			"marqueeCodeItems": 1,
+			"footerSlots": 1,
 			"pillButton": 2,
 			"siteInfoLink": 1,
 			"drawsChildren": 2
 		}
+	},
+	"partPairing": {
+		"paired": 41,
+		"unpaired": [
+			{
+				"key": "Root>SiteFooter@250#0/2#0",
+				"block": "sgs/site-footer",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/2#0",
+				"block": "sgs/site-footer",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/5#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/5#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/5#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/6#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/6#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/6#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/8#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/9#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/14#0",
+				"block": "sgs/gallery",
+				"slot": ".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(1) > .sgs-gallery__caption",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/14#0",
+				"block": "sgs/gallery",
+				"slot": ".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(2) > .sgs-gallery__caption",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/14#0",
+				"block": "sgs/gallery",
+				"slot": ".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(3) > .sgs-gallery__caption",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/14#0",
+				"block": "sgs/gallery",
+				"slot": "@scrim",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/18#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label",
+				"reason": ".sgs-trust-bar__badge:nth-of-type(1): the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/18#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__circle",
+				"reason": ".sgs-trust-bar__badge:nth-of-type(1): the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/18#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(2) > .sgs-trust-bar__circle",
+				"reason": ".sgs-trust-bar__badge:nth-of-type(2): the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/18#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(3) > .sgs-trust-bar__circle",
+				"reason": ".sgs-trust-bar__badge:nth-of-type(3): the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/18#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(4) > .sgs-trust-bar__circle",
+				"reason": ".sgs-trust-bar__badge:nth-of-type(4): the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/18#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__circle > svg",
+				"reason": ".sgs-trust-bar__badge:nth-of-type(1): the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/18#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/18#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/18#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(2) > .sgs-trust-bar__circle > svg",
+				"reason": ".sgs-trust-bar__badge:nth-of-type(2): the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/18#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(3) > .sgs-trust-bar__circle > svg",
+				"reason": ".sgs-trust-bar__badge:nth-of-type(3): the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/18#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(4) > .sgs-trust-bar__circle > svg",
+				"reason": ".sgs-trust-bar__badge:nth-of-type(4): the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/18#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(2) > .sgs-trust-bar__label",
+				"reason": ".sgs-trust-bar__badge:nth-of-type(2): the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/18#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(3) > .sgs-trust-bar__label",
+				"reason": ".sgs-trust-bar__badge:nth-of-type(3): the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/18#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(4) > .sgs-trust-bar__label",
+				"reason": ".sgs-trust-bar__badge:nth-of-type(4): the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/18#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__icon",
+				"reason": ".sgs-trust-bar__badge:nth-of-type(1): the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/18#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(2) > .sgs-trust-bar__icon",
+				"reason": ".sgs-trust-bar__badge:nth-of-type(2): the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/18#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(3) > .sgs-trust-bar__icon",
+				"reason": ".sgs-trust-bar__badge:nth-of-type(3): the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/18#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(4) > .sgs-trust-bar__icon",
+				"reason": ".sgs-trust-bar__badge:nth-of-type(4): the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/18#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1)",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/18#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(2)",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/18#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(3)",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/18#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(4)",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/21#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/21#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/21#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/22#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/22#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/22#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/23#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/24#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/26#0",
+				"block": "sgs/responsive-logo",
+				"slot": ".sgs-responsive-logo__link > .sgs-responsive-logo__picture > .sgs-responsive-logo__image",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/27#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/27#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/27#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/28#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/28#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/28#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/29#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/30#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/30#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list__heading",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/30#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/30#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/30#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/30#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/30#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/30#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6): the draft draws 5 copies of this repeated part"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/30#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__text",
+				"reason": "the first copy of this repeated part has no element here, so neither has this one"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/30#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__text",
+				"reason": "the first copy of this repeated part has no element here, so neither has this one"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/30#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text",
+				"reason": "the first copy of this repeated part has no element here, so neither has this one"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/30#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__text",
+				"reason": "the first copy of this repeated part has no element here, so neither has this one"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/30#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__text",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6): the draft draws 5 copies of this repeated part"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/30#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6)",
+				"reason": "the draft draws 5 copies of this repeated part"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/30#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/30#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/30#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/30#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/30#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__icon",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6): the draft draws 5 copies of this repeated part"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/30#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__description",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/30#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__text > .sgs-icon-list__description",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/30#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__text > .sgs-icon-list__description",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/35#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/35#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/35#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/36#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/37#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/37#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list__heading",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/37#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/37#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/37#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/37#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/37#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5): the draft draws 4 copies of this repeated part"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/37#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6): the draft draws 4 copies of this repeated part"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/37#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__text",
+				"reason": "the first copy of this repeated part has no element here, so neither has this one"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/37#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__text",
+				"reason": "the first copy of this repeated part has no element here, so neither has this one"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/37#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text",
+				"reason": "the first copy of this repeated part has no element here, so neither has this one"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/37#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__text",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5): the draft draws 4 copies of this repeated part"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/37#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__text",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6): the draft draws 4 copies of this repeated part"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/37#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5)",
+				"reason": "the draft draws 4 copies of this repeated part"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/37#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6)",
+				"reason": "the draft draws 4 copies of this repeated part"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/37#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/37#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/37#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/37#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__icon",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5): the draft draws 4 copies of this repeated part"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/37#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__icon",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6): the draft draws 4 copies of this repeated part"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/37#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__description",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/37#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__text > .sgs-icon-list__description",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/37#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__text > .sgs-icon-list__description",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/41#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/41#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/41#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/42#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/43#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/43#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon > svg",
+				"reason": ".sgs-button__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/54#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/54#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/54#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/54#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(1)",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/54#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(2)",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/55#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/55#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/55#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/56#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/56#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-info__link",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/56#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1) > .sgs-business-hours__day",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/56#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon > svg",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/56#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2) > .sgs-business-hours__day",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/56#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3) > .sgs-business-hours__day",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/56#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4) > .sgs-business-hours__day",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/56#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1)",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/56#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2)",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/56#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3)",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/56#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4)",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/57#0",
+				"block": "sgs/multi-button",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/57#0",
+				"block": "sgs/multi-button",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/58#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/58#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon > svg",
+				"reason": ".sgs-button__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/59#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/59#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon > svg",
+				"reason": ".sgs-button__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/60#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/60#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-info__link",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/60#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1) > .sgs-business-hours__day",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/60#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon > svg",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/60#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2) > .sgs-business-hours__day",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/60#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3) > .sgs-business-hours__day",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/60#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4) > .sgs-business-hours__day",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/60#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1)",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/60#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2)",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/60#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3)",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteFooter@250#0/60#0",
+				"block": "sgs/business-info",
+				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4)",
+				"reason": ".sgs-business-info: the draft has no element of its own here"
+			}
+		]
 	},
 	"widthAlternatives": [],
 	"problems": [],
@@ -55,6 +919,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/site-footer",
@@ -85,20 +950,26 @@
 			"block": "sgs/site-footer-row",
 			"action": null,
 			"reason": null,
-			"source": null,
+			"source": "client decision",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"ruleWould": {
+				"label": "sgs/container",
+				"reason": "",
+				"decision": {
+					"label": "sgs/site-footer-row",
+					"reason": "Bean accepted sgs/site-footer-row in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)"
+				}
+			},
 			"candidates": [
 				{
 					"block": "sgs/site-footer-row",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"block_composition: sgs/site-footer (section-root) accepts [\"sgs/site-footer-row\"]; sgs/site-footer-row is a content-block",
-						"sgs/site-footer accepts sgs/site-footer-row as its only child",
-						"element holds 1 block children"
+						"client decision: Bean accepted sgs/site-footer-row in the intake review on 2026-10-29 (recovered from the review history, 2026-11-01)"
 					]
 				}
 			],
@@ -108,7 +979,9 @@
 				"1440": "shots/Root_SiteFooter_250_0_3_0@1440.png"
 			},
 			"snippet": "<section aria-label=\"Instagram\" style=\"background:#FBF3DC;padding:{{ igPad }}\" data-dc-tpl=\"3\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"4\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:24px\" data-dc-tpl=\"5\"> <div data-dc-tpl=\"6\"> <div style=\"font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform",
-			"attributes": {},
+			"attributes": {
+				"rowSlot": "top"
+			},
 			"slots": {
 				".sgs-container__inner": {
 					"tpl": "Root>SiteFooter@250#0/4#0"
@@ -152,6 +1025,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -173,6 +1047,14 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>SiteFooter@250#0/6#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root>SiteFooter@250#0/9#0"
+				}
 			}
 		},
 		{
@@ -189,6 +1071,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -208,6 +1091,14 @@
 			"snippet": "<div data-dc-tpl=\"6\"> <div style=\"font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform:rotate(-2deg);transform-origin:left\" data-dc-tpl=\"7\">fresh out the oven…</div> <h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ h2 }};line-height:1.05\" data-dc-tpl=\"8\">@mamasmunches</h2> </div>",
 			"attributes": {
 				"tagName": "div"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>SiteFooter@250#0/7#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root>SiteFooter@250#0/8#0"
+				}
 			}
 		},
 		{
@@ -216,21 +1107,21 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "fresh out the oven…",
-			"block": "sgs/text",
+			"block": "sgs/label",
 			"action": null,
 			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/text",
-					"score": 0.25,
+					"block": "sgs/label",
+					"score": 1,
 					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the @mamasmunches h2)."
 					]
 				}
 			],
@@ -258,6 +1149,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -276,7 +1168,8 @@
 			},
 			"snippet": "<h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ h2 }};line-height:1.05\" data-dc-tpl=\"8\">@mamasmunches</h2>",
 			"attributes": {
-				"content": "@mamasmunches"
+				"content": "@mamasmunches",
+				"level": "h2"
 			}
 		},
 		{
@@ -293,6 +1186,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -319,6 +1213,9 @@
 			"slots": {
 				".sgs-button__icon > svg": {
 					"tpl": "Root>SiteFooter@250#0/10#0"
+				},
+				".sgs-button__label": {
+					"tpl": "Root>SiteFooter@250#0/9#0"
 				}
 			}
 		},
@@ -336,6 +1233,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "logoGrid",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/gallery",
@@ -352,7 +1250,18 @@
 				"1440": "shots/Root_SiteFooter_250_0_14_0@1440.png"
 			},
 			"snippet": "<div style=\"display:grid;grid-auto-flow:{{ flow }};grid-auto-columns:{{ autoCols }};grid-template-columns:{{ igCols }};gap:14px;overflow-x:{{ ovx }};scroll-snap-type:x mandatory;scrollbar-width:none;margin:{{ bleedM }};padding:{{ bleedP }}\" data-dc-tpl=\"14\"> <sc-for list=\"{{ posts }}\" as=\"p\" hint-placeholder-count=\"0\" data-dc-tpl=\"15\"> <a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"",
-			"attributes": {}
+			"attributes": {},
+			"slots": {
+				".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(1)": {
+					"tpl": "Root>SiteFooter@250#0/16#0"
+				},
+				".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(2)": {
+					"tpl": "Root>SiteFooter@250#0/16#1"
+				},
+				".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(3)": {
+					"tpl": "Root>SiteFooter@250#0/16#2"
+				}
+			}
 		},
 		{
 			"order": 9,
@@ -661,6 +1570,7 @@
 				"kind": "presence",
 				"detail": "the strip's items are built by the draft's code (its template holds one text binding): add each item to the trust bar"
 			},
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/trust-bar",
@@ -679,6 +1589,11 @@
 			"snippet": "<div aria-hidden=\"true\" sc-camel-on-mouse-enter=\"{{ tagIn }}\" sc-camel-on-mouse-leave=\"{{ tagOut }}\" style=\"background:#F9CF6E;border-top:2px solid #3A2A22;border-bottom:2px solid #3A2A22;overflow:hidden;padding:14px 0\" data-dc-tpl=\"18\">{{ tagline }}</div>",
 			"attributes": {
 				"title": "boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦"
+			},
+			"slots": {
+				".sgs-trust-bar__title": {
+					"tpl": "Root>SiteFooter@250#0/18#0"
+				}
 			}
 		},
 		{
@@ -689,21 +1604,19 @@
 			"words": "",
 			"block": "sgs/site-footer-row",
 			"action": null,
-			"reason": null,
-			"source": null,
+			"reason": "the columns row of the footer",
+			"source": "rule footerSlots",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "footerSlots",
 			"candidates": [
 				{
 					"block": "sgs/site-footer-row",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"block_composition: sgs/site-footer (section-root) accepts [\"sgs/site-footer-row\"]; sgs/site-footer-row is a content-block",
-						"sgs/site-footer accepts sgs/site-footer-row as its only child",
-						"element holds 1 block children"
+						"rule footerSlots: a footer is always three rows: its grid of link groups is the columns row, a strip above it is the top row, a strip below it (a legal line, a copyright bar) and any floating element it carries is the bottom row (Bean, 2026-10-22)"
 					]
 				}
 			],
@@ -713,7 +1626,9 @@
 				"1440": "shots/Root_SiteFooter_250_0_19_0@1440.png"
 			},
 			"snippet": "<div style=\"background:#F5C2C8;padding:{{ mainPad }};overflow:hidden\" data-dc-tpl=\"19\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"20\"> <div style=\"display:grid;grid-template-columns:{{ topCols }};gap:28px;align-items:center;padding-bottom:{{ topGap }};border-bottom:2px dashed rgba(58,42,34,.28)\" data-dc-tpl=\"21\"> <div style=\"display:flex;flex-direction:column;gap:18px;align-items:{{",
-			"attributes": {},
+			"attributes": {
+				"rowSlot": "columns"
+			},
 			"slots": {
 				".sgs-container__inner": {
 					"tpl": "Root>SiteFooter@250#0/20#0"
@@ -757,6 +1672,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -778,6 +1694,14 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>SiteFooter@250#0/22#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root>SiteFooter@250#0/26#0"
+				}
 			}
 		},
 		{
@@ -794,6 +1718,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -815,6 +1740,14 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>SiteFooter@250#0/23#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root>SiteFooter@250#0/24#0"
+				}
 			}
 		},
 		{
@@ -831,6 +1764,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -849,7 +1783,8 @@
 			},
 			"snippet": "<h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ ctaSize }};line-height:1;letter-spacing:-0.02em;text-wrap:balance\" data-dc-tpl=\"23\">Hungry? Of course you are.</h2>",
 			"attributes": {
-				"content": "Hungry? Of course you are."
+				"content": "Hungry? Of course you are.",
+				"level": "h2"
 			}
 		},
 		{
@@ -866,6 +1801,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "pillButton",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -883,7 +1819,13 @@
 			},
 			"snippet": "<a href=\"Home.dc.html#build\" style=\"height:60px;padding:0 30px;border-radius:999px;border:2px solid #3A2A22;background:#EE8088;color:#3A2A22;font-weight:700;font-size:17px;display:flex;align-items:center;gap:10px;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s\" style-hover=\"background:#F9CF6E;transform:translate(-2px,-2px);box-shadow:6px 6",
 			"attributes": {
+				"url": "/#build",
 				"label": "Build your box →"
+			},
+			"slots": {
+				".sgs-button__icon > svg": {
+					"tpl": "Root>SiteFooter@250#0/25#0"
+				}
 			}
 		},
 		{
@@ -923,6 +1865,7 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/responsive-logo",
@@ -969,6 +1912,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -990,6 +1934,14 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>SiteFooter@250#0/28#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root>SiteFooter@250#0/35#0"
+				}
 			}
 		},
 		{
@@ -1006,6 +1958,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1027,6 +1980,14 @@
 			"attributes": {
 				"tagName": "nav",
 				"layout": "stack"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>SiteFooter@250#0/29#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root>SiteFooter@250#0/30#0"
+				}
 			}
 		},
 		{
@@ -1043,6 +2004,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -1116,6 +2078,26 @@
 			"item": {
 				"text": "All Zookies",
 				"url": "/shop/"
+			},
+			"slots": {
+				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text": {
+					"tpl": "Root>SiteFooter@250#0/30#0"
+				},
+				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)": {
+					"tpl": "Root>SiteFooter@250#0/30#0"
+				},
+				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2)": {
+					"tpl": "Root>SiteFooter@250#0/31#0"
+				},
+				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3)": {
+					"tpl": "Root>SiteFooter@250#0/32#0"
+				},
+				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4)": {
+					"tpl": "Root>SiteFooter@250#0/33#0"
+				},
+				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5)": {
+					"tpl": "Root>SiteFooter@250#0/34#0"
+				}
 			}
 		},
 		{
@@ -1288,6 +2270,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1309,6 +2292,14 @@
 			"attributes": {
 				"tagName": "nav",
 				"layout": "stack"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>SiteFooter@250#0/36#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root>SiteFooter@250#0/37#0"
+				}
 			}
 		},
 		{
@@ -1325,6 +2316,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -1398,6 +2390,23 @@
 			"item": {
 				"text": "FAQs",
 				"url": "/help/"
+			},
+			"slots": {
+				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text": {
+					"tpl": "Root>SiteFooter@250#0/37#0"
+				},
+				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)": {
+					"tpl": "Root>SiteFooter@250#0/37#0"
+				},
+				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2)": {
+					"tpl": "Root>SiteFooter@250#0/38#0"
+				},
+				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3)": {
+					"tpl": "Root>SiteFooter@250#0/39#0"
+				},
+				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4)": {
+					"tpl": "Root>SiteFooter@250#0/40#0"
+				}
 			}
 		},
 		{
@@ -1531,6 +2540,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1552,6 +2562,14 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>SiteFooter@250#0/42#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root>SiteFooter@250#0/43#0"
+				}
 			}
 		},
 		{
@@ -1560,21 +2578,21 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "say hello",
-			"block": "sgs/text",
+			"block": "sgs/heading",
 			"action": null,
 			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/text",
-					"score": 0.25,
+					"block": "sgs/heading",
+					"score": 1,
 					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: The script title of the footer's contact column; its sibling columns' script titles (shop, help) are sgs/heading by the columnHeading rule, so one footer keeps one block."
 					]
 				}
 			],
@@ -1585,7 +2603,7 @@
 			},
 			"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444\" data-dc-tpl=\"42\">say hello</div>",
 			"attributes": {
-				"text": "say hello"
+				"content": "say hello"
 			}
 		},
 		{
@@ -1602,6 +2620,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "siteInfoLink",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -1622,6 +2641,11 @@
 				"url": "mailto:Zainab@mamasmunches.com",
 				"linkSource": "email",
 				"labelFromSiteInfo": true
+			},
+			"slots": {
+				".sgs-button__label": {
+					"tpl": "Root>SiteFooter@250#0/43#0"
+				}
 			}
 		},
 		{
@@ -1638,6 +2662,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/social-icons",
@@ -1771,22 +2796,33 @@
 			"tag": "div",
 			"depth": 3,
 			"words": "",
-			"block": null,
-			"action": "unresolved",
-			"reason": "no block fits this element: decide it with skeleton.mjs decide",
-			"source": null,
-			"confidence": 0,
-			"low": true,
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": null,
-			"candidates": [],
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"client decision: Bean marked block:sgs/container in the intake review on 2026-10-26"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_SiteFooter_250_0_54_0@375.png",
 				"1440": "shots/Root_SiteFooter_250_0_54_0@1440.png"
 			},
 			"snippet": "<div style=\"height:8px\" data-dc-tpl=\"54\"></div>",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div"
+			}
 		},
 		{
 			"order": 51,
@@ -1802,6 +2838,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1823,6 +2860,14 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>SiteFooter@250#0/56#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root>SiteFooter@250#0/57#0"
+				}
 			}
 		},
 		{
@@ -1839,6 +2884,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/business-info",
@@ -1883,6 +2929,7 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/multi-button",
@@ -1910,6 +2957,14 @@
 			"snippet": "<span style=\"display:flex;justify-content:center;gap:18px\" data-dc-tpl=\"57\"><a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"58\">Privacy</a><a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"59\">Terms</a></span>",
 			"attributes": {
 				"layout": "flex"
+			},
+			"slots": {
+				".sgs-button:nth-of-type(1)": {
+					"tpl": "Root>SiteFooter@250#0/58#0"
+				},
+				".sgs-button:nth-of-type(2)": {
+					"tpl": "Root>SiteFooter@250#0/59#0"
+				}
 			}
 		},
 		{
@@ -1926,6 +2981,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -1946,6 +3002,11 @@
 			"attributes": {
 				"label": "Privacy",
 				"url": "/help/#legal"
+			},
+			"slots": {
+				".sgs-button__label": {
+					"tpl": "Root>SiteFooter@250#0/58#0"
+				}
 			}
 		},
 		{
@@ -1962,6 +3023,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -1982,6 +3044,11 @@
 			"attributes": {
 				"label": "Terms",
 				"url": "/help/#legal"
+			},
+			"slots": {
+				".sgs-button__label": {
+					"tpl": "Root>SiteFooter@250#0/59#0"
+				}
 			}
 		},
 		{
@@ -1998,6 +3065,7 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/business-info",

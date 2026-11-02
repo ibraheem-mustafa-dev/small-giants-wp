@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-28T06:42:46.338Z",
-	"inventory": "2026-10-28T06:42:46.052Z",
-	"source": "http://127.0.0.1:57904/",
+	"generated": "2026-11-02T04:39:10.073Z",
+	"inventory": "2026-11-01T21:22:37.344Z",
+	"source": "http://127.0.0.1:62097/",
 	"surface": "header",
 	"siteName": "Eye Care Birmingham",
 	"surfaceParts": [
@@ -11,7 +11,7 @@
 			"name": "Mega menu",
 			"openedBy": "Hover or keyboard focus on Sunglasses / Brands / Lenses / Help after 150ms (instant when switching panels); click on touch devices (hover: none); click on Brands toggles; footer \"All brands\" toggles Brands",
 			"roots": [
-				"Eye Care Birmingham/53"
+				"Eye Care Birmingham/51"
 			]
 		},
 		{
@@ -20,7 +20,7 @@
 			"name": "Mobile menu",
 			"openedBy": "Menu button (below 1060px)",
 			"roots": [
-				"Eye Care Birmingham/1165"
+				"Eye Care Birmingham/1162"
 			]
 		}
 	],
@@ -42,26 +42,408 @@
 		"rule": 1
 	},
 	"counts": {
-		"inventoryElements": 60,
+		"inventoryElements": 58,
 		"parts": 24,
-		"rows": 41,
-		"skeletonNodes": 23,
-		"expandedNodes": 23,
-		"low": 10,
-		"removed": 19,
+		"rows": 43,
+		"skeletonNodes": 12,
+		"expandedNodes": 12,
+		"low": 3,
+		"removed": 32,
 		"unresolved": 0,
 		"byRule": {
 			"headerSlots": 1,
-			"widthWrapper": 1,
+			"marquee": 9,
 			"navigation": 11,
 			"drawerOpener": 5,
-			"wholeCardLink": 1,
+			"homeLink": 1,
 			"siteInfoLink": 1,
+			"navigationLink": 2,
 			"solitaryIcon": 1,
 			"blockPartOpener": 3
 		}
 	},
+	"partPairing": {
+		"paired": 22,
+		"unpaired": [
+			{
+				"key": "Root/13#0",
+				"block": "sgs/site-header",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/13#0",
+				"block": "sgs/site-header",
+				"slot": "@controls",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/13#0",
+				"block": "sgs/site-header",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/8#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__title",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/8#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__circle",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root/8#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(2) > .sgs-trust-bar__circle",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root/8#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(3) > .sgs-trust-bar__circle",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root/8#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(4) > .sgs-trust-bar__circle",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root/8#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/8#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/8#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/8#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(2) > .sgs-trust-bar__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/8#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(3) > .sgs-trust-bar__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/8#0",
+				"block": "sgs/trust-bar",
+				"slot": ".sgs-trust-bar__badge:nth-of-type(4) > .sgs-trust-bar__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/15#0",
+				"block": "sgs/nav-bar-menu",
+				"slot": ".sgs-nav-bar-menu__bar",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/15#0",
+				"block": "sgs/nav-bar-menu",
+				"slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(4) > .sgs-nav-bar-menu__link",
+				"reason": ".sgs-nav-bar-menu__bar: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/15#0",
+				"block": "sgs/nav-bar-menu",
+				"slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(5) > .sgs-nav-bar-menu__link",
+				"reason": ".sgs-nav-bar-menu__bar: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/15#0",
+				"block": "sgs/nav-bar-menu",
+				"slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(6) > .sgs-nav-bar-menu__link",
+				"reason": ".sgs-nav-bar-menu__bar: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/15#0",
+				"block": "sgs/nav-bar-menu",
+				"slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+				"reason": ".sgs-nav-bar-menu__bar: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/15#0",
+				"block": "sgs/nav-bar-menu",
+				"slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root",
+				"reason": ".sgs-nav-bar-menu__bar: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/15#0",
+				"block": "sgs/nav-bar-menu",
+				"slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-text",
+				"reason": ".sgs-nav-bar-menu__toggle-wrap: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/15#0",
+				"block": "sgs/nav-bar-menu",
+				"slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__submenu-wrap > .sgs-nav-bar-menu__submenu",
+				"reason": ".sgs-nav-bar-menu__bar: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/15#0",
+				"block": "sgs/nav-bar-menu",
+				"slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__submenu-wrap > .sgs-nav-bar-menu__submenu > .sgs-nav-bar-menu__subitem:nth-of-type(1) > .sgs-nav-bar-menu__sublink",
+				"reason": ".sgs-nav-bar-menu__bar: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/15#0",
+				"block": "sgs/nav-bar-menu",
+				"slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__submenu-wrap > .sgs-nav-bar-menu__submenu > .sgs-nav-bar-menu__subitem:nth-of-type(2) > .sgs-nav-bar-menu__sublink",
+				"reason": ".sgs-nav-bar-menu__bar: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/15#0",
+				"block": "sgs/nav-bar-menu",
+				"slot": "@scrim",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/15#0",
+				"block": "sgs/nav-bar-menu",
+				"slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(4) > .sgs-nav-bar-menu__link > .sgs-nav-bar-menu__badge",
+				"reason": ".sgs-nav-bar-menu__bar: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/15#0",
+				"block": "sgs/nav-bar-menu",
+				"slot": "@companion",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/15#0",
+				"block": "sgs/nav-bar-menu",
+				"slot": "@companion > .sgs-nav-bar-menu__detach-wrap > .sgs-nav-bar-menu__burger",
+				"reason": "@companion: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/15#0",
+				"block": "sgs/nav-bar-menu",
+				"slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon",
+				"reason": ".sgs-nav-bar-menu__toggle-wrap: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/15#0",
+				"block": "sgs/nav-bar-menu",
+				"slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret",
+				"reason": ".sgs-nav-bar-menu__bar: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/15#0",
+				"block": "sgs/nav-bar-menu",
+				"slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)",
+				"reason": ".sgs-nav-bar-menu__toggle-wrap: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/29#0",
+				"block": "sgs/responsive-logo",
+				"slot": ".sgs-responsive-logo__link > .sgs-responsive-logo__picture > .sgs-responsive-logo__image",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/30#0",
+				"block": "sgs/responsive-logo",
+				"slot": ".sgs-responsive-logo__link > .sgs-responsive-logo__picture > .sgs-responsive-logo__image",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/31#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/31#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/31#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/33#0",
+				"block": "sgs/button",
+				"slot": ".sgs-button__icon",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root/38#0",
+				"block": "sgs/icon",
+				"slot": ".sgs-icon__shape > .sgs-icon__glyph",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root/44#0",
+				"block": "sgs/cart",
+				"slot": ".sgs-cart__trigger > .sgs-cart__icon",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root/44#0",
+				"block": "sgs/cart",
+				"slot": ".sgs-cart__trigger > .sgs-cart__badge",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/44#0",
+				"block": "sgs/cart",
+				"slot": ".sgs-cart__panel",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root/44#0",
+				"block": "sgs/cart",
+				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__free-delivery > .sgs-cart__free-delivery-track > .sgs-cart__free-delivery-fill",
+				"reason": ".sgs-cart__panel: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/44#0",
+				"block": "sgs/cart",
+				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__free-delivery > .sgs-cart__free-delivery-track",
+				"reason": ".sgs-cart__panel: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/44#0",
+				"block": "sgs/cart",
+				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-header > .sgs-cart__panel-heading",
+				"reason": ".sgs-cart__panel: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/44#0",
+				"block": "sgs/cart",
+				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-header > .sgs-cart__panel-heading > .sgs-cart__panel-count",
+				"reason": ".sgs-cart__panel: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/44#0",
+				"block": "sgs/cart",
+				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-footer > .sgs-cart__panel-subtotal",
+				"reason": ".sgs-cart__panel: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/44#0",
+				"block": "sgs/cart",
+				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__free-delivery > .sgs-cart__free-delivery-text",
+				"reason": ".sgs-cart__panel: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/44#0",
+				"block": "sgs/cart",
+				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-footer > .sgs-cart__panel-actions > .sgs-cart__panel-checkout",
+				"reason": ".sgs-cart__panel: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/44#0",
+				"block": "sgs/cart",
+				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-footer > .sgs-cart__panel-note",
+				"reason": ".sgs-cart__panel: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/44#0",
+				"block": "sgs/cart",
+				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-header",
+				"reason": ".sgs-cart__panel: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/44#0",
+				"block": "sgs/cart",
+				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-header > .sgs-cart__panel-close",
+				"reason": ".sgs-cart__panel: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/44#0",
+				"block": "sgs/cart",
+				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-footer",
+				"reason": ".sgs-cart__panel: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/44#0",
+				"block": "sgs/cart",
+				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-footer > .sgs-cart__panel-subtotal > .sgs-cart__panel-subtotal-value",
+				"reason": ".sgs-cart__panel: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/44#0",
+				"block": "sgs/cart",
+				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-items",
+				"reason": ".sgs-cart__panel: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/44#0",
+				"block": "sgs/cart",
+				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-header > .sgs-cart__panel-close > svg",
+				"reason": ".sgs-cart__panel: the draft has no element of its own here"
+			},
+			{
+				"key": "Root/44#0",
+				"block": "sgs/cart",
+				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-footer > .sgs-cart__panel-actions",
+				"reason": ".sgs-cart__panel: the draft has no element of its own here"
+			}
+		]
+	},
 	"widthAlternatives": [
+		{
+			"key": "Root/10#4",
+			"into": "Root/8#0",
+			"block": "sgs/trust-bar",
+			"widths": [
+				375
+			],
+			"words": "100% genuine, supplied direct by the brands",
+			"reason": "a label shown only at 375px inside a block with one label: no setting holds a per-width label"
+		},
+		{
+			"key": "Root/10#5",
+			"into": "Root/8#0",
+			"block": "sgs/trust-bar",
+			"widths": [
+				375
+			],
+			"words": "Free UK delivery over £75, or collect in Birmingham",
+			"reason": "a label shown only at 375px inside a block with one label: no setting holds a per-width label"
+		},
+		{
+			"key": "Root/10#6",
+			"into": "Root/8#0",
+			"block": "sgs/trust-bar",
+			"widths": [
+				375
+			],
+			"words": "Prescription lenses glazed here in 7–10 days",
+			"reason": "a label shown only at 375px inside a block with one label: no setting holds a per-width label"
+		},
+		{
+			"key": "Root/10#7",
+			"into": "Root/8#0",
+			"block": "sgs/trust-bar",
+			"widths": [
+				375
+			],
+			"words": "30 days to return, free adjustments for life",
+			"reason": "a label shown only at 375px inside a block with one label: no setting holds a per-width label"
+		},
 		{
 			"key": "Root/17#0",
 			"into": "Root/15#0",
@@ -90,6 +472,7 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/site-header",
@@ -108,7 +491,7 @@
 					"share": 0.417,
 					"evidence": [
 						"block_capabilities: sgs/hero lists \"header\" (the draft root tag)",
-						"block_composition: sgs/hero is a section-root accepting [\"sgs/media\"]",
+						"block_composition: sgs/hero is a section-root accepting any block",
 						"the root of the surface"
 					]
 				}
@@ -154,11 +537,6 @@
 			"attributes": {
 				"rowSlot": "top"
 			},
-			"slots": {
-				".sgs-container__inner": {
-					"tpl": "Root/8#0"
-				}
-			},
 			"strip": "Root/7#0"
 		},
 		{
@@ -167,15 +545,25 @@
 			"tag": "div",
 			"depth": 2,
 			"words": "",
-			"block": null,
-			"action": "unwrap",
-			"reason": "a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there",
-			"source": "rule widthWrapper",
+			"block": "sgs/trust-bar",
+			"action": null,
+			"reason": "a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee, the block chosen by what its items show and where it sits: logos alone make sgs/brand-strip; labels, alone or each with an icon or an image, make sgs/trust-bar when its item fields hold every kind the items show (array_item_schema roles: icon-slug or svg, image-object, text-content) and the section block fits where the strip sits; otherwise sgs/brand-strip showing the names as text. A section block (block_composition.container_kind section, as sgs/trust-bar) never sits inside another section, and sits only in a slot that gives it its full width: a header row, the footer's top row, a drawer's, modal's or mega panel's body, any slot the draft lays out as one full-width child (it spans its parent's content box through every ancestor up to the surface root or the section root that holds only its slot blocks, and no sibling sits beside it); never a slot that lays its children out as columns (the footer's column and bottom rows) and never a page section's own container. The marquee motion and the widths it runs at are the motion writer's (sgsMotion, belowBreakpoint), and the repeated items are its items (Bean, 2026-10-31)",
+			"source": "rule marquee",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "widthWrapper",
-			"candidates": [],
+			"rule": "marquee",
+			"acceptedDecision": true,
+			"candidates": [
+				{
+					"block": "sgs/trust-bar",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule marquee: a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee, the block chosen by what its items show and where it sits: logos alone make sgs/brand-strip; labels, alone or each with an icon or an image, make sgs/trust-bar when its item fields hold every kind the items show (array_item_schema roles: icon-slug or svg, image-object, text-content) and the section block fits where the strip sits; otherwise sgs/brand-strip showing the names as text. A section block (block_composition.container_kind section, as sgs/trust-bar) never sits inside another section, and sits only in a slot that gives it its full width: a header row, the footer's top row, a drawer's, modal's or mega panel's body, any slot the draft lays out as one full-width child (it spans its parent's content box through every ancestor up to the surface root or the section root that holds only its slot blocks, and no sibling sits beside it); never a slot that lays its children out as columns (the footer's column and bottom rows) and never a page section's own container. The marquee motion and the widths it runs at are the motion writer's (sgsMotion, belowBreakpoint), and the repeated items are its items (Bean, 2026-10-31)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_8_0@375.png",
@@ -183,6 +571,44 @@
 			},
 			"snippet": "<div style=\"display: {{ tickerDisplay }};width: {{ tickerW }};animation: {{ tickerAnim }};max-width:1440px;margin:0 auto;justify-content: {{ tickerJustify }};flex-wrap: {{ tickerWrap }};gap: {{ tickerGap }};padding: {{ tickerPad }}\" style-hover=\"animation-play-state:paused\" data-dc-tpl=\"8\"> <sc-for list=\"{{ ticker }}\" as=\"t\" hint-placeholder-count=\"4\" data-dc-tpl=\"9\"> <span style=\"padding: {{ tick",
 			"attributes": {},
+			"slots": {
+				".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label": {
+					"tpl": "Root/10#0"
+				},
+				".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__circle > svg": {
+					"tpl": "Root/11#0"
+				},
+				".sgs-trust-bar__badge:nth-of-type(2) > .sgs-trust-bar__circle > svg": {
+					"tpl": "Root/11#1"
+				},
+				".sgs-trust-bar__badge:nth-of-type(3) > .sgs-trust-bar__circle > svg": {
+					"tpl": "Root/11#2"
+				},
+				".sgs-trust-bar__badge:nth-of-type(4) > .sgs-trust-bar__circle > svg": {
+					"tpl": "Root/11#3"
+				},
+				".sgs-trust-bar__badge:nth-of-type(2) > .sgs-trust-bar__label": {
+					"tpl": "Root/10#1"
+				},
+				".sgs-trust-bar__badge:nth-of-type(3) > .sgs-trust-bar__label": {
+					"tpl": "Root/10#2"
+				},
+				".sgs-trust-bar__badge:nth-of-type(4) > .sgs-trust-bar__label": {
+					"tpl": "Root/10#3"
+				},
+				".sgs-trust-bar__badge:nth-of-type(1)": {
+					"tpl": "Root/10#0"
+				},
+				".sgs-trust-bar__badge:nth-of-type(2)": {
+					"tpl": "Root/10#1"
+				},
+				".sgs-trust-bar__badge:nth-of-type(3)": {
+					"tpl": "Root/10#2"
+				},
+				".sgs-trust-bar__badge:nth-of-type(4)": {
+					"tpl": "Root/10#3"
+				}
+			},
 			"strip": "Root/7#0"
 		},
 		{
@@ -191,24 +617,16 @@
 			"tag": "span",
 			"depth": 3,
 			"words": "100% genuine, supplied direct by the brands",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/trust-bar: rule marquee",
 			"source": null,
-			"confidence": 0.25,
-			"low": true,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"confidence": 1,
+			"low": false,
+			"stale": "the client decision for Root/10#0 (sgs/text) no longer applies: sgs/trust-bar draws this element",
+			"rule": "marquee",
+			"into": "Root/8#0",
+			"candidates": [],
 			"parts": [
 				"Root/11#0"
 			],
@@ -217,9 +635,7 @@
 				"1440": "shots/Root_10_0@1440.png"
 			},
 			"snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
-			"attributes": {
-				"text": "100% genuine, supplied direct by the brands"
-			},
+			"attributes": {},
 			"strip": "Root/7#0"
 		},
 		{
@@ -228,24 +644,16 @@
 			"tag": "span",
 			"depth": 3,
 			"words": "Free UK delivery over £75, or collect in Birmingham",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/trust-bar: rule marquee",
 			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"confidence": 1,
+			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"rule": "marquee",
+			"into": "Root/8#0",
+			"candidates": [],
 			"parts": [
 				"Root/11#1"
 			],
@@ -254,9 +662,7 @@
 				"1440": "shots/Root_10_1@1440.png"
 			},
 			"snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
-			"attributes": {
-				"text": "Free UK delivery over £75, or collect in Birmingham"
-			},
+			"attributes": {},
 			"strip": "Root/7#0"
 		},
 		{
@@ -265,24 +671,16 @@
 			"tag": "span",
 			"depth": 3,
 			"words": "Prescription lenses glazed here in 7–10 days",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/trust-bar: rule marquee",
 			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"confidence": 1,
+			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"rule": "marquee",
+			"into": "Root/8#0",
+			"candidates": [],
 			"parts": [
 				"Root/11#2"
 			],
@@ -291,9 +689,7 @@
 				"1440": "shots/Root_10_2@1440.png"
 			},
 			"snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
-			"attributes": {
-				"text": "Prescription lenses glazed here in 7–10 days"
-			},
+			"attributes": {},
 			"strip": "Root/7#0"
 		},
 		{
@@ -302,24 +698,16 @@
 			"tag": "span",
 			"depth": 3,
 			"words": "30 days to return, free adjustments for life",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/trust-bar: rule marquee",
 			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"confidence": 1,
+			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"rule": "marquee",
+			"into": "Root/8#0",
+			"candidates": [],
 			"parts": [
 				"Root/11#3"
 			],
@@ -328,9 +716,7 @@
 				"1440": "shots/Root_10_3@1440.png"
 			},
 			"snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
-			"attributes": {
-				"text": "30 days to return, free adjustments for life"
-			},
+			"attributes": {},
 			"strip": "Root/7#0"
 		},
 		{
@@ -339,24 +725,15 @@
 			"tag": "span",
 			"depth": 3,
 			"words": "100% genuine, supplied direct by the brands",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"block": null,
+			"action": "remove",
+			"reason": "Settled by evidence: the finaliser's pick in the intake review on 2026-11-01 (draft code, built page and block facts; sites/eye-care-ward-end/build/intake/review-evidence.md): A marquee duplicate of the ticker item (shown only off-screen at 375, x 1341); its other copies are drawn by sgs/brand-strip (rule marquee), so this copy folds into the strip too.",
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"candidates": [],
 			"parts": [
 				"Root/11#4"
 			],
@@ -364,35 +741,50 @@
 				"375": "shots/Root_10_4@375.png"
 			},
 			"snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
-			"attributes": {
-				"text": "100% genuine, supplied direct by the brands"
-			},
+			"attributes": {},
 			"strip": "Root/7#0"
 		},
 		{
 			"order": 8,
+			"key": "Root/10#4",
+			"tag": "span",
+			"depth": 3,
+			"words": "100% genuine, supplied direct by the brands",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/trust-bar: a label shown only at 375px inside a block with one label: no setting holds a per-width label",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": "the client decision for Root/10#4 (remove) no longer applies: drawn by sgs/trust-bar: a label shown only at 375px inside a block with one label: no setting holds a per-width label",
+			"rule": "marquee",
+			"into": "Root/8#0",
+			"candidates": [],
+			"parts": [
+				"Root/11#4"
+			],
+			"screenshots": {
+				"375": "shots/Root_10_4@375.png"
+			},
+			"snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
+			"attributes": {},
+			"strip": "Root/7#0"
+		},
+		{
+			"order": 9,
 			"key": "Root/10#5",
 			"tag": "span",
 			"depth": 3,
 			"words": "Free UK delivery over £75, or collect in Birmingham",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"block": null,
+			"action": "remove",
+			"reason": "Settled by evidence: the finaliser's pick in the intake review on 2026-11-01 (draft code, built page and block facts; sites/eye-care-ward-end/build/intake/review-evidence.md): A marquee duplicate of the ticker item (shown only off-screen at 375, x 1341); its other copies are drawn by sgs/brand-strip (rule marquee), so this copy folds into the strip too.",
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"candidates": [],
 			"parts": [
 				"Root/11#5"
 			],
@@ -400,35 +792,50 @@
 				"375": "shots/Root_10_5@375.png"
 			},
 			"snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
-			"attributes": {
-				"text": "Free UK delivery over £75, or collect in Birmingham"
-			},
+			"attributes": {},
 			"strip": "Root/7#0"
 		},
 		{
-			"order": 9,
+			"order": 10,
+			"key": "Root/10#5",
+			"tag": "span",
+			"depth": 3,
+			"words": "Free UK delivery over £75, or collect in Birmingham",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/trust-bar: a label shown only at 375px inside a block with one label: no setting holds a per-width label",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": "the client decision for Root/10#5 (remove) no longer applies: drawn by sgs/trust-bar: a label shown only at 375px inside a block with one label: no setting holds a per-width label",
+			"rule": "marquee",
+			"into": "Root/8#0",
+			"candidates": [],
+			"parts": [
+				"Root/11#5"
+			],
+			"screenshots": {
+				"375": "shots/Root_10_5@375.png"
+			},
+			"snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
+			"attributes": {},
+			"strip": "Root/7#0"
+		},
+		{
+			"order": 11,
 			"key": "Root/10#6",
 			"tag": "span",
 			"depth": 3,
 			"words": "Prescription lenses glazed here in 7–10 days",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"block": null,
+			"action": "remove",
+			"reason": "Settled by evidence: the finaliser's pick in the intake review on 2026-11-01 (draft code, built page and block facts; sites/eye-care-ward-end/build/intake/review-evidence.md): A marquee duplicate of the ticker item (shown only off-screen at 375, x 1341); its other copies are drawn by sgs/brand-strip (rule marquee), so this copy folds into the strip too.",
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"candidates": [],
 			"parts": [
 				"Root/11#6"
 			],
@@ -436,35 +843,50 @@
 				"375": "shots/Root_10_6@375.png"
 			},
 			"snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
-			"attributes": {
-				"text": "Prescription lenses glazed here in 7–10 days"
-			},
+			"attributes": {},
 			"strip": "Root/7#0"
 		},
 		{
-			"order": 10,
+			"order": 12,
+			"key": "Root/10#6",
+			"tag": "span",
+			"depth": 3,
+			"words": "Prescription lenses glazed here in 7–10 days",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/trust-bar: a label shown only at 375px inside a block with one label: no setting holds a per-width label",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": "the client decision for Root/10#6 (remove) no longer applies: drawn by sgs/trust-bar: a label shown only at 375px inside a block with one label: no setting holds a per-width label",
+			"rule": "marquee",
+			"into": "Root/8#0",
+			"candidates": [],
+			"parts": [
+				"Root/11#6"
+			],
+			"screenshots": {
+				"375": "shots/Root_10_6@375.png"
+			},
+			"snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
+			"attributes": {},
+			"strip": "Root/7#0"
+		},
+		{
+			"order": 13,
 			"key": "Root/10#7",
 			"tag": "span",
 			"depth": 3,
 			"words": "30 days to return, free adjustments for life",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"block": null,
+			"action": "remove",
+			"reason": "Settled by evidence: the finaliser's pick in the intake review on 2026-11-01 (draft code, built page and block facts; sites/eye-care-ward-end/build/intake/review-evidence.md): A marquee duplicate of the ticker item (shown only off-screen at 375, x 1341); its other copies are drawn by sgs/brand-strip (rule marquee), so this copy folds into the strip too.",
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"candidates": [],
 			"parts": [
 				"Root/11#7"
 			],
@@ -472,13 +894,37 @@
 				"375": "shots/Root_10_7@375.png"
 			},
 			"snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
-			"attributes": {
-				"text": "30 days to return, free adjustments for life"
-			},
+			"attributes": {},
 			"strip": "Root/7#0"
 		},
 		{
-			"order": 11,
+			"order": 14,
+			"key": "Root/10#7",
+			"tag": "span",
+			"depth": 3,
+			"words": "30 days to return, free adjustments for life",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/trust-bar: a label shown only at 375px inside a block with one label: no setting holds a per-width label",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": "the client decision for Root/10#7 (remove) no longer applies: drawn by sgs/trust-bar: a label shown only at 375px inside a block with one label: no setting holds a per-width label",
+			"rule": "marquee",
+			"into": "Root/8#0",
+			"candidates": [],
+			"parts": [
+				"Root/11#7"
+			],
+			"screenshots": {
+				"375": "shots/Root_10_7@375.png"
+			},
+			"snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
+			"attributes": {},
+			"strip": "Root/7#0"
+		},
+		{
+			"order": 15,
 			"key": "Root/14#0",
 			"tag": "div",
 			"depth": 1,
@@ -491,6 +937,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/site-header-row",
@@ -515,7 +962,7 @@
 			}
 		},
 		{
-			"order": 12,
+			"order": 16,
 			"key": "Root/15#0",
 			"tag": "nav",
 			"depth": 2,
@@ -528,6 +975,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "navigation",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/nav-bar-menu",
@@ -573,7 +1021,7 @@
 			]
 		},
 		{
-			"order": 13,
+			"order": 17,
 			"key": "Root/23#0",
 			"tag": "a",
 			"depth": 3,
@@ -596,7 +1044,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 14,
+			"order": 18,
 			"key": "Root/24#0",
 			"tag": "a",
 			"depth": 3,
@@ -619,7 +1067,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 15,
+			"order": 19,
 			"key": "Root/25#0",
 			"tag": "a",
 			"depth": 3,
@@ -642,7 +1090,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 16,
+			"order": 20,
 			"key": "Root/26#0",
 			"tag": "span",
 			"depth": 3,
@@ -665,7 +1113,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 17,
+			"order": 21,
 			"key": "Root/27#0",
 			"tag": "span",
 			"depth": 4,
@@ -688,7 +1136,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 18,
+			"order": 22,
 			"key": "Root/17#0",
 			"tag": "button",
 			"depth": 3,
@@ -711,7 +1159,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 19,
+			"order": 23,
 			"key": "Root/18#0",
 			"tag": "span",
 			"depth": 4,
@@ -722,7 +1170,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/18#0 (sgs/container) no longer applies: the element before it draws this element",
 			"rule": "drawerOpener",
 			"into": "Root/15#0",
 			"candidates": [],
@@ -734,7 +1182,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 20,
+			"order": 24,
 			"key": "Root/19#0",
 			"tag": "span",
 			"depth": 5,
@@ -757,7 +1205,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 21,
+			"order": 25,
 			"key": "Root/20#0",
 			"tag": "span",
 			"depth": 5,
@@ -780,7 +1228,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 22,
+			"order": 26,
 			"key": "Root/21#0",
 			"tag": "span",
 			"depth": 4,
@@ -791,7 +1239,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/21#0 (sgs/label) no longer applies: the element before it draws this element",
 			"rule": "drawerOpener",
 			"into": "Root/15#0",
 			"candidates": [],
@@ -801,7 +1249,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 23,
+			"order": 27,
 			"key": "Root/17#0",
 			"tag": "button",
 			"depth": 3,
@@ -824,7 +1272,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 24,
+			"order": 28,
 			"key": "Root/18#0",
 			"tag": "span",
 			"depth": 4,
@@ -835,7 +1283,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/18#0 (sgs/container) no longer applies: sgs/nav-bar-menu draws this element",
 			"rule": "navigation",
 			"into": "Root/15#0",
 			"candidates": [],
@@ -847,7 +1295,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 25,
+			"order": 29,
 			"key": "Root/19#0",
 			"tag": "span",
 			"depth": 5,
@@ -870,7 +1318,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 26,
+			"order": 30,
 			"key": "Root/20#0",
 			"tag": "span",
 			"depth": 5,
@@ -893,7 +1341,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 27,
+			"order": 31,
 			"key": "Root/21#0",
 			"tag": "span",
 			"depth": 4,
@@ -904,7 +1352,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/21#0 (sgs/label) no longer applies: sgs/nav-bar-menu draws this element",
 			"rule": "navigation",
 			"into": "Root/15#0",
 			"candidates": [],
@@ -914,43 +1362,78 @@
 			"attributes": {}
 		},
 		{
-			"order": 28,
+			"order": 32,
 			"key": "Root/28#0",
 			"tag": "a",
 			"depth": 2,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
-			"source": "rule wholeCardLink",
+			"block": null,
+			"action": "unwrap",
+			"reason": "the link around one or more logos (a mark and a wordmark) goes: the logo block links home itself",
+			"source": "rule homeLink",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "wholeCardLink",
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
-					]
-				}
-			],
+			"rule": "homeLink",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_28_0@375.png",
 				"1440": "shots/Root_28_0@1440.png"
 			},
-			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goHome }}\" aria-label=\"Eye Care Birmingham home\" style=\"display:flex;align-items:center;gap:12px;color:#141414\" data-dc-tpl=\"28\"> <img src=\"assets/ec-logo.png\" alt=\"\" aria-hidden=\"true\" width=\"{{ logoW }}\" height=\"{{ logoH }}\" style=\"display:block;object-fit:contain;transition:width .35s,height .35s\" data-dc-tpl=\"29\"> <span style=\"display:flex;flex-direction:colum",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goHome }}\" aria-label=\"Eye Care Birmingham home\" style=\"display:flex;align-items:center;gap:12px;color:#141414\" data-dc-tpl=\"28\"> <img src=\"assets/ec-logo.png\" alt=\"Eye Care Birmingham\" width=\"{{ logoW }}\" height=\"{{ logoH }}\" style=\"display:block;object-fit:contain;transition:width .35s,height .35s\" data-dc-tpl=\"29\"> <img src=\"assets/eye-care-wordmark.png\" alt=\"\"",
+			"attributes": {}
+		},
+		{
+			"order": 33,
+			"key": "Root/29#0",
+			"tag": "img",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/responsive-logo",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.82,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"acceptedDecision": true,
+			"candidates": [
+				{
+					"block": "sgs/responsive-logo",
+					"score": 1.15,
+					"share": 0.821,
+					"evidence": [
+						"block_capabilities: sgs/responsive-logo lists \"logo\"; block_composition: leaf",
+						"logo image: ec-logo.png / alt \"Eye Care Birmingham\" (an image whose file name, alt text or class says it is the brand mark)",
+						"the image's alt text is the site name \"Eye Care Birmingham\""
+					]
+				},
+				{
+					"block": "sgs/media",
+					"score": 0.25,
+					"share": 0.179,
+					"evidence": [
+						"html_tag_to_core_block: img -> sgs/media (\"Image — atomic media leaf\"), halved: the image is named as a logo"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_29_0@1440.png"
+			},
+			"snippet": "<img src=\"assets/ec-logo.png\" alt=\"Eye Care Birmingham\" width=\"{{ logoW }}\" height=\"{{ logoH }}\" style=\"display:block;object-fit:contain;transition:width .35s,height .35s\" data-dc-tpl=\"29\">",
 			"attributes": {
-				"tagName": "div",
-				"layout": "flex"
+				"logoId": 550
+			},
+			"carried": {
+				"logoId": "media-map.json: sites/eye-care-ward-end/handoff/assets/ec-logo.png"
 			}
 		},
 		{
-			"order": 29,
-			"key": "Root/29#0",
+			"order": 34,
+			"key": "Root/30#0",
 			"tag": "img",
 			"depth": 3,
 			"words": "",
@@ -962,6 +1445,7 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/responsive-logo",
@@ -969,7 +1453,7 @@
 					"share": 0.773,
 					"evidence": [
 						"block_capabilities: sgs/responsive-logo lists \"logo\"; block_composition: leaf",
-						"logo image: ec-logo.png / alt \"\" (an image whose file name, alt text or class says it is the brand mark)"
+						"logo image: eye-care-wordmark.png / alt \"\" (an image whose file name, alt text or class says it is the brand mark)"
 					]
 				},
 				{
@@ -983,120 +1467,19 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_29_0@1440.png"
-			},
-			"snippet": "<img src=\"assets/ec-logo.png\" alt=\"\" aria-hidden=\"true\" width=\"{{ logoW }}\" height=\"{{ logoH }}\" style=\"display:block;object-fit:contain;transition:width .35s,height .35s\" data-dc-tpl=\"29\">",
-			"attributes": {
-				"logoId": 65
-			},
-			"carried": {
-				"logoId": "media-map.json: sites/eye-care-ward-end/handoff/assets/ec-logo.png"
-			}
-		},
-		{
-			"order": 30,
-			"key": "Root/30#0",
-			"tag": "span",
-			"depth": 3,
-			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {
 				"1440": "shots/Root_30_0@1440.png"
 			},
-			"snippet": "<span style=\"display:flex;flex-direction:column;line-height:1\" data-dc-tpl=\"30\"> <span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:{{ wordmarkSize }};letter-spacing:.14em;transition:font-size .35s\" data-dc-tpl=\"31\">EYE CARE</span> <span style=\"font-size:9.5px;letter-spacing:.32em;color:#6B655E;margin-top:4px\" data-dc-tpl=\"32\">BIRMINGHAM</span> </span>",
+			"snippet": "<img src=\"assets/eye-care-wordmark.png\" alt=\"\" aria-hidden=\"true\" width=\"{{ wordmarkW }}\" height=\"{{ wordmarkH }}\" style=\"display:block;object-fit:contain;transition:width .35s,height .35s\" data-dc-tpl=\"30\">",
 			"attributes": {
-				"tagName": "div",
-				"layout": "stack"
+				"logoId": 491
+			},
+			"carried": {
+				"logoId": "media-map.json: sites/eye-care-ward-end/handoff/assets/eye-care-wordmark.png"
 			}
 		},
 		{
-			"order": 31,
+			"order": 35,
 			"key": "Root/31#0",
-			"tag": "span",
-			"depth": 4,
-			"words": "EYE CARE",
-			"block": "sgs/responsive-logo",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.8,
-			"low": false,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/responsive-logo",
-					"score": 1,
-					"share": 0.8,
-					"evidence": [
-						"block_capabilities: sgs/responsive-logo lists \"logo\"; block_composition: leaf",
-						"typed brand name: the words equal the site name \"Eye Care Birmingham\""
-					]
-				},
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 0.2,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text, halved: the words are a brand name"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {
-				"1440": "shots/Root_31_0@1440.png"
-			},
-			"snippet": "<span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:{{ wordmarkSize }};letter-spacing:.14em;transition:font-size .35s\" data-dc-tpl=\"31\">EYE CARE</span>",
-			"attributes": {},
-			"unit": "brand",
-			"note": "typed brand name \"EYE CARE BIRMINGHAM\" is the logo block"
-		},
-		{
-			"order": 32,
-			"key": "Root/32#0",
-			"tag": "span",
-			"depth": 4,
-			"words": "BIRMINGHAM",
-			"block": null,
-			"action": "absorbed",
-			"reason": "part of the typed brand name; the logo block carries it",
-			"source": null,
-			"confidence": 0.8,
-			"low": false,
-			"stale": null,
-			"rule": null,
-			"candidates": [],
-			"parts": [],
-			"screenshots": {
-				"1440": "shots/Root_32_0@1440.png"
-			},
-			"snippet": "<span style=\"font-size:9.5px;letter-spacing:.32em;color:#6B655E;margin-top:4px\" data-dc-tpl=\"32\">BIRMINGHAM</span>",
-			"attributes": {},
-			"into": "Root/31#0"
-		},
-		{
-			"order": 33,
-			"key": "Root/33#0",
 			"tag": "div",
 			"depth": 2,
 			"words": "",
@@ -1108,6 +1491,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1122,18 +1506,26 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_33_0@375.png",
-				"1440": "shots/Root_33_0@1440.png"
+				"375": "shots/Root_31_0@375.png",
+				"1440": "shots/Root_31_0@1440.png"
 			},
-			"snippet": "<div style=\"display:flex;justify-content:flex-end;gap:6px;align-items:center;font-size:13.5px;letter-spacing:.06em;text-transform:uppercase\" data-dc-tpl=\"33\"> <sc-if value=\"{{ navFull }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"34\"> <a href=\"{{ phoneHref }}\" sc-camel-on-mouse-enter=\"{{ closeMega }}\" aria-label=\"Call the clinic\" style=\"display: {{ phoneDisplay }};align-items:center;gap:8px;p",
+			"snippet": "<div style=\"display:flex;justify-content:flex-end;gap:6px;align-items:center;font-size:13.5px;letter-spacing:.06em;text-transform:uppercase\" data-dc-tpl=\"31\"> <sc-if value=\"{{ navFull }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"32\"> <a href=\"{{ phoneHref }}\" sc-camel-on-mouse-enter=\"{{ closeMega }}\" aria-label=\"Call the clinic\" style=\"display: {{ phoneDisplay }};align-items:center;gap:8px;p",
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root/33#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root/38#0"
+				}
 			}
 		},
 		{
-			"order": 34,
-			"key": "Root/35#0",
+			"order": 36,
+			"key": "Root/33#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "0121 729 8233",
@@ -1145,6 +1537,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "siteInfoLink",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -1156,12 +1549,12 @@
 				}
 			],
 			"parts": [
-				"Root/36#0"
+				"Root/34#0"
 			],
 			"screenshots": {
-				"1440": "shots/Root_35_0@1440.png"
+				"1440": "shots/Root_33_0@1440.png"
 			},
-			"snippet": "<a href=\"{{ phoneHref }}\" sc-camel-on-mouse-enter=\"{{ closeMega }}\" aria-label=\"Call the clinic\" style=\"display: {{ phoneDisplay }};align-items:center;gap:8px;padding:6px 10px;font-size:12.5px;letter-spacing:.04em;text-transform:none;color:#4A453E;white-space:nowrap\" style-hover=\"color:#141414\" data-dc-tpl=\"35\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"currentC",
+			"snippet": "<a href=\"{{ phoneHref }}\" sc-camel-on-mouse-enter=\"{{ closeMega }}\" aria-label=\"Call the clinic\" style=\"display: {{ phoneDisplay }};align-items:center;gap:8px;padding:6px 10px;font-size:12.5px;letter-spacing:.04em;text-transform:none;color:#4A453E;white-space:nowrap\" style-hover=\"color:#141414\" data-dc-tpl=\"33\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"currentC",
 			"attributes": {
 				"label": "0121 729 8233",
 				"url": "tel:01217298233",
@@ -1170,120 +1563,123 @@
 			},
 			"slots": {
 				".sgs-button__icon > svg": {
-					"tpl": "Root/36#0"
+					"tpl": "Root/34#0"
+				},
+				".sgs-button__label": {
+					"tpl": "Root/33#0"
 				}
-			}
-		},
-		{
-			"order": 35,
-			"key": "Root/38#0",
-			"tag": "a",
-			"depth": 3,
-			"words": "About Eye Care",
-			"block": "sgs/button",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.75,
-			"low": false,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
-						"block_composition: sgs/button is a leaf; the element holds words and no block children"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {
-				"1440": "shots/Root_38_0@1440.png"
-			},
-			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goAbout }}\" sc-camel-on-mouse-enter=\"{{ closeMega }}\" style=\"padding:6px 10px;border-bottom:1px solid transparent;white-space:nowrap\" style-hover=\"border-bottom:1px solid #141414\" data-dc-tpl=\"38\">About Eye Care</a>",
-			"attributes": {
-				"label": "About Eye Care"
-			}
-		},
-		{
-			"order": 36,
-			"key": "Root/39#0",
-			"tag": "a",
-			"depth": 3,
-			"words": "Help",
-			"block": "sgs/button",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.75,
-			"low": false,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
-						"block_composition: sgs/button is a leaf; the element holds words and no block children"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {
-				"1440": "shots/Root_39_0@1440.png"
-			},
-			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ navHelp }}\" sc-camel-on-mouse-enter=\"{{ openMegaHelp }}\" sc-camel-on-focus=\"{{ openMegaHelp }}\" sc-camel-on-mouse-leave=\"{{ cancelMega }}\" style=\"padding:6px 10px;border-bottom:1px solid {{ ulHelp }};white-space:nowrap\" data-dc-tpl=\"39\">Help</a>",
-			"attributes": {
-				"label": "Help"
 			}
 		},
 		{
 			"order": 37,
-			"key": "Root/40#0",
+			"key": "Root/36#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "About Eye Care",
+			"block": null,
+			"action": "absorbed",
+			"reason": "a text link in a header, outside its navigation element, set in the navigation links' own type (the same size, case and tracking) is one of the navigation's items: the menu block draws it from the header menu, never a button",
+			"source": "rule navigationLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "navigationLink",
+			"into": "Root/15#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_36_0@1440.png"
+			},
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goAbout }}\" sc-camel-on-mouse-enter=\"{{ closeMega }}\" style=\"padding:6px 10px;border-bottom:1px solid transparent;white-space:nowrap\" style-hover=\"border-bottom:1px solid #141414\" data-dc-tpl=\"36\">About Eye Care</a>",
+			"attributes": {}
+		},
+		{
+			"order": 38,
+			"key": "Root/37#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "Help",
+			"block": null,
+			"action": "absorbed",
+			"reason": "a text link in a header, outside its navigation element, set in the navigation links' own type (the same size, case and tracking) is one of the navigation's items: the menu block draws it from the header menu, never a button",
+			"source": "rule navigationLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "navigationLink",
+			"into": "Root/15#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_37_0@1440.png"
+			},
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ navHelp }}\" sc-camel-on-mouse-enter=\"{{ openMegaHelp }}\" sc-camel-on-focus=\"{{ openMegaHelp }}\" sc-camel-on-mouse-leave=\"{{ cancelMega }}\" style=\"padding:6px 10px;border-bottom:1px solid {{ ulHelp }};white-space:nowrap\" data-dc-tpl=\"37\">Help</a>",
+			"attributes": {}
+		},
+		{
+			"order": 39,
+			"key": "Root/38#0",
 			"tag": "button",
 			"depth": 3,
 			"words": "",
 			"block": "sgs/icon",
 			"action": null,
-			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
+			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text; the framework DB prefers sgs/button (confidence 0.75: html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\"); block_composition: sgs/button is a leaf; the element holds words and no block children); a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two",
 			"source": "rule solitaryIcon",
-			"confidence": 1,
-			"low": false,
+			"confidence": 0.5,
+			"low": true,
 			"stale": null,
 			"rule": "solitaryIcon",
+			"conflict": {
+				"rule": "solitaryIcon",
+				"ruleBlock": "sgs/icon",
+				"dbBlock": "sgs/button",
+				"dbConfidence": 0.75,
+				"why": "a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two"
+			},
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/icon",
 					"score": 1,
-					"share": 1,
+					"share": 0.5,
 					"evidence": [
 						"rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text"
+					]
+				},
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 0.5,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
 					]
 				}
 			],
 			"parts": [
-				"Root/41#0"
+				"Root/39#0"
 			],
 			"screenshots": {
-				"375": "shots/Root_40_0@375.png",
-				"1440": "shots/Root_40_0@1440.png"
+				"375": "shots/Root_38_0@375.png",
+				"1440": "shots/Root_38_0@1440.png"
 			},
-			"snippet": "<button sc-camel-on-click=\"{{ openAccount }}\" aria-label=\"{{ accountLabel }}\" title=\"{{ accountLabel }}\" style=\"position:relative;background:none;border:0;width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:#141414;transition:background .25s\" style-hover=\"background:#EFEAE2\" data-dc-tpl=\"40\"> <svg width=\"20\" height=\"20\" sc-camel-view-box=\"0 0 24 ",
-			"attributes": {},
+			"snippet": "<button sc-camel-on-click=\"{{ openAccount }}\" aria-label=\"{{ accountLabel }}\" title=\"{{ accountLabel }}\" style=\"position:relative;background:none;border:0;width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:#141414;transition:background .25s\" style-hover=\"background:#EFEAE2\" data-dc-tpl=\"38\"> <svg width=\"20\" height=\"20\" sc-camel-view-box=\"0 0 24 ",
+			"attributes": {
+				"linkUrl": "/my-account/"
+			},
 			"slots": {
 				".sgs-icon__shape > .sgs-icon__glyph > svg": {
-					"tpl": "Root/41#0"
+					"tpl": "Root/39#0"
+				},
+				".sgs-icon__shape": {
+					"tpl": "Root/38#0"
 				}
 			}
 		},
 		{
-			"order": 38,
-			"key": "Root/46#0",
+			"order": 40,
+			"key": "Root/44#0",
 			"tag": "button",
 			"depth": 3,
 			"words": "",
@@ -1295,6 +1691,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "blockPartOpener",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/cart",
@@ -1306,11 +1703,11 @@
 				}
 			],
 			"parts": [
-				"Root/48#0"
+				"Root/46#0"
 			],
 			"screenshots": {
-				"375": "shots/Root_46_0@375.png",
-				"1440": "shots/Root_46_0@1440.png"
+				"375": "shots/Root_44_0@375.png",
+				"1440": "shots/Root_44_0@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ openBag }}\" aria-label=\"Bag\" style=\"position:relative;background:none;border:1px solid #141414;border-radius:999px;padding: {{ bagPad }};min-height:38px;min-width:44px;justify-content:center;display:flex;align-items:center;gap:8px;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;transition:background .25s,color .25s\" style-hover=\"background:#141414;color",
 			"attributes": {
@@ -1320,11 +1717,25 @@
 				"pillCountStyle": "bubble",
 				"showZero": true,
 				"ariaLabel": "Bag"
+			},
+			"slots": {
+				".sgs-cart__trigger > .sgs-cart__icon > svg": {
+					"tpl": "Root/46#0"
+				},
+				"@scrim": {
+					"tpl": "Root/49#0"
+				},
+				".sgs-cart__trigger": {
+					"tpl": "Root/44#0"
+				},
+				".sgs-cart__trigger > .sgs-cart__pill-label": {
+					"tpl": "Root/45#0"
+				}
 			}
 		},
 		{
-			"order": 39,
-			"key": "Root/47#0",
+			"order": 41,
+			"key": "Root/45#0",
 			"tag": "span",
 			"depth": 4,
 			"words": "Bag",
@@ -1334,20 +1745,20 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/45#0 (sgs/label) no longer applies: sgs/cart draws this element",
 			"rule": "blockPartOpener",
-			"into": "Root/46#0",
+			"into": "Root/44#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_47_0@1440.png"
+				"1440": "shots/Root_45_0@1440.png"
 			},
-			"snippet": "<span style=\"display: {{ bagWordDisplay }}\" data-dc-tpl=\"47\">Bag</span>",
+			"snippet": "<span style=\"display: {{ bagWordDisplay }}\" data-dc-tpl=\"45\">Bag</span>",
 			"attributes": {}
 		},
 		{
-			"order": 40,
-			"key": "Root/51#0",
+			"order": 42,
+			"key": "Root/49#0",
 			"tag": "span",
 			"depth": 4,
 			"words": "0",
@@ -1357,16 +1768,16 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
+			"stale": "the client decision for Root/49#0 (remove) no longer applies: sgs/cart draws this element",
 			"rule": "blockPartOpener",
-			"into": "Root/46#0",
+			"into": "Root/44#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_51_0@375.png",
-				"1440": "shots/Root_51_0@1440.png"
+				"375": "shots/Root_49_0@375.png",
+				"1440": "shots/Root_49_0@1440.png"
 			},
-			"snippet": "<span key=\"{{ bagCount }}\" style=\"position: {{ badgePos }};top:-6px;right:-6px;display:inline-flex;min-width:20px;height:20px;border-radius:999px;background:var(--acc,#9C8B78);color:#fff;font-size:11px;align-items:center;justify-content:center;padding:0 6px;animation:pop .5s cubic-bezier(.2,.7,.2,1)\" data-dc-tpl=\"51\">{{ bagCount }}</span>",
+			"snippet": "<span key=\"{{ bagCount }}\" style=\"position: {{ badgePos }};top:-6px;right:-6px;display:inline-flex;min-width:20px;height:20px;border-radius:999px;background:var(--acc,#9C8B78);color:#fff;font-size:11px;align-items:center;justify-content:center;padding:0 6px;animation:pop .5s cubic-bezier(.2,.7,.2,1)\" data-dc-tpl=\"49\">{{ bagCount }}</span>",
 			"attributes": {}
 		}
 	]

@@ -1,17 +1,59 @@
 {
   "cr-ref-form-trade-application-0": {
-    "tpl": "Root>TradeApplication@466#0/6#0",
+    "tpl": "Root>TradeApplication@466#0/7#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
-      "styleHash": "4979cc05",
-      "parentTags": [],
+      "styleHash": "d7de68dd",
+      "parentTags": [
+        "div"
+      ],
       "textHash": "1505",
-      "line": 13
+      "line": 14
+    },
+    "slots": {
+      ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input": "Root>TradeApplication@466#0/22#0",
+      ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input": "Root>TradeApplication@466#0/26#0"
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-form-trade-application-1": {
+    "tpl": "Root>TradeApplication@466#0/9#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "a0e2188a",
+      "parentTags": [
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 16
+    },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root>TradeApplication@466#0/12#0"
     },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-form-trade-application-2": {
+    "tpl": "Root>TradeApplication@466#0/12#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "a627efd7",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "327d012e",
+      "line": 18
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-form-trade-application-5": {
     "tpl": "Root>TradeApplication@466#0/23#0",
     "fingerprint": {
       "tag": "h2",
@@ -27,7 +69,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-trade-application-3": {
+  "cr-ref-form-trade-application-6": {
     "tpl": "Root>TradeApplication@466#0/24#0",
     "fingerprint": {
       "tag": "p",
@@ -43,7 +85,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-trade-application-4": {
+  "cr-ref-form-trade-application-7": {
     "tpl": "Root>TradeApplication@466#0/47#0",
     "fingerprint": {
       "tag": "div",
@@ -59,9 +101,14 @@
       "textHash": "1505",
       "line": 59
     },
+    "slots": {
+      ".sgs-form-field__group > .sgs-container": "Root>TradeApplication@466#0/47#0",
+      ".sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(1) > .sgs-form-tile__label": "Root>TradeApplication@466#0/49#0",
+      ".sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(2) > .sgs-form-tile__label": "Root>TradeApplication@466#0/49#1"
+    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-trade-application-5": {
+  "cr-ref-form-trade-application-8": {
     "tpl": "Root>TradeApplication@466#0/39#0",
     "fingerprint": {
       "tag": "input",
@@ -82,7 +129,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-trade-application-6": {
+  "cr-ref-form-trade-application-9": {
     "tpl": "Root>TradeApplication@466#0/39#1",
     "fingerprint": {
       "tag": "input",
@@ -103,7 +150,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-trade-application-7": {
+  "cr-ref-form-trade-application-10": {
     "tpl": "Root>TradeApplication@466#0/41#0",
     "fingerprint": {
       "tag": "select",
@@ -124,7 +171,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-trade-application-9": {
+  "cr-ref-form-trade-application-12": {
     "tpl": "Root>TradeApplication@466#0/39#2",
     "fingerprint": {
       "tag": "input",
@@ -145,7 +192,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-trade-application-10": {
+  "cr-ref-form-trade-application-13": {
     "tpl": "Root>TradeApplication@466#0/41#1",
     "fingerprint": {
       "tag": "select",
@@ -166,7 +213,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-trade-application-11": {
+  "cr-ref-form-trade-application-14": {
     "tpl": "Root>TradeApplication@466#0/47#1",
     "fingerprint": {
       "tag": "div",
@@ -182,9 +229,14 @@
       "textHash": "1505",
       "line": 59
     },
+    "slots": {
+      ".sgs-form-field__group > .sgs-container": "Root>TradeApplication@466#0/47#1",
+      ".sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(1) > .sgs-form-tile__label": "Root>TradeApplication@466#0/49#6",
+      ".sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(2) > .sgs-form-tile__label": "Root>TradeApplication@466#0/49#7"
+    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-trade-application-13": {
+  "cr-ref-form-trade-application-16": {
     "tpl": "Root>TradeApplication@466#0/23#0",
     "fingerprint": {
       "tag": "h2",
@@ -200,7 +252,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-trade-application-14": {
+  "cr-ref-form-trade-application-17": {
     "tpl": "Root>TradeApplication@466#0/24#0",
     "fingerprint": {
       "tag": "p",
@@ -216,7 +268,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-trade-application-25": {
+  "cr-ref-form-trade-application-28": {
     "tpl": "Root>TradeApplication@466#0/23#0",
     "fingerprint": {
       "tag": "h2",
@@ -232,7 +284,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-trade-application-26": {
+  "cr-ref-form-trade-application-29": {
     "tpl": "Root>TradeApplication@466#0/24#0",
     "fingerprint": {
       "tag": "p",
@@ -248,7 +300,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-trade-application-37": {
+  "cr-ref-form-trade-application-40": {
     "tpl": "Root>TradeApplication@466#0/23#0",
     "fingerprint": {
       "tag": "h2",
@@ -264,7 +316,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-form-trade-application-38": {
+  "cr-ref-form-trade-application-41": {
     "tpl": "Root>TradeApplication@466#0/24#0",
     "fingerprint": {
       "tag": "p",
@@ -277,53 +329,6 @@
       ],
       "textHash": "f1167631",
       "line": 35
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-51": {
-    "tpl": "Root>TradeApplication@466#0/7#0",
-    "fingerprint": {
-      "tag": "div",
-      "cls": "",
-      "styleHash": "d7de68dd",
-      "parentTags": [
-        "div"
-      ],
-      "textHash": "1505",
-      "line": 14
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-52": {
-    "tpl": "Root>TradeApplication@466#0/9#0",
-    "fingerprint": {
-      "tag": "div",
-      "cls": "",
-      "styleHash": "a0e2188a",
-      "parentTags": [
-        "div",
-        "div",
-        "div"
-      ],
-      "textHash": "1505",
-      "line": 16
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-53": {
-    "tpl": "Root>TradeApplication@466#0/12#0",
-    "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "a627efd7",
-      "parentTags": [
-        "div",
-        "div",
-        "div",
-        "div"
-      ],
-      "textHash": "327d012e",
-      "line": 18
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -341,6 +346,9 @@
       "textHash": "1505",
       "line": 103
     },
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root>TradeApplication@466#0/84#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-form-trade-application-55": {
@@ -357,383 +365,6 @@
       ],
       "textHash": "525a9804",
       "line": 107
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-56": {
-    "tpl": "Root>TradeApplication@466#0/86#0",
-    "fingerprint": {
-      "tag": "aside",
-      "cls": "",
-      "styleHash": "1bd60e4b",
-      "parentTags": [
-        "div"
-      ],
-      "textHash": "1505",
-      "line": 113
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-57": {
-    "tpl": "Root>TradeApplication@466#0/87#0",
-    "fingerprint": {
-      "tag": "div",
-      "cls": "",
-      "styleHash": "19950800",
-      "parentTags": [
-        "div",
-        "aside"
-      ],
-      "textHash": "1505",
-      "line": 114
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-58": {
-    "tpl": "Root>TradeApplication@466#0/88#0",
-    "fingerprint": {
-      "tag": "button",
-      "cls": "",
-      "styleHash": "3f26fc36",
-      "parentTags": [
-        "div",
-        "aside",
-        "div"
-      ],
-      "textHash": "1505",
-      "line": 115
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-59": {
-    "tpl": "Root>TradeApplication@466#0/89#0",
-    "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "cde97387",
-      "parentTags": [
-        "div",
-        "aside",
-        "div",
-        "button"
-      ],
-      "textHash": "d88f9fbb",
-      "line": 115
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-60": {
-    "tpl": "Root>TradeApplication@466#0/91#0",
-    "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "643ee16",
-      "parentTags": [
-        "div",
-        "aside",
-        "div",
-        "button"
-      ],
-      "textHash": "1505",
-      "line": 115
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-61": {
-    "tpl": "Root>TradeApplication@466#0/93#0",
-    "fingerprint": {
-      "tag": "div",
-      "cls": "",
-      "styleHash": "8498ab8",
-      "parentTags": [
-        "div",
-        "aside",
-        "div"
-      ],
-      "textHash": "1505",
-      "line": 116
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-62": {
-    "tpl": "Root>TradeApplication@466#0/95#0",
-    "fingerprint": {
-      "tag": "div",
-      "cls": "",
-      "styleHash": "9b1ca309",
-      "parentTags": [
-        "div",
-        "aside",
-        "div",
-        "div"
-      ],
-      "textHash": "9c551ef5",
-      "line": 118
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-63": {
-    "tpl": "Root>TradeApplication@466#0/96#0",
-    "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "e6ad9e98",
-      "parentTags": [
-        "div",
-        "aside",
-        "div",
-        "div",
-        "div"
-      ],
-      "textHash": "1505",
-      "line": 118
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-64": {
-    "tpl": "Root>TradeApplication@466#0/95#1",
-    "fingerprint": {
-      "tag": "div",
-      "cls": "",
-      "styleHash": "9b1ca309",
-      "parentTags": [
-        "div",
-        "aside",
-        "div",
-        "div"
-      ],
-      "textHash": "e3d080bb",
-      "line": 118
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-65": {
-    "tpl": "Root>TradeApplication@466#0/96#1",
-    "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "e6ad9e98",
-      "parentTags": [
-        "div",
-        "aside",
-        "div",
-        "div",
-        "div"
-      ],
-      "textHash": "1505",
-      "line": 118
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-66": {
-    "tpl": "Root>TradeApplication@466#0/95#2",
-    "fingerprint": {
-      "tag": "div",
-      "cls": "",
-      "styleHash": "9b1ca309",
-      "parentTags": [
-        "div",
-        "aside",
-        "div",
-        "div"
-      ],
-      "textHash": "eb46962",
-      "line": 118
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-67": {
-    "tpl": "Root>TradeApplication@466#0/96#2",
-    "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "e6ad9e98",
-      "parentTags": [
-        "div",
-        "aside",
-        "div",
-        "div",
-        "div"
-      ],
-      "textHash": "1505",
-      "line": 118
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-68": {
-    "tpl": "Root>TradeApplication@466#0/95#3",
-    "fingerprint": {
-      "tag": "div",
-      "cls": "",
-      "styleHash": "9b1ca309",
-      "parentTags": [
-        "div",
-        "aside",
-        "div",
-        "div"
-      ],
-      "textHash": "a922406b",
-      "line": 118
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-69": {
-    "tpl": "Root>TradeApplication@466#0/96#3",
-    "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "e6ad9e98",
-      "parentTags": [
-        "div",
-        "aside",
-        "div",
-        "div",
-        "div"
-      ],
-      "textHash": "1505",
-      "line": 118
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-70": {
-    "tpl": "Root>TradeApplication@466#0/95#4",
-    "fingerprint": {
-      "tag": "div",
-      "cls": "",
-      "styleHash": "9b1ca309",
-      "parentTags": [
-        "div",
-        "aside",
-        "div",
-        "div"
-      ],
-      "textHash": "a54a30a1",
-      "line": 118
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-71": {
-    "tpl": "Root>TradeApplication@466#0/96#4",
-    "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "e6ad9e98",
-      "parentTags": [
-        "div",
-        "aside",
-        "div",
-        "div",
-        "div"
-      ],
-      "textHash": "1505",
-      "line": 118
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-72": {
-    "tpl": "Root>TradeApplication@466#0/98#0",
-    "fingerprint": {
-      "tag": "div",
-      "cls": "",
-      "styleHash": "ad92f0b8",
-      "parentTags": [
-        "div",
-        "aside"
-      ],
-      "textHash": "1505",
-      "line": 122
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-73": {
-    "tpl": "Root>TradeApplication@466#0/99#0",
-    "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "f5ec0b0a",
-      "parentTags": [
-        "div",
-        "aside",
-        "div"
-      ],
-      "textHash": "402d95b2",
-      "line": 123
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-74": {
-    "tpl": "Root>TradeApplication@466#0/100#0",
-    "fingerprint": {
-      "tag": "p",
-      "cls": "",
-      "styleHash": "1d83a3aa",
-      "parentTags": [
-        "div",
-        "aside",
-        "div"
-      ],
-      "textHash": "5d1b59b4",
-      "line": 124
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-75": {
-    "tpl": "Root>TradeApplication@466#0/101#0",
-    "fingerprint": {
-      "tag": "a",
-      "cls": "scp1q",
-      "styleHash": "70db2873",
-      "parentTags": [
-        "div",
-        "aside",
-        "div"
-      ],
-      "textHash": "f3097ff2",
-      "line": 125
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-76": {
-    "tpl": "Root>TradeApplication@466#0/103#0",
-    "fingerprint": {
-      "tag": "div",
-      "cls": "",
-      "styleHash": "aa025ab5",
-      "parentTags": [
-        "div"
-      ],
-      "textHash": "1505",
-      "line": 128
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-77": {
-    "tpl": "Root>TradeApplication@466#0/104#0",
-    "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "4a5dd59",
-      "parentTags": [
-        "div",
-        "div"
-      ],
-      "textHash": "1c504d48",
-      "line": 128
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-form-trade-application-78": {
-    "tpl": "Root>TradeApplication@466#0/105#0",
-    "fingerprint": {
-      "tag": "a",
-      "cls": "scp1q",
-      "styleHash": "5fd1ad2",
-      "parentTags": [
-        "div",
-        "div"
-      ],
-      "textHash": "d9580830",
-      "line": 128
     },
     "draft": "0fe5aee1c396a997"
   }

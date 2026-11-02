@@ -13,7 +13,11 @@
       "textHash": "1505",
       "line": 71
     },
-    "draft": "4cd995654ff1103b"
+    "slots": {
+      ".sgs-container__inner > p:nth-of-type(1)": "Root/67#0",
+      ".sgs-container__inner > p:nth-of-type(2)": "Root/68#0"
+    },
+    "draft": "8a4e3beea02443ed"
   },
   "cr-ref-flow-choice-flow-build-your-zookie-1": {
     "tpl": "Root/67#0",
@@ -30,7 +34,7 @@
       "textHash": "ae836562",
       "line": 72
     },
-    "draft": "4cd995654ff1103b"
+    "draft": "8a4e3beea02443ed"
   },
   "cr-ref-flow-choice-flow-build-your-zookie-2": {
     "tpl": "Root/68#0",
@@ -47,7 +51,7 @@
       "textHash": "88c8559f",
       "line": 73
     },
-    "draft": "4cd995654ff1103b"
+    "draft": "8a4e3beea02443ed"
   },
   "cr-ref-flow-choice-flow-build-your-zookie-3": {
     "tpl": "Root/69#0",
@@ -64,7 +68,7 @@
       "textHash": "5825abf6",
       "line": 74
     },
-    "draft": "4cd995654ff1103b"
+    "draft": "8a4e3beea02443ed"
   },
   "cr-ref-flow-choice-flow-build-your-zookie-4": {
     "tpl": "Root/63#0",
@@ -77,9 +81,10 @@
       "line": 68
     },
     "slots": {
-      ".sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-body > .sgs-choice-flow__summary-note": "Root/123#0"
+      ".sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-body > .sgs-choice-flow__summary-note": "Root/123#0",
+      ".sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-body > .sgs-choice-flow__summary-note > .sgs-choice-flow__summary-note-text": "Root/123#0"
     },
-    "draft": "4cd995654ff1103b"
+    "draft": "8a4e3beea02443ed"
   },
   "cr-ref-flow-choice-flow-build-your-zookie-6": {
     "tpl": "Root/70#0",
@@ -98,7 +103,7 @@
     "slots": {
       ".sgs-choice-flow-question__title": "Root/71#0"
     },
-    "draft": "4cd995654ff1103b"
+    "draft": "8a4e3beea02443ed"
   },
   "cr-ref-flow-choice-flow-build-your-zookie-8": {
     "tpl": "Root/76#0",
@@ -117,7 +122,7 @@
     "slots": {
       ".sgs-choice-flow-question__title": "Root/77#0"
     },
-    "draft": "4cd995654ff1103b"
+    "draft": "8a4e3beea02443ed"
   },
   "cr-ref-flow-choice-flow-build-your-zookie-10": {
     "tpl": "Root/81#0",
@@ -135,9 +140,13 @@
     },
     "slots": {
       ".sgs-choice-flow-question__title": "Root/83#0",
-      ".sgs-choice-flow-question__intro": "Root/84#0"
+      ".sgs-choice-flow-question__intro": "Root/84#0",
+      ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description": "Root/88#0",
+      ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(2) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description": "Root/88#1",
+      ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(3) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description": "Root/88#2",
+      ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(4) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description": "Root/88#3"
     },
-    "draft": "4cd995654ff1103b"
+    "draft": "8a4e3beea02443ed"
   },
   "cr-ref-flow-choice-flow-build-your-zookie-12": {
     "tpl": "Root/90#0",
@@ -156,7 +165,7 @@
     "slots": {
       ".sgs-choice-flow-question__title": "Root/91#0"
     },
-    "draft": "4cd995654ff1103b"
+    "draft": "8a4e3beea02443ed"
   },
   "cr-ref-flow-choice-flow-build-your-zookie-14": {
     "tpl": "Root/107#0",
@@ -175,7 +184,7 @@
     "slots": {
       ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description": "Root/111#0"
     },
-    "draft": "4cd995654ff1103b"
+    "draft": "8a4e3beea02443ed"
   },
   "cr-ref-flow-choice-flow-build-your-zookie-16": {
     "tpl": "Root/116#0",
@@ -192,6 +201,6 @@
       "textHash": "1505",
       "line": 97
     },
-    "draft": "4cd995654ff1103b"
+    "draft": "8a4e3beea02443ed"
   }
 }

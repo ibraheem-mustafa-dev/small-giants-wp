@@ -34,7 +34,7 @@
 				},
 				"innerBlocks": [
 					{
-						"name": "sgs/text",
+						"name": "sgs/label",
 						"attributes": {
 							"text": "nearly there"
 						},
@@ -77,6 +77,13 @@
 							{
 								"name": "sgs/text",
 								"attributes": {
+									"text": "Your basket"
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/label",
+								"attributes": {
 									"text": "2"
 								},
 								"draftRef": {
@@ -96,7 +103,12 @@
 								},
 								"innerBlocks": []
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/12#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -316,7 +328,12 @@
 															"textHash": "297b7",
 															"line": 43
 														},
-														"innerBlocks": []
+														"innerBlocks": [],
+														"draftSlots": {
+															".sgs-button__label": {
+																"tpl": "Root/36#0"
+															}
+														}
 													},
 													{
 														"name": "sgs/text",
@@ -370,9 +387,22 @@
 															"textHash": "2b58e",
 															"line": 45
 														},
-														"innerBlocks": []
+														"innerBlocks": [],
+														"draftSlots": {
+															".sgs-button__label": {
+																"tpl": "Root/38#0"
+															}
+														}
 													}
-												]
+												],
+												"draftSlots": {
+													".sgs-container__inner > p:nth-of-type(1)": {
+														"tpl": "Root/36#0"
+													},
+													".sgs-container__inner > p:nth-of-type(2)": {
+														"tpl": "Root/37#0"
+													}
+												}
 											},
 											{
 												"name": "sgs/button",
@@ -398,9 +428,22 @@
 													"textHash": "c4592d43",
 													"line": 47
 												},
-												"innerBlocks": []
+												"innerBlocks": [],
+												"draftSlots": {
+													".sgs-button__label": {
+														"tpl": "Root/39#0"
+													}
+												}
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/35#0"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/39#0"
+											}
+										}
 									},
 									{
 										"name": "sgs/text",
@@ -426,7 +469,15 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/30#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/32#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/container",
@@ -601,7 +652,12 @@
 															"textHash": "297b7",
 															"line": 43
 														},
-														"innerBlocks": []
+														"innerBlocks": [],
+														"draftSlots": {
+															".sgs-button__label": {
+																"tpl": "Root/36#1"
+															}
+														}
 													},
 													{
 														"name": "sgs/text",
@@ -655,9 +711,22 @@
 															"textHash": "2b58e",
 															"line": 45
 														},
-														"innerBlocks": []
+														"innerBlocks": [],
+														"draftSlots": {
+															".sgs-button__label": {
+																"tpl": "Root/38#1"
+															}
+														}
 													}
-												]
+												],
+												"draftSlots": {
+													".sgs-container__inner > p:nth-of-type(1)": {
+														"tpl": "Root/36#1"
+													},
+													".sgs-container__inner > p:nth-of-type(2)": {
+														"tpl": "Root/37#1"
+													}
+												}
 											},
 											{
 												"name": "sgs/button",
@@ -683,9 +752,22 @@
 													"textHash": "c4592d43",
 													"line": 47
 												},
-												"innerBlocks": []
+												"innerBlocks": [],
+												"draftSlots": {
+													".sgs-button__label": {
+														"tpl": "Root/39#1"
+													}
+												}
 											}
-										]
+										],
+										"draftSlots": {
+											".sgs-container__inner > p:nth-of-type(1)": {
+												"tpl": "Root/35#1"
+											},
+											".sgs-container__inner > p:nth-of-type(2)": {
+												"tpl": "Root/39#1"
+											}
+										}
 									},
 									{
 										"name": "sgs/text",
@@ -711,7 +793,15 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/30#1"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/32#1"
+									}
+								}
 							},
 							{
 								"name": "sgs/form-field-checkbox",
@@ -885,7 +975,15 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/59#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/60#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/container",
@@ -958,7 +1056,15 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/62#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/63#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/container",
@@ -1031,7 +1137,15 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/65#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/66#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/button",
@@ -1055,7 +1169,12 @@
 									"textHash": "c5ebc7dd",
 									"line": 78
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-button__label": {
+										"tpl": "Root/67#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/multi-button",
@@ -1101,7 +1220,12 @@
 											"textHash": "6f6a4a5",
 											"line": 80
 										},
-										"innerBlocks": []
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-button__label": {
+												"tpl": "Root/69#0"
+											}
+										}
 									},
 									{
 										"name": "sgs/button",
@@ -1125,9 +1249,22 @@
 											"textHash": "1cf1f24",
 											"line": 81
 										},
-										"innerBlocks": []
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-button__label": {
+												"tpl": "Root/70#0"
+											}
+										}
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-button:nth-of-type(1)": {
+										"tpl": "Root/69#0"
+									},
+									".sgs-button:nth-of-type(2)": {
+										"tpl": "Root/70#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/text",
@@ -1174,12 +1311,35 @@
 									"textHash": "86f2834a",
 									"line": 84
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-button__label": {
+										"tpl": "Root/72#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/25#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/29#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-hero__content": {
+						"tpl": "Root/9#0"
+					}
+				}
 			}
-		]
+		],
+		"draftSlots": {
+			".sgs-container__inner > p:nth-of-type(1)": {
+				"tpl": "Root/9#0"
+			}
+		}
 	}
 ]

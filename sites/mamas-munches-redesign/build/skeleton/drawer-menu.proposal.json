@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-28T06:48:30.709Z",
-	"inventory": "2026-10-28T06:48:30.437Z",
-	"source": "http://127.0.0.1:55059/",
+	"generated": "2026-11-02T04:59:40.306Z",
+	"inventory": "2026-11-02T01:27:16.117Z",
+	"source": "http://127.0.0.1:52267/",
 	"surface": "nav-drawer-left",
 	"siteName": null,
 	"surfaceParts": [],
@@ -22,22 +22,802 @@
 	},
 	"counts": {
 		"inventoryElements": 61,
-		"parts": 10,
-		"rows": 51,
-		"skeletonNodes": 28,
-		"expandedNodes": 28,
-		"low": 8,
-		"removed": 14,
+		"parts": 13,
+		"rows": 48,
+		"skeletonNodes": 27,
+		"expandedNodes": 27,
+		"low": 6,
+		"removed": 12,
 		"unresolved": 0,
 		"byRule": {
 			"surfaceRoot": 1,
+			"drawerClose": 1,
 			"alignWrapper": 1,
 			"wholeCardLink": 3,
-			"cardTitle": 3,
 			"listWrapper": 3,
-			"drawsChildren": 10,
+			"drawsChildren": 7,
+			"cardTitle": 1,
 			"label": 1
 		}
+	},
+	"partPairing": {
+		"paired": 30,
+		"unpaired": [
+			{
+				"key": "Root>SiteHeader@7#0/56#0",
+				"block": "sgs/nav-drawer",
+				"slot": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close > .sgs-nav-drawer__close-variant:nth-of-type(1) > .sgs-nav-drawer__close-text",
+				"reason": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/56#0",
+				"block": "sgs/nav-drawer",
+				"slot": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close > .sgs-nav-drawer__close-icon",
+				"reason": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/56#0",
+				"block": "sgs/nav-drawer",
+				"slot": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__chrome-logo > .sgs-nav-drawer__chrome-logo-picture > .sgs-nav-drawer__chrome-logo-image",
+				"reason": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__chrome-logo: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/56#0",
+				"block": "sgs/nav-drawer",
+				"slot": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__chrome-slot",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/56#0",
+				"block": "sgs/nav-drawer",
+				"slot": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__chrome-logo",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/57#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/57#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/57#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "a box the draft does not draw: its parts pair inside the element above"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/57#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(2)",
+				"reason": "no inner block of this node stands at this place"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/58#0",
+				"block": "sgs/responsive-logo",
+				"slot": ".sgs-responsive-logo__link > .sgs-responsive-logo__picture > .sgs-responsive-logo__image",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/62#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/62#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/62#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/63#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/63#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/63#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/64#0",
+				"block": "sgs/media",
+				"slot": ".sgs-media__caption",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/64#0",
+				"block": "sgs/media",
+				"slot": ".sgs-video > .sgs-video__bar > .sgs-video__time",
+				"reason": ".sgs-video: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/65#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/65#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/65#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/67#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/68#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/68#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/68#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/69#0",
+				"block": "sgs/media",
+				"slot": ".sgs-media__caption",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/69#0",
+				"block": "sgs/media",
+				"slot": ".sgs-video > .sgs-video__bar > .sgs-video__time",
+				"reason": ".sgs-video: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/70#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/70#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/70#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/72#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list__heading",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__text",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__text",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__text",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__text",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2)",
+				"reason": "the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3)",
+				"reason": "the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4)",
+				"reason": "the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5)",
+				"reason": "the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6)",
+				"reason": "the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__icon",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__icon",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__description",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__text > .sgs-icon-list__description",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/74#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__text > .sgs-icon-list__description",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/88#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/88#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/88#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/89#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/89#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/89#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/89#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__inner > p:nth-of-type(2)",
+				"reason": "no inner block of this node stands at this place"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list__heading",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon > svg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__text",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__text",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__text",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__text",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2)",
+				"reason": "the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3)",
+				"reason": "the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4)",
+				"reason": "the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5)",
+				"reason": "the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6)",
+				"reason": "the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__icon",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__icon",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__description",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__text > .sgs-icon-list__description",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/92#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__text > .sgs-icon-list__description",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/104#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/104#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/104#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/105#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list__heading",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__icon > svg",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__text",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__text",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__text",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__text",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2)",
+				"reason": "the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3)",
+				"reason": "the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4)",
+				"reason": "the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5)",
+				"reason": "the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6)",
+				"reason": "the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__icon",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__icon",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__description",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text: the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__text > .sgs-icon-list__description",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/107#0",
+				"block": "sgs/icon-list",
+				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__text > .sgs-icon-list__description",
+				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3): the draft draws one copy of this repeated part, at the first"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/123#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/123#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/123#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/124#0",
+				"block": "sgs/heading",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/125#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__image-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/125#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__overlay",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/125#0",
+				"block": "sgs/container",
+				"slot": ".sgs-container__svg-bg",
+				"reason": "the draft has no element of its own here"
+			},
+			{
+				"key": "Root>SiteHeader@7#0/127#0",
+				"block": "sgs/text",
+				"slot": "a",
+				"reason": "the draft has no element of its own here"
+			}
+		]
 	},
 	"widthAlternatives": [],
 	"problems": [],
@@ -56,6 +836,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "surfaceRoot",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/nav-drawer",
@@ -72,7 +853,25 @@
 				"1440": "shots/Root_SiteHeader_7_0_56_0@1440.png"
 			},
 			"snippet": "<aside ref=\"{{ navRef }}\" aria-label=\"Menu\" style=\"position:fixed;top:0;left:0;bottom:0;width:min(88vw,400px);background:#FBF3DC;z-index:91;transform:{{ navX }};transition:transform .32s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;overflow-y:auto\" data-dc-tpl=\"56\"> <div style=\"display:flex;align-items:center;justify-content:space-between;padding:10px 12px 10px 20px;border-bottom:1p",
-			"attributes": {}
+			"attributes": {},
+			"slots": {
+				".sgs-nav-drawer__chrome > .sgs-nav-drawer__close": {
+					"tpl": "Root>SiteHeader@7#0/59#0"
+				},
+				".sgs-nav-drawer__body": {
+					"tpl": "Root>SiteHeader@7#0/60#0"
+				},
+				"@scrim": {
+					"tpl": "Root>SiteHeader@7#0/56#0"
+				},
+				".sgs-nav-drawer__chrome": {
+					"tpl": "Root>SiteHeader@7#0/73#0"
+				}
+			},
+			"slotNotes": [
+				".sgs-nav-drawer__chrome > .sgs-nav-drawer__close > .sgs-nav-drawer__close-icon: the draft has no element for .sgs-nav-drawer__close-icon",
+				".sgs-nav-drawer__chrome > .sgs-nav-drawer__close > .sgs-nav-drawer__close-variant:nth-of-type(2) > .sgs-nav-drawer__close-icon: the draft has no element for .sgs-nav-drawer__close-variant:nth-of-type(2)"
+			]
 		},
 		{
 			"order": 1,
@@ -88,6 +887,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -109,6 +909,11 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>SiteHeader@7#0/58#0"
+				}
 			}
 		},
 		{
@@ -125,6 +930,7 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/responsive-logo",
@@ -162,34 +968,23 @@
 			"tag": "button",
 			"depth": 2,
 			"words": "×",
-			"block": "sgs/button",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.75,
+			"block": null,
+			"action": "absorbed",
+			"reason": "a button or link inside a drawer surface whose click handler writes a falsy value to a state key one of the drawer's own surfaces.json states holds at true (lib/skeleton-handler-opens.mjs::handlerCloses; a handler that also writes the key to an opening value is a toggle, not a close) is the drawer block's own close control (Spec 36 FR-36-6: close is the drawer's chrome, drawn by sgs/nav-drawer above its body), so the block takes it and its look becomes the block's close settings; the draft's button is never built as a second, dead close",
+			"source": "rule drawerClose",
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
-						"block_composition: sgs/button is a leaf; the element holds words and no block children"
-					]
-				}
-			],
+			"rule": "drawerClose",
+			"into": "Root>SiteHeader@7#0/56#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_SiteHeader_7_0_59_0@375.png",
 				"1440": "shots/Root_SiteHeader_7_0_59_0@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ close }}\" aria-label=\"Close menu\" style=\"width:48px;height:48px;border:0;background:transparent;border-radius:999px;font-size:28px;line-height:1;cursor:pointer;color:#3A2A22\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"59\">×</button>",
-			"attributes": {
-				"label": "×"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 4,
@@ -220,21 +1015,21 @@
 			"tag": "div",
 			"depth": 2,
 			"words": "Who are you shopping for?",
-			"block": "sgs/text",
+			"block": "sgs/label",
 			"action": null,
 			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/text",
-					"score": 0.25,
+					"block": "sgs/label",
+					"score": 1,
 					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: A 13px bold uppercase line with .08em tracking above the drawer cards; a kicker in capitals with wide tracking is sgs/label."
 					]
 				}
 			],
@@ -262,6 +1057,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -283,6 +1079,14 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>SiteHeader@7#0/63#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root>SiteHeader@7#0/68#0"
+				}
 			}
 		},
 		{
@@ -299,6 +1103,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "wholeCardLink",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -319,6 +1124,14 @@
 				"tagName": "div",
 				"layout": "stack",
 				"sgsBlockLink": "/shop/"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>SiteHeader@7#0/64#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root>SiteHeader@7#0/65#0"
+				}
 			}
 		},
 		{
@@ -335,6 +1148,7 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/media",
@@ -359,7 +1173,12 @@
 				"1440": "shots/Root_SiteHeader_7_0_64_0@1440.png"
 			},
 			"snippet": "<img src=\"assets/photo-bags-pink.jpg\" alt=\"\" style=\"width:100%;height:84px;object-fit:cover;border-bottom:2px solid #3A2A22\" data-dc-tpl=\"64\">",
-			"attributes": {}
+			"attributes": {},
+			"slots": {
+				".sgs-media__img": {
+					"tpl": "Root>SiteHeader@7#0/64#0"
+				}
+			}
 		},
 		{
 			"order": 9,
@@ -375,6 +1194,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -396,6 +1216,14 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>SiteHeader@7#0/66#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root>SiteHeader@7#0/67#0"
+				}
 			}
 		},
 		{
@@ -404,21 +1232,21 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "For me",
-			"block": "sgs/heading",
+			"block": "sgs/label",
 			"action": null,
-			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
-			"source": "rule cardTitle",
+			"reason": null,
+			"source": "client decision",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "cardTitle",
+			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/heading",
+					"block": "sgs/label",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule cardTitle: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
+						"client decision: Bean marked block:sgs/label in the intake review on 2026-11-02"
 					]
 				}
 			],
@@ -429,7 +1257,7 @@
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:18px\" data-dc-tpl=\"66\">For me</span>",
 			"attributes": {
-				"content": "For me"
+				"text": "For me"
 			}
 		},
 		{
@@ -446,6 +1274,7 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -480,6 +1309,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "wholeCardLink",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -500,6 +1330,14 @@
 				"tagName": "div",
 				"layout": "stack",
 				"sgsBlockLink": "/gifts/"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>SiteHeader@7#0/69#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root>SiteHeader@7#0/70#0"
+				}
 			}
 		},
 		{
@@ -516,6 +1354,7 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/media",
@@ -540,7 +1379,12 @@
 				"1440": "shots/Root_SiteHeader_7_0_69_0@1440.png"
 			},
 			"snippet": "<img src=\"assets/photo-gift-heart.jpg\" alt=\"\" style=\"width:100%;height:84px;object-fit:cover;border-bottom:2px solid #3A2A22\" data-dc-tpl=\"69\">",
-			"attributes": {}
+			"attributes": {},
+			"slots": {
+				".sgs-media__img": {
+					"tpl": "Root>SiteHeader@7#0/69#0"
+				}
+			}
 		},
 		{
 			"order": 14,
@@ -556,6 +1400,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -577,6 +1422,14 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>SiteHeader@7#0/71#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root>SiteHeader@7#0/72#0"
+				}
 			}
 		},
 		{
@@ -585,21 +1438,21 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "For a new mum",
-			"block": "sgs/heading",
+			"block": "sgs/label",
 			"action": null,
-			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
-			"source": "rule cardTitle",
+			"reason": null,
+			"source": "client decision",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "cardTitle",
+			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/heading",
+					"block": "sgs/label",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule cardTitle: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
+						"client decision: Bean marked block:sgs/label in the intake review on 2026-11-02"
 					]
 				}
 			],
@@ -610,7 +1463,7 @@
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:18px\" data-dc-tpl=\"71\">For a new mum</span>",
 			"attributes": {
-				"content": "For a new mum"
+				"text": "For a new mum"
 			}
 		},
 		{
@@ -627,6 +1480,7 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -715,6 +1569,11 @@
 			"item": {
 				"text": "Shop all",
 				"url": "/shop/"
+			},
+			"slots": {
+				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)": {
+					"tpl": "Root>SiteHeader@7#0/73#0"
+				}
 			}
 		},
 		{
@@ -1133,6 +1992,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1154,6 +2014,14 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>SiteHeader@7#0/89#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root>SiteHeader@7#0/104#0"
+				}
 			}
 		},
 		{
@@ -1170,6 +2038,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1189,6 +2058,11 @@
 			"snippet": "<div data-dstagger=\"\" data-dc-tpl=\"89\"> <sc-if value=\"{{ signedOut }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"90\"> <div style=\"display:grid;grid-template-columns:1fr 1fr;gap:10px\" data-dc-tpl=\"91\"><a href=\"SignIn.dc.html\" style=\"min-height:52px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:7",
 			"attributes": {
 				"tagName": "div"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>SiteHeader@7#0/92#0"
+				}
 			}
 		},
 		{
@@ -1259,6 +2133,17 @@
 			"item": {
 				"text": "Sign in",
 				"url": "/my-account/"
+			},
+			"slots": {
+				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon": {
+					"tpl": "Root>SiteHeader@7#0/93#0"
+				},
+				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text": {
+					"tpl": "Root>SiteHeader@7#0/92#0"
+				},
+				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)": {
+					"tpl": "Root>SiteHeader@7#0/91#0"
+				}
 			}
 		},
 		{
@@ -1314,6 +2199,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1333,6 +2219,14 @@
 			"snippet": "<div data-dstagger=\"\" data-dc-tpl=\"104\"> <div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444;line-height:1;margin-bottom:8px\" data-dc-tpl=\"105\">say hello</div> <div style=\"display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px\" data-dc-tpl=\"106\"> <a href=\"Contact.dc.html\" style=\"min-height:78px;border-radius:18px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;flex-dire",
 			"attributes": {
 				"tagName": "div"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>SiteHeader@7#0/105#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root>SiteHeader@7#0/107#0"
+				}
 			}
 		},
 		{
@@ -1341,21 +2235,21 @@
 			"tag": "div",
 			"depth": 3,
 			"words": "say hello",
-			"block": "sgs/text",
+			"block": "sgs/heading",
 			"action": null,
 			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/text",
-					"score": 0.25,
+					"block": "sgs/heading",
+					"score": 1,
 					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: The handwritten line heading the drawer's contact column, matching the footer, where the same script column titles (shop, help) are sgs/heading by the columnHeading rule."
 					]
 				}
 			],
@@ -1366,7 +2260,7 @@
 			},
 			"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444;line-height:1;margin-bottom:8px\" data-dc-tpl=\"105\">say hello</div>",
 			"attributes": {
-				"text": "say hello"
+				"content": "say hello"
 			}
 		},
 		{
@@ -1426,7 +2320,9 @@
 					]
 				}
 			],
-			"parts": [],
+			"parts": [
+				"Root>SiteHeader@7#0/108#0"
+			],
 			"screenshots": {
 				"375": "shots/Root_SiteHeader_7_0_107_0@375.png",
 				"1440": "shots/Root_SiteHeader_7_0_107_0@1440.png"
@@ -1437,36 +2333,15 @@
 			"item": {
 				"text": "WhatsApp",
 				"url": "/contact/"
+			},
+			"slots": {
+				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)": {
+					"tpl": "Root>SiteHeader@7#0/106#0"
+				}
 			}
 		},
 		{
 			"order": 41,
-			"key": "Root>SiteHeader@7#0/108#0",
-			"tag": "span",
-			"depth": 5,
-			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/icon-list: the list item's marker",
-			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": null,
-			"rule": "drawsChildren",
-			"into": "Root>SiteHeader@7#0/107#0",
-			"candidates": [],
-			"parts": [
-				"Root>SiteHeader@7#0/109#0"
-			],
-			"screenshots": {
-				"375": "shots/Root_SiteHeader_7_0_108_0@375.png",
-				"1440": "shots/Root_SiteHeader_7_0_108_0@1440.png"
-			},
-			"snippet": "<span style=\"width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#25D366;color:#FFFFFF;display:flex;align-items:center;justify-content:center\" data-dc-tpl=\"108\"><svg width=\"18\" height=\"18\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round\" data-dc-tpl=\"109\"><path d=\"M4 20l1.3-4A8 8 0 1 1 8.5 19Z\" data-dc-tpl=\"110\"></p",
-			"attributes": {}
-		},
-		{
-			"order": 42,
 			"key": "Root>SiteHeader@7#0/112#0",
 			"tag": "a",
 			"depth": 4,
@@ -1491,7 +2366,9 @@
 					]
 				}
 			],
-			"parts": [],
+			"parts": [
+				"Root>SiteHeader@7#0/113#0"
+			],
 			"screenshots": {
 				"375": "shots/Root_SiteHeader_7_0_112_0@375.png",
 				"1440": "shots/Root_SiteHeader_7_0_112_0@1440.png"
@@ -1506,33 +2383,7 @@
 			"siteInfoKind": "email"
 		},
 		{
-			"order": 43,
-			"key": "Root>SiteHeader@7#0/113#0",
-			"tag": "span",
-			"depth": 5,
-			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/icon-list: the list item's marker",
-			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": null,
-			"rule": "drawsChildren",
-			"into": "Root>SiteHeader@7#0/112#0",
-			"candidates": [],
-			"parts": [
-				"Root>SiteHeader@7#0/114#0"
-			],
-			"screenshots": {
-				"375": "shots/Root_SiteHeader_7_0_113_0@375.png",
-				"1440": "shots/Root_SiteHeader_7_0_113_0@1440.png"
-			},
-			"snippet": "<span style=\"width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;display:flex;align-items:center;justify-content:center\" data-dc-tpl=\"113\"><svg width=\"18\" height=\"18\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round\" data-dc-tpl=\"114\"><rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"2\" data-dc-tpl=\"",
-			"attributes": {}
-		},
-		{
-			"order": 44,
+			"order": 42,
 			"key": "Root>SiteHeader@7#0/117#0",
 			"tag": "a",
 			"depth": 4,
@@ -1557,7 +2408,9 @@
 					]
 				}
 			],
-			"parts": [],
+			"parts": [
+				"Root>SiteHeader@7#0/118#0"
+			],
 			"screenshots": {
 				"375": "shots/Root_SiteHeader_7_0_117_0@375.png",
 				"1440": "shots/Root_SiteHeader_7_0_117_0@1440.png"
@@ -1571,33 +2424,7 @@
 			}
 		},
 		{
-			"order": 45,
-			"key": "Root>SiteHeader@7#0/118#0",
-			"tag": "span",
-			"depth": 5,
-			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/icon-list: the list item's marker",
-			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": null,
-			"rule": "drawsChildren",
-			"into": "Root>SiteHeader@7#0/117#0",
-			"candidates": [],
-			"parts": [
-				"Root>SiteHeader@7#0/119#0"
-			],
-			"screenshots": {
-				"375": "shots/Root_SiteHeader_7_0_118_0@375.png",
-				"1440": "shots/Root_SiteHeader_7_0_118_0@1440.png"
-			},
-			"snippet": "<span style=\"width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:radial-gradient(circle at 30% 107%, #FDF497 0%, #FD5949 45%, #D6249F 60%, #285AEB 90%);color:#FFFFFF;display:flex;align-items:center;justify-content:center\" data-dc-tpl=\"118\"><svg width=\"18\" height=\"18\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:2\" data-dc-tpl=\"119\"><rec",
-			"attributes": {}
-		},
-		{
-			"order": 46,
+			"order": 43,
 			"key": "Root>SiteHeader@7#0/123#0",
 			"tag": "a",
 			"depth": 2,
@@ -1610,6 +2437,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "wholeCardLink",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1630,10 +2458,18 @@
 				"tagName": "div",
 				"layout": "flex",
 				"sgsBlockLink": "https://uk.trustpilot.com/review/mamasmunches.com"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>SiteHeader@7#0/124#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root>SiteHeader@7#0/125#0"
+				}
 			}
 		},
 		{
-			"order": 47,
+			"order": 44,
 			"key": "Root>SiteHeader@7#0/124#0",
 			"tag": "span",
 			"depth": 3,
@@ -1646,6 +2482,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "cardTitle",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -1666,7 +2503,7 @@
 			}
 		},
 		{
-			"order": 48,
+			"order": 45,
 			"key": "Root>SiteHeader@7#0/125#0",
 			"tag": "span",
 			"depth": 3,
@@ -1679,6 +2516,7 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1699,10 +2537,18 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack"
+			},
+			"slots": {
+				".sgs-container__inner > p:nth-of-type(1)": {
+					"tpl": "Root>SiteHeader@7#0/126#0"
+				},
+				".sgs-container__inner > p:nth-of-type(2)": {
+					"tpl": "Root>SiteHeader@7#0/127#0"
+				}
 			}
 		},
 		{
-			"order": 49,
+			"order": 46,
 			"key": "Root>SiteHeader@7#0/126#0",
 			"tag": "span",
 			"depth": 4,
@@ -1715,6 +2561,7 @@
 			"low": false,
 			"stale": null,
 			"rule": "label",
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/label",
@@ -1735,7 +2582,7 @@
 			}
 		},
 		{
-			"order": 50,
+			"order": 47,
 			"key": "Root>SiteHeader@7#0/127#0",
 			"tag": "span",
 			"depth": 4,
@@ -1748,6 +2595,7 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
+			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",

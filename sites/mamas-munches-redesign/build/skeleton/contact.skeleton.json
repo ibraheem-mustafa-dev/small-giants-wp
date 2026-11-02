@@ -36,7 +36,7 @@
 				},
 				"innerBlocks": [
 					{
-						"name": "sgs/text",
+						"name": "sgs/label",
 						"attributes": {
 							"text": "pop the kettle on ☕"
 						},
@@ -61,7 +61,8 @@
 					{
 						"name": "sgs/heading",
 						"attributes": {
-							"content": "Say hello to Zainab"
+							"content": "Say hello to Zainab",
+							"level": "h1"
 						},
 						"draftRef": {
 							"tpl": "Root/13#0"
@@ -111,7 +112,12 @@
 						"kind": "presence",
 						"detail": "the hero image: choose it in the hero's split media setting"
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-hero__content": {
+						"tpl": "Root/11#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/container",
@@ -204,6 +210,9 @@
 										"draftSlots": {
 											".sgs-icon__shape > .sgs-icon__glyph > svg": {
 												"tpl": "Root/21#0"
+											},
+											".sgs-icon__shape": {
+												"tpl": "Root/20#0"
 											}
 										}
 									},
@@ -255,7 +264,15 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/20#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/24#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/container",
@@ -305,6 +322,9 @@
 										"draftSlots": {
 											".sgs-icon__shape > .sgs-icon__glyph > svg": {
 												"tpl": "Root/28#0"
+											},
+											".sgs-icon__shape": {
+												"tpl": "Root/27#0"
 											}
 										}
 									},
@@ -356,7 +376,15 @@
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/27#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/32#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/container",
@@ -406,6 +434,9 @@
 										"draftSlots": {
 											".sgs-icon__shape > .sgs-icon__glyph > svg": {
 												"tpl": "Root/36#0"
+											},
+											".sgs-icon__shape": {
+												"tpl": "Root/35#0"
 											}
 										}
 									},
@@ -464,9 +495,25 @@
 											}
 										]
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/35#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/39#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/19#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/26#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/container",
@@ -518,7 +565,24 @@
 											"formIsLinked": true,
 											"formId": "form-send"
 										},
-										"innerBlocks": []
+										"innerBlocks": [
+											{
+												"name": "sgs/form-field-text",
+												"attributes": {
+													"label": "How many cookies, roughly?"
+												},
+												"innerBlocks": [],
+												"hiddenControl": "Contact/62"
+											},
+											{
+												"name": "sgs/form-field-date",
+												"attributes": {
+													"label": "Date needed"
+												},
+												"innerBlocks": [],
+												"hiddenControl": "Contact/64"
+											}
+										]
 									}
 								]
 							},
@@ -546,7 +610,7 @@
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/text",
+										"name": "sgs/label",
 										"attributes": {
 											"text": "quick answers"
 										},
@@ -570,34 +634,19 @@
 										"innerBlocks": []
 									},
 									{
-										"name": "sgs/icon-list",
+										"name": "sgs/accordion",
 										"attributes": {
-											"items": [
-												{
-													"text": "When will my order arrive?",
-													"url": "/help/#delivery"
-												},
-												{
-													"text": "What allergens are in them?",
-													"url": "/help/#allergens"
-												},
-												{
-													"text": "How does Subscribe & save work?",
-													"url": "/help/"
-												},
-												{
-													"text": "Can I send them as a gift?",
-													"url": "/help/"
-												}
-											]
+											"layout": "stack",
+											"allowMultiple": false,
+											"defaultOpen": 0
 										},
 										"draftRef": {
-											"tpl": "Root/77#0"
+											"tpl": "Root/76#0"
 										},
 										"draftFingerprint": {
-											"tag": "a",
-											"cls": "scp5",
-											"styleHash": "c35516ea",
+											"tag": "div",
+											"cls": "",
+											"styleHash": "d0f7e8bd",
 											"parentTags": [
 												"main",
 												"section",
@@ -605,10 +654,250 @@
 												"div",
 												"div"
 											],
-											"textHash": "8333fb51",
-											"line": 74
+											"textHash": "1505",
+											"line": 73
 										},
-										"innerBlocks": []
+										"innerBlocks": [
+											{
+												"name": "sgs/accordion-item",
+												"attributes": {
+													"title": "Ordering & delivery",
+													"isOpen": true
+												},
+												"draftRef": {
+													"tpl": "Root/78#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "f9ab064a",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 75
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Zainab bakes every order fresh when it comes in, then posts it with Royal Mail Tracked. Most orders are with you in 3–5 days."
+														},
+														"innerBlocks": [],
+														"draftRef": {
+															"tpl": "Root/85#0"
+														},
+														"draftFingerprint": {
+															"tag": "p",
+															"cls": "",
+															"styleHash": "64ba72aa",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "f3666877",
+															"line": 77
+														}
+													}
+												]
+											},
+											{
+												"name": "sgs/accordion-item",
+												"attributes": {
+													"title": "Ingredients & allergens"
+												},
+												"draftRef": {
+													"tpl": "Root/78#1"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "a6c4e440",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 75
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Oats (gluten), eggs, milk and fenugreek, a legume that may cross-react with peanut or soy allergies. Made in a kitchen that also handles tree nuts. The vegan base has no eggs or dairy."
+														},
+														"innerBlocks": [],
+														"draftRef": {
+															"tpl": "Root/85#0"
+														},
+														"draftFingerprint": {
+															"tag": "p",
+															"cls": "",
+															"styleHash": "64ba72aa",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "f3666877",
+															"line": 77
+														}
+													}
+												]
+											},
+											{
+												"name": "sgs/accordion-item",
+												"attributes": {
+													"title": "Subscriptions"
+												},
+												"draftRef": {
+													"tpl": "Root/78#2"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "a6c4e440",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 75
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Build your box and choose every 2 or 4 weeks. You get 10% off every box, free delivery on 20 and 40 packs and a guaranteed slot in every bake."
+														},
+														"innerBlocks": [],
+														"draftRef": {
+															"tpl": "Root/85#0"
+														},
+														"draftFingerprint": {
+															"tag": "p",
+															"cls": "",
+															"styleHash": "64ba72aa",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "f3666877",
+															"line": 77
+														}
+													}
+												]
+											},
+											{
+												"name": "sgs/accordion-item",
+												"attributes": {
+													"title": "Gifting"
+												},
+												"draftRef": {
+													"tpl": "Root/78#3"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "a6c4e440",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 75
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Yes. Choose “It’s a gift” at checkout, add her address and your note, and we’ll leave the prices off the packing slip."
+														},
+														"innerBlocks": [],
+														"draftRef": {
+															"tpl": "Root/85#0"
+														},
+														"draftFingerprint": {
+															"tag": "p",
+															"cls": "",
+															"styleHash": "64ba72aa",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "f3666877",
+															"line": 77
+														}
+													}
+												]
+											}
+										]
+									},
+									{
+										"name": "sgs/button",
+										"attributes": {
+											"label": "More answers on the Help page",
+											"url": "/help/"
+										},
+										"draftRef": {
+											"tpl": "Root/86#0"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "",
+											"styleHash": "aa248e31",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "1c4e4a65",
+											"line": 81
+										},
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-button__label": {
+												"tpl": "Root/86#0"
+											}
+										}
 									},
 									{
 										"name": "sgs/text",
@@ -616,7 +905,7 @@
 											"text": "Handmade in Birmingham by a registered food business. No shop to visit, but you’ll sometimes find Zainab at local markets and events."
 										},
 										"draftRef": {
-											"tpl": "Root/79#0"
+											"tpl": "Root/87#0"
 										},
 										"draftFingerprint": {
 											"tag": "div",
@@ -630,16 +919,48 @@
 												"div"
 											],
 											"textHash": "b1bf543",
-											"line": 76
+											"line": 82
 										},
 										"innerBlocks": []
 									}
-								]
+								],
+								"draftSlots": {
+									".sgs-container__inner > p:nth-of-type(1)": {
+										"tpl": "Root/75#0"
+									},
+									".sgs-container__inner > p:nth-of-type(2)": {
+										"tpl": "Root/76#0"
+									}
+								}
 							}
-						]
+						],
+						"draftSlots": {
+							".sgs-container__inner > p:nth-of-type(1)": {
+								"tpl": "Root/42#0"
+							},
+							".sgs-container__inner > p:nth-of-type(2)": {
+								"tpl": "Root/74#0"
+							}
+						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner > p:nth-of-type(1)": {
+						"tpl": "Root/18#0"
+					},
+					".sgs-container__inner > p:nth-of-type(2)": {
+						"tpl": "Root/41#0"
+					}
+				}
 			}
-		]
+		],
+		"draftSlots": {
+			".sgs-container__inner > p:nth-of-type(1)": {
+				"tpl": "Root/9#0"
+			},
+			".sgs-container__inner > p:nth-of-type(2)": {
+				"tpl": "Root/17#0"
+			}
+		}
 	}
 ]
