@@ -17,8 +17,15 @@ const LAYOUTS = [ 'grid', 'masonry', 'scroll', 'carousel' ];
  */
 export function galleryLayoutTiers( layout ) {
 	const stored = layout && typeof layout === 'object' ? layout : {};
-	const own = ( tier ) =>
-		LAYOUTS.includes( stored[ tier ] ) ? stored[ tier ] : null;
+	// An empty tier inherits the one above; a stored value that is not one of the four layouts is a grid
+	// (`sgs_resolve_tier` plus the allow-list in `sgs_gallery_layout_tiers`).
+	const own = ( tier ) => {
+		const value = stored[ tier ];
+		if ( value === undefined || value === null || value === '' || value === 'inherit' ) {
+			return null;
+		}
+		return LAYOUTS.includes( value ) ? value : 'grid';
+	};
 	const desktop = own( 'desktop' ) ?? 'grid';
 	const tablet = own( 'tablet' ) ?? desktop;
 	const mobile = own( 'mobile' ) ?? tablet;

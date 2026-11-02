@@ -93,7 +93,10 @@ final class Sgs_Button_Hover_Parts {
 		$default = $split[ self::DEFAULT_KEY ] ?? array();
 		$out     = array();
 		foreach ( $split as $slug => $parts ) {
-			if ( self::DEFAULT_KEY !== $slug && ! isset( $parts[ self::WHOLE_MARKER ] ) ) {
+			if ( self::DEFAULT_KEY !== $slug ) {
+				// A transform that could not be split sits whole in `hover-lift`, so that part is already set; scale and
+				// rotate still get their identity wherever the default moves them, or the default's parts would stack
+				// on the preset's whole transform.
 				foreach ( self::identities() as $part => $identity ) {
 					if ( isset( $default[ $part ] ) && ! isset( $parts[ $part ] ) ) {
 						$parts[ $part ] = $identity;

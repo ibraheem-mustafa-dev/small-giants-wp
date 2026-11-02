@@ -170,8 +170,9 @@ if ( ! function_exists( 'sgs_gallery_layout_css' ) ) {
 	 * The per-device layout override rules, on the image grid and its items.
 	 *
 	 * Only a tier that differs from the one above prints (a uniform layout prints nothing: the stylesheet's static rules
-	 * paint the desktop layout). Each tier is printed as `@media` and `@container`, so a gallery in a column narrower
-	 * than 768px takes its mobile layout (the gallery root is the query container). A carousel is never overridden: it
+	 * paint the desktop layout). Each tier follows the screen (`@media`); the Mobile tier also prints as `@container` under
+	 * 480px, so a gallery in a column narrower than that takes its mobile layout on any screen (the gallery root is the
+	 * query container). A carousel is never overridden: it
 	 * is only honoured when uniform.
 	 *
 	 * @param string $grid_sel   The image grid's scoped selector.
@@ -209,31 +210,48 @@ if ( ! function_exists( 'sgs_gallery_layout_css' ) ) {
 if ( ! function_exists( 'sgs_gallery_scroll_css' ) ) {
 	/**
 	 * The swipe row's own settings on the image grid: the width of a card (`scrollItemWidth`, printed as
-	 * `--sgs-scroll-item-width`) and the edge padding that lets cards run to the screen edge while the first card
-	 * lines up with the page (`scrollInset`, as `padding-inline` and `scroll-padding-inline`), per device, through the
-	 * container-aware responsive emitter.
+	 * `--sgs-scroll-item-width`, which only a swipe row reads) and the edge padding that lets cards run to the screen edge
+	 * while the first card lines up with the page (`scrollInset`, as `padding-inline` and `scroll-padding-inline`), per
+	 * device, through the container-aware responsive emitter.
+	 *
+	 * The inset belongs to the swipe row alone: a tier that resolves to a grid or masonry gets an explicit zero where the
+	 * inherited value would otherwise reach it (so a desktop swipe row with a tablet grid keeps the tablet grid flush).
 	 *
 	 * @param string $grid_sel   The image grid's scoped selector.
 	 * @param array  $attributes Block attributes.
 	 * @return string CSS, or '' when the swipe row is not used at any tier or nothing is set.
 	 */
 	function sgs_gallery_scroll_css( string $grid_sel, array $attributes ): string {
-		if ( ! sgs_gallery_layout_tiers( $attributes )['scroll'] ) {
+		$tiers = sgs_gallery_layout_tiers( $attributes );
+		if ( ! $tiers['scroll'] ) {
 			return '';
 		}
 		$specs = array();
-		foreach ( array(
-			'scrollItemWidth' => array( '--sgs-scroll-item-width' ),
-			'scrollInset'     => array( 'padding-inline', 'scroll-padding-inline' ),
-		) as $attr => $props ) {
-			if ( isset( $attributes[ $attr ] ) && is_array( $attributes[ $attr ] ) ) {
-				foreach ( $props as $prop ) {
-					$specs[] = array(
-						'value'     => $attributes[ $attr ],
-						'css'       => $prop,
-						'transform' => 'sgs_css_length_value',
-					);
+		if ( isset( $attributes['scrollItemWidth'] ) && is_array( $attributes['scrollItemWidth'] ) ) {
+			$specs[] = array(
+				'value'     => $attributes['scrollItemWidth'],
+				'css'       => '--sgs-scroll-item-width',
+				'transform' => 'sgs_css_length_value',
+			);
+		}
+		if ( isset( $attributes['scrollInset'] ) && is_array( $attributes['scrollInset'] ) ) {
+			$inset  = sgs_responsive_normalise_object( $attributes['scrollInset'] );
+			$masked = array();
+			$above  = '';
+			foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
+				$own = is_scalar( $inset[ $tier ] ?? null ) ? (string) $inset[ $tier ] : '';
+				if ( '' !== $own ) {
+					$above = $own;
 				}
+				// A swipe-row tier keeps its inherited value; any other tier is flush wherever a value would reach it.
+				$masked[ $tier ] = 'scroll' === $tiers[ $tier ] ? $above : ( '' !== $above ? '0px' : '' );
+			}
+			foreach ( array( 'padding-inline', 'scroll-padding-inline' ) as $prop ) {
+				$specs[] = array(
+					'value'     => $masked,
+					'css'       => $prop,
+					'transform' => 'sgs_css_length_value',
+				);
 			}
 		}
 		return $specs ? sgs_emit_responsive_css( $grid_sel, $specs, array( 'container' => true ) ) : '';

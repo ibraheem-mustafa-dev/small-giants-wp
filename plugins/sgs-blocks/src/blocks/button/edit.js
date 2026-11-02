@@ -1162,6 +1162,33 @@ export default function Edit( {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					{ /* The old "Underline on hover" setting is no longer offered, but a button that
+					   still carries it keeps rendering it (unless the Button underline above is set),
+					   so it is shown here read-only with a way to remove it. */ }
+					{ attributes.textDecorationHover === 'underline' && (
+						<div className="sgs-button-legacy-underline">
+							<p className="components-base-control__help">
+								{ linkUnderline
+									? __(
+											'An older "Underline on hover" setting is saved on this button; the Button underline above overrides it.',
+											'sgs-blocks'
+									  )
+									: __(
+											'This button has an older "Underline on hover" setting. It still underlines the button on hover.',
+											'sgs-blocks'
+									  ) }
+							</p>
+							<Button
+								variant="secondary"
+								size="compact"
+								onClick={ () =>
+									setAttributes( { textDecorationHover: 'none' } )
+								}
+							>
+								{ __( 'Clear the old hover underline', 'sgs-blocks' ) }
+							</Button>
+						</div>
+					) }
 					{ /* Letter spacing is now a TIER OBJECT (Spec 35 migration,
 						   2026-08-11) — same RangeControl UX as before, wrapped in
 						   <ResponsiveOverride> so tablet/mobile become editable

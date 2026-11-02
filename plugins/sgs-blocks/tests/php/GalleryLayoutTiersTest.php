@@ -80,9 +80,8 @@ final class GalleryLayoutTiersTest extends TestCase {
 		$this->assertStringContainsString( '--sgs-scroll-item-width:78%;', $css );
 		$this->assertStringContainsString( 'padding-inline:20px;scroll-padding-inline:20px;', $css );
 		$this->assertSame( 0, preg_match( '/max-width:1023px\)\{[^{]*\.sgs-gallery__grid\{display:/', $css ), 'the tablet tier inherits desktop: no tablet layout rule' );
-		$this->assertStringContainsString( 'role="region"', $out['html'] );
-		$this->assertStringContainsString( 'tabindex="0"', $out['html'] );
-		$this->assertStringContainsString( 'aria-label="Gallery, swipe row"', $out['html'] );
+		$this->assertStringContainsString( 'data-sgs-scroll-region="Gallery, swipe row"', $out['html'], 'view.js makes it a focusable region while it scrolls' );
+		$this->assertStringNotContainsString( 'tabindex=', $out['html'], 'no static tab stop on a grid that does not scroll at every width' );
 	}
 
 	public function test_a_return_to_grid_resets_what_masonry_set(): void {
@@ -98,13 +97,24 @@ final class GalleryLayoutTiersTest extends TestCase {
 		$this->assertStringNotContainsString( 'var(--sgs-columns)', $css, 'the desktop count never reaches a narrower tier' );
 	}
 
+	public function test_the_edge_padding_reaches_only_the_swipe_row_tiers(): void {
+		$css = $this->gallery( array( 'desktop' => 'scroll', 'tablet' => 'grid', 'mobile' => 'scroll' ), array( 'scrollInset' => array( 'desktop' => '20px' ) ) )['css'];
+
+		$this->assertMatchesRegularExpression( '/\.sgs-gallery__grid\{padding-inline:20px;scroll-padding-inline:20px;\}/', $css, 'desktop swipe row has its inset' );
+		$this->assertMatchesRegularExpression( '/max-width:1023px\)\{[^{]*\.sgs-gallery__grid\{padding-inline:0px;scroll-padding-inline:0px;\}/', $css, 'the tablet grid is flush' );
+		$this->assertMatchesRegularExpression( '/max-width:767px\)\{[^{]*\.sgs-gallery__grid\{padding-inline:20px;scroll-padding-inline:20px;\}/', $css, 'the mobile swipe row has it back' );
+
+		$grid_only = $this->gallery( array( 'desktop' => 'grid', 'mobile' => 'scroll' ), array( 'scrollInset' => array( 'mobile' => '20px' ) ) )['css'];
+		$this->assertDoesNotMatchRegularExpression( '/padding-inline:0px/', $grid_only, 'nothing to undo when no wider tier carries a value' );
+	}
+
 	public function test_a_uniform_layout_prints_no_override_and_no_region(): void {
 		foreach ( array( array(), array( 'desktop' => 'masonry' ), array( 'desktop' => 'scroll', 'tablet' => 'scroll', 'mobile' => 'scroll' ) ) as $layout ) {
 			$out = $this->gallery( $layout );
 			$this->assertStringNotContainsString( 'grid-auto-flow:row;grid-auto-columns:auto;overflow-x:visible', $out['css'], wp_json_encode( $layout ) );
 			$this->assertSame( 0, preg_match( '/@(media|container) \(max-width:\d+px\)\{[^{]*\.sgs-gallery__grid\{display:/', $out['css'] ), wp_json_encode( $layout ) );
 		}
-		$this->assertStringNotContainsString( 'role="region"', $this->gallery( array( 'desktop' => 'masonry' ) )['html'] );
+		$this->assertStringNotContainsString( 'data-sgs-scroll-region', $this->gallery( array( 'desktop' => 'masonry' ) )['html'] );
 	}
 
 	public function test_an_old_scalar_layout_is_not_read(): void {

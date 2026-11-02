@@ -83,6 +83,19 @@ final class ButtonHoverPartsTest extends TestCase {
 		$this->assertArrayNotHasKey( 'link', $out, 'a preset without a transform keeps falling back whole' );
 	}
 
+	public function test_an_unsplittable_preset_transform_still_masks_the_default_scale_and_rotate(): void {
+		$out = Sgs_Button_Hover_Parts::derive(
+			array(
+				'default' => array( 'hover-transform' => 'translate(0px, -2px) scale(1.05) rotate(2deg)' ),
+				'primary' => array( 'hover-transform' => 'scale(1.1) translateY(-4px)' ),
+			)
+		);
+		$this->assertSame( 'scale(1.1) translateY(-4px)', $out['primary']['hover-lift'], 'the whole transform stays in hover-lift' );
+		$this->assertSame( 'scale(1)', $out['primary']['hover-scale'], 'the default scale must not stack on it' );
+		$this->assertSame( 'rotate(0deg)', $out['primary']['hover-rotate'], 'the default rotate must not stack on it' );
+		$this->assertArrayNotHasKey( 'hover-lift-whole', $out['primary'], 'the internal marker is never published' );
+	}
+
 	public function test_hover_markers_only_for_the_self_source_and_hover_fields(): void {
 		$state = array( 'values' => array( 'translateY' => -2, 'restRotate' => -2 ), 'devices' => array( 'mobile' => array( 'scale' => 1.25 ) ) );
 		$this->assertSame(

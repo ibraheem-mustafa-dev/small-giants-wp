@@ -18,6 +18,9 @@ describe( 'galleryLayoutTiers', () => {
 			'scroll',
 		] );
 		expect( tiers( { desktop: 'sideways' } ) ).toEqual( [ 'grid', 'grid', 'grid' ] );
+		// An invalid non-empty tier is a grid of its own, it does not inherit (the PHP twin's rule).
+		expect( tiers( { desktop: 'masonry', tablet: 'sideways' } ) ).toEqual( [ 'masonry', 'grid', 'grid' ] );
+		expect( tiers( { desktop: 'masonry', tablet: '', mobile: 'inherit' } ) ).toEqual( [ 'masonry', 'masonry', 'masonry' ] );
 	} );
 
 	it( 'does not read the old scalar shape', () => {

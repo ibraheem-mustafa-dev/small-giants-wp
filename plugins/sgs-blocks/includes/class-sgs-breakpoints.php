@@ -79,12 +79,10 @@ if ( ! class_exists( 'SGS_Breakpoints' ) ) {
 		/**
 		 * Build the opening of a scoped tier at-rule for a given max-width.
 		 *
-		 * Emits BOTH a media query and (when $with_container) a container query
-		 * with identical bounds — the Spec 37 FR-37-16 "container queries + media queries
-		 * together" contract. The container query lets the block adapt to its own
-		 * wrapper width when reused in a narrower context (e.g. a sidebar); the
-		 * media query is the always-present fallback for contexts where the
-		 * container query does not apply.
+		 * Always emits the media query for the screen width. When $with_container, the Mobile tier ALSO gets a container
+		 * query under CONTAINER_MOBILE_MAX (480px boxes), so a block reused in a narrow box (a sidebar, a narrow column on
+		 * a wide screen) takes its Mobile values (Spec 37 FR-37-16, FW-H); the Tablet tier gets none, because the tiers
+		 * follow the screen (`container_max()`).
 		 *
 		 * Returns an array of at-rule PREFIX strings (each already opened with
 		 * `{`), so the caller wraps the inner `selector{decls}` and appends one

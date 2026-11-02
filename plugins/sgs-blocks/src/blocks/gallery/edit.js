@@ -56,6 +56,7 @@ import useGalleryItems from './use-gallery-items';
 import ImagesPanel from './components/ImagesPanel';
 import LayoutSettingsPanel from './components/LayoutSettingsPanel';
 import { galleryLayoutTiers } from './layout-tiers';
+import { cssLengthValue } from '../../utils/css-length';
 import GalleryHoverEffectsPanel from './components/GalleryHoverEffectsPanel';
 import GalleryContentPanel from './components/GalleryContentPanel';
 import GalleryCarouselPanel from './components/GalleryCarouselPanel';
@@ -274,8 +275,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( 'scroll' === tierLayout ) {
 		// The swipe row (style.css `.sgs-gallery--scroll`, resolved for the previewed device): one card per column
 		// width unless a card width is set, and the edge padding that lets cards run to the screen edge.
-		const cardWidth = resolveResponsiveTier( attributes.scrollItemWidth, previewTier )?.value;
-		const inset = resolveResponsiveTier( attributes.scrollInset, previewTier )?.value;
+		// The same length check the page applies (`sgs_css_length_value`), so the canvas accepts and rejects what it prints.
+		const cardWidth = cssLengthValue( resolveResponsiveTier( attributes.scrollItemWidth, previewTier )?.value );
+		const inset = cssLengthValue( resolveResponsiveTier( attributes.scrollInset, previewTier )?.value );
 		previewGridStyle.gridAutoFlow = 'column';
 		previewGridStyle.gridTemplateColumns = 'none';
 		previewGridStyle.gridAutoColumns =

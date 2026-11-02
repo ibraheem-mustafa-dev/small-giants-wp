@@ -112,9 +112,9 @@ $drag_momentum  = (bool) ( $attributes['dragMomentum'] ?? true );
 $loop_carousel = (bool) ( $attributes['loopCarousel'] ?? false );
 
 $grid_fx_attr = '';
-// A swipe row at any device tier is a scrollable region: focusable, so the arrow keys scroll it, and named. The markup is
-// the same at every width, so the region is declared whenever some tier is a swipe row.
-$sgs_gal_scroll_attr = $sgs_gal_tiers['scroll'] ? ' tabindex="0" role="region" aria-label="' . esc_attr__( 'Gallery, swipe row', 'sgs-blocks' ) . '"' : '';
+// A swipe row at any device tier is a scrollable region while it scrolls: the markup is the same at every width, so the grid
+// only carries the region's name and view.js makes it focusable (tabindex, role, label) exactly while its content overflows.
+$sgs_gal_scroll_attr = $sgs_gal_tiers['scroll'] ? ' data-sgs-scroll-region="' . esc_attr__( 'Gallery, swipe row', 'sgs-blocks' ) . '"' : '';
 if ( 'carousel' === $layout && $drag_to_scroll ) {
 	$grid_fx_attr = ' data-sgs-fx="draggable"';
 	if ( ! $drag_momentum ) {

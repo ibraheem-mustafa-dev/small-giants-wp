@@ -11,6 +11,8 @@
  *   "masonry"  -> {"desktop":"masonry"}                 (tablet and mobile inherit)
  *   "carousel" -> {"desktop":"carousel","tablet":"carousel","mobile":"carousel"}
  *
+ * Only the `layout` member is rewritten, as text; every other byte of the comment stays as stored (an empty `{}` stays `{}`).
+ *
  * It covers every post type that can hold blocks: posts, pages, custom post types, `wp_block`, `wp_template`,
  * `wp_template_part`, `wp_navigation` and `sgs_header`, `sgs_footer`, `sgs_drawer` (and any other registered type), in
  * every status except auto-drafts. Only the attribute JSON inside the gallery's own block comment is touched; the rest of
@@ -67,27 +69,84 @@ $sgs_layout_object = static function ( string $layout ) {
 };
 
 /**
+ * The attribute JSON with its top-level `"layout":"<old>"` member replaced by the object shape, and nothing else touched.
+ *
+ * The rest of the JSON is left byte for byte as stored (an empty `{}` stays `{}`, key order and escaping stay), because it
+ * is edited as text: a scanner walks the object, tracking string and nesting state, and rewrites only a string value whose
+ * key is `layout` at the top level.
+ *
+ * @param string $json The attribute JSON (an object).
+ * @return string|null The rewritten JSON, or null when the top-level layout is not one of the three old strings.
+ */
+$sgs_replace_layout = static function ( string $json ) use ( $sgs_layout_object ): ?string {
+	$len   = strlen( $json );
+	$depth = 0;
+	for ( $i = 0; $i < $len; $i++ ) {
+		$ch = $json[ $i ];
+		if ( '{' === $ch || '[' === $ch ) {
+			++$depth;
+		} elseif ( '}' === $ch || ']' === $ch ) {
+			--$depth;
+		} elseif ( '"' === $ch ) {
+			$start = $i;
+			for ( ++$i; $i < $len && '"' !== $json[ $i ]; $i++ ) {
+				if ( '\\' === $json[ $i ] ) {
+					++$i;
+				}
+			}
+			$literal = substr( $json, $start, $i - $start + 1 );
+			if ( 1 !== $depth || '"layout"' !== $literal ) {
+				continue;
+			}
+			// A key: skip to the value.
+			$j = $i + 1;
+			while ( $j < $len && ctype_space( $json[ $j ] ) ) {
+				++$j;
+			}
+			if ( ':' !== ( $json[ $j ] ?? '' ) ) {
+				continue;
+			}
+			++$j;
+			while ( $j < $len && ctype_space( $json[ $j ] ) ) {
+				++$j;
+			}
+			if ( '"' !== ( $json[ $j ] ?? '' ) ) {
+				return null; // Already an object (or something else): nothing to do.
+			}
+			$end = $j;
+			for ( ++$end; $end < $len && '"' !== $json[ $end ]; $end++ ) {
+				if ( '\\' === $json[ $end ] ) {
+					++$end;
+				}
+			}
+			$old    = json_decode( substr( $json, $j, $end - $j + 1 ) );
+			$object = is_string( $old ) ? $sgs_layout_object( $old ) : null;
+			if ( null === $object ) {
+				return null;
+			}
+			return substr( $json, 0, $j ) . wp_json_encode( $object ) . substr( $json, $end + 1 );
+		}
+	}
+	return null;
+};
+
+/**
  * Rewrite the old-shape gallery comments in one content string.
  *
  * @param string $content Post content.
  * @param int    $found   Old-shape galleries seen (by reference).
  * @return string The content with every old-shape gallery rewritten.
  */
-$sgs_rewrite = static function ( string $content, int &$found ) use ( $sgs_layout_object ): string {
+$sgs_rewrite = static function ( string $content, int &$found ) use ( $sgs_replace_layout ): string {
 	return (string) preg_replace_callback(
 		'/<!--\s+wp:sgs\/gallery\s+(\{.*?\})(\s+\/?-->)/s',
-		static function ( array $m ) use ( &$found, $sgs_layout_object ): string {
-			$attrs = json_decode( $m[1], true );
-			if ( ! is_array( $attrs ) || ! isset( $attrs['layout'] ) || ! is_string( $attrs['layout'] ) ) {
-				return $m[0];
-			}
-			$object = $sgs_layout_object( $attrs['layout'] );
-			if ( null === $object ) {
+		static function ( array $m ) use ( &$found, $sgs_replace_layout ): string {
+			$json = $sgs_replace_layout( $m[1] );
+			if ( null === $json ) {
 				return $m[0];
 			}
 			++$found;
-			$attrs['layout'] = $object;
-			return '<!-- wp:sgs/gallery ' . serialize_block_attributes( $attrs ) . $m[2];
+			return '<!-- wp:sgs/gallery ' . $json . $m[2];
 		},
 		$content
 	);

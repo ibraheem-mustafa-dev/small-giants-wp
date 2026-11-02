@@ -439,3 +439,36 @@ function initCarousel( galleryEl ) {
 
 // Initialise all carousel galleries on the page.
 document.querySelectorAll( '.sgs-gallery--carousel' ).forEach( initCarousel );
+
+/**
+ * A swipe row is a scrollable region only while it scrolls. The markup is the same at every width, so render.php marks a
+ * grid that is a swipe row at some device (`data-sgs-scroll-region`, holding the region's name) and this makes it a
+ * focusable, named region (so the arrow keys scroll it, and axe's scrollable-region-focusable passes) exactly while its
+ * content overflows, and a plain grid again when it does not. Without script the row still scrolls by touch and pointer,
+ * and its own links stay focusable.
+ *
+ * @param {HTMLElement} grid The `.sgs-gallery__grid` element carrying `data-sgs-scroll-region`.
+ */
+function initScrollRegion( grid ) {
+	const name = grid.getAttribute( 'data-sgs-scroll-region' );
+	const sync = () => {
+		const scrolls = grid.scrollWidth > grid.clientWidth + 1;
+		if ( scrolls ) {
+			grid.setAttribute( 'tabindex', '0' );
+			grid.setAttribute( 'role', 'region' );
+			grid.setAttribute( 'aria-label', name );
+		} else {
+			grid.removeAttribute( 'tabindex' );
+			grid.removeAttribute( 'role' );
+			grid.removeAttribute( 'aria-label' );
+		}
+	};
+	sync();
+	if ( 'function' === typeof ResizeObserver ) {
+		new ResizeObserver( sync ).observe( grid );
+	} else {
+		window.addEventListener( 'resize', sync );
+	}
+}
+
+document.querySelectorAll( '.sgs-gallery__grid[data-sgs-scroll-region]' ).forEach( initScrollRegion );

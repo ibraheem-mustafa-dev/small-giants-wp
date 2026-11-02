@@ -2025,6 +2025,15 @@
     "budget_ms": 40000,
     "order": 231
   },
+  {
+    "id": "check-button-empty-custom-props-self-test",
+    "cmd": "node scripts/check-button-empty-custom-props.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 300,
+    "order": 234
+  },
     {
       "id": "check-authored-text-rich-self-test",
       "cmd": "python scripts/check-authored-text-rich.py --self-test",
