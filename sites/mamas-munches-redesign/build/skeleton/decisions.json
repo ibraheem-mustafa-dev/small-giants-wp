@@ -31,10 +31,10 @@
 				"proposed": "sgs/container"
 			},
 			"Home>SiteFooter@250#0/7#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|fresh out the oven…",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the @mamasmunches h2)."
 			},
 			"Home>SiteFooter@250#0/8#0": {
 				"block": "sgs/heading",
@@ -187,10 +187,10 @@
 				"proposed": "sgs/container"
 			},
 			"Home>SiteFooter@250#0/42#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "div|say hello",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The script title of the footer's contact column; its sibling columns' script titles (shop, help) are sgs/heading by the columnHeading rule, so one footer keeps one block."
 			},
 			"Home>SiteFooter@250#0/43#0": {
 				"block": "sgs/button",
@@ -413,10 +413,10 @@
 				"proposed": "sgs/text"
 			},
 			"Home/41#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|baked with love",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: A short tag line on a pink ribbon (background, border, clip-path) laid over the hero image; a pill or tag of a few words is sgs/label."
 			},
 			"Home/42#0": {
 				"block": "sgs/trust-bar",
@@ -461,16 +461,16 @@
 				"proposed": "sgs/container"
 			},
 			"Home/50#0": {
-				"block": "sgs/heading",
+				"block": "sgs/label",
 				"signature": "span|for me ✦",
-				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/heading"
+				"proposed": "sgs/heading",
+				"reason": "Bean marked block:sgs/label in the intake review on 2026-11-02"
 			},
 			"Home/51#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "span|I’m feeding a little one",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The card's Young Serif title at the h3 size; the script kicker before it (for me) was made the heading by cardTitle, so the card now holds two headings and the review should settle it."
 			},
 			"Home/52#0": {
 				"block": "sgs/text",
@@ -509,16 +509,16 @@
 				"proposed": "sgs/container"
 			},
 			"Home/58#0": {
-				"block": "sgs/heading",
+				"block": "sgs/label",
 				"signature": "span|for her ♥",
-				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/heading"
+				"proposed": "sgs/heading",
+				"reason": "Bean marked block:sgs/label in the intake review on 2026-11-02"
 			},
 			"Home/59#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "span|I’m spoiling a new mum",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The card's Young Serif title at the h3 size; the script kicker before it (for her) was made the heading by cardTitle, so the card now holds two headings and the review should settle it."
 			},
 			"Home/60#0": {
 				"block": "sgs/text",
@@ -929,10 +929,10 @@
 				"proposed": "sgs/container"
 			},
 			"Home/128#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|gifts for new mums",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
 			},
 			"Home/129#0": {
 				"block": "sgs/heading",
@@ -1139,10 +1139,10 @@
 				"proposed": "sgs/container"
 			},
 			"Home/160#0": {
-				"block": "sgs/heading",
+				"block": "sgs/label",
 				"signature": "div|Baby shower coming up?",
-				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/heading"
+				"proposed": "sgs/heading",
+				"reason": "Bean marked block:sgs/label in the intake review on 2026-11-02"
 			},
 			"Home/161#0": {
 				"block": "sgs/text",
@@ -1169,10 +1169,10 @@
 				"proposed": "remove"
 			},
 			"Home/166#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "div|Zainab’s Zookie recipe",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The recipe card's title, set larger than the line after it; it titles the card (cardHeading pattern)."
 			},
 			"Home/167#0": {
 				"block": "sgs/text",
@@ -1193,10 +1193,10 @@
 				"proposed": "sgs/container"
 			},
 			"Home/170#0": {
-				"block": "sgs/text",
+				"block": "sgs/icon",
 				"signature": "span|✓",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: A tick in a 32px yellow circle with a border beside each ingredient; sgs/icon draws a glyph in a circle with its own border (DB description)."
 			},
 			"Home/171#0": {
 				"block": "sgs/container",
@@ -1205,10 +1205,10 @@
 				"proposed": "sgs/container"
 			},
 			"Home/172#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "div|Oats",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The ingredient name, Young Serif 22px above its description; it titles the row."
 			},
 			"Home/173#0": {
 				"block": "sgs/text",
@@ -1223,10 +1223,10 @@
 				"proposed": "sgs/container"
 			},
 			"Home/175#0": {
-				"block": "sgs/text",
+				"block": "sgs/icon",
 				"signature": "span|✓",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: A tick in a 32px yellow circle with a border beside each ingredient; sgs/icon draws a glyph in a circle with its own border (DB description)."
 			},
 			"Home/176#0": {
 				"block": "sgs/container",
@@ -1235,10 +1235,10 @@
 				"proposed": "sgs/container"
 			},
 			"Home/177#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "div|Brewer’s yeast",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The ingredient name, Young Serif 22px above its description; it titles the row."
 			},
 			"Home/178#0": {
 				"block": "sgs/text",
@@ -1253,10 +1253,10 @@
 				"proposed": "sgs/container"
 			},
 			"Home/180#0": {
-				"block": "sgs/text",
+				"block": "sgs/icon",
 				"signature": "span|✓",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: A tick in a 32px yellow circle with a border beside each ingredient; sgs/icon draws a glyph in a circle with its own border (DB description)."
 			},
 			"Home/181#0": {
 				"block": "sgs/container",
@@ -1265,10 +1265,10 @@
 				"proposed": "sgs/container"
 			},
 			"Home/182#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "div|Flaxseed",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The ingredient name, Young Serif 22px above its description; it titles the row."
 			},
 			"Home/183#0": {
 				"block": "sgs/text",
@@ -1283,10 +1283,10 @@
 				"proposed": "sgs/container"
 			},
 			"Home/185#0": {
-				"block": "sgs/text",
+				"block": "sgs/icon",
 				"signature": "span|✓",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: A tick in a 32px yellow circle with a border beside each ingredient; sgs/icon draws a glyph in a circle with its own border (DB description)."
 			},
 			"Home/186#0": {
 				"block": "sgs/container",
@@ -1295,10 +1295,10 @@
 				"proposed": "sgs/container"
 			},
 			"Home/187#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "div|Fenugreek",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The ingredient name, Young Serif 22px above its description; it titles the row."
 			},
 			"Home/188#0": {
 				"block": "sgs/text",
@@ -1373,10 +1373,10 @@
 				"proposed": "sgs/container"
 			},
 			"Home/202#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|our story",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (the story column's eyebrow)."
 			},
 			"Home/203#0": {
 				"block": "sgs/text",
@@ -1433,10 +1433,10 @@
 				"proposed": "sgs/container"
 			},
 			"Home/212#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|real mums, real words",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
 			},
 			"Home/213#0": {
 				"block": "sgs/heading",
@@ -1703,10 +1703,10 @@
 				"proposed": "sgs/container"
 			},
 			"Home/239#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|ask away",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
 			},
 			"Home/240#0": {
 				"block": "sgs/heading",
@@ -1757,10 +1757,10 @@
 				"proposed": "sgs/container"
 			},
 			"Home/146#0": {
-				"block": "sgs/multi-button",
+				"remove": true,
 				"signature": "div|",
-				"reason": "Bean accepted sgs/multi-button in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/multi-button"
+				"proposed": "sgs/multi-button",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The gift carousel's dots (375 only) step a scroll track over the product collection; no block in the DB draws carousel controls for woocommerce/product-collection, and copied buttons would be dead, so they go."
 			},
 			"Home/148#0": {
 				"block": "sgs/button",
@@ -1946,10 +1946,10 @@
 				"proposed": "sgs/container"
 			},
 			"Shop/12#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|fresh from Zainab’s kitchen",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1)."
 			},
 			"Shop/13#0": {
 				"block": "sgs/heading",
@@ -2204,16 +2204,16 @@
 				"proposed": "sgs/container"
 			},
 			"Shop/34#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "span|your cookie, your way ✦",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: A handwritten kicker at the top of the card link before its title; a kicker is sgs/label."
 			},
 			"Shop/35#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "span|Build your own box",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The card's Young Serif title at the h2 size; it titles the card."
 			},
 			"Shop/36#0": {
 				"block": "sgs/text",
@@ -2240,16 +2240,16 @@
 				"proposed": "sgs/container"
 			},
 			"Shop/40#0": {
-				"block": "sgs/heading",
+				"block": "sgs/label",
 				"signature": "span|never run out",
-				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/heading"
+				"proposed": "sgs/heading",
+				"reason": "Bean marked block:sgs/label in the intake review on 2026-11-02"
 			},
 			"Shop/41#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "span|Subscribe & save 10%",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The card's Young Serif title at the h2 size; the script kicker before it was made the heading by cardTitle, so the card holds two headings."
 			},
 			"Shop/42#0": {
 				"block": "sgs/container",
@@ -2264,10 +2264,10 @@
 				"proposed": "sgs/label"
 			},
 			"Shop/44#1": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "span|Free delivery on 20 and 40 packs",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: A pill chip ({{ k }}, border and 999px radius); its other copy (10% off every box) is sgs/label, and one list keeps one block."
 			},
 			"Shop/45#0": {
 				"block": "sgs/container",
@@ -2282,16 +2282,16 @@
 				"proposed": "sgs/container"
 			},
 			"Shop/47#0": {
-				"block": "sgs/heading",
+				"block": "sgs/label",
 				"signature": "span|buying for someone?",
-				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/heading"
+				"proposed": "sgs/heading",
+				"reason": "Bean marked block:sgs/label in the intake review on 2026-11-02"
 			},
 			"Shop/48#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "span|Find a gift by moment or budget",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The card's Young Serif title at the h2 size; the script kicker before it was made the heading by cardTitle, so the card holds two headings."
 			},
 			"Shop/49#0": {
 				"block": "sgs/text",
@@ -2312,16 +2312,16 @@
 				"reason": "Settled by evidence: woocommerce/product-collection in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			},
 			"Shop/44#2": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "span|A guaranteed slot in every bake",
 				"proposed": "sgs/text",
-				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: A pill chip ({{ k }}, border and 999px radius); its other copy (10% off every box) is sgs/label, and one list keeps one block."
 			},
 			"Shop/44#3": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "span|Skip, swap flavours or cancel online",
 				"proposed": "sgs/text",
-				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: A pill chip ({{ k }}, border and 999px radius); its other copy (10% off every box) is sgs/label, and one list keeps one block."
 			}
 		},
 		"page-gifts-dc-html": {
@@ -2369,10 +2369,10 @@
 				"proposed": "sgs/container"
 			},
 			"Gifts/12#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|for the mum-to-be & the brand new mum ♥",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1)."
 			},
 			"Gifts/13#0": {
 				"block": "sgs/heading",
@@ -2543,10 +2543,10 @@
 				"proposed": "sgs/container"
 			},
 			"Gifts/46#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|easy as that",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
 			},
 			"Gifts/47#0": {
 				"block": "sgs/heading",
@@ -2579,16 +2579,16 @@
 				"proposed": "sgs/container"
 			},
 			"Gifts/51#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|1",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The step number in a 52px filled circle with a border; a short pill-shaped badge is sgs/label."
 			},
 			"Gifts/52#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "div|Pick a gift",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: Each step's Young Serif 22px title ({{ s.t }}) above its description; it titles the step."
 			},
 			"Gifts/53#0": {
 				"block": "sgs/text",
@@ -2609,10 +2609,10 @@
 				"proposed": "sgs/container"
 			},
 			"Gifts/57#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|go on, have a go",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
 			},
 			"Gifts/58#0": {
 				"block": "sgs/heading",
@@ -2699,16 +2699,16 @@
 				"proposed": "sgs/container"
 			},
 			"Gifts/76#0": {
-				"block": "sgs/heading",
+				"block": "sgs/label",
 				"signature": "div|baby shower coming up?",
-				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/heading"
+				"proposed": "sgs/heading",
+				"reason": "Bean marked block:sgs/label in the intake review on 2026-11-02"
 			},
 			"Gifts/77#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "div|Give it now, she bakes it later",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The band's Young Serif title at the h2 size; the script kicker before it was made the heading by cardTitle, so the band holds two headings."
 			},
 			"Gifts/78#0": {
 				"block": "sgs/text",
@@ -2753,28 +2753,28 @@
 				"reason": "Settled by evidence: woocommerce/product-collection in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			},
 			"Gifts/51#1": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|2",
 				"proposed": "sgs/text",
-				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The step number in a 52px filled circle with a border; a short pill-shaped badge is sgs/label."
 			},
 			"Gifts/51#2": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|3",
 				"proposed": "sgs/text",
-				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The step number in a 52px filled circle with a border; a short pill-shaped badge is sgs/label."
 			},
 			"Gifts/52#1": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "div|Write your note",
 				"proposed": "sgs/text",
-				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: Each step's Young Serif 22px title ({{ s.t }}) above its description; it titles the step."
 			},
 			"Gifts/52#2": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "div|We bake and post",
 				"proposed": "sgs/text",
-				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: Each step's Young Serif 22px title ({{ s.t }}) above its description; it titles the step."
 			},
 			"Gifts/53#1": {
 				"block": "sgs/text",
@@ -2837,10 +2837,10 @@
 				"proposed": "sgs/hero"
 			},
 			"Basket/10#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|nearly there",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1)."
 			},
 			"Basket/11#0": {
 				"block": "sgs/container",
@@ -2849,10 +2849,10 @@
 				"proposed": "sgs/container"
 			},
 			"Basket/12#0": {
-				"block": "sgs/text",
+				"remove": true,
 				"signature": "span|2",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
 			},
 			"Basket/25#0": {
 				"block": "sgs/text",
@@ -3129,10 +3129,10 @@
 				"proposed": "sgs/hero"
 			},
 			"Contact/12#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|pop the kettle on ☕",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1)."
 			},
 			"Contact/13#0": {
 				"block": "sgs/heading",
@@ -3309,10 +3309,10 @@
 				"proposed": "sgs/container"
 			},
 			"Contact/75#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|quick answers",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: A handwritten eyebrow above the quick-answer links; sgs/label."
 			},
 			"Contact/77#0": {
 				"block": "sgs/icon-list",
@@ -3409,10 +3409,10 @@
 				"proposed": "sgs/hero"
 			},
 			"Help/11#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|ask us anything",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1)."
 			},
 			"Help/12#0": {
 				"block": "sgs/heading",
@@ -3697,10 +3697,10 @@
 				"proposed": "sgs/container"
 			},
 			"Help/39#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|getting it to you",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
 			},
 			"Help/40#0": {
 				"block": "sgs/heading",
@@ -3751,10 +3751,10 @@
 				"proposed": "sgs/text"
 			},
 			"Help/63#0": {
-				"block": "sgs/text",
+				"remove": true,
 				"signature": "div|Prices and timings to be confirmed by Zainab.",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: A brief note to the client (Prices and timings to be confirmed by Zainab.), not design; a brief-only line is removed."
 			},
 			"Help/64#0": {
 				"block": "sgs/container",
@@ -3769,10 +3769,10 @@
 				"proposed": "sgs/container"
 			},
 			"Help/66#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|please read carefully",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
 			},
 			"Help/67#0": {
 				"block": "sgs/heading",
@@ -3835,10 +3835,10 @@
 				"proposed": "sgs/container"
 			},
 			"Help/79#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "b|Privacy policy",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The Privacy policy title (Young Serif 20px) above its paragraph; it titles the block."
 			},
 			"Help/80#0": {
 				"block": "sgs/text",
@@ -3853,10 +3853,10 @@
 				"proposed": "sgs/container"
 			},
 			"Help/82#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "b|Terms & conditions",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The Terms and conditions title (Young Serif 20px) above its paragraph; it titles the block."
 			},
 			"Help/83#0": {
 				"block": "sgs/text",
@@ -3877,16 +3877,16 @@
 				"proposed": "sgs/container"
 			},
 			"Help/86#0": {
-				"block": "sgs/heading",
+				"block": "sgs/label",
 				"signature": "span|still stuck?",
-				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/heading"
+				"proposed": "sgs/heading",
+				"reason": "Bean marked block:sgs/label in the intake review on 2026-11-02"
 			},
 			"Help/87#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "span|Message Zainab",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The card link's Young Serif 24px title; the script kicker before it (still stuck?) was made the heading by cardTitle, so the card holds two headings."
 			},
 			"Help/88#0": {
 				"block": "sgs/button",
@@ -4031,10 +4031,10 @@
 				"proposed": "sgs/hero"
 			},
 			"SignIn/11#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|welcome back, mama",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1)."
 			},
 			"SignIn/12#0": {
 				"block": "sgs/heading",
@@ -4109,10 +4109,10 @@
 				"proposed": "sgs/container"
 			},
 			"SignIn/96#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|why have an account?",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: A handwritten eyebrow above the benefits list; sgs/label."
 			},
 			"SignIn/97#0": {
 				"block": "sgs/container",
@@ -4139,22 +4139,22 @@
 				"proposed": "sgs/container"
 			},
 			"SignIn/100#0": {
-				"block": "sgs/text",
+				"block": "sgs/icon",
 				"signature": "span|✓",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: A tick in a 32px yellow bordered circle beside each benefit; sgs/icon draws a glyph in a circle with its own border."
 			},
 			"SignIn/100#1": {
-				"block": "sgs/text",
+				"block": "sgs/icon",
 				"signature": "span|✓",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: A tick in a 32px yellow bordered circle beside each benefit; sgs/icon draws a glyph in a circle with its own border."
 			},
 			"SignIn/100#2": {
-				"block": "sgs/text",
+				"block": "sgs/icon",
 				"signature": "span|✓",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: A tick in a 32px yellow bordered circle beside each benefit; sgs/icon draws a glyph in a circle with its own border."
 			},
 			"SignIn/101#0": {
 				"block": "sgs/container",
@@ -4175,10 +4175,10 @@
 				"proposed": "sgs/container"
 			},
 			"SignIn/102#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "div|Every order and bake date",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: Each benefit's Young Serif 20px title ({{ k.t }}) above its description."
 			},
 			"SignIn/103#0": {
 				"block": "sgs/text",
@@ -4193,16 +4193,16 @@
 				"reason": "Settled by evidence: sgs/account in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			},
 			"SignIn/102#1": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "div|Subscriptions on your terms",
 				"proposed": "sgs/text",
-				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: Each benefit's Young Serif 20px title ({{ k.t }}) above its description."
 			},
 			"SignIn/102#2": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "div|Saved addresses",
 				"proposed": "sgs/text",
-				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: Each benefit's Young Serif 20px title ({{ k.t }}) above its description."
 			},
 			"SignIn/103#1": {
 				"block": "sgs/text",
@@ -4257,10 +4257,10 @@
 				"proposed": "sgs/hero"
 			},
 			"Account/11#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|my account",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1)."
 			},
 			"Account/12#0": {
 				"block": "sgs/heading",
@@ -4758,10 +4758,10 @@
 				"proposed": "sgs/label"
 			},
 			"Product/20#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|baked with love",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: A short tag line on a pink ribbon laid over the product image; a pill or tag is sgs/label."
 			},
 			"Product/21#0": {
 				"block": "sgs/multi-button",
@@ -4998,10 +4998,10 @@
 				"proposed": "sgs/container"
 			},
 			"Product/124#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|real mums, real words",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
 			},
 			"Product/125#0": {
 				"block": "sgs/heading",
@@ -5268,6 +5268,30 @@
 				"signature": "span|0",
 				"proposed": "sgs/text",
 				"reason": "Settled by evidence: sgs/text in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home>SiteHeader@7#0/17#0": {
+				"remove": true,
+				"signature": "button|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-02 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home>SiteHeader@7#0/18#0": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-02 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home>SiteHeader@7#0/19#0": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-02 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			},
+			"Home>SiteHeader@7#0/20#0": {
+				"remove": true,
+				"signature": "span|",
+				"proposed": "remove",
+				"reason": "Settled by evidence: remove in the intake review on 2026-11-02 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
 			}
 		},
 		"nav-drawer-left": {
@@ -5290,10 +5314,10 @@
 				"proposed": "sgs/responsive-logo"
 			},
 			"Home>SiteHeader@7#0/61#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|Who are you shopping for?",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: A 13px bold uppercase line with .08em tracking above the drawer cards; a kicker in capitals with wide tracking is sgs/label."
 			},
 			"Home>SiteHeader@7#0/62#0": {
 				"block": "sgs/container",
@@ -5320,10 +5344,10 @@
 				"proposed": "sgs/container"
 			},
 			"Home>SiteHeader@7#0/66#0": {
-				"block": "sgs/heading",
+				"block": "sgs/label",
 				"signature": "span|For me",
-				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/heading"
+				"proposed": "sgs/heading",
+				"reason": "Bean marked block:sgs/label in the intake review on 2026-11-02"
 			},
 			"Home>SiteHeader@7#0/67#0": {
 				"block": "sgs/text",
@@ -5350,10 +5374,10 @@
 				"proposed": "sgs/container"
 			},
 			"Home>SiteHeader@7#0/71#0": {
-				"block": "sgs/heading",
+				"block": "sgs/label",
 				"signature": "span|For a new mum",
-				"reason": "Bean accepted sgs/heading in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/heading"
+				"proposed": "sgs/heading",
+				"reason": "Bean marked block:sgs/label in the intake review on 2026-11-02"
 			},
 			"Home>SiteHeader@7#0/72#0": {
 				"block": "sgs/text",
@@ -5434,10 +5458,10 @@
 				"proposed": "sgs/container"
 			},
 			"Home>SiteHeader@7#0/105#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "div|say hello",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The handwritten line heading the drawer's contact column, matching the footer, where the same script column titles (shop, help) are sgs/heading by the columnHeading rule."
 			},
 			"Home>SiteHeader@7#0/107#0": {
 				"block": "sgs/icon-list",
@@ -5508,10 +5532,10 @@
 				"proposed": "sgs/container"
 			},
 			"Home>SiteHeader@7#0/177#0": {
-				"block": "sgs/responsive-logo",
+				"remove": true,
 				"signature": "img|",
-				"reason": "Bean accepted sgs/responsive-logo in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/responsive-logo"
+				"proposed": "absorbed",
+				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
 			},
 			"Home>SiteHeader@7#0/178#0": {
 				"block": "sgs/text",
@@ -5520,16 +5544,16 @@
 				"proposed": "sgs/text"
 			},
 			"Home>SiteHeader@7#0/179#0": {
-				"block": "sgs/text",
+				"remove": true,
 				"signature": "p|New to Zookies? The Taster Trio is 3 cookies for £5, postage included.",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "absorbed",
+				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
 			},
 			"Home>SiteHeader@7#0/180#0": {
-				"block": "sgs/button",
+				"remove": true,
 				"signature": "button|Add a Taster Trio · £5",
-				"reason": "Bean accepted sgs/button in the intake review on 2026-10-27 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/button"
+				"proposed": "absorbed",
+				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
 			},
 			"Home>SiteHeader@7#0/181#0": {
 				"block": "sgs/button",
@@ -5552,10 +5576,10 @@
 				"proposed": "sgs/container"
 			},
 			"Home/67#0": {
-				"block": "sgs/text",
+				"block": "sgs/label",
 				"signature": "div|your cookie, your way",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
 			},
 			"Home/68#0": {
 				"block": "sgs/heading",
