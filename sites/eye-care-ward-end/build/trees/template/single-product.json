@@ -617,10 +617,7 @@
                 }
               }
             }
-          },
-          "sgsCustomCss": "& { opacity: 0; transform: matrix(1, 0, 0, 1, 0, 26); }",
-          "sgsCustomCssId": "rc67f203adb9",
-          "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width opacity: 0; transform: matrix(1, 0, 0, 1, 0, 26);"
+          }
         },
         "innerBlocks": [
           {
@@ -1051,9 +1048,9 @@
               }
             }
           },
-          "sgsCustomCss": "& { opacity: 0; border-top-style: solid; transform: matrix(1, 0, 0, 1, 0, 26); }",
+          "sgsCustomCss": "& { border-top-style: solid; }",
           "sgsCustomCssId": "r6cc24f8918c",
-          "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width opacity: 0; border-top-style: solid; transform: matrix(1, 0, 0, 1, 0, 26);"
+          "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width border-top-style: solid;"
         },
         "innerBlocks": [
           {
@@ -1917,9 +1914,9 @@
               }
             }
           },
-          "sgsCustomCss": "& { transform: matrix(1, 0, 0, 1, 0, 26); } & .sgs-container__svg-bg { line-height: normal; top: 10px; width: 36px; cursor: pointer; height: 36px; right: 10px; transition-property: background, transform; } & .sgs-container__inner > p:nth-of-type(1) { margin-bottom: 24px; }",
+          "sgsCustomCss": "& .sgs-container__svg-bg { line-height: normal; top: 10px; width: 36px; cursor: pointer; height: 36px; right: 10px; transition-property: background, transform; } & .sgs-container__inner > p:nth-of-type(1) { margin-bottom: 24px; }",
           "sgsCustomCssId": "r976f386c716",
-          "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width transform: matrix(1, 0, 0, 1, 0, 26);, & .sgs-container__svg-bg every width line-height: normal; top: 10px; width: 36px; cursor: pointer; height: 36px; right: 10px; transition-property: background, transform;, & .sgs-container__inner > p:nth-of-type(1) every width margin-bottom: 24px;"
+          "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & .sgs-container__svg-bg every width line-height: normal; top: 10px; width: 36px; cursor: pointer; height: 36px; right: 10px; transition-property: background, transform;, & .sgs-container__inner > p:nth-of-type(1) every width margin-bottom: 24px;"
         },
         "innerBlocks": [
           {
@@ -2165,9 +2162,9 @@
               }
             }
           },
-          "sgsCustomCss": "& { opacity: 0; transform: matrix(1, 0, 0, 1, 0, 26); } & .sgs-container__inner > p:nth-of-type(1) { margin-bottom: 24px; }",
+          "sgsCustomCss": "& .sgs-container__inner > p:nth-of-type(1) { margin-bottom: 24px; }",
           "sgsCustomCssId": "r1242de0b4f1",
-          "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & every width opacity: 0; transform: matrix(1, 0, 0, 1, 0, 26);, & .sgs-container__inner > p:nth-of-type(1) every width margin-bottom: 24px;"
+          "sgsCustomCssNote": "Written by the cloning route: Custom CSS no setting holds: & .sgs-container__inner > p:nth-of-type(1) every width margin-bottom: 24px;"
         },
         "innerBlocks": [
           {
