@@ -199,6 +199,29 @@ test( 'MUST FAIL: a choice flow that advances and comes back passes; one that ne
 	}
 } );
 
+// A buybox's flow sits in a closed popup its button opens (FR-43-22): the check opens it as a shopper does.
+const popupFlowHtml = ( opener ) => `
+	${ opener ? '<button type="button" data-sgs-modal-open="sgs-flow-lenses">Add my prescription</button>' : '' }
+	<div id="sgs-flow-lenses"><dialog id="sgs-modal-21">${ flowHtml( true ) }</dialog></div>
+	<script>
+		const o = document.querySelector( '[data-sgs-modal-open]' );
+		o && ( o.onclick = () => document.getElementById( 'sgs-modal-21' ).showModal() );
+	</script>`;
+
+test( 'MUST FAIL: a flow in a closed popup is opened by its visible opener and then checked; with no opener it fails naming the popup', async () => {
+	const page = await pageWith( popupFlowHtml( true ) );
+	const { flows } = await page.evaluate( readPartsInPage, MARK );
+	const item = await flowItem( page, flows[ 0 ], { url: BASE, shoot } );
+	await page.close();
+	assert.equal( item.status, 'pass', item.error || item.detail );
+	const bare = await pageWith( popupFlowHtml( false ) );
+	const parts = await bare.evaluate( readPartsInPage, MARK );
+	const none = await flowItem( bare, parts.flows[ 0 ], { url: BASE, shoot } );
+	await bare.close();
+	assert.equal( none.status, 'fail' );
+	assert.match( none.error, /closed popup \(#sgs-flow-lenses\) that no visible control on the page opens/ );
+} );
+
 const formHtml = ( works ) => `
 	<div class="sgs-form" data-wp-interactive="sgs/form" data-wp-context='{"formId":"contact","successMessage":"Thanks!","successRedirect":""}'>
 		<form class="sgs-form__inner" novalidate>

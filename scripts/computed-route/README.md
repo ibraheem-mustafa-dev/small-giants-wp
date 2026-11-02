@@ -3333,6 +3333,7 @@ FR-48-57: the words of a multi-step form's own buttons. The draft's Next and Bac
 - `readPartsInPage(mark)` → the page's marked modals, choice flows and forms; `FLOW_ROOT` → a choice flow's root selector; `flowStateInPage` → its shown step, step count, Back and Continue.
 - `missingFlowRows(rows, flows)` → the page-map `sgs_choice_flow` rows no rendered flow shows: a flow naming a slug (`data-flow-slug`) is the row of that slug; a flow naming none is the row its `aria-label` matches.
 - `WOO_PAGES` → what the cart, checkout and account pages must show; `wooStateInPage` → whether it shows, else the page's first words.
+- `popupOfFlowInPage([mark, id])` → whether a flow sits in a closed `<dialog>` and its visible opener (marked `<id>-opener`); `flowItem` clicks that opener first, as a shopper opens a buybox's flow popup (FR-43-22), and fails naming the popup when none shows.
 - `modalItem`, `flowItem`, `formItem`, `wooItem` → one item each; `addOneLine(page, base)` → one basket line through the Store API for `--with-cart`.
 
 ### `lib/intake-palette-declared.mjs`
