@@ -385,7 +385,11 @@
                             "itemMinHeight": {
                                 "desktop": "auto"
                             },
-                            "justifyContent": {"desktop":"center"},
+                            "justifyContent": {
+                                "desktop": "center",
+                                "tablet": "flex-start",
+                                "mobile": "flex-start"
+                            },
                             "itemBgHover": "mm-pink-soft",
                             "itemBgCurrent": "mm-pink-soft",
                             "itemFontSize": {
@@ -516,11 +520,17 @@
                                 "name": "sgs/cart",
                                 "attributes": {
                                     "displayMode": "drawer",
-                                    "iconSize": {"desktop":22},
+                                    "iconSize": {
+                                        "desktop": 22,
+                                        "tablet": 24
+                                    },
                                     "iconColourHover": "primary-text",
                                     "iconColourHoverGradient": "rgb(58, 42, 34)",
                                     "badgeTextColourHover": "primary-text",
-                                    "showZero": {"desktop":true},
+                                    "showZero": {
+                                        "desktop": true,
+                                        "tablet": false
+                                    },
                                     "emptyCartMessage": "Your basket is empty",
                                     "emptyCartCtaLabel": "Browse the shop",
                                     "checkoutLabel": "Checkout securely",
@@ -565,7 +575,6 @@
                                         "desktop": "48px"
                                     },
                                     "badgeColour": "mm-pink",
-                                    "sgsCustomCss": "@media (min-width:1024px) { & .sgs-cart__trigger { box-shadow: 3px 3px 0 #3A2A22; } } @media (max-width:1023px) { & .sgs-cart__trigger { min-width: 48px; min-height: 48px; border-radius: 999px; } }",
                                     "triggerStyleTablet": "icon",
                                     "pillShowIcon": true,
                                     "iconName": "shopping-bag",
@@ -574,6 +583,26 @@
                                     "pillBgColourHover": "mm-yellow",
                                     "pillLetterSpacing": {
                                         "desktop": 0
+                                    },
+                                    "iconSource": "custom",
+                                    "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z\"/><path d=\"M9 10V7a3 3 0 0 1 6 0v3\"/></svg>",
+                                    "iconBgHover": "mm-pink-soft",
+                                    "iconTriggerRadius": "999px",
+                                    "iconTriggerSize": {
+                                        "tablet": 48
+                                    },
+                                    "pillShadow": "3px 3px 0 #3A2A22",
+                                    "pillShadowHover": "5px 5px 0 #3A2A22",
+                                    "pillPadding": {
+                                        "desktop": {
+                                            "top": "0px",
+                                            "right": "18px",
+                                            "bottom": "0px",
+                                            "left": "14px"
+                                        }
+                                    },
+                                    "pillBadgeSize": {
+                                        "desktop": 22
                                     }
                                 }
                             }

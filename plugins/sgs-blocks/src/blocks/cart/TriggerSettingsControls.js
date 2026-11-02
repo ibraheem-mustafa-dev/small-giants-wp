@@ -201,6 +201,7 @@ export default function TriggerSettingsControls( {
 					{ ( tier ) => (
 						<ToggleControl
 							label={ __( 'Show badge when cart is empty', 'sgs-blocks' ) }
+							hideLabelFromVision
 							help={ __(
 								'When off, the badge hides until there is at least one item in the cart. The editor preview counts as an empty cart, so it shows this setting for the device you are previewing.',
 								'sgs-blocks'
