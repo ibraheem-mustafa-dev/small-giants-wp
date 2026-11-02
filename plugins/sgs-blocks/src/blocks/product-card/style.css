@@ -1532,7 +1532,7 @@
    (0,1,1) would otherwise beat the single-class rule and show every logo at its
    file's intrinsic size. The card's instance rule (brandLogoHeight, -Width,
    -MaxHeight, -MaxWidth) uses the same weight and comes later, so it wins. */
-.sgs-product-card .sgs-product-card__brand-logo {
+.sgs-product-card__brand .sgs-product-card__brand-logo {
 	display: block;
 	width: auto;
 	height: var( --sgs-product-card-brand-logo-height, 18px );
