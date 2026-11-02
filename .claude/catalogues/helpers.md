@@ -375,11 +375,13 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 |---|---|---|---|
 | `sgs_render_info_toggle` | `function sgs_render_info_toggle( string $panel_text, string $aria_label = '', string $extra_class = '' )…` | Render an info-toggle button + its (initially hidden) panel. | tags button, div; aria aria-controls, aria-expanded, aria-label |
 
-#### `includes/helpers-inline-formats.php` — 4 function(s)
+#### `includes/helpers-inline-formats.php` — 6 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
-| `sgs_rich_text_kses` | `function sgs_rich_text_kses( $html ): string` | Sanitise RichText markup for output: the post allowlist without inline style. | no markup |
+| `sgs_rich_text_kses` | `function sgs_rich_text_kses( $html, bool $links = true, string $formats = 'free' ): string` | Sanitise RichText markup for output: the post allowlist without inline style. | no markup |
+| `sgs_authored_text_plain` | `function sgs_authored_text_plain( $value ): string` | A typed rich value as plain text: line breaks become a space, tags are stripped, entities decoded, white space collapsed. The caller… | no markup |
+| `sgs_rich_text_sanitise_param` | `function sgs_rich_text_sanitise_param( $value ): string` | A REST argument sanitiser for typed rich text that prints inside a link or button: the sanitised markup, no link. | no markup |
 | `sgs_inline_format_palette_css` | `function sgs_inline_format_palette_css(): string` | The highlight colour rule for each palette slug that is safe in a selector. | no markup |
 | `sgs_inline_formats_enqueue` | `function sgs_inline_formats_enqueue(): void` | Enqueue the `sgs-inline-formats` stylesheet with its palette rules. | no markup |
 | `sgs_inline_formats_maybe_enqueue` | `function sgs_inline_formats_maybe_enqueue( $block_content, $block = array() )` | `render_block` filter: load the inline-format stylesheet when the block's markup holds a highlight or a photo. | no markup |
@@ -854,7 +856,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_tier_media_queries` | `function sgs_tier_media_queries( array $tiers, string $extra = '' ): array` | The exact media condition for each named tier (desktop >= 1024, tablet 768 to 1023, mobile <= 767), each optionally narrowed by `$extra`. | no markup |
 | `sgs_tier_exact_media_css` | `function sgs_tier_exact_media_css( array $tiers, string $rules, string $extra = '' ): string` | Wrap `$rules` so they apply at exactly the given tiers, with no cascade into other tiers. All three tiers and no extra condition: no… | no markup |
 
-#### `includes/helpers-tokens.php` — 33 function(s)
+#### `includes/helpers-tokens.php` — 35 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
@@ -883,8 +885,10 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_gradient_overlay_attr` | `function sgs_gradient_overlay_attr( string $base, string $part = 'gradient' ): string` | Derive ONE of a gradient-overlay family's attribute names from its base. | no markup |
 | `sgs_gradient_overlay_attr_map` | `function sgs_gradient_overlay_attr_map( string $base, ?string $solid = null ): array` | The attribute-key map for a gradient-overlay family. | no markup |
 | `sgs_overlay_decls` | `function sgs_overlay_decls( ?string $colour, ?string $gradient, $opacity = null, ?string $blend_mode = null…` | Resolve an overlay LAYER's complete CSS declaration set — colour/gradient paint plus its own opacity (D717, 2026-08-21) plus its own blend… | no markup |
-| `sgs_text_colour_decl` | `function sgs_text_colour_decl( ?string $value ): string` | Resolve a text-colour attribute (flat colour OR gradient string, D636 single-attribute storage) into a bare CSS declaration fragment — no… | no markup |
+| `sgs_text_colour_decl` | `function sgs_text_colour_decl( ?string $value, bool $localise = false, string $align = '' ): string` | Resolve a text-colour attribute (flat colour OR gradient string, D636 single-attribute storage) into a bare CSS declaration fragment — no… | no markup |
+| `sgs_text_gradient_box_decls` | `function sgs_text_gradient_box_decls( string $align = '' ): string` | Declarations that make a text-gradient element paint its own full gradient over its own text. | no markup |
 | `sgs_text_colour_gradient_fallback_rule` | `function sgs_text_colour_gradient_fallback_rule( string $selector, ?string $value ): string` | The `@supports not (background-clip: text)` fallback rule that MUST accompany `sgs_text_colour_decl()` whenever its input was a gradient (a… | no markup |
+| `sgs_text_colour_child_rules` | `function sgs_text_colour_child_rules( string $root_sel, array $child_suffixes, string $normal_value, string…` | Rules that carry a block's text colour (resting and hover, flat or gradient) onto the text elements inside it that paint their own `color`. | no markup |
 | `sgs_resolve_text_colour_or_gradient` | `function sgs_resolve_text_colour_or_gradient( ?string $flat_value, ?string $gradient_value ): string` | Resolve which of a text-colour attribute's two SIBLING values should be used — the flat colour attribute, or its `{attr}Gradient` sibling. | no markup |
 | `sgs_grid_border_parts` | `function sgs_grid_border_parts( string $value ): array` | Split a `gridItemBorder`-style CSS border SHORTHAND string ("1px solid #ccc") into its width/style/colour parts, order-independent. | no markup |
 | `sgs_border_gradient_css` | `function sgs_border_gradient_css( string $selector, string $normal_paint, ?string $hover_paint = null, string…` | Universal masked-`::before` gradient-border emitter (D636 border builder, 2026-08-16). `border-color` cannot legally hold a CSS gradient —… | no markup |
@@ -924,7 +928,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 27 Part 2 P1). | calls wc_price |
 | `sgs_value_ladder_markup` | `function sgs_value_ladder_markup( string $wrapper_class, array $rows, int $default_pack, bool $decoy_enabled…` | Markup for the comparative value ladder: one <ul> of pack rows (Spec 27 Part 2 P1). | tags li, span, ul; aria aria-current, aria-label |
 
-**93 files, 444 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**93 files, 448 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 
@@ -932,6 +936,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 
 | File | Exports | Purpose |
 |---|---|---|
+| `AuthoredText.js` | `AuthoredText (default)` | AuthoredText — the editor canvas's print of a typed rich value (a setting edited with `SgsFreeTextField type="rich"`), the twin… |
 | `BooleanResponsiveControl.js` | `BooleanResponsiveControl (default)` | BooleanResponsiveControl — a single ToggleControl on Desktop, a 3-way Inherit/On/Off switch on Tablet/Mobile, driven by the… |
 | `BorderStyleControl.js` | `BorderStyleControl (default)` | BorderStyleControl — thin SGS wrapper matching WP core's native `BorderControlStylePicker` exactly (Bean-directed, 2026-08-19). |
 | `ColumnShapePicker.js` | `ColumnShapePicker (default)`, `weightsToTrack`, `activeShapeKey`, `ColumnShapePicker` | ColumnShapePicker — pick a column SHAPE by clicking a diagram (FR-37-42). |
@@ -993,7 +998,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `TypographyControls.js` | `TypographyControls (default)`, `isTieredValue`, `typographyAttrName`… | TypographyControls — shared, uniform typography UI for every SGS block. |
 | `TypographyNumberShadowRows.js` | `textShadowIsEditable`, `parseTextShadowShape`, `composeTextShadowShape`… | Number style and text shadow rows for TypographyControls (opt-in: `showNumberStyle`, `showTextShadow`). |
 
-**60 files.**
+**61 files.**
 
 ### JS media atoms — `src/components/media/atoms/*.js`
 
