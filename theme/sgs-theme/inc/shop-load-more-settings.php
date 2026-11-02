@@ -301,6 +301,12 @@ function enqueue_shop_load_more(): void {
 		asset_version( SHOP_LOAD_MORE_MODULE_PATH, wp_get_theme()->get( 'Version' ) )
 	);
 	wp_enqueue_script_module( SHOP_LOAD_MORE_MODULE );
+	wp_enqueue_style(
+		'sgs-shop-load-more',
+		get_theme_file_uri( 'assets/css/shop-load-more.css' ),
+		array(),
+		asset_version( 'assets/css/shop-load-more.css', wp_get_theme()->get( 'Version' ) )
+	);
 	add_action( 'wp_footer', __NAMESPACE__ . '\print_shop_load_more_settings', 5 );
 }
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_shop_load_more', 22 );

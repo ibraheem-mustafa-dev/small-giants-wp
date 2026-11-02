@@ -1,0 +1,87 @@
+/*
+ * Shop "Load more" mode: the button, the count and the screen-reader announcer built by
+ * assets/js/sgs-shop-load-more.js. Loaded with the module only (inc/shop-load-more-settings.php).
+ * Button tokens match the shop Filter button (assets/css/woocommerce.css, .sgs-shop-filters__toggle).
+ */
+
+.wp-block-query-pagination-numbers[hidden],
+.wp-block-query-pagination-next[hidden] {
+	display: none;
+}
+
+.sgs-shop-load-more {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: var(--wp--preset--spacing--30, 1rem) var(--wp--preset--spacing--40, 1.5rem);
+	margin-block: var(--wp--preset--spacing--40, 1.5rem);
+}
+
+.sgs-shop-load-more__button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	min-width: 44px;
+	padding: 0.5em 1.75em;
+	border: 2px solid var(--wp--preset--color--primary, #E68A95);
+	border-radius: var(--wp--custom--border-radius--pill, 9999px);
+	background: var(--wp--preset--color--primary, #E68A95);
+	color: var(--wp--preset--color--primary-text, #fffaf5);
+	font: inherit;
+	font-size: 0.9375rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: filter 0.15s ease, opacity 0.15s ease;
+}
+
+.sgs-shop-load-more__button:hover {
+	filter: brightness(1.1);
+}
+
+.sgs-shop-load-more__button:focus-visible {
+	outline: 3px solid var(--wp--preset--color--text, #1a1a1a);
+	outline-offset: 3px;
+}
+
+.sgs-shop-load-more__button:disabled {
+	cursor: progress;
+	opacity: 0.75;
+}
+
+.sgs-shop-load-more__count {
+	margin: 0;
+	font-size: 0.9375rem;
+	color: var(--wp--preset--color--text, #1a1a1a);
+}
+
+.sgs-shop-load-more__count[hidden] {
+	display: none;
+}
+
+/* Below the wide-screen breakpoint the count sits under the button. */
+@media ( max-width: 781px ) {
+	.sgs-shop-load-more {
+		flex-direction: column;
+	}
+}
+
+/* Visually hidden live region: spoken, never seen. */
+.sgs-shop-load-more__announcer {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+	border: 0;
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-shop-load-more__button {
+		transition: none;
+	}
+}
