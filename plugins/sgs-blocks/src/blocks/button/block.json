@@ -110,7 +110,11 @@
 								"css:transform": "builtInHoverLift",
 								"css:text-decoration-color-link": "linkUnderlineColourHover",
 								"css:-webkit-text-stroke-color": "textStrokeColourHover"
-							}
+							},
+							"noBaseByDesign": [
+								"css:transform"
+							],
+							"_noBaseByDesignNote": "css:transform (builtInHoverLift) is the button style's own hover movement; a button's resting transform is none by definition, so a resting counterpart would be clutter. The attribute only switches the style's lift off (FW-A)."
 						}
 					}
 				},

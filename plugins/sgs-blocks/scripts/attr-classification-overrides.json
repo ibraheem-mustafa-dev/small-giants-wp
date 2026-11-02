@@ -2743,6 +2743,57 @@
 			"_why": "2026-09-07, Task 3 (two-state link colour). Genuinely paints color on `{selector} a` via sgs_link_colour_css(), called from render.php as sgs_link_colour_css( $attributes, '', $scope ). Same dynamic-key scanning gap as sgs/collapsible-text.linkColour above."
 		},
 		{
+			"slug": "sgs/button",
+			"attr": "linkUnderline",
+			"fields": {
+				"css_property": "text-decoration-line",
+				"css_element": "button",
+				"role": "typography"
+			},
+			"_why": "2026-11-02, FW-B (footer framework batch). Paints text-decoration-line on the button itself (the button is the `<a>`, so no `{selector} a`) via sgs_link_underline_css() in self mode (includes/helpers-link-underline.php), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/button",
+			"attr": "linkUnderlineThickness",
+			"fields": {
+				"css_property": "text-decoration-thickness",
+				"css_element": "button",
+				"role": "typography"
+			},
+			"_why": "2026-11-02, FW-B (footer framework batch). Paints text-decoration-thickness on the button itself (the button is the `<a>`, so no `{selector} a`) via sgs_link_underline_css() in self mode (includes/helpers-link-underline.php), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/button",
+			"attr": "linkUnderlineColour",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "button",
+				"role": "color"
+			},
+			"_why": "2026-11-02, FW-B (footer framework batch). Paints text-decoration-color on the button itself (the button is the `<a>`, so no `{selector} a`) via sgs_link_underline_css() in self mode (includes/helpers-link-underline.php), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/button",
+			"attr": "linkUnderlineColourHover",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "button",
+				"css_state": "hover",
+				"role": "color"
+			},
+			"_why": "2026-11-02, FW-B (footer framework batch). Paints text-decoration-color on the button itself (the button is the `<a>`, so no `{selector} a`) via sgs_link_underline_css() in self mode (includes/helpers-link-underline.php), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/button",
+			"attr": "linkUnderlineOffset",
+			"fields": {
+				"css_property": "text-underline-offset",
+				"css_element": "button",
+				"role": "typography"
+			},
+			"_why": "2026-11-02, FW-B (footer framework batch). Paints text-underline-offset on the button itself (the button is the `<a>`, so no `{selector} a`) via sgs_link_underline_css() in self mode (includes/helpers-link-underline.php), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
 			"slug": "sgs/text",
 			"attr": "linkUnderline",
 			"fields": {

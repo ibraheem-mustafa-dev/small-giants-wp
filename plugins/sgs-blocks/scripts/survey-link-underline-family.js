@@ -44,9 +44,9 @@ const REGISTRY_FILES = {
 	settings: path.join( __dirname, 'consistency', 'setting-registry.json' ),
 };
 
-// The population the family is declared to have (plan 2026-10-19-control-gaps-build.md, Design G11).
-const EXPECTED_BLOCKS = [ 'business-info', 'collapsible-text', 'heading', 'icon-list', 'label', 'product-card', 'quote', 'testimonial', 'text', 'timeline' ];
-const EXPECTED_PREFIX_COUNT = 11;
+// The population the family is declared to have (plan 2026-10-19-control-gaps-build.md, Design G11; `button` joined in the footer framework batch, FW-B, where the button itself is the link).
+const EXPECTED_BLOCKS = [ 'business-info', 'button', 'collapsible-text', 'heading', 'icon-list', 'label', 'product-card', 'quote', 'testimonial', 'text', 'timeline' ];
+const EXPECTED_PREFIX_COUNT = 12;
 
 const MODES = [ '', 'none', 'always', 'hover', 'sweep' ];
 const MODES_JSON = '[ ' + MODES.map( ( m ) => JSON.stringify( m ) ).join( ', ' ) + ' ]';

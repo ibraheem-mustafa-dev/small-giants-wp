@@ -56,6 +56,30 @@
 			"contains": "ref.matches(",
 			"category": "not-css",
 			"reason": "A runtime query (Element.matches(':focus-visible')) in actions.linkTriggerFocus: only keyboard focus on a parent link that is its panel's trigger opens the panel; it paints nothing."
+		},
+		{
+			"path": "plugins/sgs-blocks/includes/helpers-link-underline.php",
+			"contains": "$state_sel = ",
+			"category": "shared-state",
+			"reason": "sgs_link_underline_self_css: The shared link underline for an element that is itself the link (sgs/button, FW-B): rest, hover, keyboard-focus and mouse-focus variants of text-decoration-line, thickness, colour and offset only, so the stylesheet's own hover and focus resets never win. It writes no outline or box-shadow, so the focus system stays the indicator."
+		},
+		{
+			"path": "plugins/sgs-blocks/includes/helpers-link-underline.php",
+			"contains": "$rest_sel  = ",
+			"category": "shared-state",
+			"reason": "sgs_link_underline_self_css: The shared link underline for an element that is itself the link (sgs/button, FW-B): rest, hover, keyboard-focus and mouse-focus variants of text-decoration-line, thickness, colour and offset only, so the stylesheet's own hover and focus resets never win. It writes no outline or box-shadow, so the focus system stays the indicator."
+		},
+		{
+			"path": "plugins/sgs-blocks/src/utils/link-underline.js",
+			"contains": "const stateSel =",
+			"category": "shared-state",
+			"reason": "selfPreviewCss, the editor-canvas twin of sgs_link_underline_self_css: The shared link underline for an element that is itself the link (sgs/button, FW-B): rest, hover, keyboard-focus and mouse-focus variants of text-decoration-line, thickness, colour and offset only, so the stylesheet's own hover and focus resets never win. It writes no outline or box-shadow, so the focus system stays the indicator."
+		},
+		{
+			"path": "plugins/sgs-blocks/src/utils/link-underline.js",
+			"contains": "const restSel =",
+			"category": "shared-state",
+			"reason": "selfPreviewCss, the editor-canvas twin of sgs_link_underline_self_css: The shared link underline for an element that is itself the link (sgs/button, FW-B): rest, hover, keyboard-focus and mouse-focus variants of text-decoration-line, thickness, colour and offset only, so the stylesheet's own hover and focus resets never win. It writes no outline or box-shadow, so the focus system stays the indicator."
 		}
 	]
 }
