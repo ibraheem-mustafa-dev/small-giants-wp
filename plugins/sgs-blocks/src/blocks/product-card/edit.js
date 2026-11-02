@@ -2136,7 +2136,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								}
 								__nextHasNoMarginBottom
 							/>
-							{ brandUseLogo !== false && (
+							{ isBound && brandUseLogo !== false && (
 								<ResponsiveLengthControl
 									label={ __( 'Logo height', 'sgs-blocks' ) }
 									help={ __( 'Empty = 18px.', 'sgs-blocks' ) }
@@ -2144,7 +2144,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 									onChange={ ( obj ) => setAttributes( { brandLogoHeight: obj } ) }
 								/>
 							) }
-							{ brandUseLogo !== false && (
+							{ isBound && brandUseLogo !== false && (
 								<ResponsiveLengthControl
 									label={ __( 'Logo width', 'sgs-blocks' ) }
 									help={ __( 'Empty = automatic, keeping the logo’s shape.', 'sgs-blocks' ) }
@@ -2152,7 +2152,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 									onChange={ ( obj ) => setAttributes( { brandLogoWidth: obj } ) }
 								/>
 							) }
-							{ brandUseLogo !== false && (
+							{ isBound && brandUseLogo !== false && (
 								<ResponsiveLengthControl
 									label={ __( 'Logo maximum height', 'sgs-blocks' ) }
 									help={ __( 'Empty = no cap.', 'sgs-blocks' ) }
@@ -2160,7 +2160,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 									onChange={ ( obj ) => setAttributes( { brandLogoMaxHeight: obj } ) }
 								/>
 							) }
-							{ brandUseLogo !== false && (
+							{ isBound && brandUseLogo !== false && (
 								<ResponsiveLengthControl
 									label={ __( 'Logo maximum width', 'sgs-blocks' ) }
 									help={ __( 'Empty = as wide as the card allows.', 'sgs-blocks' ) }
