@@ -110,6 +110,17 @@ def self_test_theme_json() -> list[str]:
         payload, why = resolve_theme_json_payload({"client": "broken"}, root=repo)
         if payload is not None:
             failures.append("broken snapshot: resolve returned a payload instead of failing closed")
+        # 13b. A target's own "snapshot" wins over its client's: two sites of one client ship
+        # different theme.json files (eye-care-test against the re-extracted clone snapshot).
+        own = SNAPSHOT.replace(b'"version"', b'"_own":1,"version"', 1)
+        (repo / "sites" / "acme" / "theme-snapshot-site-b.json").write_bytes(own)
+        payload, why = resolve_theme_json_payload(
+            {"client": "acme", "snapshot": "sites/acme/theme-snapshot-site-b.json"}, root=repo)
+        if payload is None or b'"_own"' not in payload:
+            failures.append(f"own snapshot: the target's own snapshot was not shipped ({why})")
+        payload, why = resolve_theme_json_payload({"client": "acme"}, root=repo)
+        if payload is None or b'"_own"' in payload:
+            failures.append("own snapshot: a target without one shipped another target's snapshot")
         # 14. Guard decisions, including the one abort case.
         fw, sn, wc = md5(FRAMEWORK), md5(SNAPSHOT), md5(b"working-copy")
         cases = [
@@ -510,7 +521,7 @@ def self_test() -> int:
     print(" 10. a target with NO client keeps the framework default theme.json")
     print(" 11. a payload missing from the tarball FAILS the extract and leaves the live theme untouched")
     print(" 12. a named client with no snapshot fails closed (no framework fallback)")
-    print(" 13. an unparseable snapshot fails closed")
+    print(" 13. an unparseable snapshot fails closed; a target's own snapshot wins over its client's")
     print(" 14. pre-upload guard: aborts only when an UNCOMMITTED pushed snapshot is live")
     print(" 15. post-deploy verify: a live theme.json that is not the payload FAILS")
     print(" 16. every real TARGETS entry names a client whose snapshot prepares")

@@ -37,6 +37,8 @@ sys.stdout.reconfigure(encoding="utf-8")
 # theme.json (None = the framework theme.json). A theme deploy ships the snapshot as
 # the theme's theme.json, so a deploy can never revert a client site to the framework
 # default — see resolve_theme_json_payload(). Keyed on this data, never on a site name.
+# An optional "snapshot" (a repo-relative path) names the target's own snapshot when two
+# sites of one client need different theme.json files (target_snapshot_rel()).
 #
 # "kind" says what the site is for: "canary" (the framework's own live site), "test" (a per-client test site) or
 # "reference" (a hand-built site kept as a read-only reference). scripts/local-wp/push-to-remote.sh, which overwrites
@@ -64,12 +66,16 @@ TARGETS = {
     # WooCommerce, so deploy-and-verify clone runs of the Eye Care draft are checked on a
     # real rendered page without touching sandybrown's global active-header/footer/
     # theme-snapshot pointers. Credentials: .claude/secrets/eye-care-test.env (gitignored).
-    # A reference site: Bean ruled it read-only (2026-10-27), so nothing copies a mirror over it.
+    # Eye Care's hand-built site, finished by hand from 2026-11-02 (Bean); kind "reference", so
+    # nothing copies a mirror over it. It ships its own snapshot: the client snapshot was
+    # re-extracted for the clone (eye-care-clone-test) and renames the palette this site's
+    # blocks use.
     "eye-care-test": {
         "host": "darkcyan-grouse-898606.hostingersite.com",
         "wp_content": "domains/darkcyan-grouse-898606.hostingersite.com/public_html/wp-content",
         "explicit_opt_in_required": True,
         "client": "eye-care-ward-end",
+        "snapshot": "sites/eye-care-ward-end/theme-snapshot-eye-care-test.json",
         "kind": "reference",
     },
     # Second Eye Care test site: the fresh WordPress for the full re-clone of the Eye Care draft;
@@ -445,6 +451,11 @@ def scp_base_cmd(use_alias: bool, local: str, remote_path: str) -> list[str]:
 # deploy never touches it, so nothing needs re-applying there.
 THEME_JSON_PAYLOAD_NAME = f"sgs-theme-json-{RUN_ID}.payload"
 SNAPSHOT_REL = "sites/{client}/theme-snapshot.json"
+
+
+def target_snapshot_rel(target: dict) -> str:
+    """The repo-relative snapshot a client target ships: its own "snapshot", else the client's."""
+    return target.get("snapshot") or SNAPSHOT_REL.format(client=target["client"])
 FRAMEWORK_THEME_JSON_REL = "theme/sgs-theme/theme.json"
 
 

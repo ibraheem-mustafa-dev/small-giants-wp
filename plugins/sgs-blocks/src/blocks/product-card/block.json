@@ -3073,7 +3073,7 @@
 		"attributeTagBorderWidth": {
 			"type": "object",
 			"default": {},
-			"description": "Border width for the attribute tag { top, right, bottom, left }, set alongside its colour in the border control. Empty = the style.css default (1px, matching the Frame Card design's bordered-only chip)."
+			"description": "Border width for the attribute tag { top, right, bottom, left }, set alongside its colour in the border control. Empty = no border (width 0, the framework border default); set 1px for an outlined chip."
 		},
 		"attributeTagBackgroundColour": {
 			"type": "string",

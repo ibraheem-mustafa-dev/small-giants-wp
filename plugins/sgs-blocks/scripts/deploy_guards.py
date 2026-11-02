@@ -15,7 +15,7 @@ import tempfile
 import time
 from pathlib import Path
 
-from deploy_common import DEPLOY_ROOTS, DEPLOY_SKIP_BASENAMES, DEPLOY_SKIP_PREFIXES, FRAMEWORK_THEME_JSON_REL, NON_BLOCK_POST_TYPES, REPO_ROOT, RUNTIME_SUFFIXES, SNAPSHOT_REL, err, log, ssh_base_cmd
+from deploy_common import DEPLOY_ROOTS, DEPLOY_SKIP_BASENAMES, DEPLOY_SKIP_PREFIXES, FRAMEWORK_THEME_JSON_REL, NON_BLOCK_POST_TYPES, REPO_ROOT, RUNTIME_SUFFIXES, err, log, ssh_base_cmd, target_snapshot_rel
 
 
 def deploy_roots_for_scope(theme_only: bool, blocks_only: bool) -> tuple[str, ...]:
@@ -144,7 +144,7 @@ def resolve_theme_json_payload(target: dict, root: Path = REPO_ROOT) -> tuple[by
             return path.read_bytes(), f"framework default ({FRAMEWORK_THEME_JSON_REL})"
         except OSError as exc:
             return None, f"framework theme.json unreadable: {exc}"
-    path = root / SNAPSHOT_REL.format(client=client)
+    path = root / target_snapshot_rel(target)
     if not path.is_file():
         return None, (f"target names client '{client}' but {path.relative_to(root).as_posix()} "
                       "does not exist")
@@ -155,7 +155,7 @@ def resolve_theme_json_payload(target: dict, root: Path = REPO_ROOT) -> tuple[by
         return None, f"client '{client}' snapshot could not be prepared: {exc}"
     if not (isinstance(parsed, dict) and parsed.get("version") and isinstance(parsed.get("settings"), dict)):
         return None, f"client '{client}' snapshot is not a theme.json (no version/settings)"
-    label = f"client snapshot {SNAPSHOT_REL.format(client=client)}"
+    label = f"client snapshot {target_snapshot_rel(target)}"
     return data, label + (f" ({note})" if note else "")
 
 
@@ -227,7 +227,7 @@ def step_theme_json_guard(use_alias: bool, target: dict, payload: bytes, label: 
         # A worktree-isolated run is re-exec'd from a checkout of HEAD; the operator's working
         # copy (where an uncommitted push came from) is the shared checkout run_isolated names.
         shared_root = Path(os.environ.get("SGS_DEPLOY_SHARED_ROOT") or REPO_ROOT)
-        snap = shared_root / SNAPSHOT_REL.format(client=client)
+        snap = shared_root / target_snapshot_rel(target)
         if snap.is_file():
             try:
                 wc_bytes, _ = _load_push_module().deploy_theme_json_bytes(snap)
@@ -239,7 +239,7 @@ def step_theme_json_guard(use_alias: bool, target: dict, payload: bytes, label: 
         f"{(live_md5 or status)[:8]} -> {decision}")
     if decision == "abort-uncommitted" and not takeover:
         err(f"[theme-json] the LIVE theme.json is the UNCOMMITTED working copy of "
-            f"{SNAPSHOT_REL.format(client=client)} (pushed by push-theme-snapshot.py), and this "
+            f"{target_snapshot_rel(target)} (pushed by push-theme-snapshot.py), and this "
             "deploy ships the COMMITTED version. Deploying would silently discard the pushed "
             "snapshot. Commit the snapshot and re-run, or pass --takeover to replace it on "
             "purpose. Nothing was uploaded.")
