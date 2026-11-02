@@ -112,6 +112,7 @@ foreach ( is_array( $sgs_input['cases'] ?? null ) ? $sgs_input['cases'] : array(
 				'target'            => $sgs_target,
 				'attributes'        => is_array( $sgs_case['attributes'] ?? null ) ? $sgs_case['attributes'] : array(),
 				'parent_owned'      => $sgs_owned,
+				'match'             => $sgs_resolved['match'],
 			)
 		);
 		$sgs_result['css']    .= $sgs_emitted['css'];

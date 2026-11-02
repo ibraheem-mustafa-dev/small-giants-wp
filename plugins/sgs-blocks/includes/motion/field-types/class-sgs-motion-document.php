@@ -125,6 +125,10 @@ final class Sgs_Motion_Document {
 		if ( ! is_array( $node ) ) {
 			return $this->drop;
 		}
+		if ( ( Sgs_Motion_Field_Types::REF_PREFIX . 'angleList' ) === ( $node['$ref'] ?? null ) && is_array( $value ) ) {
+			// A `restRotate` list is made safe before it is checked: clamped, capped at 12, a one-angle list collapsed.
+			$value = Sgs_Motion_Field_Types::normalise_angle_list( $value );
+		}
 		$type = $this->node_type( $node );
 		if ( 'object' !== $type && 'array' !== $type ) {
 			return null === $this->eval->evaluate( $node, $value ) ? $value : $this->drop;

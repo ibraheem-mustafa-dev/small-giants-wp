@@ -1838,5 +1838,134 @@
 		],
 		"rootAttrs": {},
 		"losers": {}
+	},
+	{
+		"name": "rest rotate list cycles through the items",
+		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-rot-rest:-2deg;--sgs-mh-to-rot:calc(0deg - var(--sgs-rot-rest));transition:--sgs-mh-rot var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms;}.sgs-m-0123456789 .sgs-hero__media:nth-child(6n+1 of .sgs-hero__media){--sgs-rot-rest:-2deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(6n+2 of .sgs-hero__media){--sgs-rot-rest:1.5deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(6n+3 of .sgs-hero__media){--sgs-rot-rest:-1deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(6n+4 of .sgs-hero__media){--sgs-rot-rest:2deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(6n+5 of .sgs-hero__media){--sgs-rot-rest:-1.5deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(6n+6 of .sgs-hero__media){--sgs-rot-rest:1deg;}",
+		"plans": [
+			{
+				"target": "media",
+				"selector": ".sgs-m-0123456789 .sgs-hero__media",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mh-rotate": "",
+					"data-sgs-mc": "rotate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "rest rotate list then a scalar on mobile",
+		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-rot-rest:-2deg;--sgs-mh-to-rot:calc(0deg - var(--sgs-rot-rest));transition:--sgs-mh-rot var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms;}.sgs-m-0123456789 .sgs-hero__media:nth-child(3n+1 of .sgs-hero__media){--sgs-rot-rest:-2deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(3n+2 of .sgs-hero__media){--sgs-rot-rest:1.5deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(3n+3 of .sgs-hero__media){--sgs-rot-rest:-1deg;}@media (max-width:1023px){.sgs-m-0123456789 .sgs-hero__media{--sgs-rot-rest:3deg;--sgs-mh-to-rot:calc(0deg - var(--sgs-rot-rest));}.sgs-m-0123456789 .sgs-hero__media:nth-child(2n+1 of .sgs-hero__media){--sgs-rot-rest:3deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(2n+2 of .sgs-hero__media){--sgs-rot-rest:-3deg;}}@media (max-width:767px){.sgs-m-0123456789 .sgs-hero__media{--sgs-rot-rest:0deg;--sgs-mh-to-rot:0deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(n of .sgs-hero__media){--sgs-rot-rest:0deg;}}",
+		"plans": [
+			{
+				"target": "media",
+				"selector": ".sgs-m-0123456789 .sgs-hero__media",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mh-rotate": "",
+					"data-sgs-mc": "rotate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "rest rotate list is clamped and capped",
+		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-rot-rest:360deg;transition:color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms;}.sgs-m-0123456789 .sgs-hero__media:nth-child(12n+1 of .sgs-hero__media){--sgs-rot-rest:360deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(12n+2 of .sgs-hero__media){--sgs-rot-rest:-360deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(12n+3 of .sgs-hero__media){--sgs-rot-rest:2deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(12n+4 of .sgs-hero__media){--sgs-rot-rest:3deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(12n+5 of .sgs-hero__media){--sgs-rot-rest:4deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(12n+6 of .sgs-hero__media){--sgs-rot-rest:5deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(12n+7 of .sgs-hero__media){--sgs-rot-rest:6deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(12n+8 of .sgs-hero__media){--sgs-rot-rest:7deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(12n+9 of .sgs-hero__media){--sgs-rot-rest:8deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(12n+10 of .sgs-hero__media){--sgs-rot-rest:9deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(12n+11 of .sgs-hero__media){--sgs-rot-rest:10deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(12n+12 of .sgs-hero__media){--sgs-rot-rest:11deg;}",
+		"plans": [
+			{
+				"target": "media",
+				"selector": ".sgs-m-0123456789 .sgs-hero__media",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "rotate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "rest rotate scalar on gallery items has no per-item rule",
+		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-rot-rest:-2deg;--sgs-mh-to-rot:2deg;transition:--sgs-mh-rot var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms;}",
+		"plans": [
+			{
+				"target": "media",
+				"selector": ".sgs-m-0123456789 .sgs-hero__media",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mh-rotate": "",
+					"data-sgs-mc": "rotate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "rest rotate list on the root keeps the first angle",
+		"css": ".sgs-m-0123456789{--sgs-rot-rest:4deg;transition:color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "rotate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "rest pivot left and a custom pivot per device",
+		"css": ".sgs-m-0123456789{--sgs-rot-rest:-2deg;transform-origin:left;transition:color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms;}@media (max-width:1023px){.sgs-m-0123456789{transform-origin:10% 90%;}}@media (max-width:767px){.sgs-m-0123456789{transform-origin:center;}}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "rotate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "rest pivot custom without a point prints nothing",
+		"css": ".sgs-m-0123456789{--sgs-rot-rest:-2deg;transition:color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "rotate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
 	}
 ]

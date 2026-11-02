@@ -506,6 +506,7 @@ final class Sgs_Motion_Renderer {
 					'target'            => $target,
 					'attributes'        => $attrs,
 					'parent_owned'      => $owned,
+					'match'             => $resolved['match'],
 				)
 			);
 			$css      .= $emitted['css'];

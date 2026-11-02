@@ -258,10 +258,16 @@ const SETS = [
 		[ '2em', '2rem', '50%', '201px' ],
 	],
 	[
-		'angle',
+		'angleList',
 		field( 'HoverStateValues', 'restRotate' ),
-		[ '1turn', '-360deg' ],
-		[ '2turn', '361deg' ],
+		[ '1turn', '-360deg', [ -2, 1.5 ], [ 1, '0.5turn', 360 ] ],
+		[ [ 'x', 'y' ], 'sideways', true ],
+	],
+	[
+		'originPair',
+		field( 'HoverStateValues', 'restOriginCustom' ),
+		[ '0% 50%', '100% 100%', '-10% 5.5%' ],
+		[ 'left', '50 50', '1000% 0%', '50%' ],
 	],
 	[ 'angle', null, [ '1turn' ], [ '1.5turn' ] ],
 	[ 'duration', null, [ 1500 ], [ '1.5s', '1500ms' ] ],
@@ -376,8 +382,8 @@ beforeAll( () => {
 } );
 
 describe( 'motion field-type parity', () => {
-	it( 'covers the fifteen field types the schema declares', () => {
-		expect( FIELD_TYPE_NAMES ).toHaveLength( 15 );
+	it( 'covers the seventeen field types the schema declares', () => {
+		expect( FIELD_TYPE_NAMES ).toHaveLength( 17 );
 		expect( Object.keys( FIELD_TYPES ).sort() ).toEqual(
 			[ ...FIELD_TYPE_NAMES ].sort()
 		);

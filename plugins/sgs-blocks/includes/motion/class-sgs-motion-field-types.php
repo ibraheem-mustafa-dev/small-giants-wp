@@ -175,7 +175,10 @@ final class Sgs_Motion_Field_Types {
 		if ( null === self::$evaluator ) {
 			self::$evaluator = new Sgs_Motion_Schema_Eval( self::defs() );
 		}
-		$value   = Sgs_Motion_Schema_Eval::normalise( $value );
+		$value = Sgs_Motion_Schema_Eval::normalise( $value );
+		if ( 'angleList' === $type && is_array( $value ) ) {
+			$value = self::normalise_angle_list( $value );
+		}
 		$failure = self::$evaluator->evaluate( $built['node'] ?? array(), $value );
 		if ( null !== $failure ) {
 			return array(
@@ -187,6 +190,39 @@ final class Sgs_Motion_Field_Types {
 			'ok'    => true,
 			'value' => $value,
 		);
+	}
+
+	/**
+	 * A list of angles made safe: each number is clamped to the angle range, a value that is not an angle is dropped, at
+	 * most 12 are kept, and a list of fewer than 2 collapses to its one angle (null when none is left, which then fails
+	 * validation). The editor twin is `normaliseAngleList` in `src/components/motion/field-types.js`.
+	 *
+	 * @param array<int|string,mixed> $list The stored list.
+	 * @return mixed The normalised list, one angle, null, or the input unchanged when it is not a list.
+	 */
+	public static function normalise_angle_list( array $list ) {
+		if ( array() !== $list && array_keys( $list ) !== range( 0, count( $list ) - 1 ) ) {
+			return $list;
+		}
+		$range = self::defs()['angle']['x-sgs-range'] ?? array(
+			'min' => -360,
+			'max' => 360,
+		);
+		$kept  = array();
+		foreach ( $list as $item ) {
+			if ( Sgs_Motion_Schema_Eval::is_number( $item ) ) {
+				$kept[] = max( $range['min'], min( $range['max'], $item ) );
+			} elseif ( is_string( $item ) && self::validate( 'angle', $item )['ok'] ) {
+				$kept[] = $item;
+			}
+			if ( 12 === count( $kept ) ) {
+				break;
+			}
+		}
+		if ( count( $kept ) >= 2 ) {
+			return $kept;
+		}
+		return 1 === count( $kept ) ? $kept[0] : null;
 	}
 
 	/**
@@ -339,6 +375,10 @@ final class Sgs_Motion_Field_Types {
 		}
 		if ( 'colourReference' === $type && is_string( $value ) ) {
 			return Sgs_Motion_Field_Css::colour( $value );
+		}
+		if ( 'angleList' === $type && is_array( $value ) ) {
+			// A list prints its first angle: the base value, and what a browser without `:nth-child(of)` shows.
+			return array() === $value ? null : self::value_css( 'angle', reset( $value ) );
 		}
 		if ( Sgs_Motion_Schema_Eval::is_number( $value ) ) {
 			$unit = self::defs()[ $type ]['x-sgs-unit'] ?? '';

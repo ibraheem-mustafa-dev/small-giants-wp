@@ -92,13 +92,81 @@ export function hoverAngles( angles, raw, changed, tier, decls, owners ) {
 			if ( isNumber( raw[ hoverKey ] ) && isNumber( raw[ restKey ] ) ) {
 				diff = valueCss( DEF, hoverKey, raw[ hoverKey ] - raw[ restKey ] );
 			}
-			to = diff ?? `calc(${ angles[ hoverKey ] } - ${ angles[ restKey ] })`;
+			// A rest angle list gives every item its own rest angle, so the hover difference is read from the item's own
+			// `--sgs-rot-rest` and the engaged hover lands on the hover angle for each of them.
+			const restRef = Array.isArray( raw[ restKey ] )
+				? `var(${ restProp })`
+				: angles[ restKey ];
+			to = diff ?? `calc(${ angles[ hoverKey ] } - ${ restRef })`;
 		}
 		decls[ tier ][
 			MH_PREFIX + 'to-' + hoverProp.slice( MH_PREFIX.length )
 		] = to;
 		owners[ hoverProp ] = true;
 	} );
+}
+
+const ORIGIN_KEYS = [ 'restOrigin', 'restOriginCustom' ];
+
+/**
+ * Whether a field key is one of the rest pivot fields (written as `transform-origin`).
+ *
+ * @param {string} key Field key.
+ * @return {boolean} True for a pivot key.
+ */
+export function isOriginKey( key ) {
+	return ORIGIN_KEYS.includes( key );
+}
+
+/**
+ * The `transform-origin` value of the effective pivot fields (twin of `Sgs_Motion_Rotation::origin_css`).
+ *
+ * @param {Object} origin Effective `restOrigin` and `restOriginCustom` (stored values).
+ * @return {string|null} The value, or null when none is set.
+ */
+export function originCss( origin ) {
+	const choice = typeof origin.restOrigin === 'string' ? origin.restOrigin : '';
+	if ( choice === 'custom' ) {
+		return valueCss( DEF, 'restOriginCustom', origin.restOriginCustom ?? null );
+	}
+	if ( choice === 'centre' ) {
+		return 'center';
+	}
+	return [ 'left', 'right', 'top', 'bottom' ].includes( choice ) ? choice : null;
+}
+
+/**
+ * The CSS of each angle of a normalised `restRotate` list (twin of `Sgs_Motion_Rotation::list_css`).
+ *
+ * @param {unknown} value The normalised stored value.
+ * @return {string[]|null} Null when it is not a list.
+ */
+function listCss( value ) {
+	if ( ! Array.isArray( value ) ) {
+		return null;
+	}
+	const out = value.map( ( angle ) => valueCss( DEF, 'restRotate', angle ) );
+	return out.includes( null ) ? null : out;
+}
+
+/**
+ * The rules that give each repeated item its own rest angle, as `[selector suffix, declarations]` pairs (twin of
+ * `Sgs_Motion_Rotation::nth_rules`): a list of L angles gives one rule per position, a single angle that follows a list
+ * at a wider tier is written as `:nth-child(n of .cls)`.
+ *
+ * @param {unknown}  value   The tier's normalised `restRotate` (one angle or a list).
+ * @param {string[]} classes The item's classes.
+ * @return {Array<[string,Object<string,string>]>} The rules.
+ */
+export function nthRules( value, classes ) {
+	const prop = String( fields( DEF ).restRotate?.css || '' );
+	const of = ` of .${ classes.join( '.' ) })`;
+	const list = listCss( value );
+	if ( list === null ) {
+		const css = valueCss( DEF, 'restRotate', value );
+		return css === null ? [] : [ [ `:nth-child(n${ of }`, { [ prop ]: css } ] ];
+	}
+	return list.map( ( css, i ) => [ `:nth-child(${ list.length }n+${ i + 1 }${ of }`, { [ prop ]: css } ] );
 }
 
 /**

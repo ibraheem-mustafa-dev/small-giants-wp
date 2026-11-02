@@ -11,6 +11,8 @@ import DurationAtom from './DurationAtom';
 import EasingAtom from './EasingAtom';
 import DistanceAtom from './DistanceAtom';
 import AngleAtom from './AngleAtom';
+import AngleListAtom from './AngleListAtom';
+import OriginPairAtom from './OriginPairAtom';
 import NumberAtom from './NumberAtom';
 import ColourReferenceAtom from './ColourReferenceAtom';
 import ChoiceAtom from './ChoiceAtom';
@@ -25,6 +27,8 @@ export const ATOM_FOR_FIELD_TYPE = Object.freeze( {
 	easing: EasingAtom,
 	distance: DistanceAtom,
 	angle: AngleAtom,
+	angleList: AngleListAtom,
+	originPair: OriginPairAtom,
 	ratio: NumberAtom,
 	scale: NumberAtom,
 	percentage: NumberAtom,

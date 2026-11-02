@@ -23,6 +23,8 @@ describe( 'the atom registry', () => {
 			easing: atom( 'EasingAtom' ),
 			distance: atom( 'DistanceAtom' ),
 			angle: atom( 'AngleAtom' ),
+			angleList: atom( 'AngleListAtom' ),
+			originPair: atom( 'OriginPairAtom' ),
 			ratio: atom( 'NumberAtom' ),
 			scale: atom( 'NumberAtom' ),
 			percentage: atom( 'NumberAtom' ),

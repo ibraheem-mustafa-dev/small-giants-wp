@@ -2755,6 +2755,201 @@
 			},
 			"root": ".sgs-m-0123456789",
 			"context": {}
+		},
+		{
+			"name": "rest rotate list cycles through the items",
+			"block": "sgs/hero",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"media": {
+						"hover": {
+							"state": {
+								"values": {
+									"restRotate": [
+										-2,
+										1.5,
+										-1,
+										2,
+										-1.5,
+										1
+									],
+									"rotate": 0
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "rest rotate list then a scalar on mobile",
+			"block": "sgs/hero",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"media": {
+						"hover": {
+							"state": {
+								"values": {
+									"restRotate": [
+										-2,
+										1.5,
+										-1
+									],
+									"rotate": 0
+								},
+								"devices": {
+									"tablet": {
+										"restRotate": [
+											3,
+											-3
+										]
+									},
+									"mobile": {
+										"restRotate": 0
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "rest rotate list is clamped and capped",
+			"block": "sgs/hero",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"media": {
+						"hover": {
+							"state": {
+								"values": {
+									"restRotate": [
+										999,
+										-999,
+										"x",
+										2,
+										3,
+										4,
+										5,
+										6,
+										7,
+										8,
+										9,
+										10,
+										11,
+										12,
+										13
+									]
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "rest rotate scalar on gallery items has no per-item rule",
+			"block": "sgs/hero",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"media": {
+						"hover": {
+							"state": {
+								"values": {
+									"restRotate": -2,
+									"rotate": 0
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "rest rotate list on the root keeps the first angle",
+			"block": "sgs/text",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"hover": {
+							"state": {
+								"values": {
+									"restRotate": [
+										4,
+										5
+									]
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "rest pivot left and a custom pivot per device",
+			"block": "sgs/text",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"hover": {
+							"state": {
+								"values": {
+									"restRotate": -2,
+									"restOrigin": "left"
+								},
+								"devices": {
+									"tablet": {
+										"restOrigin": "custom",
+										"restOriginCustom": "10% 90%"
+									},
+									"mobile": {
+										"restOrigin": "centre"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "rest pivot custom without a point prints nothing",
+			"block": "sgs/text",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"hover": {
+							"state": {
+								"values": {
+									"restRotate": -2,
+									"restOrigin": "custom"
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
 		}
 	]
 }

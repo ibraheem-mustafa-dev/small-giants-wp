@@ -22,6 +22,18 @@ export const FIELD_LABELS = Object.freeze( {
 	},
 	scale: { label: __( 'Scale', 'sgs-blocks' ) },
 	restRotate: { label: __( 'Rest rotate (Z)', 'sgs-blocks' ) },
+	restOrigin: {
+		label: __( 'Pivot', 'sgs-blocks' ),
+		options: [
+			{ value: 'centre', label: __( 'Centre', 'sgs-blocks' ) },
+			{ value: 'left', label: __( 'Left edge', 'sgs-blocks' ) },
+			{ value: 'right', label: __( 'Right edge', 'sgs-blocks' ) },
+			{ value: 'top', label: __( 'Top edge', 'sgs-blocks' ) },
+			{ value: 'bottom', label: __( 'Bottom edge', 'sgs-blocks' ) },
+			{ value: 'custom', label: __( 'Custom point', 'sgs-blocks' ) },
+		],
+	},
+	restOriginCustom: { label: __( 'Custom pivot', 'sgs-blocks' ) },
 	rotate: { label: __( 'Hover rotate (Z)', 'sgs-blocks' ) },
 	restRotateX: { label: __( 'Rest rotate X', 'sgs-blocks' ) },
 	rotateX: { label: __( 'Hover rotate X', 'sgs-blocks' ) },
@@ -105,6 +117,8 @@ export const HOVER_GROUPS = Object.freeze( [
 		label: __( 'Rotate', 'sgs-blocks' ),
 		keys: [
 			'restRotate',
+			'restOrigin',
+			'restOriginCustom',
 			'rotate',
 			'restRotateX',
 			'restRotateY',

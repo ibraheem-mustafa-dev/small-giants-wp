@@ -252,9 +252,10 @@ export function isNumber( v ) {
  *
  * @param {string} selector Scoped selector.
  * @param {Object} decls    Per-tier declarations.
+ * @param {Object} extra    Per-tier extra rules, `[selector suffix, declarations]`, printed after the tier's own rule.
  * @return {string} CSS.
  */
-export function rules( selector, decls ) {
+export function rules( selector, decls, extra = {} ) {
 	const media = {
 		desktop: null,
 		tablet: `@media (max-width:${ SGS_BREAKPOINTS.TABLET_MAX }px)`,
@@ -262,11 +263,22 @@ export function rules( selector, decls ) {
 	};
 	return TIERS.map( ( tier ) => {
 		const entries = Object.entries( decls[ tier ] || {} );
-		if ( entries.length === 0 ) {
+		const more = extra[ tier ] || [];
+		if ( entries.length === 0 && more.length === 0 ) {
 			return '';
 		}
 		const body = entries.map( ( [ prop, value ] ) => `${ prop }:${ value };` ).join( '' );
-		const rule = `${ selector }{${ body }}`;
+		// Per-item rules follow the tier's own rule inside the same wrapper (one specificity, source order decides).
+		const rule =
+			( entries.length === 0 ? '' : `${ selector }{${ body }}` ) +
+			more
+				.map(
+					( [ suffix, props ] ) =>
+						`${ selector }${ suffix }{${ Object.entries( props )
+							.map( ( [ prop, value ] ) => `${ prop }:${ value };` )
+							.join( '' ) }}`
+				)
+				.join( '' );
 		return media[ tier ] === null ? rule : `${ media[ tier ] }{${ rule }}`;
 	} ).join( '' );
 }

@@ -37,6 +37,7 @@ import HoverToggleRow from './hover/HoverToggleRow';
 import HoverFineTune from './hover/HoverFineTune';
 import FocusState, { focusAvailable } from './hover/FocusState';
 import PresetThumbnailGrid from './thumbnails/PresetThumbnailGrid';
+import { itemMatches, resolveTarget } from './canvas/resolve-target';
 
 const NONE = 'hover-none';
 // The Hover state choices, without None (the unset option) and, on an element whose ring is refused, without the
@@ -60,6 +61,23 @@ export default function HoverPanel( { blockName, clientId, elements, motion, lay
 	const ringRefused = useRingRefused( clientId, blockName, elements, target );
 	const parentOwned = useParentOwned( clientId, target );
 	const hoverChoices = choicesFor( ringRefused );
+	// A target that is one of the block's repeated items (the twin of `Sgs_Motion_Targets::item_matches`): only there can
+	// a rest rotate list cycle through siblings.
+	const repeated = ( () => {
+		if ( target === ROOT_TARGET ) {
+			return false;
+		}
+		const resolved = resolveTarget( blockName, elements, '.x', target, {} );
+		if ( ! resolved || resolved.root || resolved.classes.length === 0 ) {
+			return false;
+		}
+		const wanted = resolved.classes.join( '.' );
+		return itemMatches(
+			blockName,
+			elements,
+			getBlockType( blockName )?.supports?.sgs?.animationItems
+		).some( ( item ) => ! item.root && item.classes.join( '.' ) === wanted );
+	} )();
 	const [ notice, setNotice ] = useState( null );
 	const flow = useRestamp( layers );
 	const drive = useDrivenBy( layers, target, setNotice );
@@ -171,6 +189,7 @@ export default function HoverPanel( { blockName, clientId, elements, motion, lay
 							layer={ layer }
 							defName="HoverStateValues"
 							groups={ HOVER_GROUPS }
+							repeated={ repeated }
 							omitKeys={ [
 								...( ringRefused ? RING_KEYS : [] ),
 								...( parentOwned ? [] : PARENT_KEYS ),

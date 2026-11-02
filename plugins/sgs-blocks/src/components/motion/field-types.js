@@ -131,10 +131,41 @@ export function validateField( type, value, fieldNode = null ) {
 	if ( built.error ) {
 		return { ok: false, error: built.error };
 	}
-	const failure = evaluate( built.node, value );
+	const checked =
+		type === 'angleList' && Array.isArray( value )
+			? normaliseAngleList( value )
+			: value;
+	const failure = evaluate( built.node, checked );
 	return failure === null
-		? { ok: true, value }
+		? { ok: true, value: checked }
 		: { ok: false, error: `${ type }: ${ failure }` };
+}
+
+/**
+ * A list of angles made safe (twin of `Sgs_Motion_Field_Types::normalise_angle_list`): each number is clamped to the angle
+ * range, a value that is not an angle is dropped, at most 12 are kept, and a list of fewer than 2 collapses to its one
+ * angle (null when none is left, which then fails validation).
+ *
+ * @param {Array} list The stored list.
+ * @return {Array|number|string|null} The normalised list, one angle or null.
+ */
+export function normaliseAngleList( list ) {
+	const range = DEFS.angle[ RANGE_KEY ] || { min: -360, max: 360 };
+	const kept = [];
+	for ( const item of list ) {
+		if ( isJsonNumber( item ) ) {
+			kept.push( Math.max( range.min, Math.min( range.max, item ) ) );
+		} else if ( typeof item === 'string' && validateField( 'angle', item ).ok ) {
+			kept.push( item );
+		}
+		if ( kept.length === 12 ) {
+			break;
+		}
+	}
+	if ( kept.length >= 2 ) {
+		return kept;
+	}
+	return kept.length === 1 ? kept[ 0 ] : null;
 }
 
 /**
@@ -198,6 +229,10 @@ function valueCss( type, value ) {
 	if ( type === 'colourReference' ) {
 		return colourCss( value );
 	}
+	if ( type === 'angleList' && Array.isArray( value ) ) {
+		// A list prints its first angle: the base value, and what a browser without `:nth-child(of)` shows.
+		return value.length === 0 ? null : valueCss( 'angle', value[ 0 ] );
+	}
 	if ( isJsonNumber( value ) ) {
 		return numberCss( value, DEFS[ type ][ 'x-sgs-unit' ] || '' );
 	}
@@ -221,7 +256,7 @@ function valueCss( type, value ) {
 export function fieldCss( type, value, fieldNode = null ) {
 	const verdict = validateField( type, value, fieldNode );
 	return verdict.ok
-		? { ok: true, value, css: valueCss( type, value ) }
+		? { ok: true, value: verdict.value, css: valueCss( type, verdict.value ) }
 		: verdict;
 }
 

@@ -26,6 +26,7 @@ function FieldAtom( {
 	onChange,
 	hideLabel,
 	tier = 'desktop',
+	repeated = false,
 } ) {
 	const Atom = ATOM_FOR_FIELD_TYPE[ field.fieldType ];
 	const extra = hideLabel ? { hideLabelFromVision: true } : {};
@@ -37,6 +38,9 @@ function FieldAtom( {
 	}
 	if ( field.fieldType === 'distance' && field.lift ) {
 		extra.allowLift = true;
+	}
+	if ( field.fieldType === 'angleList' ) {
+		extra.repeated = repeated;
 	}
 	if ( field.fieldType === 'choice' && field.options ) {
 		extra.options = field.options;
@@ -58,9 +62,15 @@ function FieldAtom( {
  * @param {Object}   props.field   A field from `hover-fields.js::fieldGroups`.
  * @param {Object}   props.layer   The state layer.
  * @param {Function} props.onLayer Receives the edited layer.
+ * @param {boolean}  [props.repeated] Whether the target is a repeated item (a rest rotate list is offered only then).
  * @return {Element} The field.
  */
-export default function HoverFieldRow( { field, layer, onLayer } ) {
+export default function HoverFieldRow( {
+	field,
+	layer,
+	onLayer,
+	repeated = false,
+} ) {
 	const unstampedTag = ( tier ) => {
 		const path = pathAt( field.key, tier );
 		return (
@@ -81,6 +91,7 @@ export default function HoverFieldRow( { field, layer, onLayer } ) {
 			<div className="sgs-motion-hover__field">
 				<FieldAtom
 					field={ field }
+					repeated={ repeated }
 					value={ layer.values?.[ field.key ] }
 					presetValue={ stampedValue(
 						layer,
@@ -113,6 +124,7 @@ export default function HoverFieldRow( { field, layer, onLayer } ) {
 						<FieldAtom
 							field={ field }
 							hideLabel
+							repeated={ repeated }
 							tier={ tier }
 							value={ value }
 							presetValue={ stampedValue(

@@ -100,11 +100,96 @@ final class Sgs_Motion_Rotation {
 				if ( self::is_number( $raw[ $hover_key ] ) && self::is_number( $raw[ $rest_key ] ) ) {
 					$diff = Sgs_Motion_Emitter::value_css( self::DEF, $hover_key, $raw[ $hover_key ] - $raw[ $rest_key ] );
 				}
-				$to = $diff ?? 'calc(' . $angles[ $hover_key ] . ' - ' . $angles[ $rest_key ] . ')';
+				// A rest angle list gives every item its own rest angle, so the hover difference is read from the
+				// item's own `--sgs-rot-rest` and the engaged hover lands on the hover angle for each of them.
+				$rest_ref = is_array( $raw[ $rest_key ] ) ? 'var(' . $rest_prop . ')' : $angles[ $rest_key ];
+				$to       = $diff ?? 'calc(' . $angles[ $hover_key ] . ' - ' . $rest_ref . ')';
 			}
 			$decls[ $tier ][ Sgs_Motion_Emitter::MH_PREFIX . 'to-' . substr( $hover_prop, strlen( Sgs_Motion_Emitter::MH_PREFIX ) ) ] = $to;
 			$owners[ $hover_prop ] = true;
 		}
+	}
+
+	/** The rest pivot fields: a keyword choice and a custom pair, both written as `transform-origin`. */
+	const ORIGIN_KEYS = array( 'restOrigin', 'restOriginCustom' );
+
+	/** The `restRotate` list's cap. */
+	const LIST_MAX = 12;
+
+	/**
+	 * Whether a field key is one of the rest pivot fields.
+	 *
+	 * @param string $key Field key.
+	 * @return bool
+	 */
+	public static function is_origin_key( string $key ): bool {
+		return in_array( $key, self::ORIGIN_KEYS, true );
+	}
+
+	/**
+	 * The `transform-origin` value of the effective pivot fields, or null when none is set.
+	 *
+	 * @param array<string,mixed> $origin Effective `restOrigin` and `restOriginCustom` (stored values).
+	 * @return string|null
+	 */
+	public static function origin_css( array $origin ): ?string {
+		$choice = isset( $origin['restOrigin'] ) && is_string( $origin['restOrigin'] ) ? $origin['restOrigin'] : '';
+		if ( 'custom' === $choice ) {
+			$custom = Sgs_Motion_Emitter::value_css( self::DEF, 'restOriginCustom', $origin['restOriginCustom'] ?? null );
+			return $custom;
+		}
+		if ( 'centre' === $choice ) {
+			return 'center';
+		}
+		return in_array( $choice, array( 'left', 'right', 'top', 'bottom' ), true ) ? $choice : null;
+	}
+
+	/**
+	 * The CSS of each angle of a normalised `restRotate` list.
+	 *
+	 * @param mixed $value The normalised stored value.
+	 * @return array<int,string>|null Null when it is not a list.
+	 */
+	public static function list_css( $value ): ?array {
+		if ( ! is_array( $value ) ) {
+			return null;
+		}
+		$out = array();
+		foreach ( $value as $angle ) {
+			$css = Sgs_Motion_Emitter::value_css( self::DEF, 'restRotate', $angle );
+			if ( null === $css ) {
+				return null;
+			}
+			$out[] = $css;
+		}
+		return $out;
+	}
+
+	/**
+	 * The rules that give each repeated item its own rest angle, as `[selector suffix, declarations]` pairs appended after
+	 * the tier's own rule (the same specificity as each other, so a narrower tier's family wins by source order).
+	 *
+	 * A list of L angles gives one rule per position (`:nth-child(Ln+k of .cls)`); a single angle that follows a list at
+	 * a wider tier is written as `:nth-child(n of .cls)` so it replaces the wider tier's positions.
+	 *
+	 * @param mixed             $value   The tier's normalised `restRotate` (one angle or a list).
+	 * @param array<int,string> $classes The item's classes.
+	 * @return array<int,array{0:string,1:array<string,string>}>
+	 */
+	public static function nth_rules( $value, array $classes ): array {
+		$prop  = (string) ( Sgs_Motion_Emitter::fields( self::DEF )['restRotate']['css'] ?? '' );
+		$of    = ' of .' . implode( '.', $classes ) . ')';
+		$rules = array();
+		$list  = self::list_css( $value );
+		if ( null === $list ) {
+			$css = Sgs_Motion_Emitter::value_css( self::DEF, 'restRotate', $value );
+			return null === $css ? array() : array( array( ':nth-child(n' . $of, array( $prop => $css ) ) );
+		}
+		$count = count( $list );
+		foreach ( $list as $i => $css ) {
+			$rules[] = array( ':nth-child(' . $count . 'n+' . ( $i + 1 ) . $of, array( $prop => $css ) );
+		}
+		return $rules;
 	}
 
 	/**

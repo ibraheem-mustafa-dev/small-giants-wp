@@ -42,8 +42,12 @@ import {
 	followTiming,
 	hoverAngles,
 	isAngle,
+	isOriginKey,
+	nthRules,
+	originCss,
 	parentPerspective,
 } from './emit-rotation';
+import { fieldCss } from '../../../../components/motion/field-types';
 import { emitEntrance } from './emit-entrance';
 import { triggerCss, paintTransitionEntries } from './trigger-rules';
 import { itemMatches, resolveTarget } from './resolve-target';
@@ -82,8 +86,10 @@ const listOf = ( v ) => {
  * @param {Object} decls    Per-tier declarations (mutated).
  * @param {Object} trans    Per-tier transition entries (mutated).
  * @param {Object} channels Channel set (mutated).
+ * @param {Object} extra    Per-tier extra rules, `[selector suffix, declarations]` (mutated): a `restRotate` list's per-item rules.
+ * @param {Object} context  The emit context (`match`: the target's matcher, for a list's item class).
  */
-function hoverState( state, decls, trans, channels ) {
+function hoverState( state, decls, trans, channels, extra, context ) {
 	const def = 'HoverStateValues';
 	const f = fields( def );
 	const tiers = tierValues( state );
@@ -108,9 +114,14 @@ function hoverState( state, decls, trans, channels ) {
 	const angles = emptyAngles();
 	const raw = emptyAngles();
 	let ownerCount = 0;
+	const origin = {};
+	let listSeen = false;
+	const itemClass = context.match && ! context.match.root ? context.match.classes || [] : [];
 	TIERS.forEach( ( tier ) => {
 		let timingChanged = tier === 'desktop';
 		const angleChanged = {};
+		let originChanged = false;
+		let restHere = null;
 		if ( isFollow && followTiming( tiers[ tier ], follow ) ) {
 			timingChanged = true;
 		}
@@ -125,6 +136,11 @@ function hoverState( state, decls, trans, channels ) {
 			if ( prop === null || css === null ) {
 				return;
 			}
+			if ( isOriginKey( key ) ) {
+				origin[ key ] = value;
+				originChanged = true;
+				return;
+			}
 			if ( has( timing, prop ) ) {
 				timing[ prop ] = css;
 				timingChanged = true;
@@ -132,6 +148,15 @@ function hoverState( state, decls, trans, channels ) {
 				angles[ key ] = css;
 				raw[ key ] = value;
 				angleChanged[ key ] = true;
+				if ( key === 'restRotate' ) {
+					// A list's angles are clamped and capped; a root target has no siblings to cycle through.
+					const checked = fieldCss( f[ key ].type, value, f[ key ].node );
+					restHere = checked.ok ? checked.value : null;
+					if ( Array.isArray( restHere ) && itemClass.length === 0 ) {
+						restHere = restHere[ 0 ];
+					}
+					raw[ key ] = restHere;
+				}
 			} else if ( [ 'rest', 'active' ].includes( f[ key ].state ) ) {
 				decls[ tier ][ prop ] = css;
 			} else if ( prop.startsWith( MH_PREFIX ) ) {
@@ -144,6 +169,16 @@ function hoverState( state, decls, trans, channels ) {
 		} );
 		if ( Object.keys( angleChanged ).length > 0 ) {
 			hoverAngles( angles, raw, angleChanged, tier, decls, owners );
+		}
+		if ( restHere !== null && ( Array.isArray( restHere ) || listSeen ) ) {
+			extra[ tier ] = [ ...extra[ tier ], ...nthRules( restHere, itemClass ) ];
+		}
+		listSeen = listSeen || Array.isArray( restHere );
+		if ( originChanged ) {
+			const pivot = originCss( origin );
+			if ( pivot !== null ) {
+				decls[ tier ][ 'transform-origin' ] = pivot;
+			}
 		}
 		// A tier repeats the whole list when its timing or its owner set differs from the wider tier's.
 		if ( timingChanged || Object.keys( owners ).length !== ownerCount ) {
@@ -309,11 +344,12 @@ export function emitTarget( element, selector, context = {} ) {
 	const attrs = {};
 	const channels = {};
 	const trans = { desktop: [], tablet: [], mobile: [] };
+	const extra = { desktop: [], tablet: [], mobile: [] };
 	const state = element?.hover?.state;
 	if ( state && typeof state === 'object' && ! Array.isArray( state ) ) {
 		attrs[ 'data-sgs-mh' ] = String( state.source ?? 'self' );
 		Object.assign( attrs, hoverPartMarkers( state ) );
-		hoverState( state, decls, trans, channels );
+		hoverState( state, decls, trans, channels, extra, context );
 	}
 	listOf( element?.hover?.effects ).forEach( ( layer ) => {
 		layerWrites( layer ).forEach( ( c ) => ( channels[ c ] = true ) );
@@ -348,7 +384,7 @@ export function emitTarget( element, selector, context = {} ) {
 		}
 	} );
 	const parent = parentPerspective( decls, state, Boolean( context.parentOwned ) );
-	let css = rules( selector, decls );
+	let css = rules( selector, decls, extra );
 	if ( Object.keys( parent ).length > 0 ) {
 		css += rules( `:has(> ${ selector })`, { desktop: {}, tablet: {}, mobile: {}, ...parent } );
 	}
@@ -477,7 +513,7 @@ export function emitScopedCss( motion, { blockName, elements, root, states = [],
 		}
 		const report = ( drop ) => out.dropped.push( { target, layer: 'entrance.base', ...drop } );
 		const suppressEntrance = Boolean( context.suppressEntrance ) || target === moved;
-		const emitted = emitTarget( element, resolved.selector, { ...context, parentOwned: owned, suppressEntrance, states, noTransition: loser, report } );
+		const emitted = emitTarget( element, resolved.selector, { ...context, parentOwned: owned, suppressEntrance, states, noTransition: loser, report, match: resolved } );
 		out.css += emitted.css;
 		out.plans.push( { target, ...resolved, attrs: emitted.attrs, entrance: emitted.entrance } );
 	} );

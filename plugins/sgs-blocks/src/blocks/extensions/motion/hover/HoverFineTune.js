@@ -17,15 +17,27 @@ const DRIVER_OPTIONS = Object.freeze( [
 	{ value: 'pointer', label: __( 'Follow pointer', 'sgs-blocks' ) },
 ] );
 
-function Fields( { fields, layer, onLayer } ) {
-	return fields.map( ( field ) => (
-		<HoverFieldRow
-			key={ field.key }
-			field={ field }
-			layer={ layer }
-			onLayer={ onLayer }
-		/>
-	) );
+// The custom pivot point is drawn only while a Pivot of Custom point is chosen at some device.
+const customPivotChosen = ( layer ) =>
+	[ layer.values, layer.devices?.tablet, layer.devices?.mobile ].some(
+		( values ) => values?.restOrigin === 'custom'
+	);
+
+function Fields( { fields, layer, onLayer, repeated } ) {
+	return fields
+		.filter(
+			( field ) =>
+				field.key !== 'restOriginCustom' || customPivotChosen( layer )
+		)
+		.map( ( field ) => (
+			<HoverFieldRow
+				key={ field.key }
+				field={ field }
+				layer={ layer }
+				onLayer={ onLayer }
+				repeated={ repeated }
+			/>
+		) );
 }
 
 /**
@@ -35,6 +47,7 @@ function Fields( { fields, layer, onLayer } ) {
  * @param {Object[]} props.groups  `HOVER_GROUPS` or `FOCUS_GROUPS`.
  * @param {number}   props.level   The heading level of a group (3 under the panel, 4 under the Focus heading).
  * @param {string[]} props.omitKeys Keys not offered on this element; the ring group says why when its keys are left out.
+ * @param {boolean}  [props.repeated] Whether the target is a repeated item.
  * @param {Function} props.onLayer Receives the edited layer.
  * @return {Element} The fields.
  */
@@ -44,6 +57,7 @@ export default function HoverFineTune( {
 	groups,
 	level = 3,
 	omitKeys = [],
+	repeated = false,
 	onLayer,
 } ) {
 	const Heading = `h${ level }`;
@@ -72,6 +86,7 @@ export default function HoverFineTune( {
 							fields={ group.fields }
 							layer={ layer }
 							onLayer={ onLayer }
+							repeated={ repeated }
 						/>
 						{ driver && (
 							<>

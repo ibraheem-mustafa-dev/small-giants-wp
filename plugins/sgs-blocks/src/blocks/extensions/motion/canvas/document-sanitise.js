@@ -18,6 +18,7 @@ import {
 	isAnnotation,
 	isJsonObject,
 } from '../../../../components/motion/field-types/schema-eval';
+import { normaliseAngleList } from '../../../../components/motion/field-types';
 
 const REF_PREFIX = '#/$defs/';
 const DEFS = defs.$defs || {};
@@ -157,6 +158,10 @@ function walk( node, value ) {
 	}
 	if ( ! isJsonObject( node ) ) {
 		return DROP;
+	}
+	if ( node.$ref === '#/$defs/angleList' && Array.isArray( value ) ) {
+		// A `restRotate` list is made safe before it is checked: clamped, capped at 12, a one-angle list collapsed.
+		value = normaliseAngleList( value );
 	}
 	const type = nodeType( node );
 	if ( type !== 'object' && type !== 'array' ) {

@@ -81,7 +81,7 @@ final class Sgs_Motion_Emitter {
 	 *
 	 * @param array<string,mixed> $element  The resolved element (refusals already dropped).
 	 * @param string              $selector The target's scoped selector.
-	 * @param array<string,mixed> $context  `lcp` (bool), `suppress_entrance` (bool), `attributes` (the block's stored attributes, for the ring guard), `no_transition` (bool: a target
+	 * @param array<string,mixed> $context  `match` (the target's matcher from `Sgs_Motion_Targets::resolve`: its item classes for a `restRotate` list), `lcp` (bool), `suppress_entrance` (bool), `attributes` (the block's stored attributes, for the ring guard), `no_transition` (bool: a target
 	 *                                      that shares its element with an earlier-declared one writes no `transition`,
 	 *                                      `Sgs_Motion_Shared_Element`), `block`, `target`.
 	 * @return array{css:string,attrs:array<string,string>,entrance:bool}
@@ -92,6 +92,7 @@ final class Sgs_Motion_Emitter {
 		$channels = array();
 		$trans    = array_fill_keys( self::TIERS, array() );
 		$explicit = array_fill_keys( self::TIERS, array() );
+		$extra    = array_fill_keys( self::TIERS, array() );
 		$state    = $element['hover']['state'] ?? null;
 		if ( is_array( $state ) && Sgs_Motion_Ring_Guard::has_ring( $state ) ) {
 			// The ring and the accent line are a `box-shadow`: they would replace the element's own shadow on hover
@@ -118,7 +119,7 @@ final class Sgs_Motion_Emitter {
 		if ( is_array( $state ) ) {
 			$attrs['data-sgs-mh'] = (string) ( $state['source'] ?? 'self' );
 			$attrs               += self::hover_part_markers( $state );
-			self::hover_state( $state, $decls, $trans, $channels, $explicit );
+			self::hover_state( $state, $decls, $trans, $channels, $explicit, $extra, $context );
 		}
 		foreach ( $element['hover']['effects'] ?? array() as $layer ) {
 			self::effect_channels( $layer, $channels );
@@ -178,7 +179,7 @@ final class Sgs_Motion_Emitter {
 			}
 		}
 		$parent = Sgs_Motion_Rotation::parent_perspective( $decls, is_array( $state ) ? $state : null, ! empty( $context['parent_owned'] ) );
-		$css    = self::rules( $selector, $decls );
+		$css    = self::rules( $selector, $decls, $extra );
 		if ( array() !== $parent ) {
 			$css .= self::rules( ':has(> ' . $selector . ')', $parent + array_fill_keys( self::TIERS, array() ) );
 		}
@@ -342,9 +343,11 @@ final class Sgs_Motion_Emitter {
 	 * @param array<string,array<int,string>>    $trans    Per-tier transition entries (by reference).
 	 * @param array<string,bool>                 $channels Channel set (by reference).
 	 * @param array<string,array<string,string>> $explicit Per-tier movement `duration` and `easing` the state itself sets (by reference).
+	 * @param array<string,array<int,array>>     $extra    Per-tier extra rules, `[selector suffix, declarations]` (by reference): a `restRotate` list's per-item rules.
+	 * @param array<string,mixed>                $context  The emit context (`match`: the target's matcher, for a list's item class).
 	 * @return void
 	 */
-	private static function hover_state( array $state, array &$decls, array &$trans, array &$channels, array &$explicit ): void {
+	private static function hover_state( array $state, array &$decls, array &$trans, array &$channels, array &$explicit, array &$extra, array $context ): void {
 		$def         = 'HoverStateValues';
 		$fields      = self::fields( $def );
 		$tiers       = self::tier_values( $state );
@@ -364,9 +367,14 @@ final class Sgs_Motion_Emitter {
 		$raw         = $angles;
 		$owner_count = 0;
 		$set_timing  = array();
+		$origin      = array();
+		$list_seen   = false;
+		$item_class  = is_array( $context['match'] ?? null ) && empty( $context['match']['root'] ) ? (array) ( $context['match']['classes'] ?? array() ) : array();
 		foreach ( self::TIERS as $tier ) {
 			$timing_changed = 'desktop' === $tier;
 			$angle_changed  = array();
+			$origin_changed = false;
+			$rest_here      = null;
 			if ( $follows && Sgs_Motion_Rotation::follow_timing( $tiers[ $tier ], $follow ) ) {
 				$timing_changed = true;
 			}
@@ -381,6 +389,11 @@ final class Sgs_Motion_Emitter {
 				if ( null === $prop || null === $css ) {
 					continue;
 				}
+				if ( Sgs_Motion_Rotation::is_origin_key( (string) $key ) ) {
+					$origin[ $key ] = $value;
+					$origin_changed = true;
+					continue;
+				}
 				if ( isset( $timing[ $prop ] ) ) {
 					$timing[ $prop ] = $css;
 					$timing_changed  = true;
@@ -393,6 +406,23 @@ final class Sgs_Motion_Emitter {
 					$angles[ $key ]        = $css;
 					$raw[ $key ]           = $value;
 					$angle_changed[ $key ] = true;
+					if ( 'restRotate' === $key ) {
+						// A list's angles are clamped and capped; a root target has no siblings to cycle through.
+						$rest_here = Sgs_Motion_Field_Types::sanitise( $fields[ $key ]['type'], $value, $fields[ $key ]['node'] );
+						if ( is_array( $rest_here ) && array() === $item_class ) {
+							do_action(
+								'sgs_motion_layer_dropped',
+								(string) ( $context['block'] ?? '' ),
+								(string) ( $context['target'] ?? '' ),
+								array(
+									'id'    => 'rest-rotate-list-without-items',
+									'layer' => 'hover.state',
+								)
+							);
+							$rest_here = $rest_here[0];
+						}
+						$raw[ $key ] = $rest_here;
+					}
 				} elseif ( in_array( $fields[ $key ]['state'], array( 'rest', 'active' ), true ) ) {
 					$decls[ $tier ][ $prop ] = $css;
 				} elseif ( 0 === strpos( $prop, self::MH_PREFIX ) ) {
@@ -405,6 +435,16 @@ final class Sgs_Motion_Emitter {
 			}
 			if ( array() !== $angle_changed ) {
 				Sgs_Motion_Rotation::hover_angles( $angles, $raw, $angle_changed, $tier, $decls, $owners );
+			}
+			if ( null !== $rest_here && ( is_array( $rest_here ) || $list_seen ) ) {
+				$extra[ $tier ] = array_merge( $extra[ $tier ], Sgs_Motion_Rotation::nth_rules( $rest_here, $item_class ) );
+			}
+			$list_seen = $list_seen || is_array( $rest_here );
+			if ( $origin_changed ) {
+				$pivot = Sgs_Motion_Rotation::origin_css( $origin );
+				if ( null !== $pivot ) {
+					$decls[ $tier ]['transform-origin'] = $pivot;
+				}
 			}
 			// A tier repeats the whole list when its timing or its owner set differs from the wider tier's.
 			if ( $timing_changed || count( $owners ) !== $owner_count ) {
@@ -638,9 +678,10 @@ final class Sgs_Motion_Emitter {
 	 *
 	 * @param string                             $selector Scoped selector.
 	 * @param array<string,array<string,string>> $decls    Per-tier declarations.
+	 * @param array<string,array<int,array>>     $extra    Per-tier extra rules, `[selector suffix, declarations]`, printed after the tier's own rule.
 	 * @return string
 	 */
-	public static function rules( string $selector, array $decls ): string {
+	public static function rules( string $selector, array $decls, array $extra = array() ): string {
 		$media = array(
 			'desktop' => null,
 			'tablet'  => '@media (max-width:' . ( class_exists( '\SGS_Breakpoints' ) ? \SGS_Breakpoints::TABLET_MAX : 1023 ) . 'px)',
@@ -648,14 +689,22 @@ final class Sgs_Motion_Emitter {
 		);
 		$css   = '';
 		foreach ( self::TIERS as $tier ) {
-			if ( array() === $decls[ $tier ] ) {
+			if ( array() === $decls[ $tier ] && empty( $extra[ $tier ] ) ) {
 				continue;
 			}
 			$body = '';
 			foreach ( $decls[ $tier ] as $prop => $value ) {
 				$body .= $prop . ':' . $value . ';';
 			}
-			$rule = $selector . '{' . $body . '}';
+			$rule = array() === $decls[ $tier ] ? '' : $selector . '{' . $body . '}';
+			// Per-item rules follow the tier's own rule inside the same wrapper (one specificity, source order decides).
+			foreach ( $extra[ $tier ] ?? array() as $more ) {
+				$part = '';
+				foreach ( $more[1] as $prop => $value ) {
+					$part .= $prop . ':' . $value . ';';
+				}
+				$rule .= $selector . $more[0] . '{' . $part . '}';
+			}
 			$css .= null === $media[ $tier ] ? $rule : $media[ $tier ] . '{' . $rule . '}';
 		}
 		return $css;
