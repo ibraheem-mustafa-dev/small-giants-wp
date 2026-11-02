@@ -630,9 +630,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				}
 				style={ {
 					...itemStyle,
-					...( linkFillsRow && shownItem.url
-						? { paddingBlock: 0 }
-						: {} ),
 					...( siteInfoItem?.hidden ? { opacity: 0.5 } : {} ),
 				} }
 			>
@@ -658,7 +655,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							? {
 									alignSelf: 'stretch',
 									display: 'flex',
-									alignItems: 'center',
+									flexDirection: 'column',
 							  }
 							: {} ),
 					} }
@@ -669,7 +666,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							style={
 								linkFillsRow
 									? {
-											display: 'block',
+											flex: '1 1 auto',
+											display: 'grid',
+											alignContent: 'center',
+											marginBlock: `calc( -1 * ${ itemPaddingBlock } )`,
 											paddingBlock: itemPaddingBlock,
 									  }
 									: undefined

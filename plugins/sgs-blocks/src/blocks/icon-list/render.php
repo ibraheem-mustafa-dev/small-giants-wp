@@ -416,14 +416,13 @@ if ( '' !== $icon_bg_colour ) {
 // option-picker's precedent for overriding a static default). ---
 if ( '' !== $item_padding_block ) {
 	$scoped_css[] = "{$item_row_sel}{padding-block:{$item_padding_block};}";
-	// A linked row in the flex marker modes (icon, emoji) carries that padding on
-	// the link instead, so the whole padded row is the click target. The <li>
-	// keeps its box: the stretched text span plus the link's padding sum to the
-	// old padded height. Unlinked rows and the list-item modes keep the rule above.
+	// A linked row in the flex marker modes (icon, emoji) makes the whole padded row the click target: the link grows
+	// over the row's own vertical padding (a negative margin cancels its padding, so the <li> keeps its box exactly,
+	// whatever the marker's height) and centres its text in the row's content height. The text span stretches to that
+	// height and hands it to the link. Unlinked rows and the list-item modes keep the plain padding above.
 	if ( in_array( $marker_type, array( 'icon', 'emoji' ), true ) ) {
-		$scoped_css[] = "{$item_row_sel}.sgs-icon-list__item--linked{padding-block:0;}";
-		$scoped_css[] = "{$item_row_sel}.sgs-icon-list__item--linked .sgs-icon-list__text{align-self:stretch;display:flex;align-items:center;}";
-		$scoped_css[] = "{$item_row_sel} .sgs-icon-list__item-link{display:block;padding-block:{$item_padding_block};}";
+		$scoped_css[] = "{$item_row_sel}.sgs-icon-list__item--linked .sgs-icon-list__text{align-self:stretch;display:flex;flex-direction:column;}";
+		$scoped_css[] = "{$item_row_sel}.sgs-icon-list__item--linked .sgs-icon-list__item-link{flex:1 1 auto;display:grid;align-content:center;margin-block:calc(-1 * {$item_padding_block});padding-block:{$item_padding_block};}";
 	}
 }
 // Text colour (flat-or-gradient, resting + hover) — scoped to the item text

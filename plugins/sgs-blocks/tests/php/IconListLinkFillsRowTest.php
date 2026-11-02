@@ -1,7 +1,7 @@
 <?php
 /**
- * sgs/icon-list: a linked row in the flex marker modes carries its vertical padding on the link; every other row keeps
- * the padding on the <li>.
+ * sgs/icon-list: a linked row in the flex marker modes has its link grow over the row's own vertical padding (the <li> keeps its box);
+ * every other row is unchanged.
  *
  * Run with: vendor/bin/phpunit --filter IconListLinkFillsRowTest
  *
@@ -25,20 +25,20 @@ final class IconListLinkFillsRowTest extends TestCase {
 		return $this->render_block( 'sgs/icon-list', array_merge( array( 'items' => array( $item ) ), $extra ) );
 	}
 
-	public function test_a_linked_flex_row_moves_the_padding_onto_the_link(): void {
+	public function test_a_linked_flex_row_grows_its_link_over_the_row_padding(): void {
 		$out = $this->list( array( 'itemPaddingBlock' => '12px' ) );
 
 		$this->assertStringContainsString( 'class="sgs-icon-list__item sgs-icon-list__item--linked"', $out['html'] );
-		$this->assertStringContainsString( '.sgs-icon-list__item.sgs-icon-list__item--linked{padding-block:0;}', $out['css'] );
-		$this->assertStringContainsString( '.sgs-icon-list__text{align-self:stretch;display:flex;align-items:center;}', $out['css'] );
-		$this->assertStringContainsString( '.sgs-icon-list__item-link{display:block;padding-block:12px;}', $out['css'] );
+		$this->assertStringContainsString( '.sgs-icon-list__item.sgs-icon-list__item--linked .sgs-icon-list__text{align-self:stretch;display:flex;flex-direction:column;}', $out['css'] );
+		$this->assertStringContainsString( '.sgs-icon-list__item--linked .sgs-icon-list__item-link{flex:1 1 auto;display:grid;align-content:center;margin-block:calc(-1 * 12px);padding-block:12px;}', $out['css'] );
+		$this->assertStringContainsString( '.sgs-icon-list__item{padding-block:12px;}', $out['css'], 'the row keeps its own padding, so its box never changes' );
 	}
 
 	public function test_no_padding_setting_prints_no_link_rules(): void {
 		$out = $this->list( array() );
 
 		$this->assertStringNotContainsString( 'align-self:stretch', $out['css'] );
-		$this->assertStringNotContainsString( '.sgs-icon-list__item-link{display:block', $out['css'] );
+		$this->assertStringNotContainsString( 'align-content:center', $out['css'] );
 	}
 
 	public function test_list_item_marker_modes_keep_the_padding_on_the_row(): void {
@@ -46,7 +46,7 @@ final class IconListLinkFillsRowTest extends TestCase {
 			$out = $this->list( array( 'itemPaddingBlock' => '12px', 'markerType' => $mode ) );
 			$this->assertStringContainsString( '.sgs-icon-list__item{padding-block:12px;}', $out['css'], $mode );
 			$this->assertStringNotContainsString( 'align-self:stretch', $out['css'], $mode );
-			$this->assertStringNotContainsString( 'item-link{display:block', $out['css'], $mode );
+			$this->assertStringNotContainsString( 'align-content:center', $out['css'], $mode );
 		}
 	}
 
