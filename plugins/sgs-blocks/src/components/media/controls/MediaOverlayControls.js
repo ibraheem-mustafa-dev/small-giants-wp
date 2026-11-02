@@ -52,7 +52,7 @@ function resolveInheritedOpacity( attributes, tierKeys, tier ) {
 	return attributes[ tierKeys.desktop ] ?? DEFAULT_OPACITY;
 }
 
-const BLEND_MODE_OPTIONS = [
+export const BLEND_MODE_OPTIONS = [
 	{ label: __( 'Normal', 'sgs-blocks' ), value: 'normal' },
 	{ label: __( 'Multiply', 'sgs-blocks' ), value: 'multiply' },
 	{ label: __( 'Screen', 'sgs-blocks' ), value: 'screen' },

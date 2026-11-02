@@ -2,15 +2,21 @@
  * Media block inspector: the Media Styling ToolsPanel (order and alignment).
  */
 import { __ } from '@wordpress/i18n';
-import { TextControl } from '@wordpress/components';
+import { ComboboxControl, TextControl } from '@wordpress/components';
 import { LogicalAlignControl, ResponsiveOverride } from '../../../components';
+import { BLEND_MODE_OPTIONS } from '../../../components/media/controls/MediaOverlayControls';
 import { ToolsPanel, ToolsPanelItem } from '../../../components/primitives';
+
+const IMAGE_BLEND_OPTIONS = [
+	{ label: __( 'Normal', 'sgs-blocks' ), value: '' },
+	...BLEND_MODE_OPTIONS.filter( ( o ) => 'normal' !== o.value ),
+];
 
 export default function MediaStylingPanel( { attributes, setAttributes } ) {
 	return (
 		<ToolsPanel
 			label={ __( 'Media Styling', 'sgs-blocks' ) }
-			resetAll={ () => setAttributes( { alignment: 'start', order: {} } ) }
+			resetAll={ () => setAttributes( { alignment: 'start', order: {}, imageBlendMode: '' } ) }
 		>
 			<ToolsPanelItem
 				label={ __( 'Order', 'sgs-blocks' ) }
@@ -48,6 +54,23 @@ export default function MediaStylingPanel( { attributes, setAttributes } ) {
 			  * panels racing. object-fit/focal-point/motion render in
 			  * the "Image Styling" PanelBody, also mounted above.
 			  */ }
+
+			<ToolsPanelItem
+				label={ __( 'Image blend mode', 'sgs-blocks' ) }
+				hasValue={ () => !! attributes.imageBlendMode }
+				onDeselect={ () => setAttributes( { imageBlendMode: '' } ) }
+			>
+				<ComboboxControl
+					label={ __( 'Image blend mode', 'sgs-blocks' ) }
+					help={ __( 'Multiply drops the white ground of a logo photo so the page colour shows through.', 'sgs-blocks' ) }
+					value={ attributes.imageBlendMode || '' }
+					options={ IMAGE_BLEND_OPTIONS }
+					onChange={ ( v ) => setAttributes( { imageBlendMode: v || '' } ) }
+					allowReset={ false }
+					__next40pxDefaultSize
+					__nextHasNoMarginBottom
+				/>
+			</ToolsPanelItem>
 
 			<ToolsPanelItem
 				label={ __( 'Alignment', 'sgs-blocks' ) }

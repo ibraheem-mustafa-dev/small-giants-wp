@@ -328,7 +328,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					alt={ imageDecorative ? '' : imageAlt }
 					aria-hidden={ imageDecorative ? 'true' : undefined }
 					className={ mediaElementClassName }
-					style={ { ...mediaElementStyle, ...alignMargins } }
+					style={ { ...mediaElementStyle, ...alignMargins, mixBlendMode: attributes.imageBlendMode || undefined } }
 				/>
 				{ captionText && (
 					<CaptionTag className="sgs-media__caption" style={ captionStyle }>

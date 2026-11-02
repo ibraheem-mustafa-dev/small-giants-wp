@@ -491,6 +491,11 @@
 			"type": "string",
 			"default": "normal"
 		},
+		"imageBlendMode": {
+			"type": "string",
+			"default": "",
+			"enum": ["","multiply","screen","overlay","darken","lighten","color-dodge","color-burn","soft-light","hard-light","difference","exclusion"]
+		},
 		"boxShadow": {
 			"type": "string",
 			"default": ""
