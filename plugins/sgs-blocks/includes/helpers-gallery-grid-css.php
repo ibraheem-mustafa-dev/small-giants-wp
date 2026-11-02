@@ -113,7 +113,7 @@ if ( ! function_exists( 'sgs_gallery_layout_tiers' ) ) {
 	 * piece of markup and script for the whole block (arrows, dots, autoplay, `view.js` binds once at load), so it is
 	 * honoured only when all three tiers resolve to it; otherwise every carousel tier is a swipe row (`scroll`).
 	 * Everything downstream reads this rewritten set. A scalar `layout` (the shape before this was per device) is not
-	 * read: the saved content is re-saved by `scripts/migrate-gallery-layout.py`, never read back here (FP-14).
+	 * read: the saved content is re-saved by `scripts/migrate-gallery-layout.php` (live content) and `scripts/find-scalar-tier-attrs.py` (saved files), never read back here (FP-14).
 	 *
 	 * @param array $attributes Block attributes.
 	 * @return array{desktop:string,tablet:string,mobile:string,carousel:bool,rewritten:bool,scroll:bool}
