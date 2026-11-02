@@ -1426,7 +1426,7 @@ R-48-2 (The pointer exception, §1) governs this section.
 - `eye-care-clone-test` (mirror `local-eye-care`): Eye Care's clone target.
 - `mamas-test` (mirror `local-mamas`): Mama's Munches' clone target.
 
-`eye-care-test` (darkcyan, https://darkcyan-grouse-898606.hostingersite.com) is Eye Care's hand-built read-only reference: no route step, push or calibration ever writes to it.
+`eye-care-test` (darkcyan, https://darkcyan-grouse-898606.hostingersite.com) is Eye Care's hand-built site and, from 2026-11-02, the Eye Care site Bean presents (finished by hand, LEDGER Front F): no route step, push or calibration ever writes to it.
 
 ### FR-48-55 — The site-build script
 One script, `scripts/computed-route/site-build.mjs`, builds the site's skeleton from the confirmed `page-map.json` (FR-48-30). The whole clone is built on the local mirror, so these steps run against the mirror, and `scripts/local-wp/push-to-remote.sh` then copies the mirror's database and uploads onto the test site, which keeps every post, menu and media id:
