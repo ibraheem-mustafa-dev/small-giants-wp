@@ -41,12 +41,20 @@ import {
 	gapVar,
 } from '../../utils';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
-import HorizontalPanelControls from './horizontal-panel-controls';
+import HorizontalPanelControls, { pinnedColourRows } from './horizontal-panel-controls';
 
 // ── Select options ──────────────────────────────────────────────────────────
 
 // D649 — no JSON `enum` reliance in the UI list order; mirrors sgs/icon-list's
 // allow-list exactly (render.php validates the same set independently).
+const DATE_TEXT_TRANSFORM_OPTIONS = [
+	{ label: __( 'Standard (uppercase)', 'sgs-blocks' ), value: '' },
+	{ label: __( 'As typed', 'sgs-blocks' ), value: 'none' },
+	{ label: __( 'UPPERCASE', 'sgs-blocks' ), value: 'uppercase' },
+	{ label: __( 'lowercase', 'sgs-blocks' ), value: 'lowercase' },
+	{ label: __( 'Capitalise', 'sgs-blocks' ), value: 'capitalize' },
+];
+
 const HEADING_LEVEL_OPTIONS = [
 	{ label: __( 'Heading 2', 'sgs-blocks' ), value: 'h2' },
 	{ label: __( 'Heading 3', 'sgs-blocks' ), value: 'h3' },
@@ -1243,6 +1251,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							/>
 						),
 					},
+					...pinnedColourRows( attributes, setAttributes ),
 				] }
 			/>
 			<InspectorControls group="styles">
@@ -1445,6 +1454,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								__next40pxDefaultSize
 							/>
 						) }
+					<SelectControl
+						label={ __( 'Date letter case', 'sgs-blocks' ) }
+						value={ attributes.dateTextTransform || '' }
+						options={ DATE_TEXT_TRANSFORM_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { dateTextTransform: val } )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 				</PanelBody>
 
 				{ /* ── Milestone size & media ──

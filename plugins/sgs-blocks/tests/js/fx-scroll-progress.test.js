@@ -264,3 +264,13 @@ describe( 'fx-scroll-progress', () => {
 		expect( plain.textContent ).toBe( '' );
 	} );
 } );
+
+describe( 'active-basis pin counter', () => {
+	test( 'formatCounter uses the active index when given, the progress index otherwise', () => {
+		const { formatCounter } = require( '../../src/shared/effects/fx-scroll-progress' );
+		expect( formatCounter( 0.9, 'padded-index-of-total', 5 ) ).toBe( '05 / 05' );
+		expect( formatCounter( 0.9, 'padded-index-of-total', 5, 2 ) ).toBe( '02 / 05' );
+		expect( formatCounter( 0.9, 'index-of-total', 5, 9 ) ).toBe( '5 / 5' );
+		expect( formatCounter( 0.9, 'percent', 5, 2 ) ).toBe( '90%' );
+	} );
+} );

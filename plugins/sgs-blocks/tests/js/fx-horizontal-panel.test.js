@@ -180,11 +180,13 @@ describe( 'createState', () => {
 		expect( el.getAttribute( 'data-sgs-fx-progress-total' ) ).toBe( '3' );
 		expect( el.style.getPropertyValue( '--sgs-fx-progress' ) ).toBe( '0.5' );
 		expect( panels[ 1 ].getAttribute( 'data-sgs-fx-panel-active' ) ).toBe( 'true' );
+		expect( el.getAttribute( 'data-sgs-fx-panel-index' ) ).toBe( '2' );
 		expect( panels[ 1 ].style.getPropertyValue( '--sgs-focus-s' ) ).toBe( '1.0000' );
 		expect( panels[ 0 ].style.getPropertyValue( '--sgs-focus-op' ) ).toBe( '0.5500' );
 		state.clear();
 		expect( el.hasAttribute( 'data-sgs-fx-progress-total' ) ).toBe( false );
 		expect( panels[ 1 ].hasAttribute( 'data-sgs-fx-panel-active' ) ).toBe( false );
+		expect( el.hasAttribute( 'data-sgs-fx-panel-index' ) ).toBe( false );
 	} );
 } );
 

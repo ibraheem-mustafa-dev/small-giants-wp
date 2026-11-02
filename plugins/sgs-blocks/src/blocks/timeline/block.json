@@ -173,7 +173,8 @@
 					"prefix": "date",
 					"attrMap": {
 						"css:color": "dateColour",
-						"css:color-gradient": "dateColourGradient"
+						"css:color-gradient": "dateColourGradient",
+						"css:text-transform": "dateTextTransform"
 					},
 					"states": {
 						"hover": {
@@ -286,6 +287,79 @@
 						"css:color": "dateActiveColour",
 						"css:-webkit-text-stroke-width": "dateActiveTextStrokeWidth",
 						"css:-webkit-text-stroke-color": "dateActiveTextStrokeColour"
+					}
+				},
+				"panelRow": {
+					"selector": ".sgs-timeline__panel-row",
+					"motion": false,
+					"label": "Pinned header row",
+					"order": 6,
+					"clusters": [],
+					"prefix": "panelRow",
+					"attrMap": {
+						"css:gap": "panelRowGap",
+						"css:margin-bottom": "panelRowSpacing"
+					},
+					"_note": "Holds the counter, the progress bar and the hint above the pinned cards; printed only when panelProgressBar is on or panelHint is set."
+				},
+				"counter": {
+					"selector": ".sgs-timeline__counter",
+					"motion": false,
+					"label": "Progress counter",
+					"order": 7,
+					"clusters": [],
+					"prefix": "counter",
+					"attrMap": {
+						"css:color": "counterColour",
+						"css:font-size": "counterFontSize",
+						"css:line-height": "counterLineHeight",
+						"css:letter-spacing": "counterLetterSpacing",
+						"css:font-family": "counterFontFamily",
+						"css:font-weight": "counterFontWeight",
+						"css:font-style": "counterFontStyle",
+						"css:text-transform": "counterTextTransform"
+					}
+				},
+				"panelTrack": {
+					"selector": ".sgs-timeline__panel-track",
+					"motion": false,
+					"label": "Progress bar track",
+					"order": 8,
+					"clusters": [],
+					"prefix": "panelBar",
+					"attrMap": {
+						"css:background-color": "panelBarTrackColour",
+						"css:height": "panelBarHeight"
+					}
+				},
+				"panelFill": {
+					"selector": ".sgs-timeline__panel-fill",
+					"motion": false,
+					"label": "Progress bar fill",
+					"order": 9,
+					"clusters": [],
+					"prefix": "panelBar",
+					"attrMap": {
+						"css:background-color": "panelBarFillColour",
+						"css:background-image": "panelBarFillGradient"
+					}
+				},
+				"hint": {
+					"selector": ".sgs-timeline__panel-hint",
+					"motion": false,
+					"label": "Header row hint",
+					"order": 10,
+					"clusters": [],
+					"prefix": "hint",
+					"attrMap": {
+						"css:color": "hintColour",
+						"css:font-size": "hintFontSize",
+						"css:line-height": "hintLineHeight",
+						"css:letter-spacing": "hintLetterSpacing",
+						"css:font-family": "hintFontFamily",
+						"css:font-weight": "hintFontWeight",
+						"css:font-style": "hintFontStyle",
+						"css:text-transform": "hintTextTransform"
 					}
 				}
 			}
@@ -1030,6 +1104,255 @@
 					}
 				}
 			}
+		},
+		"panelTransitionMs": {
+			"type": "integer",
+			"default": 0,
+			"description": "Pinned-horizontal only: milliseconds over which the year colour, year outline colour, card opacity and card scale ease when the active card changes. 0 prints no transition (maximum 3000).",
+			"sgs": {
+				"meaning": {
+					"what": "Eases the year and card changes when the card nearest the centre changes.",
+					"trigger": "scrolling while the horizontal timeline is pinned",
+					"parameters": {
+						"value": {
+							"unit": "milliseconds (0 to 3000; 0 is no transition)"
+						}
+					}
+				}
+			}
+		},
+		"dateTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": "",
+			"description": "Letter case of the entry date. Empty keeps the stylesheet's uppercase."
+		},
+		"panelCounterBasis": {
+			"type": "string",
+			"enum": [
+				"progress",
+				"active"
+			],
+			"default": "progress",
+			"description": "Pinned-horizontal only: whether the counter follows the scroll progress or the card nearest the centre.",
+			"sgs": {
+				"meaning": {
+					"what": "Chooses whether the counter reads the scroll progress or the card nearest the centre of the view.",
+					"trigger": "scrolling while the horizontal timeline is pinned, when the counter is on",
+					"parameters": {
+						"value": {
+							"unit": "enum",
+							"values": [
+								"progress",
+								"active"
+							]
+						}
+					}
+				}
+			}
+		},
+		"panelProgressBar": {
+			"type": "boolean",
+			"default": false,
+			"description": "Pinned-horizontal only: draws a progress bar beside the counter that fills as the pinned scroll advances.",
+			"sgs": {
+				"meaning": {
+					"what": "Shows a bar that fills as the visitor scrolls through the pinned horizontal timeline.",
+					"trigger": "scrolling while the horizontal timeline is pinned",
+					"parameters": {
+						"value": {
+							"unit": "boolean"
+						}
+					}
+				}
+			}
+		},
+		"panelHint": {
+			"type": "string",
+			"default": "",
+			"description": "Pinned-horizontal only: a short hint shown at the end of the header row (for example a scroll prompt). Empty prints none."
+		},
+		"panelBarHeight": {
+			"type": "number",
+			"default": 4,
+			"description": "Height in pixels of the progress bar track and fill."
+		},
+		"panelBarTrackColour": {
+			"type": "string",
+			"default": "",
+			"description": "Progress bar track colour (token slug or CSS colour). Empty draws the text colour at low strength."
+		},
+		"panelBarFillColour": {
+			"type": "string",
+			"default": "",
+			"description": "Progress bar fill colour (token slug or CSS colour). Empty draws the text colour."
+		},
+		"panelBarFillGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Progress bar fill gradient (CSS gradient string). Non-empty wins over panelBarFillColour."
+		},
+		"panelRowGap": {
+			"type": "number",
+			"default": 20,
+			"description": "Space in pixels between the counter, bar and hint in the header row."
+		},
+		"panelRowSpacing": {
+			"type": "number",
+			"default": 36,
+			"description": "Space in pixels between the header row and the cards."
+		},
+		"counterColour": {
+			"type": "string",
+			"default": "",
+			"description": "Progress counter text colour (token slug or CSS colour). Empty inherits."
+		},
+		"hintColour": {
+			"type": "string",
+			"default": "",
+			"description": "Header row hint text colour (token slug or CSS colour). Empty inherits."
+		},
+		"panelPinLength": {
+			"type": "object",
+			"default": {},
+			"description": "Pinned-horizontal only: scroll distance in vh per card, per device tier {desktop,tablet,mobile}. Empty keeps the engine default.",
+			"sgs": {
+				"meaning": {
+					"what": "Sets how much page scroll each card of the pinned horizontal timeline takes.",
+					"trigger": "scrolling while the horizontal timeline is pinned",
+					"parameters": {
+						"value": {
+							"unit": "tier object {desktop,tablet,mobile} of vh per card"
+						}
+					}
+				}
+			}
+		},
+		"panelPinTail": {
+			"type": "object",
+			"default": {},
+			"description": "Pinned-horizontal only: extra scroll distance in vh added after the last card, per device tier {desktop,tablet,mobile}.",
+			"sgs": {
+				"meaning": {
+					"what": "Adds extra scroll distance at the end of the pinned horizontal timeline.",
+					"trigger": "scrolling while the horizontal timeline is pinned",
+					"parameters": {
+						"value": {
+							"unit": "tier object {desktop,tablet,mobile} of vh"
+						}
+					}
+				}
+			}
+		},
+		"counterFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"counterFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"counterFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"counterFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"counterFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"counterLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"counterLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"counterLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"counterLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"counterTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"hintFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"hintFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"hintFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"hintFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"hintFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"hintLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"hintLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"hintLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"hintLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"hintTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",

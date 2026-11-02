@@ -1,10 +1,12 @@
 <?php
 /**
- * Timeline partial: the pinned-horizontal settings (progress counter, proximity focus, active-entry year look).
+ * Timeline partial: the pinned-horizontal settings (header row with progress counter, bar and hint, proximity focus,
+ * active-entry year look, pin length, card transition).
  *
  * Required by render.php, runs in its scope. Reads `$attributes`, `$scroll_effect`, `$entries`, `$root_sel`; appends to
- * `$scoped_css`; sets `$hp_wrapper_args` (data attributes the motion engine reads on the root) and `$hp_counter_html`
- * (the counter element, already escaped). Nothing here applies unless the scroll effect is `pinned-horizontal`.
+ * `$scoped_css` and to `$wrapper_args['class']`; sets `$hp_wrapper_args` (data attributes the motion engine reads on the
+ * root) and `$hp_counter_html` (the header: the bare counter, or the header row holding the counter, bar and hint;
+ * already escaped). Nothing here applies unless the scroll effect is `pinned-horizontal`.
  *
  * @package SGS\Blocks
  */
@@ -35,6 +37,7 @@ if ( ! empty( $attributes['panelProximityFocus'] ) ) {
 }
 
 // Progress counter: a scroll-progress element reading the pin's progress (fx-scroll-progress.js, source `pin`).
+$hp_counter_only = '';
 if ( ! empty( $attributes['panelCounter'] ) && count( $entries ) > 0 ) {
 	$hp_format = $attributes['panelCounterFormat'] ?? 'padded-index-of-total';
 	$hp_format = in_array( $hp_format, array( 'padded-index-of-total', 'index-of-total', 'percent' ), true ) ? $hp_format : 'padded-index-of-total';
@@ -47,11 +50,96 @@ if ( ! empty( $attributes['panelCounter'] ) && count( $entries ) > 0 ) {
 	} else {
 		$hp_text = '0%';
 	}
-	$hp_counter_html = sprintf(
-		'<p class="sgs-timeline__counter" data-sgs-fx="scroll-progress" data-sgs-fx-scroll-progress-source="pin" data-sgs-fx-scroll-progress-output="counter" data-sgs-fx-scroll-progress-counter-format="%1$s">%2$s</p>',
+	// `active` makes the counter read the card nearest the centre instead of the scroll progress.
+	$hp_basis_attr   = 'active' === ( $attributes['panelCounterBasis'] ?? '' ) ? ' data-sgs-fx-scroll-progress-counter-basis="active"' : '';
+	$hp_counter_only = sprintf(
+		'<p class="sgs-timeline__counter" data-sgs-fx="scroll-progress" data-sgs-fx-scroll-progress-source="pin" data-sgs-fx-scroll-progress-output="counter" data-sgs-fx-scroll-progress-counter-format="%1$s"%3$s>%2$s</p>',
 		esc_attr( $hp_format ),
-		esc_html( $hp_text )
+		esc_html( $hp_text ),
+		$hp_basis_attr
 	);
+}
+$hp_counter_html = $hp_counter_only;
+
+// Header row: the counter, a progress bar and a hint on one line above the cards. Built only when the bar is on or a
+// hint is set; otherwise the counter stays the bare element above.
+$hp_bar     = ! empty( $attributes['panelProgressBar'] );
+$hp_hint    = trim( (string) ( $attributes['panelHint'] ?? '' ) );
+$hp_has_row = $hp_bar || '' !== $hp_hint;
+if ( $hp_has_row ) {
+	$hp_counter_html  = '<div class="sgs-timeline__panel-row">' . $hp_counter_only;
+	$hp_counter_html .= $hp_bar ? '<div class="sgs-timeline__panel-track" aria-hidden="true"><span class="sgs-timeline__panel-fill"></span></div>' : '';
+	$hp_counter_html .= '' !== $hp_hint ? '<span class="sgs-timeline__panel-hint">' . esc_html( $hp_hint ) . '</span>' : '';
+	$hp_counter_html .= '</div>';
+	// The row replaces the timeline's own connector while the pin runs (style.scss hides it behind this class).
+	$wrapper_args['class'] .= ' sgs-timeline--panel-row';
+
+	$hp_row_decls = array();
+	foreach ( array( 'panelRowGap' => 'gap', 'panelRowSpacing' => 'margin-bottom' ) as $hp_key => $hp_prop ) {
+		if ( isset( $attributes[ $hp_key ] ) && is_numeric( $attributes[ $hp_key ] ) ) {
+			$hp_row_decls[] = $hp_prop . ':' . max( 0.0, min( 400.0, (float) $attributes[ $hp_key ] ) ) . 'px';
+		}
+	}
+	if ( $hp_row_decls ) {
+		$scoped_css[] = $root_sel . ' .sgs-timeline__panel-row{' . implode( ';', $hp_row_decls ) . ';}';
+	}
+
+	if ( $hp_bar ) {
+		$hp_track_decls = array();
+		if ( isset( $attributes['panelBarHeight'] ) && is_numeric( $attributes['panelBarHeight'] ) ) {
+			$hp_track_decls[] = 'height:' . max( 1.0, min( 40.0, (float) $attributes['panelBarHeight'] ) ) . 'px';
+		}
+		$hp_track_col = sgs_colour_value( (string) ( $attributes['panelBarTrackColour'] ?? '' ) );
+		if ( '' !== $hp_track_col ) {
+			$hp_track_decls[] = 'background-color:' . $hp_track_col;
+		}
+		if ( $hp_track_decls ) {
+			$scoped_css[] = $root_sel . ' .sgs-timeline__panel-track{' . implode( ';', $hp_track_decls ) . ';}';
+		}
+		$hp_fill_decl = sgs_background_paint_decl( (string) ( $attributes['panelBarFillColour'] ?? '' ), (string) ( $attributes['panelBarFillGradient'] ?? '' ) );
+		if ( '' !== $hp_fill_decl ) {
+			$scoped_css[] = $root_sel . ' .sgs-timeline__panel-fill{' . $hp_fill_decl . ';}';
+		}
+	}
+}
+
+// Counter and hint text: colour and typography.
+foreach ( array( 'counter' => '.sgs-timeline__counter', 'hint' => '.sgs-timeline__panel-hint' ) as $hp_prefix => $hp_suffix ) {
+	$hp_text_decls = sgs_text_decls( $attributes, array( 'base' => $hp_prefix . 'Colour' ) );
+	if ( $hp_text_decls['normal'] ) {
+		$scoped_css[] = $root_sel . ' ' . $hp_suffix . '{' . implode( ';', $hp_text_decls['normal'] ) . ';}';
+	}
+	$hp_type_css = sgs_typography_css_rule( $attributes, $hp_prefix, $root_sel . ' ' . $hp_suffix );
+	if ( '' !== $hp_type_css ) {
+		$scoped_css[] = $hp_type_css;
+	}
+}
+
+// Pin length and tail: the per-device custom properties horizontal-panel-params.js reads (vh per card, vh after the last).
+$hp_pin_specs = array();
+foreach ( array( 'panelPinLength' => '--sgs-horizontal-panel-pin-length', 'panelPinTail' => '--sgs-horizontal-panel-pin-tail' ) as $hp_key => $hp_prop ) {
+	if ( isset( $attributes[ $hp_key ] ) && is_array( $attributes[ $hp_key ] ) && $attributes[ $hp_key ] ) {
+		$hp_pin_specs[] = array(
+			'value'        => $attributes[ $hp_key ],
+			'css'          => $hp_prop,
+			'unit_default' => 'vh',
+		);
+	}
+}
+if ( $hp_pin_specs ) {
+	$scoped_css[] = sgs_emit_responsive_css( $root_sel, $hp_pin_specs );
+}
+
+// Card transition: the year colour (fill and outline) and the card opacity and scale ease over this many milliseconds
+// when the active card changes.
+$hp_transition_ms = isset( $attributes['panelTransitionMs'] ) && is_numeric( $attributes['panelTransitionMs'] )
+	? max( 0, min( 3000, (int) $attributes['panelTransitionMs'] ) )
+	: 0;
+if ( $hp_transition_ms > 0 ) {
+	$scoped_css[] = '@media (prefers-reduced-motion:no-preference){'
+		. $root_sel . ' .sgs-timeline__date{transition:color ' . $hp_transition_ms . 'ms ease,-webkit-text-stroke-color ' . $hp_transition_ms . 'ms ease;}'
+		. $root_sel . ' .sgs-timeline__entry{transition:opacity ' . $hp_transition_ms . 'ms ease,scale ' . $hp_transition_ms . 'ms ease;}'
+		. '}';
 }
 
 // Active-entry year: the engine marks the entry nearest the centre with `data-sgs-fx-panel-active`.

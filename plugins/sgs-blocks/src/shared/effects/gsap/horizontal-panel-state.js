@@ -5,7 +5,8 @@
  *  - progress: `--sgs-fx-progress` (0 to 1, travel only) on the element and `data-sgs-fx-progress-total` (the panel
  *    count), which `fx-scroll-progress.js`'s pin source reads for its bar and counter;
  *  - active panel: `data-sgs-fx-panel-active="true"` on the panel nearest the element's centre, so any part can
- *    style it (`[data-sgs-fx-panel-active] .year`);
+ *    style it (`[data-sgs-fx-panel-active] .year`), and `data-sgs-fx-panel-index` (its 1-based position) on the
+ *    element, which `fx-scroll-progress.js`'s active-basis counter reads;
  *  - proximity focus: `--sgs-focus-s` and `--sgs-focus-op` on each panel, between the centre values and the edge
  *    values by distance from the centre, which `assets/css/motion.css`'s scale and opacity channels compose.
  *
@@ -16,6 +17,7 @@
 
 const PANEL_MARK = 'data-sgs-fx-panel';
 const ACTIVE_MARK = 'data-sgs-fx-panel-active';
+const INDEX_MARK = 'data-sgs-fx-panel-index';
 
 /**
  * The focus scale and opacity of a panel a given distance from the centre.
@@ -91,13 +93,17 @@ export function createState( el, panels, params ) {
 				panel.getBoundingClientRect()
 			);
 			if ( params.active ) {
-				const next =
-					panels[
-						nearestIndex(
-							rects.map( ( rect ) => rect.left + rect.width / 2 ),
-							centre
-						)
-					] || null;
+				const nearest = nearestIndex(
+					rects.map( ( rect ) => rect.left + rect.width / 2 ),
+					centre
+				);
+				const next = panels[ nearest ] || null;
+				if ( nearest >= 0 ) {
+					const index = String( nearest + 1 );
+					if ( el.getAttribute( INDEX_MARK ) !== index ) {
+						el.setAttribute( INDEX_MARK, index );
+					}
+				}
 				if ( next !== active ) {
 					active?.removeAttribute( ACTIVE_MARK );
 					next?.setAttribute( ACTIVE_MARK, 'true' );
@@ -127,6 +133,7 @@ export function createState( el, panels, params ) {
 		},
 		clear() {
 			el.removeAttribute( 'data-sgs-fx-progress-total' );
+			el.removeAttribute( INDEX_MARK );
 			el.style.removeProperty( '--sgs-fx-progress' );
 			panels.forEach( ( panel ) => {
 				panel.removeAttribute( PANEL_MARK );

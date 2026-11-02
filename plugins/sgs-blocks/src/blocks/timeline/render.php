@@ -364,6 +364,12 @@ foreach ( $text_targets as list( $text_suffix, $text_align, $own_normal, $own_ho
 	);
 }
 
+// Date letter case: style.scss draws the date in uppercase; a set value replaces it.
+$date_text_transform = (string) ( $attributes['dateTextTransform'] ?? '' );
+if ( in_array( $date_text_transform, array( 'none', 'uppercase', 'lowercase', 'capitalize' ), true ) ) {
+	$scoped_css[] = $root_sel . ' .sgs-timeline__date{text-transform:' . $date_text_transform . ';}';
+}
+
 // Two-state link colour (Task 3, 2026-09-07) — the per-entry description
 // field permits `core/link`, so a linked selection needs its own colour.
 // Applies block-wide to every entry's description, matching how the

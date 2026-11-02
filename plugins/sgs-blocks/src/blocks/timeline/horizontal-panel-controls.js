@@ -1,13 +1,130 @@
 import { __ } from '@wordpress/i18n';
-import { PanelBody, ToggleControl } from '@wordpress/components';
+import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 import { NumberControl, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
-import { DesignTokenPicker, ResponsiveOverride } from '../../components';
+import { DesignTokenPicker, ResponsiveOverride, TypographyControls } from '../../components';
 
 const COUNTER_FORMATS = [
 	{ value: 'padded-index-of-total', label: __( '01 / 12', 'sgs-blocks' ) },
 	{ value: 'index-of-total', label: __( '1 / 12', 'sgs-blocks' ) },
 	{ value: 'percent', label: __( '%', 'sgs-blocks' ), title: __( 'Percentage', 'sgs-blocks' ) },
 ];
+
+const COUNTER_BASES = [
+	{ value: 'progress', label: __( 'Scroll progress', 'sgs-blocks' ) },
+	{ value: 'active', label: __( 'Card in view', 'sgs-blocks' ) },
+];
+
+/**
+ * The colour rows of the pinned header row (bar track, bar fill, counter, hint) for the timeline's colour panel. Empty
+ * for any scroll effect other than "pinned-horizontal".
+ *
+ * @param {Object}   attributes    Block attributes.
+ * @param {Function} setAttributes Attribute writer.
+ * @return {Array} Rows for `SgsColourPanel`.
+ */
+export function pinnedColourRows( attributes, setAttributes ) {
+	if ( 'pinned-horizontal' !== attributes.scrollEffect ) {
+		return [];
+	}
+	const flat = ( key, attr, label ) => ( {
+		key,
+		label,
+		states: [
+			{
+				key: 'normal',
+				label: __( 'Normal', 'sgs-blocks' ),
+				value: attributes[ attr ],
+				onChange: ( val ) => setAttributes( { [ attr ]: val ?? '' } ),
+			},
+		],
+	} );
+	return [
+		flat( 'panelCounterColour', 'counterColour', __( 'Pinned counter colour', 'sgs-blocks' ) ),
+		flat( 'panelHintColour', 'hintColour', __( 'Pinned hint colour', 'sgs-blocks' ) ),
+		flat( 'panelBarTrack', 'panelBarTrackColour', __( 'Progress bar track colour', 'sgs-blocks' ) ),
+		{
+			key: 'panelBarFill',
+			label: __( 'Progress bar fill colour', 'sgs-blocks' ),
+			gradientCapable: true,
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: attributes.panelBarFillColour,
+					onChange: ( val ) => setAttributes( { panelBarFillColour: val ?? '' } ),
+					gradientValue: attributes.panelBarFillGradient,
+					onGradientChange: ( val ) => setAttributes( { panelBarFillGradient: val ?? '' } ),
+				},
+			],
+		},
+	];
+}
+
+/**
+ * A whole-number setting stored as a number.
+ *
+ * @param {Object}   props          Props.
+ * @param {string}   props.label    Control label.
+ * @param {string}   props.help     Help text.
+ * @param {number}   props.value    Stored value.
+ * @param {number}   props.min      Lower bound.
+ * @param {number}   props.max      Upper bound.
+ * @param {Function} props.onChange Receives the number.
+ * @return {JSX.Element} The control.
+ */
+function WholeNumberControl( { label, help, value, min, max, onChange } ) {
+	return (
+		<NumberControl
+			label={ label }
+			help={ help }
+			min={ min }
+			max={ max }
+			step={ 1 }
+			spinControls="custom"
+			value={ undefined === value ? '' : value }
+			onChange={ ( next ) => {
+				const parsed = parseFloat( next );
+				onChange( Number.isNaN( parsed ) ? 0 : Math.min( max, Math.max( min, parsed ) ) );
+			} }
+			__next40pxDefaultSize
+		/>
+	);
+}
+
+/**
+ * A per-device scroll distance in vh.
+ *
+ * @param {Object}   props          Props.
+ * @param {string}   props.label    Control label.
+ * @param {string}   props.help     Help text.
+ * @param {Object}   props.value    Tier object.
+ * @param {Function} props.onChange Receives the tier object.
+ * @return {JSX.Element} The control.
+ */
+function ScrollLengthControl( { label, help, value, onChange } ) {
+	return (
+		<ResponsiveOverride label={ label } value={ value } onChange={ onChange }>
+			{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+				<NumberControl
+					label={ label }
+					help={ help }
+					hideLabelFromVision
+					min={ 0 }
+					max={ 400 }
+					step={ 1 }
+					spinControls="custom"
+					value={ ownValue }
+					placeholder={ inherited && undefined !== effectiveValue ? String( effectiveValue ) : '' }
+					onChange={ ( val ) => {
+						const parsed = parseFloat( val );
+						setOwnValue( Number.isNaN( parsed ) ? '' : Math.min( 400, Math.max( 0, parsed ) ) );
+					} }
+					__next40pxDefaultSize
+				/>
+			) }
+		</ResponsiveOverride>
+	);
+}
 
 /**
  * A bounded decimal setting stored as a number, or cleared to use the engine default.
@@ -61,9 +178,38 @@ export default function HorizontalPanelControls( { attributes, setAttributes } )
 		dateActiveColour,
 		dateActiveTextStrokeWidth,
 		dateActiveTextStrokeColour,
+		panelCounterBasis,
+		panelProgressBar,
+		panelHint,
+		panelBarHeight,
+		panelRowGap,
+		panelRowSpacing,
+		panelTransitionMs,
+		panelPinLength,
+		panelPinTail,
 	} = attributes;
 	return (
+		<>
 		<PanelBody title={ __( 'Pinned scroll extras', 'sgs-blocks' ) } initialOpen={ false }>
+			<ScrollLengthControl
+				label={ __( 'Scroll distance per card (vh)', 'sgs-blocks' ) }
+				help={ __( 'How much page scroll each card takes while pinned. Empty uses the standard distance.', 'sgs-blocks' ) }
+				value={ panelPinLength }
+				onChange={ ( obj ) => setAttributes( { panelPinLength: obj } ) }
+			/>
+			<ScrollLengthControl
+				label={ __( 'Extra scroll after the last card (vh)', 'sgs-blocks' ) }
+				value={ panelPinTail }
+				onChange={ ( obj ) => setAttributes( { panelPinTail: obj } ) }
+			/>
+			<WholeNumberControl
+				label={ __( 'Card change transition (ms)', 'sgs-blocks' ) }
+				help={ __( '0 switches the year and card changes instantly. Not applied when the visitor prefers reduced motion.', 'sgs-blocks' ) }
+				value={ panelTransitionMs }
+				min={ 0 }
+				max={ 3000 }
+				onChange={ ( next ) => setAttributes( { panelTransitionMs: next } ) }
+			/>
 			<ToggleControl
 				label={ __( 'Show a progress counter', 'sgs-blocks' ) }
 				help={ __( 'A running "01 / 12" that follows the pinned scroll.', 'sgs-blocks' ) }
@@ -82,6 +228,20 @@ export default function HorizontalPanelControls( { attributes, setAttributes } )
 				>
 					{ COUNTER_FORMATS.map( ( format ) => (
 						<ToggleGroupControlOption key={ format.value } value={ format.value } label={ format.label } aria-label={ format.title } />
+					) ) }
+				</ToggleGroupControl>
+			) }
+			{ panelCounter && (
+				<ToggleGroupControl
+					label={ __( 'Counter follows', 'sgs-blocks' ) }
+					value={ panelCounterBasis || 'progress' }
+					onChange={ ( next ) => setAttributes( { panelCounterBasis: next } ) }
+					isBlock
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				>
+					{ COUNTER_BASES.map( ( basis ) => (
+						<ToggleGroupControlOption key={ basis.value } value={ basis.value } label={ basis.label } />
 					) ) }
 				</ToggleGroupControl>
 			) }
@@ -156,5 +316,68 @@ export default function HorizontalPanelControls( { attributes, setAttributes } )
 				onChange={ ( next ) => setAttributes( { dateActiveTextStrokeColour: next ?? '' } ) }
 			/>
 		</PanelBody>
+		<PanelBody title={ __( 'Pinned header row', 'sgs-blocks' ) } initialOpen={ false }>
+			<ToggleControl
+				label={ __( 'Show a progress bar', 'sgs-blocks' ) }
+				help={ __( 'A bar beside the counter that fills as the pinned scroll advances.', 'sgs-blocks' ) }
+				checked={ !! panelProgressBar }
+				onChange={ ( next ) => setAttributes( { panelProgressBar: next } ) }
+				__nextHasNoMarginBottom
+			/>
+			<TextControl
+				label={ __( 'Hint text', 'sgs-blocks' ) }
+				help={ __( 'Shown at the end of the row, for example "Scroll to explore". Empty shows none.', 'sgs-blocks' ) }
+				value={ panelHint || '' }
+				onChange={ ( next ) => setAttributes( { panelHint: next } ) }
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+			/>
+			{ panelProgressBar && (
+				<WholeNumberControl
+					label={ __( 'Bar height (px)', 'sgs-blocks' ) }
+					value={ panelBarHeight }
+					min={ 1 }
+					max={ 40 }
+					onChange={ ( next ) => setAttributes( { panelBarHeight: next } ) }
+				/>
+			) }
+			<WholeNumberControl
+				label={ __( 'Space between counter, bar and hint (px)', 'sgs-blocks' ) }
+				value={ panelRowGap }
+				min={ 0 }
+				max={ 400 }
+				onChange={ ( next ) => setAttributes( { panelRowGap: next } ) }
+			/>
+			<WholeNumberControl
+				label={ __( 'Space below the row (px)', 'sgs-blocks' ) }
+				value={ panelRowSpacing }
+				min={ 0 }
+				max={ 400 }
+				onChange={ ( next ) => setAttributes( { panelRowSpacing: next } ) }
+			/>
+		</PanelBody>
+		<PanelBody title={ __( 'Pinned counter typography', 'sgs-blocks' ) } initialOpen={ false }>
+			<TypographyControls
+				fontSizePresets
+				showFontFamily
+				showTransform
+				showLetterSpacing
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				prefix="counter"
+			/>
+		</PanelBody>
+		<PanelBody title={ __( 'Pinned hint typography', 'sgs-blocks' ) } initialOpen={ false }>
+			<TypographyControls
+				fontSizePresets
+				showFontFamily
+				showTransform
+				showLetterSpacing
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				prefix="hint"
+			/>
+		</PanelBody>
+		</>
 	);
 }

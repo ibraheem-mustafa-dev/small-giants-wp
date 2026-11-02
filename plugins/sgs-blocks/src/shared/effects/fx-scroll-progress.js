@@ -12,6 +12,9 @@
  *  - `data-sgs-fx-scroll-progress-output`: `bar-x`, `bar-y` or `counter`.
  *  - `data-sgs-fx-scroll-progress-counter-format`: `index-of-total`,
  *    `padded-index-of-total` or `percent`.
+ *  - `data-sgs-fx-scroll-progress-counter-basis`: `progress` (default) or `active`. On a pin counter, `active` shows
+ *    the 1-based index of the panel nearest the pin's centre (the pin's `data-sgs-fx-panel-index`) instead of the
+ *    index the scroll progress implies; the percent format ignores it.
  *
  * Sources:
  *  - page: the driver measures the document scroll.
@@ -78,14 +81,18 @@ function clamp( value ) {
  * @param {number}      progress 0 to 1.
  * @param {string}      format   Counter format.
  * @param {number|null} total    Panel count, or null when the source has none.
+ * @param {number|null} activeIndex 1-based index of the active panel, or null to derive the index from the progress.
  * @return {string} The text to display.
  */
-export function formatCounter( progress, format, total ) {
+export function formatCounter( progress, format, total, activeIndex = null ) {
 	const value = clamp( progress );
 	if ( 'percent' === format || ! total || total < 1 ) {
 		return Math.round( value * 100 ) + '%';
 	}
-	const index = Math.min( total, Math.floor( value * total ) + 1 );
+	const index =
+		Number.isFinite( activeIndex ) && activeIndex >= 1
+			? Math.min( total, Math.floor( activeIndex ) )
+			: Math.min( total, Math.floor( value * total ) + 1 );
 	if ( 'padded-index-of-total' === format ) {
 		const width = Math.max( 2, String( total ).length );
 		return (
@@ -118,12 +125,22 @@ function readTotal( pin ) {
 	return total > 0 ? total : null;
 }
 
+function readActiveIndex( pin ) {
+	const index = parseInt( pin.getAttribute( 'data-sgs-fx-panel-index' ), 10 );
+	return index > 0 ? index : null;
+}
+
 function renderPinCounters() {
 	frame = 0;
-	pinCounters.forEach( ( { el, pin, format } ) => {
+	pinCounters.forEach( ( { el, pin, format, active } ) => {
 		setText(
 			el,
-			formatCounter( readPinProgress( pin ), format, readTotal( pin ) )
+			formatCounter(
+				readPinProgress( pin ),
+				format,
+				readTotal( pin ),
+				active ? readActiveIndex( pin ) : null
+			)
 		);
 	} );
 }
@@ -183,7 +200,12 @@ function bindElement( el ) {
 		if ( 'counter' !== output ) {
 			return undefined;
 		}
-		const entry = { el, pin, format };
+		const entry = {
+			el,
+			pin,
+			format,
+			active: 'active' === el.getAttribute( PREFIX + 'counter-basis' ),
+		};
 		pinCounters.push( entry );
 		listenPin();
 		renderPinCounters();

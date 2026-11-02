@@ -1761,3 +1761,51 @@
 		z-index: 2;
 	}
 }
+
+// The pinned-horizontal header row (`panelProgressBar` / `panelHint`): the counter, a progress bar and a hint on one line.
+// It exists only while the pin runs (768px up, motion allowed), the same conditions fx-horizontal-panel.js and
+// assets/css/fx-horizontal-panel.css use, and replaces the timeline's own connector line there. The pin writes
+// --sgs-fx-progress (0 to 1) on the root, which the fill reads.
+.sgs-timeline__panel-row {
+	display: none;
+}
+
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+	.sgs-timeline--panel-row[data-sgs-fx~='horizontal-panel']::before {
+		display: none;
+	}
+
+	.sgs-timeline[data-sgs-fx~='horizontal-panel'] > .sgs-timeline__panel-row {
+		display: flex;
+		align-items: center;
+		gap: 20px;
+		margin-block-end: 36px;
+	}
+
+	.sgs-timeline__panel-row > .sgs-timeline__counter {
+		display: block;
+		position: static;
+		min-width: 64px;
+		text-align: start;
+	}
+
+	.sgs-timeline__panel-track {
+		flex: 1;
+		height: 4px;
+		border-radius: 999px;
+		overflow: hidden;
+		background-color: color-mix(in srgb, currentcolor 12%, transparent);
+	}
+
+	.sgs-timeline__panel-fill {
+		display: block;
+		height: 100%;
+		background-color: currentcolor;
+		transform-origin: 0 50%;
+		transform: scaleX(var(--sgs-fx-progress, 0));
+	}
+
+	.sgs-timeline__panel-hint {
+		margin-inline-start: auto;
+	}
+}
