@@ -499,6 +499,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"shadowHoverColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the item's hover shadow when shadowHover holds custom layers (a palette slug or any CSS colour, optionally with N% opacity; one entry for every layer or a list matching them). Ignored when shadowHover is a theme shadow name."
+		},
 		"contentWidth": {
 			"type": "object",
 			"default": {}

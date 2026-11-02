@@ -42,6 +42,7 @@ export default function GalleryHoverEffectsPanel( { attributes, setAttributes, s
 							transitionEasing: 'ease',
 							grayscaleHover: false,
 							shadowHover: '',
+							shadowHoverColour: '',
 						} )
 					}
 				>
@@ -68,7 +69,9 @@ export default function GalleryHoverEffectsPanel( { attributes, setAttributes, s
 					<ToolsPanelItem
 						label={ __( 'Hover shadow', 'sgs-blocks' ) }
 						hasValue={ () => ( attributes.shadowHover ?? '' ) !== '' }
-						onDeselect={ () => setAttributes( { shadowHover: '' } ) }
+						onDeselect={ () =>
+							setAttributes( { shadowHover: '', shadowHoverColour: '' } )
+						}
 						isShownByDefault
 					>
 						<ShadowControl
@@ -77,6 +80,7 @@ export default function GalleryHoverEffectsPanel( { attributes, setAttributes, s
 							setAttributes={ setAttributes }
 							attrNames={ {
 								base: 'shadowHover',
+								colour: 'shadowHoverColour',
 							} }
 						/>
 					</ToolsPanelItem>

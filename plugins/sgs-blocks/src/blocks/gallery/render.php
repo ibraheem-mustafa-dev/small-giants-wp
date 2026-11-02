@@ -82,7 +82,10 @@ $image_size      = sanitize_key( $attributes['imageSize'] ?? 'large' );
 
 $hover_scale     = sanitize_text_field( $attributes['scaleHover'] ?? '' );
 $hover_grayscale = (bool) ( $attributes['grayscaleHover'] ?? false );
-$hover_shadow    = sanitize_key( $attributes['shadowHover'] ?? '' );
+// The hover shadow of an item: a theme shadow name or custom layers (`6px 6px 0 0`) in `shadowHover`, its colour in
+// `shadowHoverColour` (ignored for a theme name, which carries its own colour); the shared composer builds the value, so a
+// custom value beats the preset the way every other block's shadow does.
+$hover_shadow    = sgs_shadow_value_composed( (string) ( $attributes['shadowHover'] ?? '' ), (string) ( $attributes['shadowHoverColour'] ?? '' ) );
 // transitionDuration/transitionEasing are read directly by sgs_transition_vars()
 // below — no local variable needed here (dead-assignment cleanup).
 
@@ -145,7 +148,7 @@ if ( $hover_scale ) {
 	$inline_styles_parts[] = '--sgs-hover-scale:' . esc_attr( $hover_scale );
 }
 if ( $hover_shadow ) {
-	$inline_styles_parts[] = '--sgs-hover-shadow:var(--wp--preset--shadow--' . esc_attr( $hover_shadow ) . ')';
+	$inline_styles_parts[] = '--sgs-hover-shadow:' . $hover_shadow;
 }
 // Always emit colour CSS vars — fallbacks are set above so these are never empty.
 // overlayColourHover paints an EXISTING .sgs-gallery__img-wrap::after (the
