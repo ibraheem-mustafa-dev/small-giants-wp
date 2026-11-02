@@ -25,7 +25,9 @@
  *   render
  * WordPress permits any of these to be either a single string or an array of
  * strings — both shapes are handled. Confirm the resolved path EXISTS
- * relative to the block's own build directory.
+ * relative to the block's own build directory, and that a built .js or .css file
+ * is not 0 bytes (a module imported only for its side effect and missing from
+ * package.json `sideEffects` is tree-shaken to an empty bundle).
  *
  * WHY THIS RUNS ON build/, NOT src/
  * ---------------------------------
