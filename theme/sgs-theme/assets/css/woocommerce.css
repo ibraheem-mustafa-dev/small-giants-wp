@@ -2190,17 +2190,17 @@ body.woocommerce-cart .with-empty-cart-icon,
 .sgs-shop-filters__group-summary::after {
 	content: "";
 	flex: 0 0 auto;
-	width: 0.5em;
-	height: 0.5em;
+	width: 0.34em;
+	height: 0.34em;
 	margin-right: 0.25em;
-	border-right: 2px solid currentColor;
-	border-bottom: 2px solid currentColor;
-	transform: rotate(45deg) translate(-0.125em, -0.125em);
+	border-right: 1px solid currentColor;
+	border-bottom: 1px solid currentColor;
+	transform: rotate(45deg) translate(-0.085em, -0.085em);
 	transition: transform 0.18s ease;
 }
 
 .sgs-shop-filters__group[open] > .sgs-shop-filters__group-summary::after {
-	transform: rotate(-135deg) translate(-0.2em, -0.2em);
+	transform: rotate(-135deg) translate(-0.136em, -0.136em);
 }
 
 @media ( prefers-reduced-motion: reduce ) {
@@ -2667,6 +2667,16 @@ body.sgs-shop-sort-native .wp-block-woocommerce-product-sort-select select {
 	appearance: auto;
 	background-image: none;
 	padding: 0 14px;
+}
+
+/* WooCommerce's inline rule for the sort select sets `font-size: inherit` and
+ * `field-sizing: content` (the select shrinks to its chosen option) at (0,3,1), which
+ * beats the toolbar rule above. Same specificity here, loaded after it: the select reads
+ * Customizer > Shop Filters > Sort menu text size, and is as wide as its longest option
+ * like a native select. */
+.woocommerce.wc-block-catalog-sorting select.orderby {
+	font-size: var(--sgs-shop-sort-size, 0.9375rem);
+	field-sizing: fixed;
 }
 
 /* (2) The Filter toggle is styled by `body.is-enhanced .sgs-shop-filters__toggle`
