@@ -76,6 +76,14 @@ test( 'MUST FAIL: the basket\'s order lines and checkout link are the page\'s ow
 	assert.ok( rows.some( ( r ) => 'Root/6#0' === r.key ), 'the checkout link is drawn by WooCommerce, never built' );
 } );
 
+test( 'a commerce region (and everything in it) under the page hero section belongs to the region, never the inner of the hero (rules.heroInner)', () => {
+	const inHero = CART.map( ( x ) => ( [ 'Root/2#0', 'Root/3#0', 'Root/7#0' ].includes( x.key ) ? { ...x, parentKey: 'Root/20#0', depth: x.depth + 1 } : { ...x, depth: x.depth + ( 'Root/1#0' === x.key ? 0 : 1 ) } ) );
+	const { proposal } = proposeFixture( { inventory: inv( [ inHero[ 0 ], el( 'Root/20#0', 'Root/1#0', 'section', '', { depth: 1 } ), ...inHero.slice( 1 ) ] ), facts: facts(), surface: 'test', surfaceKind: 'page', commerce: { role: 'cart', checkout: 'Checkout.dc.html' }, db } );
+assert.equal( proposal.rows.find( ( r ) => 'Root/20#0' === r.key )?.rule, 'hero', 'the section is the hero' );
+	assert.equal( proposal.rows.find( ( r ) => 'Root/3#0' === r.key )?.rule, 'commerceRegion' );
+	assert.deepEqual( proposal.rows.filter( ( r ) => 'heroInner' === r.rule && [ 'Root/3#0', 'Root/4#0', 'Root/5#0', 'Root/6#0' ].includes( r.key ) ), [], 'nothing in the region is the inner of the hero' );
+} );
+
 test( 'MUST FAIL: the checkout\'s payment fields and order lines are the Checkout block; the page header stays', () => {
 	const els = [
 		el( 'Root/1#0', null, 'div', '', { depth: 0 } ),

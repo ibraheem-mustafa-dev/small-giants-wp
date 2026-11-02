@@ -79,9 +79,13 @@ export function linkedFormOf( { view, scope, links, refs, els, rule, m = null } 
 	for ( const [ root, list ] of under ) {
 		const { ref, slug, block } = byRoot.get( root );
 		const attributes = { [ ref.flag ]: true, [ ref.key ]: slug };
-		const form = m ? formElement( m, list[ 0 ] ) : list[ 0 ];
+		// A record whose root is the <form> element itself starts the search at that element (its inventory copy), never at its
+		// first child; formElement then settles on the form or the layout card inside it, and the rest of the root's children go.
+		const own = els.find( ( e ) => 'form' === e.tag && view.entry( e ) === view.elements[ root ] ) ?? null;
+		const start = own ?? list[ 0 ];
+		const form = m ? formElement( m, start ) : start;
 		verdicts.set( form.key, { block, attributes } );
-		list.slice( 1 ).forEach( ( e ) => verdicts.set( e.key, { remove: true } ) );
+		( own ? list.filter( ( e ) => e !== form ) : list.slice( 1 ) ).forEach( ( e ) => verdicts.set( e.key, { remove: true } ) );
 	}
 	return ( e ) => verdicts.get( e.key ) ?? null;
 }

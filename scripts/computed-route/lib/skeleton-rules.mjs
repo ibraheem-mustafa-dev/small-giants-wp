@@ -732,6 +732,18 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// The catalogue product it sells (lib/flow-product.mjs::flowSale through `surface.saleOf( component )`) binds its product-option steps.
 	const flowRoot = view.entry( m.root )?.template ?? null;
 	const flow = R.choiceFlow && 'choiceFlow' === role?.role ? choiceFlowModel( { view, rootKey: flowRoot?.key ?? null, R: R.choiceFlow, formControl: R.formControl, brands: facts.brands || [], surfaceKind: surface.kind, parts: scope?.surfaceParts ?? [], sale: flowRoot && surface.saleOf ? surface.saleOf( flowRoot.component ) : null, script: flowRoot && surface.scriptOf ? surface.scriptOf( flowRoot.component ) : null } ) : null;
+	// An element another structural rule owns, or one below it: a form (its linked reference block, or the draft's own <form>), a
+	// commerce region, a looped holder or item, an accordion, the filter rail. Walked from the element up to the hero, because the
+	// hero's own media and layout wrappers are never an owned element, nor anything under one (rules.heroInner).
+	const ownedBelowHero = ( e, heroKey ) => {
+		for ( let x = e; x && x.key !== heroKey; x = m.byKey[ x.parentKey ] ) {
+			if ( hooks.formLinkOf( x ) || 'form' === view.realTag( x ) || region?.key === x.key || rail?.key === x.key || loopRegions.has( x.key ) || carouselCardOf.has( x.key ) || accordion.holders.has( x.key ) || accordion.items.has( x.key ) ) {
+				return true;
+			}
+		}
+		return false;
+	};
+
 	const STRUCTURES = [
 		// A choice flow's root is sgs/choice-flow, whatever its surfaces.json kind (a modal, a form): the flow draws its frame, and
 		// its steps are composed from the record (lib/skeleton-choice-flow-tree.mjs), so the draft elements are absorbed.
@@ -922,7 +934,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// Inside a hero: its image is the hero's own media slot; its layout wrappers go (the hero lays out its content).
 		( { e, kidsB } ) => {
 			const hero = ancestorBlocks( e ).find( ( a ) => a.block === R.hero?.block );
-			if ( ! hero ) {
+			if ( ! hero || ownedBelowHero( e, hero.key ) ) {
 				return null;
 			}
 			if ( isMedia( e ) ) {
