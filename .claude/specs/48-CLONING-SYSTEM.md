@@ -17,6 +17,8 @@ references:
 
 # Spec 48: Cloning system
 
+**Code state (2026-11-02).** The route (`scripts/computed-route`, `scripts/parity`) was rewound to commit `d79135af4` (2026-10-28) in commit `0ea1a6cb2`, after the clones built on later code were shown to be further from their drafts. Any file, function, refusal or behaviour this spec describes that was added after 2026-10-28 (among them the stage gate `lib/site-run-intake-gate.mjs`, the cache-path file `cache-dir.local` and `lib/cache-dir.mjs`: the cache is read as `scripts/computed-route/cache`, a junction to `E:\sgs-route-cache`) is in git history and not running until its fix is re-applied (order and evidence: `.claude/plans/2026-10-30-clone-recognition-fixes.md`, "Rewind"). The requirements themselves, and Bean's rulings, stand.
+
 ## 0. Plain English
 
 **Problem.** A client design arrives from Claude Design as a working prototype, and it has to become a real SGS WordPress site: pages, header, footer, drawer, menus, forms and shop surfaces, each built from SGS blocks with settings the client can edit.
