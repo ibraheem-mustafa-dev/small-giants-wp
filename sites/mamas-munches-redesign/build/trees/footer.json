@@ -794,8 +794,7 @@
                                 "name": "sgs/container",
                                 "attributes": {
                                     "layout": "stack",
-                                    "tagName": "nav",
-                                    "ariaLabel": "Shop",
+                                    "tagName": "div",
                                     "contentWidth": {
                                         "desktop": "full"
                                     },
@@ -813,30 +812,10 @@
                                     "minHeight": {
                                         "desktop": "0px"
                                     },
-                                    "textColourHover": "primary-text"
+                                    "textColourHover": "primary-text",
+                                    "textColour": "mm-script"
                                 },
                                 "innerBlocks": [
-                                    {
-                                        "name": "sgs/text",
-                                        "attributes": {
-                                            "text": "shop",
-                                            "fontFamily": "caveat",
-                                            "fontSize": {
-                                                "desktop": 24
-                                            },
-                                            "lineHeight": {
-                                                "desktop": 1.25
-                                            },
-                                            "textColour": "mm-script",
-                                            "textColourHover": "mm-script",
-                                            "margin": {
-                                                "desktop": {
-                                                    "top": "0px",
-                                                    "bottom": "4px"
-                                                }
-                                            }
-                                        }
-                                    },
                                     {
                                         "name": "sgs/icon-list",
                                         "attributes": {
@@ -876,7 +855,17 @@
                                             "linkUnderlineThickness": "2px",
                                             "linkUnderlineOffset": "4px",
                                             "source": "menu",
-                                            "menuRef": 32
+                                            "menuRef": 32,
+                                            "heading": "shop",
+                                            "headingLevel": "p",
+                                            "headingFontFamily": "caveat",
+                                            "headingFontSize": {
+                                                "desktop": 24
+                                            },
+                                            "headingFontSizeUnit": "px",
+                                            "headingFontWeight": "400",
+                                            "headingLineHeight": 1.25,
+                                            "headingLineHeightUnit": ""
                                         }
                                     }
                                 ]
@@ -885,8 +874,7 @@
                                 "name": "sgs/container",
                                 "attributes": {
                                     "layout": "stack",
-                                    "tagName": "nav",
-                                    "ariaLabel": "Help",
+                                    "tagName": "div",
                                     "contentWidth": {
                                         "desktop": "full"
                                     },
@@ -904,30 +892,10 @@
                                     "minHeight": {
                                         "desktop": "0px"
                                     },
-                                    "textColourHover": "primary-text"
+                                    "textColourHover": "primary-text",
+                                    "textColour": "mm-script"
                                 },
                                 "innerBlocks": [
-                                    {
-                                        "name": "sgs/text",
-                                        "attributes": {
-                                            "text": "help",
-                                            "fontFamily": "caveat",
-                                            "fontSize": {
-                                                "desktop": 24
-                                            },
-                                            "lineHeight": {
-                                                "desktop": 1.25
-                                            },
-                                            "textColour": "mm-script",
-                                            "textColourHover": "mm-script",
-                                            "margin": {
-                                                "desktop": {
-                                                    "top": "0px",
-                                                    "bottom": "4px"
-                                                }
-                                            }
-                                        }
-                                    },
                                     {
                                         "name": "sgs/icon-list",
                                         "attributes": {
@@ -967,7 +935,17 @@
                                             "linkUnderlineThickness": "2px",
                                             "linkUnderlineOffset": "4px",
                                             "source": "menu",
-                                            "menuRef": 29
+                                            "menuRef": 29,
+                                            "heading": "help",
+                                            "headingLevel": "p",
+                                            "headingFontFamily": "caveat",
+                                            "headingFontSize": {
+                                                "desktop": 24
+                                            },
+                                            "headingFontSizeUnit": "px",
+                                            "headingFontWeight": "400",
+                                            "headingLineHeight": 1.25,
+                                            "headingLineHeightUnit": ""
                                         }
                                     }
                                 ]
