@@ -13,8 +13,10 @@
  * specificity, not on enqueue order.
  *
  * SECTION PADDING. `SGS_Container_Wrapper` gives `sgs-container--section-pad` to a block whose role is a page
- * section (it declares `supports.sgs.sectionPadding`: sgs/container) when it has a content band. A section
- * inside another such section takes none, so nested sections never compound. `:where()` keeps the rule at zero specificity: any padding the client sets on the
+ * section (it declares `supports.sgs.sectionPadding`: sgs/container) when it has a content band. Only a top-level
+ * page section takes it: a container inside the site header or footer, or inside any sgs/container other than the
+ * `main` page wrapper, takes none, so an inner box never inherits a section's padding and nesting never compounds.
+ * `:where()` keeps the rule at zero specificity: any padding the client sets on the
  * block (a per-instance class rule) wins on every side and tier it sets. Top and bottom are written as longhands
  * so the minifier cannot fold them into a shorthand.
  */
@@ -24,7 +26,7 @@
 	--wp--style--root--padding-right: var(--wp--custom--gutter--mobile);
 }
 
-:where(.sgs-container--section-pad:not(.sgs-container--section-pad .sgs-container--section-pad)) {
+:where(.sgs-container--section-pad:not(.sgs-container--section-pad .sgs-container--section-pad, header *, footer *, .sgs-container:not(main) .sgs-container--section-pad)) {
 	padding-top: var(--wp--custom--section--padding--mobile, 0);
 	padding-bottom: var(--wp--custom--section--padding--mobile, 0);
 }
@@ -35,7 +37,7 @@
 		--wp--style--root--padding-right: var(--wp--custom--gutter--tablet);
 	}
 
-	:where(.sgs-container--section-pad:not(.sgs-container--section-pad .sgs-container--section-pad)) {
+	:where(.sgs-container--section-pad:not(.sgs-container--section-pad .sgs-container--section-pad, header *, footer *, .sgs-container:not(main) .sgs-container--section-pad)) {
 		padding-top: var(--wp--custom--section--padding--tablet, 0);
 		padding-bottom: var(--wp--custom--section--padding--tablet, 0);
 	}
@@ -47,7 +49,7 @@
 		--wp--style--root--padding-right: var(--wp--custom--gutter--desktop);
 	}
 
-	:where(.sgs-container--section-pad:not(.sgs-container--section-pad .sgs-container--section-pad)) {
+	:where(.sgs-container--section-pad:not(.sgs-container--section-pad .sgs-container--section-pad, header *, footer *, .sgs-container:not(main) .sgs-container--section-pad)) {
 		padding-top: var(--wp--custom--section--padding--desktop, 0);
 		padding-bottom: var(--wp--custom--section--padding--desktop, 0);
 	}

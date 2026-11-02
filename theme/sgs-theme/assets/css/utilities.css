@@ -53,8 +53,11 @@ body.admin-bar html {
 	}
 }
 
-/* Screen reader only — visually hidden but accessible */
-.sr-only {
+/* Screen reader only — visually hidden but accessible. `.sgs-sr-only` is the class SGS blocks
+   print (form required markers, counter values); it is defined here so it holds on every page, not only where
+   a block that carries its own copy happens to load. */
+.sr-only,
+.sgs-sr-only {
 	position: absolute;
 	width: 1px;
 	height: 1px;

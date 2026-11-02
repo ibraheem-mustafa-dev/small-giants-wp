@@ -450,6 +450,15 @@ select.sgs-form-field__input {
    7. Tile selector
    ---------------------------------------------------------------- */
 
+/* A radio, checkbox or tile group is a <fieldset>: no browser border, margin or padding around it. Zero
+   specificity, so any border or spacing a block sets still wins. */
+:where(.sgs-form-field__group) {
+	border: 0;
+	margin: 0;
+	padding: 0;
+	min-width: 0;
+}
+
 .sgs-form-tiles {
 	display: grid;
 	gap: var(--wp--preset--spacing--20, 0.75rem);
@@ -602,17 +611,18 @@ select.sgs-form-field__input {
 	display: block;
 }
 
-/* Tiles: enforce 2-col minimum on narrow containers (avoid 4-5 col on mobile) */
+/* Tiles on a narrow container fall back to 2 columns (1 below 300px). No !important: a tiles field's own
+   columns setting (its instance rule, specificity 0,2,0) wins at every container width. */
 @container sgs-form (max-width: 480px) {
 	.sgs-form-tiles {
-		grid-template-columns: 1fr 1fr !important;
+		grid-template-columns: 1fr 1fr;
 	}
 }
 
 /* Single column for very small containers (< 300px — embedded/widget contexts) */
 @container sgs-form (max-width: 300px) {
 	.sgs-form-tiles {
-		grid-template-columns: 1fr !important;
+		grid-template-columns: 1fr;
 	}
 }
 
