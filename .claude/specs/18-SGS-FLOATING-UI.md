@@ -113,7 +113,7 @@ The back-to-top button click handler scrolls to the top with `window.scrollTo({ 
 
 ### 3.4 CSS
 
-All layout rules live in `plugins/sgs-blocks/assets/floating-ui/floating-ui.css`. It reads the custom properties `--btt-bg`, `--btt-icon`, `--btt-pos`, `--rp-colour` and `--rp-height`, so the stylesheet carries no per-site colour or height values.
+All layout rules live in `plugins/sgs-blocks/assets/floating-ui/floating-ui.css`. It reads the custom properties `--btt-bg`, `--btt-icon`, `--rp-colour` and `--rp-height`, which the renderer's scoped `<style>` (§3.2) always sets from the Customiser; it sets no defaults on the wrapper, because it loads after that inline style and a default there overrode the Customiser (a 3px bar rendered 4px). Each consumer rule carries its own `var(--x, default)` fallback. `--btt-pos` has no consumer: the button's side comes from its `--right` / `--left` modifier class.
 
 ## 4. Accessibility
 
