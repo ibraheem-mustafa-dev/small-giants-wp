@@ -148,7 +148,7 @@
 				"icon": {
 					"label": "Cart icon",
 					"order": 2,
-					"clusters": [ "text", "fill" ],
+					"clusters": [ "text", "fill", "layout"],
 					"prefix": "icon",
 					"attrMap": {
 						"css:color": "iconColour",

@@ -5166,6 +5166,14 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "badgeSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "badgeTextColour",
       "fields": {
         "css_property": "color",
@@ -5379,6 +5387,25 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "iconBgHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "icon",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "iconBgHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "icon",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "iconColour",
       "fields": {
         "css_property": "color",
@@ -5407,9 +5434,9 @@
     },
     {
       "slug": "sgs/cart",
-      "attr": "iconSize",
+      "attr": "iconTriggerRadius",
       "fields": {
-        "css_property": "height,width",
+        "css_property": "border-radius",
         "css_element": "icon"
       }
     },
@@ -5536,15 +5563,6 @@
       "fields": {
         "css_property": "margin",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/cart",
-      "attr": "panelBg",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "panel"
       }
     },
     {
@@ -5727,6 +5745,14 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "pillBadgeSize",
+      "fields": {
+        "css_property": "height,line-height,min-width",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "pillBgColour",
       "fields": {
         "css_property": "background-color",
@@ -5779,6 +5805,14 @@
       "attr": "pillMinHeight",
       "fields": {
         "css_property": "min-height",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "pillPadding",
+      "fields": {
+        "css_property": "padding",
         "css_element": "pill"
       }
     },
@@ -9508,6 +9542,42 @@
       "fields": {
         "css_property": "writing-mode",
         "css_element": "nav-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "nextColourBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "next-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "nextColourBackgroundGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "next-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "nextColourBackgroundHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "next-button",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "nextColourBackgroundHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "next-button",
+        "css_state": "hover"
       }
     },
     {
@@ -15652,14 +15722,6 @@
     },
     {
       "slug": "sgs/label",
-      "attr": "dotSize",
-      "fields": {
-        "css_property": "height,width",
-        "css_element": "dot"
-      }
-    },
-    {
-      "slug": "sgs/label",
       "attr": "fontFamily",
       "fields": {
         "css_property": "font-family",
@@ -15712,6 +15774,14 @@
       "fields": {
         "css_property": "line-height",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "lineRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "dot"
       }
     },
     {
@@ -17738,15 +17808,6 @@
         "css_property": "padding-inline-start",
         "css_element": "sublink",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/nav-bar-menu",
-      "attr": "justifyContent",
-      "fields": {
-        "css_property": "justify-content",
-        "css_layer": "GRID",
-        "css_element": "bar"
       }
     },
     {
@@ -32304,12 +32365,37 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "iconBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "iconBgGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "iconColourHoverGradient",
       "fields": {
         "css_property": "stroke",
         "role": "color",
         "css_element": "icon",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "iconTriggerSize",
+      "fields": {
+        "css_property": "min-height,min-width",
+        "css_element": "icon"
       }
     },
     {
@@ -32371,6 +32457,15 @@
         "css_property": "flex-wrap",
         "css_layer": "OUTER",
         "css_element": "panel-actions"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "panel"
       }
     },
     {
@@ -32488,6 +32583,23 @@
       "fields": {
         "css_property": "border-radius",
         "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "pillShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "pillShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "pill",
+        "css_state": "hover"
       }
     },
     {
@@ -35309,6 +35421,14 @@
         "css_property": "gap",
         "css_layer": "GRID",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "dotSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_element": "dot"
       }
     },
     {
