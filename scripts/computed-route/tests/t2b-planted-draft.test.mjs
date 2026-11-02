@@ -131,7 +131,7 @@ test( 'MUST FAIL: a planted draft raises one effect review row per recognised ef
 	const spec = fs.readFileSync( SPEC_FILE, 'utf8' );
 	const line = spec.split( '\n' ).find( ( l ) => l.startsWith( '| Script effect' ) );
 	assert.ok( line, 'Appendix C lists the Script effect row type' );
-	assert.deepEqual( [ ...line.split( '|' )[ 2 ].matchAll( /`([^`]+)`/g ) ].map( ( m ) => m[ 1 ] ).slice( 0, 3 ), [ 'accept', 'block:<slug>', 'difference' ], 'the table lists the marks in the review\'s order' );
+	assert.deepEqual( [ ...line.split( '|' )[ 2 ].matchAll( /`([^`]+)`/g ) ].map( ( m ) => m[ 1 ] ).slice( 0, MARKS.effect.length ), MARKS.effect.map( ( m ) => m.value ?? m.shape ), 'the table lists the marks in the review\'s order' );
 	for ( const m of MARKS.effect ) {
 		assert.ok( line.includes( `\`${ m.value ?? m.shape }\`` ), `Appendix C names the mark ${ m.value ?? m.shape }` );
 	}

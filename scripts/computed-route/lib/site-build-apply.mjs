@@ -9,7 +9,7 @@ import { execFileSync } from 'child_process';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { CONTENT_META, MENU_META, ROW_META, SECTION_META, TEMPLATE_CONTENT_OPTION, TEMPLATE_OPTION, TREE_META } from './site-build-state.mjs';
+import { CONTENT_META, FIELDS_META, MENU_META, ROW_META, SECTION_META, TEMPLATE_CONTENT_OPTION, TEMPLATE_OPTION, TREE_META } from './site-build-state.mjs';
 
 // How long each editor load and save may take: twice wp-build-page.js's 60 s default, since a shared host can stall an
 // admin page past it; a run stopped by a stall resumes from the posts already made.
@@ -180,6 +180,8 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 		return id;
 	};
 	// WordPress ignores an empty page_template, so clearing one sends `default` (get_page_template_slug reads it as '').
+	// The title, slug and parent the site build set, so a later run tells its own value from a person's change.
+	const recordFields = ( id, fields ) => again( () => wp( [ 'post', 'meta', 'update', String( id ), FIELDS_META, JSON.stringify( Object.fromEntries( Object.entries( fields ).map( ( [ k, v ] ) => [ k, 'post_parent' === k ? Number( val( v ) ) || 0 : String( val( v ) ) ] ) ) ) ] ) );
 	const fieldArgs = ( fields ) => Object.entries( fields ).map( ( [ k, v ] ) => `--${ k }=${ 'page_template' === k && '' === v ? 'default' : val( v ) }` );
 	// A bookkeeping write after a save is tried three times: a dropped connection must not leave a saved post unrecorded.
 	const again = ( fn ) => {
@@ -232,6 +234,7 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 			if ( Object.keys( a.fields ).length ) {
 				wp( [ 'post', 'update', String( id ), ...fieldArgs( a.fields ) ] );
 			}
+			recordFields( id, { post_title: a.title, post_name: a.slug, post_parent: a.fields.post_parent ?? 0 } );
 		} else if ( 'build' === a.type ) {
 			try {
 				build( { postId: a.id }, a.tree );
@@ -273,6 +276,7 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 			wp( [ 'post', 'meta', 'update', String( val( a.id ) ), SECTION_META, String( val( a.page ) ) ] );
 		} else if ( 'update' === a.type ) {
 			wp( [ 'post', 'update', String( a.id ), ...fieldArgs( a.fields ) ] );
+			a.record && recordFields( a.id, a.record );
 		} else if ( 'menu' === a.type ) {
 			refs[ `menu:${ a.name }` ] = porcelain( wp( [ 'menu', 'create', a.name, '--porcelain' ] ) );
 			wp( [ 'term', 'meta', 'update', String( refs[ `menu:${ a.name }` ] ), MENU_META, a.name ] );

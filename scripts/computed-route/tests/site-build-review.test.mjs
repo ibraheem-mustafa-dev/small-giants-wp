@@ -225,6 +225,25 @@ test( 'MUST FAIL: the site the ids came from is recorded beside the page map and
 	assert.equal( map.readIdsSite?.( file ), 'site-a' );
 } );
 
+// 10b ---------------------------------------------------------------------------------------------------------------
+test( 'MUST FAIL: a parent the site build set itself follows the page map when the map gives the page a new parent (FR-48-55)', () => {
+	const rows = [ row( { slug: 'trade', title: 'Trade', id: 3 } ), row( { slug: 'faqs', title: 'FAQs', id: 10, parent: 'trade' } ) ];
+	const posts = { 3: post( 3, 'page:trade', { title: 'Trade', slug: 'trade', builtFields: { post_title: 'Trade', post_name: 'trade', post_parent: 0 } } ) };
+	const own = plan( rows, state( { posts: { ...posts, 10: post( 10, 'page:faqs', { title: 'FAQs', slug: 'faqs', parent: 0, builtFields: { post_title: 'FAQs', post_name: 'faqs', post_parent: 0 } } ) } } ) );
+	const up = own.actions.find( ( a ) => 'update' === a.type && 10 === a.id );
+	assert.deepEqual( up?.fields, { post_parent: 3 }, JSON.stringify( own.notes ) );
+	assert.deepEqual( up.record, { post_title: 'FAQs', post_name: 'faqs', post_parent: 3 } );
+	const unrecorded = plan( rows, state( { posts: { ...posts, 10: post( 10, 'page:faqs', { title: 'FAQs', slug: 'faqs', parent: 0 } ) } } ) );
+	assert.deepEqual( unrecorded.actions.find( ( a ) => 'update' === a.type && 10 === a.id )?.fields, { post_parent: 3 }, 'a post with no record takes the page map parent' );
+} );
+
+test( 'negative control: a page a person moved after the site build set its parent stays where they put it', () => {
+	const rows = [ row( { slug: 'trade', title: 'Trade', id: 3 } ), row( { slug: 'faqs', title: 'FAQs', id: 10, parent: 'trade' } ) ];
+	const p = plan( rows, state( { posts: { 3: post( 3, 'page:trade', { title: 'Trade', slug: 'trade' } ), 10: post( 10, 'page:faqs', { title: 'FAQs', slug: 'faqs', parent: 7, builtFields: { post_title: 'FAQs', post_name: 'faqs', post_parent: 0 } } ) } } ) );
+	assert.equal( p.actions.find( ( a ) => 'update' === a.type && 10 === a.id ), undefined );
+	assert.match( p.notes.join( '\n' ), /page:faqs: post 10 differs from the page map.*post_parent 7/ );
+} );
+
 // 8 -----------------------------------------------------------------------------------------------------------------
 test( 'MUST FAIL: two rows that could be one WooCommerce page stop the run, and a replaced default page is noted', () => {
 	const two = plan( [ ...SHOP(), row( { slug: 'pay', title: 'Pay', template: 'checkout' } ) ], state() );
@@ -238,7 +257,7 @@ test( 'MUST FAIL: two rows that could be one WooCommerce page stop the run, and 
 // 10 ----------------------------------------------------------------------------------------------------------------
 test( 'MUST FAIL: a person\'s rename or move of a built page is reported, never undone', () => {
 	const rows = [ row( { slug: 'home', title: 'Home', id: 10 } ) ];
-	const p = plan( rows, state( { posts: { 10: post( 10, 'page:home', { title: 'Renamed', slug: 'renamed', parent: 3, treeHash: 'old' } ) } } ) );
+	const p = plan( rows, state( { posts: { 10: post( 10, 'page:home', { title: 'Renamed', slug: 'renamed', parent: 3, treeHash: 'old', builtFields: { post_title: 'Home', post_name: 'home', post_parent: 0 } } ) } } ) );
 	assert.deepEqual( p.actions.filter( ( a ) => 'update' === a.type ), [] );
 	assert.match( p.notes.join( '\n' ), /page:home: post 10 differs from the page map.*post_title "Renamed".*post_name "renamed".*post_parent 3/ );
 	const tpl = plan( [ row( { slug: 'home', title: 'Home', id: 10, template: 'cart' } ) ], state( { posts: { 10: post( 10, 'page:home', { title: 'Home', slug: 'home', template: '' } ) } } ) );

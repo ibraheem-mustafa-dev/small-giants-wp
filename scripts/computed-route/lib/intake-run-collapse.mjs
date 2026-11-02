@@ -60,7 +60,9 @@ export function collapseSkeletonRows( surface, rows ) {
 // Every surface's rows collapsed, first within each surface (collapseSkeletonRows), then across surfaces: a template
 // element a single-file draft renders on many surfaces (a page section shared by every route) is one row in the first
 // surface that shows it, with `alsoIn` listing every other surface and its keys, and its `copies` counting them all.
-// Rows proposing another block or action for the same element stay apart. `skeletons` is proposeSkeletons' list;
+// Rows proposing another block or action for the same element stay apart, and so do rows whose rules now propose
+// different things (`ruleWould`): a saved choice applied to both copies hides that the rules want each surface otherwise
+// (a form's layout root kept on its page and unwrapped in the saved form), and one mark must not settle both. `skeletons` is proposeSkeletons' list;
 // returns { skeletons: { slug: entry }, before, after, withinSurfaces } (row counts summed over surfaces). A surface
 // whose every row moved to an earlier surface keeps its entry with `rowsIn` naming where they are. Screenshots are
 // dropped (intake takes none) and snippets cut to 160 characters.
@@ -77,7 +79,7 @@ export function collapseSkeletons( skeletons ) {
 			const { screenshots, ...keep } = r;
 			void screenshots;
 			const row = { ...keep, ...( 'string' === typeof keep.snippet ? { snippet: keep.snippet.slice( 0, 160 ) } : {} ) };
-			const k = `${ row.draftId }|${ row.block ?? '' }|${ row.action ?? '' }`;
+			const k = `${ row.draftId }|${ row.block ?? '' }|${ row.action ?? '' }|${ row.ruleWould?.label ?? '' }`;
 			const home = first.get( k );
 			if ( home && home.surface !== surface ) {
 				home.row.alsoIn = [ ...( home.row.alsoIn || [] ), { surface, keys: row.keys || [ row.key ] } ];

@@ -1,7 +1,7 @@
 // Fill resolution of one element (FR-47-4 step 2): every property that differs from what the element already shows,
 // written through the resolver, with the not-plain, conflict and fluid records.
 import { PSEUDO_PROPS, CONTEXT_PROPS } from '../../parity/lib/collect.mjs';
-import { blockSchema, fluidForm } from './resolve.mjs';
+import { blockSchema, fluidForm, LOOSE } from './resolve.mjs';
 import { setAttr } from './tree.mjs';
 import { usedValueTarget } from './solve-rows.mjs';
 import { PROPS, READ_WIDTHS, TIE_PROPS } from './fill-read.mjs';
@@ -149,6 +149,20 @@ export function ownerKeeps( st, rec, ref, target, prop, w, settingSlot ) {
 }
 
 // One element's properties at one slot, every one that differs. layer: '::before' | '::after' for a painted pseudo layer.
+// Whether a non-root target's draft element is another node's own element (its draftRef): an inner block's root the
+// part pairing gave the block (lib/skeleton-part-pairing.mjs) is that inner block's to read, never this block's look.
+export function otherNodesElement( st, rec, target ) {
+	if ( '' === ( target.slot ?? '' ) || ! target.finder ) {
+		return false;
+	}
+	st.draftRefOwners ??= new Map( ( st.nodes || [] ).flatMap( ( n ) => ( n.targets || [] ).filter( ( t ) => '' === ( t.slot ?? '' ) && t.finder ).map( ( t ) => [ json( t.finder ), n.index ] ) ) );
+	const owner = st.draftRefOwners.get( json( target.finder ) );
+	return undefined !== owner && owner !== rec.index;
+}
+
+// Whether one of the block's settings for `prop` paints `slot` itself (calibration's own slots), not by inheritance.
+const paintsOwnSlot = ( cal, prop, slot ) => Object.values( cal?.settings || {} ).some( ( c ) => c.property === prop && ! c.state && ( c.slots || [ c.slot ] ).some( ( p ) => 'string' === typeof p && LOOSE( p ) === LOOSE( slot ) ) );
+
 export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 	const slot = `${ target.slot }${ layer || '' }`;
 	// Fill's list without the context reads (direction, column-count, column-width: read so canon() and the equivalence
@@ -202,6 +216,12 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 			}
 		}
 		if ( ! Object.keys( draft ).length ) {
+			continue;
+		}
+		// Spec 48 R-47-5 and part pairing: an inherited value read on another node's element is that node's own look, which it
+		// writes itself; a setting here would carry it to every descendant. Only a setting painting that element itself takes it.
+		if ( ! layer && INHERITED.includes( prop ) && otherNodesElement( st, rec, target ) && ! paintsOwnSlot( cal, prop, target.slot ) ) {
+			settled( st, rec, ref, { slot, property: prop, value: valueText( draft ), widths: Object.keys( draft ).map( Number ), reason: 'other-node', detail: `the draft element at "${ target.slot }" is node ${ st.draftRefOwners.get( json( target.finder ) ) }'s own element; an inherited value read there is that node's to write` } );
 			continue;
 		}
 		// A background photo the block holds as its picture (lib/fill-media.mjs::mediaDecisions, tag `background`) is that

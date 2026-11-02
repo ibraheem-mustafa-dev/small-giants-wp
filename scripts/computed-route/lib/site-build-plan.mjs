@@ -23,6 +23,8 @@ import { CONTENT_META, MENU_META, ROW_META, TEMPLATE_OPTION, WOO_ROLE, isWooDefa
 export const PERMALINKS = '/%postname%/';
 export const PHASES = [ 'posts', 'menus', 'layout', 'site' ];
 const CREATES = [ 'create', 'menu', 'item-add' ];
+// The post fields a person may change after the site build set them (FIELDS_META).
+const OWN_FIELDS = [ 'post_title', 'post_name', 'post_parent' ];
 
 const shown = ( v ) => ( v && 'object' === typeof v && v.ref ? `(new ${ v.ref })` : String( v ) );
 
@@ -197,19 +199,21 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 				actions.push( { phase, type: 'build', key, id: p.id, tree, hash, say: `${ key }: rebuild post ${ p.id } from the ${ source } tree (it was built from another tree)` } );
 			}
 		}
-		// Status, title, slug and parent are set once, at creation: a post someone has since drafted, renamed, moved or made
-		// private stays as they left it, and a difference is reported. A parent made in this run is set when it exists.
+		// Title, slug and parent follow the page map on every run (FR-48-55), except where a person changed them: a value that
+		// differs from the one the site build last set (FIELDS_META) is a person's rename or move, which stays and is
+		// reported. A post with no record takes the map's values. A parent made in this run is set when it exists.
 		const want = { post_title: row.title, post_name: row.slug, ...fields };
 		const have = { post_title: p.title, post_name: p.slug, post_parent: p.parent, page_template: p.template };
 		const differs = Object.entries( want ).filter( ( [ k, v ] ) => String( v?.ref ? '' : v ) !== String( have[ k ] ) || v?.ref );
-		const ownedByPerson = ( [ k, v ] ) => ! v?.ref && [ 'post_title', 'post_name', 'post_parent' ].includes( k );
+		const recorded = p.builtFields && 'object' === typeof p.builtFields ? p.builtFields : null;
+		const ownedByPerson = ( [ k, v ] ) => ! v?.ref && OWN_FIELDS.includes( k ) && null !== recorded && k in recorded && String( recorded[ k ] ) !== String( have[ k ] );
 		const diff = Object.fromEntries( differs.filter( ( e ) => ! ownedByPerson( e ) ) );
 		const drift = differs.filter( ownedByPerson );
 		if ( drift.length ) {
 			notes.push( `${ key }: post ${ p.id } differs from the page map (${ drift.map( ( [ k, v ] ) => `${ k } ${ JSON.stringify( have[ k ] ) } (map ${ JSON.stringify( v ) })` ).join( '; ' ) }); the site build leaves a person's change` );
 		}
 		if ( Object.keys( diff ).length ) {
-			actions.push( { phase, type: 'update', key, id: p.id, fields: diff, say: `${ key }: post ${ p.id }: ${ Object.entries( diff ).map( ( [ k, v ] ) => `${ k } ${ JSON.stringify( have[ k ] ) } -> ${ shown( v ) }` ).join( '; ' ) }` } );
+			actions.push( { phase, type: 'update', key, id: p.id, fields: diff, record: { ...Object.fromEntries( OWN_FIELDS.map( ( k ) => [ k, recorded && k in recorded ? recorded[ k ] : have[ k ] ] ) ), ...Object.fromEntries( Object.entries( diff ).filter( ( [ k ] ) => OWN_FIELDS.includes( k ) ) ) }, say: `${ key }: post ${ p.id }: ${ Object.entries( diff ).map( ( [ k, v ] ) => `${ k } ${ JSON.stringify( have[ k ] ) } -> ${ shown( v ) }` ).join( '; ' ) }` } );
 		}
 	}
 

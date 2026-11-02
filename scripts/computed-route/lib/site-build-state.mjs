@@ -10,6 +10,9 @@ export const ROW_META = '_sgs_site_build_row';
 export const TREE_META = '_sgs_site_build_tree';
 // The hash of the post_content the site build's own save produced: a later difference is a person's edit, which a rebuild never overwrites.
 export const CONTENT_META = '_sgs_site_build_content';
+// The title, slug and parent the site build last set on a post (JSON): a later difference from it is a person's change,
+// which the site build reports and leaves; a post without it takes the page map's values (FR-48-55, on a rerun).
+export const FIELDS_META = '_sgs_site_build_fields';
 // A mega panel's Section page (Sgs_Mega_Menu_CPT::META_SECTION_PAGE): the page id every item opening it links to.
 export const SECTION_META = '_sgs_mega_section_page';
 // The term meta a menu the site build made carries (its page-map menu name); a same-slug menu without it is not reused.
@@ -76,6 +79,7 @@ $post = function ( $id ) {
 		'status' => $p->post_status, 'parent' => (int) $p->post_parent, 'template' => (string) get_page_template_slug( $p ),
 		'rowKey' => (string) get_post_meta( $p->ID, '${ ROW_META }', true ), 'treeHash' => (string) get_post_meta( $p->ID, '${ TREE_META }', true ),
 			'contentHash' => hash( 'sha256', $p->post_content ), 'builtContentHash' => (string) get_post_meta( $p->ID, '${ CONTENT_META }', true ),
+			'builtFields' => json_decode( (string) get_post_meta( $p->ID, '${ FIELDS_META }', true ), true ),
 			'content' => '' === (string) get_post_meta( $p->ID, '${ ROW_META }', true ) ? $p->post_content : null,
 		'sectionPage' => (int) get_post_meta( $p->ID, '${ SECTION_META }', true ),
 	);
