@@ -68,7 +68,10 @@ final class MotionFieldTypesTest extends TestCase {
 	public function test_the_schema_is_read_once_from_the_plugin(): void {
 		$this->assertFileExists( Sgs_Motion_Field_Types::schema_path() );
 		$this->assertSame( Sgs_Motion_Field_Types::schema(), Sgs_Motion_Field_Types::schema() );
-		$this->assertCount( 15, Sgs_Motion_Field_Types::names() );
+		$names = Sgs_Motion_Field_Types::names();
+		$this->assertCount( 17, $names );
+		$this->assertContains( 'angleList', $names, 'FW-D: a list of rest angles' );
+		$this->assertContains( 'originPair', $names, 'FW-G: a rest origin as two values' );
 	}
 
 	public function test_named_values(): void {

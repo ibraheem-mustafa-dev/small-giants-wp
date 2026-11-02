@@ -25,21 +25,22 @@ final class TapFloorsRenderTest extends TestCase {
 
 	/**
 	 * The cart's render.php bails out without the WooCommerce class (the harness has none), so its flag logic is read from source:
-	 * the flag follows "iconSize present", never "iconSize differs from 24".
+	 * the flag follows "an iconSize tier is set", never "iconSize differs from 24".
 	 */
 	public function test_cart_flag_follows_a_set_icon_size_not_a_value(): void {
 		$render = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/cart/render.php' );
-		$this->assertStringContainsString( "\$icon_size_set         = isset( \$attributes['iconSize'] ) && is_numeric( \$attributes['iconSize'] );", $render );
-		$this->assertStringContainsString( "\$icon_size             = \$icon_size_set ? absint( \$attributes['iconSize'] ) : 24;", $render );
-		$this->assertStringContainsString( "if ( \$icon_size_set && 'icon' === \$trigger_style ) {", $render );
+		$this->assertStringContainsString( "\$icon_size_set         = ! empty( \$icon_size_own );", $render );
+		$this->assertStringContainsString( "\$icon_size             = \$icon_size_own['desktop'] ?? 24;", $render );
+		$this->assertStringContainsString( "'icon' === \$trigger_style && isset( \$icon_size_own['desktop'] )", $render );
 		$this->assertStringNotContainsString( '24 !== $icon_size', $render );
 		$edit = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/cart/edit.js' );
-		$this->assertStringContainsString( "undefined !== iconSizeSet && ! hasPill ? '0px'", $edit );
+		$this->assertStringContainsString( "null !== iconSizeOwn && ! hasPill ? '0px'", $edit );
 	}
 
 	public function test_cart_block_json_declares_no_icon_size_default(): void {
 		$block = json_decode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/cart/block.json' ), true );
-		$this->assertArrayNotHasKey( 'default', $block['attributes']['iconSize'] );
+		$this->assertSame( 'object', $block['attributes']['iconSize']['type'], 'a per-breakpoint object' );
+		$this->assertSame( array(), $block['attributes']['iconSize']['default'], 'empty means unset: the size falls back to the 24px stylesheet default' );
 	}
 
 	public function test_store_selector_prints_the_flag_only_in_the_tier_the_size_is_set(): void {
