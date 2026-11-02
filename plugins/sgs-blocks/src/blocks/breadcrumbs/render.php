@@ -547,7 +547,8 @@ foreach ( $crumbs as $i => $crumb ) {
 		'name'     => wp_strip_all_tags( $crumb['label'] ),
 	);
 	if ( '' !== $crumb['url'] ) {
-		$schema_item['item'] = $crumb['url'];
+		// A ListItem's item must be an absolute URL; an author-entered middle crumb such as /about/ is site-relative.
+		$schema_item['item'] = 0 === strpos( $crumb['url'], '/' ) && 0 !== strpos( $crumb['url'], '//' ) ? home_url( $crumb['url'] ) : $crumb['url'];
 	}
 	$schema_items[] = $schema_item;
 }
