@@ -239,7 +239,7 @@ function SampleOptionGroup( { label, options, pillStyle, showTick, labelStyle, v
 							<input type="radio" checked={ 0 === index } readOnly tabIndex={ -1 } />
 							<span className="sgs-option-picker__pill">
 								<span className="sgs-option-picker__pill-text">
-									<span className="sgs-option-picker__pill-label" style={ optionStyle }>{ option }</span>
+									<span className="sgs-option-picker__pill-label" style={ 'tile' === style ? optionStyle : undefined }>{ option }</span>
 								</span>
 							</span>
 						</label>
@@ -371,7 +371,7 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 	// The chosen value renders beside the label only on the own-render path, so
 	// the canvas shows it under the same condition render.php uses.
 	const valueStyle = typographyPreviewStyle( attributes, 'pickerValue', tier );
-	// The option tile names (render.php scopes the same typography and colour to .sgs-option-picker__pill-label).
+	// The option tile names (render.php scopes the same typography and colour to a tile-style picker's .sgs-option-picker__pill-label).
 	const optionStyle = {
 		...typographyPreviewStyle( attributes, 'pickerOption', tier ),
 		...( attributes.pickerOptionColour ? { color: resolveColourToken( attributes.pickerOptionColour, palette ) || attributes.pickerOptionColour } : {} ),

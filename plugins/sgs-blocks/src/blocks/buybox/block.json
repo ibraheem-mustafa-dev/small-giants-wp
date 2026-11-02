@@ -80,7 +80,7 @@
 				},
 				"picker-option": {
 					"motion": false,
-					"selector": ".sgs-buybox .sgs-option-picker__pill-label",
+					"selector": ".sgs-buybox .sgs-option-picker--tile .sgs-option-picker__pill-label",
 					"label": "Option tile name",
 					"clusters": [ "text" ],
 					"prefix": "pickerOption",

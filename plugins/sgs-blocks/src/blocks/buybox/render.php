@@ -804,15 +804,19 @@ if ( $buybox_picker_show_selected_value || $buybox_picker_has_link ) {
 
 // Option-tile name (e.g. "Ivory" under a colour tile) typography and colour.
 // sgs/option-picker's pill label sits inside its pill, so this block emits a
-// scoped rule on it for every picker rendered inside the buybox root. Emitted
-// whether or not a picker renders: the rules match nothing without one.
-$sgs_bb_option_typo_css = sgs_typography_css_rule( $attributes, 'pickerOption', $root_sel . ' .sgs-option-picker__pill-label' );
+// scoped rule on it for every tile-style picker rendered inside the buybox
+// root. Pill-style pickers (outlined, filled, ghost: the size picker) keep
+// their own label, whose colour follows the pill's selected and resting
+// states. Emitted whether or not a picker renders: the rules match nothing
+// without one.
+$sgs_bb_option_sel      = $root_sel . ' .sgs-option-picker--tile .sgs-option-picker__pill-label';
+$sgs_bb_option_typo_css = sgs_typography_css_rule( $attributes, 'pickerOption', $sgs_bb_option_sel );
 if ( '' !== $sgs_bb_option_typo_css ) {
 	$scoped_css[] = $sgs_bb_option_typo_css;
 }
 $sgs_bb_option_colour = sgs_colour_value( (string) ( $attributes['pickerOptionColour'] ?? '' ) );
 if ( '' !== $sgs_bb_option_colour ) {
-	$scoped_css[] = $root_sel . ' .sgs-option-picker__pill-label{color:' . $sgs_bb_option_colour . ';}';
+	$scoped_css[] = $sgs_bb_option_sel . '{color:' . $sgs_bb_option_colour . ';}';
 }
 
 // Value-ladder typography — the wrapper ('valueLadder') and the per-row saving
