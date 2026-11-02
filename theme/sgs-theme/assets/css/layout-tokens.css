@@ -26,6 +26,22 @@
 	--wp--style--root--padding-right: var(--wp--custom--gutter--mobile);
 }
 
+/*
+ * A container whose own side padding paints its band carries `sgs-band-gutter` instead of
+ * `has-global-padding` (SGS_Container_Wrapper). It already pays the gutter, so core's nesting reset
+ * applies below it too: a banded container inside it pays no second gutter. Same selectors and
+ * specificity as core's two reset rules; this file loads after the global styles, so it wins on order.
+ */
+.sgs-band-gutter :where(:not(.alignfull.is-layout-flow) > .has-global-padding:not(.wp-block-block, .alignfull)) {
+	padding-right: 0;
+	padding-left: 0;
+}
+
+.sgs-band-gutter :where(:not(.alignfull.is-layout-flow) > .has-global-padding:not(.wp-block-block, .alignfull)) > .alignfull {
+	margin-left: 0;
+	margin-right: 0;
+}
+
 :where(.sgs-container--section-pad:not(.sgs-container--section-pad .sgs-container--section-pad, header *, footer *, .sgs-container:not(main) .sgs-container--section-pad)) {
 	padding-top: var(--wp--custom--section--padding--mobile, 0);
 	padding-bottom: var(--wp--custom--section--padding--mobile, 0);

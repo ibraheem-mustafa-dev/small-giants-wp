@@ -775,7 +775,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					'mobile'  => null,
 				);
 			}
-			$padding_tablet_obj     =is_array( $sgs_wrap_padding_tiers['tablet'] ) ? $sgs_wrap_padding_tiers['tablet'] : array();
+			$padding_tablet_obj     = is_array( $sgs_wrap_padding_tiers['tablet'] ) ? $sgs_wrap_padding_tiers['tablet'] : array();
 			$padding_mobile_obj     = is_array( $sgs_wrap_padding_tiers['mobile'] ) ? $sgs_wrap_padding_tiers['mobile'] : array();
 			$padding_top_tablet     = $sgs_css_length( $padding_tablet_obj['top'] ?? '' );
 			$padding_right_tablet   = $sgs_css_length( $padding_tablet_obj['right'] ?? '' );
@@ -1418,6 +1418,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					// the note at $suppress_outer_flex_for_main above.
 				} elseif ( 'flex' === $layout && ! $suppress_outer_flex_for_main ) {
 					$gd[] = 'display:flex';
+
 					/*
 					 * OWNERSHIP: block.json owns the DEFAULT; this code owns only the
 					 * INVARIANT. There is deliberately no fallback value here.
@@ -1568,70 +1569,27 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// ----------------------------------------------------------------
 			$classes = array( 'sgs-container' );
 
-			// ----------------------------------------------------------------
-			// Global padding (the horizontal gutter) — WordPress core's own
-			// mechanism, re-adopted 2026-08-21 after a hand-rolled copy of it
-			// regressed every nested container.
-			//
-			// HISTORY, because the shape of this fix is only obvious with it:
-			// before 163f9fa7 (2026-07-16) these were `core/group` blocks with
-			// `layout:{"type":"constrained"}`. Core gave every constrained group
-			// `.has-global-padding`, which supplies the gutter from
-			// `--wp--style--root--padding-*` AND — critically — carries core's own
-			// nesting reset, so a constrained group inside a constrained group
-			// pays the gutter ONCE. That migration carried the max-width cap
-			// (`layout.constrained` -> `contentWidth`) across but NOT the gutter,
-			// so content rendered flush to the viewport edge. f9f4368b then fixed
-			// that symptom by giving EVERY container instance a 24px `padding`
-			// default — a PER-INSTANCE default has no nesting reset, so it
-			// compounded: measured live on /shop/ at 323px, 19 of 22 containers
-			// were nested and a product card sat at left:72px (3 x 24px) with only
-			// 165px of its 309px viewport left. The footer-links container was
-			// 48px wide with 48px of padding — zero content.
-			//
-			// So this is a RE-CONNECTION, not a new mechanism: core's four
-			// `.has-global-padding` rules were already shipped and live on the page
-			// with ZERO elements using them, and `--wp--style--root--padding-left`
-			// already computes to 1.5rem/24px — the very number f9f4368b hardcoded.
-			//
-			// GATE — `$has_band_props`, and no carve-out is needed:
-			//   * a real content band == the old constrained group -> gutter.
-			//   * `contentWidth:"full"` resolves to '' (see $sgs_resolve_content_width),
-			//     so the 5 full-bleed blocks that default it (site-header/-row,
-			//     site-footer/-row, physics-canvas) have no band and are excluded —
-			//     which is exactly how core excludes full-width from global padding.
-			//   * a caller that explicitly suppresses the band via
-			//     $opts['wrap_inner'] => false (hero-split, product-card) is left
-			//     byte-identical.
-			// Deliberately NOT gated on $do_wrap: the $container_queries and
-			// fx:horizontal-panel forces further down emit a band ELEMENT without
-			// band PROPS, i.e. no constrained cap, so they must not gain a gutter.
-			// ⛔ YES, THIS ASKS THE WRONG QUESTION — AND IT STAYS (D726, 2026-08-21).
-			// It asks "does this cap its content width?" and uses the answer to decide
-			// "should this have a side margin?" — two unrelated questions sharing one
-			// answer. That was raised as a defect during the one-cap-per-page work and
-			// examined properly rather than acted on. The OUTCOME is correct in every
-			// case that exists:
-			//   banded container   = page content -> must not touch the screen edge -> gutter
-			//   full-bleed container = structure (main / header-row / footer-row) -> no
-			//                          automatic indent, and it sets `padding` if it wants one
-			// That is the same rule Bean set for bare blocks in D725: opting out of the
-			// container behaviour IS the choice, and the padding control is still there.
-			// Searched for a counter-example live and found none — 0 footer/text nodes at
-			// the viewport edge on /shop/ at 500px.
-			//
-			// NOT changed because the fix is worse than the flaw: 28 blocks route through
-			// this file, three override the band guard via $opts['wrap_inner'], and it is
-			// a Rule 7 shared mechanism. Re-verifying header/footer/hero/card-grid/shop
-			// filters live buys a tidier conditional and zero visible change.
-			//
-			// REOPEN IT only on a real case: a container that needs a side margin its
-			// band-state will not give it, and cannot simply author `padding`. Until then
-			// this is settled — do not re-investigate it.
-			// A horizontal padding the client sets paints the band and replaces the gutter, as it did
-			// when the padding painted this element.
+			/*
+			 * Global padding (the horizontal gutter) is WordPress core's own mechanism: `.has-global-padding`
+			 * takes the gutter from `--wp--style--root--padding-*` (set per tier in theme layout-tokens.css),
+			 * and core's nesting reset makes a banded container inside another pay it once.
+			 *
+			 * - A container with a content band (`$has_band_props`, the band not suppressed by
+			 *   `$opts['wrap_inner'] => false`) is page content and gets the gutter. `contentWidth:"full"`
+			 *   resolves to no band, so full-bleed structure (site-header/-row, site-footer/-row,
+			 *   physics-canvas) gets none and sets `padding` itself when it wants an indent. A band element
+			 *   forced for container queries or fx:horizontal-panel has no band props and no gutter.
+			 * - A horizontal padding the client sets paints the band and replaces the gutter. That container
+			 *   takes `sgs-band-gutter` instead: layout-tokens.css applies core's nesting reset below it, so
+			 *   a banded container inside it pays no second gutter.
+			 *
+			 * The gate reads band state, not "needs a side margin"; why it stays is decision D726
+			 * (.claude/archive/decisions.md).
+			 */
 			if ( $has_band_props && false !== $opt_wrap_inner && ! $band_padding_has_horizontal ) {
 				$classes[] = 'has-global-padding';
+			} elseif ( $has_band_props && false !== $opt_wrap_inner ) {
+				$classes[] = 'sgs-band-gutter';
 			}
 
 			// Section padding default (Spec 32 FR-32-15): a block whose role is a page section opts in
@@ -2497,7 +2455,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					'' !== $shadow_colour_hover ? $shadow_colour_hover : $shadow_colour
 				);
 				if ( '' !== $shadow_hover_value ) {
-					// sgs-shadow-fallback: hover state only; the resting rule carries the forced-colours fallback
+					// sgs-shadow-fallback: hover state only; the resting rule carries the forced-colours fallback.
 					$responsive_css .= sgs_hover_state_rules( '.' . $uid, 'box-shadow:' . $shadow_hover_value, ':focus-within' );
 				}
 			} elseif ( $shadow && $uid ) {
@@ -3198,6 +3156,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					 * (nothing here overrides an authored value; only an
 					 * absent tier gets a resolved one).
 					 */
+
 					/*
 					 * A count fills a template-less tier only when that tier's
 					 * count was AUTHORED, or when no wider tier has a literal
