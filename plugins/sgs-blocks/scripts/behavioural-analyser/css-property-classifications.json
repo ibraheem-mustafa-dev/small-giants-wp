@@ -5755,7 +5755,7 @@
       "attr": "pillFontSize",
       "fields": {
         "css_property": "font-size",
-        "css_element": "pill"
+        "css_element": "trigger"
       }
     },
     {
@@ -5763,7 +5763,7 @@
       "attr": "pillFontWeight",
       "fields": {
         "css_property": "font-weight",
-        "css_element": "pill"
+        "css_element": "trigger"
       }
     },
     {
@@ -5771,7 +5771,7 @@
       "attr": "pillLetterSpacing",
       "fields": {
         "css_property": "letter-spacing",
-        "css_element": "pill"
+        "css_element": "trigger"
       }
     },
     {
@@ -5796,7 +5796,7 @@
       "attr": "pillTextTransform",
       "fields": {
         "css_property": "text-transform",
-        "css_element": "pill"
+        "css_element": "trigger"
       }
     },
     {

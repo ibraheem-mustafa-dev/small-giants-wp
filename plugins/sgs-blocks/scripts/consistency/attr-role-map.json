@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 9462,
+    "row_count": 9465,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -2009,6 +2009,7 @@
     "sgs/cart::pillLetterSpacing": "typography",
     "sgs/cart::pillLetterSpacingUnit": "typography",
     "sgs/cart::pillMinHeight": "layout",
+    "sgs/cart::pillShowIcon": "boolean-visibility",
     "sgs/cart::pillTextColour": "color",
     "sgs/cart::pillTextColourGradient": "colour-gradient",
     "sgs/cart::pillTextColourHover": "color",
@@ -2043,6 +2044,8 @@
     "sgs/cart::subtotalLabelColour": "color",
     "sgs/cart::subtotalValueColour": "color",
     "sgs/cart::triggerStyle": "behaviour",
+    "sgs/cart::triggerStyleMobile": "behaviour",
+    "sgs/cart::triggerStyleTablet": "behaviour",
     "sgs/cart::viewCartLabel": "text-content",
     "sgs/choice-flow-question::answersMax": null,
     "sgs/choice-flow-question::answersMin": null,
