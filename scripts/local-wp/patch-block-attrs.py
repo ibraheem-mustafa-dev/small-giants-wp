@@ -31,13 +31,14 @@ def main() -> int:
     ap.add_argument("--post", required=True, type=int)
     ap.add_argument("--patch", required=True, type=Path)
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--user", default="1", help="administrator id or login the write runs as (default 1). Without an administrator, the sgsCustomCss save filter strips every sgsCustomCss attribute in the post.")
     a = ap.parse_args()
     if not re.fullmatch(r"local-[a-z0-9-]+", a.site):
         sys.exit("--site must be a local mirror (local-<name>).")
     if not a.patch.is_file():
         sys.exit(f"No patch file: {a.patch}")
     php = to_wsl(REPO / "scripts/local-wp/patch-block-attrs.php")
-    cmd = f"cd /var/www/{a.site} && wp --allow-root eval-file {php} {a.post} {to_wsl(a.patch)}" + (" dry-run" if a.dry_run else "")
+    cmd = f"cd /var/www/{a.site} && wp --allow-root --user={a.user} eval-file {php} {a.post} {to_wsl(a.patch)}" + (" dry-run" if a.dry_run else "")
     r = subprocess.run(["wsl", "-d", "Ubuntu", "-u", "root", "--", "bash", "-lc", cmd], capture_output=True, text=True)
     sys.stdout.write(r.stdout)
     sys.stderr.write("\n".join(l for l in r.stderr.splitlines() if "Deprecated" not in l and l.strip()) + ("\n" if r.stderr.strip() else ""))

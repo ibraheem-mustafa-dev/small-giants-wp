@@ -31,6 +31,12 @@ $sgs_pba_post_id = isset( $sgs_pba_args[0] ) ? absint( $sgs_pba_args[0] ) : 0;
 $sgs_pba_file    = isset( $sgs_pba_args[1] ) ? (string) $sgs_pba_args[1] : '';
 $sgs_pba_dry     = in_array( 'dry-run', $sgs_pba_args, true );
 
+// The sgsCustomCss save filter strips every sgsCustomCss attribute in the post unless the writer may post unfiltered
+// HTML, so a write without an administrator would silently delete Custom CSS the patch never touched.
+if ( ! current_user_can( 'unfiltered_html' ) ) {
+	WP_CLI::error( 'Run as an administrator (patch-block-attrs.py passes --user=1): without unfiltered_html, saving strips every sgsCustomCss in the post.' );
+}
+
 $sgs_pba_post = $sgs_pba_post_id ? get_post( $sgs_pba_post_id ) : null;
 if ( ! $sgs_pba_post ) {
 	WP_CLI::error( 'No post with that id.' );
