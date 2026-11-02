@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 9609,
+    "row_count": 9610,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -5328,6 +5328,7 @@
     "sgs/media::captionWritingMode": "select-from-enum",
     "sgs/media::height": "layout",
     "sgs/media::imageAlt": "image-alt",
+    "sgs/media::imageBlendMode": "select-from-enum",
     "sgs/media::imageDecorative": "boolean-visibility",
     "sgs/media::imageHeight": "layout",
     "sgs/media::imageId": "enum-class-probe",

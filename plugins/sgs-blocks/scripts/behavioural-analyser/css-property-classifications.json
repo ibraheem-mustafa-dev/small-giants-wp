@@ -11275,13 +11275,6 @@
     },
     {
       "slug": "sgs/gallery",
-      "attr": "scrollInset",
-      "fields": {
-        "css_property": "scroll-padding-inline"
-      }
-    },
-    {
-      "slug": "sgs/gallery",
       "attr": "scrollItemWidth",
       "fields": {
         "css_property": "flex"
@@ -16992,6 +16985,14 @@
       "fields": {
         "css_property": "writing-mode",
         "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "imageBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode",
+        "css_element": "img"
       }
     },
     {
