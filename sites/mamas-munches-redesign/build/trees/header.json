@@ -1,0 +1,544 @@
+[
+    {
+        "name": "sgs/site-header",
+        "attributes": {
+            "maxWidth": {
+                "desktop": "none"
+            },
+            "backgroundColour": "surface",
+            "minHeight": {
+                "desktop": "0px"
+            },
+            "borderWidth": {
+                "top": "0px",
+                "right": "0px",
+                "left": "0px",
+                "bottom": "1px"
+            },
+            "borderColour": "border-light",
+            "headerSticky": {
+                "desktop": "on",
+                "tablet": "on",
+                "mobile": "on"
+            }
+        },
+        "innerBlocks": [
+            {
+                "name": "sgs/site-header-row",
+                "attributes": {
+                    "rowSlot": "top",
+                    "backgroundColour": "",
+                    "borderStyle": "none",
+                    "minHeight": {
+                        "desktop": "0px"
+                    },
+                    "gap": {
+                        "desktop": "0px"
+                    },
+                    "padding": {
+                        "desktop": {
+                            "top": "0px",
+                            "right": "0px",
+                            "bottom": "0px",
+                            "left": "0px"
+                        }
+                    },
+                    "contentWidth": {
+                        "desktop": "full"
+                    },
+                    "rowHideOnScroll": {
+                        "desktop": "on",
+                        "tablet": "on",
+                        "mobile": "on"
+                    },
+                    "layout": "grid",
+                    "gridTemplateColumns": {
+                        "desktop": "minmax(0,1fr)"
+                    }
+                },
+                "innerBlocks": [
+                    {
+                        "name": "sgs/container",
+                        "attributes": {
+                            "layout": "grid",
+                            "alignItems": "center",
+                            "backgroundColour": "mm-yellow",
+                            "contentWidth": {
+                                "desktop": "full"
+                            },
+                            "padding": {
+                                "desktop": {
+                                    "top": "0px",
+                                    "right": "max(12px, calc((100% - 1240px) / 2))",
+                                    "bottom": "0px",
+                                    "left": "max(12px, calc((100% - 1240px) / 2))"
+                                }
+                            },
+                            "minHeight": {
+                                "desktop": "32px"
+                            },
+                            "gridTemplateColumns": {
+                                "desktop": "minmax(0,1fr)"
+                            }
+                        },
+                        "innerBlocks": [
+                            {
+                                "name": "sgs/container",
+                                "attributes": {
+                                    "layout": "flex",
+                                    "alignItems": "center",
+                                    "justifyContent": "center",
+                                    "gap": {
+                                        "desktop": "10px"
+                                    },
+                                    "contentWidth": {
+                                        "desktop": "full"
+                                    },
+                                    "minHeight": {
+                                        "desktop": "24px"
+                                    },
+                                    "padding": {
+                                        "desktop": {
+                                            "top": "0px",
+                                            "right": "0px",
+                                            "bottom": "0px",
+                                            "left": "0px"
+                                        }
+                                    },
+                                    "borderStyle": "dashed",
+                                    "borderColour": "mm-rule",
+                                    "borderWidth": {
+                                        "top": "1px",
+                                        "right": "0px",
+                                        "bottom": "1px",
+                                        "left": "0px"
+                                    },
+                                    "overflow": "hidden"
+                                },
+                                "innerBlocks": [
+                                    {
+                                        "name": "sgs/text",
+                                        "attributes": {
+                                            "text": "✦ Baked fresh when you order",
+                                            "fontSize": {
+                                                "desktop": 13
+                                            },
+                                            "fontWeight": "700",
+                                            "lineHeight": {
+                                                "desktop": 1.154
+                                            },
+                                            "textWrap": "nowrap",
+                                            "sgsHideOnMobile": true
+                                        }
+                                    },
+                                    {
+                                        "name": "sgs/text",
+                                        "attributes": {
+                                            "text": "·",
+                                            "fontSize": {
+                                                "desktop": 13
+                                            },
+                                            "fontWeight": "700",
+                                            "lineHeight": {
+                                                "desktop": 1.154
+                                            },
+                                            "textWrap": "nowrap",
+                                            "sgsHideOnMobile": true
+                                        }
+                                    },
+                                    {
+                                        "name": "sgs/text",
+                                        "attributes": {
+                                            "text": "With you in 3–5 days",
+                                            "fontSize": {
+                                                "desktop": 13
+                                            },
+                                            "fontWeight": "700",
+                                            "lineHeight": {
+                                                "desktop": 1.154
+                                            },
+                                            "textWrap": "nowrap",
+                                            "sgsHideOnMobile": true,
+                                            "sgsHideOnTablet": true
+                                        }
+                                    },
+                                    {
+                                        "name": "sgs/text",
+                                        "attributes": {
+                                            "text": "·",
+                                            "fontSize": {
+                                                "desktop": 13
+                                            },
+                                            "fontWeight": "700",
+                                            "lineHeight": {
+                                                "desktop": 1.154
+                                            },
+                                            "textWrap": "nowrap",
+                                            "sgsHideOnMobile": true,
+                                            "sgsHideOnTablet": true
+                                        }
+                                    },
+                                    {
+                                        "name": "sgs/text",
+                                        "attributes": {
+                                            "text": "Free UK delivery over £35",
+                                            "fontSize": {
+                                                "desktop": 13
+                                            },
+                                            "fontWeight": "700",
+                                            "lineHeight": {
+                                                "desktop": 1.154
+                                            },
+                                            "textWrap": "nowrap",
+                                            "sgsHideOnMobile": true
+                                        }
+                                    },
+                                    {
+                                        "name": "sgs/text",
+                                        "attributes": {
+                                            "text": "✦ Baked to order",
+                                            "fontSize": {
+                                                "desktop": 13
+                                            },
+                                            "fontWeight": "700",
+                                            "lineHeight": {
+                                                "desktop": 1.154
+                                            },
+                                            "textWrap": "nowrap",
+                                            "sgsHideOnTablet": true,
+                                            "sgsHideOnDesktop": true
+                                        }
+                                    },
+                                    {
+                                        "name": "sgs/text",
+                                        "attributes": {
+                                            "text": "·",
+                                            "fontSize": {
+                                                "desktop": 13
+                                            },
+                                            "fontWeight": "700",
+                                            "lineHeight": {
+                                                "desktop": 1.154
+                                            },
+                                            "textWrap": "nowrap",
+                                            "sgsHideOnTablet": true,
+                                            "sgsHideOnDesktop": true
+                                        }
+                                    },
+                                    {
+                                        "name": "sgs/text",
+                                        "attributes": {
+                                            "text": "Free delivery over £35",
+                                            "fontSize": {
+                                                "desktop": 13
+                                            },
+                                            "fontWeight": "700",
+                                            "lineHeight": {
+                                                "desktop": 1.154
+                                            },
+                                            "textWrap": "nowrap",
+                                            "sgsHideOnTablet": true,
+                                            "sgsHideOnDesktop": true
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "sgs/site-header-row",
+                "attributes": {
+                    "rowSlot": "middle",
+                    "layout": "grid",
+                    "alignItems": "center",
+                    "contentWidth": {
+                        "desktop": "1240px"
+                    },
+                    "gridTemplateColumns": {
+                        "desktop": "180px minmax(0,1fr) auto",
+                        "tablet": "minmax(0,1fr) auto minmax(0,1fr)",
+                        "mobile": "minmax(0,1fr) auto minmax(0,1fr)"
+                    },
+                    "padding": {
+                        "desktop": {
+                            "top": "0px",
+                            "right": "40px",
+                            "bottom": "0px",
+                            "left": "40px"
+                        },
+                        "tablet": {
+                            "top": "0px",
+                            "right": "20px",
+                            "bottom": "0px",
+                            "left": "20px"
+                        },
+                        "mobile": {
+                            "top": "0px",
+                            "right": "8px",
+                            "bottom": "0px",
+                            "left": "8px"
+                        }
+                    },
+                    "gap": {
+                        "desktop": "24px",
+                        "tablet": "0px",
+                        "mobile": "0px"
+                    },
+                    "minHeight": {
+                        "desktop": "84px",
+                        "tablet": "64px",
+                        "mobile": "64px"
+                    }
+                },
+                "innerBlocks": [
+                    {
+                        "name": "sgs/responsive-logo",
+                        "attributes": {
+                            "sgsHideOnMobile": true,
+                            "sgsHideOnTablet": true,
+                            "logoId": 91,
+                            "logoUrl": "http://localhost:8084/wp-content/uploads/2026/10/logo-horizontal.png",
+                            "maxHeight": {
+                                "desktop": "60px"
+                            },
+                            "alt": "Mama's Munches",
+                            "align": "left"
+                        }
+                    },
+                    {
+                        "name": "sgs/nav-bar-menu",
+                        "attributes": {
+                            "sgsFocusRests": true,
+                            "ref": 30,
+                            "collapsePoint": 1024,
+                            "gap": {
+                                "desktop": "2px"
+                            },
+                            "itemFontWeight": "700",
+                            "itemLineHeight": 1.188,
+                            "burgerHoverColour": "section",
+                            "burgerSize": "48px",
+                            "burgerWidth": {
+                                "mobile": "48px",
+                                "tablet": "48px"
+                            },
+                            "burgerBorderRadius": {
+                                "tablet": "999px"
+                            },
+                            "burgerBar1BorderRadius": {
+                                "tablet": "2px"
+                            },
+                            "burgerBar2BorderRadius": {
+                                "tablet": "2px"
+                            },
+                            "burgerBar3BorderRadius": {
+                                "tablet": "2px"
+                            },
+                            "burgerTextGap": {
+                                "tablet": "5px"
+                            },
+                            "burgerIconWidth": {
+                                "mobile": "22px",
+                                "tablet": "22px"
+                            },
+                            "itemPadding": {
+                                "desktop": {
+                                    "top": "12px",
+                                    "right": "16px",
+                                    "bottom": "12px",
+                                    "left": "16px"
+                                }
+                            },
+                            "navColourHover": "primary-text",
+                            "burgerColourHover": "primary-text",
+                            "itemTextWrap": "wrap",
+                            "itemBorderRadius": {
+                                "topLeft": "999px",
+                                "topRight": "999px",
+                                "bottomRight": "999px",
+                                "bottomLeft": "999px"
+                            },
+                            "itemMinHeight": {
+                                "desktop": "auto"
+                            },
+                            "justifyContent": "center",
+                            "itemBgHover": "mm-pink-soft",
+                            "itemBgCurrent": "mm-pink-soft",
+                            "itemFontSize": {
+                                "desktop": 16
+                            },
+                            "itemFontSizeUnit": "px"
+                        }
+                    },
+                    {
+                        "name": "sgs/responsive-logo",
+                        "attributes": {
+                            "sgsHideOnDesktop": true,
+                            "logoId": 91,
+                            "logoUrl": "http://localhost:8084/wp-content/uploads/2026/10/logo-horizontal.png",
+                            "maxHeight": {
+                                "mobile": "48px",
+                                "tablet": "56px"
+                            },
+                            "alt": "Mama's Munches",
+                            "align": "center"
+                        }
+                    },
+                    {
+                        "name": "sgs/container",
+                        "attributes": {
+                            "layout": "flex",
+                            "alignItems": "center",
+                            "justifyContent": "flex-end",
+                            "gap": {
+                                "desktop": "6px"
+                            },
+                            "contentWidth": {
+                                "desktop": "full"
+                            },
+                            "padding": {
+                                "desktop": {
+                                    "top": "0px",
+                                    "right": "0px",
+                                    "bottom": "0px",
+                                    "left": "0px"
+                                }
+                            }
+                        },
+                        "innerBlocks": [
+                            {
+                                "name": "sgs/icon",
+                                "attributes": {
+                                    "iconSource": "custom",
+                                    "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"8\" r=\"4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8px\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></circle><path d=\"M4 21a8 8 0 0 1 16 0\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8px\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path></svg>",
+                                    "iconSize": {
+                                        "desktop": "24px"
+                                    },
+                                    "iconColour": "primary-text",
+                                    "iconColourHover": "primary-text",
+                                    "shape": "circle",
+                                    "shapeSize": {
+                                        "desktop": {
+                                            "width": "48px",
+                                            "height": "48px"
+                                        }
+                                    },
+                                    "iconAlign": "center",
+                                    "backgroundColourHover": "mm-pink-soft",
+                                    "borderRadius": {
+                                        "topLeft": "999px",
+                                        "topRight": "999px",
+                                        "bottomRight": "999px",
+                                        "bottomLeft": "999px"
+                                    },
+                                    "linkUrl": "/my-account/",
+                                    "ariaLabel": "Sign in or create an account",
+                                    "sgsConditionLoggedIn": "logged-out"
+                                }
+                            },
+                            {
+                                "name": "sgs/icon",
+                                "attributes": {
+                                    "iconSource": "custom",
+                                    "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"8\" r=\"4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8px\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></circle><path d=\"M4 21a8 8 0 0 1 16 0\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8px\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path></svg>",
+                                    "iconSize": {
+                                        "desktop": "24px"
+                                    },
+                                    "iconColour": "primary-text",
+                                    "iconColourHover": "primary-text",
+                                    "shape": "circle",
+                                    "shapeSize": {
+                                        "desktop": {
+                                            "width": "48px",
+                                            "height": "48px"
+                                        }
+                                    },
+                                    "iconAlign": "center",
+                                    "backgroundColourHover": "mm-pink-soft",
+                                    "borderRadius": {
+                                        "topLeft": "999px",
+                                        "topRight": "999px",
+                                        "bottomRight": "999px",
+                                        "bottomLeft": "999px"
+                                    },
+                                    "linkUrl": "/my-account/",
+                                    "ariaLabel": "My account",
+                                    "sgsConditionLoggedIn": "logged-in"
+                                }
+                            },
+                            {
+                                "name": "sgs/cart",
+                                "attributes": {
+                                    "displayMode": "drawer",
+                                    "iconSize": 22,
+                                    "iconColourHover": "primary-text",
+                                    "iconColourHoverGradient": "rgb(58, 42, 34)",
+                                    "badgeTextColourHover": "primary-text",
+                                    "showZero": true,
+                                    "emptyCartMessage": "Your basket is empty",
+                                    "emptyCartCtaLabel": "Browse the shop",
+                                    "checkoutLabel": "Checkout securely",
+                                    "triggerStyle": "pill",
+                                    "pillLabel": "Basket",
+                                    "pillCountStyle": "bubble",
+                                    "pillBorderWidth": {
+                                        "top": "2px",
+                                        "right": "2px",
+                                        "bottom": "2px",
+                                        "left": "2px"
+                                    },
+                                    "sgsMotion": {
+                                        "v": 1,
+                                        "elements": {
+                                            "root": {
+                                                "hover": {
+                                                    "state": {
+                                                        "values": {
+                                                            "translateX": "-token:distance.xs",
+                                                            "translateY": "-token:distance.xs",
+                                                            "duration": "token:duration.fast",
+                                                            "easing": "token:easing.ease"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "pillBgColour": "mm-paper",
+                                    "pillTextColour": "primary-text",
+                                    "pillBorderStyle": "solid",
+                                    "pillBorderColour": "primary-text",
+                                    "pillBorderRadius": "999px",
+                                    "pillFontSize": {
+                                        "desktop": 15
+                                    },
+                                    "pillFontSizeUnit": "px",
+                                    "pillFontWeight": "700",
+                                    "pillTextTransform": "none",
+                                    "pillMinHeight": {
+                                        "desktop": "48px"
+                                    },
+                                    "badgeColour": "mm-pink",
+                                    "sgsCustomCss": "@media (min-width:1024px) { & .sgs-cart__trigger { box-shadow: 3px 3px 0 #3A2A22; } } @media (max-width:1023px) { & .sgs-cart__trigger { min-width: 48px; min-height: 48px; border-radius: 999px; } }",
+                                    "triggerStyleTablet": "icon",
+                                    "pillShowIcon": true,
+                                    "iconName": "shopping-bag",
+                                    "ariaLabel": "Open basket",
+                                    "iconColour": "primary-text"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "sgs/site-header-row",
+                "attributes": {
+                    "rowSlot": "bottom"
+                }
+            }
+        ]
+    }
+]

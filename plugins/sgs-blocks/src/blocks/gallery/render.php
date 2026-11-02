@@ -408,7 +408,9 @@ $wrapper_classes = implode( ' ', array_filter( [
 	'sgs-gallery--' . $layout,
 	$enable_lightbox ? 'sgs-gallery--lightbox-enabled' : '',
 	sgs_gallery_tile_mode( $attributes ) ? 'sgs-gallery--tile' : '',
-	$hover_shadow    ? 'sgs-has-hover'                 : '',
+	// A real aspect ratio (not empty or auto): style.css fills each tile with its picture.
+	'' !== $sgs_css_ratio( $aspect_ratio ) ? 'sgs-gallery--fixed-aspect' : '',
+	$hover_shadow   ? 'sgs-has-hover'                 : '',
 	$hover_grayscale ? 'sgs-has-grayscale'             : '',
 	( $show_captions && $caption_reveal ) ? 'sgs-gallery--caption-reveal' : '',
 	$uid,

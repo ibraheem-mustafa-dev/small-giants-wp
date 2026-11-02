@@ -251,6 +251,18 @@
 	transition: transform var( --sgs-transition-duration ) var( --sgs-transition-easing );
 }
 
+/* A gallery with a real aspect ratio (`sgs-gallery--fixed-aspect`, grid and carousel): the link or button, the wrap
+ * and the image fill the tile, so object-fit crops a wide or tall picture to the tile instead of leaving it at its
+ * own shape. The width is restated because the media atom (`.sgs-media-el`) sets `width: auto`, which a fixed height
+ * would turn into the picture's own proportion. An auto aspect ratio keeps natural heights; masonry keeps natural
+ * heights; tile mode lays its image out below. */
+.sgs-gallery--fixed-aspect:not( .sgs-gallery--masonry ):not( .sgs-gallery--tile ) .sgs-gallery__item > :is( .sgs-gallery__item-link, .sgs-gallery__item-btn ),
+.sgs-gallery--fixed-aspect:not( .sgs-gallery--masonry ):not( .sgs-gallery--tile ) .sgs-gallery__img-wrap,
+.sgs-gallery--fixed-aspect:not( .sgs-gallery--masonry ):not( .sgs-gallery--tile ) .sgs-gallery__img {
+	width:  100%;
+	height: 100%;
+}
+
 /* Grayscale hover (#130) */
 .sgs-gallery.sgs-has-grayscale .sgs-gallery__img {
 	filter: grayscale(100%);

@@ -1,0 +1,1414 @@
+[
+ {
+  "name": "sgs/site-footer",
+  "attributes": {
+   "textColourHover": "primary-text",
+   "maxWidth": {
+    "desktop": "none"
+   },
+   "flexDirection": "column",
+   "minHeight": {
+    "desktop": "0px"
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/site-footer-row",
+    "attributes": {
+     "rowSlot": "top",
+     "layout": "flex",
+     "flexDirection": "column",
+     "alignItems": "stretch",
+     "contentWidth": {
+      "desktop": "full"
+     },
+     "gap": {
+      "desktop": "0px"
+     },
+     "padding": {
+      "desktop": {
+       "top": "0px",
+       "right": "0px",
+       "bottom": "0px",
+       "left": "0px"
+      }
+     },
+     "borderStyle": "none"
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/container",
+      "attributes": {
+       "layout": "stack",
+       "tagName": "section",
+       "ariaLabel": "Instagram",
+       "backgroundColour": "mm-cream",
+       "backgroundColourHover": "mm-cream",
+       "contentWidth": {
+        "desktop": "1320px"
+       },
+       "padding": {
+        "desktop": {
+         "top": "88px",
+         "right": "40px",
+         "bottom": "88px",
+         "left": "40px"
+        },
+        "tablet": {
+         "top": "64px",
+         "right": "32px",
+         "bottom": "64px",
+         "left": "32px"
+        },
+        "mobile": {
+         "top": "48px",
+         "right": "20px",
+         "bottom": "48px",
+         "left": "20px"
+        }
+       },
+       "gap": {
+        "desktop": "0px"
+       },
+       "minHeight": {
+        "desktop": "0px"
+       },
+       "textColourHover": "primary-text"
+      },
+      "innerBlocks": [
+       {
+        "name": "sgs/container",
+        "attributes": {
+         "layout": "flex",
+         "tagName": "div",
+         "contentWidth": {
+          "desktop": "full"
+         },
+         "flexWrap": "wrap",
+         "alignItems": "flex-end",
+         "justifyContent": "space-between",
+         "gap": {
+          "desktop": "12px 24px"
+         },
+         "margin": {
+          "desktop": {
+           "bottom": "24px"
+          }
+         },
+         "padding": {
+          "desktop": {
+           "top": "0px",
+           "right": "0px",
+           "bottom": "0px",
+           "left": "0px"
+          }
+         },
+         "minHeight": {
+          "desktop": "0px"
+         },
+         "textColourHover": "primary-text"
+        },
+        "innerBlocks": [
+         {
+          "name": "sgs/container",
+          "attributes": {
+           "layout": "stack",
+           "tagName": "div",
+           "contentWidth": {
+            "desktop": "full"
+           },
+           "padding": {
+            "desktop": {
+             "top": "0px",
+             "right": "0px",
+             "bottom": "0px",
+             "left": "0px"
+            }
+           },
+           "gap": {
+            "desktop": "0px"
+           },
+           "minHeight": {
+            "desktop": "0px"
+           },
+           "textColourHover": "primary-text"
+          },
+          "innerBlocks": [
+           {
+            "name": "sgs/text",
+            "attributes": {
+             "text": "fresh out the oven…",
+             "textColour": "mm-pink-dark",
+             "textColourHover": "mm-pink-dark",
+             "fontFamily": "caveat",
+             "fontSize": {
+              "desktop": 26
+             },
+             "lineHeight": {
+              "desktop": 1.269
+             },
+             "margin": {
+              "desktop": {
+               "top": "0px",
+               "right": "0px",
+               "bottom": "0px",
+               "left": "0px"
+              }
+             },
+             "sgsCustomCss": "& { transform: rotate(-2deg); transform-origin: left; }",
+             "sgsCustomCssNote": "Draft eyebrow is rotated -2deg about its left edge; Text has no rotation setting."
+            }
+           },
+           {
+            "name": "sgs/heading",
+            "attributes": {
+             "margin": {
+              "desktop": {
+               "bottom": "0px"
+              }
+             },
+             "content": "@mamasmunches",
+             "fontSize": {
+              "mobile": 34,
+              "tablet": 42,
+              "desktop": 52
+             },
+             "textColourHover": "primary-text",
+             "textWrap": "wrap",
+             "lineHeight": {
+              "desktop": 1.05
+             },
+             "lineHeightUnit": ""
+            }
+           }
+          ]
+         },
+         {
+          "name": "sgs/button",
+          "attributes": {
+           "sgsFocusRests": true,
+           "padding": {
+            "desktop": {
+             "right": "22px",
+             "left": "22px"
+            }
+           },
+           "label": "Follow along",
+           "url": "https://www.instagram.com/mamasmunches/",
+           "minHeight": {
+            "desktop": "52px"
+           },
+           "fontSize": {
+            "desktop": 16
+           },
+           "colourTextHover": "primary-text",
+           "colourBackground": "surface-alt",
+           "colourBackgroundHover": "primary",
+           "borderColourHover": "primary-text",
+           "boxShadow": "rgb(58, 42, 34) 4px 4px 0px 0px",
+           "boxShadowHover": "rgb(58, 42, 34) 6px 6px 0px 0px",
+           "iconGap": {
+            "desktop": "10px"
+           },
+           "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2px\"></rect><circle cx=\"12\" cy=\"12\" r=\"4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2px\"></circle><circle cx=\"17.5\" cy=\"6.5\" r=\"1.2\" fill=\"currentColor\" stroke=\"none\" stroke-width=\"2px\"></circle></svg>",
+           "iconPosition": "before",
+           "iconColourHover": "primary-text",
+           "sgsMotion": {
+            "v": 1,
+            "elements": {
+             "root": {
+              "hover": {
+               "state": {
+                "values": {
+                 "translateX": "-token:distance.xs",
+                 "translateY": "-token:distance.xs",
+                 "duration": "token:duration.fast",
+                 "easing": "token:easing.ease"
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        ]
+       },
+       {
+        "name": "sgs/gallery",
+        "attributes": {
+         "layout": "grid",
+         "mediaItems": [
+          {
+           "id": 96,
+           "url": "http://localhost:8084/wp-content/uploads/2026/10/photo-hero-mug-1.jpg",
+           "alt": "A mug beside a Mama's Munches cookie",
+           "linkUrl": "https://www.instagram.com/mamasmunches/",
+           "linkLabel": "View on Instagram",
+           "_key": "mm-ig-1"
+          },
+          {
+           "id": 95,
+           "url": "http://localhost:8084/wp-content/uploads/2026/10/photo-gift-heart-1.jpg",
+           "alt": "A heart-shaped gift of Mama's Munches cookies",
+           "linkUrl": "https://www.instagram.com/mamasmunches/",
+           "linkLabel": "View on Instagram",
+           "_key": "mm-ig-2"
+          },
+          {
+           "id": 97,
+           "url": "http://localhost:8084/wp-content/uploads/2026/10/photo-pair-love-1.jpg",
+           "alt": "Two Mama's Munches cookies side by side",
+           "linkUrl": "https://www.instagram.com/mamasmunches/",
+           "linkLabel": "View on Instagram",
+           "_key": "mm-ig-3"
+          },
+          {
+           "id": 93,
+           "url": "http://localhost:8084/wp-content/uploads/2026/10/photo-bags-pink.jpg",
+           "alt": "Pink Mama's Munches cookie bags",
+           "linkUrl": "https://www.instagram.com/mamasmunches/",
+           "linkLabel": "View on Instagram",
+           "_key": "mm-ig-4"
+          },
+          {
+           "id": 98,
+           "url": "http://localhost:8084/wp-content/uploads/2026/10/photo-tray-love.jpg",
+           "alt": "A tray of freshly baked Mama's Munches cookies",
+           "linkUrl": "https://www.instagram.com/mamasmunches/",
+           "linkLabel": "View on Instagram",
+           "_key": "mm-ig-5"
+          },
+          {
+           "id": 94,
+           "url": "http://localhost:8084/wp-content/uploads/2026/10/photo-bun-case-1.jpg",
+           "alt": "Cookies in a bun case",
+           "linkUrl": "https://www.instagram.com/mamasmunches/",
+           "linkLabel": "View on Instagram",
+           "_key": "mm-ig-6"
+          }
+         ],
+         "enableLightbox": false,
+         "aspectRatio": "1 / 1",
+         "columns": {
+          "desktop": 6,
+          "tablet": 3,
+          "mobile": 1
+         },
+         "gap": {
+          "desktop": "14px"
+         },
+         "tileBorderStyle": "solid",
+         "tileBorderWidth": {
+          "top": "2px",
+          "right": "2px",
+          "bottom": "2px",
+          "left": "2px"
+         },
+         "tileBorderColour": "mm-cocoa",
+         "tileBorderRadius": {
+          "desktop": {
+           "topLeft": "18px",
+           "topRight": "18px",
+           "bottomRight": "18px",
+           "bottomLeft": "18px"
+          }
+         },
+         "tileColour": "mm-pink-soft",
+         "sgsCustomCss": "& .sgs-gallery__item { transition: transform .25s ease; } & .sgs-gallery__item:nth-child(1) { transform: rotate(-2deg); } & .sgs-gallery__item:nth-child(2) { transform: rotate(1.5deg); } & .sgs-gallery__item:nth-child(3) { transform: rotate(-1deg); } & .sgs-gallery__item:nth-child(4) { transform: rotate(2deg); } & .sgs-gallery__item:nth-child(5) { transform: rotate(-1.5deg); } & .sgs-gallery__item:nth-child(6) { transform: rotate(1deg); } & .sgs-gallery__item:hover, & .sgs-gallery__item:focus-within { transform: none; } @media (max-width: 767px) { & { margin-left: -20px; margin-right: -20px; padding: 8px 20px 12px; } & .sgs-gallery__grid { grid-auto-flow: column; grid-template-columns: none; grid-auto-columns: 147px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; } & .sgs-gallery__item { scroll-snap-align: start; } } @media (prefers-reduced-motion: reduce) { & .sgs-gallery__item { transition: none; } }",
+         "sgsCustomCssNote": "Tile rotations (-2, 1.5, -1, 2, -1.5, 1deg) that straighten on hover or focus, and the mobile sideways scroller of 147px tiles with its -20px side margins and 8px 20px 12px padding (a mobile-tier padding or margin on the Gallery is read through the Gallery container query, so it also fires at 768 inside a 704px band): the Gallery has no rotation or per-tier scroller setting."
+        }
+       }
+      ]
+     },
+     {
+      "name": "sgs/trust-bar",
+      "attributes": {
+       "items": [
+        {
+         "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M12 1.5C12.7 7.2 16.8 11.3 22.5 12C16.8 12.7 12.7 16.8 12 22.5C11.3 16.8 7.2 12.7 1.5 12C7.2 11.3 11.3 7.2 12 1.5Z\" fill=\"currentColor\"></path></svg>",
+         "label": "boost your milk, bite by bite",
+         "_key": "mm-tag-1"
+        },
+        {
+         "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M12 1.5C12.7 7.2 16.8 11.3 22.5 12C16.8 12.7 12.7 16.8 12 22.5C11.3 16.8 7.2 12.7 1.5 12C7.2 11.3 11.3 7.2 12 1.5Z\" fill=\"currentColor\"></path></svg>",
+         "label": "baked when you order",
+         "_key": "mm-tag-2"
+        },
+        {
+         "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M12 1.5C12.7 7.2 16.8 11.3 22.5 12C16.8 12.7 12.7 16.8 12 22.5C11.3 16.8 7.2 12.7 1.5 12C7.2 11.3 11.3 7.2 12 1.5Z\" fill=\"currentColor\"></path></svg>",
+         "label": "handmade in Birmingham",
+         "_key": "mm-tag-3"
+        },
+        {
+         "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M12 1.5C12.7 7.2 16.8 11.3 22.5 12C16.8 12.7 12.7 16.8 12 22.5C11.3 16.8 7.2 12.7 1.5 12C7.2 11.3 11.3 7.2 12 1.5Z\" fill=\"currentColor\"></path></svg>",
+         "label": "one-handed snacking",
+         "_key": "mm-tag-4"
+        }
+       ],
+       "title": "",
+       "badgeStyle": "icon-bare",
+       "iconColour": "mm-sparkle",
+       "iconColourHover": "mm-sparkle",
+       "iconBareSize": 22,
+       "labelFontFamily": "heading",
+       "labelLineHeight": {
+        "desktop": 1.47
+       },
+       "labelLineHeightUnit": "em",
+       "labelFontSize": {
+        "desktop": 32,
+        "tablet": 32,
+        "mobile": 24
+       },
+       "labelColour": "mm-cocoa",
+       "labelColourHover": "mm-cocoa",
+       "textColour": "mm-cocoa",
+       "textColourHover": "mm-cocoa",
+       "shadowLiftOnHover": false,
+       "layout": "flex",
+       "flexWrap": "nowrap",
+       "alignItems": "center",
+       "gap": {
+        "desktop": "28px"
+       },
+       "itemGap": {
+        "desktop": "12px"
+       },
+       "padding": {
+        "desktop": {
+         "top": "14px",
+         "right": "0px",
+         "bottom": "14px",
+         "left": "0px"
+        }
+       },
+       "minHeight": {
+        "desktop": "0px"
+       },
+       "backgroundColour": "mm-yellow",
+       "backgroundColourHover": "mm-yellow",
+       "borderStyle": "solid",
+       "borderColour": "mm-cocoa",
+       "borderWidth": {
+        "top": "2px",
+        "right": "0px",
+        "bottom": "2px",
+        "left": "0px"
+       },
+       "contentWidth": {
+        "desktop": "full"
+       },
+       "sgsMotion": {
+        "v": 1,
+        "elements": {
+         "root": {
+          "effects": [
+           {
+            "id": "mmtag",
+            "effect": "marquee",
+            "values": {
+             "speed": 56.2,
+             "hoverRate": 0,
+             "touchPause": "tap",
+             "belowBreakpoint": "always"
+            },
+            "devices": {
+             "mobile": {
+              "speed": 44.1
+             }
+            }
+           }
+          ]
+         }
+        }
+       }
+      }
+     },
+     {
+      "name": "sgs/container",
+      "attributes": {
+       "layout": "stack",
+       "tagName": "section",
+       "backgroundColour": "mm-pink-band",
+       "backgroundColourHover": "mm-pink-band",
+       "contentWidth": {
+        "desktop": "1320px"
+       },
+       "padding": {
+        "desktop": {
+         "top": "80px",
+         "right": "40px",
+         "bottom": "0px",
+         "left": "40px"
+        },
+        "tablet": {
+         "top": "64px",
+         "right": "32px",
+         "bottom": "0px",
+         "left": "32px"
+        },
+        "mobile": {
+         "top": "48px",
+         "right": "20px",
+         "bottom": "0px",
+         "left": "20px"
+        }
+       },
+       "gap": {
+        "desktop": "0px"
+       },
+       "minHeight": {
+        "desktop": "0px"
+       },
+       "textColourHover": "primary-text"
+      },
+      "innerBlocks": [
+       {
+        "name": "sgs/container",
+        "attributes": {
+         "layout": "grid",
+         "tagName": "div",
+         "contentWidth": {
+          "desktop": "full"
+         },
+         "alignItems": "center",
+         "gridTemplateColumns": {
+          "desktop": "1fr 190px",
+          "tablet": "1fr 150px",
+          "mobile": "minmax(0, 1fr)"
+         },
+         "gap": {
+          "desktop": "28px"
+         },
+         "padding": {
+          "desktop": {
+           "top": "0px",
+           "right": "0px",
+           "bottom": "56px",
+           "left": "0px"
+          },
+          "tablet": {
+           "top": "0px",
+           "right": "0px",
+           "bottom": "44px",
+           "left": "0px"
+          },
+          "mobile": {
+           "top": "0px",
+           "right": "0px",
+           "bottom": "36px",
+           "left": "0px"
+          }
+         },
+         "borderStyle": "dashed",
+         "borderColour": "mm-rule-soft",
+         "borderColourHover": "mm-rule-soft",
+         "borderWidth": {
+          "top": "0px",
+          "right": "0px",
+          "bottom": "2px",
+          "left": "0px"
+         },
+         "minHeight": {
+          "desktop": "0px"
+         },
+         "textColourHover": "primary-text"
+        },
+        "innerBlocks": [
+         {
+          "name": "sgs/container",
+          "attributes": {
+           "layout": "stack",
+           "tagName": "div",
+           "contentWidth": {
+            "desktop": "full"
+           },
+           "gap": {
+            "desktop": "18px"
+           },
+           "padding": {
+            "desktop": {
+             "top": "0px",
+             "right": "0px",
+             "bottom": "0px",
+             "left": "0px"
+            }
+           },
+           "minHeight": {
+            "desktop": "0px"
+           },
+           "sgsCustomCss": "@media (max-width: 767px) { & { text-align: center; } } @media (min-width: 768px) { & { text-align: left; } } @media (max-width: 767px) { & .sgs-container__inner { align-items: center; } } @media (min-width: 768px) { & .sgs-container__inner { align-items: flex-start; } }",
+           "sgsCustomCssNote": "Width ladder text-align: 0-767px center, 768px and up left; Width ladder align-items: 0-767px center, 768px and up flex-start",
+           "textColourHover": "primary-text"
+          },
+          "innerBlocks": [
+           {
+            "name": "sgs/heading",
+            "attributes": {
+             "sgsCustomCss": "@media (max-width: 767px) { & { text-align: center; } } @media (min-width: 768px) { & { text-align: left; } }",
+             "sgsCustomCssId": "wgate12",
+             "sgsCustomCssNote": "Width ladder text-align: 0-767px center, 768px and up left",
+             "margin": {
+              "desktop": {
+               "bottom": "0px"
+              }
+             },
+             "content": "Hungry? Of course you are.",
+             "fontSize": {
+              "mobile": 40,
+              "tablet": 56,
+              "desktop": 80
+             },
+             "lineHeight": {
+              "mobile": 1,
+              "tablet": 1,
+              "desktop": 1
+             },
+             "lineHeightUnit": "",
+             "letterSpacing": {
+              "desktop": "clamp(-1.6px, -0.052vw - 0.606px, -0.8px)"
+             },
+             "textColourHover": "primary-text"
+            }
+           },
+           {
+            "name": "sgs/button",
+            "attributes": {
+             "sgsCustomCss": "@media (max-width: 767px) { & { text-align: center; } } @media (min-width: 768px) { & { text-align: left; } }",
+             "sgsCustomCssId": "wgate13",
+             "sgsCustomCssNote": "Width ladder text-align: 0-767px center, 768px and up left",
+             "sgsFocusRests": true,
+             "label": "Build your box →",
+             "minHeight": {
+              "desktop": "60px"
+             },
+             "colourTextHover": "primary-text",
+             "colourBackground": "accent",
+             "colourBackgroundHover": "primary",
+             "borderColourHover": "primary-text",
+             "boxShadow": "rgb(58, 42, 34) 4px 4px 0px 0px",
+             "boxShadowHover": "rgb(58, 42, 34) 6px 6px 0px 0px",
+             "iconGap": {
+              "desktop": "10px"
+             },
+             "sgsMotion": {
+              "v": 1,
+              "elements": {
+               "root": {
+                "hover": {
+                 "state": {
+                  "values": {
+                   "translateX": "-token:distance.xs",
+                   "translateY": "-token:distance.xs",
+                   "duration": "token:duration.fast",
+                   "easing": "token:easing.ease"
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          ]
+         },
+         {
+          "name": "sgs/responsive-logo",
+          "attributes": {
+           "logoId": 92,
+           "logoUrl": "http://localhost:8084/wp-content/uploads/2026/10/logo-round.png",
+           "maxWidth": {
+            "desktop": "190px",
+            "tablet": "150px",
+            "mobile": "140px"
+           },
+           "alt": "Mama's Munches",
+           "sgsMotion": {
+            "v": 1,
+            "elements": {
+             "root": {
+              "hover": {
+               "state": {
+                "values": {
+                 "rotate": 6,
+                 "scale": 1.05,
+                 "restRotate": -8,
+                 "duration": 600,
+                 "easing": "token:easing.spring"
+                }
+               }
+              }
+             }
+            }
+           },
+           "margin": {
+            "desktop": {
+             "left": "auto",
+             "right": "0px"
+            },
+            "mobile": {
+             "left": "auto",
+             "right": "auto"
+            }
+           }
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "sgs/site-footer-row",
+    "attributes": {
+     "rowSlot": "columns",
+     "layout": "grid",
+     "backgroundColour": "mm-pink-band",
+     "backgroundColourHover": "mm-pink-band",
+     "contentWidth": {
+      "desktop": "1320px"
+     },
+     "gridTemplateColumns": {
+      "desktop": "minmax(0,1fr) minmax(0,1fr) minmax(0,1.3fr)",
+      "tablet": "minmax(0,1fr) minmax(0,1fr) minmax(0,1.3fr)",
+      "mobile": "minmax(0,1fr) minmax(0,1fr)"
+     },
+     "gap": {
+      "desktop": "48px",
+      "tablet": "32px",
+      "mobile": "32px 20px"
+     },
+     "padding": {
+      "desktop": {
+       "top": "56px",
+       "right": "40px",
+       "bottom": "40px",
+       "left": "40px"
+      },
+      "tablet": {
+       "top": "44px",
+       "right": "32px",
+       "bottom": "32px",
+       "left": "32px"
+      },
+      "mobile": {
+       "top": "36px",
+       "right": "20px",
+       "bottom": "28px",
+       "left": "20px"
+      }
+     },
+     "alignItems": "start",
+     "borderStyle": "none"
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/container",
+      "attributes": {
+       "layout": "stack",
+       "tagName": "nav",
+       "ariaLabel": "Shop",
+       "contentWidth": {
+        "desktop": "full"
+       },
+       "gap": {
+        "desktop": "2px"
+       },
+       "padding": {
+        "desktop": {
+         "top": "0px",
+         "right": "0px",
+         "bottom": "0px",
+         "left": "0px"
+        }
+       },
+       "minHeight": {
+        "desktop": "0px"
+       },
+       "textColourHover": "primary-text"
+      },
+      "innerBlocks": [
+       {
+        "name": "sgs/text",
+        "attributes": {
+         "text": "shop",
+         "fontFamily": "caveat",
+         "fontSize": {
+          "desktop": 24
+         },
+         "lineHeight": {
+          "desktop": 1.25
+         },
+         "textColour": "mm-script",
+         "textColourHover": "mm-script",
+         "margin": {
+          "desktop": {
+           "top": "0px",
+           "bottom": "4px"
+          }
+         }
+        }
+       },
+       {
+        "name": "sgs/icon-list",
+        "attributes": {
+         "items": [
+          {
+           "text": "All Zookies",
+           "url": "/shop/"
+          },
+          {
+           "text": "Build your box",
+           "url": "/#build"
+          },
+          {
+           "text": "Subscribe & save",
+           "url": "/product/zookies/"
+          },
+          {
+           "text": "Gifts",
+           "url": "/gifts/"
+          },
+          {
+           "text": "Taster Trio",
+           "url": "/product/taster-trio/"
+          }
+         ],
+         "sgsMotion": {
+          "v": 1,
+          "elements": {
+           "root": {
+            "hover": {
+             "state": {
+              "values": {
+               "translateX": 4,
+               "duration": "token:duration.fast",
+               "easing": "token:easing.ease"
+              }
+             }
+            }
+           }
+          }
+         },
+         "markerType": "none",
+         "linkUnderline": "none",
+         "itemFontSize": {
+          "desktop": 17
+         },
+         "itemFontWeight": "600",
+         "itemPaddingBlock": "6px",
+         "itemLineHeight": 1.2,
+         "itemLineHeightUnit": "",
+         "textElLineHeight": {
+          "desktop": 1.2
+         },
+         "textElLineHeightUnit": "",
+         "gap": "2",
+         "textColour": "mm-cocoa",
+         "textColourHover": "mm-cocoa"
+        }
+       }
+      ]
+     },
+     {
+      "name": "sgs/container",
+      "attributes": {
+       "layout": "stack",
+       "tagName": "nav",
+       "ariaLabel": "Help",
+       "contentWidth": {
+        "desktop": "full"
+       },
+       "gap": {
+        "desktop": "2px"
+       },
+       "padding": {
+        "desktop": {
+         "top": "0px",
+         "right": "0px",
+         "bottom": "0px",
+         "left": "0px"
+        }
+       },
+       "minHeight": {
+        "desktop": "0px"
+       },
+       "textColourHover": "primary-text"
+      },
+      "innerBlocks": [
+       {
+        "name": "sgs/text",
+        "attributes": {
+         "text": "help",
+         "fontFamily": "caveat",
+         "fontSize": {
+          "desktop": 24
+         },
+         "lineHeight": {
+          "desktop": 1.25
+         },
+         "textColour": "mm-script",
+         "textColourHover": "mm-script",
+         "margin": {
+          "desktop": {
+           "top": "0px",
+           "bottom": "4px"
+          }
+         }
+        }
+       },
+       {
+        "name": "sgs/icon-list",
+        "attributes": {
+         "items": [
+          {
+           "text": "FAQs",
+           "url": "/help/"
+          },
+          {
+           "text": "Delivery",
+           "url": "/help/#delivery"
+          },
+          {
+           "text": "Allergens",
+           "url": "/help/#allergens"
+          },
+          {
+           "text": "Contact",
+           "url": "/contact/"
+          }
+         ],
+         "sgsMotion": {
+          "v": 1,
+          "elements": {
+           "root": {
+            "hover": {
+             "state": {
+              "values": {
+               "translateX": 4,
+               "duration": "token:duration.fast",
+               "easing": "token:easing.ease"
+              }
+             }
+            }
+           }
+          }
+         },
+         "markerType": "none",
+         "linkUnderline": "none",
+         "itemFontSize": {
+          "desktop": 17
+         },
+         "itemFontWeight": "600",
+         "itemPaddingBlock": "6px",
+         "itemLineHeight": 1.2,
+         "itemLineHeightUnit": "",
+         "textElLineHeight": {
+          "desktop": 1.2
+         },
+         "textElLineHeightUnit": "",
+         "gap": "2",
+         "textColour": "mm-cocoa",
+         "textColourHover": "mm-cocoa"
+        }
+       }
+      ]
+     },
+     {
+      "name": "sgs/container",
+      "attributes": {
+       "layout": "stack",
+       "tagName": "div",
+       "contentWidth": {
+        "desktop": "full"
+       },
+       "gap": {
+        "desktop": "12px"
+       },
+       "padding": {
+        "desktop": {
+         "top": "0px",
+         "right": "0px",
+         "bottom": "0px",
+         "left": "0px"
+        }
+       },
+       "minHeight": {
+        "desktop": "0px"
+       },
+       "sgsCustomCss": "@media (max-width: 767px) { & { grid-column: 1 / -1; } }",
+       "sgsCustomCssNote": "Draft: the say hello group spans both mobile columns; the Container has no grid-column setting.",
+       "textColourHover": "primary-text"
+      },
+      "innerBlocks": [
+       {
+        "name": "sgs/text",
+        "attributes": {
+         "text": "say hello",
+         "fontFamily": "caveat",
+         "fontSize": {
+          "desktop": 24
+         },
+         "lineHeight": {
+          "desktop": 1.25
+         },
+         "textColour": "mm-script",
+         "textColourHover": "mm-script",
+         "margin": {
+          "desktop": {
+           "top": "0px",
+           "bottom": "4px"
+          }
+         }
+        }
+       },
+       {
+        "name": "sgs/button",
+        "attributes": {
+         "sgsFocusRests": true,
+         "padding": {
+          "desktop": {
+           "top": "2px",
+           "right": "6px",
+           "bottom": "2px",
+           "left": "6px"
+          }
+         },
+         "margin": {
+          "desktop": {
+           "left": "-6px"
+          }
+         },
+         "label": "Zainab@mamasmunches.com",
+         "url": "mailto:Zainab@mamasmunches.com",
+         "linkSource": "email",
+         "labelFromSiteInfo": true,
+         "minHeight": {
+          "desktop": "auto"
+         },
+         "textDecoration": "underline",
+         "colourTextHover": "primary-text",
+         "colourBackground": "#00000000",
+         "colourBackgroundHover": "surface-alt",
+         "colourBackgroundHoverGradient": "none",
+         "borderStyle": "none",
+         "borderWidth": {
+          "right": "0px",
+          "bottom": "0px",
+          "left": "0px",
+          "top": "0px"
+         },
+         "borderRadius": {
+          "desktop": {
+           "topLeft": "8px",
+           "topRight": "8px",
+           "bottomRight": "8px",
+           "bottomLeft": "8px"
+          }
+         }
+        }
+       },
+       {
+        "name": "sgs/social-icons",
+        "attributes": {
+         "childIconSize": {
+          "desktop": "20px"
+         },
+         "childIconShowBackground": true,
+         "childIconBorderColour": "primary-text",
+         "childIconBorderWidth": {
+          "right": "2px",
+          "bottom": "2px",
+          "left": "2px",
+          "top": "2px"
+         },
+         "childIconBorderStyle": "solid",
+         "childIconBoxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px",
+         "gap": {
+          "desktop": "10px"
+         },
+         "flexWrap": "nowrap"
+        },
+        "innerBlocks": [
+         {
+          "name": "sgs/icon",
+          "attributes": {
+           "iconSource": "brand",
+           "brandName": "instagram",
+           "shapeSize": {
+            "desktop": {
+             "width": "48px"
+            }
+           },
+           "iconColour": "mm-white",
+           "iconColourHover": "mm-white",
+           "backgroundColourGradient": "radial-gradient(circle at 30% 107%, rgb(253, 244, 151) 0%, rgb(253, 89, 73) 45%, rgb(214, 36, 159) 60%, rgb(40, 90, 235) 90%)",
+           "borderRadius": {
+            "topLeft": "999px",
+            "topRight": "999px",
+            "bottomRight": "999px",
+            "bottomLeft": "999px"
+           },
+           "linkUrl": "https://www.instagram.com/mamasmunches/",
+           "ariaLabel": "Instagram",
+           "boxShadowHover": "rgb(58, 42, 34) 5px 5px 0px 0px",
+           "metadata": {
+            "bindings": {
+             "linkUrl": {
+              "source": "sgs/site-info",
+              "args": {
+               "key": "socials.instagram"
+              }
+             }
+            }
+           },
+           "sgsMotion": {
+            "v": 1,
+            "elements": {
+             "root": {
+              "hover": {
+               "state": {
+                "values": {
+                 "translateX": "-token:distance.xs",
+                 "translateY": "-token:distance.xs",
+                 "rotate": -8,
+                 "duration": "token:duration.fast",
+                 "easing": "token:easing.ease"
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         },
+         {
+          "name": "sgs/icon",
+          "attributes": {
+           "iconSource": "brand",
+           "brandName": "whatsapp",
+           "shapeSize": {
+            "desktop": {
+             "width": "48px"
+            }
+           },
+           "iconColour": "mm-white",
+           "iconColourHover": "mm-white",
+           "backgroundColour": "#25D366",
+           "backgroundColourHover": "#25D366",
+           "borderRadius": {
+            "topLeft": "999px",
+            "topRight": "999px",
+            "bottomRight": "999px",
+            "bottomLeft": "999px"
+           },
+           "ariaLabel": "WhatsApp",
+           "boxShadowHover": "rgb(58, 42, 34) 5px 5px 0px 0px",
+           "sgsMotion": {
+            "v": 1,
+            "elements": {
+             "root": {
+              "hover": {
+               "state": {
+                "values": {
+                 "translateX": "-token:distance.xs",
+                 "translateY": "-token:distance.xs",
+                 "rotate": -8,
+                 "duration": "token:duration.fast",
+                 "easing": "token:easing.ease"
+                }
+               }
+              }
+             }
+            }
+           },
+           "linkUrl": "/contact/"
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "sgs/site-footer-row",
+    "attributes": {
+     "rowSlot": "bottom",
+     "layout": "flex",
+     "backgroundColour": "mm-pink-band",
+     "backgroundColourHover": "mm-pink-band",
+     "contentWidth": {
+      "desktop": "1320px"
+     },
+     "padding": {
+      "desktop": {
+       "top": "0px",
+       "right": "40px",
+       "bottom": "32px",
+       "left": "40px"
+      },
+      "tablet": {
+       "top": "0px",
+       "right": "32px",
+       "bottom": "28px",
+       "left": "32px"
+      },
+      "mobile": {
+       "top": "0px",
+       "right": "20px",
+       "bottom": "24px",
+       "left": "20px"
+      }
+     },
+     "borderStyle": "none"
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/container",
+      "attributes": {
+       "layout": "grid",
+       "tagName": "div",
+       "contentWidth": {
+        "desktop": "full"
+       },
+       "alignItems": "center",
+       "textAlign": "center",
+       "fontSize": {
+        "desktop": 14
+       },
+       "gridTemplateColumns": {
+        "desktop": "minmax(0,1fr) auto minmax(0,1fr)",
+        "tablet": "minmax(0, 1fr)",
+        "mobile": "minmax(0, 1fr)"
+       },
+       "gap": {
+        "desktop": "10px 24px"
+       },
+       "padding": {
+        "desktop": {
+         "top": "18px",
+         "right": "0px",
+         "bottom": "0px",
+         "left": "0px"
+        }
+       },
+       "margin": {
+        "desktop": {
+         "top": "8px"
+        }
+       },
+       "borderStyle": "dashed",
+       "borderColour": "mm-rule-soft",
+       "borderColourHover": "mm-rule-soft",
+       "borderWidth": {
+        "top": "2px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+       },
+       "minHeight": {
+        "desktop": "0px"
+       },
+       "textColourHover": "primary-text"
+      },
+      "innerBlocks": [
+       {
+        "name": "sgs/business-info",
+        "attributes": {
+         "padding": {
+          "desktop": {
+           "top": "0px",
+           "right": "0px",
+           "bottom": "0px",
+           "left": "0px"
+          }
+         },
+         "margin": {
+          "desktop": {
+           "top": "0px",
+           "right": "0px",
+           "bottom": "0px",
+           "left": "0px"
+          }
+         },
+         "lineHeight": {
+          "desktop": 1.214
+         },
+         "borderStyle": "none",
+         "borderWidth": {
+          "top": "0px",
+          "right": "0px",
+          "bottom": "0px",
+          "left": "0px"
+         },
+         "fontSize": {
+          "desktop": 14
+         },
+         "showIcon": false,
+         "textColour": "mm-cocoa",
+         "textColourHover": "mm-cocoa",
+         "displayType": "copyright",
+         "copyrightPrefix": "",
+         "textAlign": "center",
+         "sgsCustomCss": "@media (min-width: 1024px) { & { text-align: left; justify-self: start; } }",
+         "sgsCustomCssNote": "Draft: copyright is start-aligned at 1440, centred below 1024."
+        }
+       },
+       {
+        "name": "sgs/multi-button",
+        "attributes": {
+         "flexDirection": {
+          "desktop": "row",
+          "mobile": "row"
+         },
+         "gap": {
+          "mobile": "18px",
+          "desktop": "18px"
+         },
+         "justifyContent": {
+          "desktop": "center",
+          "tablet": "center",
+          "mobile": "center"
+         },
+         "alignItems": {
+          "desktop": "stretch",
+          "tablet": "stretch"
+         },
+         "layout": "flex"
+        },
+        "innerBlocks": [
+         {
+          "name": "sgs/button",
+          "attributes": {
+           "padding": {
+            "desktop": {
+             "right": "0px",
+             "left": "0px"
+            }
+           },
+           "label": "Privacy",
+           "url": "/help/#legal",
+           "fontWeight": "400",
+           "textDecoration": "underline",
+           "fontSize": {
+            "desktop": 14
+           },
+           "colourTextHover": "primary-text",
+           "colourBackground": "#00000000",
+           "colourBackgroundHover": "#00000000",
+           "borderStyle": "none",
+           "borderWidth": {
+            "right": "0px",
+            "bottom": "0px",
+            "left": "0px",
+            "top": "0px"
+           },
+           "borderRadius": {
+            "desktop": {
+             "topLeft": "0px",
+             "topRight": "0px",
+             "bottomRight": "0px",
+             "bottomLeft": "0px"
+            }
+           },
+           "colourText": "mm-cocoa",
+           "minHeight": {
+            "desktop": "0px"
+           }
+          }
+         },
+         {
+          "name": "sgs/button",
+          "attributes": {
+           "padding": {
+            "desktop": {
+             "right": "0px",
+             "left": "0px"
+            }
+           },
+           "label": "Terms",
+           "url": "/help/#legal",
+           "fontWeight": "400",
+           "textDecoration": "underline",
+           "fontSize": {
+            "desktop": 14
+           },
+           "colourTextHover": "primary-text",
+           "colourBackground": "#00000000",
+           "colourBackgroundHover": "#00000000",
+           "borderStyle": "none",
+           "borderWidth": {
+            "right": "0px",
+            "bottom": "0px",
+            "left": "0px",
+            "top": "0px"
+           },
+           "borderRadius": {
+            "desktop": {
+             "topLeft": "0px",
+             "topRight": "0px",
+             "bottomRight": "0px",
+             "bottomLeft": "0px"
+            }
+           },
+           "colourText": "mm-cocoa",
+           "minHeight": {
+            "desktop": "0px"
+           }
+          }
+         }
+        ]
+       },
+       {
+        "name": "sgs/business-info",
+        "attributes": {
+         "padding": {
+          "desktop": {
+           "top": "0px",
+           "right": "0px",
+           "bottom": "0px",
+           "left": "0px"
+          }
+         },
+         "margin": {
+          "desktop": {
+           "top": "0px",
+           "right": "0px",
+           "bottom": "0px",
+           "left": "0px"
+          }
+         },
+         "lineHeight": {
+          "desktop": 1.214
+         },
+         "borderStyle": "none",
+         "borderWidth": {
+          "top": "0px",
+          "right": "0px",
+          "bottom": "0px",
+          "left": "0px"
+         },
+         "fontSize": {
+          "desktop": 14
+         },
+         "showIcon": false,
+         "textColour": "mm-cocoa",
+         "textColourHover": "mm-cocoa",
+         "displayType": "attribution",
+         "fontWeight": "700",
+         "textWrap": "nowrap",
+         "textAlign": "center",
+         "sgsCustomCss": "@media (min-width: 1024px) { & { text-align: right; justify-self: end; } }",
+         "sgsCustomCssNote": "Draft: attribution is end-aligned at 1440, centred below 1024."
+        }
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ }
+]
