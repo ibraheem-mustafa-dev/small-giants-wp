@@ -79,6 +79,7 @@
 					"_note": "The gallery thumbnail strip: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
 				},
 				"picker-option": {
+					"motion": false,
 					"selector": ".sgs-buybox .sgs-option-picker__pill-label",
 					"label": "Option tile name",
 					"clusters": [ "text" ],

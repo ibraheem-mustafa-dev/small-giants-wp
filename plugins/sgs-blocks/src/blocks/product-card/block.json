@@ -480,6 +480,7 @@
 					}
 				},
 				"brandLogo": {
+					"motion": false,
 					"selector": ".sgs-product-card__brand-logo",
 					"label": "Brand logo",
 					"order": 14,

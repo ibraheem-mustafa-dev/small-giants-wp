@@ -268,7 +268,7 @@
 
 /* Padding default sits in :where() (zero specificity) so the panelPadding setting always wins. */
 :where( .sgs-tabs__panel ) {
-	padding: 24px;
+	padding: var( --wp--preset--spacing--40, 1.5rem );
 }
 
 .sgs-tabs__panel {
@@ -436,9 +436,10 @@
 		display: none;
 	}
 
+	/* (0,3,0): ties the instance's own panelPadding rule (.{uid}.wp-block-sgs-tabs .sgs-tabs__panel), which prints later and wins. */
 	.sgs-tabs--horizontal:not(.sgs-tabs--mobile-row) .sgs-tabs__panel {
 		margin-top: 0.75rem;
-		padding: 1rem;
+		padding: var( --wp--preset--spacing--30, 1rem );
 		border: 1px solid var( --sgs-panel-border, #e5e7eb );
 		border-radius: var( --wp--custom--border-radius--small, 4px );
 	}

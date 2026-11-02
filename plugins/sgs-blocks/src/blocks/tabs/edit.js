@@ -532,6 +532,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					<ResponsiveBoxControl
 						label={ __( 'Panel padding', 'sgs-blocks' ) }
 						presets
+						defaults={ spacingDefaultsFor( name, 'panelPadding', { attributes, tier: previewTier } ) }
 						values={ {
 							base: panelPadding?.desktop ?? {},
 							tablet: panelPadding?.tablet ?? {},

@@ -36,6 +36,19 @@
 		"sgs": {
 			"motion": true,
 			"spacingDefaults": {
+				"panelPadding": {
+					"top": "var(--wp--preset--spacing--40)",
+					"right": "var(--wp--preset--spacing--40)",
+					"bottom": "var(--wp--preset--spacing--40)",
+					"left": "var(--wp--preset--spacing--40)",
+					"when": [
+						{
+							"attrs": { "orientation": "horizontal", "mobileLayout": "stack" },
+							"classes": [ "sgs-tabs--horizontal", "!sgs-tabs--mobile-row" ],
+							"mobile": { "top": "var(--wp--preset--spacing--30)", "right": "var(--wp--preset--spacing--30)", "bottom": "var(--wp--preset--spacing--30)", "left": "var(--wp--preset--spacing--30)" }
+						}
+					]
+				},
 				"tabPadding": {
 					"top": "12px",
 					"right": "20px",
