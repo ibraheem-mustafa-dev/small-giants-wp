@@ -540,8 +540,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		color: colourVar( attributes.descriptionColour ) || undefined,
 		...elementPreview.description,
 	};
-	// A linked row in the flex marker modes carries its vertical padding on the link
-	// (render.php prints the same rules), so the whole padded row is the click target.
+	// A linked row in the flex marker modes carries its link over the row's own vertical padding (render.php prints the
+	// same rules), so the whole padded row is the click target. The list-item modes cover the row with a ::after on
+	// the link instead, which paints nothing and so has no canvas twin.
 	const linkFillsRow =
 		!! itemPaddingBlock && [ 'icon', 'emoji' ].includes( markerType || 'icon' );
 	const itemStyle = {

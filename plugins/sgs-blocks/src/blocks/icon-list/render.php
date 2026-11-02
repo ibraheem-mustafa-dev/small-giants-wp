@@ -416,13 +416,19 @@ if ( '' !== $icon_bg_colour ) {
 // option-picker's precedent for overriding a static default). ---
 if ( '' !== $item_padding_block ) {
 	$scoped_css[] = "{$item_row_sel}{padding-block:{$item_padding_block};}";
-	// A linked row in the flex marker modes (icon, emoji) makes the whole padded row the click target: the link grows
-	// over the row's own vertical padding (a negative margin cancels its padding, so the <li> keeps its box exactly,
-	// whatever the marker's height) and centres its text in the row's content height. The text span stretches to that
-	// height and hands it to the link. Unlinked rows and the list-item modes keep the plain padding above.
+	// A linked row makes the whole padded row the click target, with the <li>'s box, the marker and the text exactly where
+	// they were. In the flex marker modes (icon, emoji) the link grows over the row's own vertical padding (a negative
+	// margin cancels its padding) and centres its text; the text span stretches to the row's content height and hands it
+	// to the link. In the list-item modes (bullet, numbered, none) the text is inline in the row's own line box, so any
+	// change of display would change the row's height; the link instead carries an empty ::after that covers the row
+	// (the <li> is its containing block), the stretched-link pattern: the click and hover area is the row, the layout is
+	// untouched. Unlinked rows keep the plain padding above.
 	if ( in_array( $marker_type, array( 'icon', 'emoji' ), true ) ) {
 		$scoped_css[] = "{$item_row_sel}.sgs-icon-list__item--linked .sgs-icon-list__text{align-self:stretch;display:flex;flex-direction:column;}";
 		$scoped_css[] = "{$item_row_sel}.sgs-icon-list__item--linked .sgs-icon-list__item-link{flex:1 1 auto;display:grid;align-content:center;margin-block:calc(-1 * {$item_padding_block});padding-block:{$item_padding_block};}";
+	} else {
+		$scoped_css[] = "{$item_row_sel}.sgs-icon-list__item--linked{position:relative;}";
+		$scoped_css[] = "{$item_row_sel}.sgs-icon-list__item--linked .sgs-icon-list__item-link::after{content:\"\";position:absolute;inset:0;}";
 	}
 }
 // Text colour (flat-or-gradient, resting + hover) — scoped to the item text

@@ -41,12 +41,14 @@ final class IconListLinkFillsRowTest extends TestCase {
 		$this->assertStringNotContainsString( 'align-content:center', $out['css'] );
 	}
 
-	public function test_list_item_marker_modes_keep_the_padding_on_the_row(): void {
+	public function test_list_item_marker_modes_cover_the_row_without_changing_its_layout(): void {
 		foreach ( array( 'bullet', 'numbered', 'none' ) as $mode ) {
 			$out = $this->list( array( 'itemPaddingBlock' => '12px', 'markerType' => $mode ) );
-			$this->assertStringContainsString( '.sgs-icon-list__item{padding-block:12px;}', $out['css'], $mode );
-			$this->assertStringNotContainsString( 'align-self:stretch', $out['css'], $mode );
-			$this->assertStringNotContainsString( 'align-content:center', $out['css'], $mode );
+			$this->assertStringContainsString( '.sgs-icon-list__item{padding-block:12px;}', $out['css'], $mode . ': the row keeps its padding' );
+			$this->assertStringContainsString( '.sgs-icon-list__item--linked{position:relative;}', $out['css'], $mode );
+			$this->assertStringContainsString( '.sgs-icon-list__item--linked .sgs-icon-list__item-link::after{content:"";position:absolute;inset:0;}', $out['css'], $mode );
+			$this->assertStringNotContainsString( 'align-content:center', $out['css'], $mode . ': not the flex-marker layout' );
+			$this->assertStringNotContainsString( 'display:flow-root', $out['css'], $mode . ': the text stays inline' );
 		}
 	}
 
