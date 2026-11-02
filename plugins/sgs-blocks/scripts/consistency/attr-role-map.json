@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 9513,
+    "row_count": 9515,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -1302,11 +1302,11 @@
     "sgs/button::linkKind": null,
     "sgs/button::linkSource": "enum-mode",
     "sgs/button::linkTarget": "link-href",
-    "sgs/button::linkUnderline": "enum-mode",
+    "sgs/button::linkUnderline": "typography",
     "sgs/button::linkUnderlineColour": "color",
     "sgs/button::linkUnderlineColourHover": "color",
     "sgs/button::linkUnderlineOffset": "typography",
-    "sgs/button::linkUnderlineThickness": "styling",
+    "sgs/button::linkUnderlineThickness": "typography",
     "sgs/button::margin": "layout",
     "sgs/button::minHeight": "layout",
     "sgs/button::note": "text-content",
@@ -3874,6 +3874,8 @@
     "sgs/gallery::scrimColour": "color",
     "sgs/gallery::scrimColourGradient": "colour-gradient",
     "sgs/gallery::scrimOpacity": "visual",
+    "sgs/gallery::scrollInset": "position",
+    "sgs/gallery::scrollItemWidth": "layout",
     "sgs/gallery::separators": null,
     "sgs/gallery::sgsCollapseVisibility": "behaviour",
     "sgs/gallery::sgsColourTreatment": "visual",

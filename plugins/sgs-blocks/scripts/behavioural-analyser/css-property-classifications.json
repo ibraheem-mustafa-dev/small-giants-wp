@@ -11032,6 +11032,20 @@
     },
     {
       "slug": "sgs/gallery",
+      "attr": "scrollInset",
+      "fields": {
+        "css_property": "scroll-padding-inline"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "scrollItemWidth",
+      "fields": {
+        "css_property": "flex"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
       "attr": "shadowHover",
       "fields": {
         "css_property": "box-shadow",
