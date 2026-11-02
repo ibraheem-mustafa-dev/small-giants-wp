@@ -115,14 +115,14 @@
 	},
 	{
 		"file": "lib/fill-custom-css.mjs",
-		"find": "export const openMachinery = ( row, opened ) => !! opened && OPEN_MACHINERY.includes( row.property ) && (",
-		"replace": "export const openMachinery = ( row, opened ) => false && OPEN_MACHINERY.includes( row.property ) && (",
+		"find": "export const openMachinery = ( row, opened ) => !! opened && (",
+		"replace": "export const openMachinery = ( row, opened ) => false && (",
 		"why": "the old behaviour: an opened surface root's display is written as a resting rule"
 	},
 	{
 		"file": "lib/fill-custom-css.mjs",
-		"find": "export const openMachinery = ( row, opened ) => !! opened && OPEN_MACHINERY.includes( row.property ) && (",
-		"replace": "export const openMachinery = ( row, opened ) => ( opened = opened || { root: row.node }, true ) && OPEN_MACHINERY.includes( row.property ) && (",
+		"find": "export const openMachinery = ( row, opened ) => !! opened && (",
+		"replace": "export const openMachinery = ( row, opened ) => ( opened = opened || { root: row.node }, true ) && (",
 		"why": "a surface read at rest would lose its root's display too"
 	},
 	{
@@ -142,5 +142,11 @@
 		"find": "export const OPEN_MACHINERY = [ 'display', 'visibility', 'opacity', 'pointer-events', 'content-visibility' ];",
 		"replace": "export const OPEN_MACHINERY = [ 'display', 'visibility', 'opacity', 'pointer-events', 'content-visibility', 'z-index' ];",
 		"why": "z-index of the opened root would be dropped"
+	},
+	{
+		"file": "lib/fill-custom-css.mjs",
+		"find": "\t|| ( FRAME_LAYER.includes( row.property ) && row.node === opened.frame && '' === ( row.slot ?? '' ) )",
+		"replace": "",
+		"why": "a modal frame root's overlay placement read open would be written on the closed wrapper"
 	}
 ]

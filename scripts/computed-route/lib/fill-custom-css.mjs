@@ -46,10 +46,17 @@ const UNSAFE_VALUE = /[{};<]/;
 // (`opened.frame`: the frame's root and each top-level part the frame draws, the scrim and the dialog; a sub-part such as the close
 // control inside the dialog is not toggled, so keeps its display). Both come from the skeleton, never from a block name.
 export const OPEN_MACHINERY = [ 'display', 'visibility', 'opacity', 'pointer-events', 'content-visibility' ];
+// A modal frame's root read open is the draft's full-screen overlay layer; the modal block draws that layer itself (its
+// dialog in the browser's top layer), so the root's placement is machinery too: written on the closed wrapper it leaves an
+// invisible full-screen sheet over the page that takes every click (Eye Care's size guide on Help, 2026-11-02).
+export const FRAME_LAYER = [ 'position', 'top', 'right', 'bottom', 'left', 'inset', 'z-index' ];
 const SUB_PART = /[\s>+~]/;
-export const openMachinery = ( row, opened ) => !! opened && OPEN_MACHINERY.includes( row.property ) && (
-	( row.node === opened.root && '' === ( row.slot ?? '' ) )
-	|| ( row.node === opened.frame && ! SUB_PART.test( row.slot ?? '' ) )
+export const openMachinery = ( row, opened ) => !! opened && (
+	( OPEN_MACHINERY.includes( row.property ) && (
+		( row.node === opened.root && '' === ( row.slot ?? '' ) )
+		|| ( row.node === opened.frame && ! SUB_PART.test( row.slot ?? '' ) )
+	) )
+	|| ( FRAME_LAYER.includes( row.property ) && row.node === opened.frame && '' === ( row.slot ?? '' ) )
 );
 
 const codeOf = ( row ) => String( row.reason || '' ).split( ':' )[ 0 ];

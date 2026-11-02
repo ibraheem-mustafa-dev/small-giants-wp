@@ -207,6 +207,19 @@ test( 'MUST FAIL: a modal frame keeps a sub-part\'s display, its other propertie
 	assert.equal( staticFlex.flat[ 1 ].attributes.sgsCustomCss, '& { display: flex; }' );
 } );
 
+test( 'MUST FAIL: a modal frame root\'s overlay placement read open is not written on the closed wrapper; the dialog\'s and an opened surface root\'s placement are (negative controls)', () => {
+	const layer = [ [ 'position', 'fixed' ], [ 'top', '0px' ], [ 'right', '0px' ], [ 'bottom', '0px' ], [ 'left', '0px' ], [ 'z-index', '78' ] ];
+	const { flat, out } = runOpened( [
+		...layer.map( ( [ property, value ] ) => row( { node: 'n1', block: 'sgs/text', slot: '', property, value } ) ),
+		row( { node: 'n1', block: 'sgs/text', slot: '.sgs-modal__dialog', property: 'position', value: 'relative' } ),
+	], { root: 'n0', frame: 'n1' } );
+	assert.equal( out.unmapped.filter( ( u ) => 'custom-css-skipped' === u.how ).length, 6 );
+	assert.doesNotMatch( flat[ 1 ].attributes.sgsCustomCss, /fixed|z-index/ );
+	assert.match( flat[ 1 ].attributes.sgsCustomCss, /sgs-modal__dialog \{ position: relative; \}/ );
+	const drawer = runOpened( [ row( { property: 'position', value: 'fixed' } ), row( { property: 'z-index', value: '300' } ) ], { root: 'n0' } );
+	assert.equal( drawer.flat[ 0 ].attributes.sgsCustomCss, '& { position: fixed; z-index: 300; }' );
+} );
+
 test( 'openedElements names the first node and the skeleton\'s modal frame node', () => {
 	const flat = tree();
 	const nodes = [ { index: 0, node: {} }, { index: 1, node: { modalFrame: true } } ];
