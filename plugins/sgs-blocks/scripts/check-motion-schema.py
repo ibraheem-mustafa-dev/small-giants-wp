@@ -8,7 +8,7 @@ WHAT --check ASSERTS
   parse            the file is JSON
   meta-schema      it is a valid JSON Schema 2020-12 (jsonschema's Draft202012Validator.check_schema)
   refs             every `#/$defs/...` reference resolves
-  field-types      `$defs` holds exactly the 15 FR-38A-55 field types (x-sgs-kind "fieldType")
+  field-types      `$defs` holds exactly the 17 FR-38A-55 field types (x-sgs-kind "fieldType")
   no-inline-type   every property entry is a `$ref` plus narrowing keywords only (enum, const, minimum, maximum,
                    multipleOf, description and x-sgs-* annotations); an inline `type` or shape fails
   field-annotation every field in a values node carries x-sgs-field (fieldType, cssProperty, state, perDevice) that
@@ -61,7 +61,7 @@ PART_KINDS = {"text", "svg"}
 # FR-38A-55: the field types, by the names the schema gives them.
 FIELD_TYPES = {
     "duration", "easing", "distance", "angle", "ratio", "scale", "percentage", "opacity", "colourReference",
-    "partReference", "assetReference", "choice", "boolean", "propertyRow", "tokenReference",
+    "partReference", "assetReference", "choice", "boolean", "propertyRow", "tokenReference", "angleList", "originPair",
 }
 PER_DEVICE_REQUIRED = {"duration", "distance", "angle"}
 ENTRY_KEYS = {"$ref", "description", "title", "default", "examples", "$comment", "enum", "const",

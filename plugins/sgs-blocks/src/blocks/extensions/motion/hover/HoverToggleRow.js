@@ -6,10 +6,10 @@
  * @package
  */
 
-import { ToggleControl } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
 import { getBlockType } from '@wordpress/blocks';
+import BooleanAtom from '../../../../components/motion/BooleanAtom';
 
 /**
  * @param {Object} props
@@ -18,12 +18,15 @@ import { getBlockType } from '@wordpress/blocks';
  * @return {Element|null} The row, or null when the block declares no toggle.
  */
 export default function HoverToggleRow( { blockName, clientId } ) {
-	const toggle = getBlockType( blockName )?.supports?.sgs?.motion?.hoverToggle;
+	const toggle =
+		getBlockType( blockName )?.supports?.sgs?.motion?.hoverToggle;
 	const attribute = toggle?.attribute;
 	const value = useSelect(
 		( select ) =>
 			attribute
-				? select( blockEditorStore ).getBlockAttributes( clientId )?.[ attribute ]
+				? select( blockEditorStore ).getBlockAttributes( clientId )?.[
+						attribute
+				  ]
 				: undefined,
 		[ clientId, attribute ]
 	);
@@ -32,13 +35,15 @@ export default function HoverToggleRow( { blockName, clientId } ) {
 		return null;
 	}
 	return (
-		<ToggleControl
-			__nextHasNoMarginBottom
+		<BooleanAtom
 			label={ toggle.label }
 			help={ toggle.help }
-			checked={ value !== false }
+			value={ value !== false }
+			presetValue={ true }
 			onChange={ ( next ) =>
-				updateBlockAttributes( clientId, { [ attribute ]: next } )
+				updateBlockAttributes( clientId, {
+					[ attribute ]: next !== false,
+				} )
 			}
 		/>
 	);
