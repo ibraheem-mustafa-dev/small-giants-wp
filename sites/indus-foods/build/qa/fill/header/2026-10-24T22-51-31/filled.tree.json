@@ -882,7 +882,7 @@
                   "burgerShadowHover": "rgba(10, 126, 168, 0.85) 0px 10px 22px -10px",
                   "burgerColourHover": "surface",
                   "sgsFocusRests": true,
-                  "justifyContent": "flex-start",
+                  "justifyContent": {"desktop":"flex-start"},
                   "burgerBorderRadius": {
                     "desktop": "50%",
                     "tablet": "50%",

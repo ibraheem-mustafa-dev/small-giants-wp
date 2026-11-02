@@ -27,6 +27,9 @@ import {
 	Notice,
 } from '@wordpress/components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import { ResponsiveControl } from '../../components';
+import { resolveTier } from '../../utils';
+import { patchTier } from '../../utils/patch-tier';
 
 const JUSTIFY_CONTENT_OPTIONS = [
 	{ label: __( '— default (space between) —', 'sgs-blocks' ), value: '' },
@@ -39,7 +42,7 @@ const JUSTIFY_CONTENT_OPTIONS = [
 
 /**
  * @param {Object}   root0
- * @param {string}   root0.justifyContent   Block attribute.
+ * @param {Object}   root0.justifyContent   Block attribute: `{desktop,tablet,mobile}`.
  * @param {string}   root0.splitAfterItemId Block attribute — an item identifier
  *                                          from `resolvedItems`, or ''.
  * @param {string}   root0.splitSide        Block attribute — '' | 'before' | 'after'.
@@ -78,18 +81,30 @@ export default function SplitPanel( {
 
 	return (
 		<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
-			<SelectControl
-				label={ __( 'Justify items', 'sgs-blocks' ) }
-				value={ justifyContent || '' }
-				options={ JUSTIFY_CONTENT_OPTIONS }
-				onChange={ ( val ) => setAttributes( { justifyContent: val } ) }
-				help={ __(
-					'How the menu items are spaced along the bar when they do not fill it.',
-					'sgs-blocks'
+			<ResponsiveControl
+				label={ __( 'Align items (per device)', 'sgs-blocks' ) }
+				value={ justifyContent }
+				isInherited={ ( tier ) => resolveTier( justifyContent, tier, '' ).inherited }
+				resolvedValue={ ( tier ) => resolveTier( justifyContent, tier, '' ).value || __( 'default (space between)', 'sgs-blocks' ) }
+				onReset={ ( tier ) => patchTier( { justifyContent }, setAttributes, 'justifyContent', tier, null ) }
+			>
+				{ ( tier ) => (
+					<SelectControl
+						label={ __( 'Align items', 'sgs-blocks' ) }
+						value={ ( justifyContent && justifyContent[ tier ] ) || '' }
+						options={ JUSTIFY_CONTENT_OPTIONS }
+						onChange={ ( val ) =>
+							patchTier( { justifyContent }, setAttributes, 'justifyContent', tier, val || null )
+						}
+						help={ __(
+							'The menu button sits in this row below the collapse point. How the items are spaced along the bar when they do not fill it.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 				) }
-				__nextHasNoMarginBottom
-				__next40pxDefaultSize
-			/>
+			</ResponsiveControl>
 
 			<ToggleGroupControl
 				label={ __( 'Split this menu', 'sgs-blocks' ) }

@@ -395,7 +395,7 @@
 									"triggerStyle": "pill",
 									"pillLabel": "Basket",
 									"pillCountStyle": "bubble",
-									"showZero": true
+									"showZero": {"desktop":true}
 								},
 								"draftRef": {
 									"tpl": "Root>SiteHeader@7#0/49#0"

@@ -385,7 +385,7 @@
                             "itemMinHeight": {
                                 "desktop": "auto"
                             },
-                            "justifyContent": "center",
+                            "justifyContent": {"desktop":"center"},
                             "itemBgHover": "mm-pink-soft",
                             "itemBgCurrent": "mm-pink-soft",
                             "itemFontSize": {
@@ -516,11 +516,11 @@
                                 "name": "sgs/cart",
                                 "attributes": {
                                     "displayMode": "drawer",
-                                    "iconSize": 22,
+                                    "iconSize": {"desktop":22},
                                     "iconColourHover": "primary-text",
                                     "iconColourHoverGradient": "rgb(58, 42, 34)",
                                     "badgeTextColourHover": "primary-text",
-                                    "showZero": true,
+                                    "showZero": {"desktop":true},
                                     "emptyCartMessage": "Your basket is empty",
                                     "emptyCartCtaLabel": "Browse the shop",
                                     "checkoutLabel": "Checkout securely",

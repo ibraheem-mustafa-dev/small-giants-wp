@@ -751,7 +751,7 @@
               "itemColourCurrent": "primary",
               "burgerHoverColour": "primary",
               "burgerColourHover": "surface",
-              "justifyContent": "flex-start",
+              "justifyContent": {"desktop":"flex-start"},
               "burgerBorderRadius": {
                 "desktop": "50%",
                 "tablet": "50%",

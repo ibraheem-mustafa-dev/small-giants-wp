@@ -513,7 +513,7 @@
 									"triggerStyle": "pill",
 									"pillLabel": "Bag",
 									"pillCountStyle": "bubble",
-									"showZero": true,
+									"showZero": {"desktop":true},
 									"ariaLabel": "Bag"
 								},
 								"draftRef": {

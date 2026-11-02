@@ -886,10 +886,13 @@ $css = '';
  * cloning converter, WP-CLI) that bypasses the editor's `enum` validation.
  */
 $sgs_nm_justify_allowed = array( 'flex-start', 'center', 'flex-end', 'space-between', 'space-around' );
-$sgs_nm_justify_content = (string) ( $attributes['justifyContent'] ?? '' );
-if ( in_array( $sgs_nm_justify_content, $sgs_nm_justify_allowed, true ) ) {
-	$css .= $uid_sel . '{justify-content:' . $sgs_nm_justify_content . '}';
+$sgs_nm_justify_by_value = array();
+foreach ( $sgs_nm_justify_allowed as $sgs_nm_justify_value ) {
+	$sgs_nm_justify_by_value[ $sgs_nm_justify_value ] = 'justify-content:' . $sgs_nm_justify_value;
 }
+// Per breakpoint, mobile-first through the shared tier emitter: an unset tier prints
+// nothing, so style.css's :where() space-between stays.
+$css .= sgs_emit_tier_rules_map( $uid_sel, $attributes['justifyContent'] ?? array(), $sgs_nm_justify_by_value, '', '' );
 
 /*
  * ── Burger morph duration + easing custom properties. ──

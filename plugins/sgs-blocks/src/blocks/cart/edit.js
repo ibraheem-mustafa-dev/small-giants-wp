@@ -1,13 +1,14 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import { PanelBody, TextControl, Notice } from '@wordpress/components';
-import { useDrawerPreviewToggle, IconPreview, ResponsiveBoxControl, SgsColourPanel, ScrimControls, TypographyControls, ResponsiveOverride, SgsLengthControl, RowWrapPanel } from '../../components';
+import { useDrawerPreviewToggle, IconPreview, ResponsiveBoxControl, ShadowControl, shadowAttrKeys, SgsColourPanel, ScrimControls, TypographyControls, ResponsiveOverride, SgsLengthControl, RowWrapPanel } from '../../components';
 import { ToolsPanel } from '../../components/primitives';
-import { colourVar, usePreviewTier, tierBoxLonghands } from '../../utils';
+import { colourVar, usePreviewTier, tierBoxLonghands, resolveTier } from '../../utils';
 import MediaElementPanel from '../../components/MediaElementPanel';
 import PanelSettingsControls from './PanelSettingsControls';
 import TriggerSettingsControls from './TriggerSettingsControls';
 import PillBorderControl from './PillBorderControl';
+import IconTriggerControl from './IconTriggerControl';
 import buildCartColourRows from './colourPanelRows';
 import buildPanelColourRows from './panelColourRows';
 import PanelContentControls from './PanelContentControls';
@@ -37,6 +38,8 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	const {
 		displayMode,
 		iconName,
+		iconSource,
+		iconSvg,
 		iconSize: iconSizeSet,
 		iconColour,
 		iconColourGradient,
@@ -101,8 +104,13 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		title: __( 'Bag drawer', 'sgs-blocks' ),
 		help: __( 'Shows the open panel over the canvas so you can style it. Affects this editing session only — it is not saved and does not change the site.', 'sgs-blocks' ),
 	} );
-	const iconSize = iconSizeSet ?? 24;
 	const previewTier = usePreviewTier();
+	// Every per-breakpoint value resolves for the previewed device, as render.php's tier rules do on the front end.
+	const iconSizeOwn = resolveTier( iconSizeSet, previewTier, null ).value;
+	const iconSize = iconSizeOwn ?? 24;
+	const showZeroPreview = true === resolveTier( showZero, previewTier, false ).value;
+	const badgeSizePreview = resolveTier( attributes.badgeSize, previewTier, null ).value;
+	const pillBadgeSizePreview = resolveTier( attributes.pillBadgeSize, previewTier, null ).value;
 	// The canvas shows the style of the device being previewed.
 	const hasPill = 'pill' === { desktop: desktopStyle, tablet: tabletStyle, mobile: mobileStyle }[ previewTier ];
 	const [ palette ] = useSettings( 'color.palette' );
@@ -110,8 +118,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	const marginLonghands = tierBoxLonghands( margin, previewTier, 'margin' );
 	const style = {
 		'--sgs-cart-icon-size': `${ iconSize }px`,
-		// An icon size the client set (24 included) overrules the trigger's 44px tap floor, as render.php does.
-		'--sgs-cart-tap-min': undefined !== iconSizeSet && ! hasPill ? '0px' : undefined,
+		// An icon size set at this breakpoint or above overrules the trigger's 44px tap floor, as render.php does.
+		'--sgs-cart-tap-min': null !== iconSizeOwn && ! hasPill ? '0px' : undefined,
+		'--sgs-cart-badge-size': null !== badgeSizePreview ? `${ badgeSizePreview }px` : undefined,
+		'--sgs-cart-pill-badge-size': null !== pillBadgeSizePreview ? `${ pillBadgeSizePreview }px` : undefined,
 		'--sgs-cart-icon-colour': colourVar( iconColour ) || undefined,
 		'--sgs-cart-badge-colour': colourVar( badgeColour ) || undefined,
 		'--sgs-cart-badge-text-colour':
@@ -174,8 +184,13 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 
 				<TriggerSettingsControls
 					iconName={ iconName }
-					iconSize={ iconSize }
+					iconSource={ iconSource }
+					iconSvg={ iconSvg }
+					iconSize={ iconSizeSet }
 					showZero={ showZero }
+					badgeSize={ attributes.badgeSize }
+					pillBadgeSize={ attributes.pillBadgeSize }
+					pillPadding={ attributes.pillPadding }
 					hideWhenEmpty={ hideWhenEmpty }
 					triggerStyle={ triggerStyle }
 					triggerStyleTablet={ triggerStyleTablet }
@@ -241,6 +256,13 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					setAttributes={ setAttributes }
 				/>
 
+				<IconTriggerControl
+					hasIconTier={ ! allPill }
+					iconTriggerRadius={ attributes.iconTriggerRadius }
+					iconTriggerSize={ attributes.iconTriggerSize }
+					setAttributes={ setAttributes }
+				/>
+
 				{ anyPill && (
 					<PanelBody
 						title={ __( 'Pill text and size', 'sgs-blocks' ) }
@@ -273,6 +295,21 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								/>
 							) }
 						</ResponsiveOverride>
+					</PanelBody>
+				) }
+
+				{ anyPill && (
+					<PanelBody
+						title={ __( 'Pill shadow', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<p>{ __( 'Text pill only: an icon button never takes this shadow.', 'sgs-blocks' ) }</p>
+						<ShadowControl
+							label={ __( 'Pill shadow', 'sgs-blocks' ) }
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							attrNames={ shadowAttrKeys( 'pillShadow', { hover: true, hoverColour: true } ) }
+						/>
 					</PanelBody>
 				) }
 
@@ -353,7 +390,8 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					{ ( ! hasPill || pillShowIcon ) && (
 						<span className="sgs-cart__icon" aria-hidden="true">
 							<IconPreview
-								source="lucide"
+								source={ 'custom' === iconSource && iconSvg ? 'custom' : 'lucide' }
+								svg={ 'custom' === iconSource ? iconSvg : '' }
 								name={ iconName }
 								size={ iconSize }
 								gradient={ iconColourGradient }
@@ -368,7 +406,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					<span
 						className={ `sgs-cart__badge${
 							hasPill ? ' sgs-cart__badge--pill' : ''
-						}${ showZero ? ' sgs-cart__badge--visible' : '' }` }
+						}${ showZeroPreview ? ' sgs-cart__badge--visible' : '' }` }
 						style={ parts.badge }
 					>
 						0

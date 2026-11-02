@@ -210,7 +210,24 @@ export function triggerStyles( attributes, tier, palette, hasPill ) {
 		badge[ '--sgs-cart-editor-badge-fill' ] = badgeFill.backgroundImage || badgeFill.backgroundColor;
 	}
 	if ( ! hasPill ) {
-		return { trigger: {}, pillLabel: {}, badge };
+		// The icon button's own background paints on the trigger's ::after layer (render-scoped-css.php), as the pill's does.
+		const iconFill = backgroundPaintPreview( attributes.iconBg, attributes.iconBgGradient, palette );
+		const iconTrigger = {};
+		if ( iconFill.backgroundImage || iconFill.backgroundColor ) {
+			iconTrigger[ '--sgs-cart-editor-icon-fill' ] = iconFill.backgroundImage || iconFill.backgroundColor;
+		}
+		const iconRadius = sgsLengthPreview( attributes.iconTriggerRadius );
+		if ( iconRadius ) {
+			iconTrigger.borderRadius = iconRadius;
+		}
+		// A set size replaces the 44px tap floor at this device and never goes below 24px (render-scoped-css.php).
+		const iconSize = resolveTier( attributes.iconTriggerSize, tier, null ).value;
+		if ( null !== iconSize && Number( iconSize ) > 0 ) {
+			const px = `${ Math.max( 24, Number( iconSize ) ) }px`;
+			iconTrigger.minWidth = px;
+			iconTrigger.minHeight = px;
+		}
+		return { trigger: iconTrigger, pillLabel: {}, badge };
 	}
 	const trigger = typographyPreviewStyle( attributes, 'pill', tier );
 	const fill = backgroundPaintPreview( attributes.pillBgColour, attributes.pillBgColourGradient, palette );
@@ -226,6 +243,13 @@ export function triggerStyles( attributes, tier, palette, hasPill ) {
 	const minHeight = tierLengthPreview( attributes.pillMinHeight, tier );
 	if ( minHeight ) {
 		trigger.minHeight = minHeight;
+	}
+	Object.assign( trigger, tierBoxLonghands( attributes.pillPadding, tier, 'padding' ) );
+	// The pill's shadow, and the same value as --sgs-focus-under so the focus ring composes over it (render-scoped-css.php).
+	const pillShadow = resolveShadowPreviewComposed( attributes.pillShadow, attributes.pillShadowColour );
+	if ( pillShadow ) {
+		trigger.boxShadow = pillShadow;
+		trigger[ '--sgs-focus-under' ] = pillShadow;
 	}
 	return {
 		trigger,

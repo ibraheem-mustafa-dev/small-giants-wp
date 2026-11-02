@@ -68,6 +68,29 @@ if ( ( ! $trigger_mixed && ( 'pill' !== $trigger_style || $badge_is_bubble ) ) |
 	}
 }
 
+// Badge size per breakpoint: the icon overlay badge (badgeSize) and the pill's count bubble (pillBadgeSize) each feed their
+// own custom property, which style.css reads with the old fixed size as the fallback. Unset prints nothing.
+foreach ( array(
+	'badgeSize'     => '--sgs-cart-badge-size',
+	'pillBadgeSize' => '--sgs-cart-pill-badge-size',
+) as $sgs_cart_badge_size_attr => $sgs_cart_badge_size_prop ) {
+	if ( is_array( $attributes[ $sgs_cart_badge_size_attr ] ?? null ) && ! empty( $attributes[ $sgs_cart_badge_size_attr ] ) ) {
+		$sgs_cart_badge_size_css = sgs_emit_responsive_css(
+			$sel,
+			array(
+				array(
+					'value'        => $attributes[ $sgs_cart_badge_size_attr ],
+					'css'          => $sgs_cart_badge_size_prop,
+					'unit_default' => 'px',
+				),
+			)
+		);
+		if ( '' !== $sgs_cart_badge_size_css ) {
+			$scoped_css[] = $sgs_cart_badge_size_css;
+		}
+	}
+}
+
 // Panel: panelBg (fill) / panelTextColour (text) share .sgs-cart__panel —
 // same split, only rendered when $has_panel (flyout|drawer displayMode).
 // Also HAND-BUILT: the panel's own `--flyout`/`--drawer` modifier classes
@@ -219,10 +242,117 @@ if ( $trigger_has_pill ) {
 			$scoped_css[] = sgs_hover_state_rules( $pill_sel, $pill_text_hover_decl, ':focus-visible', ' .sgs-cart__pill-label' );
 		}
 	}
+
+	// Pill shadow (rest and hover) through the shared shadow composer; the focus system gets each shadow as
+	// --sgs-focus-under. Printed only here, in the pill tiers, so an icon tier's focus ring never reads it.
+	$pill_shadow        = sgs_shadow_decls(
+		$attributes,
+		array(
+			'base'         => 'pillShadow',
+			'colour'       => 'pillShadowColour',
+			'hover'        => 'pillShadowHover',
+			'hover_colour' => 'pillShadowColourHover',
+		),
+		'sgs/cart'
+	);
+	$pill_shadow_normal = sgs_focus_under_decls( $pill_shadow['normal'] );
+	if ( $pill_shadow_normal ) {
+		$scoped_css[] = $pill_sel . '{' . implode( ';', $pill_shadow_normal ) . ';}';
+	}
+	$pill_shadow_hover = sgs_focus_under_decls( $pill_shadow['hover'] );
+	if ( $pill_shadow_hover ) {
+		$scoped_css[] = sgs_hover_state_rules( $pill_sel, implode( ';', $pill_shadow_hover ) );
+	}
+
+	// Pill padding per breakpoint (box with presets); unset keeps style.css's 0 14px.
+	$pill_padding_tiers = sgs_responsive_normalise_object( $attributes['pillPadding'] ?? null, true );
+	foreach ( $sgs_cart_tier_keys as $sgs_cart_pad_tier ) {
+		$pill_padding_decls = sgs_box_object_longhands( $pill_padding_tiers[ $sgs_cart_pad_tier ] ?? null, 'padding' );
+		if ( null === $pill_padding_decls ) {
+			continue;
+		}
+		$pill_padding_rule = $pill_sel . '{' . $pill_padding_decls . ';}';
+		$scoped_css[]      = '' === $sgs_cart_tier_media[ $sgs_cart_pad_tier ] ? $pill_padding_rule : $sgs_cart_tier_media[ $sgs_cart_pad_tier ] . '{' . $pill_padding_rule . '}';
+	}
+
 	if ( $trigger_mixed ) {
 		$pill_rules = array_splice( $scoped_css, $pill_rules_start );
 		foreach ( $trigger_ranges['pill'] as $pill_range ) {
 			$scoped_css[] = '@media ' . $pill_range . '{' . implode( '', $pill_rules ) . '}';
+		}
+	}
+}
+
+// Icon trigger background (normal and hover) on the trigger's own ::after layer, the pill's and badge's pattern, so a stroke
+// gradient on the glyph never meets background-clip:text. Printed bare in a block with one icon trigger style, and inside each
+// icon media range in a mixed block. The trigger is its own stacking context so the layer sits behind the glyph, not the page.
+if ( in_array( 'icon', $trigger_tiers, true ) ) {
+	$icon_bg_sel  = $sel . ' .sgs-cart__trigger';
+	$icon_bg_fill = sgs_fill_decls(
+		$attributes,
+		array(
+			'base'           => 'iconBg',
+			'gradient'       => 'iconBgGradient',
+			'hover'          => 'iconBgHover',
+			'hover_gradient' => 'iconBgHoverGradient',
+		)
+	);
+	// Icon button corner radius (scalar) and square size (per breakpoint, never below the 24px target size), icon tiers only.
+	$icon_trigger_rules  = array();
+	$icon_trigger_radius = sgs_css_length_value( (string) ( $attributes['iconTriggerRadius'] ?? '' ) );
+	if ( '' !== $icon_trigger_radius ) {
+		$icon_trigger_rules[] = $icon_bg_sel . '{border-radius:' . $icon_trigger_radius . ';}';
+	}
+	$icon_trigger_size_obj = is_array( $attributes['iconTriggerSize'] ?? null ) ? $attributes['iconTriggerSize'] : array();
+	$icon_trigger_size_own = array();
+	foreach ( $sgs_cart_tier_keys as $sgs_cart_tier_key ) {
+		$icon_trigger_size_raw = $icon_trigger_size_obj[ $sgs_cart_tier_key ] ?? null;
+		if ( is_numeric( $icon_trigger_size_raw ) && (float) $icon_trigger_size_raw > 0 ) {
+			$icon_trigger_size_own[ $sgs_cart_tier_key ] = max( 24, absint( $icon_trigger_size_raw ) );
+		}
+	}
+	if ( $trigger_mixed ) {
+		// Each icon breakpoint takes its own size, or the one inherited from the breakpoint above.
+		$icon_trigger_size_seen = null;
+		foreach ( array(
+			'desktop' => 'lg',
+			'tablet'  => 'md',
+			'mobile'  => 'sm',
+		) as $sgs_cart_tier_key => $sgs_cart_tier_lg ) {
+			$icon_trigger_size_seen = $icon_trigger_size_own[ $sgs_cart_tier_key ] ?? $icon_trigger_size_seen;
+			if ( null !== $icon_trigger_size_seen && 'icon' === $trigger_tiers[ $sgs_cart_tier_lg ] ) {
+				$scoped_css[] = '@media ' . $sgs_cart_tier_ranges[ $sgs_cart_tier_key ] . '{' . $icon_bg_sel . '{min-width:' . $icon_trigger_size_seen . 'px;min-height:' . $icon_trigger_size_seen . 'px;}}';
+			}
+		}
+	} else {
+		foreach ( $icon_trigger_size_own as $sgs_cart_tier_key => $icon_trigger_size_px ) {
+			$icon_trigger_size_rule = $icon_bg_sel . '{min-width:' . $icon_trigger_size_px . 'px;min-height:' . $icon_trigger_size_px . 'px;}';
+			$scoped_css[]           = '' === $sgs_cart_tier_media[ $sgs_cart_tier_key ] ? $icon_trigger_size_rule : $sgs_cart_tier_media[ $sgs_cart_tier_key ] . '{' . $icon_trigger_size_rule . '}';
+		}
+	}
+	if ( $icon_trigger_rules ) {
+		if ( $trigger_mixed ) {
+			foreach ( $trigger_ranges['icon'] as $icon_trigger_range ) {
+				$scoped_css[] = '@media ' . $icon_trigger_range . '{' . implode( '', $icon_trigger_rules ) . '}';
+			}
+		} else {
+			$scoped_css = array_merge( $scoped_css, $icon_trigger_rules );
+		}
+	}
+	if ( $icon_bg_fill['normal'] || $icon_bg_fill['hover'] ) {
+		$icon_bg_rules   = array();
+		$icon_bg_rules[] = $icon_bg_sel . '{isolation:isolate;}';
+		$icon_bg_rules[] = $icon_bg_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;' . implode( ';', $icon_bg_fill['normal'] ) . ';}';
+		if ( $icon_bg_fill['hover'] ) {
+			$icon_bg_rules[] = $icon_bg_sel . '::after{transition:background-color var(--wp--custom--duration--fast, .25s) var(--wp--custom--easing--ease, ease);}';
+			$icon_bg_rules[] = sgs_hover_state_rules( $icon_bg_sel, implode( ';', $icon_bg_fill['hover'] ), ':focus-visible', '::after' );
+		}
+		if ( $trigger_mixed ) {
+			foreach ( $trigger_ranges['icon'] as $icon_bg_range ) {
+				$scoped_css[] = '@media ' . $icon_bg_range . '{' . implode( '', $icon_bg_rules ) . '}';
+			}
+		} else {
+			$scoped_css = array_merge( $scoped_css, $icon_bg_rules );
 		}
 	}
 }

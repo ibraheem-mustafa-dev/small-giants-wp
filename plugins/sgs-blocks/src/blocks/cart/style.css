@@ -69,15 +69,15 @@
 	position: absolute;
 	top: 2px;
 	right: 2px;
-	min-width: 18px;
-	height: 18px;
+	min-width: var(--sgs-cart-badge-size, 18px);
+	height: var(--sgs-cart-badge-size, 18px);
 	padding: 0 4px;
 	border-radius: 999px;
 	/* background-color/color come from a render.php-emitted ::after layer +
 	 * direct text rule so a badgeTextColour text gradient's
 	 * background-clip:text cannot clip the badge's own fill — this element
 	 * is `position:absolute` already, so no position rule is added here. */
-	line-height: 18px;
+	line-height: var(--sgs-cart-badge-size, 18px);
 	text-align: center;
 	pointer-events: none;
 	/* Ensure badge never causes text reflow in surrounding layout */
@@ -153,11 +153,11 @@
 	top: auto;
 	right: auto;
 	z-index: 0;
-	min-width: 20px;
-	height: 20px;
+	min-width: var(--sgs-cart-pill-badge-size, 20px);
+	height: var(--sgs-cart-pill-badge-size, 20px);
 	padding: 0 6px;
 	border-radius: 999px;
-	line-height: 20px;
+	line-height: var(--sgs-cart-pill-badge-size, 20px);
 	letter-spacing: 0;
 	text-align: center;
 }
@@ -225,11 +225,11 @@
 		top: auto;
 		right: auto;
 		z-index: 0;
-		min-width: 20px;
-		height: 20px;
+		min-width: var(--sgs-cart-pill-badge-size, 20px);
+		height: var(--sgs-cart-pill-badge-size, 20px);
 		padding: 0 6px;
 		border-radius: 999px;
-		line-height: 20px;
+		line-height: var(--sgs-cart-pill-badge-size, 20px);
 		letter-spacing: 0;
 		text-align: center;
 	}
@@ -287,11 +287,11 @@
 		top: auto;
 		right: auto;
 		z-index: 0;
-		min-width: 20px;
-		height: 20px;
+		min-width: var(--sgs-cart-pill-badge-size, 20px);
+		height: var(--sgs-cart-pill-badge-size, 20px);
 		padding: 0 6px;
 		border-radius: 999px;
-		line-height: 20px;
+		line-height: var(--sgs-cart-pill-badge-size, 20px);
 		letter-spacing: 0;
 		text-align: center;
 	}
@@ -349,11 +349,11 @@
 		top: auto;
 		right: auto;
 		z-index: 0;
-		min-width: 20px;
-		height: 20px;
+		min-width: var(--sgs-cart-pill-badge-size, 20px);
+		height: var(--sgs-cart-pill-badge-size, 20px);
 		padding: 0 6px;
 		border-radius: 999px;
-		line-height: 20px;
+		line-height: var(--sgs-cart-pill-badge-size, 20px);
 		letter-spacing: 0;
 		text-align: center;
 	}

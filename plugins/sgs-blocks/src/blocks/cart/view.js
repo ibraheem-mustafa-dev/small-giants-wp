@@ -59,7 +59,8 @@ function updateCartWidgets( cart ) {
 	}
 
 	document.querySelectorAll( '.sgs-cart' ).forEach( ( widget ) => {
-		const showZero = widget.dataset.showZero === 'true';
+		// True when any breakpoint shows the badge on an empty cart; the stylesheet hides it again at the breakpoints that do not.
+		const showZero = widget.dataset.showZeroAny === 'true';
 		const hideWhenEmpty = widget.dataset.hideWhenEmpty === '1';
 		const countPopMode = widget.dataset.countPop || 'off';
 		const trigger = widget.querySelector( '[data-sgs-cart-trigger]' );

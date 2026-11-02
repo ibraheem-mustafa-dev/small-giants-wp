@@ -37,6 +37,10 @@ export default function buildCartColourRows( {
 		pillBgColourGradient,
 		pillTextColour,
 		pillTextColourGradient,
+		iconBg,
+		iconBgGradient,
+		iconBgHover,
+		iconBgHoverGradient,
 		pillBgColourHover,
 		pillBgColourHoverGradient,
 		pillTextColourHover,
@@ -52,6 +56,8 @@ export default function buildCartColourRows( {
 	// Pill rows show when any device uses the pill; the icon row when any device shows the icon.
 	const hasPill = [ desktop, tablet, mobile ].includes( 'pill' );
 	const hasIcon = [ desktop, tablet, mobile ].includes( 'icon' ) || !! pillShowIcon;
+	// The icon button's own background only paints in an icon tier.
+	const hasIconTier = [ desktop, tablet, mobile ].includes( 'icon' );
 
 	return [
 		hasIcon && {
@@ -77,6 +83,31 @@ export default function buildCartColourRows( {
 					gradientValue: iconColourHoverGradient,
 					onGradientChange: ( val ) =>
 						setAttributes( { iconColourHoverGradient: val ?? '' } ),
+				},
+			],
+		},
+		hasIconTier && {
+			key: 'iconBackground',
+			label: __( 'Icon button background (icon button only)', 'sgs-blocks' ),
+			gradientCapable: true,
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: iconBg,
+					onChange: ( val ) => setAttributes( { iconBg: val ?? '' } ),
+					linked: true,
+					gradientValue: iconBgGradient,
+					onGradientChange: ( val ) => setAttributes( { iconBgGradient: val ?? '' } ),
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: iconBgHover,
+					onChange: ( val ) => setAttributes( { iconBgHover: val ?? '' } ),
+					linked: true,
+					gradientValue: iconBgHoverGradient,
+					onGradientChange: ( val ) => setAttributes( { iconBgHoverGradient: val ?? '' } ),
 				},
 			],
 		},

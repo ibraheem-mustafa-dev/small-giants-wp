@@ -101,7 +101,7 @@ test( 'MUST FAIL: the header control opening the cart row\'s block-owned drawer 
 	const r = run();
 	const cart = nodeOf( r, 'Root/6#0' );
 	assert.equal( cart?.name, 'sgs/cart' );
-	assert.deepEqual( cart.attributes, { displayMode: 'drawer', triggerStyle: 'pill', pillLabel: 'Bag', pillCountStyle: 'bubble', showZero: true, ariaLabel: 'Bag' } );
+	assert.deepEqual( cart.attributes, { displayMode: 'drawer', triggerStyle: 'pill', pillLabel: 'Bag', pillCountStyle: 'bubble', showZero: { desktop: true }, ariaLabel: 'Bag' } );
 	assert.equal( cart.innerBlocks.length, 0, 'the block draws its own trigger' );
 	assert.equal( rowOf( r, 'Root/6#0' ).rule, 'blockPartOpener' );
 	for ( const k of [ 'Root/7#0', 'Root/8#0' ] ) {

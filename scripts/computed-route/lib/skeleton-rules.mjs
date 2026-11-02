@@ -652,7 +652,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			[ T.style ]: label ? T.pill : T.icon,
 			...( label ? { [ T.label ]: label } : {} ),
 			...( count ? { [ T.countStyle ]: view.ownPaint( count ) ? T.bubble : T.plain } : {} ),
-			...( count && 0 === Number( m.words( count ).trim() ) ? { [ T.showZero ]: true } : {} ),
+			...( count && 0 === Number( m.words( count ).trim() ) ? { [ T.showZero ]: { desktop: true } } : {} ),
 			...( aria && ! /\{\{/.test( aria ) ? { [ T.ariaLabel ]: aria } : {} ),
 		};
 	};

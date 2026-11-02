@@ -75,7 +75,11 @@
 	z-index: -1;
 	border-radius: inherit;
 	pointer-events: none;
-	background: var( --sgs-cart-editor-pill-fill, transparent );
+	background: var( --sgs-cart-editor-pill-fill, var( --sgs-cart-editor-icon-fill, transparent ) );
+}
+
+.sgs-cart--editor-preview .sgs-cart__trigger {
+	isolation: isolate;
 }
 
 /* panelCloseSize sizes the preview glyph, as sgs_cart_panel_css() sizes the live one. */

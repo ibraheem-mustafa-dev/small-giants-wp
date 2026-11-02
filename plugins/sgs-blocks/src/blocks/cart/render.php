@@ -64,8 +64,34 @@ $display_mode          = in_array( $attributes['displayMode'] ?? 'link', $allowe
 	? (string) $attributes['displayMode']
 	: 'link';
 $icon_name             = preg_replace( '/[^a-z0-9-]/', '', strtolower( $attributes['iconName'] ?? 'shopping-cart' ) );
-$icon_size_set         = isset( $attributes['iconSize'] ) && is_numeric( $attributes['iconSize'] );
-$icon_size             = $icon_size_set ? absint( $attributes['iconSize'] ) : 24;
+// Per-breakpoint settings are { desktop, tablet, mobile } objects: an empty tier inherits the tier above through the CSS cascade
+// (desktop is the base rule, tablet applies up to 1023px, mobile up to 767px). A scalar is not read back (FP-14).
+$sgs_cart_tier_keys    = array( 'desktop', 'tablet', 'mobile' );
+$sgs_cart_tier_media   = array(
+	'desktop' => '',
+	'tablet'  => '@media(max-width:1023px)',
+	'mobile'  => '@media(max-width:767px)',
+);
+$sgs_cart_tier_ranges  = array(
+	'desktop' => '(min-width:1024px)',
+	'tablet'  => '(min-width:768px) and (max-width:1023px)',
+	'mobile'  => '(max-width:767px)',
+);
+$icon_size_obj         = is_array( $attributes['iconSize'] ?? null ) ? $attributes['iconSize'] : array();
+$icon_size_own         = array();
+foreach ( $sgs_cart_tier_keys as $sgs_cart_tier_key ) {
+	$icon_size_raw = $icon_size_obj[ $sgs_cart_tier_key ] ?? null;
+	if ( is_numeric( $icon_size_raw ) && (float) $icon_size_raw > 0 ) {
+		$icon_size_own[ $sgs_cart_tier_key ] = absint( $icon_size_raw );
+	}
+}
+$icon_size_set         = ! empty( $icon_size_own );
+$icon_size             = $icon_size_own['desktop'] ?? 24;
+// Custom pasted SVG: re-sanitised here (the editor's sanitiser is a second layer, never the only one); an empty or
+// rejected SVG falls back to the Lucide icon named by iconName.
+$icon_custom_svg       = ( 'custom' === ( $attributes['iconSource'] ?? 'lucide' ) && '' !== trim( (string) ( $attributes['iconSvg'] ?? '' ) ) )
+	? wp_kses( (string) $attributes['iconSvg'], sgs_svg_kses_allowed_tags() )
+	: '';
 $icon_colour           = (string) ( $attributes['iconColour'] ?? '' );
 // Icon/SVG gradient sibling — non-empty wins over iconColour above.
 $icon_colour_gradient       = $attributes['iconColourGradient'] ?? '';
@@ -74,7 +100,13 @@ $icon_colour_hover_gradient = $attributes['iconColourHoverGradient'] ?? '';
 $badge_colour               = $attributes['badgeColour'] ?? 'accent';
 $badge_text_colour          = $attributes['badgeTextColour'] ?? '';
 $aria_label                 = sanitize_text_field( $attributes['ariaLabel'] ?? __( 'View your cart', 'sgs-blocks' ) );
-$show_zero                  = ! empty( $attributes['showZero'] );
+$show_zero_obj              = is_array( $attributes['showZero'] ?? null ) ? $attributes['showZero'] : array();
+$show_zero_tiers            = array();
+foreach ( $sgs_cart_tier_keys as $sgs_cart_tier_key ) {
+	$show_zero_tiers[ $sgs_cart_tier_key ] = true === sgs_resolve_tier( $show_zero_obj, $sgs_cart_tier_key, false )['value'];
+}
+// True when any breakpoint shows the badge on an empty cart (view.js reads it as data-show-zero-any).
+$show_zero                  = in_array( true, $show_zero_tiers, true );
 $hide_when_empty            = ! empty( $attributes['hideWhenEmpty'] );
 
 // Wave B, U-1 — text-pill trigger style. 'icon' (default) keeps the existing
@@ -232,8 +264,9 @@ $ssr_count = 0;
 $sgs_cart_vars = array(
 	'--sgs-cart-icon-size:' . $icon_size . 'px',
 );
-// An icon size the client set (24 included) overrules the trigger's 44px tap floor: the trigger wraps the glyph (ruling 11).
-if ( $icon_size_set && 'icon' === $trigger_style && ! $trigger_mixed ) {
+// An icon size set at a breakpoint overrules the trigger's 44px tap floor in an icon tier of that breakpoint: the trigger
+// wraps the glyph (ruling 11). A pill tier, and a tier with no size of its own or above, keep the floor.
+if ( ! $trigger_mixed && 'icon' === $trigger_style && isset( $icon_size_own['desktop'] ) ) {
 	$sgs_cart_vars[] = '--sgs-cart-tap-min:0px';
 }
 // Unset, the trigger takes the surrounding text colour (style.css's currentColor fallback).
@@ -295,10 +328,39 @@ if ( $sgs_cart_vars ) {
 	$scoped_css[] = $sel . '{' . implode( ';', $sgs_cart_vars ) . '}';
 }
 
-// Mixed styles: the icon tiers wrap the glyph; the pill tiers keep their own height floor.
-if ( $trigger_mixed && $icon_size_set ) {
-	foreach ( $trigger_ranges['icon'] as $icon_range ) {
-		$scoped_css[] = '@media ' . $icon_range . '{' . $sel . '{--sgs-cart-tap-min:0px}}';
+// Icon size per breakpoint: tablet and mobile values override the base var printed above.
+foreach ( array( 'tablet', 'mobile' ) as $sgs_cart_tier_key ) {
+	if ( isset( $icon_size_own[ $sgs_cart_tier_key ] ) ) {
+		$scoped_css[] = $sgs_cart_tier_media[ $sgs_cart_tier_key ] . '{' . $sel . '{--sgs-cart-icon-size:' . $icon_size_own[ $sgs_cart_tier_key ] . 'px}}';
+	}
+}
+// Tap floor follows the same rule per breakpoint. One style: tablet and mobile sizes lift the floor from their own width down.
+// Mixed styles: the icon tiers wrap the glyph at every breakpoint that has a size of its own or above; the pill tiers keep their own height floor.
+$sgs_cart_size_seen = false;
+foreach ( $sgs_cart_tier_keys as $sgs_cart_tier_key ) {
+	$sgs_cart_size_seen = $sgs_cart_size_seen || isset( $icon_size_own[ $sgs_cart_tier_key ] );
+	$sgs_cart_tier_lg   = array(
+		'desktop' => 'lg',
+		'tablet'  => 'md',
+		'mobile'  => 'sm',
+	)[ $sgs_cart_tier_key ];
+	if ( ! $sgs_cart_size_seen || 'icon' !== $trigger_tiers[ $sgs_cart_tier_lg ] ) {
+		continue;
+	}
+	if ( $trigger_mixed ) {
+		$scoped_css[] = '@media ' . $sgs_cart_tier_ranges[ $sgs_cart_tier_key ] . '{' . $sel . '{--sgs-cart-tap-min:0px}}';
+	} elseif ( 'desktop' !== $sgs_cart_tier_key && isset( $icon_size_own[ $sgs_cart_tier_key ] ) ) {
+		$scoped_css[] = $sgs_cart_tier_media[ $sgs_cart_tier_key ] . '{' . $sel . '{--sgs-cart-tap-min:0px}}';
+	}
+}
+
+// Show the badge on an empty cart per breakpoint: view.js adds the visible class when any breakpoint shows it, and each breakpoint
+// that does not hides it again while the cart is empty. The rule out-ranks every .sgs-cart__badge--visible display rule.
+if ( $show_zero ) {
+	foreach ( $sgs_cart_tier_keys as $sgs_cart_tier_key ) {
+		if ( ! $show_zero_tiers[ $sgs_cart_tier_key ] ) {
+			$scoped_css[] = '@media ' . $sgs_cart_tier_ranges[ $sgs_cart_tier_key ] . '{' . $sel . ':not(.sgs-cart--has-items) .sgs-cart__badge{display:none}}';
+		}
 	}
 }
 
@@ -337,7 +399,7 @@ if ( $hide_when_empty && 0 === $ssr_count ) {
 // the block has a flyout/drawer panel to render it in).
 $wrapper_data_attributes = array(
 	'class'                 => implode( ' ', $wrapper_classes ),
-	'data-show-zero'        => $show_zero ? 'true' : 'false',
+	'data-show-zero-any'    => $show_zero ? 'true' : 'false',
 	'data-hide-when-empty'  => $hide_when_empty ? '1' : '0',
 	'data-display-mode'     => esc_attr( $effective_mode ),
 	'data-auto-open-on-add' => $auto_open_on_add ? '1' : '0',
@@ -356,7 +418,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 );
 
 // ── Icon SVG ─────────────────────────────────────────────────────────────────
-$icon_svg = sgs_get_lucide_icon( $icon_name );
+$icon_svg = '' !== $icon_custom_svg ? $icon_custom_svg : sgs_get_lucide_icon( $icon_name );
 // Icon/SVG gradient — non-empty gradient wins over iconColour's
 // flat currentColor paint (helpers-svg-gradient.php).
 $sgs_cart_stroke_grad = sgs_icon_gradient_css( 'lucide', $icon_colour_gradient, $uid . '-ig', "{$sel} .sgs-cart__icon svg" );

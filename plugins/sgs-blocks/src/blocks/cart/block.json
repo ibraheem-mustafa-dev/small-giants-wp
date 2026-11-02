@@ -82,6 +82,7 @@
 				"margin": [
 					"margin"
 				],
+				"pillPadding": [ "pillPadding" ],
 				"panelHeadPadding": [ "panelHeadPadding" ],
 				"panelBodyPadding": [ "panelBodyPadding" ],
 				"panelFooterPadding": [ "panelFooterPadding" ],
@@ -151,17 +152,24 @@
 					"prefix": "icon",
 					"attrMap": {
 						"css:color": "iconColour",
-						"css:stroke": "iconColourGradient"
+						"css:stroke": "iconColourGradient",
+						"css:background-color": "iconBg",
+						"css:background-image": "iconBgGradient",
+						"css:border-radius": "iconTriggerRadius",
+						"css:min-width": "iconTriggerSize",
+						"css:min-height": "iconTriggerSize"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:color": "iconColourHover",
-								"css:stroke": "iconColourHoverGradient"
+								"css:stroke": "iconColourHoverGradient",
+								"css:background-color": "iconBgHover",
+								"css:background-image": "iconBgHoverGradient"
 							}
 						}
 					},
-					"_note": "iconSize is a real attribute but is not a css:font-size (sets width/height, not text size) — no cluster member exists, so it is an honest ORPHAN (FR-35-4). `css:stroke` (icon/SVG gradient mechanism) is explicit-mapped to iconColourGradient — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php). iconColourHover/iconColourHoverGradient mirror sgs/icon's own hover states shape exactly — resolved via sgs_icon_gradient_css() on .sgs-cart__trigger:hover.",
+					"_note": "iconSize is a per-breakpoint object that prints --sgs-cart-icon-size (sets width/height, not text size) — no cluster member exists, so it is an honest ORPHAN (FR-35-4). iconBg/iconBgGradient and their hover siblings paint the icon button's own background on the trigger's ::after layer, in icon tiers only. `css:stroke` (icon/SVG gradient mechanism) is explicit-mapped to iconColourGradient — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php). iconColourHover/iconColourHoverGradient mirror sgs/icon's own hover states shape exactly — resolved via sgs_icon_gradient_css() on .sgs-cart__trigger:hover.",
 					"absentIn": [ "pill-link" ],
 					"absentWhy": "The pill trigger shows its label and count in place of the icon."
 				},
@@ -174,7 +182,9 @@
 						"css:background-color": "badgeColour",
 						"css:background-image": "badgeColourGradient",
 						"css:color": "badgeTextColour",
-						"css:color-gradient": "badgeTextColourGradient"
+						"css:color-gradient": "badgeTextColourGradient",
+						"css:width": "badgeSize",
+						"css:height": "badgeSize"
 					},
 					"states": {
 						"hover": {
@@ -225,11 +235,14 @@
 						"css:border-width": "pillBorderWidth",
 						"css:border-style": "pillBorderStyle",
 						"css:border-radius": "pillBorderRadius",
-						"css:min-height": "pillMinHeight"
+						"css:min-height": "pillMinHeight",
+						"css:padding": "pillPadding",
+						"css:box-shadow": "pillShadow"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
+								"css:box-shadow": "pillShadowHover",
 								"css:background-color": "pillBgColourHover",
 								"css:background-image": "pillBgColourHoverGradient",
 								"css:color": "pillTextColourHover",
@@ -665,8 +678,61 @@
 			"type": "string",
 			"default": "shopping-cart"
 		},
+		"iconSource": {
+			"type": "string",
+			"default": "lucide",
+			"enum": [
+				"lucide",
+				"custom"
+			],
+			"description": "Where the cart glyph comes from: the Lucide icon named by iconName, or a pasted SVG (iconSvg)."
+		},
+		"iconSvg": {
+			"type": "string",
+			"default": "",
+			"description": "Pasted inline SVG markup when iconSource is 'custom'. Sanitised in the editor and re-sanitised in render.php (wp_kses + sgs_svg_kses_allowed_tags()); an empty or rejected SVG falls back to the Lucide icon."
+		},
 		"iconSize": {
-			"type": "number"
+			"type": "object",
+			"default": {},
+			"description": "Icon size in px per breakpoint: {desktop,tablet,mobile}. An empty tier inherits the tier above; unset keeps 24px."
+		},
+		"iconTriggerRadius": {
+			"type": "string",
+			"default": "",
+			"description": "CSS length (e.g. \"999px\" or \"50%\") for the icon button's corners, in icon tiers only. Empty keeps the trigger's 4px radius. The icon background layer inherits it."
+		},
+		"iconTriggerSize": {
+			"type": "object",
+			"default": {},
+			"description": "Icon button square size in px per breakpoint, in icon tiers only. A set value replaces the 44px tap floor in that tier but never goes below 24px. Unset keeps the floor."
+		},
+		"iconBg": {
+			"type": "string",
+			"default": ""
+		},
+		"iconBgGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient painting the icon button's background. Non-empty wins over iconBg."
+		},
+		"iconBgHover": {
+			"type": "string",
+			"default": ""
+		},
+		"iconBgHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"badgeSize": {
+			"type": "object",
+			"default": {},
+			"description": "Icon trigger count badge size in px per breakpoint. Unset keeps 18px."
+		},
+		"pillBadgeSize": {
+			"type": "object",
+			"default": {},
+			"description": "Text pill count bubble size in px per breakpoint. Unset keeps 20px."
 		},
 		"iconColour": {
 			"type": "string",
@@ -717,8 +783,9 @@
 			"default": "View your cart"
 		},
 		"showZero": {
-			"type": "boolean",
-			"default": false
+			"type": "object",
+			"default": {},
+			"description": "Show the badge on an empty cart, per breakpoint: {desktop,tablet,mobile} of booleans. An empty tier inherits the tier above; unset hides the badge until there is an item."
 		},
 		"hideWhenEmpty": {
 			"type": "boolean",
@@ -936,6 +1003,27 @@
 				"dotted"
 			],
 			"description": "Pill border style. '' = inherit the block's own CSS default (solid)."
+		},
+		"pillShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"pillShadowColour": {
+			"type": "string",
+			"default": ""
+		},
+		"pillShadowHover": {
+			"type": "string",
+			"default": ""
+		},
+		"pillShadowColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"pillPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Pill padding box per breakpoint: {desktop,tablet,mobile} of {top,right,bottom,left}. Empty keeps style.css's 0 14px."
 		},
 		"pillBorderRadius": {
 			"type": "string",
@@ -1454,7 +1542,7 @@
 	"example": {
 		"attributes": {
 			"iconName": "shopping-cart",
-			"iconSize": 24,
+			"iconSize": { "desktop": 24 },
 			"iconColour": "primary",
 			"badgeColour": "accent"
 		}

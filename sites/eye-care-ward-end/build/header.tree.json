@@ -517,7 +517,7 @@
                   "badgeColour": "accent",
                   "badgeTextColour": "surface-alt",
                   "freeDeliveryMessage": "Add %s more for free UK delivery",
-                  "showZero": true,
+                  "showZero": {"desktop":true},
                   "pillCountStyle": "bubble",
                   "pillFontSize": {
                     "desktop": 12.5

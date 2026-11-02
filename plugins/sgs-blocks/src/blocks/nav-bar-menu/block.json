@@ -662,16 +662,9 @@
 			"default": 0
 		},
 		"justifyContent": {
-			"type": "string",
-			"default": "",
-			"enum": [
-				"",
-				"flex-start",
-				"center",
-				"flex-end",
-				"space-between",
-				"space-around"
-			]
+			"type": "object",
+			"default": {},
+			"_note": "Per-breakpoint {desktop,tablet,mobile}; each tier is one of flex-start, center, flex-end, space-between, space-around (render.php::$sgs_nm_justify_allowed). An empty tier inherits the tier above; an unset object keeps style.css's :where() space-between."
 		},
 		"splitAfterItemId": {
 			"type": "string",

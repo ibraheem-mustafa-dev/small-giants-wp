@@ -1,6 +1,7 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { PanelBody, RangeControl, ToggleControl } from '@wordpress/components';
-import { IconPicker, ResponsiveControl } from '../../components';
+import { IconPicker, ResponsiveControl, ResponsiveBoxControl } from '../../components';
+import { resolveTier, patchTier } from '../../utils';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
@@ -10,8 +11,13 @@ import SgsFreeTextField from '../../components/SgsFreeTextField';
  *
  * @param {Object}   root0                    Props.
  * @param {string}   root0.iconName           Current icon name.
- * @param {number}   root0.iconSize           Current icon size (px).
- * @param {boolean}  root0.showZero           Whether the badge shows on a zero count.
+ * @param {string}   root0.iconSource         'lucide' or 'custom' (a pasted SVG).
+ * @param {string}   root0.iconSvg            The pasted SVG markup when iconSource is 'custom'.
+ * @param {Object}   root0.iconSize           Icon size (px) per breakpoint: `{desktop,tablet,mobile}`.
+ * @param {Object}   root0.showZero           Per breakpoint, whether the badge shows on a zero count.
+ * @param {Object}   root0.badgeSize          Icon badge size (px) per breakpoint.
+ * @param {Object}   root0.pillBadgeSize      Pill count bubble size (px) per breakpoint.
+ * @param {Object}   root0.pillPadding        Pill padding box per breakpoint.
  * @param {boolean}  root0.hideWhenEmpty      Whether the whole trigger hides until non-empty.
  * @param {string}   root0.triggerStyle       Desktop style: 'icon' (icon+badge) or 'pill' (word+count).
  * @param {string}   root0.triggerStyleTablet Tablet override ('' inherits desktop).
@@ -23,8 +29,13 @@ import SgsFreeTextField from '../../components/SgsFreeTextField';
  */
 export default function TriggerSettingsControls( {
 	iconName,
+	iconSource,
+	iconSvg,
 	iconSize,
 	showZero,
+	badgeSize,
+	pillBadgeSize,
+	pillPadding,
 	hideWhenEmpty,
 	triggerStyle,
 	triggerStyleTablet,
@@ -115,6 +126,21 @@ export default function TriggerSettingsControls( {
 						<ToggleGroupControlOption value="bubble" label={ __( 'Bubble', 'sgs-blocks' ) } />
 					</ToggleGroupControl>
 				) }
+				{ isPill && (
+					<ResponsiveBoxControl
+						label={ __( 'Pill padding', 'sgs-blocks' ) }
+						presets
+						values={ {
+							base: pillPadding?.desktop ?? {},
+							tablet: pillPadding?.tablet ?? {},
+							mobile: pillPadding?.mobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							const key = 'base' === tier ? 'desktop' : tier;
+							setAttributes( { pillPadding: { ...( pillPadding || {} ), [ key ]: next } } );
+						} }
+					/>
+				) }
 				{ /* Pill border colour + radius moved to the Styles tab's "Pill
 				   border" panel (edit.js) — Spec 35 §14 / C1: border colour is
 				   excluded from SgsColourPanel; radius sits with it as the pair. */ }
@@ -129,40 +155,106 @@ export default function TriggerSettingsControls( {
 			<PanelBody title={ __( 'Icon', 'sgs-blocks' ) } initialOpen={ false }>
 				<IconPicker
 					label={ __( 'Cart icon', 'sgs-blocks' ) }
-					value={ { source: 'lucide', name: iconName } }
-					onChange={ ( { name } ) =>
-						setAttributes( { iconName: name } )
+					value={ { source: 'custom' === iconSource ? 'custom' : 'lucide', name: iconName, svg: 'custom' === iconSource ? iconSvg : undefined } }
+					sources={ [ 'lucide', 'custom' ] }
+					onChange={ ( { source, name, svg } ) =>
+						setAttributes( 'custom' === source
+							? { iconSource: 'custom', iconSvg: svg }
+							: { iconSource: 'lucide', iconSvg: '', iconName: name } )
 					}
 				/>
-				<RangeControl
+				<ResponsiveControl
 					label={ __( 'Icon size (px)', 'sgs-blocks' ) }
 					value={ iconSize }
-					onChange={ ( val ) => setAttributes( { iconSize: val } ) }
-					min={ 16 }
-					max={ 64 }
-					step={ 4 }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
+					isInherited={ ( tier ) => resolveTier( iconSize, tier, 24 ).inherited }
+					resolvedValue={ ( tier ) => `${ resolveTier( iconSize, tier, 24 ).value }px` }
+					onReset={ ( tier ) => patchTier( { iconSize }, setAttributes, 'iconSize', tier, null ) }
+				>
+					{ ( tier ) => (
+						<RangeControl
+							label={ __( 'Icon size (px)', 'sgs-blocks' ) }
+							hideLabelFromVision
+							value={ resolveTier( iconSize, tier, 24 ).value }
+							onChange={ ( val ) => patchTier( { iconSize }, setAttributes, 'iconSize', tier, val ?? null ) }
+							min={ 16 }
+							max={ 64 }
+							step={ 4 }
+							help={ __( 'Icon trigger only. A size set here lets the button wrap the icon instead of keeping its 44px tap area.', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
+				</ResponsiveControl>
 			</PanelBody>
 
 			<PanelBody
 				title={ __( 'Badge', 'sgs-blocks' ) }
 				initialOpen={ false }
 			>
-				<ToggleControl
-					label={ __(
-						'Show badge when cart is empty',
-						'sgs-blocks'
+				<ResponsiveControl
+					label={ __( 'Show badge when cart is empty', 'sgs-blocks' ) }
+					value={ showZero }
+					isInherited={ ( tier ) => resolveTier( showZero, tier, false ).inherited }
+					resolvedValue={ ( tier ) => ( resolveTier( showZero, tier, false ).value ? __( 'Shown', 'sgs-blocks' ) : __( 'Hidden', 'sgs-blocks' ) ) }
+					onReset={ ( tier ) => patchTier( { showZero }, setAttributes, 'showZero', tier, null ) }
+				>
+					{ ( tier ) => (
+						<ToggleControl
+							label={ __( 'Show badge when cart is empty', 'sgs-blocks' ) }
+							help={ __(
+								'When off, the badge hides until there is at least one item in the cart. The editor preview counts as an empty cart, so it shows this setting for the device you are previewing.',
+								'sgs-blocks'
+							) }
+							checked={ !! resolveTier( showZero, tier, false ).value }
+							onChange={ ( val ) => patchTier( { showZero }, setAttributes, 'showZero', tier, val ) }
+							__nextHasNoMarginBottom
+						/>
 					) }
-					help={ __(
-						'When off, the badge hides until there is at least one item in the cart.',
-						'sgs-blocks'
+				</ResponsiveControl>
+				<ResponsiveControl
+					label={ __( 'Icon badge size (px)', 'sgs-blocks' ) }
+					value={ badgeSize }
+					isInherited={ ( tier ) => resolveTier( badgeSize, tier, 18 ).inherited }
+					resolvedValue={ ( tier ) => `${ resolveTier( badgeSize, tier, 18 ).value }px` }
+					onReset={ ( tier ) => patchTier( { badgeSize }, setAttributes, 'badgeSize', tier, null ) }
+				>
+					{ ( tier ) => (
+						<RangeControl
+							label={ __( 'Icon badge size (px)', 'sgs-blocks' ) }
+							hideLabelFromVision
+							value={ resolveTier( badgeSize, tier, 18 ).value }
+							onChange={ ( val ) => patchTier( { badgeSize }, setAttributes, 'badgeSize', tier, val ?? null ) }
+							min={ 10 }
+							max={ 40 }
+							help={ __( 'Icon trigger only: the round count badge on the icon.', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
 					) }
-					checked={ showZero }
-					onChange={ ( val ) => setAttributes( { showZero: val } ) }
-					__nextHasNoMarginBottom
-				/>
+				</ResponsiveControl>
+				{ isPill && (
+					<ResponsiveControl
+						label={ __( 'Pill count bubble size (px)', 'sgs-blocks' ) }
+						value={ pillBadgeSize }
+						isInherited={ ( tier ) => resolveTier( pillBadgeSize, tier, 20 ).inherited }
+						resolvedValue={ ( tier ) => `${ resolveTier( pillBadgeSize, tier, 20 ).value }px` }
+						onReset={ ( tier ) => patchTier( { pillBadgeSize }, setAttributes, 'pillBadgeSize', tier, null ) }
+					>
+						{ ( tier ) => (
+							<RangeControl
+								label={ __( 'Pill count bubble size (px)', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ resolveTier( pillBadgeSize, tier, 20 ).value }
+								onChange={ ( val ) => patchTier( { pillBadgeSize }, setAttributes, 'pillBadgeSize', tier, val ?? null ) }
+								min={ 10 }
+								max={ 40 }
+								help={ __( 'Text pill only, and only when the count shows as a bubble.', 'sgs-blocks' ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
+					</ResponsiveControl>
+				) }
 				<ToggleControl
 					label={ __( 'Hide cart until it has items', 'sgs-blocks' ) }
 					help={ __(
