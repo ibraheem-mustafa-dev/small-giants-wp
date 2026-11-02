@@ -400,6 +400,13 @@ export function getBuyboxExtraColourRows( { attributes, setAttributes } ) {
 			attributes,
 			setAttributes,
 		} ),
+		textRow( {
+			key: 'picker-option',
+			label: __( 'Option tile name', 'sgs-blocks' ),
+			attrs: { base: 'pickerOptionColour' },
+			attributes,
+			setAttributes,
+		} ),
 		fillRow( {
 			key: 'add-to-cart-background',
 			label: __( 'Add to cart background', 'sgs-blocks' ),

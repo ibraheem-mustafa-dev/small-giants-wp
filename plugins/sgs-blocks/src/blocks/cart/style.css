@@ -699,7 +699,8 @@
 	opacity: 1;
 }
 
-:where(.sgs-cart__panel) .sgs-cart__item-brand-logo {
+/* Two classes (0,2,0) so `.woocommerce img { height: auto }` (0,1,1) cannot win. */
+.sgs-cart__panel .sgs-cart__item-brand-logo {
 	display: block;
 	width: auto;
 	height: var( --sgs-cart-item-brand-logo-height, 16px );

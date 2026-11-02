@@ -266,8 +266,12 @@
 
 /* ─── Individual panel ──────────────────────────────────────────────────────── */
 
-.sgs-tabs__panel {
+/* Padding default sits in :where() (zero specificity) so the panelPadding setting always wins. */
+:where( .sgs-tabs__panel ) {
 	padding: 24px;
+}
+
+.sgs-tabs__panel {
 	background: var( --sgs-panel-bg, transparent );
 	background-image: var( --sgs-panel-bg-gradient, none );
 }

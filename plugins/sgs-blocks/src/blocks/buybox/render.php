@@ -802,6 +802,19 @@ if ( $buybox_picker_show_selected_value || $buybox_picker_has_link ) {
 	}
 }
 
+// Option-tile name (e.g. "Ivory" under a colour tile) typography and colour.
+// sgs/option-picker's pill label sits inside its pill, so this block emits a
+// scoped rule on it for every picker rendered inside the buybox root. Emitted
+// whether or not a picker renders: the rules match nothing without one.
+$sgs_bb_option_typo_css = sgs_typography_css_rule( $attributes, 'pickerOption', $root_sel . ' .sgs-option-picker__pill-label' );
+if ( '' !== $sgs_bb_option_typo_css ) {
+	$scoped_css[] = $sgs_bb_option_typo_css;
+}
+$sgs_bb_option_colour = sgs_colour_value( (string) ( $attributes['pickerOptionColour'] ?? '' ) );
+if ( '' !== $sgs_bb_option_colour ) {
+	$scoped_css[] = $root_sel . ' .sgs-option-picker__pill-label{color:' . $sgs_bb_option_colour . ';}';
+}
+
 // Value-ladder typography — the wrapper ('valueLadder') and the per-row saving
 // text ('valueLadderSaving'), which style.css sizes absolutely so the wrapper
 // setting cannot reach it. Emitted whether or not the ladder renders: the rules
@@ -980,7 +993,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 		role="status"
 		aria-live="polite"
 	>
-		<span class="buybox__stock-dot" aria-hidden="true"></span><?php echo sgs_rich_text_kses( (string) $buybox_stock_status['label'], false ); ?>
+		<span class="buybox__stock-dot" aria-hidden="true"></span><?php echo sgs_rich_text_kses( (string) $buybox_stock_status['label'], false ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_rich_text_kses() is wp_kses over an allowlist. ?>
 	</p>
 	<?php else : ?>
 	<p
@@ -1036,12 +1049,12 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 
 	<?php // ── 8a-ii. Comparative value-ladder (FR-30-8, SSR-only — no data-wp-* on ladder nodes). ?>
 	<?php if ( false !== ( $attributes['showLadder'] ?? true ) && ! $buybox_ladder_hidden ) : ?>
-	<?php
-	// PD-12: aria-current marks the row matching the default-selected combo's unitDivisor.
-	$buybox_default_pack = isset( $def['unitDivisor'] ) ? (int) round( (float) $def['unitDivisor'] ) : 0;
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_value_ladder_markup() escapes every dynamic value.
-	echo sgs_value_ladder_markup( 'buybox__value-ladder', $buybox_ladder, $buybox_default_pack, $buybox_decoy_enabled );
-	?>
+		<?php
+		// PD-12: aria-current marks the row matching the default-selected combo's unitDivisor.
+		$buybox_default_pack = isset( $def['unitDivisor'] ) ? (int) round( (float) $def['unitDivisor'] ) : 0;
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_value_ladder_markup() escapes every dynamic value.
+		echo sgs_value_ladder_markup( 'buybox__value-ladder', $buybox_ladder, $buybox_default_pack, $buybox_decoy_enabled );
+		?>
 	<?php endif; ?>
 
 	<?php
@@ -1205,6 +1218,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 						'<div class="sgs-buybox__picker-label-row"><span class="sgs-buybox__picker-label-text">%s</span><a class="sgs-buybox__picker-label-link" href="%s">%s</a></div>',
 						esc_html( $axis['label'] ),
 						esc_url( $buybox_picker_link_url ),
+						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_rich_text_kses() is wp_kses over an allowlist.
 						sgs_rich_text_kses( $buybox_picker_link_text, false )
 					);
 				} else {
@@ -1336,7 +1350,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 				<?php if ( $add_to_cart_show_icon ) : ?>
 				<svg class="buybox__cart-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
 				<?php endif; ?>
-				<span class="buybox__cart-label"><?php echo sgs_rich_text_kses( $add_to_cart_label, false ); ?></span>
+				<span class="buybox__cart-label"><?php echo sgs_rich_text_kses( $add_to_cart_label, false ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_rich_text_kses() is wp_kses over an allowlist. ?></span>
 			</span>
 				<?php
 				// Bound directly to the SAME context.priceDisplay path the price row
@@ -1349,7 +1363,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 				<?php if ( $add_to_cart_show_icon ) : ?>
 			<svg class="buybox__cart-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
 				<?php endif; ?>
-			<span class="buybox__cart-label"><?php echo sgs_rich_text_kses( $add_to_cart_label, false ); ?></span>
+			<span class="buybox__cart-label"><?php echo sgs_rich_text_kses( $add_to_cart_label, false ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_rich_text_kses() is wp_kses over an allowlist. ?></span>
 			<?php endif; ?>
 		</button>
 	</form>

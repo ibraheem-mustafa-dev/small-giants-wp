@@ -216,6 +216,20 @@ if ( in_array( $sgs_field_columns_from, array( '480', '400', '320' ), true ) ) {
 	$sgs_form_supports_classes[] = 'sgs-form--field-cols-' . $sgs_field_columns_from;
 }
 
+// stretchButtonsNarrow defaults to true (style.css stacks the buttons full width
+// in a narrow container); only an explicit false adds the opt-out class.
+if ( false === ( $attributes['stretchButtonsNarrow'] ?? true ) ) {
+	$sgs_form_supports_classes[] = 'sgs-form--no-narrow-stretch';
+}
+
+// The form's own Gap setting reaches the field rows only when one is set: the
+// class lets style.css make .sgs-form__inner inherit the wrapper's gap, and an
+// unset gap keeps the stylesheet's spacing-30 (output unchanged).
+$sgs_form_gap_attr = $attributes['gap'] ?? array();
+if ( is_array( $sgs_form_gap_attr ) && array() !== array_filter( $sgs_form_gap_attr, static fn( $v ): bool => '' !== trim( (string) $v ) ) ) {
+	$sgs_form_supports_classes[] = 'sgs-form--has-gap';
+}
+
 $sgs_form_style_engine_input = array();
 
 if ( ! empty( $sgs_form_style_group['color'] ) && is_array( $sgs_form_style_group['color'] ) ) {
@@ -528,7 +542,7 @@ $sgs_field_css .= sgs_typography_css_rule( $attributes, 'reviewDetail', '.' . $s
 $sgs_field_css .= sgs_typography_css_rule( $attributes, 'stepLabel', '.' . $sgs_form_uid . ' .sgs-form__progress-step-label' );
 
 // Submit button row alignment (the stylesheet's own value is flex-end). Narrow
-// containers still stack the button full width (style.css @container rule).
+// containers stack the button full width unless stretchButtonsNarrow is false.
 $sgs_submit_align_map = array(
 	'start'  => 'flex-start',
 	'center' => 'center',

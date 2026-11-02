@@ -190,6 +190,18 @@ if ( $sgs_container_resting_decls || $sgs_container_hover_decls ) {
 		$sgs_container_resting_decls,
 		$sgs_container_hover_decls
 	);
+
+	// Headings inherit the section's FLAT text colour. The theme paints
+	// `h1..h6 { color: var(--wp--preset--color--heading) }` straight on the heading,
+	// which beats inheritance, so a dark section's headings stayed ink on ink.
+	// `:where()` keeps this rule at (0,1,0): it beats the theme's (0,0,1) element rule
+	// and loses to a heading's own scoped (0,2,0) colour. `inherit` (not the value)
+	// lets a nested container with its own text colour win whatever the print order.
+	// A text GRADIENT is never inherited (it paints with background-clip:text on the
+	// container only), so the rule prints for a flat colour alone.
+	if ( '' !== (string) ( $attributes['textColour'] ?? '' ) && '' === (string) ( $attributes['textColourGradient'] ?? '' ) ) {
+		$sgs_container_supports_css .= '.' . $sgs_container_supports_uid . ' :where(h1,h2,h3,h4,h5,h6){color:inherit}';
+	}
 }
 
 // ── Wrapper border (width, style, colour, gradient ring, hover, radius at

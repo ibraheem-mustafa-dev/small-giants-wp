@@ -1367,6 +1367,56 @@
 			"default": "",
 			"description": "Companion unit for pickerValueLineHeight. Empty = unitless (the TypographyControls convention — a unitless ratio recomputes correctly against nested text, unlike a fixed em/px line-height)."
 		},
+		"pickerOptionFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Font size for each option tile's name (e.g. \"Ivory\" under a colour tile, \"Large\" on a size tile). Emitted by this block as a scoped rule on the tile name inside the buybox; empty = the option picker's own look."
+		},
+		"pickerOptionFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"pickerOptionFontWeight": {
+			"type": "string",
+			"default": "",
+			"description": "Font weight for each option tile's name. Empty = the option picker's own look."
+		},
+		"pickerOptionLetterSpacing": {
+			"type": "object",
+			"default": {},
+			"description": "Letter spacing for each option tile's name."
+		},
+		"pickerOptionLetterSpacingUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"pickerOptionLineHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Line height for each option tile's name. Unitless ratio, same shape as every other TypographyControls-driven prefix."
+		},
+		"pickerOptionLineHeightUnit": {
+			"type": "string",
+			"default": "",
+			"description": "Companion unit for pickerOptionLineHeight. Empty = unitless."
+		},
+		"pickerOptionTextTransform": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"description": "Letter case for each option tile's name. Empty = the option picker's own look."
+		},
+		"pickerOptionColour": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour for each option tile's name. Empty = the option picker's own pill text colour (resting, hover and selected)."
+		},
 		"pickerShowSelectedValue": {
 			"type": "boolean",
 			"default": false,

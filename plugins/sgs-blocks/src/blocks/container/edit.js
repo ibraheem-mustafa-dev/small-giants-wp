@@ -466,6 +466,12 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		previewTier
 	);
 
+	// Headings inherit a flat section text colour (render.php prints the same rule on
+	// the page); a text gradient is never inherited.
+	if ( textColour && ! textColourGradient ) {
+		gridItemScopedCss += `#block-${ clientId } :where(h1,h2,h3,h4,h5,h6){color:inherit}`;
+	}
+
 	// "Scroll sideways" at the previewed device: the items' row (the band when one
 	// renders, else the root) previews as the same one-line row the frontend
 	// draws (includes/container-scroll-row-css.php), without snap, which would

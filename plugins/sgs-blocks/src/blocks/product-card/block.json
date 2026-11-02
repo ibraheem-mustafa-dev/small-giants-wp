@@ -479,6 +479,22 @@
 						}
 					}
 				},
+				"brandLogo": {
+					"selector": ".sgs-product-card__brand-logo",
+					"label": "Brand logo",
+					"order": 14,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "brandLogo",
+					"attrMap": {
+						"css:height": "brandLogoHeight",
+						"css:width": "brandLogoWidth",
+						"css:max-height": "brandLogoMaxHeight",
+						"css:max-width": "brandLogoMaxWidth"
+					},
+					"_note": "The brand LOGO image (brandUseLogo on), a per-device length each. Unset height keeps the stylesheet 18px, width auto, max-height none, max-width 100%. Emitted by src/blocks/product-card/render.php."
+				},
 				"savingBadge": {
 					"selector": ".sgs-product-card__saving-badge",
 					"label": "Saving badge",
@@ -2919,6 +2935,26 @@
 			"type": "boolean",
 			"default": true,
 			"description": "Print the brand's LOGO on the product image when the brand has one, falling back to the brand name as text. The logo's text alternative is the brand name (never the attachment's own alt text, which is often empty), and the logo replaces the name rather than joining it, so the brand is announced once. Resolved by includes/helpers-brand-logo.php via the shared `sgs_product_card_brand_taxonomy` filter; rendered by sgs_product_card_brand_markup(). Switch off to force the typed/resolved name even where a logo exists — a logo too detailed to read at overlay size is a design call."
+		},
+		"brandLogoHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Brand logo height per device, a CSS length. Unset keeps the stylesheet 18px."
+		},
+		"brandLogoWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Brand logo width per device, a CSS length. Unset keeps auto (the logo's own shape)."
+		},
+		"brandLogoMaxHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Brand logo maximum height per device, a CSS length. Unset = no cap."
+		},
+		"brandLogoMaxWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Brand logo maximum width per device, a CSS length. Unset = the logo may fill its box (100%), never wider."
 		},
 		"brandName": {
 			"type": "string",

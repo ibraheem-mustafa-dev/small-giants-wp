@@ -1491,12 +1491,15 @@
  * is already `position:relative` in this stylesheet's earlier rules, so
  * both selectors are covered without a third rule.
  */
+:where( .sgs-product-card__brand ) {
+	max-width: 80%;
+}
+
 .sgs-product-card__brand {
 	position: absolute;
 	top: 0;
 	left: 0;
 	z-index: 1;
-	max-width: 80%;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -1525,7 +1528,11 @@
 	align-items: center;
 }
 
-.sgs-product-card__brand-logo {
+/* Two classes (0,2,0): WooCommerce's `.woocommerce img { height: auto }`
+   (0,1,1) would otherwise beat the single-class rule and show every logo at its
+   file's intrinsic size. The card's instance rule (brandLogoHeight, -Width,
+   -MaxHeight, -MaxWidth) uses the same weight and comes later, so it wins. */
+.sgs-product-card .sgs-product-card__brand-logo {
 	display: block;
 	width: auto;
 	height: var( --sgs-product-card-brand-logo-height, 18px );

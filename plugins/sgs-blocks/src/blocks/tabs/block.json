@@ -165,7 +165,8 @@
 						"css:background-color": "panelBgColour",
 						"css:background-image": "panelBgColourGradient",
 						"css:border-color": "panelBorderColour",
-						"css:border-color-gradient": "panelBorderColourGradient"
+						"css:border-color-gradient": "panelBorderColourGradient",
+						"css:padding": "panelPadding"
 					},
 					"states": {
 						"hover": {
@@ -179,6 +180,9 @@
 				}
 			},
 			"boxFamilies": {
+				"panelPadding": [
+					"panelPadding"
+				],
 				"borderRadius": [
 					"borderRadius"
 				],
@@ -336,6 +340,11 @@
 			"type": "object",
 			"default": {},
 			"description": "Tab button padding as a box {top,right,bottom,left} (mirrors sgs/form's submitPadding). Empty = the stylesheet's 12px 20px."
+		},
+		"panelPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Tab panel padding as a BOX-object {top,right,bottom,left} per tier ({desktop,tablet,mobile}); render.php emits it through sgs_emit_responsive_css() with box=true onto `.sgs-tabs__panel`. Empty = the stylesheet's 24px; a set side prints only that padding-* longhand and wins over it."
 		},
 		"tabMinHeight": {
 			"type": "string",

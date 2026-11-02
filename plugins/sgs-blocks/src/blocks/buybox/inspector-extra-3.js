@@ -159,6 +159,16 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 							showTransform: true,
 						},
 						{
+							key: 'pickerOption',
+							label: __( 'Option tile name', 'sgs-blocks' ),
+							prefix: 'pickerOption',
+							showFontFamily: false,
+							showStyle: false,
+							showLineHeight: true,
+							showLetterSpacing: true,
+							showTransform: true,
+						},
+						{
 							key: 'pickerValue',
 							label: __( 'Chosen value', 'sgs-blocks' ),
 							prefix: 'pickerValue',

@@ -21,12 +21,13 @@ import { LogicalAlignControl,
 	SgsColourPanel,
 	SgsBorderControl,
 	SgsBoxControl,
+	ResponsiveBoxControl,
 	SgsLengthControl,
 	TypographyControls,
 	BOX_UNITS,
 	resolveColourToken,
 } from '../../components';
-import { colourVar, textPaintPreview, borderPaintPreview, containerWrapperPreview, usePreviewTier, BandWrap } from '../../utils';
+import { colourVar, textPaintPreview, borderPaintPreview, containerWrapperPreview, usePreviewTier, tierBoxLonghands, BandWrap } from '../../utils';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 import { spacingAxesFor } from '../../utils/spacing-axes';
 import { tabsIndicatorGradientCss, tabButtonStyle } from './preview-style';
@@ -75,6 +76,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		hideEmptyTabs,
 		mobileLayout,
 		tabPadding,
+		panelPadding,
 		tabMinHeight,
 		tabIndicatorThickness,
 		tabFontSize,
@@ -222,7 +224,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		{
 			className: 'sgs-tabs__panels',
 			'data-active-tab': activeEditorTab,
-			style: panelBorderPreview.borderImage ? { borderImage: panelBorderPreview.borderImage } : undefined,
+			style: {
+				...( panelBorderPreview.borderImage ? { borderImage: panelBorderPreview.borderImage } : {} ),
+				...tierBoxLonghands( panelPadding && typeof panelPadding === 'object' ? panelPadding : {}, previewTier, 'padding' ),
+			},
 		},
 		{
 			allowedBlocks: [ 'sgs/tab' ],
@@ -523,6 +528,19 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						defaults={ spacingDefaultsFor( name, 'tabPadding', { attributes, tier: previewTier } ) }
 						splitOnAxis={ spacingAxesFor( name, 'tabPadding' ) }
 						onChange={ ( next ) => setAttributes( { tabPadding: next || {} } ) }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Panel padding', 'sgs-blocks' ) }
+						presets
+						values={ {
+							base: panelPadding?.desktop ?? {},
+							tablet: panelPadding?.tablet ?? {},
+							mobile: panelPadding?.mobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { panelPadding: { ...( panelPadding || {} ), [ key ]: next } } );
+						} }
 					/>
 					<SgsLengthControl
 						label={ __( 'Tab minimum height', 'sgs-blocks' ) }

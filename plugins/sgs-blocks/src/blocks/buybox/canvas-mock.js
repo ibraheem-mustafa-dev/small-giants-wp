@@ -222,7 +222,7 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 }
 
 /** One sample option picker, in sgs/option-picker's own markup. */
-function SampleOptionGroup( { label, options, pillStyle, showTick, labelStyle, valueStyle, showSelectedValue } ) {
+function SampleOptionGroup( { label, options, pillStyle, showTick, labelStyle, valueStyle, optionStyle, showSelectedValue } ) {
 	const style = PICKER_STYLES.includes( pillStyle ) ? pillStyle : 'outlined';
 	return (
 		<>
@@ -239,7 +239,7 @@ function SampleOptionGroup( { label, options, pillStyle, showTick, labelStyle, v
 							<input type="radio" checked={ 0 === index } readOnly tabIndex={ -1 } />
 							<span className="sgs-option-picker__pill">
 								<span className="sgs-option-picker__pill-text">
-									<span className="sgs-option-picker__pill-label">{ option }</span>
+									<span className="sgs-option-picker__pill-label" style={ optionStyle }>{ option }</span>
 								</span>
 							</span>
 						</label>
@@ -371,6 +371,11 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 	// The chosen value renders beside the label only on the own-render path, so
 	// the canvas shows it under the same condition render.php uses.
 	const valueStyle = typographyPreviewStyle( attributes, 'pickerValue', tier );
+	// The option tile names (render.php scopes the same typography and colour to .sgs-option-picker__pill-label).
+	const optionStyle = {
+		...typographyPreviewStyle( attributes, 'pickerOption', tier ),
+		...( attributes.pickerOptionColour ? { color: resolveColourToken( attributes.pickerOptionColour, palette ) || attributes.pickerOptionColour } : {} ),
+	};
 	const showSelectedValue = true === attributes.pickerShowSelectedValue;
 	const rrpPillStyle = {
 		...( attributes.rrpPillBackgroundColour ? { backgroundColor: resolveColourToken( attributes.rrpPillBackgroundColour, palette ) || attributes.rrpPillBackgroundColour } : {} ),
@@ -439,7 +444,7 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 							<p className="sgs-buybox-guided__meter-compact">{ `1 ${ __( 'of', 'sgs-blocks' ) } 2 · ${ __( 'Colour', 'sgs-blocks' ) }` }</p>
 						</div>
 						<h3 className="sgs-buybox-guided__group-title">{ __( 'Colour', 'sgs-blocks' ) }</h3>
-						<SampleOptionGroup label={ __( 'Colour', 'sgs-blocks' ) } options={ SAMPLE.colours } pillStyle={ attributes.pickerSwatchStyle } showTick={ showTick } labelStyle={ labelStyle } valueStyle={ valueStyle } showSelectedValue={ showSelectedValue } />
+						<SampleOptionGroup label={ __( 'Colour', 'sgs-blocks' ) } options={ SAMPLE.colours } pillStyle={ attributes.pickerSwatchStyle } showTick={ showTick } labelStyle={ labelStyle } valueStyle={ valueStyle } optionStyle={ optionStyle } showSelectedValue={ showSelectedValue } />
 						<div className="sgs-buybox-guided__nav" style={ attributes.navFlexWrap ? { flexWrap: attributes.navFlexWrap } : undefined }>
 							<span className="sgs-buybox-guided__nav-btn sgs-buybox-guided__nav-btn--back">{ attributes.guidedBackLabel || __( 'Back', 'sgs-blocks' ) }</span>
 							<AuthoredText className="sgs-buybox-guided__nav-btn sgs-buybox-guided__nav-btn--next" value={ attributes.guidedNextLabel || __( 'Next', 'sgs-blocks' ) } />
@@ -447,8 +452,8 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 					</div>
 				) : (
 					<>
-						<SampleOptionGroup label={ __( 'Colour', 'sgs-blocks' ) } options={ SAMPLE.colours } pillStyle={ attributes.pickerSwatchStyle } showTick={ showTick } labelStyle={ labelStyle } valueStyle={ valueStyle } showSelectedValue={ showSelectedValue } />
-						<SampleOptionGroup label={ __( 'Size', 'sgs-blocks' ) } options={ SAMPLE.sizes } pillStyle={ attributes.pickerStyle } showTick={ showTick } labelStyle={ labelStyle } valueStyle={ valueStyle } showSelectedValue={ showSelectedValue } />
+						<SampleOptionGroup label={ __( 'Colour', 'sgs-blocks' ) } options={ SAMPLE.colours } pillStyle={ attributes.pickerSwatchStyle } showTick={ showTick } labelStyle={ labelStyle } valueStyle={ valueStyle } optionStyle={ optionStyle } showSelectedValue={ showSelectedValue } />
+						<SampleOptionGroup label={ __( 'Size', 'sgs-blocks' ) } options={ SAMPLE.sizes } pillStyle={ attributes.pickerStyle } showTick={ showTick } labelStyle={ labelStyle } valueStyle={ valueStyle } optionStyle={ optionStyle } showSelectedValue={ showSelectedValue } />
 					</>
 				) }
 				<div className="buybox__cart-form">

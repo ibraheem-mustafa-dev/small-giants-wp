@@ -301,6 +301,23 @@ if ( null !== $tab_padding ) {
 	$tabs_responsive_css .= "{$root_sel} .sgs-tabs__tab{{$tab_padding};}";
 }
 
+// Panel padding — BOX-object per tier, emitted as scoped longhands on `.sgs-tabs__panel`
+// ($root_sel + class beats style.css's single-class `padding:24px` default). Unset prints nothing.
+$panel_padding_obj = is_array( $attributes['panelPadding'] ?? null ) ? $attributes['panelPadding'] : array();
+if ( ! empty( $panel_padding_obj ) ) {
+	$tabs_responsive_css .= sgs_emit_responsive_css(
+		"{$root_sel} .sgs-tabs__panel",
+		array(
+			array(
+				'value'        => $panel_padding_obj,
+				'css'          => 'padding',
+				'box'          => true,
+				'unit_default' => 'px',
+			),
+		)
+	);
+}
+
 // $css_vars (CSS custom-property VALUES only, e.g. --sgs-tab-text:…) stay
 // inline via extra_styles — a `--x: value` VALUE is allowed by the no-inline
 // contract (only real property declarations are forbidden).

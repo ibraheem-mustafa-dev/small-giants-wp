@@ -16,6 +16,7 @@ import {
 	DesignTokenPicker,
 	SgsColourPanel,
 	SgsLengthControl,
+	ResponsiveLengthControl,
 	SgsBorderControl,
 	MediaElementPanel,
 	SsrPreviewGuard, SgsBoxControl, LinkUnderlineControl } from '../../components';
@@ -724,6 +725,10 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 		ratingColour,
 		showBrandOverlay,
 		brandUseLogo,
+		brandLogoHeight,
+		brandLogoWidth,
+		brandLogoMaxHeight,
+		brandLogoMaxWidth,
 		brandName,
 		brandColour,
 		showSavingBadge,
@@ -2131,6 +2136,38 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								}
 								__nextHasNoMarginBottom
 							/>
+							{ brandUseLogo !== false && (
+								<ResponsiveLengthControl
+									label={ __( 'Logo height', 'sgs-blocks' ) }
+									help={ __( 'Empty = 18px.', 'sgs-blocks' ) }
+									value={ brandLogoHeight }
+									onChange={ ( obj ) => setAttributes( { brandLogoHeight: obj } ) }
+								/>
+							) }
+							{ brandUseLogo !== false && (
+								<ResponsiveLengthControl
+									label={ __( 'Logo width', 'sgs-blocks' ) }
+									help={ __( 'Empty = automatic, keeping the logo’s shape.', 'sgs-blocks' ) }
+									value={ brandLogoWidth }
+									onChange={ ( obj ) => setAttributes( { brandLogoWidth: obj } ) }
+								/>
+							) }
+							{ brandUseLogo !== false && (
+								<ResponsiveLengthControl
+									label={ __( 'Logo maximum height', 'sgs-blocks' ) }
+									help={ __( 'Empty = no cap.', 'sgs-blocks' ) }
+									value={ brandLogoMaxHeight }
+									onChange={ ( obj ) => setAttributes( { brandLogoMaxHeight: obj } ) }
+								/>
+							) }
+							{ brandUseLogo !== false && (
+								<ResponsiveLengthControl
+									label={ __( 'Logo maximum width', 'sgs-blocks' ) }
+									help={ __( 'Empty = as wide as the card allows.', 'sgs-blocks' ) }
+									value={ brandLogoMaxWidth }
+									onChange={ ( obj ) => setAttributes( { brandLogoMaxWidth: obj } ) }
+								/>
+							) }
 							<TextControl
 								label={ __( 'Brand name', 'sgs-blocks' ) }
 								help={ __(

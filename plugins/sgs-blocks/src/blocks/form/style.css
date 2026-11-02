@@ -56,6 +56,11 @@
 	gap: var(--wp--preset--spacing--30, 1rem);
 }
 
+/* A form with its own Gap setting spaces its field rows by it too. */
+.sgs-form--has-gap .sgs-form__inner {
+	gap: inherit;
+}
+
 /* A step takes the form's own gap, so the form's Gap setting reaches the rows
    inside a step as well. */
 .sgs-form-step {
@@ -937,12 +942,14 @@ select.sgs-form-field__input {
 }
 
 /* Stack buttons full-width on narrow containers */
+/* The :where() wrapper keeps the specificity at (0,1,0); a form with
+ * stretchButtonsNarrow off carries .sgs-form--no-narrow-stretch and skips this. */
 @container sgs-form (max-width: 400px) {
-	.sgs-form__actions {
+	:where(.sgs-form:not(.sgs-form--no-narrow-stretch)) .sgs-form__actions {
 		flex-direction: column-reverse;  /* primary action stays on top visually */
 	}
 
-	.sgs-form__button {
+	:where(.sgs-form:not(.sgs-form--no-narrow-stretch)) .sgs-form__button {
 		width: 100%;
 		text-align: center;
 	}

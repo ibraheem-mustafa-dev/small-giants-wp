@@ -490,6 +490,25 @@ if ( null !== $sgs_card_padding_shorthand ) {
 	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .product-card-body,.' . $sgs_card_uid . ' .sgs-product-card__body{' . $sgs_card_padding_shorthand . ';}';
 }
 
+// Brand logo box (brandLogoHeight / -Width / -MaxHeight / -MaxWidth): each a
+// per-device length, emitted as one scoped rule on the logo. Unset properties
+// emit nothing, so style.css keeps 18px high, width auto. The selector's
+// weight (0,2,0) equals style.css's logo rule and this <style> comes later.
+$sgs_brand_logo_props = array();
+foreach ( array(
+	'brandLogoHeight'    => 'height',
+	'brandLogoWidth'     => 'width',
+	'brandLogoMaxHeight' => 'max-height',
+	'brandLogoMaxWidth'  => 'max-width',
+) as $sgs_brand_logo_attr => $sgs_brand_logo_css ) {
+	$sgs_brand_logo_props[] = array(
+		'value'        => is_array( $attributes[ $sgs_brand_logo_attr ] ?? null ) ? $attributes[ $sgs_brand_logo_attr ] : array(),
+		'css'          => $sgs_brand_logo_css,
+		'unit_default' => 'px',
+	);
+}
+$sgs_card_typo_css .= sgs_emit_responsive_css( '.' . $sgs_card_uid . ' .sgs-product-card__brand-logo', $sgs_brand_logo_props );
+
 // ── Media-element atom layer (rule 37-media-no-handroll) — replaces the
 // former sgs_media_position_css() hand-roll (which never had a declared
 // sgsObjectFit/sgsObjectPosition attribute pair or any editor control, so it

@@ -98,6 +98,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		submitPadding,
 		submitMinHeight,
 		submitAlign,
+		stretchButtonsNarrow,
 		actionsFlexWrap,
 		fieldBackground,
 		fieldTextColour,
@@ -436,7 +437,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 			...typographyPreviewStyle( attributes, '', previewTier ),
 			...tierBoxLonghands( attributes.margin, previewTier, 'margin' ),
 		},
-		className: `sgs-form ${ formPreviewScope }${ fieldColumnsFrom && '560' !== fieldColumnsFrom ? ` sgs-form--field-cols-${ fieldColumnsFrom }` : '' }`,
+		className: `sgs-form ${ formPreviewScope }${ fieldColumnsFrom && '560' !== fieldColumnsFrom ? ` sgs-form--field-cols-${ fieldColumnsFrom }` : '' }${ false === stretchButtonsNarrow ? ' sgs-form--no-narrow-stretch' : '' }${ attributes.gap && Object.values( attributes.gap ).some( ( v ) => '' !== String( v ?? '' ).trim() ) ? ' sgs-form--has-gap' : '' }`,
 	} );
 
 	// Base roster of blocks a form's own children may ever sensibly be — unlike
@@ -895,9 +896,16 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						value={ submitAlign || '' }
 						options={ SUBMIT_ALIGN_OPTIONS }
 						onChange={ ( value ) => setAttributes( { submitAlign: value } ) }
-						help={ __( 'A narrow form still stacks the button full width.', 'sgs-blocks' ) }
+						help={ __( 'A narrow form stacks the button full width unless the toggle below is off.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
+					/>
+					<ToggleControl
+						label={ __( 'Full-width buttons in narrow spaces', 'sgs-blocks' ) }
+						checked={ false !== stretchButtonsNarrow }
+						onChange={ ( value ) => setAttributes( { stretchButtonsNarrow: value } ) }
+						help={ __( 'On: a form narrower than 400px stacks the buttons full width. Off: they keep their normal width and order.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
 					/>
 					<FlexWrapControl
 						label={ __( 'Wrap buttons', 'sgs-blocks' ) }

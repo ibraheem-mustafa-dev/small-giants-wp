@@ -1367,7 +1367,12 @@
 				"end"
 			],
 			"default": "",
-			"description": "Where the submit button row sits: start, center or end. Empty = the stylesheet's end. A narrow form container still stacks the button full width."
+			"description": "Where the submit button row sits: start, center or end. Empty = the stylesheet's end. A narrow form container stacks the button full width unless stretchButtonsNarrow is off."
+		},
+		"stretchButtonsNarrow": {
+			"type": "boolean",
+			"default": true,
+			"description": "When on (default), a narrow form container (400px or less) stacks the buttons full width with the primary action on top. Off keeps the buttons at their normal width and order."
 		},
 		"progressBarColour": {
 			"type": "string",
