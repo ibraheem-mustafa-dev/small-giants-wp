@@ -3730,6 +3730,48 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "pickerOptionColour",
+      "fields": {
+        "css_property": "color"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerOptionFontSize",
+      "fields": {
+        "css_property": "font-size"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerOptionFontWeight",
+      "fields": {
+        "css_property": "font-weight"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerOptionLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerOptionLineHeight",
+      "fields": {
+        "css_property": "line-height"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerOptionTextTransform",
+      "fields": {
+        "css_property": "text-transform"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "pickerValueFontSize",
       "fields": {
         "css_property": "font-size",
@@ -3777,15 +3819,6 @@
       "attr": "rrpPillBackgroundColour",
       "fields": {
         "css_property": "background-color",
-        "role": "color",
-        "css_element": "rrp-pill"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "rrpPillTextColour",
-      "fields": {
-        "css_property": "color",
         "role": "color",
         "css_element": "rrp-pill"
       }
@@ -32020,6 +32053,15 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "rrpPillTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "rrp-pill"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "stickyBarBackground",
       "fields": {
         "css_property": "background-color",
@@ -39414,6 +39456,38 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "brandLogoHeight",
+      "fields": {
+        "css_property": "height",
+        "css_element": "brandLogo"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "brandLogoMaxHeight",
+      "fields": {
+        "css_property": "max-height",
+        "css_element": "brandLogo"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "brandLogoMaxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_element": "brandLogo"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "brandLogoWidth",
+      "fields": {
+        "css_property": "width",
+        "css_element": "brandLogo"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "cta2TextAlign",
       "fields": {
         "css_property": "text-align",
@@ -41076,6 +41150,14 @@
       "attr": "panelBorderColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
+        "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
+      "attr": "panelPadding",
+      "fields": {
+        "css_property": "padding",
         "css_element": "panel"
       }
     },
