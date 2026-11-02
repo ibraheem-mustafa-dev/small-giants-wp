@@ -36,7 +36,7 @@ for ( const surface of list.split( ',' ) ) {
 				}
 				await p.waitForTimeout( 2000 );
 				// Play every scroll entrance so nothing is captured mid-reveal.
-				await p.evaluate( async () => { for ( let y = 0; y < document.body.scrollHeight; y += 600 ) { window.scrollTo( 0, y ); await new Promise( ( r ) => setTimeout( r, 120 ) ); } window.scrollTo( 0, 0 ); } );
+				await p.evaluate( async () => { for ( let y = 0; y < document.body.scrollHeight; y += 200 ) { window.scrollTo( 0, y ); await new Promise( ( r ) => setTimeout( r, 250 ) ); } window.scrollTo( 0, 0 ); } );
 				await p.waitForTimeout( 1200 );
 				await p.screenshot( { path: `${ OUT }/${ surface }-${ w }-${ side }${ 'live' === side && process.env.SUFFIX ? process.env.SUFFIX : '' }.png`, fullPage: true } );
 			} catch ( e ) {
