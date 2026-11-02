@@ -137,11 +137,12 @@ if ( $sf_resting_decls || $sf_hover_decls ) {
 
 	// Footer links take the footer's text colour by inheritance only: core styles every link with
 	// `a:where(:not(.wp-element-button)){color:var(--wp--preset--color--link)}`, so the footer sets that
-	// variable to `currentColor` on its own root and a plain link resolves to the colour it inherits. No
+	// variable (and its link-hover twin, which core's :hover and :focus-visible link rules read) to `currentColor` on its own
+	// root, so a plain link keeps the colour it inherits at rest, on hover and on keyboard focus. No
 	// rule targets descendants, so any block inside the footer that sets its own colour (an sgs/button,
 	// an sgs/text link colour) keeps it.
 	if ( '' !== $sf_text_effective ) {
-		$css .= ".{$uid}{--wp--preset--color--link:currentColor;}";
+		$css .= ".{$uid}{--wp--preset--color--link:currentColor;--wp--preset--color--link-hover:currentColor;}";
 	}
 
 	$sf_text_fallback = sgs_text_colour_gradient_fallback_rule( $root_sel, $sf_text_effective );

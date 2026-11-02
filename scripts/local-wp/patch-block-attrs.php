@@ -12,7 +12,8 @@
  *   { "match": "cr-ref-home-96", "replace": "<!-- wp:sgs/multi-button {...} --> ... <!-- /wp:sgs/multi-button -->" }
  *   { "match": "cr-ref-home-74", "remove": true }
  *   { "match": "cr-ref-home-91", "append": "<!-- wp:sgs/text {...} /-->" }   (adds inner blocks at the end)
- * `set` replaces each named top-level attribute whole (a box padding object is written whole, never merged).
+ * `set` replaces each named top-level attribute whole (a box padding object is written whole, never merged). An empty
+ * JSON object `{}` decodes to an empty array and serialises as `[]`, so unset an attribute rather than setting it to `{}`.
  * Every operation must match exactly one block unless it says "all": true; otherwise nothing is written.
  *
  * Before writing, the post's content is saved to /var/www/<site>-backups/<post>-<UTC time>.html. The content is
@@ -150,7 +151,7 @@ $sgs_pba_dir = rtrim( ABSPATH, '/' ) . '-backups';
 if ( ! is_dir( $sgs_pba_dir ) && ! wp_mkdir_p( $sgs_pba_dir ) ) {
 	WP_CLI::error( 'Cannot create the backup folder ' . $sgs_pba_dir );
 }
-$sgs_pba_backup = sprintf( '%s/%d-%s.html', $sgs_pba_dir, $sgs_pba_post_id, gmdate( 'Ymd-His' ) );
+$sgs_pba_backup = sprintf( '%s/%d-%s-%s.html', $sgs_pba_dir, $sgs_pba_post_id, gmdate( 'Ymd-His' ), substr( (string) microtime(), 2, 6 ) );
 if ( false === file_put_contents( $sgs_pba_backup, $sgs_pba_post->post_content ) ) {
 	WP_CLI::error( 'Backup failed; nothing written.' );
 }

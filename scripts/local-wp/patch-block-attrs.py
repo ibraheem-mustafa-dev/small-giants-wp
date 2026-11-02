@@ -9,6 +9,7 @@ be one of the local-* folders under /var/www in WSL, so a Hostinger site can nev
 """
 import argparse
 import re
+import shlex
 import subprocess
 import sys
 from pathlib import Path
@@ -33,6 +34,8 @@ def main() -> int:
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--user", default="1", help="administrator id or login the write runs as (default 1). Without an administrator, the sgsCustomCss save filter strips every sgsCustomCss attribute in the post.")
     a = ap.parse_args()
+    if not re.fullmatch(r"[A-Za-z0-9_.@-]+", a.user):
+        sys.exit("--user must be a user id or login.")
     if not re.fullmatch(r"local-[a-z0-9-]+", a.site):
         sys.exit("--site must be a local mirror (local-<name>).")
     if not a.patch.is_file():
@@ -40,7 +43,7 @@ def main() -> int:
     php = to_wsl(REPO / "scripts/local-wp/patch-block-attrs.php")
     # One writer per post at a time: parallel workers patching the same post queue on a lock instead of one read-modify-write
     # overwriting another's.
-    cmd = f"cd /var/www/{a.site} && flock -w 120 /tmp/patch-block-attrs-{a.site}-{a.post}.lock wp --allow-root --user={a.user} eval-file {php} {a.post} {to_wsl(a.patch)}" + (" dry-run" if a.dry_run else "")
+    cmd = f"cd /var/www/{a.site} && flock -w 120 /tmp/patch-block-attrs-{a.site}-{a.post}.lock wp --allow-root --user={shlex.quote(a.user)} eval-file {shlex.quote(php)} {a.post} {shlex.quote(to_wsl(a.patch))}" + (" dry-run" if a.dry_run else "")
     r = subprocess.run(["wsl", "-d", "Ubuntu", "-u", "root", "--", "bash", "-lc", cmd], capture_output=True, text=True)
     sys.stdout.write(r.stdout)
     sys.stderr.write("\n".join(l for l in r.stderr.splitlines() if "Deprecated" not in l and l.strip()) + ("\n" if r.stderr.strip() else ""))
