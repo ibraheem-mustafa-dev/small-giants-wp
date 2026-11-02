@@ -469,8 +469,16 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	);
 
 	// "Heading colour" (render.php prints the same rule on the page).
-	if ( headingColour ) {
-		gridItemScopedCss += `#block-${ clientId } :where(h1,h2,h3,h4,h5,h6){color:${ resolveColourToken( headingColour, colourPalette ) }}`;
+	// The resolved colour goes into an editor <style>: a value that could close the rule
+	// (the server's sgs_css_value_has_breakout set) prints nothing.
+	const headingColourCss = headingColour
+		? String( resolveColourToken( headingColour, colourPalette ) ?? '' )
+		: '';
+	if (
+		headingColourCss &&
+		! /[;{}<>"'`\\]|url\s*\(|expression\s*\(|@/i.test( headingColourCss )
+	) {
+		gridItemScopedCss += `#block-${ clientId } :where(h1,h2,h3,h4,h5,h6){color:${ headingColourCss }}`;
 	}
 
 	// "Scroll sideways" at the previewed device: the items' row (the band when one

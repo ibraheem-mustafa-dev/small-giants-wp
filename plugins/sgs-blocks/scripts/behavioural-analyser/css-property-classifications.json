@@ -2603,6 +2603,47 @@
     },
     {
       "slug": "sgs/button",
+      "attr": "linkUnderline",
+      "fields": {
+        "css_property": "text-decoration-link",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "linkUnderlineColour",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "linkUnderlineColourHover",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "linkUnderlineOffset",
+      "fields": {
+        "css_property": "text-decoration-offset-link",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "linkUnderlineThickness",
+      "fields": {
+        "css_property": "text-decoration-thickness-link",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -6728,6 +6769,16 @@
         "css_property": "grid-template-rows",
         "css_layer": "GRID",
         "css_element": "inner"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "headingColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "headings"
       }
     },
     {
@@ -31878,6 +31929,14 @@
       "fields": {
         "css_property": "box-shadow",
         "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "builtInHoverLift",
+      "fields": {
         "css_element": "wrapper",
         "css_state": "hover"
       }

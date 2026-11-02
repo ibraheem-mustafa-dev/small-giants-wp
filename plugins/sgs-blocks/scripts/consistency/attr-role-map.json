@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 9506,
+    "row_count": 9513,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -1256,6 +1256,7 @@
     "sgs/button::boxShadowColour": "color",
     "sgs/button::boxShadowColourHover": "color",
     "sgs/button::boxShadowHover": "visual",
+    "sgs/button::builtInHoverLift": "boolean-visibility",
     "sgs/button::className": "technical",
     "sgs/button::colourBackground": "color",
     "sgs/button::colourBackgroundGradient": "colour-gradient",
@@ -1301,6 +1302,11 @@
     "sgs/button::linkKind": null,
     "sgs/button::linkSource": "enum-mode",
     "sgs/button::linkTarget": "link-href",
+    "sgs/button::linkUnderline": "enum-mode",
+    "sgs/button::linkUnderlineColour": "color",
+    "sgs/button::linkUnderlineColourHover": "color",
+    "sgs/button::linkUnderlineOffset": "typography",
+    "sgs/button::linkUnderlineThickness": "styling",
     "sgs/button::margin": "layout",
     "sgs/button::minHeight": "layout",
     "sgs/button::note": "text-content",
@@ -2351,6 +2357,7 @@
     "sgs/container::gridTemplateColumns": "layout",
     "sgs/container::gridTemplateRows": "layout",
     "sgs/container::ground": "enum-mode",
+    "sgs/container::headingColour": "color",
     "sgs/container::justifyContent": "layout",
     "sgs/container::justifyItems": "layout",
     "sgs/container::layout": "layout",
