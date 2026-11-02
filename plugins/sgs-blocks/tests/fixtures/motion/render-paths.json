@@ -865,8 +865,11 @@
      "content": "<div class=\"sgs-form-field sgs-form-field--text\"><label class=\"sgs-form-field__label\" for=\"f1\">Name</label><input type=\"text\" id=\"f1\" name=\"name\" class=\"sgs-form-field__input\" /></div><div class=\"sgs-form-field sgs-form-field--text\"><label class=\"sgs-form-field__label\" for=\"f2\">Name</label><input type=\"text\" id=\"f2\" email=\"email\" class=\"sgs-form-field__input\" /></div>"
     },
     "multi-step": {
-     "why": "two sgs/form-step inner blocks: is_multi_step true adds the progress wrapper (bar, step number, step label) and the prev/next buttons",
-     "attrs": {},
+     "why": "two sgs/form-step inner blocks: is_multi_step true adds the progress wrapper (bar, step number, step label) and the prev/next buttons; the step counter and the saved-progress notice are switched on so those two parts print",
+     "attrs": {
+      "stepCounter": true,
+      "savedProgress": true
+     },
      "innerBlocks": [
       {
        "name": "sgs/form-step",

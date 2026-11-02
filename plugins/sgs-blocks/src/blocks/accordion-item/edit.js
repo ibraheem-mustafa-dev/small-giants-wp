@@ -13,7 +13,7 @@ import { useState } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { BandWrap, tierBoxProperties, usePreviewTier, gapVar } from '../../utils';
 import { SvgGradientDefs } from '../../utils/svg-gradient-preview';
-import { itemWrapperPreview, headerPreview } from './preview-style';
+import { itemWrapperPreview, headerPreview, iconRingPreview } from './preview-style';
 import { SgsColourPanel, fillRow, textRow,
 	SgsBorderControl,
 	resolveColourToken,
@@ -164,7 +164,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 
 
 	const chevron = (
-		<span className="sgs-accordion-item__icons">
+		<span className="sgs-accordion-item__icons" style={ iconRingPreview( context, tier, editorOpen ) }>
 			<span
 				className={ `sgs-accordion-item__icon-open ${
 					iconRotation > 0 ? 'sgs-accordion-item__icon-open--rotates' : ''

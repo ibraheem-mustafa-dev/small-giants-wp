@@ -263,6 +263,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		minHeight:
 			resolveResponsiveTier( attributes.minHeight, previewTier )?.value ||
 			undefined,
+		order: ( () => {
+			const tierOrder = resolveResponsiveTier( attributes.order, previewTier )?.value;
+			return null === tierOrder || undefined === tierOrder || '' === tierOrder ? undefined : tierOrder;
+		} )(),
 		aspectRatio: /^\s*\d+(\.\d+)?\s*(\/\s*\d+(\.\d+)?\s*)?$/.test(
 			attributes.boxAspectRatio || ''
 		)

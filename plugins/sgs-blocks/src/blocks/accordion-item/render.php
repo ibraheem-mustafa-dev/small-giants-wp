@@ -516,15 +516,14 @@ if ( $sgs_ai_header_radius['base'] || $sgs_ai_header_radius['tablet'] || $sgs_ai
 
 // Ring around the toggle icon (iconCircle* from the parent accordion, via block context).
 // Nothing prints while every member is empty, so an unset accordion renders as before.
-$sgs_ai_ring_attrs = array(
-	'iconCircleBorderWidth'  => $block->context['sgs/accordionIconCircleBorderWidth'] ?? array(),
-	'iconCircleBorderColour' => $block->context['sgs/accordionIconCircleBorderColour'] ?? '',
-);
 $sgs_ai_ring_bg          = sgs_colour_value( (string) ( $block->context['sgs/accordionIconCircleBackground'] ?? '' ) );
 $sgs_ai_ring_bg_open     = sgs_colour_value( (string) ( $block->context['sgs/accordionIconCircleBackgroundOpen'] ?? '' ) );
 $sgs_ai_ring_border_open = sgs_colour_value( (string) ( $block->context['sgs/accordionIconCircleBorderColourOpen'] ?? '' ) );
 $sgs_ai_ring_border      = sgs_border_element_decls(
-	$sgs_ai_ring_attrs,
+	array(
+		'iconCircleBorderWidth'  => $block->context['sgs/accordionIconCircleBorderWidth'] ?? array(),
+		'iconCircleBorderColour' => $block->context['sgs/accordionIconCircleBorderColour'] ?? '',
+	),
 	'iconCircle',
 	$root_sel,
 	array(

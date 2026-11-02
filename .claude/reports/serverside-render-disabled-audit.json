@@ -1,5 +1,5 @@
 {
-	"generatedAt": "2026-10-27T13:02:55.586Z",
+	"generatedAt": "2026-11-02T23:18:25.004Z",
 	"total": 13,
 	"violations": 0,
 	"findings": [
@@ -17,7 +17,7 @@
 		{
 			"file": "src/blocks/before-after/edit.js",
 			"block": "sgs/before-after",
-			"line": 946,
+			"line": 943,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -30,7 +30,7 @@
 		{
 			"file": "src/blocks/brand-strip/edit.js",
 			"block": "sgs/brand-strip",
-			"line": 1188,
+			"line": 1187,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -42,7 +42,7 @@
 		{
 			"file": "src/blocks/business-info/edit.js",
 			"block": "sgs/business-info",
-			"line": 933,
+			"line": 956,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -65,7 +65,7 @@
 		{
 			"file": "src/blocks/google-rating-badge/edit.js",
 			"block": "sgs/google-rating-badge",
-			"line": 630,
+			"line": 629,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -120,7 +120,7 @@
 		{
 			"file": "src/blocks/product-card/edit.js",
 			"block": "sgs/product-card",
-			"line": 3440,
+			"line": 3481,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -142,7 +142,7 @@
 		{
 			"file": "src/blocks/trustpilot-reviews/edit.js",
 			"block": "sgs/trustpilot-reviews",
-			"line": 809,
+			"line": 807,
 			"wrapped": true,
 			"ancestors": [
 				"",

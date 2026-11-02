@@ -594,8 +594,9 @@ if ( '' !== $sgs_nav_icon_svg ) {
 	$sgs_nav_icon_html_start = '<span class="sgs-form__button-icon" aria-hidden="true">' . $sgs_nav_icon_svg . '</span>';
 	$sgs_nav_icon_html_end   = $sgs_nav_icon_html_start;
 	$sgs_nav_icon_size = max( 1, (float) ( $attributes['navIconSize'] ?? 18 ) );
-	$sgs_nav_icon_gap  = max( 0, (float) ( $attributes['navIconGap'] ?? 10 ) );
-	$sgs_field_css    .= '.' . $sgs_form_uid . ' .sgs-form__button--has-icon{gap:' . $sgs_nav_icon_gap . 'px;}';
+	$sgs_nav_icon_gap  = sgs_css_length_value( $attributes['navIconGap'] ?? '10px' );
+	$sgs_nav_icon_gap  = '' !== $sgs_nav_icon_gap ? $sgs_nav_icon_gap : '10px';
+	$sgs_field_css    .= '.' . $sgs_form_uid . ' .sgs-form__button--has-icon{gap:' . $sgs_nav_icon_gap . ';}';
 	$sgs_field_css    .= '.' . $sgs_form_uid . ' .sgs-form__button-icon{width:' . $sgs_nav_icon_size . 'px;height:' . $sgs_nav_icon_size . 'px;}';
 }
 

@@ -41,6 +41,45 @@ export function itemWrapperPreview( attributes, tier, palette ) {
 }
 
 /**
+ * The ring round the toggle icon (iconCircle* from the parent accordion), as render.php prints it on the icons box.
+ *
+ * @param {Object}  context Block context from sgs/accordion.
+ * @param {string}  tier    'desktop' | 'tablet' | 'mobile'.
+ * @param {boolean} open    Whether the item previews open.
+ * @return {Object} Inline style for the icons box; empty while every ring member is empty.
+ */
+export function iconRingPreview( context, tier, open ) {
+	const sizes = context[ 'sgs/accordionIconCircleSize' ] || {};
+	const size = [ tier, 'tablet', 'desktop' ]
+		.slice( 'mobile' === tier ? 0 : 'tablet' === tier ? 1 : 2 )
+		.map( ( t ) => sizes[ t ] )
+		.find( ( v ) => 'number' === typeof v && v > 0 );
+	const widths = context[ 'sgs/accordionIconCircleBorderWidth' ] || {};
+	const side = ( key ) => ( /^\d+(\.\d+)?(px|em|rem)?$/.test( String( widths[ key ] ?? '' ) ) ? String( widths[ key ] ) : '' );
+	const hasWidth = [ 'top', 'right', 'bottom', 'left' ].some( ( key ) => '' !== side( key ) );
+	const borderColour = colourVar( ( open && context[ 'sgs/accordionIconCircleBorderColourOpen' ] ) || context[ 'sgs/accordionIconCircleBorderColour' ] );
+	const background = colourVar( ( open && context[ 'sgs/accordionIconCircleBackgroundOpen' ] ) || context[ 'sgs/accordionIconCircleBackground' ] );
+	if ( ! size && ! hasWidth && ! borderColour && ! background ) {
+		return {};
+	}
+	return {
+		boxSizing: 'border-box',
+		borderRadius: '50%',
+		display: 'grid',
+		placeItems: 'center',
+		...( size ? { width: `${ size }px`, height: `${ size }px` } : {} ),
+		...( background ? { backgroundColor: background } : {} ),
+		...( hasWidth
+			? {
+					borderStyle: 'solid',
+					borderWidth: [ 'top', 'right', 'bottom', 'left' ].map( ( key ) => ( side( key ) ? ( /[a-z]$/.test( side( key ) ) ? side( key ) : `${ side( key ) }px` ) : '0' ) ).join( ' ' ),
+			  }
+			: {} ),
+		...( borderColour ? { borderColor: borderColour } : {} ),
+	};
+}
+
+/**
  * The header row, title and icon as the parent accordion styles them.
  *
  * @param {Object}  context Block context from sgs/accordion.

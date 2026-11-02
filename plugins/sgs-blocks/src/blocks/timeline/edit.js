@@ -1770,7 +1770,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					>
 						<time
 							className="sgs-timeline__date"
-							style={ dateColourStyle }
+							style={ {
+								...dateColourStyle,
+								...( [ 'none', 'uppercase', 'lowercase', 'capitalize' ].includes( attributes.dateTextTransform )
+									? { textTransform: attributes.dateTextTransform }
+									: {} ),
+							} }
 						>
 							{ entry.date || __( 'Date', 'sgs-blocks' ) }
 						</time>

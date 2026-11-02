@@ -75,10 +75,11 @@ if ( $hp_has_row ) {
 	$wrapper_args['class'] .= ' sgs-timeline--panel-row';
 
 	$hp_row_decls = array();
-	foreach ( array( 'panelRowGap' => 'gap', 'panelRowSpacing' => 'margin-bottom' ) as $hp_key => $hp_prop ) {
-		if ( isset( $attributes[ $hp_key ] ) && is_numeric( $attributes[ $hp_key ] ) ) {
-			$hp_row_decls[] = $hp_prop . ':' . max( 0.0, min( 400.0, (float) $attributes[ $hp_key ] ) ) . 'px';
-		}
+	if ( isset( $attributes['panelRowGap'] ) && is_numeric( $attributes['panelRowGap'] ) ) {
+		$hp_row_decls[] = 'gap:' . max( 0.0, min( 400.0, (float) $attributes['panelRowGap'] ) ) . 'px';
+	}
+	if ( isset( $attributes['panelRowSpacing'] ) && is_numeric( $attributes['panelRowSpacing'] ) ) {
+		$hp_row_decls[] = 'margin-bottom:' . max( 0.0, min( 400.0, (float) $attributes['panelRowSpacing'] ) ) . 'px';
 	}
 	if ( $hp_row_decls ) {
 		$scoped_css[] = $root_sel . ' .sgs-timeline__panel-row{' . implode( ';', $hp_row_decls ) . ';}';
@@ -103,16 +104,22 @@ if ( $hp_has_row ) {
 	}
 }
 
-// Counter and hint text: colour and typography.
-foreach ( array( 'counter' => '.sgs-timeline__counter', 'hint' => '.sgs-timeline__panel-hint' ) as $hp_prefix => $hp_suffix ) {
-	$hp_text_decls = sgs_text_decls( $attributes, array( 'base' => $hp_prefix . 'Colour' ) );
-	if ( $hp_text_decls['normal'] ) {
-		$scoped_css[] = $root_sel . ' ' . $hp_suffix . '{' . implode( ';', $hp_text_decls['normal'] ) . ';}';
-	}
-	$hp_type_css = sgs_typography_css_rule( $attributes, $hp_prefix, $root_sel . ' ' . $hp_suffix );
-	if ( '' !== $hp_type_css ) {
-		$scoped_css[] = $hp_type_css;
-	}
+// Counter and hint text: colour and typography (each helper call names its prefix as a literal).
+$hp_counter_decls = sgs_text_decls( $attributes, array( 'base' => 'counterColour' ) );
+if ( $hp_counter_decls['normal'] ) {
+	$scoped_css[] = $root_sel . ' .sgs-timeline__counter{' . implode( ';', $hp_counter_decls['normal'] ) . ';}';
+}
+$hp_counter_type_css = sgs_typography_css_rule( $attributes, 'counter', $root_sel . ' .sgs-timeline__counter' );
+if ( '' !== $hp_counter_type_css ) {
+	$scoped_css[] = $hp_counter_type_css;
+}
+$hp_hint_decls = sgs_text_decls( $attributes, array( 'base' => 'hintColour' ) );
+if ( $hp_hint_decls['normal'] ) {
+	$scoped_css[] = $root_sel . ' .sgs-timeline__panel-hint{' . implode( ';', $hp_hint_decls['normal'] ) . ';}';
+}
+$hp_hint_type_css = sgs_typography_css_rule( $attributes, 'hint', $root_sel . ' .sgs-timeline__panel-hint' );
+if ( '' !== $hp_hint_type_css ) {
+	$scoped_css[] = $hp_hint_type_css;
 }
 
 // Pin length and tail: the per-device custom properties horizontal-panel-params.js reads (vh per card, vh after the last).

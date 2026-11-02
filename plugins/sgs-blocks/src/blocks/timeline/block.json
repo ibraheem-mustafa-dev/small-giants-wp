@@ -294,7 +294,9 @@
 					"motion": false,
 					"label": "Pinned header row",
 					"order": 6,
-					"clusters": [],
+					"clusters": [
+						"layout"
+					],
 					"prefix": "panelRow",
 					"attrMap": {
 						"css:gap": "panelRowGap",
@@ -307,7 +309,9 @@
 					"motion": false,
 					"label": "Progress counter",
 					"order": 7,
-					"clusters": [],
+					"clusters": [
+						"text"
+					],
 					"prefix": "counter",
 					"attrMap": {
 						"css:color": "counterColour",
@@ -325,7 +329,10 @@
 					"motion": false,
 					"label": "Progress bar track",
 					"order": 8,
-					"clusters": [],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"prefix": "panelBar",
 					"attrMap": {
 						"css:background-color": "panelBarTrackColour",
@@ -337,7 +344,9 @@
 					"motion": false,
 					"label": "Progress bar fill",
 					"order": 9,
-					"clusters": [],
+					"clusters": [
+						"fill"
+					],
 					"prefix": "panelBar",
 					"attrMap": {
 						"css:background-color": "panelBarFillColour",
@@ -349,7 +358,9 @@
 					"motion": false,
 					"label": "Header row hint",
 					"order": 10,
-					"clusters": [],
+					"clusters": [
+						"text"
+					],
 					"prefix": "hint",
 					"attrMap": {
 						"css:color": "hintColour",

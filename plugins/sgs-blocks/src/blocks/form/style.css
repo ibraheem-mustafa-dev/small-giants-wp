@@ -985,13 +985,12 @@ select.sgs-form-field__input {
 
 /* Step-button icon (navIcon): the buttons become inline flex rows; Previous mirrors the same icon. */
 .sgs-form__button--has-icon {
-	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 }
 
-.sgs-form__button--has-icon[hidden] {
-	display: none;
+.sgs-form__button--has-icon:not([hidden]) {
+	display: inline-flex;
 }
 
 .sgs-form__button-icon {

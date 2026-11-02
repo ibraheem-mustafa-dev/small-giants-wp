@@ -659,7 +659,8 @@
       "default": 0,
       "minimum": 0,
       "maximum": 360,
-      "description": "Degrees the open icon turns when the item opens. Non-zero prints only the open icon and rotates it; 0 keeps both icons and cross-fades them. Ignored when the Turning toggle icon part holds an Entrance layer (Spec 38A FR-38A-53): the layer then prints the single icon and sets the angle and timing.",
+      "description": "Degrees the open icon turns when the item opens. Non-zero prints only the open icon and rotates it; 0 keeps both icons and cross-fades them. Ignored when the Turning toggle icon part holds an Entrance layer (Spec 38A FR-38A-53): the layer then prints the single icon and sets the angle and timing."
+    },
     "iconCircleSize": {
       "type": "object",
       "default": {},
@@ -689,7 +690,6 @@
       "type": "string",
       "default": "",
       "description": "Ring background colour while the item is open. Empty keeps the closed background."
-    }
     }
   },
   "providesContext": {

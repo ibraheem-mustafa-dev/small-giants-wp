@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { ToggleControl } from '@wordpress/components';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
-import { IconPicker } from '../../components';
+import { IconPicker, SgsLengthControl } from '../../components';
 import { NumberControl } from '../../components/primitives';
 
 /**
@@ -53,12 +53,11 @@ export default function ButtonLabelControls( { attributes, setAttributes } ) {
 						onChange={ ( value ) => setAttributes( { navIconSize: value ? parseFloat( value ) : 18 } ) }
 						__next40pxDefaultSize
 					/>
-					<NumberControl
-						label={ __( 'Gap between icon and label (px)', 'sgs-blocks' ) }
-						value={ attributes.navIconGap ?? 10 }
-						min={ 0 }
-						onChange={ ( value ) => setAttributes( { navIconGap: '' === value ? 10 : parseFloat( value ) } ) }
-						__next40pxDefaultSize
+					<SgsLengthControl
+						presets
+						label={ __( 'Gap between icon and label', 'sgs-blocks' ) }
+						value={ attributes.navIconGap ?? '10px' }
+						onChange={ ( value ) => setAttributes( { navIconGap: value || '10px' } ) }
 					/>
 				</>
 			) }

@@ -6834,6 +6834,15 @@
     },
     {
       "slug": "sgs/container",
+      "attr": "order",
+      "fields": {
+        "css_property": "order",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
       "attr": "overflow",
       "fields": {
         "css_property": "overflow",
@@ -8432,15 +8441,6 @@
     },
     {
       "slug": "sgs/form",
-      "attr": "fieldTextColour",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "field-input"
-      }
-    },
-    {
-      "slug": "sgs/form",
       "attr": "fieldTextColumns",
       "fields": {
         "css_property": "column-count"
@@ -9617,6 +9617,23 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "navIconGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "nav-icon-gap"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "navIconSize",
+      "fields": {
+        "css_property": "width",
+        "css_element": "nav-icon"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "nextColourBackground",
       "fields": {
         "css_property": "background-color",
@@ -10067,11 +10084,257 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "savedNoticeFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "saved-notice"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "savedNoticeFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "saved-notice"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "savedNoticeFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "saved-notice"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "savedNoticeFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "saved-notice"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "savedNoticeLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "saved-notice"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "savedNoticeLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "saved-notice"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "savedNoticeTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "saved-notice"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "savedNoticeTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "saved-notice"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "savedNoticeTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "saved-notice"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "savedNoticeTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "saved-notice"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "savedNoticeTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "saved-notice",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "savedNoticeTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "saved-notice"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "savedNoticeTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "saved-notice"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "savedNoticeTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "saved-notice"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "savedNoticeWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "saved-notice"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "savedProgressDotColour",
       "fields": {
         "css_property": "background-color",
         "role": "color",
         "css_element": "saved-dot"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepCounterFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "step-counter"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepCounterFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "step-counter"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepCounterFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "step-counter"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepCounterFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "step-counter"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepCounterLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "step-counter"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepCounterLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "step-counter"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepCounterTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "step-counter"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepCounterTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "step-counter"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepCounterTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "step-counter"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepCounterTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "step-counter"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepCounterTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "step-counter",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepCounterTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "step-counter"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepCounterTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "step-counter"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepCounterTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "step-counter"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepCounterWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "step-counter"
       }
     },
     {
@@ -15920,6 +16183,14 @@
     },
     {
       "slug": "sgs/label",
+      "attr": "markerIcon",
+      "fields": {
+        "css_property": "mask-image",
+        "css_element": "dot"
+      }
+    },
+    {
+      "slug": "sgs/label",
       "attr": "padding",
       "fields": {
         "css_property": "padding",
@@ -20445,6 +20716,13 @@
       "fields": {
         "css_property": "writing-mode",
         "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "order",
+      "fields": {
+        "css_property": "order"
       }
     },
     {
@@ -29096,6 +29374,62 @@
     },
     {
       "slug": "sgs/timeline",
+      "attr": "counterFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "counter"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "counterFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "counter"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "counterFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "counter"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "counterFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "counter"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "counterLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "counter"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "counterLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "counter"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "counterTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "counter"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
       "attr": "dateActiveColour",
       "fields": {
         "css_property": "color",
@@ -29140,6 +29474,14 @@
         "role": "color",
         "css_element": "date",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "dateTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "date"
       }
     },
     {
@@ -29212,6 +29554,62 @@
     },
     {
       "slug": "sgs/timeline",
+      "attr": "hintFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "hint"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "hintFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "hint"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "hintFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "hint"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "hintFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "hint"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "hintLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "hint"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "hintLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "hint"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "hintTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "hint"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -29240,6 +29638,48 @@
       "fields": {
         "css_property": "padding",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "panelBarHeight",
+      "fields": {
+        "css_property": "height",
+        "css_element": "panelTrack"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "panelBarTrackColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "panelTrack"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "panelRowGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "panelRow"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "panelRowSpacing",
+      "fields": {
+        "css_property": "margin-bottom",
+        "css_element": "panelRow"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "panelTransitionMs",
+      "fields": {
+        "css_property": "transition-duration",
+        "css_element": "entry"
       }
     },
     {
@@ -31020,6 +31460,66 @@
       "fields": {
         "css_property": "padding",
         "css_element": "header"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "iconCircleBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "icon-ring"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "iconCircleBackgroundOpen",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "icon-ring",
+        "css_state": "open"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "iconCircleBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "icon-ring"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "iconCircleBorderColourOpen",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "icon-ring",
+        "css_state": "open"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "iconCircleBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "OUTER",
+        "css_element": "icon-ring"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "iconCircleSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_layer": "OUTER",
+        "css_element": "icon-ring"
       }
     },
     {
@@ -33518,6 +34018,15 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "fieldTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "field-input"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "fieldTextareaMinHeight",
       "fields": {
         "css_property": "min-height",
@@ -33531,6 +34040,15 @@
         "css_property": "grid-template-columns",
         "css_layer": "GRID",
         "css_element": "inner"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "labelColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "field-label"
       }
     },
     {
@@ -33567,6 +34085,24 @@
         "css_property": "background-image",
         "css_element": "progress-bar",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "requiredMarkColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "required-mark"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepCounterColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "step-counter"
       }
     },
     {
@@ -41947,6 +42483,15 @@
     },
     {
       "slug": "sgs/timeline",
+      "attr": "counterColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "counter"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
       "attr": "dateColourGradient",
       "fields": {
         "css_property": "color-gradient",
@@ -42021,6 +42566,32 @@
       "fields": {
         "css_property": "tag",
         "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "hintColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "hint"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "panelBarFillColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "panelFill"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "panelBarFillGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "panelFill"
       }
     },
     {

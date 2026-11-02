@@ -755,6 +755,7 @@
 					}
 				},
 				"saved-notice": {
+					"text": true,
 					"selector": ".sgs-form__saved-notice",
 					"label": "Saved-progress notice",
 					"order": 31,
@@ -779,6 +780,10 @@
 						"css:writing-mode": "savedNoticeWritingMode"
 					},
 					"_note": "Typography only (savedNotice* family, render.php sgs_typography_css_rule on .{uid} .sgs-form__saved-notice). Printed only when savedProgress is on.",
+					"absentIn": [
+						"single-step"
+					],
+					"absentWhy": "The notice prints only when Save progress is on, and the single-step fixture leaves it off.",
 					"states": {
 						"hover": {
 							"attrMap": {
@@ -3338,9 +3343,9 @@
 			"description": "Width and height in px of the step-button icon."
 		},
 		"navIconGap": {
-			"type": "number",
-			"default": 10,
-			"description": "Gap in px between a step button's icon and its label."
+			"type": "string",
+			"default": "10px",
+			"description": "Gap between a step button's icon and its label: a spacing token number or a length such as 10px."
 		},
 		"actionsNote": {
 			"type": "string",

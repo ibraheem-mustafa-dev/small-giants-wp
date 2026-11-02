@@ -447,7 +447,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 			...typographyPreviewStyle( attributes, '', previewTier ),
 			...tierBoxLonghands( attributes.margin, previewTier, 'margin' ),
 		},
-		className: `sgs-form ${ formPreviewScope }${ fieldColumnsFrom && '560' !== fieldColumnsFrom ? ` sgs-form--field-cols-${ fieldColumnsFrom }` : '' }${ false === stretchButtonsNarrow ? ' sgs-form--no-narrow-stretch' : '' }${ attributes.gap && Object.values( attributes.gap ).some( ( v ) => '' !== String( v ?? '' ).trim() ) ? ' sgs-form--has-gap' : '' }`,
+		className: `sgs-form ${ formPreviewScope }${ fieldColumnsFrom && '560' !== fieldColumnsFrom ? ` sgs-form--field-cols-${ fieldColumnsFrom }` : '' }${ false === stretchButtonsNarrow ? ' sgs-form--no-narrow-stretch' : '' }${ 'inline' === attributes.stepLayout ? ' sgs-form--stepper-inline' : '' }${ attributes.gap && Object.values( attributes.gap ).some( ( v ) => '' !== String( v ?? '' ).trim() ) ? ' sgs-form--has-gap' : '' }`,
 	} );
 
 	// Base roster of blocks a form's own children may ever sensibly be — unlike
