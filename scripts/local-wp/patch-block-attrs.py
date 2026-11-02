@@ -38,7 +38,9 @@ def main() -> int:
     if not a.patch.is_file():
         sys.exit(f"No patch file: {a.patch}")
     php = to_wsl(REPO / "scripts/local-wp/patch-block-attrs.php")
-    cmd = f"cd /var/www/{a.site} && wp --allow-root --user={a.user} eval-file {php} {a.post} {to_wsl(a.patch)}" + (" dry-run" if a.dry_run else "")
+    # One writer per post at a time: parallel workers patching the same post queue on a lock instead of one read-modify-write
+    # overwriting another's.
+    cmd = f"cd /var/www/{a.site} && flock -w 120 /tmp/patch-block-attrs-{a.site}-{a.post}.lock wp --allow-root --user={a.user} eval-file {php} {a.post} {to_wsl(a.patch)}" + (" dry-run" if a.dry_run else "")
     r = subprocess.run(["wsl", "-d", "Ubuntu", "-u", "root", "--", "bash", "-lc", cmd], capture_output=True, text=True)
     sys.stdout.write(r.stdout)
     sys.stderr.write("\n".join(l for l in r.stderr.splitlines() if "Deprecated" not in l and l.strip()) + ("\n" if r.stderr.strip() else ""))
