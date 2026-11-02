@@ -30,6 +30,9 @@ export default function buildCartColourRows( {
 		badgeTextColourHover,
 		badgeTextColourHoverGradient,
 		triggerStyle,
+		triggerStyleTablet,
+		triggerStyleMobile,
+		pillShowIcon,
 		pillBgColour,
 		pillBgColourGradient,
 		pillTextColour,
@@ -40,10 +43,18 @@ export default function buildCartColourRows( {
 		pillTextColourHoverGradient,
 	} = attributes;
 
-	const hasPill = 'pill' === ( triggerStyle || 'icon' );
+	const tiers = [ triggerStyle, triggerStyleTablet, triggerStyleMobile ].map( ( v ) =>
+		[ 'icon', 'pill' ].includes( v ) ? v : null
+	);
+	const desktop = 'pill' === tiers[ 0 ] ? 'pill' : 'icon';
+	const tablet = tiers[ 1 ] || desktop;
+	const mobile = tiers[ 2 ] || tablet;
+	// Pill rows show when any device uses the pill; the icon row when any device shows the icon.
+	const hasPill = [ desktop, tablet, mobile ].includes( 'pill' );
+	const hasIcon = [ desktop, tablet, mobile ].includes( 'icon' ) || !! pillShowIcon;
 
 	return [
-		! hasPill && {
+		hasIcon && {
 			key: 'icon',
 			label: __( 'Icon colour', 'sgs-blocks' ),
 			states: [

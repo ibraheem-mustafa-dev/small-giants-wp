@@ -81,6 +81,52 @@ $hide_when_empty            = ! empty( $attributes['hideWhenEmpty'] );
 // icon+badge trigger; 'pill' swaps the icon for an editable word (pillLabel)
 // beside the live item count (same badge element, restyled — see style.css).
 $trigger_style     = ( 'pill' === ( $attributes['triggerStyle'] ?? 'icon' ) ) ? 'pill' : 'icon';
+// Per-tier trigger style: triggerStyle is the desktop value; the tablet (up to 1023px)
+// and mobile (up to 767px) overrides are empty to inherit the tier above. One button
+// prints at every width, so the tiers switch parts by class and stylesheet, not by markup.
+$trigger_style_tablet = in_array( $attributes['triggerStyleTablet'] ?? '', array( 'icon', 'pill' ), true )
+	? (string) $attributes['triggerStyleTablet']
+	: $trigger_style;
+$trigger_style_mobile = in_array( $attributes['triggerStyleMobile'] ?? '', array( 'icon', 'pill' ), true )
+	? (string) $attributes['triggerStyleMobile']
+	: $trigger_style_tablet;
+$trigger_tiers        = array(
+	'lg' => $trigger_style,
+	'md' => $trigger_style_tablet,
+	'sm' => $trigger_style_mobile,
+);
+// A block that sets no tier override keeps the single-style markup and rules exactly as before.
+$trigger_mixed    = count( array_unique( $trigger_tiers ) ) > 1;
+$trigger_has_pill = in_array( 'pill', $trigger_tiers, true );
+$pill_show_icon   = ! empty( $attributes['pillShowIcon'] );
+// Media ranges where each style is live (merged where adjacent tiers share a style); used only when mixed.
+$trigger_ranges = array( 'pill' => array(), 'icon' => array() );
+if ( $trigger_mixed ) {
+	foreach ( array( 'pill', 'icon' ) as $range_style ) {
+		$lg_on = $range_style === $trigger_tiers['lg'];
+		$md_on = $range_style === $trigger_tiers['md'];
+		$sm_on = $range_style === $trigger_tiers['sm'];
+		if ( $lg_on && $md_on ) {
+			$trigger_ranges[ $range_style ][] = '(min-width:768px)';
+			$lg_on                            = false;
+			$md_on                            = false;
+		}
+		if ( $md_on && $sm_on ) {
+			$trigger_ranges[ $range_style ][] = '(max-width:1023px)';
+			$md_on                            = false;
+			$sm_on                            = false;
+		}
+		if ( $lg_on ) {
+			$trigger_ranges[ $range_style ][] = '(min-width:1024px)';
+		}
+		if ( $md_on ) {
+			$trigger_ranges[ $range_style ][] = '(min-width:768px) and (max-width:1023px)';
+		}
+		if ( $sm_on ) {
+			$trigger_ranges[ $range_style ][] = '(max-width:767px)';
+		}
+	}
+}
 $pill_label        = (string) ( $attributes['pillLabel'] ?? __( 'Cart', 'sgs-blocks' ) );
 $pill_bg_colour    = (string) ( $attributes['pillBgColour'] ?? '' );
 $pill_text_colour  = (string) ( $attributes['pillTextColour'] ?? '' );
@@ -187,7 +233,7 @@ $sgs_cart_vars = array(
 	'--sgs-cart-icon-size:' . $icon_size . 'px',
 );
 // An icon size the client set (24 included) overrules the trigger's 44px tap floor: the trigger wraps the glyph (ruling 11).
-if ( $icon_size_set && 'icon' === $trigger_style ) {
+if ( $icon_size_set && 'icon' === $trigger_style && ! $trigger_mixed ) {
 	$sgs_cart_vars[] = '--sgs-cart-tap-min:0px';
 }
 // Unset, the trigger takes the surrounding text colour (style.css's currentColor fallback).
@@ -249,11 +295,31 @@ if ( $sgs_cart_vars ) {
 	$scoped_css[] = $sel . '{' . implode( ';', $sgs_cart_vars ) . '}';
 }
 
+// Mixed styles: the icon tiers wrap the glyph; the pill tiers keep their own height floor.
+if ( $trigger_mixed && $icon_size_set ) {
+	foreach ( $trigger_ranges['icon'] as $icon_range ) {
+		$scoped_css[] = '@media ' . $icon_range . '{' . $sel . '{--sgs-cart-tap-min:0px}}';
+	}
+}
+
 require __DIR__ . '/render-scoped-css.php';
 
 // ── Wrapper classes ───────────────────────────────────────────────────────────
-$wrapper_classes = array( 'sgs-cart', $uid, 'sgs-cart--mode-' . $effective_mode, 'sgs-cart--trigger-' . $trigger_style );
-if ( 'pill' === $trigger_style && 'bubble' === ( $attributes['pillCountStyle'] ?? 'plain' ) ) {
+$wrapper_classes = array( 'sgs-cart', $uid, 'sgs-cart--mode-' . $effective_mode );
+if ( $trigger_mixed ) {
+	$wrapper_classes[] = 'sgs-cart--trigger-mixed';
+	foreach ( $trigger_tiers as $tier_key => $tier_style ) {
+		if ( 'pill' === $tier_style ) {
+			$wrapper_classes[] = 'sgs-cart--pill-' . $tier_key;
+		}
+	}
+} else {
+	$wrapper_classes[] = 'sgs-cart--trigger-' . $trigger_style;
+}
+if ( $trigger_has_pill && $pill_show_icon ) {
+	$wrapper_classes[] = 'sgs-cart--pill-icon';
+}
+if ( $trigger_has_pill && 'bubble' === ( $attributes['pillCountStyle'] ?? 'plain' ) ) {
 	$wrapper_classes[] = 'sgs-cart--pill-count-bubble';
 }
 if ( ! $wc_active ) {
@@ -337,14 +403,28 @@ $icon_and_badge_html = sprintf(
 // restyles it inline, not as an overlay), so badgeColour/badgeTextColour
 // keep governing the count's colours in both trigger styles — one control,
 // not two.
-$pill_and_badge_html = sprintf(
+// pillShowIcon puts the icon before the word; a mixed block always carries the icon and the word
+// together so the stylesheet can show the right parts at each width.
+$pill_icon_html      = ( $pill_show_icon || $trigger_mixed )
+	? '<span class="sgs-cart__icon" aria-hidden="true">' . $icon_svg . '</span>' // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted Lucide SVG.
+	: '';
+$pill_and_badge_html = $pill_icon_html . sprintf(
 	'<span class="sgs-cart__pill-label">%1$s</span><span class="sgs-cart__badge sgs-cart__badge--pill%2$s" role="status" aria-live="polite" aria-atomic="true" data-sgs-cart-count>%3$d</span>',
 	sgs_rich_text_kses( $pill_label, false ),
 	( $ssr_count > 0 || $show_zero ) ? ' sgs-cart__badge--visible' : '',
 	absint( $ssr_count )
 );
 
-$trigger_inner_html = ( 'pill' === $trigger_style ) ? $pill_and_badge_html : $icon_and_badge_html;
+$trigger_inner_html = ( 'pill' === $trigger_style || $trigger_mixed ) ? $pill_and_badge_html : $icon_and_badge_html;
+
+// A visible word must be inside the accessible name (WCAG 2.5.3), so a mixed block names the button
+// by its word at every width, then the aria-label setting and the live count.
+if ( $trigger_mixed ) {
+	$pill_label_text = trim( wp_strip_all_tags( $pill_label ) );
+	if ( '' !== $pill_label_text && false === stripos( $aria_label, $pill_label_text ) ) {
+		$trigger_label = $pill_label_text . ', ' . $trigger_label;
+	}
+}
 
 // ── Trigger markup (FR-36-10) ──────────────────────────────────────────────
 // The mode decides the ELEMENT: an <a> for link (full no-JS fallback), a real

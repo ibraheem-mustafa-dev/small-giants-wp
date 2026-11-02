@@ -66,6 +66,9 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		panelTextColourHover,
 		panelTextColourHoverGradient,
 		triggerStyle,
+		triggerStyleTablet,
+		triggerStyleMobile,
+		pillShowIcon,
 		pillLabel,
 		pillBorderColour,
 		pillBorderWidth,
@@ -82,7 +85,12 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	const hasDrawer = 'drawer' === displayMode;
 	// Wave B, U-1 — 'pill' swaps the icon+badge trigger for a word beside the
 	// live count, in a pill.
-	const hasPill = 'pill' === ( triggerStyle || 'icon' );
+	const desktopStyle = 'pill' === triggerStyle ? 'pill' : 'icon';
+	const tabletStyle = [ 'icon', 'pill' ].includes( triggerStyleTablet ) ? triggerStyleTablet : desktopStyle;
+	const mobileStyle = [ 'icon', 'pill' ].includes( triggerStyleMobile ) ? triggerStyleMobile : tabletStyle;
+	// anyPill: some device shows the pill (its settings appear); allPill: every device does.
+	const anyPill = [ desktopStyle, tabletStyle, mobileStyle ].includes( 'pill' );
+	const allPill = [ desktopStyle, tabletStyle, mobileStyle ].every( ( v ) => 'pill' === v );
 
 	// WooCommerce availability flag — injected by render.php via wp_localize_script
 	// equivalent in the editor. Falls back to true when the data object is absent
@@ -95,6 +103,8 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	} );
 	const iconSize = iconSizeSet ?? 24;
 	const previewTier = usePreviewTier();
+	// The canvas shows the style of the device being previewed.
+	const hasPill = 'pill' === { desktop: desktopStyle, tablet: tabletStyle, mobile: mobileStyle }[ previewTier ];
 	const [ palette ] = useSettings( 'color.palette' );
 	const parts = triggerStyles( attributes, previewTier, palette, hasPill );
 	const marginLonghands = tierBoxLonghands( margin, previewTier, 'margin' );
@@ -168,6 +178,9 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					showZero={ showZero }
 					hideWhenEmpty={ hideWhenEmpty }
 					triggerStyle={ triggerStyle }
+					triggerStyleTablet={ triggerStyleTablet }
+					triggerStyleMobile={ triggerStyleMobile }
+					pillShowIcon={ pillShowIcon }
 					pillLabel={ pillLabel }
 					pillCountStyle={ attributes.pillCountStyle }
 					setAttributes={ setAttributes }
@@ -215,7 +228,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				) }
 
 				<PillBorderControl
-					isPill={ hasPill }
+					isPill={ anyPill }
 					pillBorderColour={ pillBorderColour }
 					pillBorderWidth={ pillBorderWidth }
 					pillBorderStyle={ pillBorderStyle }
@@ -228,7 +241,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					setAttributes={ setAttributes }
 				/>
 
-				{ hasPill && (
+				{ anyPill && (
 					<PanelBody
 						title={ __( 'Pill text and size', 'sgs-blocks' ) }
 						initialOpen={ false }
@@ -263,7 +276,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					</PanelBody>
 				) }
 
-				{ ( ! hasPill || 'bubble' === attributes.pillCountStyle ) && (
+				{ ( ! allPill || 'bubble' === attributes.pillCountStyle ) && (
 					<PanelBody
 						title={ __( 'Count badge text', 'sgs-blocks' ) }
 						initialOpen={ false }
@@ -337,11 +350,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					aria-label={ ariaLabel }
 					style={ parts.trigger }
 				>
-					{ hasPill ? (
-						<span className="sgs-cart__pill-label" style={ parts.pillLabel }>
-							<AuthoredText value={ pillLabel || __( 'Cart', 'sgs-blocks' ) } />
-						</span>
-					) : (
+					{ ( ! hasPill || pillShowIcon ) && (
 						<span className="sgs-cart__icon" aria-hidden="true">
 							<IconPreview
 								source="lucide"
@@ -349,6 +358,11 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								size={ iconSize }
 								gradient={ iconColourGradient }
 							/>
+						</span>
+					) }
+					{ hasPill && (
+						<span className="sgs-cart__pill-label" style={ parts.pillLabel }>
+							<AuthoredText value={ pillLabel || __( 'Cart', 'sgs-blocks' ) } />
 						</span>
 					) }
 					<span

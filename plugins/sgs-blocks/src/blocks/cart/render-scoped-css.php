@@ -52,10 +52,19 @@ if ( '' !== $badge_text_hover_effective ) {
 // Badge count text (size, weight) through the shared typography helper, for the
 // icon trigger's overlay badge and the pill's bubble. A plain pill count inherits
 // the pill label's own typography (style.css), so it is left out there.
-if ( 'pill' !== $trigger_style || 'bubble' === ( $attributes['pillCountStyle'] ?? 'plain' ) ) {
+// A mixed block applies it in the icon tiers only (a plain pill count keeps the label's typography there).
+$badge_is_bubble = 'bubble' === ( $attributes['pillCountStyle'] ?? 'plain' );
+if ( ( ! $trigger_mixed && ( 'pill' !== $trigger_style || $badge_is_bubble ) ) || ( $trigger_mixed && $badge_is_bubble ) ) {
 	$badge_typo_css = sgs_typography_css_rule( $attributes, 'badge', $badge_sel );
 	if ( '' !== $badge_typo_css ) {
 		$scoped_css[] = $badge_typo_css;
+	}
+} elseif ( $trigger_mixed ) {
+	$badge_typo_css = sgs_typography_css_rule( $attributes, 'badge', $badge_sel );
+	if ( '' !== $badge_typo_css ) {
+		foreach ( $trigger_ranges['icon'] as $icon_range ) {
+			$scoped_css[] = '@media ' . $icon_range . '{' . $badge_typo_css . '}';
+		}
 	}
 }
 
@@ -112,7 +121,9 @@ if ( $has_panel ) {
 // (same badge element, restyled for the pill by style.css). Border-colour is
 // flat-only (no gradient sibling); border-radius always emits so an operator
 // starts from the draft's fully-rounded default without a manual set.
-if ( 'pill' === $trigger_style ) {
+if ( $trigger_has_pill ) {
+	// Every pill rule below is collected, then wrapped in the pill tiers' media ranges when the styles are mixed.
+	$pill_rules_start = count( $scoped_css );
 	$pill_sel       = $sel . ' .sgs-cart__trigger';
 	$pill_label_sel = $sel . ' .sgs-cart__pill-label';
 
@@ -206,6 +217,12 @@ if ( 'pill' === $trigger_style ) {
 		if ( '' !== $pill_text_hover_decl ) {
 			$scoped_css[] = $pill_label_sel . '{transition:color var(--wp--custom--duration--fast, .25s) var(--wp--custom--easing--ease, ease);}';
 			$scoped_css[] = sgs_hover_state_rules( $pill_sel, $pill_text_hover_decl, ':focus-visible', ' .sgs-cart__pill-label' );
+		}
+	}
+	if ( $trigger_mixed ) {
+		$pill_rules = array_splice( $scoped_css, $pill_rules_start );
+		foreach ( $trigger_ranges['pill'] as $pill_range ) {
+			$scoped_css[] = '@media ' . $pill_range . '{' . implode( '', $pill_rules ) . '}';
 		}
 	}
 }

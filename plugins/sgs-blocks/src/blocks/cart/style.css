@@ -166,6 +166,203 @@
 	justify-content: center;
 }
 
+/* ── Per-breakpoint trigger style (triggerStyleTablet / triggerStyleMobile) ───
+   One button prints at every width. A block whose styles differ by tier carries
+   the icon, the word and the count together; the word shows only in a pill tier
+   (and the icon only when pillShowIcon is on), and the pill look is applied by
+   the tier's own class inside that tier's media range: desktop from 1024px,
+   tablet 768 to 1023px, mobile up to 767px. */
+.sgs-cart--trigger-mixed .sgs-cart__pill-label {
+	display: none;
+	white-space: nowrap;
+}
+
+@media (min-width: 1024px) {
+	.sgs-cart--pill-lg .sgs-cart__trigger {
+		min-width: auto;
+		gap: 8px;
+		padding: 0 14px;
+		border: 0 solid transparent;
+		border-radius: 999px;
+		font-size: 0.8rem;
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+
+	.sgs-cart--pill-lg .sgs-cart__pill-label {
+		display: inline-block;
+	}
+
+	.sgs-cart--pill-lg:not(.sgs-cart--pill-icon) .sgs-cart__icon {
+		display: none;
+	}
+
+	.sgs-cart--pill-lg .sgs-cart__badge {
+		position: static;
+		display: none;
+		min-width: 0;
+		height: auto;
+		padding: 0;
+		font-size: inherit;
+		font-weight: inherit;
+		line-height: inherit;
+		pointer-events: none;
+	}
+
+	.sgs-cart--pill-lg:not(.sgs-cart--pill-count-bubble) .sgs-cart__badge::after {
+		content: none !important; /* stylelint-disable-line declaration-no-important */
+	}
+
+	.sgs-cart--pill-lg .sgs-cart__badge--visible {
+		display: inline-block;
+	}
+
+	.sgs-cart--pill-lg.sgs-cart--pill-count-bubble .sgs-cart__badge {
+		position: relative;
+		top: auto;
+		right: auto;
+		z-index: 0;
+		min-width: 20px;
+		height: 20px;
+		padding: 0 6px;
+		border-radius: 999px;
+		line-height: 20px;
+		letter-spacing: 0;
+		text-align: center;
+	}
+
+	.sgs-cart--pill-lg.sgs-cart--pill-count-bubble .sgs-cart__badge--visible {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+	.sgs-cart--pill-md .sgs-cart__trigger {
+		min-width: auto;
+		gap: 8px;
+		padding: 0 14px;
+		border: 0 solid transparent;
+		border-radius: 999px;
+		font-size: 0.8rem;
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+
+	.sgs-cart--pill-md .sgs-cart__pill-label {
+		display: inline-block;
+	}
+
+	.sgs-cart--pill-md:not(.sgs-cart--pill-icon) .sgs-cart__icon {
+		display: none;
+	}
+
+	.sgs-cart--pill-md .sgs-cart__badge {
+		position: static;
+		display: none;
+		min-width: 0;
+		height: auto;
+		padding: 0;
+		font-size: inherit;
+		font-weight: inherit;
+		line-height: inherit;
+		pointer-events: none;
+	}
+
+	.sgs-cart--pill-md:not(.sgs-cart--pill-count-bubble) .sgs-cart__badge::after {
+		content: none !important; /* stylelint-disable-line declaration-no-important */
+	}
+
+	.sgs-cart--pill-md .sgs-cart__badge--visible {
+		display: inline-block;
+	}
+
+	.sgs-cart--pill-md.sgs-cart--pill-count-bubble .sgs-cart__badge {
+		position: relative;
+		top: auto;
+		right: auto;
+		z-index: 0;
+		min-width: 20px;
+		height: 20px;
+		padding: 0 6px;
+		border-radius: 999px;
+		line-height: 20px;
+		letter-spacing: 0;
+		text-align: center;
+	}
+
+	.sgs-cart--pill-md.sgs-cart--pill-count-bubble .sgs-cart__badge--visible {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+}
+
+@media (max-width: 767px) {
+	.sgs-cart--pill-sm .sgs-cart__trigger {
+		min-width: auto;
+		gap: 8px;
+		padding: 0 14px;
+		border: 0 solid transparent;
+		border-radius: 999px;
+		font-size: 0.8rem;
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+
+	.sgs-cart--pill-sm .sgs-cart__pill-label {
+		display: inline-block;
+	}
+
+	.sgs-cart--pill-sm:not(.sgs-cart--pill-icon) .sgs-cart__icon {
+		display: none;
+	}
+
+	.sgs-cart--pill-sm .sgs-cart__badge {
+		position: static;
+		display: none;
+		min-width: 0;
+		height: auto;
+		padding: 0;
+		font-size: inherit;
+		font-weight: inherit;
+		line-height: inherit;
+		pointer-events: none;
+	}
+
+	.sgs-cart--pill-sm:not(.sgs-cart--pill-count-bubble) .sgs-cart__badge::after {
+		content: none !important; /* stylelint-disable-line declaration-no-important */
+	}
+
+	.sgs-cart--pill-sm .sgs-cart__badge--visible {
+		display: inline-block;
+	}
+
+	.sgs-cart--pill-sm.sgs-cart--pill-count-bubble .sgs-cart__badge {
+		position: relative;
+		top: auto;
+		right: auto;
+		z-index: 0;
+		min-width: 20px;
+		height: 20px;
+		padding: 0 6px;
+		border-radius: 999px;
+		line-height: 20px;
+		letter-spacing: 0;
+		text-align: center;
+	}
+
+	.sgs-cart--pill-sm.sgs-cart--pill-count-bubble .sgs-cart__badge--visible {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+}
+
 /* ── Has-items modifier — added by view.js ─────────────────────────────────── */
 /* Useful for parent-chain CSS hooks (e.g. header styling when cart has items) */
 .sgs-cart--has-items .sgs-cart__trigger {

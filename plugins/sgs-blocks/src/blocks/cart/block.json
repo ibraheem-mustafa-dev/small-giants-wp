@@ -805,6 +805,31 @@
 			],
 			"description": "Wave B — 'icon' is the existing icon+badge trigger. 'pill' replaces the icon with an editable word (pillLabel) beside the live item count, in a pill shape."
 		},
+		"triggerStyleTablet": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"icon",
+				"pill"
+			],
+			"description": "Tablet-tier override of triggerStyle (viewport up to 1023px). Empty inherits the desktop triggerStyle. One button and one drawer print at every width; the tier switches the label, icon and count visibility by class and stylesheet."
+		},
+		"triggerStyleMobile": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"icon",
+				"pill"
+			],
+			"description": "Mobile-tier override of triggerStyle (viewport up to 767px). Empty inherits the resolved tablet value."
+		},
+		"pillShowIcon": {
+			"type": "boolean",
+			"default": false,
+			"description": "In a pill tier, show the cart icon (sized by iconSize) before the label. Off keeps the word-and-count pill."
+		},
 		"pillLabel": {
 			"type": "string",
 			"default": "Cart"
