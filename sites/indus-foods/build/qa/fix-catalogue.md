@@ -132,3 +132,23 @@ QC: fresh captures of indus-test after round 2 (E:/sgs-tmp/vision/indus-foods/*-
 Also open from round 2: the Delivery list in the wrong column (a left/right flip); the blog page template shows only the loop, so its page blocks (breadcrumb, eyebrow) never render; the Careers location pin (no sgs/label icon); the form Continue arrow (no nav-button icon setting); the About animated landscape; the FAQ plus ring; testimonial arrows as chevrons. Lows (37) are in the QC reports: footer social glyph style, breadcrumb separator spacing, small rhythm gaps.
 
 Mirror state at handoff: local-indus content equals indus-test (pushed after round 2), but its plugin build was synced from a gate-skipped build that included another session's uncommitted button and icon-list work. Before any round-3 push: `npm run build` from a clean tree (all gates), then `sync-build.sh local-indus`, then confirm push-to-remote's build comparison passes.
+
+## Round 3 register (Bean approved 2026-11-02; review page with draft-vs-live pairs: E:/sgs-tmp/r3-pairs/index.html)
+
+Site fixes approved, written with scripts/local-wp/patch-block-attrs.py on local-indus:
+
+| Id | Pages | Wrong compared with the draft | Proven cause | Fix | Stage | Status |
+|---|---|---|---|---|---|---|
+| S1 (R3-02) | food-service, brands, sanam, delivery | photo corners square inside the rounded frame | frames carry borderRadius but no overflow, so the image paints past the corners | frame `overflow: hidden` | Fill | approved |
+| S2 (R3-03, R3-08) | food-service, brands, sanam, our-story, delivery | dot-list rows 75px apart against 51px | the list grid's single `gap:24px` also spaces rows; the draft is `gap:0 24px` | grid `gap` `{"desktop":"0px 24px"}` | Fill | approved |
+| S3 (R3-04) | sanam | eyebrows have no gold dash | the three labels lack the line-marker settings food-service carries | `dot`, `markerShape:"line"`, 28x2px, 12px gap, gold (blue on "The range") | Fill | approved |
+| S5 (R3-07) | about | Explore titles 14px at 375 against 19px | cards 02-08 are sgs/text with no fontSize, so they inherit the fluid body size | `fontSize {"desktop":19}` | Fill | approved |
+| S6 | about, our-story | stat labels touch their numbers (draft 12px) | about counters' Custom CSS zeroes the number margin (R2-07); our-story labels have no top margin | 12px gap, through a setting where one exists | site build | approved |
+| S8 | about hero | the draft's animated landscape is missing | the hero has no background image; the draft animates its SVG with script | Bean's uploaded SVG variants (media library) set as the hero background per device, animated per the draft | intake | approved |
+| S9 (R3-09) | careers form (post 151) | labels 12px/600 against 13.5px/700 | no label size or weight saved | form `labelFontSize {"desktop":13.5}`, `labelFontWeight "700"` | Fill | approved |
+| S10 (R3-10) | careers "Talk to us" | phone and email underlined, icons 20px | `linkUnderline` and `iconSize` unset, so the theme underline and the medium default show | `linkUnderline:"none"`, `iconSize:"small"` | Fill | approved |
+| S11 (R3-11) | careers vacancy chips | chips wider (letter-spaced) | the label's 0.08em default letter spacing; the draft has none | `letterSpacing: 0` on the nine chips | Fill | approved |
+| S12 (R3-12) | contact | enquiry form inset 60px at 1440 | its panel lacks `contentWidth` full, so the band caps at 1080px | `contentWidth {"desktop":"full"}` on cr-ref-contact-42 | Fill | approved |
+| S13 (R3-16) | footer | quick links turn teal on hover and focus | the icon-list stylesheet's own hover colour (primary-dark) and the theme link hover | footer list `textColourHover: accent` (gold, the draft's hover) | Fill | approved |
+
+Accepted: S4 (R3-05, brands and faqs CTA link beside the button at 375): Bean prefers the live layout (D-26). Dropped as not reproducing on the mirror: R3-17 (no stored tiles field has desktop-only columns). Re-investigation by reading each block's source (Bean: avoid Custom CSS, propose each gap fix with certainty): the timeline (gold year fill animated on scroll, "Today" casing, progress bar, slide number placement and style, side-card fade), the form stepper and Step N of M, required-mark colour, plain file field, label icon, form button icon, container child order (Delivery), rounded accordion header corners, FAQ icon ring, testimonial arrows, the brands ingredient cards' cursor-follow image (new, Bean), and the blog posts-page template (keep it the posts page; edit its template as the WooCommerce templates are edited).

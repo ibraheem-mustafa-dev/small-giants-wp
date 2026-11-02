@@ -416,5 +416,17 @@
     },
     "reason": "The draft's 'Photo on Unsplash' chips are the design tool's placeholder-photo credit. Neither they nor a footer 'Placeholder photography via Unsplash' credit are built, because the client's own photography replaces the placeholders.",
     "decided": "2026-11-02 Bean ruling (Indus round 2)"
+  },
+  {
+    "id": "D-26",
+    "scope": "brands, faqs",
+    "node": "cr-ref-brands-92, cr-ref-faqs-63 (CTA button group)",
+    "state": "*",
+    "property": "flex-wrap",
+    "expected": {
+      "rule": "bean-ruling"
+    },
+    "reason": "At 375 the draft wraps the secondary CTA link under the button (its 22px column gap and 15.5px link text overflow the 287px row by a few pixels); the live row fits both side by side. Bean prefers the live layout.",
+    "decided": "2026-11-02 Bean ruling (Indus round 3, R3-05)"
   }
 ]
