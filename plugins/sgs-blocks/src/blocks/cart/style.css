@@ -141,8 +141,10 @@
 
 /* Count as a bubble (pillCountStyle: 'bubble'): a round chip beside the label,
    filled by the badge's own ::after (badgeColour) and lettered in
-   badgeTextColour, at the same size as the icon trigger's overlay badge. */
-.sgs-cart--pill-count-bubble .sgs-cart__badge {
+   badgeTextColour, at the same size as the icon trigger's overlay badge. Scoped to a
+   single-style pill: a block whose styles differ by tier sets its bubble only inside
+   its pill tiers (below), so its icon tiers keep the corner overlay badge. */
+.sgs-cart--trigger-pill.sgs-cart--pill-count-bubble .sgs-cart__badge {
 	position: relative;
 	/* The base .sgs-cart__badge rule offsets the icon-only overlay badge by
 	 * top/right 2px against its corner. A relatively positioned bubble is in
@@ -160,7 +162,7 @@
 	text-align: center;
 }
 
-.sgs-cart--pill-count-bubble .sgs-cart__badge--visible {
+.sgs-cart--trigger-pill.sgs-cart--pill-count-bubble .sgs-cart__badge--visible {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
