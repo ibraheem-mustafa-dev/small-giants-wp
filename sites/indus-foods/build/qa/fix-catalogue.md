@@ -111,7 +111,7 @@ QC: fresh captures of indus-test after round 2 (E:/sgs-tmp/vision/indus-foods/*-
 
 | Id | Surface, widths | Wrong compared with the draft | Note |
 |---|---|---|---|
-| R3-01 | home and sector H2s on light sections, all widths | headings paint the container's ink #1E2A3C, draft slate #2C3E50 | caused by c1956a5b3 (headings inherit a container's flat textColour); Bean deciding the framework rule via the Eye Care stream; do not set per-heading colours until decided |
+| R3-01 | home and sector H2s on light sections, all widths | headings paint the container's ink #1E2A3C, draft slate #2C3E50 | caused by c1956a5b3; Bean decided (2026-11-02): the Eye Care stream removes that rule and adds a container 'Heading colour' setting plus a heading-inverse role on dark sections; resolves at the next indus-test deploy carrying it; set no per-heading colours |
 | R3-02 | food-service, brands, sanam split photos and Other sectors photos, all widths | inner image corners square inside the rounded white frame | |
 | R3-03 | dot lists on food-service, brands, sanam, our-story, 375 (and 768/1440 stretch) | rows about 75px where the draft is about 51px | |
 | R3-04 | sanam eyebrows ABOUT SANAM, THE RANGE, SANAM | no gold dash (food-service and brands have it) | |
@@ -126,5 +126,9 @@ QC: fresh captures of indus-test after round 2 (E:/sgs-tmp/vision/indus-foods/*-
 | R3-13 | apply stepper, 1440 and 768 | labels stacked under the circles; draft has circle and label inline | framework gap: Step N of M and inline step labels |
 | R3-14 | apply Have these ready bar, 768 and 375 | square corners against the draft's 28px pill | |
 | R3-15 | apply required asterisk | dark against the draft's red | |
+| R3-16 | footer quick links, hover and keyboard focus | text turns teal #075E80 on the dark footer (near-invisible) | the icon-list stylesheet's own :hover/:focus-within text colour (primary-dark); set cr-ref-footer-32 `textColourHover` to the draft's hover (gold accent) and check every icon list on a dark ground |
+| R3-17 | framework, tiles fields | a tiles field saved with desktop-only columns now keeps them at 375 (the narrow fallback lost !important in 3fe8263c4) | have the tiles render fill missing tiers from the block.json columns default (pre-handoff review, minor) |
 
 Also open from round 2: the Delivery list in the wrong column (a left/right flip); the blog page template shows only the loop, so its page blocks (breadcrumb, eyebrow) never render; the Careers location pin (no sgs/label icon); the form Continue arrow (no nav-button icon setting); the About animated landscape; the FAQ plus ring; testimonial arrows as chevrons. Lows (37) are in the QC reports: footer social glyph style, breadcrumb separator spacing, small rhythm gaps.
+
+Mirror state at handoff: local-indus content equals indus-test (pushed after round 2), but its plugin build was synced from a gate-skipped build that included another session's uncommitted button and icon-list work. Before any round-3 push: `npm run build` from a clean tree (all gates), then `sync-build.sh local-indus`, then confirm push-to-remote's build comparison passes.
