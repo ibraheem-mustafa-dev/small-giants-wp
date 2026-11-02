@@ -1,7 +1,8 @@
 /**
  * The upload field's drop-zone look: a dashed drop zone (default) or a plain
  * panel holding the help line and a "Choose file" button (render.php,
- * form/style.css `.sgs-form-field__file-zone--panel`).
+ * form/style.css `.sgs-form-field__file-zone--panel`), or the native file control
+ * (`.sgs-form-field__file-zone--native`) styled by the form's field settings.
  *
  * @package SGS\Blocks
  */
@@ -26,6 +27,7 @@ export default function ZonePanel( { attributes, setAttributes } ) {
 				options={ [
 					{ label: __( 'Dashed drop zone', 'sgs-blocks' ), value: 'dashed' },
 					{ label: __( 'Panel with a Choose file button', 'sgs-blocks' ), value: 'panel' },
+					{ label: __( 'Native file control (styled like the other fields)', 'sgs-blocks' ), value: 'native' },
 				] }
 				onChange={ ( zoneStyle ) => setAttributes( { zoneStyle } ) }
 				__nextHasNoMarginBottom

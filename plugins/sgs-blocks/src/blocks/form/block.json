@@ -39,6 +39,7 @@
 				]
 			},
 			"containerKind": "layout",
+			"iconPicker": true,
 			"boxFamilies": {
 				"padding": [
 					"padding"
@@ -339,6 +340,7 @@
 					"prefix": "label",
 					"_note": "Typography only (labelFontSize and the rest of the label* set, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__label). The class is rendered by the child field blocks: as a <label> by includes/forms/field-render-helpers.php::field_label and as a <legend> by form-field-checkbox, form-field-radio and form-field-tiles, so one class-only selector serves both tags.",
 					"attrMap": {
+						"css:color": "labelColour",
 						"css:-webkit-text-stroke-width": "labelTextStrokeWidth",
 						"css:-webkit-text-stroke-color": "labelTextStrokeColour"
 					},
@@ -713,6 +715,116 @@
 							}
 						}
 					}
+				},
+				"step-counter": {
+					"selector": ".sgs-form__step-counter",
+					"label": "Step counter",
+					"order": 22,
+					"clusters": [
+						"text"
+					],
+					"prefix": "stepCounter",
+					"attrMap": {
+						"css:font-size": "stepCounterFontSize",
+						"css:font-weight": "stepCounterFontWeight",
+						"css:font-style": "stepCounterFontStyle",
+						"css:font-family": "stepCounterFontFamily",
+						"css:text-transform": "stepCounterTextTransform",
+						"css:text-decoration": "stepCounterTextDecoration",
+						"css:line-height": "stepCounterLineHeight",
+						"css:letter-spacing": "stepCounterLetterSpacing",
+						"css:text-align": "stepCounterTextAlign",
+						"css:text-wrap": "stepCounterTextWrap",
+						"css:-webkit-text-stroke-width": "stepCounterTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "stepCounterTextStrokeColour",
+						"css:column-count": "stepCounterTextColumns",
+						"css:writing-mode": "stepCounterWritingMode",
+						"css:color": "stepCounterColour"
+					},
+					"_note": "Typography and colour (stepCounter* family, render.php sgs_typography_css_rule on .{uid} .sgs-form__step-counter). view.js keeps the text in step with the current step.",
+					"absentIn": [
+						"single-step"
+					],
+					"absentWhy": "The counter prints only for a multi-step form with the Step counter switch on.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "stepCounterTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"saved-notice": {
+					"selector": ".sgs-form__saved-notice",
+					"label": "Saved-progress notice",
+					"order": 31,
+					"clusters": [
+						"text"
+					],
+					"prefix": "savedNotice",
+					"attrMap": {
+						"css:font-size": "savedNoticeFontSize",
+						"css:font-weight": "savedNoticeFontWeight",
+						"css:font-style": "savedNoticeFontStyle",
+						"css:font-family": "savedNoticeFontFamily",
+						"css:text-transform": "savedNoticeTextTransform",
+						"css:text-decoration": "savedNoticeTextDecoration",
+						"css:line-height": "savedNoticeLineHeight",
+						"css:letter-spacing": "savedNoticeLetterSpacing",
+						"css:text-align": "savedNoticeTextAlign",
+						"css:text-wrap": "savedNoticeTextWrap",
+						"css:-webkit-text-stroke-width": "savedNoticeTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "savedNoticeTextStrokeColour",
+						"css:column-count": "savedNoticeTextColumns",
+						"css:writing-mode": "savedNoticeWritingMode"
+					},
+					"_note": "Typography only (savedNotice* family, render.php sgs_typography_css_rule on .{uid} .sgs-form__saved-notice). Printed only when savedProgress is on.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "savedNoticeTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"required-mark": {
+					"selector": ".sgs-form-field__required",
+					"motion": false,
+					"label": "Required mark",
+					"order": 11,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "requiredMarkColour"
+					},
+					"_note": "The asterisk beside a required field's label, emitted by includes/forms/field-render-helpers.php::field_label and by the checkbox field."
+				},
+				"nav-icon-gap": {
+					"selector": ".sgs-form__button--has-icon",
+					"motion": false,
+					"label": "Step-button icon gap",
+					"order": 32,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:gap": "navIconGap"
+					},
+					"_note": "Printed only when navIcon is set."
+				},
+				"nav-icon": {
+					"selector": ".sgs-form__button-icon",
+					"motion": false,
+					"label": "Step-button icon",
+					"order": 33,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:width": "navIconSize"
+					},
+					"_note": "Lucide icon on Next and Submit, mirrored before the label on Previous. The same size sets the height."
 				},
 				"file-button": {
 					"selector": ".sgs-form-field__file-button",
@@ -1364,10 +1476,11 @@
 				"",
 				"start",
 				"center",
-				"end"
+				"end",
+				"space-between"
 			],
 			"default": "",
-			"description": "Where the submit button row sits: start, center or end. Empty = the stylesheet's end. A narrow form container stacks the button full width unless stretchButtonsNarrow is off."
+			"description": "Where the submit button row sits: start, center, end or space-between (the buttons-row note at the left, the buttons at the right). Empty = the stylesheet's end. A narrow form container stacks the button full width unless stretchButtonsNarrow is off."
 		},
 		"stretchButtonsNarrow": {
 			"type": "boolean",
@@ -2968,6 +3081,277 @@
 			"type": "string",
 			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
 			"default": ""
+		},
+		"stepLayout": {
+			"type": "string",
+			"enum": [
+				"stacked",
+				"inline"
+			],
+			"default": "stacked",
+			"description": "How a multi-step form's progress steps sit: stacked (number above label) or inline (number beside label, steps sharing the width equally)."
+		},
+		"stepCounter": {
+			"type": "boolean",
+			"default": false,
+			"description": "Show a 'Step 2 of 4' counter above the fields of a multi-step form."
+		},
+		"stepCounterLabel": {
+			"type": "string",
+			"default": "Step %1$d of %2$d",
+			"role": "content",
+			"description": "Wording of the step counter: %1$d is the current step, %2$d the number of steps."
+		},
+		"stepCounterColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the step counter. Empty = the form's text colour."
+		},
+		"stepCounterFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"stepCounterFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"stepCounterFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"stepCounterFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"stepCounterFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"stepCounterTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"stepCounterTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"stepCounterLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"stepCounterLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"stepCounterLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"stepCounterLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"stepCounterTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"stepCounterTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"stepCounterTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"stepCounterTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"stepCounterTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"stepCounterTextColumns": {
+			"type": "number"
+		},
+		"stepCounterWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"savedNoticeFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"savedNoticeFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"savedNoticeFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"savedNoticeFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"savedNoticeFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"savedNoticeTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"savedNoticeTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"savedNoticeLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"savedNoticeLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"savedNoticeLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"savedNoticeLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"savedNoticeTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"savedNoticeTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"savedNoticeTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"savedNoticeTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"savedNoticeTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"savedNoticeTextColumns": {
+			"type": "number"
+		},
+		"savedNoticeWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"requiredMarkColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the required asterisk beside a field label. Empty = the stylesheet's text colour."
+		},
+		"labelColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of every field label and of the checkbox, radio and tiles legends. Empty = the stylesheet's label colour."
+		},
+		"navIcon": {
+			"type": "string",
+			"default": "",
+			"description": "Lucide icon slug printed on the Next and Submit buttons after the label, and mirrored before the label on Previous. Empty = no icon."
+		},
+		"navIconSize": {
+			"type": "number",
+			"default": 18,
+			"description": "Width and height in px of the step-button icon."
+		},
+		"navIconGap": {
+			"type": "number",
+			"default": 10,
+			"description": "Gap in px between a step button's icon and its label."
+		},
+		"actionsNote": {
+			"type": "string",
+			"default": "",
+			"role": "content",
+			"description": "A short note at the left of the buttons row, plain inline formatting only. Empty = none."
+		},
+		"actionsNoteFirstStepOnly": {
+			"type": "boolean",
+			"default": true,
+			"description": "On a multi-step form, show the buttons-row note on the first step only."
 		},
 		"submitFontSizeUnit": {
 			"type": "string",

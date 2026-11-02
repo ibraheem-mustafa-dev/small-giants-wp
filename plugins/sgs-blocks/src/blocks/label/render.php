@@ -331,9 +331,26 @@ if ( ! empty( $attributes['dot'] ) ) {
 		$line_radius    = '' !== $line_radius ? $line_radius : '0';
 		$scoped_css[]   = "{$root_sel}::before{content:\"\";display:inline-block;flex-shrink:0;width:{$line_length};height:{$line_thickness};border-radius:{$line_radius};vertical-align:middle;margin-inline-end:{$dot_gap};{$dot_paint};}";
 	} else {
-		$dot_size     = sgs_css_length_value( (string) ( $attributes['dotSize'] ?? '' ) );
-		$dot_size     = '' !== $dot_size ? $dot_size : '7px';
-		$scoped_css[] = "{$root_sel}::before{content:\"\";display:inline-block;flex-shrink:0;width:{$dot_size};height:{$dot_size};border-radius:50%;vertical-align:middle;margin-inline-end:{$dot_gap};{$dot_paint};}";
+		$dot_size = sgs_css_length_value( (string) ( $attributes['dotSize'] ?? '' ) );
+		// markerShape icon: the Lucide icon is a mask on the same `::before` box, so the dot paint
+		// (colour, gradient or the text colour) shows through the icon's strokes. An unknown or
+		// empty slug keeps the round dot.
+		$marker_icon_svg = '';
+		if ( 'icon' === ( $attributes['markerShape'] ?? 'dot' ) ) {
+			require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
+			$marker_icon_svg = sgs_get_lucide_icon( sanitize_key( (string) ( $attributes['markerIcon'] ?? '' ) ) );
+		}
+		if ( '' !== $marker_icon_svg ) {
+			$marker_icon_svg = (string) preg_replace( '/<!--.*?-->/s', '', $marker_icon_svg );
+			$marker_icon_svg = str_replace( 'stroke="currentColor"', 'stroke="black"', $marker_icon_svg );
+			$marker_icon_svg = (string) preg_replace( '/>\s+</', '><', trim( $marker_icon_svg ) );
+			$marker_mask     = 'url("data:image/svg+xml,' . rawurlencode( $marker_icon_svg ) . '") center/contain no-repeat';
+			$dot_size        = '' !== $dot_size ? $dot_size : '16px';
+			$scoped_css[]    = "{$root_sel}::before{content:\"\";display:inline-block;flex-shrink:0;width:{$dot_size};height:{$dot_size};vertical-align:middle;margin-inline-end:{$dot_gap};{$dot_paint};-webkit-mask:{$marker_mask};mask:{$marker_mask};}";
+		} else {
+			$dot_size     = '' !== $dot_size ? $dot_size : '7px';
+			$scoped_css[] = "{$root_sel}::before{content:\"\";display:inline-block;flex-shrink:0;width:{$dot_size};height:{$dot_size};border-radius:50%;vertical-align:middle;margin-inline-end:{$dot_gap};{$dot_paint};}";
+		}
 	}
 }
 

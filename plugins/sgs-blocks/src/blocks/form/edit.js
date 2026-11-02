@@ -31,6 +31,7 @@ import { FORM_CPT } from './SavedFormPicker';
 import EmailSettingsPanel from './EmailSettingsPanel';
 import SubmitMotionControls from './SubmitMotionControls';
 import SavedProgressPanel from './SavedProgressPanel';
+import StepSettingsPanel from './StepSettingsPanel';
 import ButtonLabelControls from './ButtonLabelControls';
 import { submitShadowPreviewStyle, submitLiftPreviewRule } from './submit-motion-preview';
 
@@ -41,6 +42,7 @@ const SUBMIT_ALIGN_OPTIONS = [
 	{ label: __( 'Left', 'sgs-blocks' ), value: 'start' },
 	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
 	{ label: __( 'Right', 'sgs-blocks' ), value: 'end' },
+	{ label: __( 'Space between (note left, buttons right)', 'sgs-blocks' ), value: 'space-between' },
 ];
 
 const FIELD_COLUMNS_FROM_OPTIONS = [
@@ -322,6 +324,9 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	const fieldBorderDecls = borderBoxPreview( fieldBorderWidth, fieldBorderStyle );
 	const fieldBackgroundValue = resolveColourToken( fieldBackground, palette );
 	const fieldTextValue = resolveColourToken( fieldTextColour, palette );
+	const labelColourValue = resolveColourToken( attributes.labelColour, palette );
+	const requiredMarkValue = resolveColourToken( attributes.requiredMarkColour, palette );
+	const stepCounterColourValue = resolveColourToken( attributes.stepCounterColour, palette );
 	const fieldEdgeValue = resolveColourToken( fieldBorderColour, palette );
 	const fieldHolderValue = resolveColourToken( fieldPlaceholderColour, palette );
 	const fieldVars = [
@@ -352,7 +357,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	]
 		.filter( Boolean )
 		.join( '' );
-	const submitAlignValue = { start: 'flex-start', center: 'center', end: 'flex-end' }[ submitAlign ];
+	const submitAlignValue = { start: 'flex-start', center: 'center', end: 'flex-end', 'space-between': 'space-between' }[ submitAlign ];
 	const fieldPreviewCss = [
 		fieldVars && `.${ formPreviewScope }{${ fieldVars }}`,
 		fieldBaseDecls && `${ fieldSel }{${ fieldBaseDecls }}`,
@@ -427,6 +432,11 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		typographyPreviewCss( attributes, 'reviewHeading', `.${ formPreviewScope } .sgs-form-review__heading`, previewTier ),
 		typographyPreviewCss( attributes, 'reviewDetail', `.${ formPreviewScope } .sgs-form-review__detail`, previewTier ),
 		typographyPreviewCss( attributes, 'stepLabel', `.${ formPreviewScope } .sgs-form__progress-step-label`, previewTier ),
+		typographyPreviewCss( attributes, 'stepCounter', `.${ formPreviewScope } .sgs-form__step-counter`, previewTier ),
+		typographyPreviewCss( attributes, 'savedNotice', `.${ formPreviewScope } .sgs-form__saved-notice`, previewTier ),
+		labelColourValue && `.${ formPreviewScope } .sgs-form-field__label{color:${ labelColourValue };}`,
+		requiredMarkValue && `.${ formPreviewScope } .sgs-form-field__required{color:${ requiredMarkValue };}`,
+		stepCounterColourValue && `.${ formPreviewScope } .sgs-form__step-counter{color:${ stepCounterColourValue };}`,
 	]
 		.filter( Boolean )
 		.join( '' );
@@ -712,6 +722,27 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						setAttributes,
 					} ),
 					textRow( {
+						key: 'field-label',
+						label: __( 'Field label colour', 'sgs-blocks' ),
+						attrs: { base: 'labelColour' },
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'required-mark',
+						label: __( 'Required mark colour', 'sgs-blocks' ),
+						attrs: { base: 'requiredMarkColour' },
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'step-counter',
+						label: __( 'Step counter colour', 'sgs-blocks' ),
+						attrs: { base: 'stepCounterColour' },
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
 						key: 'field-placeholder',
 						label: __( 'Field placeholder colour', 'sgs-blocks' ),
 						attrs: { base: 'fieldPlaceholderColour' },
@@ -849,6 +880,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 
+				<StepSettingsPanel attributes={ attributes } setAttributes={ setAttributes } />
 				<SavedProgressPanel attributes={ attributes } setAttributes={ setAttributes } />
 
 				<EmailSettingsPanel
@@ -1292,6 +1324,36 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 								showWritingMode: true,
 							},
 							{
+								key: 'stepCounter',
+								label: __( 'Step counter', 'sgs-blocks' ),
+								prefix: 'stepCounter',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextStroke: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'savedNotice',
+								label: __( 'Saved-progress notice', 'sgs-blocks' ),
+								prefix: 'savedNotice',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextStroke: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
 								key: 'stepLabel',
 								label: __( 'Step label', 'sgs-blocks' ),
 								prefix: 'stepLabel',
@@ -1392,6 +1454,13 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					211-228 emits a real, unconditional `color`/`background-color`
 					rule on this exact element; the preview had never carried it. */ }
 				{ /* Saved-progress notice preview: render.php prints the same notice on the frontend. */ }
+				{ attributes.stepCounter && (
+					<div className="sgs-form__status-row">
+						<span className="sgs-form__step-counter">
+							{ ( attributes.stepCounterLabel || __( 'Step %1$d of %2$d', 'sgs-blocks' ) ).replace( '%1$d', '1' ).replace( '%2$d', '3' ) }
+						</span>
+					</div>
+				) }
 				{ savedProgress && (
 					<p className="sgs-form__saved-notice">
 						<span
@@ -1407,6 +1476,11 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					</p>
 				) }
 				<div className="sgs-form__actions">
+					{ attributes.actionsNote && (
+						<span className="sgs-form__actions-note">
+							<AuthoredText value={ attributes.actionsNote } />
+						</span>
+					) }
 					{ /* Editor-canvas-only Previous-button preview (2026-09-05) — same
 						reasoning as the Submit button preview above: no real multi-step
 						navigation exists in the editor canvas, so without this element

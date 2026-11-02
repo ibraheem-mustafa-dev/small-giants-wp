@@ -5,6 +5,7 @@ import {
 	RichText,
 } from '@wordpress/block-editor';
 import { PanelBody, ToggleControl } from '@wordpress/components';
+import { useEffect, useState } from '@wordpress/element';
 import {
 	TypographyControls,
 	ResponsiveBoxControl,
@@ -13,7 +14,9 @@ import {
 	fillRow,
 	SgsLengthControl,
 	LinkUnderlineControl,
+	IconPicker,
 } from '../../components';
+import { loadLucide } from '../../components/IconPicker';
 import {
 	colourVar,
 	SGS_LENGTH_UNITS,
@@ -231,6 +234,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		dotSize,
 		dotGap,
 		markerShape,
+		markerIcon,
 		lineLength,
 		lineThickness,
 		lineRadius,
@@ -257,9 +261,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		}
 	);
 	// The leading dot: the same `::before` rule render.php prints, scoped to this canvas element.
+	const [ markerIconSvg, setMarkerIconSvg ] = useState( '' );
+	useEffect( () => {
+		let live = true;
+		if ( 'icon' !== markerShape || ! markerIcon ) {
+			setMarkerIconSvg( '' );
+			return undefined;
+		}
+		loadLucide()
+			.then( ( data ) => live && setMarkerIconSvg( data?.map?.[ markerIcon ] || '' ) )
+			.catch( () => live && setMarkerIconSvg( '' ) );
+		return () => {
+			live = false;
+		};
+	}, [ markerShape, markerIcon ] );
 	const dotCss = labelDotPreviewCss(
 		`.sgs-lbl-ed-${ clientId }`,
-		attributes
+		attributes,
+		markerIconSvg
 	);
 	// The end shapes: the cut `::after` layer carrying the fill and the border (the rules render.php prints).
 	const endShapeCss = labelEndShapePreviewCss(
@@ -501,6 +520,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									value="line"
 									label={ __( 'Line', 'sgs-blocks' ) }
 								/>
+								<ToggleGroupControlOption
+									value="icon"
+									label={ __( 'Icon', 'sgs-blocks' ) }
+								/>
 							</ToggleGroupControl>
 							{ 'line' === markerShape ? (
 								<>
@@ -545,18 +568,31 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									/>
 								</>
 							) : (
-								<SgsLengthControl
-									scale="font-size"
-									label={ __( 'Dot size', 'sgs-blocks' ) }
-									value={ dotSize ?? '' }
-									units={ SGS_LENGTH_UNITS }
-									onChange={ ( val ) =>
-										setAttributes( {
-											dotSize: sgsNormaliseLength( val ),
-										} )
-									}
-									presets={ false }
-								/>
+								<>
+									{ 'icon' === markerShape && (
+										<IconPicker
+											label={ __( 'Marker icon', 'sgs-blocks' ) }
+											/* render.php cuts a Lucide icon out of the dot paint with a mask. */
+											sources={ [ 'lucide' ] }
+											value={ markerIcon ? { source: 'lucide', name: markerIcon } : null }
+											onChange={ ( val ) =>
+												setAttributes( { markerIcon: val ? val.name : '' } )
+											}
+										/>
+									) }
+									<SgsLengthControl
+										scale="font-size"
+										label={ 'icon' === markerShape ? __( 'Icon size', 'sgs-blocks' ) : __( 'Dot size', 'sgs-blocks' ) }
+										value={ dotSize ?? '' }
+										units={ SGS_LENGTH_UNITS }
+										onChange={ ( val ) =>
+											setAttributes( {
+												dotSize: sgsNormaliseLength( val ),
+											} )
+										}
+										presets={ false }
+									/>
+								</>
 							) }
 							<SgsLengthControl
 								presets

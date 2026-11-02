@@ -648,6 +648,18 @@ select.sgs-form-field__input {
 	z-index: 1;
 }
 
+/* The native look (zoneStyle 'native'): the file input is the visible control and takes the form's
+   field settings through its sgs-form-field__input class. Only the dashed border is this look's own
+   default; a form-level border style, the file-label colours and the field settings all outrank it. */
+.sgs-form-field__file-zone--native .sgs-form-field__file-input {
+	position: static;
+	opacity: 1;
+	width: 100%;
+	box-sizing: border-box;
+	z-index: auto;
+	border-style: dashed;
+}
+
 .sgs-form-field__file-label {
 	display: flex;
 	flex-direction: column;
@@ -910,6 +922,36 @@ select.sgs-form-field__input {
 	font-weight: 600;
 }
 
+/* Inline stepper (stepLayout "inline"): each step puts its number and label on one row, and the
+   steps share the width equally. The narrow-container rule below still hides the labels. */
+.sgs-form--stepper-inline .sgs-form__progress-steps {
+	display: grid;
+	grid-auto-flow: column;
+	grid-auto-columns: minmax(0, 1fr);
+	gap: 8px;
+}
+
+.sgs-form--stepper-inline .sgs-form__progress-step {
+	flex-direction: row;
+	justify-content: flex-start;
+	gap: 10px;
+	min-width: 0;
+	padding: 6px 0;
+}
+
+.sgs-form--stepper-inline .sgs-form__progress-step-number {
+	width: 32px;
+	height: 32px;
+	flex-shrink: 0;
+}
+
+.sgs-form--stepper-inline .sgs-form__progress-step-label {
+	min-width: 0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
 /* Hide step labels on narrow containers — step numbers are enough */
 @container sgs-form (max-width: 480px) {
 	.sgs-form__progress-step-label {
@@ -939,6 +981,42 @@ select.sgs-form-field__input {
 	gap: var(--wp--preset--spacing--20, 0.75rem);
 	justify-content: flex-end;
 	padding-top: var(--wp--preset--spacing--30, 1rem);
+}
+
+/* Step-button icon (navIcon): the buttons become inline flex rows; Previous mirrors the same icon. */
+.sgs-form__button--has-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.sgs-form__button--has-icon[hidden] {
+	display: none;
+}
+
+.sgs-form__button-icon {
+	display: inline-flex;
+	flex: none;
+}
+
+.sgs-form__button-icon svg {
+	width: 100%;
+	height: 100%;
+}
+
+.sgs-form__button--prev .sgs-form__button-icon {
+	transform: scaleX(-1);
+}
+
+/* The note at the left of the buttons row; its size and colour are the help text's defaults. */
+:where(.sgs-form__actions-note) {
+	font-size: var(--wp--preset--font-size--x-small, 0.8125rem);
+}
+
+.sgs-form__actions-note {
+	color: var(--wp--preset--color--text-muted, #555);
+	margin-right: auto;
+	align-self: center;
 }
 
 /* Stack buttons full-width on narrow containers */

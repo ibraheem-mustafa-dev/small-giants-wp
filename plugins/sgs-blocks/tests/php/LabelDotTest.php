@@ -100,4 +100,56 @@ final class LabelDotTest extends TestCase {
 		$this->assertStringContainsString( 'Halal certified', $out['html'], 'positive control: the label rendered' );
 		$this->assertStringNotContainsString( '::before', $out['css'], 'negative control: no dot when the switch is off' );
 	}
+
+	/**
+	 * The icon marker is the same `::before` box with the dot paint, cut by a Lucide mask.
+	 */
+	public function test_icon_marker_masks_the_dot_paint(): void {
+		$out = $this->label(
+			array(
+				'dot'         => true,
+				'markerShape' => 'icon',
+				'markerIcon'  => 'map-pin',
+				'dotSize'     => '14px',
+				'dotGap'      => '6px',
+				'dotColour'   => '#0A7EA8',
+			)
+		);
+
+		$this->assertMatchesRegularExpression(
+			'/\.sgs-lbl-[0-9a-f]{8}\.wp-block-sgs-label::before\{content:"";display:inline-block;flex-shrink:0;width:14px;height:14px;vertical-align:middle;margin-inline-end:6px;background-color:#0A7EA8;-webkit-mask:url\("data:image\/svg\+xml,[^"]+"\) center\/contain no-repeat;mask:url\("data:image\/svg\+xml,[^"]+"\) center\/contain no-repeat;\}/',
+			$out['css']
+		);
+		$this->assertStringNotContainsString( 'border-radius:50%', $out['css'], 'the icon replaces the round dot' );
+		$this->assertStringContainsString( 'stroke%3D%22black%22', $out['css'], 'the mask strokes are opaque black' );
+		$this->assertStringNotContainsString( 'currentColor', str_replace( 'background-color:currentColor', '', $out['css'] ), 'no currentColor stroke survives in the mask' );
+	}
+
+	/**
+	 * An icon marker with no usable slug keeps the round dot.
+	 */
+	public function test_icon_marker_without_a_known_slug_keeps_the_dot(): void {
+		$out = $this->label(
+			array(
+				'dot'         => true,
+				'markerShape' => 'icon',
+				'markerIcon'  => 'no-such-icon',
+			)
+		);
+
+		$this->assertStringContainsString( 'border-radius:50%', $out['css'] );
+		$this->assertStringNotContainsString( 'mask', $out['css'] );
+	}
+
+	/**
+	 * Negative control: a dot label (the default shape) prints no mask.
+	 */
+	public function test_dot_and_line_markers_print_no_mask(): void {
+		$dot  = $this->label( array( 'dot' => true, 'markerIcon' => 'map-pin' ) );
+		$line = $this->label( array( 'dot' => true, 'markerShape' => 'line', 'markerIcon' => 'map-pin' ) );
+
+		$this->assertStringContainsString( '::before', $dot['css'], 'positive control: the dot printed' );
+		$this->assertStringNotContainsString( 'mask', $dot['css'] );
+		$this->assertStringNotContainsString( 'mask', $line['css'] );
+	}
 }

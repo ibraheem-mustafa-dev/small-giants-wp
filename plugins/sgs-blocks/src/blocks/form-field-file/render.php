@@ -25,6 +25,8 @@ $max         = absint( $attributes['maxSize'] ?? 10 );
 $upload_text = $attributes['uploadText'] ?? '';
 // zoneStyle 'panel': a plain panel holding the help line and a Choose file button.
 $is_panel    = 'panel' === ( $attributes['zoneStyle'] ?? 'dashed' );
+// zoneStyle 'native': the browser's own file control, styled by the form's field settings; no drag-drop label.
+$is_native   = 'native' === ( $attributes['zoneStyle'] ?? 'dashed' );
 
 // allowedTypes is an array in the block schema — join for the HTML accept attribute.
 $allowed_types_raw = $attributes['allowedTypes'] ?? array( 'image/*', 'application/pdf' );
@@ -41,7 +43,7 @@ $drop_label = ! empty( $upload_text )
 
 echo field_open( $attributes, 'file' );
 echo field_label( $fid, $attributes );
-echo '<div class="sgs-form-field__file-zone' . ( $is_panel ? ' sgs-form-field__file-zone--panel' : '' ) . '">';
+echo '<div class="sgs-form-field__file-zone' . ( $is_panel ? ' sgs-form-field__file-zone--panel' : '' ) . ( $is_native ? ' sgs-form-field__file-zone--native' : '' ) . '">';
 
 // aria-describedby wires the error span and help text (when present) so that
 // screen readers announce inline validation messages for this field.
@@ -50,25 +52,30 @@ if ( ! empty( $attributes['helpText'] ) ) {
 	$file_described_by[] = $fid . '-help';
 }
 
+// Native look: the input is the visible control, so it carries the form's field class (border, radius,
+// padding, font from the field settings) and draws its own focus ring instead of a proxy label's.
 printf(
-	'<input type="file" id="%s" name="%s" accept="%s" class="sgs-form-field__file-input sgs-focus-source" data-wp-on--change="actions.uploadFile" aria-describedby="%s"%s />',
+	'<input type="file" id="%s" name="%s" accept="%s" class="%s" data-wp-on--change="actions.uploadFile" aria-describedby="%s"%s />',
 	esc_attr( $fid ),
 	esc_attr( $field_name ),
 	$accept,
+	$is_native ? 'sgs-form-field__file-input sgs-form-field__input' : 'sgs-form-field__file-input sgs-focus-source',
 	esc_attr( implode( ' ', $file_described_by ) ),
 	$required ? ' required aria-required="true"' : ''
 );
 
-echo '<div class="sgs-form-field__file-label sgs-focus-proxy">';
-echo '<span>' . sgs_rich_text_kses( (string) $drop_label, false ) . '</span>';
-echo '<span class="sgs-form-field__file-hint">' . sprintf( esc_html__( 'Max %d MB', 'sgs-blocks' ), $max ) . '</span>';
-if ( $is_panel ) {
-	// The help line and a button-look cue sit inside the panel; the whole panel is the file input's target.
-	echo field_help( $fid, $attributes );
-	$button_label = trim( (string) ( $attributes['buttonLabel'] ?? '' ) );
-	echo '<span class="sgs-form-field__file-button" aria-hidden="true">' . sgs_rich_text_kses( '' !== $button_label ? $button_label : __( 'Choose file', 'sgs-blocks' ), false ) . '</span>';
+if ( ! $is_native ) {
+	echo '<div class="sgs-form-field__file-label sgs-focus-proxy">';
+	echo '<span>' . sgs_rich_text_kses( (string) $drop_label, false ) . '</span>';
+	echo '<span class="sgs-form-field__file-hint">' . sprintf( esc_html__( 'Max %d MB', 'sgs-blocks' ), $max ) . '</span>';
+	if ( $is_panel ) {
+		// The help line and a button-look cue sit inside the panel; the whole panel is the file input's target.
+		echo field_help( $fid, $attributes );
+		$button_label = trim( (string) ( $attributes['buttonLabel'] ?? '' ) );
+		echo '<span class="sgs-form-field__file-button" aria-hidden="true">' . sgs_rich_text_kses( '' !== $button_label ? $button_label : __( 'Choose file', 'sgs-blocks' ), false ) . '</span>';
+	}
+	echo '</div>';
 }
-echo '</div>';
 
 echo '<div class="sgs-form-file__progress" hidden>' . esc_html__( 'Uploading…', 'sgs-blocks' ) . '</div>';
 echo '<div class="sgs-form-file__preview" hidden></div>';

@@ -20,6 +20,23 @@
 	background-color: var(--wp--preset--color--success, currentColor);
 }
 
+/* Step counter and saved notice share one row when the counter is on. */
+.sgs-form__status-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	margin: 0 0 1rem;
+}
+
+.sgs-form__status-row .sgs-form__saved-notice {
+	margin: 0;
+}
+
+.sgs-form__step-counter {
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+}
+
 /* Review: one card per section. */
 .sgs-form-review__cards {
 	display: grid;

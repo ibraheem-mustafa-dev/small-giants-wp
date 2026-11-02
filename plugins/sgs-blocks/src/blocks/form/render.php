@@ -38,6 +38,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-form-submit-motion.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-form-own-submit.php';
+require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
 // CSS-keyword sanitiser — letters + hyphen only (border-style — the only
 // free-text keyword sgs/form's declared supports concatenate into scoped CSS;
@@ -195,6 +196,17 @@ $context = array(
 	'successRedirect' => $success_redirect,
 );
 
+// The step counter's wording travels in the context only when the counter is on, so view.js can
+// keep the text in step with currentStep; an untouched form's context is unchanged.
+$sgs_form_counter_on    = ! empty( $attributes['stepCounter'] ) && $is_multi_step;
+$sgs_form_counter_label = trim( (string) ( $attributes['stepCounterLabel'] ?? '' ) );
+if ( '' === $sgs_form_counter_label || 'Step %1$d of %2$d' === $sgs_form_counter_label ) {
+	$sgs_form_counter_label = __( 'Step %1$d of %2$d', 'sgs-blocks' );
+}
+if ( $sgs_form_counter_on ) {
+	$context['stepCounterLabel'] = $sgs_form_counter_label;
+}
+
 // ---------------------------------------------------------------------------
 // Block-private scoped color/typography/border supports (no-inline contract
 // §A) — mirrors sgs/container's render.php pattern. Base padding/margin +
@@ -220,6 +232,12 @@ if ( in_array( $sgs_field_columns_from, array( '480', '400', '320' ), true ) ) {
 // in a narrow container); only an explicit false adds the opt-out class.
 if ( false === ( $attributes['stretchButtonsNarrow'] ?? true ) ) {
 	$sgs_form_supports_classes[] = 'sgs-form--no-narrow-stretch';
+}
+
+// stepLayout "inline" puts each step's number and label on one row, the steps sharing the width
+// equally (style.css). The default "stacked" adds nothing, so an untouched form is unchanged.
+if ( 'inline' === (string) ( $attributes['stepLayout'] ?? 'stacked' ) ) {
+	$sgs_form_supports_classes[] = 'sgs-form--stepper-inline';
 }
 
 // The form's own Gap setting reaches the field rows only when one is set: the
@@ -529,7 +547,9 @@ $sgs_field_css .= sgs_typography_css_rule( $attributes, 'navButton', '.' . $sgs_
 // inside the uid root, and the stylesheet's own size for each is a :where()
 // default (the review heading keeps its (0,1,0) literal so the theme's heading
 // styles cannot beat it), so an unset control leaves the look unchanged.
-$sgs_field_css .= sgs_typography_css_rule( $attributes, 'helpText', '.' . $sgs_form_uid . ' .sgs-form-field__help, .' . $sgs_form_uid . ' .sgs-form-field__file-hint' );
+$sgs_actions_note = trim( (string) ( $attributes['actionsNote'] ?? '' ) );
+// The actions note reuses the help-text typography; its selector joins the rule only when a note exists.
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'helpText', '.' . $sgs_form_uid . ' .sgs-form-field__help, .' . $sgs_form_uid . ' .sgs-form-field__file-hint' . ( '' !== $sgs_actions_note ? ', .' . $sgs_form_uid . ' .sgs-form__actions-note' : '' ) );
 $sgs_field_css .= sgs_typography_css_rule( $attributes, 'errorText', '.' . $sgs_form_uid . ' .sgs-form-field__error, .' . $sgs_form_uid . ' .sgs-form-field__error-message' );
 $sgs_field_css .= sgs_typography_css_rule( $attributes, 'fileStatus', '.' . $sgs_form_uid . ' .sgs-form-file__preview, .' . $sgs_form_uid . ' .sgs-form-file__progress' );
 $sgs_field_css .= sgs_typography_css_rule( $attributes, 'fileButton', '.' . $sgs_form_uid . ' .sgs-form-field__file-button' );
@@ -541,12 +561,59 @@ $sgs_field_css .= sgs_typography_css_rule( $attributes, 'reviewHeading', '.' . $
 $sgs_field_css .= sgs_typography_css_rule( $attributes, 'reviewDetail', '.' . $sgs_form_uid . ' .sgs-form-review__detail' );
 $sgs_field_css .= sgs_typography_css_rule( $attributes, 'stepLabel', '.' . $sgs_form_uid . ' .sgs-form__progress-step-label' );
 
+// Required-mark colour, field-label colour (every label and the checkbox, radio and tiles
+// legends), the step counter and the saved-progress notice. Each is opt-in: unset prints nothing.
+// The label rule is (0,2,0), above the stylesheet's zero-specificity static-label default; the
+// required mark keeps its own rule, which beats the label colour it would otherwise inherit.
+$sgs_required_text = sgs_text_decls( $attributes, array( 'base' => 'requiredMarkColour' ) );
+if ( ! empty( $sgs_required_text['normal'] ) ) {
+	$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form-field__required{' . implode( ';', $sgs_required_text['normal'] ) . ';}';
+}
+$sgs_label_text = sgs_text_decls( $attributes, array( 'base' => 'labelColour' ) );
+if ( ! empty( $sgs_label_text['normal'] ) ) {
+	$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form-field__label{' . implode( ';', $sgs_label_text['normal'] ) . ';}';
+}
+$sgs_counter_text = sgs_text_decls( $attributes, array( 'base' => 'stepCounterColour' ) );
+if ( ! empty( $sgs_counter_text['normal'] ) ) {
+	$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form__step-counter{' . implode( ';', $sgs_counter_text['normal'] ) . ';}';
+}
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'stepCounter', '.' . $sgs_form_uid . ' .sgs-form__step-counter' );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'savedNotice', '.' . $sgs_form_uid . ' .sgs-form__saved-notice' );
+
+// Icon on the step buttons: its size and the gap to the label. Printed only when an icon is set.
+$sgs_nav_icon_name = sanitize_key( (string) ( $attributes['navIcon'] ?? '' ) );
+$sgs_nav_icon_svg  = '';
+if ( '' !== $sgs_nav_icon_name ) {
+	$sgs_nav_icon_svg = sgs_get_lucide_icon( $sgs_nav_icon_name );
+}
+$sgs_nav_icon_class      = '';
+$sgs_nav_icon_html_start = '';
+$sgs_nav_icon_html_end   = '';
+if ( '' !== $sgs_nav_icon_svg ) {
+	$sgs_nav_icon_class      = ' sgs-form__button--has-icon';
+	$sgs_nav_icon_html_start = '<span class="sgs-form__button-icon" aria-hidden="true">' . $sgs_nav_icon_svg . '</span>';
+	$sgs_nav_icon_html_end   = $sgs_nav_icon_html_start;
+	$sgs_nav_icon_size = max( 1, (float) ( $attributes['navIconSize'] ?? 18 ) );
+	$sgs_nav_icon_gap  = max( 0, (float) ( $attributes['navIconGap'] ?? 10 ) );
+	$sgs_field_css    .= '.' . $sgs_form_uid . ' .sgs-form__button--has-icon{gap:' . $sgs_nav_icon_gap . 'px;}';
+	$sgs_field_css    .= '.' . $sgs_form_uid . ' .sgs-form__button-icon{width:' . $sgs_nav_icon_size . 'px;height:' . $sgs_nav_icon_size . 'px;}';
+}
+
+// A note at the left of the buttons row ("Takes about 5 minutes"). With actionsNoteFirstStepOnly
+// (default on) a multi-step form hides it once the visitor leaves step one.
+$sgs_actions_note_html = '';
+if ( '' !== $sgs_actions_note ) {
+	$sgs_actions_note_hide = $is_multi_step && false !== ( $attributes['actionsNoteFirstStepOnly'] ?? true ) ? ' data-wp-bind--hidden="!state.isFirstStep"' : '';
+	$sgs_actions_note_html = '<span class="sgs-form__actions-note"' . $sgs_actions_note_hide . '>' . sgs_rich_text_kses( $sgs_actions_note, false ) . '</span>';
+}
+
 // Submit button row alignment (the stylesheet's own value is flex-end). Narrow
 // containers stack the button full width unless stretchButtonsNarrow is false.
 $sgs_submit_align_map = array(
-	'start'  => 'flex-start',
-	'center' => 'center',
-	'end'    => 'flex-end',
+	'start'         => 'flex-start',
+	'center'        => 'center',
+	'end'           => 'flex-end',
+	'space-between' => 'space-between',
 );
 $sgs_submit_align     = $sgs_submit_align_map[ (string) ( $attributes['submitAlign'] ?? '' ) ] ?? '';
 if ( '' !== $sgs_submit_align ) {
@@ -683,6 +750,34 @@ $sgs_form_file_fill_css = function_exists( 'sgs_fill_states_css' )
 	)
 	: '';
 
+// A native-look file field (zoneStyle 'native') has no label element: the file-label colours paint the
+// input itself. Each emitter is called on its own selector so the hover suffix lands on it, and no
+// gradient is passed (an input has no pseudo-element to carry a ring). Printed only when a native field
+// sits in the form, so every other form is unchanged.
+if ( str_contains( (string) $content, 'sgs-form-field__file-zone--native' ) ) {
+	$sgs_form_file_native_sel = '.' . $sgs_form_uid . ' .sgs-form-field__file-zone--native .sgs-form-field__file-input';
+	if ( function_exists( 'sgs_border_states_css' ) ) {
+		$sgs_form_file_border_css .= sgs_border_states_css(
+			$sgs_form_file_native_sel,
+			$attributes,
+			array(
+				'base'  => 'fileLabelBorderColour',
+				'hover' => 'fileLabelBorderColourHover',
+			)
+		);
+	}
+	if ( function_exists( 'sgs_fill_states_css' ) ) {
+		$sgs_form_file_fill_css .= sgs_fill_states_css(
+			$sgs_form_file_native_sel,
+			$attributes,
+			array(
+				'base'  => 'fileLabelBackgroundColour',
+				'hover' => 'fileLabelBackgroundColourHover',
+			)
+		);
+	}
+}
+
 if ( '' !== $sgs_form_file_border_css || '' !== $sgs_form_file_fill_css ) {
 	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
 		$sgs_form_supports_classes[] = $sgs_form_uid;
@@ -718,6 +813,16 @@ if ( $sgs_form_saved_on ) {
 
 ob_start();
 
+// One row holds the step counter and the saved-progress notice, the counter at the left and the notice at the right.
+if ( $sgs_form_counter_on ) {
+	$sgs_form_counter_text = str_replace(
+		array( '%1$d', '%2$d' ),
+		array( '1', (string) (int) $total_steps ),
+		$sgs_form_counter_label
+	);
+	echo '<div class="sgs-form__status-row"><span class="sgs-form__step-counter" data-wp-text="state.stepCounterText">' . esc_html( $sgs_form_counter_text ) . '</span>';
+}
+
 if ( $sgs_form_saved_on ) :
 	$sgs_form_saved_label      = trim( (string) ( $attributes['savedProgressLabel'] ?? '' ) );
 	$sgs_form_saved_done_label = trim( (string) ( $attributes['savedProgressSavedLabel'] ?? '' ) );
@@ -730,6 +835,10 @@ if ( $sgs_form_saved_on ) :
 </p>
 	<?php
 endif;
+
+if ( $sgs_form_counter_on ) {
+	echo '</div>';
+}
 
 if ( $is_multi_step ) :
 	?>
@@ -800,37 +909,38 @@ $sgs_form_label_attr = '' !== $sgs_form_label
 	<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- InnerBlocks output, pre-rendered and escaped by WordPress. ?>
 
 	<?php if ( $is_multi_step || ! $has_own_submit ) : ?>
-	<div class="sgs-form__actions">
+	<div class="sgs-form__actions"><?php echo $sgs_actions_note_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from sgs_rich_text_kses() or empty. ?>
+
 		<?php if ( $is_multi_step ) : ?>
 			<button
 				type="button"
-				class="sgs-form__button sgs-form__button--prev"
+				class="sgs-form__button sgs-form__button--prev<?php echo esc_attr( $sgs_nav_icon_class ); ?>"
 				data-wp-on--click="actions.prevStep"
 				data-wp-bind--hidden="state.isFirstStep"
 			>
-				<?php echo sgs_rich_text_kses( is_string( $attributes['prevLabel'] ?? null ) && '' !== trim( $attributes['prevLabel'] ) ? $attributes['prevLabel'] : __( 'Previous', 'sgs-blocks' ), false ); ?>
+				<?php echo $sgs_nav_icon_html_start . sgs_rich_text_kses( is_string( $attributes['prevLabel'] ?? null ) && '' !== trim( $attributes['prevLabel'] ) ? $attributes['prevLabel'] : __( 'Previous', 'sgs-blocks' ), false ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the icon is sgs_get_lucide_icon() SVG or empty, the label is kses'd. ?>
 			</button>
 
 			<button
 				type="button"
-				class="sgs-form__button sgs-form__button--next"
+				class="sgs-form__button sgs-form__button--next<?php echo esc_attr( $sgs_nav_icon_class ); ?>"
 				data-wp-on--click="actions.nextStep"
 				data-wp-bind--hidden="state.isLastStep"
 			>
-				<?php echo sgs_rich_text_kses( is_string( $attributes['nextLabel'] ?? null ) && '' !== trim( $attributes['nextLabel'] ) ? $attributes['nextLabel'] : __( 'Next', 'sgs-blocks' ), false ); ?>
+				<?php echo sgs_rich_text_kses( is_string( $attributes['nextLabel'] ?? null ) && '' !== trim( $attributes['nextLabel'] ) ? $attributes['nextLabel'] : __( 'Next', 'sgs-blocks' ), false ) . $sgs_nav_icon_html_end; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the label is kses'd, the icon is sgs_get_lucide_icon() SVG or empty. ?>
 			</button>
 		<?php endif; ?>
 
 		<?php if ( ! $has_own_submit ) : ?>
 		<button
 			type="submit"
-			class="sgs-form__button sgs-form__button--submit sgs-form__button--<?php echo esc_attr( $submit_style ); ?>"
+			class="sgs-form__button sgs-form__button--submit sgs-form__button--<?php echo esc_attr( $submit_style ); ?><?php echo esc_attr( $sgs_nav_icon_class ); ?>"
 			data-wp-bind--disabled="context.submitting"
 			<?php if ( $is_multi_step ) : ?>
 				data-wp-bind--hidden="!state.isLastStep"
 			<?php endif; ?>
 		>
-			<?php echo sgs_rich_text_kses( (string) $submit_label, false ); ?>
+			<?php echo sgs_rich_text_kses( (string) $submit_label, false ) . $sgs_nav_icon_html_end; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the label is kses'd, the icon is sgs_get_lucide_icon() SVG or empty. ?>
 		</button>
 		<?php endif; ?>
 	</div>

@@ -122,10 +122,11 @@
             "type": "string",
             "enum": [
                 "dashed",
-                "panel"
+                "panel",
+                "native"
             ],
             "default": "dashed",
-            "description": "The drop zone's look: a dashed drop zone, or a plain panel holding the help line and a Choose file button."
+            "description": "The drop zone's look: a dashed drop zone, a plain panel holding the help line and a Choose file button, or the browser's own file control styled by the form's field settings."
         },
         "buttonLabel": {
             "type": "string",

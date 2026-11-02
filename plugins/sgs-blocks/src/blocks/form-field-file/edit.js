@@ -48,6 +48,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	].join( ' ' );
 
 	const isPanel = 'panel' === attributes.zoneStyle;
+	const isNative = 'native' === attributes.zoneStyle;
 	const blockProps = useBlockProps( { className } );
 
 	return (
@@ -228,8 +229,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					</label>
 				) }
 				<div
-					className={ isPanel ? 'sgs-form-field__file-zone sgs-form-field__file-zone--panel' : 'sgs-form-field__file-zone' }
-					style={ isPanel ? undefined : {
+					className={ isPanel ? 'sgs-form-field__file-zone sgs-form-field__file-zone--panel' : `sgs-form-field__file-zone${ isNative ? ' sgs-form-field__file-zone--native' : '' }` }
+					style={ isPanel || isNative ? undefined : {
 						border: '2px dashed #ccc',
 						borderRadius: '8px',
 						padding: '40px',
@@ -237,6 +238,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						backgroundColor: '#f9f9f9',
 					} }
 				>
+					{ isNative && (
+						<input type="file" className="sgs-form-field__file-input sgs-form-field__input" disabled />
+					) }
+					{ ! isNative && (
 					<div className="sgs-form-field__file-label" style={ isPanel ? undefined : { border: 'none', padding: 0 } }>
 						<span>
 							<AuthoredText
@@ -264,6 +269,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							</span>
 						) }
 					</div>
+					) }
 				</div>
 				{ ! isPanel && helpText && (
 					<p className="sgs-form-field__help">{ helpText }</p>

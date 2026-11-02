@@ -50,9 +50,10 @@ function dotPaint( colour, gradient ) {
  *
  * @param {string} selector   The canvas element's own selector, e.g. `.sgs-lbl-ed-{clientId}`.
  * @param {Object} attributes Block attributes.
+ * @param {string} iconSvg    The Lucide SVG for `markerIcon`, once loaded (markerShape icon).
  * @return {string} The CSS rule, or '' when the dot is off.
  */
-export function labelDotPreviewCss( selector, attributes = {} ) {
+export function labelDotPreviewCss( selector, attributes = {}, iconSvg = '' ) {
 	if ( ! attributes.dot ) {
 		return '';
 	}
@@ -66,6 +67,16 @@ export function labelDotPreviewCss( selector, attributes = {} ) {
 		const radius =
 			safeLength( gapVar( attributes.lineRadius ) ) || '0';
 		return `${ selector }::before{content:"";display:inline-block;flex-shrink:0;width:${ length };height:${ thickness };border-radius:${ radius };vertical-align:middle;margin-inline-end:${ gap };${ paint };}`;
+	}
+	if ( 'icon' === attributes.markerShape && 'string' === typeof iconSvg && iconSvg ) {
+		const size = safeLength( sgsLengthPreview( attributes.dotSize ) ) || '16px';
+		const svg = iconSvg
+			.replace( /<!--[\s\S]*?-->/g, '' )
+			.replace( /stroke="currentColor"/g, 'stroke="black"' )
+			.replace( />\s+</g, '><' )
+			.trim();
+		const mask = `url("data:image/svg+xml,${ encodeURIComponent( svg ) }") center/contain no-repeat`;
+		return `${ selector }::before{content:"";display:inline-block;flex-shrink:0;width:${ size };height:${ size };vertical-align:middle;margin-inline-end:${ gap };${ paint };-webkit-mask:${ mask };mask:${ mask };}`;
 	}
 	const size = safeLength( sgsLengthPreview( attributes.dotSize ) ) || '7px';
 	return `${ selector }::before{content:"";display:inline-block;flex-shrink:0;width:${ size };height:${ size };border-radius:50%;vertical-align:middle;margin-inline-end:${ gap };${ paint };}`;

@@ -29,6 +29,7 @@
 		},
 		"sgs": {
 			"motion": true,
+			"iconPicker": true,
 			"enabledExtensions": [
 				"timeText"
 			],
@@ -122,7 +123,8 @@
 						"css:background-image": "dotColourGradient",
 						"css:width": "dotSize",
 						"css:height": "dotSize",
-						"css:border-radius": "lineRadius"
+						"css:border-radius": "lineRadius",
+						"css:mask-image": "markerIcon"
 					},
 					"_note": "The opt-in leading dot (`dot`), painted as a decorative `::before` on the label root (render.php): an empty `content`, so the label text stays the accessible text. dotGap (on the label element) is its margin-inline-end to the text."
 				}
@@ -348,10 +350,16 @@
 			"type": "string",
 			"enum": [
 				"dot",
-				"line"
+				"line",
+				"icon"
 			],
 			"default": "dot",
-			"description": "Shape of the leading marker when `dot` is on: a round dot (dotSize) or a short line (lineLength x lineThickness, lineRadius). Colour (dotColour, dotColourGradient) and gap (dotGap) are shared."
+			"description": "Shape of the leading marker when `dot` is on: a round dot (dotSize), a short line (lineLength x lineThickness, lineRadius) or a Lucide icon (markerIcon, sized by dotSize). Colour (dotColour, dotColourGradient) and gap (dotGap) are shared."
+		},
+		"markerIcon": {
+			"type": "string",
+			"default": "",
+			"description": "Lucide icon slug painted as the leading marker when markerShape is icon, cut out of the dot paint with a mask. Empty = the round dot."
 		},
 		"lineLength": {
 			"type": "string",

@@ -50,6 +50,18 @@ const { state } = store( 'sgs/form', {
 		},
 
 		/**
+		 * The step counter's wording with the current and total step filled in.
+		 *
+		 * @return {string} For example "Step 2 of 4".
+		 */
+		get stepCounterText() {
+			const ctx = getContext();
+			return String( ctx.stepCounterLabel || '' )
+				.replace( '%1$d', String( ctx.currentStep + 1 ) )
+				.replace( '%2$d', String( ctx.totalSteps ) );
+		},
+
+		/**
 		 * Check if currently on first step.
 		 *
 		 * @return {boolean} True if on first step.

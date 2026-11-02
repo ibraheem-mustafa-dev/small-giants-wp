@@ -1,14 +1,17 @@
 import { __ } from '@wordpress/i18n';
+import { ToggleControl } from '@wordpress/components';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
+import { IconPicker } from '../../components';
+import { NumberControl } from '../../components/primitives';
 
 /**
- * The words on the form's own buttons: Submit, and a multi-step form's Next and Previous.
- * An emptied field shows the button's default words.
+ * The words on the form's own buttons (Submit, and a multi-step form's Next and Previous; an emptied field shows the
+ * default words), the icon on them and the note at the left of the buttons row.
  *
  * @param {Object}   props
  * @param {Object}   props.attributes    The form block's attributes.
  * @param {Function} props.setAttributes The form block's attribute setter.
- * @return {Element} The three label fields.
+ * @return {Element} The label fields, the icon controls and the note fields.
  */
 export default function ButtonLabelControls( { attributes, setAttributes } ) {
 	return (
@@ -34,6 +37,47 @@ export default function ButtonLabelControls( { attributes, setAttributes } ) {
 				value={ attributes.prevLabel ?? '' }
 				onChange={ ( value ) => setAttributes( { prevLabel: value } ) }
 			/>
+			<IconPicker
+				label={ __( 'Button icon', 'sgs-blocks' ) }
+				/* render.php draws a Lucide icon after the Next and Submit labels and a mirrored copy before Previous's label. */
+				sources={ [ 'lucide' ] }
+				value={ attributes.navIcon ? { source: 'lucide', name: attributes.navIcon } : null }
+				onChange={ ( val ) => setAttributes( { navIcon: val ? val.name : '' } ) }
+			/>
+			{ attributes.navIcon && (
+				<>
+					<NumberControl
+						label={ __( 'Button icon size (px)', 'sgs-blocks' ) }
+						value={ attributes.navIconSize ?? 18 }
+						min={ 1 }
+						onChange={ ( value ) => setAttributes( { navIconSize: value ? parseFloat( value ) : 18 } ) }
+						__next40pxDefaultSize
+					/>
+					<NumberControl
+						label={ __( 'Gap between icon and label (px)', 'sgs-blocks' ) }
+						value={ attributes.navIconGap ?? 10 }
+						min={ 0 }
+						onChange={ ( value ) => setAttributes( { navIconGap: '' === value ? 10 : parseFloat( value ) } ) }
+						__next40pxDefaultSize
+					/>
+				</>
+			) }
+			<SgsFreeTextField
+				type="rich"
+				noLink
+				label={ __( 'Note beside the buttons', 'sgs-blocks' ) }
+				value={ attributes.actionsNote ?? '' }
+				onChange={ ( value ) => setAttributes( { actionsNote: value } ) }
+				help={ __( 'Short text at the left of the buttons row. Pair it with Space between in Button alignment.', 'sgs-blocks' ) }
+			/>
+			{ !! attributes.actionsNote && (
+				<ToggleControl
+					label={ __( 'Show the note on the first step only', 'sgs-blocks' ) }
+					checked={ false !== attributes.actionsNoteFirstStepOnly }
+					onChange={ ( value ) => setAttributes( { actionsNoteFirstStepOnly: value } ) }
+					__nextHasNoMarginBottom
+				/>
+			) }
 		</>
 	);
 }
