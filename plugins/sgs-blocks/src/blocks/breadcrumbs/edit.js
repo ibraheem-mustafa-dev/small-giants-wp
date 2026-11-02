@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, ToggleControl, SelectControl, TextControl } from '@wordpress/components';
-import { FlexWrapControl, SgsColourPanel, textRow, ResponsiveBoxControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, SgsLengthControl } from '../../components';
+import { FlexWrapControl, SgsColourPanel, textRow, ResponsiveBoxControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, SgsLengthControl, LinkPopoverField } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, usePreviewTier, tierBoxLonghands, sgsLengthPreview, sgsBorderPreview } from '../../utils';
 
 import AuthoredText from '../../components/AuthoredText';
@@ -166,14 +166,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<TextControl
+					<LinkPopoverField
+						searchOnly
 						label={ __( 'Middle crumb link', 'sgs-blocks' ) }
 						help={ __( 'Where the middle crumb links to. Leave empty to show it as plain text.', 'sgs-blocks' ) }
-						type="url"
 						value={ middleCrumbUrl ?? '' }
-						onChange={ ( val ) => setAttributes( { middleCrumbUrl: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+						onChange={ ( url ) => setAttributes( { middleCrumbUrl: url ?? '' } ) }
 					/>
 					<SelectControl
 						label={ __( 'Separator', 'sgs-blocks' ) }
