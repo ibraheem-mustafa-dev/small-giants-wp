@@ -192,17 +192,25 @@
 	 * reference carousel's own tile hover exactly (measured live:
 	 * `.spectra-image-gallery__media:hover { border-color: var(--ast-
 	 * global-color-1) }` + `...media-thumbnail { transform: scale3d(1.1,
-	 * 1.1, 1.1) }` on a tile with `overflow: hidden`). `overflow: hidden`
-	 * here is what CONTAINS the zoomed logo image inside the tile bounds —
-	 * without it the scaled image would visually escape the rounded card.
+	 * 1.1, 1.1) }`). The tile's content (`> *` below) clips a zoomed logo
+	 * inside the tile bounds; the tile itself stays unclipped so the
+	 * Separators line, drawn on the tile's `::before` half a gap outside
+	 * its leading edge, is visible.
 	 * `border` starts transparent so the hover colour transition is smooth
 	 * (no layout shift: the border width is the tile border setting, 0 by default).
 	 */
-	overflow: hidden;
 	border: var(--sgs-tile-border-thickness, 0px) solid transparent;
 	transition-property: border-color;
 	transition-duration: var(--wp--custom--duration--medium, 300ms);
 	transition-timing-function: var(--wp--custom--easing--ease-in-out, ease-in-out);
+}
+
+/* Clips the tile's content (the link, the logo, the text) to the tile's rounded
+   shape; the tile itself is not clipped, so the Separators line outside its
+   leading edge shows. */
+.sgs-brand-strip__item > * {
+	overflow: hidden;
+	border-radius: inherit;
 }
 
 /* A tile link is the whole tile, not a link inside running text, so it carries
