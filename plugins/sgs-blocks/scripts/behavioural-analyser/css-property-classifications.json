@@ -3732,42 +3732,49 @@
       "slug": "sgs/buybox",
       "attr": "pickerOptionColour",
       "fields": {
-        "css_property": "color"
+        "css_property": "color",
+        "role": "color",
+        "css_element": "picker-option"
       }
     },
     {
       "slug": "sgs/buybox",
       "attr": "pickerOptionFontSize",
       "fields": {
-        "css_property": "font-size"
+        "css_property": "font-size",
+        "css_element": "picker-option"
       }
     },
     {
       "slug": "sgs/buybox",
       "attr": "pickerOptionFontWeight",
       "fields": {
-        "css_property": "font-weight"
+        "css_property": "font-weight",
+        "css_element": "picker-option"
       }
     },
     {
       "slug": "sgs/buybox",
       "attr": "pickerOptionLetterSpacing",
       "fields": {
-        "css_property": "letter-spacing"
+        "css_property": "letter-spacing",
+        "css_element": "picker-option"
       }
     },
     {
       "slug": "sgs/buybox",
       "attr": "pickerOptionLineHeight",
       "fields": {
-        "css_property": "line-height"
+        "css_property": "line-height",
+        "css_element": "picker-option"
       }
     },
     {
       "slug": "sgs/buybox",
       "attr": "pickerOptionTextTransform",
       "fields": {
-        "css_property": "text-transform"
+        "css_property": "text-transform",
+        "css_element": "picker-option"
       }
     },
     {
