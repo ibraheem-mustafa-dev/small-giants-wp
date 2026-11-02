@@ -543,7 +543,23 @@ if ( ! function_exists( 'get_post_meta' ) ) {
 
 if ( ! function_exists( 'get_the_title' ) ) {
 	function get_the_title( $post = null ): string {
-		return '';
+		// '' unless SGS_QA_TITLES, a JSON object of post ID => title, names the post asked for.
+		$titles = json_decode( (string) getenv( 'SGS_QA_TITLES' ), true );
+		$id     = is_object( $post ) ? (int) ( $post->ID ?? 0 ) : (int) $post;
+		return is_array( $titles ) && isset( $titles[ $id ] ) ? (string) $titles[ $id ] : '';
+	}
+}
+
+if ( ! function_exists( 'is_home' ) ) {
+	function is_home(): bool {
+		// The posts page when SGS_QA_IS_HOME=1; otherwise no current WP_Query, as is_singular() above.
+		return '1' === getenv( 'SGS_QA_IS_HOME' );
+	}
+}
+
+if ( ! function_exists( 'is_front_page' ) ) {
+	function is_front_page(): bool {
+		return false;
 	}
 }
 

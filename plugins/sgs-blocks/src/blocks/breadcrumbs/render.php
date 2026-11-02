@@ -481,6 +481,16 @@ if ( is_singular() ) {
 			);
 		}
 	}
+} elseif ( is_home() && ! is_front_page() ) {
+	// The posts page: a current crumb titled like the page set as the posts page.
+	if ( $show_current_crumb ) {
+		$posts_page_id    = (int) get_option( 'page_for_posts' );
+		$posts_page_title = $posts_page_id > 0 ? get_the_title( $posts_page_id ) : '';
+		$crumbs[]         = array(
+			'label' => esc_html( '' !== $posts_page_title ? $posts_page_title : __( 'Blog', 'sgs-blocks' ) ),
+			'url'   => '',
+		);
+	}
 } elseif ( is_archive() ) {
 	add_filter( 'get_the_archive_title_prefix', '__return_empty_string' );
 	$archive_label = get_the_archive_title();

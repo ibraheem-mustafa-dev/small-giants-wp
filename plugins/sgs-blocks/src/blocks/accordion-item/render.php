@@ -482,6 +482,94 @@ if ( $border['mobile'] ) {
 }
 $responsive_css .= implode( '', $border['rules'] );
 
+// A rounded item's header follows the item's corners: the same radius prints on the
+// header, and an open item squares the header's bottom corners where the panel joins.
+// Nothing prints without a radius. No overflow clip: it would hide the focus ring.
+$sgs_ai_radius_only = static function ( array $decls ): array {
+	return array_values(
+		array_filter(
+			$decls,
+			static function ( $decl ): bool {
+				return str_contains( (string) $decl, 'radius' );
+			}
+		)
+	);
+};
+$sgs_ai_header_radius = array(
+	'base'   => $sgs_ai_radius_only( $border['base'] ),
+	'tablet' => $sgs_ai_radius_only( $border['tablet'] ),
+	'mobile' => $sgs_ai_radius_only( $border['mobile'] ),
+);
+if ( $sgs_ai_header_radius['base'] || $sgs_ai_header_radius['tablet'] || $sgs_ai_header_radius['mobile'] ) {
+	$sgs_ai_header_radius_sel = $root_sel . ' > .sgs-accordion-item__header';
+	if ( $sgs_ai_header_radius['base'] ) {
+		$responsive_css .= $sgs_ai_header_radius_sel . '{' . implode( ';', $sgs_ai_header_radius['base'] ) . ';}';
+	}
+	if ( $sgs_ai_header_radius['tablet'] ) {
+		$responsive_css .= '@media(max-width:1023px){' . $sgs_ai_header_radius_sel . '{' . implode( ';', $sgs_ai_header_radius['tablet'] ) . ';}}';
+	}
+	if ( $sgs_ai_header_radius['mobile'] ) {
+		$responsive_css .= '@media(max-width:767px){' . $sgs_ai_header_radius_sel . '{' . implode( ';', $sgs_ai_header_radius['mobile'] ) . ';}}';
+	}
+	$responsive_css .= $root_sel . '[open] > .sgs-accordion-item__header{border-bottom-left-radius:0;border-bottom-right-radius:0}';
+}
+
+// Ring around the toggle icon (iconCircle* from the parent accordion, via block context).
+// Nothing prints while every member is empty, so an unset accordion renders as before.
+$sgs_ai_ring_attrs = array(
+	'iconCircleBorderWidth'  => $block->context['sgs/accordionIconCircleBorderWidth'] ?? array(),
+	'iconCircleBorderColour' => $block->context['sgs/accordionIconCircleBorderColour'] ?? '',
+);
+$sgs_ai_ring_bg          = sgs_colour_value( (string) ( $block->context['sgs/accordionIconCircleBackground'] ?? '' ) );
+$sgs_ai_ring_bg_open     = sgs_colour_value( (string) ( $block->context['sgs/accordionIconCircleBackgroundOpen'] ?? '' ) );
+$sgs_ai_ring_border_open = sgs_colour_value( (string) ( $block->context['sgs/accordionIconCircleBorderColourOpen'] ?? '' ) );
+$sgs_ai_ring_border      = sgs_border_element_decls(
+	$sgs_ai_ring_attrs,
+	'iconCircle',
+	$root_sel,
+	array(
+		'radius' => false,
+		'colour' => array(
+			'base' => 'iconCircleBorderColour',
+		),
+	)
+);
+$sgs_ai_ring_sizes = array();
+$sgs_ai_ring_tiers = sgs_responsive_normalise_object( $block->context['sgs/accordionIconCircleSize'] ?? array() );
+foreach ( $sgs_ai_var_tiers as $sgs_ai_tier => $sgs_ai_media ) {
+	$sgs_ai_ring_px = $sgs_ai_ring_tiers[ $sgs_ai_tier ] ?? null;
+	if ( is_numeric( $sgs_ai_ring_px ) && (float) $sgs_ai_ring_px > 0 ) {
+		$sgs_ai_ring_sizes[ $sgs_ai_tier ] = (float) $sgs_ai_ring_px;
+	}
+}
+if ( $sgs_ai_ring_sizes || $sgs_ai_ring_border['base'] || '' !== $sgs_ai_ring_bg || '' !== $sgs_ai_ring_bg_open || '' !== $sgs_ai_ring_border_open ) {
+	$sgs_ai_ring_sel   = $root_sel . ' > .sgs-accordion-item__header .sgs-accordion-item__icons';
+	$sgs_ai_ring_decls = array( 'box-sizing:border-box', 'border-radius:50%', 'display:grid', 'place-items:center' );
+	if ( '' !== $sgs_ai_ring_bg ) {
+		$sgs_ai_ring_decls[] = 'background-color:' . $sgs_ai_ring_bg;
+	}
+	$responsive_css .= $sgs_ai_ring_sel . '{' . implode( ';', array_merge( $sgs_ai_ring_decls, $sgs_ai_ring_border['base'] ) ) . ';}';
+	foreach ( $sgs_ai_ring_sizes as $sgs_ai_tier => $sgs_ai_ring_px ) {
+		$sgs_ai_ring_rule = $sgs_ai_ring_sel . '{width:' . $sgs_ai_ring_px . 'px;height:' . $sgs_ai_ring_px . 'px;}';
+		$responsive_css  .= '' === $sgs_ai_var_tiers[ $sgs_ai_tier ] ? $sgs_ai_ring_rule : $sgs_ai_var_tiers[ $sgs_ai_tier ] . '{' . $sgs_ai_ring_rule . '}';
+	}
+	if ( $sgs_ai_ring_sizes ) {
+		// The glyph keeps the Icon size inside the larger ring.
+		$responsive_css .= $sgs_ai_ring_sel . ' > .sgs-accordion-item__icon-open,' . $sgs_ai_ring_sel . ' > .sgs-accordion-item__icon-close'
+			. '{width:var(--sgs-accordion-icon-size,24px);height:var(--sgs-accordion-icon-size,24px);}';
+	}
+	$sgs_ai_ring_open_decls = array();
+	if ( '' !== $sgs_ai_ring_border_open ) {
+		$sgs_ai_ring_open_decls[] = 'border-color:' . $sgs_ai_ring_border_open;
+	}
+	if ( '' !== $sgs_ai_ring_bg_open ) {
+		$sgs_ai_ring_open_decls[] = 'background-color:' . $sgs_ai_ring_bg_open;
+	}
+	if ( $sgs_ai_ring_open_decls ) {
+		$responsive_css .= $root_sel . '[open] > .sgs-accordion-item__header .sgs-accordion-item__icons{' . implode( ';', $sgs_ai_ring_open_decls ) . ';}';
+	}
+}
+
 if ( $responsive_css ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied below; $responsive_css built from pre-sanitised values only.
 	printf( '<style id="%s">%s</style>', esc_attr( $uid ), wp_strip_all_tags( $responsive_css ) );

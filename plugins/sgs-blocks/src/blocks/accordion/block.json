@@ -49,6 +49,9 @@
         ],
         "borderWidth": [
           "borderWidth"
+        ],
+        "iconCircleBorderWidth": [
+          "iconCircleBorderWidth"
         ]
       },
       "elements": {
@@ -185,6 +188,33 @@
             }
           },
           "_note": "iconColour paints the open/close chevron. openIcon/closeIcon (icon slug) and iconPosition are content/variant fields, not independent style controls, so only the colour member is mapped — the rest are honest gaps. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php). iconColourHover/iconColourHoverGradient (2026-09-06, colour-conformance closeout) mirror the same mechanism, consumed by sgs/accordion-item via block context exactly like the resting pair (providesContext below).",
+          "layer": "OUTER"
+        },
+        "icon-ring": {
+          "selector": ".sgs-accordion-item__icons",
+          "motion": false,
+          "label": "Toggle icon ring",
+          "order": 4.05,
+          "clusters": [
+            "fill",
+            "layout"
+          ],
+          "attrMap": {
+            "css:width": "iconCircleSize",
+            "css:height": "iconCircleSize",
+            "css:background-color": "iconCircleBackground",
+            "css:border-width": "iconCircleBorderWidth",
+            "css:border-color": "iconCircleBorderColour"
+          },
+          "states": {
+            "open": {
+              "attrMap": {
+                "css:background-color": "iconCircleBackgroundOpen",
+                "css:border-color": "iconCircleBorderColourOpen"
+              }
+            }
+          },
+          "_note": "The optional ring around the toggle icon, the iconCircle* family of sgs/notice-banner and sgs/trust-bar. Printed by sgs/accordion-item from block context on the item's `.sgs-accordion-item__icons` box (a circle, border-box); nothing prints while every member is empty. The glyph keeps the Icon size.",
           "layer": "OUTER"
         },
         "turning-icon": {
@@ -629,7 +659,37 @@
       "default": 0,
       "minimum": 0,
       "maximum": 360,
-      "description": "Degrees the open icon turns when the item opens. Non-zero prints only the open icon and rotates it; 0 keeps both icons and cross-fades them. Ignored when the Turning toggle icon part holds an Entrance layer (Spec 38A FR-38A-53): the layer then prints the single icon and sets the angle and timing."
+      "description": "Degrees the open icon turns when the item opens. Non-zero prints only the open icon and rotates it; 0 keeps both icons and cross-fades them. Ignored when the Turning toggle icon part holds an Entrance layer (Spec 38A FR-38A-53): the layer then prints the single icon and sets the angle and timing.",
+    "iconCircleSize": {
+      "type": "object",
+      "default": {},
+      "description": "Ring around the toggle icon: its diameter in px, per device {desktop,tablet,mobile}. Empty = no sized ring; the icon box keeps the Icon size."
+    },
+    "iconCircleBorderWidth": {
+      "type": "object",
+      "default": {},
+      "description": "Ring around the toggle icon: border width as a {top,right,bottom,left} box. Empty = no ring border."
+    },
+    "iconCircleBorderColour": {
+      "type": "string",
+      "default": "",
+      "description": "Ring around the toggle icon: border colour. Empty = the current text colour."
+    },
+    "iconCircleBackground": {
+      "type": "string",
+      "default": "",
+      "description": "Ring around the toggle icon: background colour. Empty = transparent."
+    },
+    "iconCircleBorderColourOpen": {
+      "type": "string",
+      "default": "",
+      "description": "Ring border colour while the item is open. Empty keeps the closed colour."
+    },
+    "iconCircleBackgroundOpen": {
+      "type": "string",
+      "default": "",
+      "description": "Ring background colour while the item is open. Empty keeps the closed background."
+    }
     }
   },
   "providesContext": {
@@ -660,6 +720,12 @@
     "sgs/accordionContentPadding": "contentPadding",
     "sgs/accordionIconSize": "iconSize",
     "sgs/accordionIconRotation": "iconRotation",
+    "sgs/accordionIconCircleSize": "iconCircleSize",
+    "sgs/accordionIconCircleBorderWidth": "iconCircleBorderWidth",
+    "sgs/accordionIconCircleBorderColour": "iconCircleBorderColour",
+    "sgs/accordionIconCircleBackground": "iconCircleBackground",
+    "sgs/accordionIconCircleBorderColourOpen": "iconCircleBorderColourOpen",
+    "sgs/accordionIconCircleBackgroundOpen": "iconCircleBackgroundOpen",
     "sgs/accordionMotion": "sgsMotion"
   },
   "allowedBlocks": [

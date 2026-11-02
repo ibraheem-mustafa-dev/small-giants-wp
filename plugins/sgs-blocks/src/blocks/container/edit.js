@@ -897,6 +897,33 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 							/>
 						) }
 					</ResponsiveOverride>
+					<ResponsiveOverride
+						label={ __( 'Order', 'sgs-blocks' ) }
+						value={ attributes.order }
+						onChange={ ( obj ) => setAttributes( { order: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<TextControl
+								label={ __(
+									'Order in the parent grid or flex row',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Lower numbers come first. Empty keeps the source order.',
+									'sgs-blocks'
+								) }
+								type="number"
+								value={ ownValue ?? '' }
+								onChange={ ( v ) =>
+									setOwnValue(
+										'' === v ? '' : parseInt( v, 10 )
+									)
+								}
+								__next40pxDefaultSize
+								__nextHasNoMarginBottom
+							/>
+						) }
+					</ResponsiveOverride>
 					<TextControl
 						label={ __( 'Shape (width / height)', 'sgs-blocks' ) }
 						help={ __(

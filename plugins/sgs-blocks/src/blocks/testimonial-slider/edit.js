@@ -20,7 +20,7 @@ import {
 	ToggleControl,
 	TextControl,
 } from '@wordpress/components';
-import { SgsColourPanel, fillRow, textRow,
+import { SgsColourPanel, fillRow, textRow, IconPicker,
 	SgsBorderControl,
 	TypographyControls,
 	resolveColourToken,
@@ -67,6 +67,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		pauseButton,
 		showDots,
 		showArrows,
+		arrowIconPrev,
+		arrowIconNext,
 		slidesVisible,
 		cardStyle,
 		backgroundColour,
@@ -182,6 +184,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								transitionEasing: 'ease-in-out',
 								slidesVisible: 3,
 								showArrows: true,
+								arrowIconPrev: 'chevron-left',
+								arrowIconNext: 'chevron-right',
 								showDots: true,
 								autoplay: true,
 								autoplaySpeed: 5000,
@@ -333,6 +337,48 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { showArrows: val } )
 								}
 								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Previous arrow icon', 'sgs-blocks' ) }
+							hasValue={ () =>
+								'chevron-left' !== ( arrowIconPrev || 'chevron-left' )
+							}
+							onDeselect={ () =>
+								setAttributes( { arrowIconPrev: 'chevron-left' } )
+							}
+						>
+							<IconPicker
+								label={ __( 'Previous arrow icon', 'sgs-blocks' ) }
+								value={ {
+									source: 'lucide',
+									name: arrowIconPrev || 'chevron-left',
+								} }
+								onChange={ ( { name } ) =>
+									setAttributes( { arrowIconPrev: name } )
+								}
+								sources={ [ 'lucide' ] }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Next arrow icon', 'sgs-blocks' ) }
+							hasValue={ () =>
+								'chevron-right' !== ( arrowIconNext || 'chevron-right' )
+							}
+							onDeselect={ () =>
+								setAttributes( { arrowIconNext: 'chevron-right' } )
+							}
+						>
+							<IconPicker
+								label={ __( 'Next arrow icon', 'sgs-blocks' ) }
+								value={ {
+									source: 'lucide',
+									name: arrowIconNext || 'chevron-right',
+								} }
+								onChange={ ( { name } ) =>
+									setAttributes( { arrowIconNext: name } )
+								}
+								sources={ [ 'lucide' ] }
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem

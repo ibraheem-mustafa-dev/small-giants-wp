@@ -122,6 +122,12 @@
 		"sgs/accordionContentPadding",
 		"sgs/accordionIconSize",
 		"sgs/accordionIconRotation",
+		"sgs/accordionIconCircleSize",
+		"sgs/accordionIconCircleBorderWidth",
+		"sgs/accordionIconCircleBorderColour",
+		"sgs/accordionIconCircleBackground",
+		"sgs/accordionIconCircleBorderColourOpen",
+		"sgs/accordionIconCircleBackgroundOpen",
 		"sgs/accordionMotion"
 	],
 	"attributes": {

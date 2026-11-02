@@ -19,6 +19,7 @@
 		"sgs": {
 			"motion": true,
 			"collection": true,
+			"iconPicker": true,
 			"containerKind": "layout",
 			"elements": {
 				"slider": {
@@ -206,6 +207,16 @@
 		"showDots": {
 			"type": "boolean",
 			"default": true
+		},
+		"arrowIconPrev": {
+			"type": "string",
+			"default": "chevron-left",
+			"description": "Lucide icon slug for the previous arrow button."
+		},
+		"arrowIconNext": {
+			"type": "string",
+			"default": "chevron-right",
+			"description": "Lucide icon slug for the next arrow button."
 		},
 		"showArrows": {
 			"type": "boolean",

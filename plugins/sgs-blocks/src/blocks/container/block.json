@@ -99,6 +99,7 @@
 						"css:position": "pinEdge",
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
+						"css:order": "order",
 						"css:aspect-ratio": "boxAspectRatio",
 						"css:box-shadow": "shadow",
 						"css:box-shadow-color": "shadowColour",
@@ -458,6 +459,11 @@
 		"minHeight": {
 			"type": "object",
 			"default": {}
+		},
+		"order": {
+			"type": "object",
+			"default": {},
+			"description": "Position among the parent's grid or flex items, per device. Lower numbers come first; empty keeps the source order. Tablet inherits desktop until it sets its own."
 		},
 		"boxAspectRatio": {
 			"type": "string",

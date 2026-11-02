@@ -624,6 +624,87 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							/>
 						) }
 					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.iconCircleSize }
+						onChange={ ( obj ) =>
+							setAttributes( { iconCircleSize: obj } )
+						}
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<RangeControl
+								label={ __(
+									'Icon ring size (px)',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Empty draws no sized ring. The icon keeps its own size inside it.',
+									'sgs-blocks'
+								) }
+								value={
+									typeof ownValue === 'number'
+										? ownValue
+										: undefined
+								}
+								onChange={ ( val ) => setOwnValue( val ) }
+								min={ 16 }
+								max={ 96 }
+								step={ 1 }
+								allowReset
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
+					</ResponsiveOverride>
+					<SgsBorderControl
+						label={ __( 'Icon ring border', 'sgs-blocks' ) }
+						widthValues={ attributes.iconCircleBorderWidth ?? {} }
+						onWidthChange={ ( next ) =>
+							setAttributes( { iconCircleBorderWidth: next } )
+						}
+						colourLabel={ __(
+							'Icon ring border colour',
+							'sgs-blocks'
+						) }
+						colourValue={ attributes.iconCircleBorderColour }
+						onColourChange={ ( val ) =>
+							setAttributes( {
+								iconCircleBorderColour: val ?? '',
+							} )
+						}
+						colourLinked={ true }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Icon ring border colour (open)', 'sgs-blocks' ) }
+						value={ attributes.iconCircleBorderColourOpen }
+						onChange={ ( val ) =>
+							setAttributes( {
+								iconCircleBorderColourOpen: val ?? '',
+							} )
+						}
+					/>
+					<DesignTokenPicker
+						label={ __( 'Icon ring background', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Closed', 'sgs-blocks' ),
+								value: attributes.iconCircleBackground,
+								onChange: ( val ) =>
+									setAttributes( {
+										iconCircleBackground: val ?? '',
+									} ),
+							},
+							{
+								key: 'open',
+								label: __( 'Open', 'sgs-blocks' ),
+								value: attributes.iconCircleBackgroundOpen,
+								onChange: ( val ) =>
+									setAttributes( {
+										iconCircleBackgroundOpen: val ?? '',
+									} ),
+							},
+						] }
+					/>
 					{ partHasEntranceLayer( attributes, 'turning-icon' ) ? (
 						<p>
 							{ __(

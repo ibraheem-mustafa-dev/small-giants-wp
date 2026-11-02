@@ -344,8 +344,11 @@ if ( $show_arrows && $total_testimonials > 0 ) {
 	// sgs/accordion-item + sgs/nav-drawer). The SVG is trusted static markup
 	// from sgs_get_lucide_icon() (mirrors the escaping pattern used elsewhere
 	// in this codebase for the same helper).
-	$arrow_prev_icon = function_exists( 'sgs_get_lucide_icon' ) ? sgs_get_lucide_icon( 'chevron-left' ) : '';
-	$arrow_next_icon = function_exists( 'sgs_get_lucide_icon' ) ? sgs_get_lucide_icon( 'chevron-right' ) : '';
+	// An unknown slug falls back to the chevron.
+	$arrow_prev_slug = sanitize_key( (string) ( $attributes['arrowIconPrev'] ?? 'chevron-left' ) );
+	$arrow_next_slug = sanitize_key( (string) ( $attributes['arrowIconNext'] ?? 'chevron-right' ) );
+	$arrow_prev_icon = function_exists( 'sgs_get_lucide_icon' ) ? ( sgs_get_lucide_icon( $arrow_prev_slug ) ?: sgs_get_lucide_icon( 'chevron-left' ) ) : '';
+	$arrow_next_icon = function_exists( 'sgs_get_lucide_icon' ) ? ( sgs_get_lucide_icon( $arrow_next_slug ) ?: sgs_get_lucide_icon( 'chevron-right' ) ) : '';
 
 	$arrow_prev_html = '<button class="sgs-testimonial-slider__arrow sgs-testimonial-slider__arrow--prev" aria-label="' . esc_attr__( 'Previous testimonial', 'sgs-blocks' ) . '" type="button"><span class="sgs-testimonial-slider__arrow-icon" aria-hidden="true">' . $arrow_prev_icon . '</span></button>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
 	$arrow_next_html = '<button class="sgs-testimonial-slider__arrow sgs-testimonial-slider__arrow--next" aria-label="' . esc_attr__( 'Next testimonial', 'sgs-blocks' ) . '" type="button"><span class="sgs-testimonial-slider__arrow-icon" aria-hidden="true">' . $arrow_next_icon . '</span></button>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().

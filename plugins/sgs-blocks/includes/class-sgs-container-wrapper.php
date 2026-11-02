@@ -2228,6 +2228,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				|| $sgs_needs_uid_object_tier( $attributes['gap'] ?? null )
 				|| $sgs_needs_uid_object_tier( $attributes['gridTemplateColumns'] ?? null )
 				|| $sgs_needs_uid_object_tier( $attributes['gridTemplateRows'] ?? null )
+				|| $sgs_needs_uid_object_tier( $attributes['order'] ?? null )
 				|| $sgs_needs_uid_object_tier( $attributes['columns'] ?? null )
 				// Phase 2 fix (2026-09-06): on a block whose `padding`/`margin`
 				// has migrated to the tier-of-boxes shape (D555 + the Phase 2
@@ -2624,6 +2625,26 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// minHeight, sgs/button's 48px floor) always wins. At (0,2,0) it
 				// zeroed every authored min-height on a grid/flex child.
 				$responsive_css .= ':where(' . $grid_sel . '>*){min-width:0;min-height:0}';
+			}
+
+			// order — the container's position among its parent's grid/flex items, a
+			// per-device object. Base prints unconditionally and the tablet/mobile
+			// tiers override under max-width, so an unset tablet inherits desktop.
+			if ( $uid && isset( $attributes['order'] ) && is_array( $attributes['order'] ) ) {
+				$order_obj = sgs_responsive_normalise_object( $attributes['order'] );
+				foreach ( array( 'desktop', 'tablet', 'mobile' ) as $order_tier ) {
+					$order_val = $order_obj[ $order_tier ] ?? null;
+					if ( null === $order_val || '' === $order_val || ! is_numeric( $order_val ) ) {
+						continue;
+					}
+					$order_decl = '.' . $uid . '{order:' . intval( $order_val ) . '}';
+					if ( 'tablet' === $order_tier ) {
+						$order_decl = '@media (max-width:1023px){' . $order_decl . '}';
+					} elseif ( 'mobile' === $order_tier ) {
+						$order_decl = '@media (max-width:767px){' . $order_decl . '}';
+					}
+					$responsive_css .= $order_decl;
+				}
 			}
 
 			if ( $has_responsive_attr ) {
