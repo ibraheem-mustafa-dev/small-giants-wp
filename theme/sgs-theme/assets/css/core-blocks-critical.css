@@ -489,7 +489,7 @@ header.wp-block-template-part {
    colour. The rule is (0,0,1): it beats the theme's own h1..h6 rule by coming later (this file loads after
    global styles) and loses to a section's Heading colour (0,1,0) and to a heading block's own colour. */
 :where(.sgs-on-dark) {
-	--sgs-tone-heading: var(--wp--preset--color--text-inverse, currentColor);
+	--sgs-tone-heading: var(--wp--preset--color--heading-inverse, var(--wp--preset--color--text-inverse, currentColor));
 }
 :where(.sgs-on-light) {
 	--sgs-tone-heading: initial;

@@ -108,6 +108,12 @@
           "_source": "confirmed"
         },
         {
+          "slug": "heading-inverse",
+          "color": "#FAF8F5",
+          "name": "Heading on Dark",
+          "_source": "confirmed"
+        },
+        {
           "slug": "border",
           "color": "#E6E1DA",
           "name": "Border",

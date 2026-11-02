@@ -37,7 +37,7 @@ READ_ROLES = ("border", "border-light", "primary-dark", "accent-light")
 # What a role renders as when the draft never shows it (the role whose value the draft's own rendering gives it).
 FOLLOW_WHEN_ABSENT = {
     "border-light": "border", "primary-dark": "primary", "accent-light": "accent", "border": "text-muted",
-    "primary-text": "text-inverse", "accent": "primary", "accent-text": "text", "surface-alt": "surface",
+    "primary-text": "text-inverse", "heading-inverse": "text-inverse", "accent": "primary", "accent-text": "text", "surface-alt": "surface",
     "text-muted": "text", "text-inverse": "surface", "footer-bg": "text", "heading": "text", "link": "primary",
     "link-hover": "link", "section": "surface-alt", "section-text": "text",
 }

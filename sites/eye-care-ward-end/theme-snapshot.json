@@ -633,6 +633,7 @@
         "text": "ink",
         "text-muted": "text-2",
         "text-inverse": "paper",
+        "heading-inverse": "paper",
         "border": "hairline",
         "border-light": "hairline",
         "footer-bg": "paper",

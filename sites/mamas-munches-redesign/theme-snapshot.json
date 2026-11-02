@@ -625,6 +625,7 @@
         "text": "mm-cocoa",
         "text-muted": "mm-muted",
         "text-inverse": "mm-paper",
+        "heading-inverse": "mm-paper",
         "border": "mm-cocoa",
         "border-light": "mm-line",
         "footer-bg": "mm-cream",

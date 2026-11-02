@@ -107,6 +107,12 @@
           "_source": "derived"
         },
         {
+          "slug": "heading-inverse",
+          "color": "#fffaf5",
+          "name": "Heading on Dark",
+          "_source": "derived"
+        },
+        {
           "slug": "link",
           "color": "#e68a95",
           "name": "Link",

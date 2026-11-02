@@ -158,6 +158,7 @@ export const ruleStatus = ( c ) => {
 };
 export const ruleWhatsapp = ( c ) => ( c.words.includes( 'whatsapp' ) ? { role: 'whatsapp', why: 'name says WhatsApp' } : null );
 export const ruleTextMuted = ( c ) => ( c.words.some( ( w ) => /^(muted|subtle)$/.test( w ) ) && ! c.words.some( ( w ) => /^(brand|surface|bg)$/.test( w ) ) ? { role: 'text-muted', why: 'name says muted text' } : null );
+export const ruleHeadingInverse = ( c ) => ( c.words.some( ( w ) => /^(heading|headings|headline|title)$/.test( w ) ) && c.words.some( ( w ) => /^(inverse|inverted|reverse|dark)$/.test( w ) ) ? { role: 'heading-inverse', why: 'name says heading on dark' } : null );
 export const ruleTextInverse = ( c ) => ( c.words.some( ( w ) => /^(inverse|inverted|reverse)$/.test( w ) ) ? { role: 'text-inverse', why: 'name says inverse text' } : null );
 export const ruleText = ( c ) => ( c.words.some( ( w ) => /^(text|body|copy|fg|foreground)$/.test( w ) ) && ! c.words.some( ( w ) => /^(surface|bg|background)$/.test( w ) ) ? { role: 'text', why: 'name says body text' } : null );
 export const ruleSurface = ( c ) => ( c.words.some( ( w ) => /^(surface|bg|background|ground|canvas|page)$/.test( w ) ) ? { role: 'surface', why: 'name says surface' } : null );
@@ -177,11 +178,11 @@ export const ruleBrand = ( c ) => {
 	}
 	return { role: null, why: `${ mod } shade of the ${ c.family.role } family has no slug` };
 };
-export const NAME_RULES = [ ruleLinkHover, ruleLink, ruleHeading, ruleReserved, ruleOnGround, ruleSection, ruleFooter, ruleBorder,
+export const NAME_RULES = [ ruleLinkHover, ruleLink, ruleHeadingInverse, ruleHeading, ruleReserved, ruleOnGround, ruleSection, ruleFooter, ruleBorder,
 	ruleStatus, ruleWhatsapp, ruleTextMuted, ruleTextInverse, ruleText, ruleSurface, ruleBrand ];
 
 // When a slug is not in the vocabulary yet, the closest existing slug to propose instead (FR-32-14 lands them).
-const STAND_IN = { heading: 'text', link: 'primary', 'link-hover': 'primary-dark', section: 'surface-alt', 'section-text': 'text' };
+const STAND_IN = { heading: 'text', 'heading-inverse': 'text-inverse', link: 'primary', 'link-hover': 'primary-dark', section: 'surface-alt', 'section-text': 'text' };
 const MODIFIERS = /^(hover|dark|darker|deep|light|lighter|mid|pale|soft|active|focus)$/;
 // A slug that loses a collision tries this one next.
 const SECOND = { surface: 'surface-alt', primary: 'accent' };

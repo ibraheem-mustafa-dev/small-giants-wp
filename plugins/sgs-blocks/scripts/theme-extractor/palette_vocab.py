@@ -126,13 +126,14 @@ ROLE_DEFAULT_TABLE = (
     ("section-text", "text"),
     ("accent-text", "text"),
     ("primary-text", "text-inverse"),
+    ("heading-inverse", "text-inverse"),
     ("link", "primary"),
     ("link-hover", "primary-dark"),
     ("section", "surface-alt"),
 )
 # The ground each followed text slug is read on (Spec 32 section 12.2), traced with the WCAG ratio.
 ROLE_DEFAULT_GROUND = {"heading": "surface", "section-text": "section", "accent-text": "accent-light",
-                       "primary-text": "primary", "link": "surface", "link-hover": "surface"}
+                       "primary-text": "primary", "heading-inverse": "footer-bg", "link": "surface", "link-hover": "surface"}
 MIN_TEXT_CONTRAST = 4.5
 # The status roles: a draft with no shade for one keeps the framework value as raw hex in ``settings.custom.colourRoles``.
 STATUS_ROLE_RE = re.compile(r"^(?:success|error|info)(?:-light)?$")

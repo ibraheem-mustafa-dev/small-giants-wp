@@ -87,6 +87,12 @@
           "_source": "declared"
         },
         {
+          "slug": "heading-inverse",
+          "color": "#fffaf5",
+          "name": "Heading on Dark",
+          "_source": "declared"
+        },
+        {
           "slug": "text-muted",
           "color": "#6b5c50",
           "name": "Text Muted",

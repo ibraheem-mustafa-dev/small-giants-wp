@@ -253,6 +253,11 @@
           "name": "Text on Dark"
         },
         {
+          "slug": "heading-inverse",
+          "color": "#FFFFFF",
+          "name": "Heading on Dark"
+        },
+        {
           "slug": "border",
           "color": "#8B4A6B",
           "name": "Border"
