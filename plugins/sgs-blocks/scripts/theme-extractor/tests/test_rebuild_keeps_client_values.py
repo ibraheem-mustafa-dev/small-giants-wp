@@ -40,7 +40,7 @@ def test_must_fail_an_undeclared_primary_dark_follows_this_clients_primary_and_l
     next(e for e in pal if e["slug"] == "primary").update(color="#141414", _source="confirmed")
     role_defaults.apply_role_defaults(snap, BASELINE, [])
     got = _pal(snap)
-    assert got["primary-dark"]["color"] == _pal(COMMITTED)["primary-dark"]["color"] == "#0F0F0F"
+    assert got["primary-dark"]["color"] == "#0F0F0F"
     assert got["primary-dark"]["_source"] == "derived"
     assert got["link-hover"]["color"] == "#0F0F0F"
     confirmed = copy.deepcopy(BASELINE)

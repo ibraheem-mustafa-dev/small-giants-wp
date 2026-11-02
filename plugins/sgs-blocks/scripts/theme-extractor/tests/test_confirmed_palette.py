@@ -110,7 +110,7 @@ def test_must_fail_near_identical_tokens_on_one_slug_keep_the_colour_that_earned
     assert real["--surface-soft"]["value"] == real["--acc-soft"]["value"] == "#EFEAE2"
 
     def intake(order):
-        rows = [dict(real[t], role="accent-light") for t in order]
+        rows = [dict(real[t], role="accent-light", roles=["accent-light"]) for t in order]
         return {"palette": {"rows": rows}, "review": [{"rowId": f"palette:{t}", "rowType": "palette-role", "mark": "accept"} for t in order]}
 
     for order in (("--surface-soft", "--acc-soft"), ("--acc-soft", "--surface-soft")):

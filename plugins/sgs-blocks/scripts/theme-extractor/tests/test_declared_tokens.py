@@ -80,14 +80,14 @@ def test_the_redesign_snapshot_takes_its_declared_body_heading_and_focus_values(
 
 def test_the_wholesale_body_rule_gives_the_body_size_and_text_colour():
     snap = _applied(WHOLESALE)
-    assert snap["styles"]["color"]["text"] == "var:preset|color|text"
+    assert snap["styles"]["color"]["text"] == "var:preset|color|grey-body"  # the draft's own shade holding #4A5563 (FR-32-28)
     assert verify_against_draft.resolve(snap, snap["styles"]["color"]["text"]).upper() == "#4A5563"
     assert verify_against_draft.resolve(snap, snap["styles"]["typography"]["fontSize"]) == "19px"
 
 
 def test_the_optician_focus_ring_is_its_accent():
     snap = _applied(OPTICIAN)
-    assert snap["settings"]["custom"]["focus"]["ring"] == "var(--wp--preset--color--accent)"
+    assert snap["settings"]["custom"]["focus"]["ring"] == "var(--wp--preset--color--acc)"  # the draft's own accent shade (FR-32-28)
     assert verify_against_draft.resolve(snap, snap["settings"]["custom"]["focus"]["ring"]).upper() == "#9C8B78"
 
 
