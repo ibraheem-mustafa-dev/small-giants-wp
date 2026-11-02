@@ -1,10 +1,11 @@
 // The live address a `product` surface is read at. Every product uses one single-product template (page-map row postType
 // `product`, collection `live`, no post of its own), so the site run reads that template at one real product's permalink.
 // The product is chosen deterministically from the live site's published products: the one whose title equals the draft
-// product page's main heading, else the first simple, purchasable product that is neither a calibration fixture nor titled
-// like one. The query is read-only; site-run.mjs runs it through its WP-CLI runner.
+// product page's main heading, else the first simple, purchasable, in-stock product, else the first purchasable, in-stock
+// variable product (its permalink: a page read needs no variation). A calibration fixture or a gift card is never chosen. The query is read-only; site-run.mjs runs it through its WP-CLI runner.
 import fs from 'fs';
 import path from 'path';
+import { primeReject, variationReject } from './live-prime.mjs';
 
 // Prints a JSON array of the published products' facts the picker judges, with each permalink (read-only).
 export function liveProductsPhp() {
@@ -33,6 +34,19 @@ const norm = ( s ) => String( s ?? '' ).replace( /\s+/g, ' ' ).trim().toLowerCas
 // Whether a candidate is a calibration fixture, by its marker, its SKU or its title.
 const isFixture = ( c ) => !! c.fixture || String( c.sku || '' ).startsWith( 'sgs-fixture-' ) || FIXTURE_TITLE.test( c.title || '' );
 
+// Why a product cannot be read at: a simple product by live-prime.mjs::primeReject, a variable product by
+// live-prime.mjs::variationReject over its own purchasable and stock facts (a variable parent is in stock when a variation is);
+// any other type is not read at.
+const readReject = ( c ) => {
+	if ( 'simple' === c.type ) {
+		return primeReject( c );
+	}
+	if ( 'variable' === c.type ) {
+		return variationReject( c, { purchasable: c.purchasable, inStock: c.inStock, managed: c.managed, stock: c.stock } );
+	}
+	return `${ c.type } product`;
+};
+
 // The path and query of an absolute permalink, or null for a missing or malformed one.
 export function addressOfLink( link ) {
 	try {
@@ -49,12 +63,17 @@ export function pickLiveProduct( candidates, heading = null ) {
 	const list = Array.isArray( candidates ) ? candidates : [];
 	const real = list.filter( ( c ) => ! isFixture( c ) && addressOfLink( c.link ) );
 	const wanted = norm( heading );
-	const byHeading = wanted ? real.find( ( c ) => norm( c.title ) === wanted ) : null;
-	const chosen = byHeading ?? real.find( ( c ) => 'simple' === c.type && c.purchasable ) ?? null;
+	const buyable = ( c ) => null === readReject( c );
+	const notGift = ( c ) => 'gift card' !== variationReject( c, { purchasable: true, inStock: true } );
+	const byHeading = wanted ? real.find( ( c ) => norm( c.title ) === wanted && notGift( c ) ) : null;
+	const simple = real.find( ( c ) => 'simple' === c.type && buyable( c ) );
+	const variable = real.find( ( c ) => 'variable' === c.type && buyable( c ) );
+	const chosen = byHeading ?? simple ?? variable ?? null;
 	if ( chosen ) {
-		return { id: chosen.id, address: addressOfLink( chosen.link ), why: byHeading ? `the product titled like the draft heading "${ heading }"` : 'the first simple, purchasable product' };
+		return { id: chosen.id, address: addressOfLink( chosen.link ), why: byHeading ? `the product titled like the draft heading "${ heading }"` : simple ? 'the first simple, purchasable product' : 'the first purchasable, in-stock variable product' };
 	}
-	return { id: null, address: null, why: list.length ? `no published product is titled "${ heading ?? '' }" or is a simple, purchasable non-fixture product (${ list.slice( 0, 8 ).map( ( c ) => `#${ c.id } ${ c.title }` ).join( '; ' ) })` : 'the site has no published product' };
+	const reason = ( c ) => ( isFixture( c ) ? 'calibration fixture' : readReject( c ) ?? 'no live link' );
+	return { id: null, address: null, why: list.length ? `no published product is titled "${ heading ?? '' }" or is a purchasable, in-stock simple or variable non-fixture, non-gift-card product (${ list.slice( 0, 8 ).map( ( c ) => `#${ c.id } ${ c.title }: ${ reason( c ) }` ).join( '; ' ) })` : 'the site has no published product' };
 }
 
 // The first h1's text in a surface's saved inventory (build/intake/inventories/<intakeSurface>.json), or null when the file or
