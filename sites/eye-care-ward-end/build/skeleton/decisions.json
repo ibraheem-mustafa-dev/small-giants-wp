@@ -376,40 +376,40 @@
 				"proposed": "sgs/container"
 			},
 			"Eye Care Birmingham/177#0": {
-				"block": "sgs/media",
+				"remove": true,
 				"signature": "img|",
-				"reason": "Bean accepted sgs/media in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/media"
+				"proposed": "sgs/media",
+				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
 			},
 			"Eye Care Birmingham/178#0": {
-				"block": "sgs/container",
+				"remove": true,
 				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
+				"proposed": "sgs/container",
+				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
 			},
 			"Eye Care Birmingham/179#0": {
-				"block": "sgs/text",
+				"remove": true,
 				"signature": "div|Google Reviews",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
 			},
 			"Eye Care Birmingham/180#0": {
-				"block": "sgs/container",
+				"remove": true,
 				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
+				"proposed": "sgs/container",
+				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
 			},
 			"Eye Care Birmingham/181#0": {
-				"block": "sgs/text",
+				"remove": true,
 				"signature": "span|4.7",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
 			},
 			"Eye Care Birmingham/182#0": {
-				"block": "sgs/container",
+				"remove": true,
 				"signature": "span|★★★★★",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
+				"proposed": "sgs/container",
+				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
 			},
 			"Eye Care Birmingham/183#0": {
 				"block": "sgs/label",
@@ -418,52 +418,52 @@
 				"reason": "Settled by evidence: block:sgs/label in the intake review on 2026-11-01 (draft code, built page and block facts; sites/eye-care-ward-end/build/intake/review-evidence.md)"
 			},
 			"Eye Care Birmingham/184#0": {
-				"block": "sgs/text",
+				"remove": true,
 				"signature": "span|15 reviews",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
 			},
 			"Eye Care Birmingham/185#0": {
-				"block": "sgs/multi-button",
+				"remove": true,
 				"signature": "div|",
-				"reason": "Bean accepted sgs/multi-button in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/multi-button"
+				"proposed": "sgs/multi-button",
+				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
 			},
 			"Eye Care Birmingham/186#0": {
-				"block": "sgs/button",
+				"remove": true,
 				"signature": "a|See all reviews",
-				"reason": "Bean accepted sgs/button in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/button"
+				"proposed": "sgs/button",
+				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
 			},
 			"Eye Care Birmingham/187#0": {
-				"block": "sgs/button",
+				"remove": true,
 				"signature": "a|Write a review",
-				"reason": "Bean accepted sgs/button in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/button"
+				"proposed": "sgs/button",
+				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
 			},
 			"Eye Care Birmingham/188#0": {
-				"block": "sgs/container",
+				"remove": true,
 				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
+				"proposed": "sgs/container",
+				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
 			},
 			"Eye Care Birmingham/206#0": {
-				"block": "sgs/text",
+				"remove": true,
 				"signature": "p|Scroll for more — 13 of the 15 reviews left a comment.",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
 			},
 			"Eye Care Birmingham/207#0": {
-				"block": "sgs/social-icons",
+				"remove": true,
 				"signature": "div|",
-				"reason": "Bean accepted sgs/social-icons in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/social-icons"
+				"proposed": "sgs/social-icons",
+				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
 			},
 			"Eye Care Birmingham/208#0": {
-				"block": "sgs/icon",
+				"remove": true,
 				"signature": "button|",
-				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/icon"
+				"proposed": "sgs/icon",
+				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
 			},
 			"Eye Care Birmingham/216#0": {
 				"block": "sgs/container",
@@ -580,10 +580,10 @@
 				"proposed": "sgs/label"
 			},
 			"Eye Care Birmingham/235#0": {
-				"block": "sgs/text",
+				"remove": true,
 				"signature": "span|The reception or the consulting room — whichever you'd rather show. No portrait needed.",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
 			},
 			"Eye Care Birmingham/236#0": {
 				"block": "sgs/container",
@@ -760,16 +760,16 @@
 				"proposed": "sgs/heading"
 			},
 			"Eye Care Birmingham/205#0": {
-				"block": "sgs/container",
+				"remove": true,
 				"signature": "div|",
-				"reason": "Bean accepted sgs/container in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/container"
+				"proposed": "sgs/container",
+				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
 			},
 			"Eye Care Birmingham/211#0": {
-				"block": "sgs/icon",
+				"remove": true,
 				"signature": "button|",
-				"reason": "Bean accepted sgs/icon in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/icon"
+				"proposed": "sgs/icon",
+				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
 			},
 			"Eye Care Birmingham/214#0": {
 				"block": "sgs/container",
@@ -3178,10 +3178,10 @@
 				"proposed": "sgs/label"
 			},
 			"Eye Care Birmingham/348#0": {
-				"block": "sgs/text",
+				"remove": true,
 				"signature": "div|Photography to come front · three-quarter · side · worn",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block"
 			},
 			"Eye Care Birmingham/351#0": {
 				"block": "sgs/label",
@@ -3190,10 +3190,10 @@
 				"proposed": "sgs/label"
 			},
 			"Eye Care Birmingham/352#0": {
-				"block": "sgs/multi-button",
+				"block": "sgs/container",
 				"signature": "div|",
-				"reason": "Bean accepted sgs/multi-button in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/multi-button"
+				"proposed": "sgs/multi-button",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The gallery thumbnails grid (a loop of buttons swapping the main image); on the single-product template this is the product gallery, which no candidate offers, so a container keeps the layout."
 			},
 			"Eye Care Birmingham/421#0": {
 				"block": "sgs/text",
@@ -3645,6 +3645,12 @@
 				"signature": "a|WhatsApp 07960 5978",
 				"proposed": "sgs/whatsapp-cta",
 				"reason": "Settled by evidence: the finaliser's pick in the intake review on 2026-11-01 (draft code, built page and block facts; sites/eye-care-ward-end/build/intake/review-evidence.md): A wa.me link in WhatsApp green printing the number; sgs/whatsapp-cta."
+			},
+			"Eye Care Birmingham/680#0": {
+				"block": "sgs/form",
+				"signature": "form|",
+				"proposed": "sgs/form",
+				"reason": "Settled by evidence: sgs/form in the intake review on 2026-11-02 (draft code, built page and block facts; sites/eye-care-ward-end/build/intake/review-evidence.md)"
 			}
 		},
 		"mobile-menu": {
@@ -3715,10 +3721,10 @@
 				"proposed": "sgs/icon"
 			},
 			"Eye Care Birmingham/1191#0": {
-				"block": "sgs/media",
+				"block": "sgs/icon",
 				"signature": "img|",
-				"reason": "Bean accepted sgs/media in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/media"
+				"proposed": "sgs/media",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The WhatsApp brand glyph alone inside its link button (beside the Instagram and Google glyph links); a glyph on its own is sgs/icon, which carries the brand registry, not a media image."
 			},
 			"Eye Care Birmingham/1164#0": {
 				"block": "sgs/responsive-logo",
@@ -4237,22 +4243,22 @@
 				"proposed": "sgs/button"
 			},
 			"Eye Care Birmingham/617#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "div|MCOptom",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The 22px Playfair title of each qualification item with its description paragraph below; a title role, sgs/heading."
 			},
 			"Eye Care Birmingham/620#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "div|DipTp(IP)",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The 22px Playfair title of each qualification item with its description paragraph below; a title role, sgs/heading."
 			},
 			"Eye Care Birmingham/623#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "div|Paediatric Eye Care",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The 22px Playfair title of each qualification item with its description paragraph below; a title role, sgs/heading."
 			},
 			"Eye Care Birmingham/599#0": {
 				"block": "sgs/container",
@@ -4273,10 +4279,10 @@
 				"proposed": "sgs/heading"
 			},
 			"Eye Care Birmingham/614#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "div|BSc (Hons)",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The 22px Playfair title of each qualification item with its description paragraph below; a title role, sgs/heading."
 			},
 			"Eye Care Birmingham/615#0": {
 				"block": "sgs/text",
@@ -4491,10 +4497,10 @@
 				"proposed": "sgs/container"
 			},
 			"Eye Care Birmingham/654#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "div|Still not answered?",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The 24px Playfair title of the still-not-answered card above its text and buttons; sgs/heading."
 			},
 			"Eye Care Birmingham/655#0": {
 				"block": "sgs/business-info",
@@ -5175,10 +5181,10 @@
 				"proposed": "sgs/container"
 			},
 			"Eye Care Birmingham/844#0": {
-				"block": "sgs/text",
+				"block": "sgs/icon",
 				"signature": "div|✓",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: A lone check glyph in a 64px accent circle above the confirmation heading; a glyph on its own is sgs/icon, not text."
 			},
 			"Eye Care Birmingham/849#0": {
 				"block": "sgs/container",
@@ -5201,10 +5207,10 @@
 				"proposed": "sgs/container"
 			},
 			"Eye Care Birmingham/1236#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "span|Which size am I?",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The 24px Playfair title of the size-guide modal beside its close button; sgs/heading."
 			},
 			"Eye Care Birmingham/1239#0": {
 				"block": "sgs/text",
@@ -5273,10 +5279,10 @@
 				"proposed": "sgs/container"
 			},
 			"Eye Care Birmingham/1251#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "div|Lens width — 42 to 62mm",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The medium-weight title of each measurement item with its description paragraph below; a title role, sgs/heading."
 			},
 			"Eye Care Birmingham/1252#0": {
 				"block": "sgs/text",
@@ -5291,10 +5297,10 @@
 				"proposed": "sgs/container"
 			},
 			"Eye Care Birmingham/1254#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "div|Bridge — 14 to 24mm",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The medium-weight title of each measurement item with its description paragraph below; a title role, sgs/heading."
 			},
 			"Eye Care Birmingham/1255#0": {
 				"block": "sgs/text",
@@ -5309,10 +5315,10 @@
 				"proposed": "sgs/container"
 			},
 			"Eye Care Birmingham/1257#0": {
-				"block": "sgs/text",
+				"block": "sgs/heading",
 				"signature": "div|Temple — 130 to 150mm",
-				"reason": "Bean accepted sgs/text in the intake review on 2026-10-30 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/text"
+				"proposed": "sgs/text",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The medium-weight title of each measurement item with its description paragraph below; a title role, sgs/heading."
 			},
 			"Eye Care Birmingham/1258#0": {
 				"block": "sgs/text",
