@@ -68,6 +68,34 @@ Captures `E:/sgs-tmp/vision/eye-care-ward-end/*-live-r2.png`; reviewers were giv
 | R2-19 | Stock line bold (88) | `stockFontWeight` unset | 400 | tree | closed 2026-11-02 |
 | R2-20 | Contact page left-aligned; form in half a row (N45) | outer `margin` 0 overrode the centring; N45 never applied to the page | margin removed (box centred), info and map in an inner grid, the form its own full-width row; form 285 field style: white, 52px, 14px sides, 15px text, square, gap 10px, button left | tree | closed 2026-11-02 (row gap 10px waits for R2-5) |
 
+## Finishing stream, round 3 (2026-11-02, approved by Bean)
+
+Captures `E:/sgs-tmp/vision/eye-care-ward-end/*-live-r3.png` (product pairs `product-gucci-*`; home hero and contact map as viewport shots `home-hero-*` / `contact-map-*`, both render); draft/live pairs `E:/sgs-tmp/r3shots/index.html`. Reviewers had `E:/sgs-tmp/r3-decided.md`. Refuted on measurement: the lenses step-numeral colour (both #6F6152) and "from +£59" (the draft has the plus). Wave 2 waits for FW-F (every textAlign/alignItems per-device; Mama's session) to free the wrapper, text, accordion, icon-list, buybox, product-card and google-reviews blocks. Load-more runs as its own planned track (`plans/2026-11-02-shop-load-more.md`).
+
+| Ref | What is wrong | Proven cause | Fix | Type | Status |
+|---|---|---|---|---|---|
+| R3-1 | Selected size tile "M" unreadable (#4A453E on #141414) | R2-6's pickerOption typography and colour reached every `.sgs-option-picker__pill-label` in the buybox, the size pills included | scoped to `.sgs-option-picker--tile` (render, element selector, canvas mock) | framework repair | committed `db297a934`, deploy pending |
+| R3-2 | Grey bands in the shape grid gaps (375, 768) | `SGS_Container_Wrapper` reads `overlayGradient` as a whole-section overlay; sgs/card-grid uses the same name for its per-tile overlay, so a second copy covers the grid (live: one 335x628 span) | the wrapper skips the section overlay for card-grid | framework repair, wave 2 | open |
+| R3-3 | Google reviews header wraps at 768 and 375 | saved `padding` applied on the card and again on its `__inner` (live 20px 16px on both) | padding once; header gap 18px | framework repair + tree, wave 2 | open |
+| R3-4 | Brand strip has no dividers | `separators.column` saved and emitted, clipped by `.sgs-brand-strip__item{overflow:hidden}` | draw the divider inside the item | framework repair | open |
+| R3-5 | Open Help answer indented 132px at 1440 | `text/render.php` centres any `maxWidth` box (`margin-inline:auto`) | a left/centre option for a width-capped text box; Help answers left | framework new, wave 2 | open |
+| R3-6 | Shop phone cards: price and RRP sometimes together | price group shares a wrapping row with the swatches | a stacked price-group setting on sgs/product-card | framework new, wave 2 | open |
+| R3-7 | Selected colour name #5E584F; draft #6B655E | buybox stylesheet uses text-muted; no setting | `pickerValueColour` on sgs/buybox, saved text-subtle | framework new, wave 2 | open |
+| R3-8 | Filter chevrons 1.5x larger and 2x heavier; sort select 107px (draft 152px) | `woocommerce.css::.sgs-shop-filters__group-summary::after` 8px box, 2px borders; WooCommerce's `field-sizing:content` on `select.orderby` | chevron about 5.4px with 1px stroke; `field-sizing:fixed`; sort size 13.5px | framework repair | open |
+| R3-9 | Accordion "+" heavier than the draft | no icon stroke setting | `iconStrokeWidth` on the accordion (trust-bar's precedent); Good-to-know 1.5 | framework new, wave 2 | open |
+| R3-10 | Brand logo JPEGs paint a white box on the cream product page | the supplier logos are white-ground JPEGs | an image blend setting on sgs/media (copying `overlayBlendMode`); multiply on cr-ref-product-5 | framework new + tree | open |
+| R3-11 | No "heading on dark" palette role (Bean, round 2) | the on-dark heading rule falls back to text-inverse only | `heading-inverse` role in theme.json and the Indus, Mama's and Eye Care snapshots, first in `core-blocks-critical.css`'s on-dark chain | framework new | open |
+| R3-12 | Assurance rows: tick-to-text 8px (draft 14px), 20px extra gap | `.sgs-icon-list__item{gap:spacing-20}` with no setting; list `gap` unset | item-gap setting on sgs/icon-list; list gap 0 | framework new + tree, wave 2 | open |
+| R3-13 | Help FAQ pitch 66.5px (draft 71px) | header content 25.5px (17px at 1.5) vs the draft's 30px | `headerMinHeight` 70px, `lineHeight` 1.25 (page 171) | tree | open |
+| R3-14 | Help cards: 10px extra under each label; empty 4th cell blank at 768 | card stack `gap` 10px plus the label's own 10px margin; no grid ground | card gap 0 (cr-ref-help-4/7/10); `backgroundColour: border` on cr-ref-help-3 | tree | open |
+| R3-15 | "See everything" / "All 12 styles" have no resting underline | border unset on cr-ref-home-14 / -52 | 1px bottom border `text`, 3px bottom padding (Help's Size guide precedent) | tree | open |
+| R3-16 | Product brand logo 40px tall and soft; Gucci logo under the heart on 375 cards | cr-ref-product-5 height 40px, maxWidth 180px; card `brandLogoMaxWidth` has no mobile tier | 15px / 91px; card brandLogoMaxWidth mobile 72px (templates 423, 438) | tree | open |
+| R3-17 | Description text smaller and lighter on 768/375 | post-content 16px turned fluid (14px at 375), text-muted | fixed 16.5px / 1.5, list 15.5px, text-soft | tree | open |
+| R3-18 | Product lower layout: column split, Good-to-know pitch 77px (draft 65px), assurance gap | cr-ref-product-11 `1.35fr 1fr`; cr-ref-product-90 gap 16px; icon-list gap unset | `1.1fr 1fr`; gap 0 + headerMinHeight 64px; icon-list gap 0 | tree | open |
+| R3-19 | Textarea 116px (draft 120px); "Photo to come" #5E584F (draft #A39C90) | `fieldTextareaMinHeight` unset (form 285); `noImageLabelColour` unset | 120px; custom-text-faint on every card (the draft's placeholder value) | tree | open |
+| R3-20 | Test product "QA Simple Line Item" (£9.99) live in the shop | product 1111, created 2026-10-06 by an automated check | delete | content | open |
+| R3-21 | Shop numbered pagination (R2-14) | none specified | Baymard load-more: own plan and build | framework new | planned |
+
 ## Four build rules for every item
 
 1. **Step 0: rebuild every page from its layout file first.** The live header is older than `header.tree.json`: the file has asked for an 18px wordmark that shrinks to 15px since 30 September, and the live one is 16px with no shrink. Every tree is rebuilt through `wp-build-page.js` before any item is judged, so no fix chases a stale page.
