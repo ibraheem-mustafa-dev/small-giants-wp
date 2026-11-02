@@ -75100,14 +75100,14 @@
      "tag": "div",
      "words": "Who are you shopping for?",
      "block": "sgs/label",
-     "confidence": 0.8,
+     "confidence": 1,
      "low": false,
-     "reason": "A 13px bold uppercase line with .08em tracking above the drawer cards; a kicker in capitals with wide tracking is sgs/label.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -75149,22 +75149,7 @@
        "h": 15
       }
      ],
-     "draftId": "SiteHeader:61",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "SiteHeader:61"
     },
     {
      "rowId": "skeleton:nav-drawer-left:Home>SiteHeader@7#0/62#0",
@@ -75205,7 +75190,7 @@
       {
        "draftId": "SiteHeader:61",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       }
      ],
      "siblingCount": 1,
@@ -75487,14 +75472,14 @@
      },
      "tag": "span",
      "words": "For me",
-     "block": "sgs/heading",
+     "block": "sgs/label",
      "confidence": 1,
      "low": false,
-     "reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
-     "rule": "cardTitle",
+     "reason": null,
+     "rule": null,
      "candidates": [
       {
-       "block": "sgs/heading",
+       "block": "sgs/label",
        "score": 1,
        "share": 1
       }
@@ -75581,7 +75566,7 @@
       {
        "draftId": "SiteHeader:66",
        "tag": "span",
-       "block": "sgs/heading"
+       "block": "sgs/label"
       }
      ],
      "siblingCount": 1,
@@ -75878,14 +75863,14 @@
      },
      "tag": "span",
      "words": "For a new mum",
-     "block": "sgs/heading",
+     "block": "sgs/label",
      "confidence": 1,
      "low": false,
-     "reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
-     "rule": "cardTitle",
+     "reason": null,
+     "rule": null,
      "candidates": [
       {
-       "block": "sgs/heading",
+       "block": "sgs/label",
        "score": 1,
        "share": 1
       }
@@ -75972,7 +75957,7 @@
       {
        "draftId": "SiteHeader:71",
        "tag": "span",
-       "block": "sgs/heading"
+       "block": "sgs/label"
       }
      ],
      "siblingCount": 1,
@@ -77592,14 +77577,14 @@
      "tag": "div",
      "words": "say hello",
      "block": "sgs/heading",
-     "confidence": 0.65,
-     "low": true,
-     "reason": "The handwritten line heading the drawer's contact column, matching the footer, where the same script column titles (shop, help) are sgs/heading by the columnHeading rule.",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -77641,22 +77626,7 @@
        "h": 24
       }
      ],
-     "draftId": "SiteHeader:105",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "SiteHeader:105"
     },
     {
      "rowId": "skeleton:nav-drawer-left:Home>SiteHeader@7#0/106#0",
@@ -77692,7 +77662,7 @@
       {
        "draftId": "SiteHeader:105",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       }
      ],
      "siblingCount": 1,
@@ -78324,7 +78294,7 @@
     "rows": 48,
     "skeletonNodes": 27,
     "expandedNodes": 27,
-    "low": 8,
+    "low": 6,
     "removed": 12,
     "unresolved": 0,
     "byRule": {
@@ -78332,9 +78302,9 @@
      "drawerClose": 1,
      "alignWrapper": 1,
      "wholeCardLink": 3,
-     "cardTitle": 3,
      "listWrapper": 3,
      "drawsChildren": 7,
+     "cardTitle": 1,
      "label": 1
     }
    },
@@ -79469,14 +79439,14 @@
      "tag": "div",
      "words": "fresh out the oven…",
      "block": "sgs/label",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the @mamasmunches h2).",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -79518,22 +79488,7 @@
        "h": 44
       }
      ],
-     "draftId": "SiteFooter:7",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "SiteFooter:7"
     },
     {
      "rowId": "skeleton:site-footer:Home>SiteFooter@250#0/8#0",
@@ -79577,7 +79532,7 @@
       {
        "draftId": "SiteFooter:7",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       }
      ],
      "siblingCount": 1,
@@ -81882,14 +81837,14 @@
      "tag": "div",
      "words": "say hello",
      "block": "sgs/heading",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "The script title of the footer's contact column; its sibling columns' script titles (shop, help) are sgs/heading by the columnHeading rule, so one footer keeps one block.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -81936,22 +81891,7 @@
        "h": 30
       }
      ],
-     "draftId": "SiteFooter:42",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "SiteFooter:42"
     },
     {
      "rowId": "skeleton:site-footer:Home>SiteFooter@250#0/43#0",
@@ -81995,7 +81935,7 @@
       {
        "draftId": "SiteFooter:42",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       },
       {
        "draftId": "SiteFooter:44",
@@ -82076,7 +82016,7 @@
       {
        "draftId": "SiteFooter:42",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       },
       {
        "draftId": "SiteFooter:43",
@@ -82843,7 +82783,7 @@
     "rows": 57,
     "skeletonNodes": 34,
     "expandedNodes": 36,
-    "low": 5,
+    "low": 3,
     "removed": 17,
     "unresolved": 0,
     "byRule": {
@@ -84505,7 +84445,7 @@
       {
        "draftId": "Home:41",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       }
      ],
      "siblingCount": 4,
@@ -84736,7 +84676,7 @@
       {
        "draftId": "Home:41",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       }
      ],
      "siblingCount": 4,
@@ -84967,7 +84907,7 @@
       {
        "draftId": "Home:41",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       }
      ],
      "siblingCount": 4,
@@ -85204,7 +85144,7 @@
       {
        "draftId": "Home:41",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       }
      ],
      "siblingCount": 4,
@@ -85409,14 +85349,14 @@
      "tag": "div",
      "words": "baked with love",
      "block": "sgs/label",
-     "confidence": 0.6,
-     "low": true,
-     "reason": "A short tag line on a pink ribbon (background, border, clip-path) laid over the hero image; a pill or tag of a few words is sgs/label.",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -85473,22 +85413,7 @@
        "h": 66.8
       }
      ],
-     "draftId": "Home:41",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Home:41"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/42#0",
@@ -86111,14 +86036,14 @@
      },
      "tag": "span",
      "words": "for me ✦",
-     "block": "sgs/heading",
+     "block": "sgs/label",
      "confidence": 1,
      "low": false,
-     "reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
-     "rule": "cardTitle",
+     "reason": null,
+     "rule": null,
      "candidates": [
       {
-       "block": "sgs/heading",
+       "block": "sgs/label",
        "score": 1,
        "share": 1
       }
@@ -86134,7 +86059,7 @@
       {
        "draftId": "Home:51",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       },
       {
        "draftId": "Home:52",
@@ -86194,14 +86119,14 @@
      "tag": "span",
      "words": "I’m feeding a little one",
      "block": "sgs/heading",
-     "confidence": 0.6,
-     "low": true,
-     "reason": "The card's Young Serif title at the h3 size; the script kicker before it (for me) was made the heading by cardTitle, so the card now holds two headings and the review should settle it.",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -86216,7 +86141,7 @@
       {
        "draftId": "Home:50",
        "tag": "span",
-       "block": "sgs/heading"
+       "block": "sgs/label"
       },
       {
        "draftId": "Home:52",
@@ -86253,22 +86178,7 @@
        "h": 57.2
       }
      ],
-     "draftId": "Home:51",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Home:51"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/52#0",
@@ -86313,12 +86223,12 @@
       {
        "draftId": "Home:50",
        "tag": "span",
-       "block": "sgs/heading"
+       "block": "sgs/label"
       },
       {
        "draftId": "Home:51",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       },
       {
        "draftId": "Home:53",
@@ -86410,12 +86320,12 @@
       {
        "draftId": "Home:50",
        "tag": "span",
-       "block": "sgs/heading"
+       "block": "sgs/label"
       },
       {
        "draftId": "Home:51",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       },
       {
        "draftId": "Home:52",
@@ -86773,14 +86683,14 @@
      },
      "tag": "span",
      "words": "for her ♥",
-     "block": "sgs/heading",
+     "block": "sgs/label",
      "confidence": 1,
      "low": false,
-     "reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
-     "rule": "cardTitle",
+     "reason": null,
+     "rule": null,
      "candidates": [
       {
-       "block": "sgs/heading",
+       "block": "sgs/label",
        "score": 1,
        "share": 1
       }
@@ -86796,7 +86706,7 @@
       {
        "draftId": "Home:59",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       },
       {
        "draftId": "Home:60",
@@ -86856,14 +86766,14 @@
      "tag": "span",
      "words": "I’m spoiling a new mum",
      "block": "sgs/heading",
-     "confidence": 0.6,
-     "low": true,
-     "reason": "The card's Young Serif title at the h3 size; the script kicker before it (for her) was made the heading by cardTitle, so the card now holds two headings and the review should settle it.",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -86878,7 +86788,7 @@
       {
        "draftId": "Home:58",
        "tag": "span",
-       "block": "sgs/heading"
+       "block": "sgs/label"
       },
       {
        "draftId": "Home:60",
@@ -86915,22 +86825,7 @@
        "h": 57.2
       }
      ],
-     "draftId": "Home:59",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Home:59"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/60#0",
@@ -86975,12 +86870,12 @@
       {
        "draftId": "Home:58",
        "tag": "span",
-       "block": "sgs/heading"
+       "block": "sgs/label"
       },
       {
        "draftId": "Home:59",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       },
       {
        "draftId": "Home:61",
@@ -87072,12 +86967,12 @@
       {
        "draftId": "Home:58",
        "tag": "span",
-       "block": "sgs/heading"
+       "block": "sgs/label"
       },
       {
        "draftId": "Home:59",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       },
       {
        "draftId": "Home:60",
@@ -91969,14 +91864,14 @@
      "tag": "div",
      "words": "gifts for new mums",
      "block": "sgs/label",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -92018,22 +91913,7 @@
        "h": 28
       }
      ],
-     "draftId": "Home:128",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Home:128"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/129#0",
@@ -92077,7 +91957,7 @@
       {
        "draftId": "Home:128",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       }
      ],
      "siblingCount": 1,
@@ -93196,22 +93076,11 @@
      "tag": "div",
      "words": "",
      "block": null,
-     "confidence": 0.5,
-     "low": true,
-     "reason": "The gift carousel's dots (375 only) step a scroll track over the product collection; no block in the DB draws carousel controls for woocommerce/product-collection, and copied buttons would be dead, so they go.",
+     "confidence": 1,
+     "low": false,
+     "reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The gift carousel's dots (375 only) step a scroll track over the product collection; no block in the DB draws carousel controls for woocommerce/product-collection, and copied buttons would be dead, so they go.",
      "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/multi-button",
-       "score": 0.75,
-       "share": 0.682
-      },
-      {
-       "block": "sgs/container",
-       "score": 0.35,
-       "share": 0.318
-      }
-     ],
+     "candidates": [],
      "action": "remove",
      "snippet": "<div style=\"display:flex;gap:8px\" data-dc-tpl=\"146\"><sc-for list=\"{{ giftDots }}\" as=\"d\" hint-placeholder-count=\"0\" data-dc-tpl=\"147\"><button sc-camel-on-click=",
      "parent": {
@@ -93236,27 +93105,7 @@
        "h": 12
       }
      ],
-     "draftId": "Home:146",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/multi-button",
-      "action": null,
-      "confidence": 0.51,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/multi-button",
-        "score": 0.75,
-        "share": 0.682
-       },
-       {
-        "block": "sgs/container",
-        "score": 0.35,
-        "share": 0.318
-       }
-      ]
-     }
+     "draftId": "Home:146"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/148",
@@ -93277,40 +93126,34 @@
      },
      "tag": "button",
      "words": "",
-     "block": "sgs/button",
-     "confidence": 0.75,
+     "block": null,
+     "confidence": 1,
      "low": false,
-     "reason": "4 copies of one template element",
+     "reason": "4 copies of one template element; inside a removed element (Home/146#0)",
      "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/button",
-       "score": 0.75,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "candidates": [],
+     "action": "remove",
      "snippet": "<button sc-camel-on-click=\"{{ d.go }}\" aria-label=\"{{ d.label }}\" style=\"width:{{ d.w }};height:12px;border-radius:999px;border:2px solid #3A2A22;background:{{ ",
      "parent": {
       "draftId": "Home:146",
       "tag": "div",
-      "block": "sgs/multi-button"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "Home:148",
        "tag": "button",
-       "block": "sgs/button"
+       "block": null
       },
       {
        "draftId": "Home:148",
        "tag": "button",
-       "block": "sgs/button"
+       "block": null
       },
       {
        "draftId": "Home:148",
        "tag": "button",
-       "block": "sgs/button"
+       "block": null
       }
      ],
      "siblingCount": 3,
@@ -93331,7 +93174,7 @@
       "Home/148#2",
       "Home/148#3"
      ],
-     "proposalReason": null
+     "proposalReason": "inside a removed element (Home/146#0)"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/149#0",
@@ -93368,7 +93211,7 @@
       {
        "draftId": "Home:146",
        "tag": "div",
-       "block": "sgs/multi-button"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -94143,14 +93986,14 @@
      },
      "tag": "div",
      "words": "Baby shower coming up?",
-     "block": "sgs/heading",
+     "block": "sgs/label",
      "confidence": 1,
      "low": false,
-     "reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
-     "rule": "cardTitle",
+     "reason": null,
+     "rule": null,
      "candidates": [
       {
-       "block": "sgs/heading",
+       "block": "sgs/label",
        "score": 1,
        "share": 1
       }
@@ -94238,7 +94081,7 @@
       {
        "draftId": "Home:160",
        "tag": "div",
-       "block": "sgs/heading"
+       "block": "sgs/label"
       }
      ],
      "siblingCount": 1,
@@ -94539,7 +94382,7 @@
       {
        "draftId": "Home:166",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       },
       {
        "draftId": "Home:167",
@@ -94597,14 +94440,14 @@
      "tag": "div",
      "words": "Zainab’s Zookie recipe",
      "block": "sgs/heading",
-     "confidence": 0.65,
-     "low": true,
-     "reason": "The recipe card's title, set larger than the line after it; it titles the card (cardHeading pattern).",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -94656,22 +94499,7 @@
        "h": 85.1
       }
      ],
-     "draftId": "Home:166",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Home:166"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/167#0",
@@ -94719,7 +94547,7 @@
       {
        "draftId": "Home:166",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       },
       {
        "draftId": "Home:168",
@@ -94814,7 +94642,7 @@
       {
        "draftId": "Home:166",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       },
       {
        "draftId": "Home:167",
@@ -94950,14 +94778,14 @@
      "tag": "span",
      "words": "✓",
      "block": "sgs/icon",
-     "confidence": 0.6,
-     "low": true,
-     "reason": "A tick in a 32px yellow circle with a border beside each ingredient; sgs/icon draws a glyph in a circle with its own border (DB description).",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/icon",
+       "score": 1,
        "share": 1
       }
      ],
@@ -94999,22 +94827,7 @@
        "h": 32.6
       }
      ],
-     "draftId": "Home:170",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Home:170"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/171#0",
@@ -95059,7 +94872,7 @@
       {
        "draftId": "Home:170",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/icon"
       }
      ],
      "siblingCount": 1,
@@ -95110,14 +94923,14 @@
      "tag": "div",
      "words": "Oats",
      "block": "sgs/heading",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "The ingredient name, Young Serif 22px above its description; it titles the row.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -95159,22 +94972,7 @@
        "h": 34.9
       }
      ],
-     "draftId": "Home:172",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Home:172"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/173#0",
@@ -95220,7 +95018,7 @@
       {
        "draftId": "Home:172",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       }
      ],
      "siblingCount": 1,
@@ -95366,14 +95164,14 @@
      "tag": "span",
      "words": "✓",
      "block": "sgs/icon",
-     "confidence": 0.6,
-     "low": true,
-     "reason": "A tick in a 32px yellow circle with a border beside each ingredient; sgs/icon draws a glyph in a circle with its own border (DB description).",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/icon",
+       "score": 1,
        "share": 1
       }
      ],
@@ -95415,22 +95213,7 @@
        "h": 32.6
       }
      ],
-     "draftId": "Home:175",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Home:175"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/176#0",
@@ -95475,7 +95258,7 @@
       {
        "draftId": "Home:175",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/icon"
       }
      ],
      "siblingCount": 1,
@@ -95526,14 +95309,14 @@
      "tag": "div",
      "words": "Brewer’s yeast",
      "block": "sgs/heading",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "The ingredient name, Young Serif 22px above its description; it titles the row.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -95575,22 +95358,7 @@
        "h": 34.9
       }
      ],
-     "draftId": "Home:177",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Home:177"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/178#0",
@@ -95636,7 +95404,7 @@
       {
        "draftId": "Home:177",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       }
      ],
      "siblingCount": 1,
@@ -95782,14 +95550,14 @@
      "tag": "span",
      "words": "✓",
      "block": "sgs/icon",
-     "confidence": 0.6,
-     "low": true,
-     "reason": "A tick in a 32px yellow circle with a border beside each ingredient; sgs/icon draws a glyph in a circle with its own border (DB description).",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/icon",
+       "score": 1,
        "share": 1
       }
      ],
@@ -95831,22 +95599,7 @@
        "h": 32.6
       }
      ],
-     "draftId": "Home:180",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Home:180"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/181#0",
@@ -95891,7 +95644,7 @@
       {
        "draftId": "Home:180",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/icon"
       }
      ],
      "siblingCount": 1,
@@ -95942,14 +95695,14 @@
      "tag": "div",
      "words": "Flaxseed",
      "block": "sgs/heading",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "The ingredient name, Young Serif 22px above its description; it titles the row.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -95991,22 +95744,7 @@
        "h": 34.9
       }
      ],
-     "draftId": "Home:182",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Home:182"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/183#0",
@@ -96052,7 +95790,7 @@
       {
        "draftId": "Home:182",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       }
      ],
      "siblingCount": 1,
@@ -96198,14 +95936,14 @@
      "tag": "span",
      "words": "✓",
      "block": "sgs/icon",
-     "confidence": 0.6,
-     "low": true,
-     "reason": "A tick in a 32px yellow circle with a border beside each ingredient; sgs/icon draws a glyph in a circle with its own border (DB description).",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/icon",
+       "score": 1,
        "share": 1
       }
      ],
@@ -96247,22 +95985,7 @@
        "h": 32.6
       }
      ],
-     "draftId": "Home:185",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Home:185"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/186#0",
@@ -96307,7 +96030,7 @@
       {
        "draftId": "Home:185",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/icon"
       }
      ],
      "siblingCount": 1,
@@ -96358,14 +96081,14 @@
      "tag": "div",
      "words": "Fenugreek",
      "block": "sgs/heading",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "The ingredient name, Young Serif 22px above its description; it titles the row.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -96407,22 +96130,7 @@
        "h": 34.9
       }
      ],
-     "draftId": "Home:187",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Home:187"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/188#0",
@@ -96468,7 +96176,7 @@
       {
        "draftId": "Home:187",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       }
      ],
      "siblingCount": 1,
@@ -97485,14 +97193,14 @@
      "tag": "div",
      "words": "our story",
      "block": "sgs/label",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (the story column's eyebrow).",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -97549,22 +97257,7 @@
        "h": 28
       }
      ],
-     "draftId": "Home:202",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Home:202"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/203#0",
@@ -97607,7 +97300,7 @@
       {
        "draftId": "Home:202",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Home:204",
@@ -97692,7 +97385,7 @@
       {
        "draftId": "Home:202",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Home:203",
@@ -97777,7 +97470,7 @@
       {
        "draftId": "Home:202",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Home:203",
@@ -97862,7 +97555,7 @@
       {
        "draftId": "Home:202",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Home:203",
@@ -98309,14 +98002,14 @@
      "tag": "div",
      "words": "real mums, real words",
      "block": "sgs/label",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -98358,22 +98051,7 @@
        "h": 28
       }
      ],
-     "draftId": "Home:212",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Home:212"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/213#0",
@@ -98417,7 +98095,7 @@
       {
        "draftId": "Home:212",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       }
      ],
      "siblingCount": 1,
@@ -100294,14 +99972,14 @@
      "tag": "div",
      "words": "ask away",
      "block": "sgs/label",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -100348,22 +100026,7 @@
        "h": 28
       }
      ],
-     "draftId": "Home:239",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Home:239"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/240#0",
@@ -100406,7 +100069,7 @@
       {
        "draftId": "Home:239",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Home:241",
@@ -100481,7 +100144,7 @@
       {
        "draftId": "Home:239",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Home:240",
@@ -100892,10 +100555,10 @@
     "inventoryElements": 372,
     "parts": 2,
     "rows": 370,
-    "skeletonNodes": 156,
-    "expandedNodes": 156,
-    "low": 41,
-    "removed": 226,
+    "skeletonNodes": 151,
+    "expandedNodes": 151,
+    "low": 24,
+    "removed": 231,
     "unresolved": 0,
     "byRule": {
      "hero": 1,
@@ -100906,10 +100569,10 @@
      "marqueeCodeItems": 1,
      "alignWrapper": 3,
      "wholeCardLink": 4,
-     "cardTitle": 4,
      "cardAction": 2,
      "formLink": 105,
      "loopBlocks": 96,
+     "cardTitle": 1,
      "accordion": 1,
      "accordionItem": 13
     }
@@ -101164,14 +100827,14 @@
      "tag": "div",
      "words": "your cookie, your way",
      "block": "sgs/label",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -101218,22 +100881,7 @@
        "h": 28
       }
      ],
-     "draftId": "Home:67",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Home:67"
     },
     {
      "rowId": "skeleton:build-your-zookie:Home/68#0",
@@ -101276,7 +100924,7 @@
       {
        "draftId": "Home:67",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Home:69",
@@ -101351,7 +100999,7 @@
       {
        "draftId": "Home:67",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Home:68",
@@ -101392,7 +101040,7 @@
     "rows": 106,
     "skeletonNodes": 19,
     "expandedNodes": 19,
-    "low": 1,
+    "low": 0,
     "removed": 101,
     "unresolved": 0,
     "byRule": {
@@ -101707,14 +101355,14 @@
      "tag": "div",
      "words": "fresh from Zainab’s kitchen",
      "block": "sgs/label",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1).",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -101761,22 +101409,7 @@
        "h": 39.7
       }
      ],
-     "draftId": "Shop:12",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Shop:12"
     },
     {
      "rowId": "skeleton:page-shop-dc-html:Shop/13#0",
@@ -101819,7 +101452,7 @@
       {
        "draftId": "Shop:12",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Shop:14",
@@ -101894,7 +101527,7 @@
       {
        "draftId": "Shop:12",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Shop:13",
@@ -103998,14 +103631,14 @@
      "tag": "span",
      "words": "your cookie, your way ✦",
      "block": "sgs/label",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "A handwritten kicker at the top of the card link before its title; a kicker is sgs/label.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -104020,7 +103653,7 @@
       {
        "draftId": "Shop:35",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       },
       {
        "draftId": "Shop:36",
@@ -104057,22 +103690,7 @@
        "h": 26
       }
      ],
-     "draftId": "Shop:34",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Shop:34"
     },
     {
      "rowId": "skeleton:page-shop-dc-html:Shop/35#0",
@@ -104094,14 +103712,14 @@
      "tag": "span",
      "words": "Build your own box",
      "block": "sgs/heading",
-     "confidence": 0.75,
+     "confidence": 1,
      "low": false,
-     "reason": "The card's Young Serif title at the h2 size; it titles the card.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -104116,7 +103734,7 @@
       {
        "draftId": "Shop:34",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Shop:36",
@@ -104153,22 +103771,7 @@
        "h": 27.3
       }
      ],
-     "draftId": "Shop:35",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Shop:35"
     },
     {
      "rowId": "skeleton:page-shop-dc-html:Shop/36#0",
@@ -104212,12 +103815,12 @@
       {
        "draftId": "Shop:34",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Shop:35",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       },
       {
        "draftId": "Shop:37",
@@ -104308,12 +103911,12 @@
       {
        "draftId": "Shop:34",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Shop:35",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       },
       {
        "draftId": "Shop:36",
@@ -104507,14 +104110,14 @@
      },
      "tag": "span",
      "words": "never run out",
-     "block": "sgs/heading",
+     "block": "sgs/label",
      "confidence": 1,
      "low": false,
-     "reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
-     "rule": "cardTitle",
+     "reason": null,
+     "rule": null,
      "candidates": [
       {
-       "block": "sgs/heading",
+       "block": "sgs/label",
        "score": 1,
        "share": 1
       }
@@ -104530,7 +104133,7 @@
       {
        "draftId": "Shop:41",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       },
       {
        "draftId": "Shop:42",
@@ -104584,14 +104187,14 @@
      "tag": "span",
      "words": "Subscribe & save 10%",
      "block": "sgs/heading",
-     "confidence": 0.6,
-     "low": true,
-     "reason": "The card's Young Serif title at the h2 size; the script kicker before it was made the heading by cardTitle, so the card holds two headings.",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -104606,7 +104209,7 @@
       {
        "draftId": "Shop:40",
        "tag": "span",
-       "block": "sgs/heading"
+       "block": "sgs/label"
       },
       {
        "draftId": "Shop:42",
@@ -104638,22 +104241,7 @@
        "h": 27.3
       }
      ],
-     "draftId": "Shop:41",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Shop:41"
     },
     {
      "rowId": "skeleton:page-shop-dc-html:Shop/42#0",
@@ -104697,12 +104285,12 @@
       {
        "draftId": "Shop:40",
        "tag": "span",
-       "block": "sgs/heading"
+       "block": "sgs/label"
       },
       {
        "draftId": "Shop:41",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       }
      ],
      "siblingCount": 2,
@@ -104732,8 +104320,8 @@
      "draftId": "Shop:42"
     },
     {
-     "rowId": "skeleton:page-shop-dc-html:Shop/44=sgs/label",
-     "key": "Shop/44=sgs/label",
+     "rowId": "skeleton:page-shop-dc-html:Shop/44",
+     "key": "Shop/44",
      "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -104754,7 +104342,7 @@
      "block": "sgs/label",
      "confidence": 1,
      "low": false,
-     "reason": "1 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+     "reason": "4 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
      "rule": "label",
      "candidates": [
       {
@@ -104774,17 +104362,17 @@
       {
        "draftId": "Shop:44",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Shop:44",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Shop:44",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/label"
       }
      ],
      "siblingCount": 3,
@@ -104812,130 +104400,20 @@
       }
      ],
      "draftId": "Shop:44",
-     "copies": 1,
+     "copies": 4,
      "keys": [
-      "Shop/44#0"
-     ],
-     "proposalReason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
-     "splitFrom": "Shop/44",
-     "blocksAcrossCopies": {
-      "sgs/label": 1,
-      "sgs/text": 3
-     }
-    },
-    {
-     "rowId": "skeleton:page-shop-dc-html:Shop/44=sgs/text",
-     "key": "Shop/44=sgs/text",
-     "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "dcb34cac",
-      "parentTags": [
-       "main",
-       "section",
-       "div",
-       "div",
-       "a",
-       "span"
-      ],
-      "textHash": "56b070b",
-      "line": 54
-     },
-     "tag": "span",
-     "words": "Free delivery on 20 and 40 packs",
-     "block": "sgs/label",
-     "confidence": 0.85,
-     "low": false,
-     "reason": "A pill chip ({{ k }}, border and 999px radius); its other copy (10% off every box) is sgs/label, and one list keeps one block.",
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/text",
-       "score": 0.25,
-       "share": 1
-      }
-     ],
-     "action": null,
-     "snippet": "<span style=\"background:#FFFAF0;border:2px solid #3A2A22;border-radius:999px;padding:6px 12px;font-size:14px;font-weight:700\" data-dc-tpl=\"44\">{{ k }}</span>",
-     "parent": {
-      "draftId": "Shop:42",
-      "tag": "span",
-      "block": "sgs/container"
-     },
-     "siblings": [
-      {
-       "draftId": "Shop:44",
-       "tag": "span",
-       "block": "sgs/label"
-      },
-      {
-       "draftId": "Shop:44",
-       "tag": "span",
-       "block": "sgs/text"
-      },
-      {
-       "draftId": "Shop:44",
-       "tag": "span",
-       "block": "sgs/text"
-      }
-     ],
-     "siblingCount": 3,
-     "boxes": [
-      {
-       "width": 1440,
-       "x": 920.3,
-       "y": 2034.5,
-       "w": 245.8,
-       "h": 33
-      },
-      {
-       "width": 768,
-       "x": 428,
-       "y": 1779.2,
-       "w": 245.8,
-       "h": 33
-      },
-      {
-       "width": 375,
-       "x": 44,
-       "y": 2004.6,
-       "w": 245.8,
-       "h": 33
-      }
-     ],
-     "draftId": "Shop:44",
-     "copies": 3,
-     "keys": [
+      "Shop/44#0",
       "Shop/44#1",
       "Shop/44#2",
       "Shop/44#3"
      ],
-     "proposalReason": null,
+     "proposalReason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
      "otherWords": [
+      "Free delivery on 20 and 40 packs",
       "A guaranteed slot in every bake",
       "Skip, swap flavours or cancel online"
      ],
-     "distinctWords": 3,
-     "splitFrom": "Shop/44",
-     "blocksAcrossCopies": {
-      "sgs/label": 1,
-      "sgs/text": 3
-     },
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": "3 copies of one template element",
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "distinctWords": 4
     },
     {
      "rowId": "skeleton:page-shop-dc-html:Shop/45#0",
@@ -105105,14 +104583,14 @@
      },
      "tag": "span",
      "words": "buying for someone?",
-     "block": "sgs/heading",
+     "block": "sgs/label",
      "confidence": 1,
      "low": false,
-     "reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
-     "rule": "cardTitle",
+     "reason": null,
+     "rule": null,
      "candidates": [
       {
-       "block": "sgs/heading",
+       "block": "sgs/label",
        "score": 1,
        "share": 1
       }
@@ -105128,7 +104606,7 @@
       {
        "draftId": "Shop:48",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       },
       {
        "draftId": "Shop:49",
@@ -105182,14 +104660,14 @@
      "tag": "span",
      "words": "Find a gift by moment or budget",
      "block": "sgs/heading",
-     "confidence": 0.6,
-     "low": true,
-     "reason": "The card's Young Serif title at the h2 size; the script kicker before it was made the heading by cardTitle, so the card holds two headings.",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -105204,7 +104682,7 @@
       {
        "draftId": "Shop:47",
        "tag": "span",
-       "block": "sgs/heading"
+       "block": "sgs/label"
       },
       {
        "draftId": "Shop:49",
@@ -105236,22 +104714,7 @@
        "h": 54.6
       }
      ],
-     "draftId": "Shop:48",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Shop:48"
     },
     {
      "rowId": "skeleton:page-shop-dc-html:Shop/49#0",
@@ -105295,12 +104758,12 @@
       {
        "draftId": "Shop:47",
        "tag": "span",
-       "block": "sgs/heading"
+       "block": "sgs/label"
       },
       {
        "draftId": "Shop:48",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       }
      ],
      "siblingCount": 2,
@@ -105421,7 +104884,7 @@
     "rows": 110,
     "skeletonNodes": 38,
     "expandedNodes": 38,
-    "low": 10,
+    "low": 2,
     "removed": 80,
     "unresolved": 0,
     "byRule": {
@@ -105433,7 +104896,6 @@
      "commerceRegion": 61,
      "wholeCardLink": 3,
      "cardAction": 1,
-     "cardTitle": 2,
      "label": 1
     }
    },
@@ -106619,7 +106081,7 @@
       {
        "draftId": "Product:20",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       }
      ],
      "siblingCount": 1,
@@ -106668,14 +106130,14 @@
      "tag": "div",
      "words": "baked with love",
      "block": "sgs/label",
-     "confidence": 0.6,
-     "low": true,
-     "reason": "A short tag line on a pink ribbon laid over the product image; a pill or tag is sgs/label.",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -106717,22 +106179,7 @@
        "h": 54.3
       }
      ],
-     "draftId": "Product:20",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Product:20"
     },
     {
      "rowId": "skeleton:page-product-dc-html-id-zookies:Product/21#0",
@@ -111774,14 +111221,14 @@
      "tag": "div",
      "words": "real mums, real words",
      "block": "sgs/label",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -111828,22 +111275,7 @@
        "h": 28
       }
      ],
-     "draftId": "Product:124",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Product:124"
     },
     {
      "rowId": "skeleton:page-product-dc-html-id-zookies:Product/125#0",
@@ -111885,7 +111317,7 @@
       {
        "draftId": "Product:124",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Product:126",
@@ -111959,7 +111391,7 @@
       {
        "draftId": "Product:124",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Product:125",
@@ -112789,7 +112221,7 @@
     "rows": 183,
     "skeletonNodes": 30,
     "expandedNodes": 30,
-    "low": 4,
+    "low": 2,
     "removed": 158,
     "unresolved": 0,
     "byRule": {
@@ -113834,14 +113266,14 @@
      "tag": "div",
      "words": "for the mum-to-be & the brand new mum ♥",
      "block": "sgs/label",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1).",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -113893,22 +113325,7 @@
        "h": 71.7
       }
      ],
-     "draftId": "Gifts:12",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Gifts:12"
     },
     {
      "rowId": "skeleton:page-gifts-dc-html:Gifts/13#0",
@@ -113951,7 +113368,7 @@
       {
        "draftId": "Gifts:12",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Gifts:14",
@@ -114031,7 +113448,7 @@
       {
        "draftId": "Gifts:12",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Gifts:13",
@@ -114111,7 +113528,7 @@
       {
        "draftId": "Gifts:12",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Gifts:13",
@@ -116054,14 +115471,14 @@
      "tag": "div",
      "words": "easy as that",
      "block": "sgs/label",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -116108,22 +115525,7 @@
        "h": 28
       }
      ],
-     "draftId": "Gifts:46",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Gifts:46"
     },
     {
      "rowId": "skeleton:page-gifts-dc-html:Gifts/47#0",
@@ -116165,7 +115567,7 @@
       {
        "draftId": "Gifts:46",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Gifts:48",
@@ -116239,7 +115641,7 @@
       {
        "draftId": "Gifts:46",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Gifts:47",
@@ -116375,14 +115777,14 @@
      "tag": "div",
      "words": "1",
      "block": "sgs/label",
-     "confidence": 0.55,
-     "low": true,
-     "reason": "The step number in a 52px filled circle with a border; a short pill-shaped badge is sgs/label.",
+     "confidence": 1,
+     "low": false,
+     "reason": "3 copies of one template element",
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -116397,7 +115799,7 @@
       {
        "draftId": "Gifts:52",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       },
       {
        "draftId": "Gifts:53",
@@ -116441,22 +115843,7 @@
       "2",
       "3"
      ],
-     "distinctWords": 3,
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": "3 copies of one template element",
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "distinctWords": 3
     },
     {
      "rowId": "skeleton:page-gifts-dc-html:Gifts/52",
@@ -116478,14 +115865,14 @@
      "tag": "div",
      "words": "Pick a gift",
      "block": "sgs/heading",
-     "confidence": 0.75,
+     "confidence": 1,
      "low": false,
-     "reason": "Each step's Young Serif 22px title ({{ s.t }}) above its description; it titles the step.",
+     "reason": "3 copies of one template element",
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -116500,7 +115887,7 @@
       {
        "draftId": "Gifts:51",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Gifts:53",
@@ -116544,22 +115931,7 @@
       "Write your note",
       "We bake and post"
      ],
-     "distinctWords": 3,
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": "3 copies of one template element",
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "distinctWords": 3
     },
     {
      "rowId": "skeleton:page-gifts-dc-html:Gifts/53",
@@ -116603,12 +115975,12 @@
       {
        "draftId": "Gifts:51",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Gifts:52",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       }
      ],
      "siblingCount": 2,
@@ -116890,14 +116262,14 @@
      "tag": "div",
      "words": "go on, have a go",
      "block": "sgs/label",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -116959,22 +116331,7 @@
        "h": 28
       }
      ],
-     "draftId": "Gifts:57",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Gifts:57"
     },
     {
      "rowId": "skeleton:page-gifts-dc-html:Gifts/58#0",
@@ -117017,7 +116374,7 @@
       {
        "draftId": "Gifts:57",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Gifts:59",
@@ -117107,7 +116464,7 @@
       {
        "draftId": "Gifts:57",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Gifts:58",
@@ -117191,7 +116548,7 @@
       {
        "draftId": "Gifts:57",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Gifts:58",
@@ -117340,7 +116697,7 @@
       {
        "draftId": "Gifts:57",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Gifts:58",
@@ -117489,7 +116846,7 @@
       {
        "draftId": "Gifts:57",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Gifts:58",
@@ -118480,14 +117837,14 @@
      },
      "tag": "div",
      "words": "baby shower coming up?",
-     "block": "sgs/heading",
+     "block": "sgs/label",
      "confidence": 1,
      "low": false,
-     "reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
-     "rule": "cardTitle",
+     "reason": null,
+     "rule": null,
      "candidates": [
       {
-       "block": "sgs/heading",
+       "block": "sgs/label",
        "score": 1,
        "share": 1
       }
@@ -118503,7 +117860,7 @@
       {
        "draftId": "Gifts:77",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       },
       {
        "draftId": "Gifts:78",
@@ -118561,14 +117918,14 @@
      "tag": "div",
      "words": "Give it now, she bakes it later",
      "block": "sgs/heading",
-     "confidence": 0.6,
-     "low": true,
-     "reason": "The band's Young Serif title at the h2 size; the script kicker before it was made the heading by cardTitle, so the band holds two headings.",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -118583,7 +117940,7 @@
       {
        "draftId": "Gifts:76",
        "tag": "div",
-       "block": "sgs/heading"
+       "block": "sgs/label"
       },
       {
        "draftId": "Gifts:78",
@@ -118620,22 +117977,7 @@
        "h": 67.2
       }
      ],
-     "draftId": "Gifts:77",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Gifts:77"
     },
     {
      "rowId": "skeleton:page-gifts-dc-html:Gifts/78#0",
@@ -118678,12 +118020,12 @@
       {
        "draftId": "Gifts:76",
        "tag": "div",
-       "block": "sgs/heading"
+       "block": "sgs/label"
       },
       {
        "draftId": "Gifts:77",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       },
       {
        "draftId": "Gifts:79",
@@ -118773,12 +118115,12 @@
       {
        "draftId": "Gifts:76",
        "tag": "div",
-       "block": "sgs/heading"
+       "block": "sgs/label"
       },
       {
        "draftId": "Gifts:77",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       },
       {
        "draftId": "Gifts:78",
@@ -119047,7 +118389,7 @@
     "rows": 127,
     "skeletonNodes": 72,
     "expandedNodes": 72,
-    "low": 23,
+    "low": 13,
     "removed": 68,
     "unresolved": 0,
     "byRule": {
@@ -119059,7 +118401,6 @@
      "alignWrapper": 2,
      "formControl": 6,
      "wholeCardLink": 1,
-     "cardTitle": 1,
      "label": 2,
      "cardAction": 1
     }
@@ -120031,14 +119372,14 @@
      "tag": "div",
      "words": "nearly there",
      "block": "sgs/label",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1).",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -120085,22 +119426,7 @@
        "h": 28
       }
      ],
-     "draftId": "Basket:10",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Basket:10"
     },
     {
      "rowId": "skeleton:page-basket-dc-html:Basket/11#0",
@@ -120141,7 +119467,7 @@
       {
        "draftId": "Basket:10",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Basket:22",
@@ -120192,19 +119518,13 @@
      },
      "tag": "span",
      "words": "2",
-     "block": "sgs/label",
-     "confidence": 0.55,
-     "low": true,
-     "reason": "The item-count pill inside the h1; a short pill is sgs/label.",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block",
      "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/text",
-       "score": 0.25,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "candidates": [],
+     "action": "remove",
      "snippet": "<span style=\"font-family:Karla;font-size:.4em;font-weight:700;vertical-align:middle;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:4px ",
      "parent": {
       "draftId": "Basket:11",
@@ -120236,22 +119556,7 @@
        "h": 32
       }
      ],
-     "draftId": "Basket:12",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Basket:12"
     },
     {
      "rowId": "skeleton:page-basket-dc-html:Basket/22#0",
@@ -120292,7 +119597,7 @@
       {
        "draftId": "Basket:10",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Basket:11",
@@ -123366,10 +122671,10 @@
     "inventoryElements": 58,
     "parts": 0,
     "rows": 58,
-    "skeletonNodes": 7,
-    "expandedNodes": 7,
-    "low": 2,
-    "removed": 52,
+    "skeletonNodes": 6,
+    "expandedNodes": 6,
+    "low": 0,
+    "removed": 53,
     "unresolved": 0,
     "byRule": {
      "hero": 1,
@@ -130930,14 +130235,14 @@
      "tag": "div",
      "words": "pop the kettle on ☕",
      "block": "sgs/label",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1).",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -130984,22 +130289,7 @@
        "h": 41.7
       }
      ],
-     "draftId": "Contact:12",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Contact:12"
     },
     {
      "rowId": "skeleton:page-contact-dc-html:Contact/13#0",
@@ -131042,7 +130332,7 @@
       {
        "draftId": "Contact:12",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Contact:14",
@@ -131117,7 +130407,7 @@
       {
        "draftId": "Contact:12",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Contact:13",
@@ -133809,14 +133099,14 @@
      "tag": "div",
      "words": "quick answers",
      "block": "sgs/label",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "A handwritten eyebrow above the quick-answer links; sgs/label.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -133868,22 +133158,7 @@
        "h": 28
       }
      ],
-     "draftId": "Contact:75",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Contact:75"
     },
     {
      "rowId": "skeleton:page-contact-dc-html:Contact/76#0",
@@ -133927,7 +133202,7 @@
       {
        "draftId": "Contact:75",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Contact:86",
@@ -134564,7 +133839,7 @@
       {
        "draftId": "Contact:75",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Contact:76",
@@ -134645,7 +133920,7 @@
       {
        "draftId": "Contact:75",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Contact:76",
@@ -134691,7 +133966,7 @@
     "rows": 75,
     "skeletonNodes": 37,
     "expandedNodes": 37,
-    "low": 5,
+    "low": 3,
     "removed": 44,
     "unresolved": 0,
     "byRule": {
@@ -136025,14 +135300,14 @@
      "tag": "div",
      "words": "ask us anything",
      "block": "sgs/label",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1).",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -136079,22 +135354,7 @@
        "h": 30
       }
      ],
-     "draftId": "Help:11",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Help:11"
     },
     {
      "rowId": "skeleton:page-help-dc-html:Help/12#0",
@@ -136136,7 +135396,7 @@
       {
        "draftId": "Help:11",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Help:13",
@@ -136204,7 +135464,7 @@
       {
        "draftId": "Help:11",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Help:12",
@@ -137618,14 +136878,14 @@
      "tag": "div",
      "words": "getting it to you",
      "block": "sgs/label",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -137655,7 +136915,7 @@
       {
        "draftId": "Help:63",
        "tag": "div",
-       "block": "sgs/text"
+       "block": null
       }
      ],
      "siblingCount": 4,
@@ -137682,22 +136942,7 @@
        "h": 28
       }
      ],
-     "draftId": "Help:39",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Help:39"
     },
     {
      "rowId": "skeleton:page-help-dc-html:Help/40#0",
@@ -137739,7 +136984,7 @@
       {
        "draftId": "Help:39",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Help:41",
@@ -137754,7 +136999,7 @@
       {
        "draftId": "Help:63",
        "tag": "div",
-       "block": "sgs/text"
+       "block": null
       }
      ],
      "siblingCount": 4,
@@ -137823,7 +137068,7 @@
       {
        "draftId": "Help:39",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Help:40",
@@ -137838,7 +137083,7 @@
       {
        "draftId": "Help:63",
        "tag": "div",
-       "block": "sgs/text"
+       "block": null
       }
      ],
      "siblingCount": 4,
@@ -137907,7 +137152,7 @@
       {
        "draftId": "Help:39",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Help:40",
@@ -137922,7 +137167,7 @@
       {
        "draftId": "Help:63",
        "tag": "div",
-       "block": "sgs/text"
+       "block": null
       }
      ],
      "siblingCount": 4,
@@ -138710,17 +137955,11 @@
      "tag": "div",
      "words": "Prices and timings to be confirmed by Zainab.",
      "block": null,
-     "confidence": 0.8,
+     "confidence": 1,
      "low": false,
-     "reason": "A brief note to the client (Prices and timings to be confirmed by Zainab.), not design; a brief-only line is removed.",
+     "reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: A brief note to the client (Prices and timings to be confirmed by Zainab.), not design; a brief-only line is removed.",
      "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/text",
-       "score": 0.25,
-       "share": 1
-      }
-     ],
+     "candidates": [],
      "action": "remove",
      "snippet": "<div style=\"font-size:13px;margin-top:12px;color:#5E4A3D\" data-dc-tpl=\"63\">Prices and timings to be confirmed by Zainab.</div>",
      "parent": {
@@ -138732,7 +137971,7 @@
       {
        "draftId": "Help:39",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Help:40",
@@ -138774,22 +138013,7 @@
        "h": 15
       }
      ],
-     "draftId": "Help:63",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Help:63"
     },
     {
      "rowId": "skeleton:page-help-dc-html:Help/64#0",
@@ -138953,14 +138177,14 @@
      "tag": "div",
      "words": "please read carefully",
      "block": "sgs/label",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -139017,22 +138241,7 @@
        "h": 28
       }
      ],
-     "draftId": "Help:66",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Help:66"
     },
     {
      "rowId": "skeleton:page-help-dc-html:Help/67#0",
@@ -139074,7 +138283,7 @@
       {
        "draftId": "Help:66",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Help:68",
@@ -139158,7 +138367,7 @@
       {
        "draftId": "Help:66",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Help:67",
@@ -139562,7 +138771,7 @@
       {
        "draftId": "Help:66",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Help:67",
@@ -139646,7 +138855,7 @@
       {
        "draftId": "Help:66",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "Help:67",
@@ -139928,14 +139137,14 @@
      "tag": "b",
      "words": "Privacy policy",
      "block": "sgs/heading",
-     "confidence": 0.75,
+     "confidence": 1,
      "low": false,
-     "reason": "The Privacy policy title (Young Serif 20px) above its paragraph; it titles the block.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -139977,22 +139186,7 @@
        "h": 28
       }
      ],
-     "draftId": "Help:79",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Help:79"
     },
     {
      "rowId": "skeleton:page-help-dc-html:Help/80#0",
@@ -140035,7 +139229,7 @@
       {
        "draftId": "Help:79",
        "tag": "b",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       }
      ],
      "siblingCount": 1,
@@ -140152,14 +139346,14 @@
      "tag": "b",
      "words": "Terms & conditions",
      "block": "sgs/heading",
-     "confidence": 0.75,
+     "confidence": 1,
      "low": false,
-     "reason": "The Terms and conditions title (Young Serif 20px) above its paragraph; it titles the block.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -140201,22 +139395,7 @@
        "h": 28
       }
      ],
-     "draftId": "Help:82",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Help:82"
     },
     {
      "rowId": "skeleton:page-help-dc-html:Help/83#0",
@@ -140259,7 +139438,7 @@
       {
        "draftId": "Help:82",
        "tag": "b",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       }
      ],
      "siblingCount": 1,
@@ -140443,14 +139622,14 @@
      },
      "tag": "span",
      "words": "still stuck?",
-     "block": "sgs/heading",
+     "block": "sgs/label",
      "confidence": 1,
      "low": false,
-     "reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
-     "rule": "cardTitle",
+     "reason": null,
+     "rule": null,
      "candidates": [
       {
-       "block": "sgs/heading",
+       "block": "sgs/label",
        "score": 1,
        "share": 1
       }
@@ -140466,7 +139645,7 @@
       {
        "draftId": "Help:87",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       }
      ],
      "siblingCount": 1,
@@ -140514,14 +139693,14 @@
      "tag": "span",
      "words": "Message Zainab",
      "block": "sgs/heading",
-     "confidence": 0.6,
-     "low": true,
-     "reason": "The card link's Young Serif 24px title; the script kicker before it (still stuck?) was made the heading by cardTitle, so the card holds two headings.",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -140536,7 +139715,7 @@
       {
        "draftId": "Help:86",
        "tag": "span",
-       "block": "sgs/heading"
+       "block": "sgs/label"
       }
      ],
      "siblingCount": 1,
@@ -140563,22 +139742,7 @@
        "h": 34
       }
      ],
-     "draftId": "Help:87",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Help:87"
     },
     {
      "rowId": "skeleton:page-help-dc-html:Help/88#0",
@@ -140654,10 +139818,10 @@
     "inventoryElements": 146,
     "parts": 15,
     "rows": 131,
-    "skeletonNodes": 74,
-    "expandedNodes": 74,
-    "low": 14,
-    "removed": 70,
+    "skeletonNodes": 73,
+    "expandedNodes": 73,
+    "low": 7,
+    "removed": 71,
     "unresolved": 0,
     "byRule": {
      "hero": 1,
@@ -140669,7 +139833,6 @@
      "accordionItem": 73,
      "label": 4,
      "wholeCardLink": 1,
-     "cardTitle": 1,
      "cardAction": 1
     }
    },
@@ -141126,14 +140289,14 @@
      "tag": "div",
      "words": "welcome back, mama",
      "block": "sgs/label",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1).",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -141175,22 +140338,7 @@
        "h": 41.7
       }
      ],
-     "draftId": "SignIn:11",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "SignIn:11"
     },
     {
      "rowId": "skeleton:page-signin-dc-html:SignIn/12#0",
@@ -141232,7 +140380,7 @@
       {
        "draftId": "SignIn:11",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       }
      ],
      "siblingCount": 1,
@@ -142335,14 +141483,14 @@
      "tag": "div",
      "words": "why have an account?",
      "block": "sgs/label",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "A handwritten eyebrow above the benefits list; sgs/label.",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -142389,22 +141537,7 @@
        "h": 28
       }
      ],
-     "draftId": "SignIn:96",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "SignIn:96"
     },
     {
      "rowId": "skeleton:page-signin-dc-html:SignIn/97#0",
@@ -142447,7 +141580,7 @@
       {
        "draftId": "SignIn:96",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "SignIn:104",
@@ -142585,14 +141718,14 @@
      "tag": "span",
      "words": "✓",
      "block": "sgs/icon",
-     "confidence": 0.6,
-     "low": true,
-     "reason": "A tick in a 32px yellow bordered circle beside each benefit; sgs/icon draws a glyph in a circle with its own border.",
+     "confidence": 1,
+     "low": false,
+     "reason": "3 copies of one template element",
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/icon",
+       "score": 1,
        "share": 1
       }
      ],
@@ -142641,22 +141774,7 @@
       "SignIn/100#1",
       "SignIn/100#2"
      ],
-     "proposalReason": null,
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": "3 copies of one template element",
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "proposalReason": null
     },
     {
      "rowId": "skeleton:page-signin-dc-html:SignIn/101",
@@ -142701,7 +141819,7 @@
       {
        "draftId": "SignIn:100",
        "tag": "span",
-       "block": "sgs/text"
+       "block": "sgs/icon"
       }
      ],
      "siblingCount": 1,
@@ -142759,14 +141877,14 @@
      "tag": "div",
      "words": "Every order and bake date",
      "block": "sgs/heading",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "Each benefit's Young Serif 20px title ({{ k.t }}) above its description.",
+     "reason": "3 copies of one template element",
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/heading",
+       "score": 1,
        "share": 1
       }
      ],
@@ -142820,22 +141938,7 @@
       "Subscriptions on your terms",
       "Saved addresses"
      ],
-     "distinctWords": 3,
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": "3 copies of one template element",
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "distinctWords": 3
     },
     {
      "rowId": "skeleton:page-signin-dc-html:SignIn/103",
@@ -142881,7 +141984,7 @@
       {
        "draftId": "SignIn:102",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/heading"
       }
      ],
      "siblingCount": 1,
@@ -142978,7 +142081,7 @@
       {
        "draftId": "SignIn:96",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       },
       {
        "draftId": "SignIn:97",
@@ -143034,7 +142137,7 @@
     "rows": 38,
     "skeletonNodes": 25,
     "expandedNodes": 25,
-    "low": 12,
+    "low": 4,
     "removed": 13,
     "unresolved": 0,
     "byRule": {
@@ -144837,14 +143940,14 @@
      "tag": "div",
      "words": "my account",
      "block": "sgs/label",
-     "confidence": 0.7,
+     "confidence": 1,
      "low": false,
-     "reason": "a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1).",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
-       "block": "sgs/text",
-       "score": 0.25,
+       "block": "sgs/label",
+       "score": 1,
        "share": 1
       }
      ],
@@ -144886,22 +143989,7 @@
        "h": 41.7
       }
      ],
-     "draftId": "Account:11",
-     "finalisedBy": "agent",
-     "original": {
-      "block": "sgs/text",
-      "action": null,
-      "confidence": 0.25,
-      "low": true,
-      "reason": null,
-      "candidates": [
-       {
-        "block": "sgs/text",
-        "score": 0.25,
-        "share": 1
-       }
-      ]
-     }
+     "draftId": "Account:11"
     },
     {
      "rowId": "skeleton:page-account-dc-html:Account/12#0",
@@ -144943,7 +144031,7 @@
       {
        "draftId": "Account:11",
        "tag": "div",
-       "block": "sgs/text"
+       "block": "sgs/label"
       }
      ],
      "siblingCount": 1,
@@ -145507,7 +144595,7 @@
     "rows": 13,
     "skeletonNodes": 6,
     "expandedNodes": 6,
-    "low": 1,
+    "low": 0,
     "removed": 7,
     "unresolved": 0,
     "byRule": {
@@ -152005,10 +151093,11 @@
   {
    "rowId": "skeleton:nav-drawer-left:Home>SiteHeader@7#0/66#0",
    "rowType": "skeleton-block",
-   "contentHash": "281c10881a34ab99742de3c6ba3a8694b5a0a1c3571e40f522a9a42b3bd41fa4",
-   "mark": "block:sgs/label",
+   "contentHash": "8d075d4e04a1b3cdae07eab131f879c4f0c3ad3fb8e51d088391777befe130a9",
+   "mark": "accept",
    "markedOn": "2026-11-02",
-   "carriedFrom": null
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:nav-drawer-left:Home>SiteHeader@7#0/67#0",
@@ -152045,10 +151134,11 @@
   {
    "rowId": "skeleton:nav-drawer-left:Home>SiteHeader@7#0/71#0",
    "rowType": "skeleton-block",
-   "contentHash": "c0952b308e5e07918c637386d955c8b561c85cfdf4b8d2e25d4a2cdd4bb0bfa3",
-   "mark": "block:sgs/label",
+   "contentHash": "e2b7a07011bc0a54f281cad2210130152d22abf8da7573e9226fb1020f396a98",
+   "mark": "accept",
    "markedOn": "2026-11-02",
-   "carriedFrom": null
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:nav-drawer-left:Home>SiteHeader@7#0/72#0",
@@ -153109,10 +152199,11 @@
   {
    "rowId": "skeleton:page-home-dc-html:Home/50#0",
    "rowType": "skeleton-block",
-   "contentHash": "1dc0dcc68d10ec6a57de291d987499f76ed0de1e2247f1685bdc55dd50ec2df6",
-   "mark": "block:sgs/label",
+   "contentHash": "8b633c494f4e354f39c1134a01f7c6f74b73e6dd9926d726342e5f189ed3dd94",
+   "mark": "accept",
    "markedOn": "2026-11-02",
-   "carriedFrom": null
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/51#0",
@@ -153173,10 +152264,11 @@
   {
    "rowId": "skeleton:page-home-dc-html:Home/58#0",
    "rowType": "skeleton-block",
-   "contentHash": "f1176a95332dee3bbdc872503c227a5d3107b0d3bff58ff45c0c94e12ed08c89",
-   "mark": "block:sgs/label",
+   "contentHash": "62aabd80146fd59c4d8843a68fb193c31f69804c400ab52e2f14c289157704a3",
+   "mark": "accept",
    "markedOn": "2026-11-02",
-   "carriedFrom": null
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/59#0",
@@ -153846,10 +152938,11 @@
   {
    "rowId": "skeleton:page-home-dc-html:Home/148",
    "rowType": "skeleton-block",
-   "contentHash": "0e1dd994d347f6d3aadd3155d5c9035a367f0983aa026a9b44144fdf27c466ed",
+   "contentHash": "926a49f0a4054c7ebcf6dba6a540c9f355ebe8767d11f84c504fe7a5f8211e13",
    "mark": "accept",
-   "markedOn": "2026-11-01",
-   "carriedFrom": null
+   "markedOn": "2026-11-02",
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/149#0",
@@ -153943,10 +153036,11 @@
   {
    "rowId": "skeleton:page-home-dc-html:Home/160#0",
    "rowType": "skeleton-block",
-   "contentHash": "61cb5f80056f45f75a8175e7d2b1fba3998b5cab77c3b54872bf4e4732fb448c",
-   "mark": "block:sgs/label",
+   "contentHash": "06dfe1b739c643571346b09a01d267cb6cb7d473269484cdc6f4ada21e0962f0",
+   "mark": "accept",
    "markedOn": "2026-11-02",
-   "carriedFrom": null
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home/161#0",
@@ -154962,10 +154056,11 @@
   {
    "rowId": "skeleton:page-shop-dc-html:Shop/40#0",
    "rowType": "skeleton-block",
-   "contentHash": "cb233e769fbf63f831bc4ffacff2af851934be050d81569601d2a4ab8b0f0d31",
-   "mark": "block:sgs/label",
+   "contentHash": "5185400e33cf551050b3496eca1e6b3ec331b33c045d4adea9dd8921cdbc9fde",
+   "mark": "accept",
    "markedOn": "2026-11-02",
-   "carriedFrom": null
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-shop-dc-html:Shop/41#0",
@@ -154984,17 +154079,9 @@
    "carriedFrom": null
   },
   {
-   "rowId": "skeleton:page-shop-dc-html:Shop/44=sgs/label",
+   "rowId": "skeleton:page-shop-dc-html:Shop/44",
    "rowType": "skeleton-block",
-   "contentHash": "8965208e346519ac40148e7ce07d4e82f219e3281d0e85b1e73da3a5a850d741",
-   "mark": "accept",
-   "markedOn": "2026-11-01",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "skeleton:page-shop-dc-html:Shop/44=sgs/text",
-   "rowType": "skeleton-block",
-   "contentHash": "99cfae0613de632e6e4001e923a1debde422ff4520ee49b7736d79fe2198c661",
+   "contentHash": "cfc1b217b665733b50a88cabb67c0d8a37bb7776e6b202060261de18cd836ca1",
    "mark": "accept",
    "markedOn": "2026-11-02",
    "carriedFrom": null
@@ -155018,10 +154105,11 @@
   {
    "rowId": "skeleton:page-shop-dc-html:Shop/47#0",
    "rowType": "skeleton-block",
-   "contentHash": "8fa88ee6df2e949aa785b39c4b930421d338b68557a08e974133c63408e0601c",
-   "mark": "block:sgs/label",
+   "contentHash": "901187c99260c695556bf7e3a459d5591446c4f409b4427ccb1dc6ad22cc07f9",
+   "mark": "accept",
    "markedOn": "2026-11-02",
-   "carriedFrom": null
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-shop-dc-html:Shop/48#0",
@@ -156387,10 +155475,11 @@
   {
    "rowId": "skeleton:page-gifts-dc-html:Gifts/76#0",
    "rowType": "skeleton-block",
-   "contentHash": "25e18554c7481a61053deb7624c928ee93a24f309dd6b5c9e88341327b4eb991",
-   "mark": "block:sgs/label",
+   "contentHash": "17a03b04938c50914f2d27e533e6fb76e8350e77c2ac0be4ddd1301920b5c5e2",
+   "mark": "accept",
    "markedOn": "2026-11-02",
-   "carriedFrom": null
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-gifts-dc-html:Gifts/77#0",
@@ -156555,10 +155644,11 @@
   {
    "rowId": "skeleton:page-basket-dc-html:Basket/12#0",
    "rowType": "skeleton-block",
-   "contentHash": "8a227127cc806bc9da8189d4caa1e36dede0f3254a7cb0501d7bc85bca285592",
-   "mark": "remove",
+   "contentHash": "07c11a1e25c0ef1c415ec2d8a931c8bf3dcb59c20c73feb0015ace01614004f0",
+   "mark": "accept",
    "markedOn": "2026-11-02",
-   "carriedFrom": null
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-basket-dc-html:Basket/22#0",
@@ -158636,10 +157726,11 @@
   {
    "rowId": "skeleton:page-help-dc-html:Help/86#0",
    "rowType": "skeleton-block",
-   "contentHash": "fdb501de2accda01c21ec6e461b25c066da54930307f44801766222833200dda",
-   "mark": "block:sgs/label",
+   "contentHash": "1a7f7110d6c668e4dea19503430b3886bb16b510dbd07801a581578860f9255d",
+   "mark": "accept",
    "markedOn": "2026-11-02",
-   "carriedFrom": null
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-help-dc-html:Help/87#0",

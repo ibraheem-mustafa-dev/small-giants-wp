@@ -1763,28 +1763,28 @@
 				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: The gift carousel's dots (375 only) step a scroll track over the product collection; no block in the DB draws carousel controls for woocommerce/product-collection, and copied buttons would be dead, so they go."
 			},
 			"Home/148#0": {
-				"block": "sgs/button",
+				"remove": true,
 				"signature": "button|",
-				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/button"
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
 			},
 			"Home/148#1": {
-				"block": "sgs/button",
+				"remove": true,
 				"signature": "button|",
-				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/button"
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
 			},
 			"Home/148#2": {
-				"block": "sgs/button",
+				"remove": true,
 				"signature": "button|",
-				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/button"
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
 			},
 			"Home/148#3": {
-				"block": "sgs/button",
+				"remove": true,
 				"signature": "button|",
-				"reason": "Bean accepted sgs/button in the intake review on 2026-10-31 (recovered from the review history, 2026-11-01)",
-				"proposed": "sgs/button"
+				"proposed": "remove",
+				"reason": "Bean accepted remove in the intake review on 2026-11-02"
 			},
 			"Home/149#0": {
 				"remove": true,
