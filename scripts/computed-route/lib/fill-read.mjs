@@ -167,11 +167,30 @@ async function openPage( browser, devices, { url, open, opener = null, width, or
 	// The runtime has mounted its components by now: a state is set on a live instance, never before it exists.
 	const opened = opener?.state ? await openState( page, opener, width ) : null;
 	opened && await settleAnimations( page, { floor: 300 } );
-	// A scroll entrance sits paused at its start pose until its element nears the viewport, which the settle above never
-	// waits for: scrolling each into view plays it (the scroll is put back), so every read is the element AT REST, never
-	// the before-reveal state a motion owns (Spec 48 R-47-4).
-	await triggerArmed( page );
+	// A scroll entrance sits at its start pose until its element nears the viewport, which the settle above never waits
+	// for: the page is swept top to bottom first (a reveal the draft's own script drives, an IntersectionObserver writing
+	// opacity and transform inline, is no animation the browser lists), then each armed animation is scrolled into view
+	// (the scroll is put back), so every read is the element AT REST, never the before-reveal state a motion owns
+	// (Spec 48 R-47-4).
+	await playEntrances( page );
 	return { ctx, page, h, opened };
+}
+
+// Scrolls the page through its full height a viewport-step at a time so every scroll-triggered reveal fires, whatever
+// drives it, puts the scroll back, lets the transitions finish, then plays any entrance still armed (`triggerArmed`).
+export async function playEntrances( page, { stepMs = 120 } = {} ) {
+	const y = await page.evaluate( async ( wait ) => {
+		const start = window.scrollY;
+		const step = Math.max( 200, Math.round( window.innerHeight * 0.6 ) );
+		for ( let at = 0; at < document.documentElement.scrollHeight; at += step ) {
+			window.scrollTo( { top: at, behavior: 'instant' } );
+			await new Promise( ( done ) => setTimeout( done, wait ) );
+		}
+		return start;
+	}, stepMs );
+	await page.evaluate( ( t ) => window.scrollTo( { top: t, behavior: 'instant' } ), y );
+	await settleAnimations( page, { floor: 900 } );
+	return triggerArmed( page );
 }
 
 // What every read of the draft returns:
