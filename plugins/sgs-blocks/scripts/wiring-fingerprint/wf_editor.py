@@ -67,6 +67,13 @@ class EditorModel:
             if name in declared and name not in be.control:
                 be.control[name] = why
 
+        # The Motion Hover panel's toggle row (`extensions/motion/hover/HoverToggleRow.js`) writes the attribute a block
+        # names in `supports.sgs.motion.hoverToggle.attribute`, so that attribute has an inspector control.
+        motion = ((bjson.get("supports") or {}).get("sgs") or {}).get("motion")
+        hover_toggle = motion.get("hoverToggle") if isinstance(motion, dict) else None
+        if isinstance(hover_toggle, dict) and isinstance(hover_toggle.get("attribute"), str):
+            credit(hover_toggle["attribute"], "motion-hover-toggle")
+
         suffixes: set[str] = set()
         for rel in files:
             suffixes |= set(self._f(rel).get("prefixSuffixes", []))
